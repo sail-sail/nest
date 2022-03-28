@@ -141,7 +141,6 @@ pm2 save
 
 centos7/8:
 systemctl restart pm2-root
-
 ubuntu:
 service pm2-root restart
 
