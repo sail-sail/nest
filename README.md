@@ -134,7 +134,7 @@ mysql导出数据:
 mysqldump --defaults-file="/etc/my.cnf" --user=nest -p --host=localhost --protocol=tcp --port=3306 --default-character-set=utf8 --skip-triggers "nest" > nest.sql
 ```
 
-10.  PM2设置开机自启动
+10. PM2设置开机自启动
 ```
 pm2 startup
 pm2 save
