@@ -139,7 +139,7 @@ mysqldump --defaults-file="/etc/my.cnf" --user=nest -p --host=localhost --protoc
 pm2 startup
 pm2 save
 
-centos7:
+centos7/8:
 systemctl restart pm2-root
 
 ubuntu:
