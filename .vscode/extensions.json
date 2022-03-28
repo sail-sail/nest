@@ -1,0 +1,30 @@
+{
+  "recommendations": [
+    "aaron-bond.better-comments",
+    "alefragnani.bookmarks",
+    "ms-ceintl.vscode-language-pack-zh-hans",
+    "oouo-diogo-perdigao.docthis",
+    "mikestead.dotenv",
+    "hediet.vscode-drawio-insiders-build",
+    "janisdd.vscode-edit-csv",
+    "editorconfig.editorconfig",
+    "oibit.element-ui-helper",
+    "dbaeumer.vscode-eslint",
+    "maggie.eslint-rules-zh-plugin",
+    "github.copilot",
+    "graphql.vscode-graphql",
+    "151263555.graphql-nestjs-ts",
+    "p-de-jong.vscode-html-scss",
+    "zaaack.markdown-editor",
+    "ms-vscode.vscode-typescript-next",
+    "howardzuo.vscode-npm-dependency",
+    "zaaack.markdown-editor",
+    "ibm.output-colorizer",
+    "deanhjjiang.split-line",
+    "sysoev.language-stylus",
+    "jock.svg",
+    "johnsoncodehk.volar",
+    "vscode-icons-team.vscode-icons",
+    "redhat.vscode-xml"
+  ]
+}

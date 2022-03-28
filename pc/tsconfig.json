@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "importHelpers": true,
+    "removeComments": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": [ "esnext", "dom", "WebWorker" ],
+    "types": [ "vite/client", "node" ],
+    "paths": {
+      "@/*": [ "./src/*" ],
+      "#/*": [ "./src/typings/*" ]
+    }
+  },
+  "include": [
+    "node_modules/vue/ref-macros.d.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ]
+}

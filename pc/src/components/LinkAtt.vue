@@ -1,0 +1,76 @@
+<template>
+<el-link @click="linkClk" type="primary">
+  <slot name="default">
+    {{ attLen }}
+  </slot>
+</el-link>
+<AttDialog ref="attDialogRef" @change="attDialogChg"></AttDialog>
+</template>
+
+<script lang="ts" setup>
+import {
+  ElLink,
+} from "element-plus";
+import { watch } from "vue";
+import AttDialog from "./AttDialog.vue";
+
+const emit = defineEmits([
+  "change",
+  "update:modelValue",
+]);
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: string|null;
+    maxSize?: number;
+    maxFileSize?: number;
+    readonly?: boolean;
+  }>(),
+  {
+    modelValue: "",
+    maxSize: 1,
+    maxFileSize: 1024 * 1024 * 50,
+    readonly: false,
+  },
+);
+
+let modelValue = $ref("");
+
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    if (modelValue !== newVal) {
+      modelValue = newVal;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+let attLen = $computed(() => {
+  if (!modelValue) return 0;
+  return modelValue.split(",").length;
+});
+
+let attDialogRef = $ref<InstanceType<typeof AttDialog>>();
+
+async function linkClk() {
+  await attDialogRef.showDialog({
+    model: {
+      modelValue,
+      maxSize: props.maxSize,
+      maxFileSize: props.maxFileSize,
+      readonly: props.readonly,
+    },
+  });
+}
+
+function attDialogChg(modelValue: string) {
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
+}
+</script>
+
+<style lang="scss" scoped>
+</style>

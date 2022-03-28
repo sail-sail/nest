@@ -1,0 +1,42 @@
+[server]
+port = 4001
+host = "127.0.0.1"
+token_timeout = 3600
+title = "nest"
+
+[database]
+type = "mysql"
+host = "180.76.246.215"
+port = 3389
+username = "nest"
+password = "umbdflXHI0osat2v"
+database = "nest"
+connectionLimit = 4
+
+[wxapp]
+appid = ""
+secret = ""
+
+[minio]
+endPoint = "180.76.246.215"
+port = 9000
+accessKey = "WfLyt5Fkdgpr4YCV"
+secretKey = "kluANLzo0ajGutyH"
+bucket = "nest"
+poolSize = 10
+pendingTimeout = 15000
+
+[cache]
+type = "redis"
+database = 0
+[socket]
+#path = "/tmp/redis.sock"
+host = "localhost"
+port = 6379
+
+#日志配置 lever:日志等级info log error,path日志保存的路径
+[log]
+#lever = "log"
+#path = "../"
+#separate = "YYYY-MM-DD"
+#expire_day = 31

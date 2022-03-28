@@ -1,0 +1,4 @@
+
+type Mutation {
+  login(username: String!, password: String!, tenant_id: String!): String!
+}

@@ -1,0 +1,6 @@
+id,type,menu_id,lbl,route_path,route_query,is_enabled,order_by
+6ZeQOSTtRpGy+467HJZuBw,pc,,系统管理,,NULL,1,100
+LiRTLUICQA2SRlJgYoNmnA,pc,6ZeQOSTtRpGy+467HJZuBw,菜单,/menu,NULL,1,1000
+1oTQS2N4TsKhvk7Rnq4hAg,pc,6ZeQOSTtRpGy+467HJZuBw,角色,/role,NULL,1,1001
+TO8DBpthSvG2/XDWOwAqtA,pc,6ZeQOSTtRpGy+467HJZuBw,租户,/tenant,NULL,1,10031
+AE6NzvHDQ3CSMdhPlSHCdg,pc,6ZeQOSTtRpGy+467HJZuBw,用户,/usr,NULL,1,10041

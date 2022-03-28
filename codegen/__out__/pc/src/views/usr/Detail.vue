@@ -1,0 +1,559 @@
+<template>
+<el-dialog
+  draggable
+  :fullscreen="fullscreen"
+  v-model="dialogVisible"
+  append-to-body
+  :close-on-click-modal="false"
+  :custom-class="columnNum > 20 ? 'custom_dialog' : 'custom_dialog auto_dialog'"
+  top="0"
+  :before-close="beforeClose"
+>
+  <template v-slot:title>
+    <div class="dialog_title">
+      <div class="title_lbl">
+        <span class="dialogTitle_span">
+          {{ dialogTitle }}
+        </span>
+        <span v-if="isModelDirty" class="isModelDirty_span">
+          *
+        </span>
+      </div>
+      <el-icon class="full_but" @click="setFullscreen">
+        <FullScreen/>
+      </el-icon>
+    </div>
+  </template>
+  <div class="wrap_div">
+    <div class="content_div">
+      <el-form
+        :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
+        :model="dialogModel"
+        ref="formRef"
+        :rules="form_rules"
+        :validate-on-rule-change="false"
+        @keyup.enter.native="saveClk"
+      >
+        
+        <label class="form_label">
+          <span style="color: red;">*</span>
+          <span>名称</span>
+        </label>
+        <el-form-item prop="lbl">
+          <el-input
+            class="form_input"
+            v-model="dialogModel.lbl"
+            placeholder="请输入名称"
+          ></el-input>
+        </el-form-item>
+        
+        <label class="form_label">
+          <span style="color: red;">*</span>
+          <span>用户名</span>
+        </label>
+        <el-form-item prop="username">
+          <el-input
+            class="form_input"
+            v-model="dialogModel.username"
+            placeholder="请输入用户名"
+          ></el-input>
+        </el-form-item>
+        
+        <label class="form_label">
+          <span>密码</span>
+        </label>
+        <el-form-item prop="password">
+          <el-input
+            class="form_input"
+            v-model="dialogModel.password"
+            placeholder="请输入密码"
+          ></el-input>
+        </el-form-item>
+        
+        <label class="form_label">
+          <span>启用</span>
+        </label>
+        <el-form-item prop="is_enabled">
+          <el-select
+            class="form_input"
+            @keyup.enter.native.stop
+            v-model="dialogModel.is_enabled"
+            placeholder="请选择启用"
+            filterable
+            default-first-option
+            clearable
+          >
+            <el-option
+              :value="1"
+              label="是"
+            ></el-option>
+            <el-option
+              :value="0"
+              label="否"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        
+        <label class="form_label">
+          <span>角色</span>
+        </label>
+        <el-form-item prop="role_ids">
+          <el-select-v2
+            :height="300"
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            class="form_input"
+            @keyup.enter.native.stop
+            v-model="dialogModel.role_ids"
+            placeholder="请选择角色"
+            :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+            filterable
+            clearable
+            :loading="!inited"
+            :remote="roleInfo.count > SELECT_V2_SIZE"
+            :remote-method="roleFilterEfc"
+          ></el-select-v2>
+        </el-form-item>
+        
+        <label class="form_label">
+          <span>备注</span>
+        </label>
+        <el-form-item prop="rem">
+          <el-input
+            class="form_input"
+            v-model="dialogModel.rem"
+            placeholder="请输入备注"
+          ></el-input>
+        </el-form-item>
+        
+      </el-form>
+    </div>
+    <div class="toolbox_div">
+      <el-button
+        type="primary"
+        :disabled="!isModelDirty"
+        :icon="CircleCheck"
+        class="save_but"
+        @click="saveClk"
+      >
+        保存
+      </el-button>
+      <div class="page_div">
+        <template v-if="ids && ids.length > 0">
+          <el-button
+            type="text"
+            class="prev_but"
+            :disabled="ids.indexOf(dialogModel.id) <= 0"
+            @click="prevIdClk"
+          >
+            上一页
+          </el-button>
+          <span class="detail_pg_span">
+            <span>
+              {{ ids.indexOf(dialogModel.id) + 1 }} / {{ ids.length }}
+            </span>
+          </span>
+          <el-button
+            type="text"
+            class="next_but"
+            :disabled="ids.indexOf(dialogModel.id) >= ids.length - 1"
+            @click="nextIdClk"
+          >
+            下一页
+          </el-button>
+        </template>
+        <span class="chg_ids_span" v-if="changedIds.length > 0">
+          {{ changedIds.length }}
+        </span>
+      </div>
+    </div>
+  </div>
+</el-dialog>
+</template>
+
+<script setup lang="ts">
+import {
+  ElDialog,
+  ElIcon,
+  ElMessage,
+  ElMessageBox,
+  ElForm,
+  ElFormItem,
+  FormItemRule,
+  ElInput,
+  ElInputNumber,
+  ElCheckbox,
+  ElSelect,
+  ElSelectV2,
+  ElOption,
+  ElDatePicker,
+  ElButton,
+} from "element-plus";
+import {
+  CircleCheck,
+  FullScreen,
+} from "@element-plus/icons-vue";
+import { useFullscreenEffect } from "@/compositions/fullscreen";
+import {
+  deepCompare,
+  SELECT_V2_SIZE,
+} from "@/views/common/App";
+import {
+  create,
+  findById,
+  updateById,
+} from "./Api";
+
+import { UsrModel } from "./Model";
+import { RoleModel } from "../role/Model";
+
+import {
+  findAllAndCountRole,
+  findAllRole,
+} from "./Api";
+
+const emit = defineEmits([
+  "change",
+  "nextId",
+]);
+
+let inited = $ref(false);
+let columnNum = $ref(6);
+
+let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+
+let dialogTitle = $ref("");
+let dialogVisible = $ref(false);
+let dialogAction = $ref("add");
+
+let dialogModel: UsrModel = $ref({
+  role_ids: [ ],
+});
+
+let oldDialogModel: UsrModel = $ref({
+  role_ids: [ ],
+});
+let ids: string[] = $ref([ ]);
+let oldIds: string[] = $ref([ ]);
+let changedIds: string[] = $ref([ ]);
+
+let formRef = $ref<InstanceType<typeof ElForm>>();
+
+// 表单校验
+let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
+  lbl: [
+    { required: true, message: "请输入名称" },
+  ],
+  username: [
+    { required: true, message: "请输入用户名" },
+  ],
+});
+
+// 下拉框列表
+
+let roleInfo: { count: number, data: RoleModel[] } = $ref({ count: 0, data: [ ] });
+
+// 获取下拉框列表
+async function getSelectListEfc() {
+  [
+    roleInfo,
+  ] = await Promise.all([
+    findAllAndCountRole(
+      {
+      },
+      {
+        pgSize: SELECT_V2_SIZE,
+      },
+    ),
+  ]);
+}
+
+// 角色下拉框远程搜索
+async function roleFilterEfc(query: string) {
+  roleInfo.data = await findAllRole({
+    lbl: query ? `%${ query }%` : undefined,
+  }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
+}
+
+// 打开对话框
+async function showDialog(
+  { title, model, action }: { title?: string, model?: any, action: "add"|"edit" },
+): Promise<void> {
+  inited = false;
+  if (formRef) {
+    formRef.resetFields();
+  }
+  dialogAction = action;
+  if (title) {
+    dialogTitle = title;
+  }
+  ids = [ ];
+  oldIds = [ ];
+  changedIds = [ ];
+  dialogModel = {
+    is_enabled: 0,
+    role_ids: [ ],
+  };
+  oldDialogModel = {
+    is_enabled: 0,
+    role_ids: [ ],
+  };
+  await getSelectListEfc();
+  if (action === "add") {
+    dialogModel = {
+      is_enabled: 1,
+      role_ids: [ ],
+      ...model,
+    };
+    oldDialogModel = {
+      is_enabled: 0,
+      role_ids: [ ],
+      ...model,
+    };
+  } else if (action === "edit") {
+    ids = model.ids;
+    oldIds = model.ids;
+    if (!ids || ids.length === 0 && model.id) {
+      ids = [ model.id ];
+      oldIds = [ model.id ];
+    }
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      oldDialogModel.id = ids[0];
+      await refreshEfc();
+    }
+  }
+  if (formRef) {
+    formRef.clearValidate();
+  }
+  inited = true;
+  dialogVisible = true;
+}
+
+// 是否有改动
+let isModelDirty = $computed(() => !deepCompare(dialogModel, oldDialogModel));
+
+// 刷新
+async function refreshEfc() {
+  if (formRef) {
+    formRef.clearValidate();
+  }
+  const data = await findById(dialogModel.id);
+  if (data) {
+    dialogModel = data;
+    oldDialogModel = Object.assign({ }, data);
+  }
+}
+
+// 点击上一页
+async function prevIdClk() {
+  if (!(await vldInputChg())) return;
+  await prevId();
+}
+
+// 点击下一页
+async function nextIdClk() {
+  if (!(await vldInputChg())) return;
+  await nextId();
+}
+
+// 下一页
+async function nextId() {
+  if (!dialogModel.id) {
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      oldDialogModel.id = ids[0];
+    } else {
+      return false;
+    }
+  } else {
+    const idx = ids.indexOf(dialogModel.id);
+    if (idx >= 0 && idx < ids.length - 1) {
+      dialogModel.id = ids[idx + 1];
+      oldDialogModel.id = ids[idx + 1];
+    } else {
+      return false;
+    }
+  }
+  await refreshEfc();
+  emit("nextId", { dialogAction, id: dialogModel.id });
+  return true;
+}
+
+// 上一页
+async function prevId() {
+  if (!dialogModel.id) {
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      oldDialogModel.id = ids[0];
+    }
+  } else {
+    const idx = ids.indexOf(dialogModel.id);
+    if (idx > 0) {
+      dialogModel.id = ids[idx - 1];
+      oldDialogModel.id = ids[idx - 1];
+    } else {
+      return false;
+    }
+  }
+  await refreshEfc();
+  emit("nextId", { dialogAction, id: dialogModel.id });
+  return true;
+}
+
+// 确定
+async function saveClk() {
+  try {
+    await formRef.validate();
+  } catch (err) {
+    return;
+  }
+  let id = undefined;
+  let msg = "";
+  if (dialogAction === "add") {
+    id = await create(dialogModel);
+    dialogModel.id = id;
+    oldIds.push(id);
+    msg = `增加成功!`;
+  } else if (dialogAction === "edit") {
+    id = await updateById(dialogModel.id, dialogModel);
+    msg = `修改成功!`;
+  }
+  if (id) {
+    changedIds.push(dialogModel.id);
+    ElMessage.success(msg);
+    const oldId = dialogModel.id;
+    let isNext = await nextId();
+    if (!isNext) {
+      isNext = await prevId();
+    }
+    if (!isNext) {
+      dialogVisible = false;
+      emit("change", {
+        action: dialogAction,
+        ids: oldIds,
+        changedIds,
+      });
+    } else {
+      ids = ids.filter((id) => id !== oldId);
+    }
+  }
+}
+
+// 校验是否有改动
+async function vldInputChg(): Promise<boolean> {
+  if (isModelDirty) {
+    try {
+      await ElMessageBox.confirm(`尚未保存, 是否继续?`, {
+        confirmButtonText: "继续",
+        cancelButtonText: "取消",
+        type: "warning",
+      });
+    } catch (err) {
+      return false;
+    }
+    return true;
+  }
+  return true;
+}
+
+// 窗口关闭之前判断是否有改动
+async function beforeClose(done: (cancel: boolean) => void) {
+  if (await vldInputChg()) {
+    if (changedIds.length > 0) {
+      emit("change", {
+        action: dialogAction,
+        ids: oldIds,
+        changedIds,
+      });
+    }
+    done(false);
+  }
+}
+
+defineExpose({ showDialog });
+</script>
+
+<style lang="scss" scoped>
+.wrap_div {
+  flex: 1 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-basis: inherit;
+}
+.content_div {
+  flex: 1 0 0;
+  overflow: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  flex-basis: inherit;
+}
+.toolbox_div {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.dialog_form1 {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(min-content, max-content) 280px);
+  justify-items: end;
+  align-items: center;
+  grid-row-gap: 15px;
+  grid-column-gap: 5px;
+  grid-template-rows: auto;
+  place-content: center;
+}
+
+.dialog_form2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(min-content, max-content) 280px);
+  justify-items: end;
+  align-items: center;
+  grid-row-gap: 15px;
+  grid-column-gap: 5px;
+  grid-template-rows: auto;
+  place-content: center;
+}
+.form_label {
+  margin-left: 3px;
+  text-align: right;
+}
+.form_label::after {
+  content: ":";
+}
+.form_input {
+  width: 100%;
+}
+.save_but {
+  margin-left: inherit;
+}
+.page_div {
+  position: absolute;
+  right: 10px;
+  color: gray;
+  font-size: 12px;
+}
+.chg_ids_span {
+  margin-left: 5px;
+}
+.prev_but {
+  margin-right: 5px;
+}
+.next_but {
+  margin-left: 3px;
+}
+.isModelDirty_span {
+  color: red;
+  position: relative;
+  top: 2px;
+  font-weight: bold;
+  margin-left: 3px;
+}
+</style>

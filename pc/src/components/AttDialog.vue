@@ -1,0 +1,575 @@
+<template>
+<el-dialog
+  draggable
+  :fullscreen="fullscreen"
+  v-model="dialogVisible"
+  append-to-body
+  :close-on-click-modal="false"
+  :custom-class="'custom_dialog AttDialog'"
+  top="0"
+  :before-close="beforeClose"
+>
+  <template v-slot:title>
+    <div class="dialog_title">
+      <div class="title_lbl">
+        <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
+        <span v-if="isModelDirty" class="isModelDirty_span">*</span>
+      </div>
+      <el-icon class="full_but" @click="setFullscreen">
+        <FullScreen/>
+      </el-icon>
+    </div>
+  </template>
+  <div class="wrap_div">
+    <div class="toolbox_div" v-if="!fullscreen">
+      <el-button
+        v-if="!dialogModel.readonly && urlList.length > 0"
+        type="primary"
+        @click="uploadClk"
+        :icon="Upload"
+      >
+        上传
+      </el-button>
+      <el-button
+        v-if="urlList[nowIndex] && !dialogModel.readonly"
+        type="danger"
+        plain
+        @click="deleteClk"
+        :icon="Delete"
+      >
+        删除
+      </el-button>
+      <el-button
+        v-if="urlList[nowIndex]"
+        @click="downloadClk"
+        :icon="Download"
+      >
+        下载
+      </el-button>
+      <el-button
+        v-if="urlList[nowIndex]"
+        @click="printClk"
+        :icon="Printer"
+      >
+        打印
+      </el-button>
+      <a
+        v-if="urlList[nowIndex]"
+        class="el-button"
+        style="text-decoration: none;"
+        target="_blank"
+        :href="urlList[nowIndex]"
+      >
+        网页中打开
+      </a>
+      <el-button
+        v-if="urlList[nowIndex]"
+        :disabled="nowIndex === 0"
+        @click="moveLeftClk"
+        :icon="ArrowLeft"
+      >
+        前移
+      </el-button>
+      <el-button
+        v-if="urlList[nowIndex]"
+        :disabled="nowIndex === urlList.length - 1"
+        @click="moveRightClk"
+        :icon="ArrowRight"
+      >
+        后移
+      </el-button>
+    </div>
+    <div class="content_div">
+      <template v-for="(url, i) in urlList" :key="url">
+        <iframe
+          v-if="iframeShoweds[i]"
+          :style="{ display: i === nowIndex ? '' : 'none' }"
+          class="iframe"
+          :src="url"
+          frameborder="0"
+          @load="iframeLoad"
+          :ref="(el) => { if (el) iframeRefs[i] = el }"
+        ></iframe>
+      </template>
+      <div v-if="urlList.length === 0" class="empty">
+        <el-button
+          v-if="!dialogModel.readonly && urlList.length === 0"
+          type="primary"
+          @click="uploadClk"
+          :icon="Upload"
+        >
+          上传
+        </el-button>
+        <div v-else-if="!dialogModel.readonly" class="empty">
+          <span>(暂无附件)</span>
+        </div>
+      </div>
+      <div v-if="iframeLoading" class="loading_div">
+        加载中, 请稍后....
+      </div>
+    </div>
+    <div class="pagination_row" v-if="urlList.length > 1">
+      <div class="pagination_div">
+        <el-button
+          :disabled="nowIndex <= 0"
+          size="small"
+          :icon="ArrowLeft"
+          @click="previousClk"
+        ></el-button>
+        <span class="pagination_span">
+          {{ nowIndex + 1 }} / {{ urlList.length }}
+        </span>
+        <el-button
+          :disabled="nowIndex >= urlList.length - 1"
+          size="small"
+          :icon="ArrowRight"
+          @click="nextClk"
+        ></el-button>
+      </div>
+    </div>
+  </div>
+  <input type="file"
+    @change="inputChg"
+    style="display: none;"
+    ref="fileRef"
+  />
+</el-dialog>
+</template>
+
+<script lang="ts" setup>
+import {
+  ElIcon,
+  ElDialog,
+  ElButton,
+  ElMessage,
+  ElMessageBox,
+} from "element-plus";
+import {
+  Upload,
+  Delete,
+  Download,
+  Printer,
+  FullScreen,
+  ArrowLeft,
+  ArrowRight,
+} from "@element-plus/icons-vue";
+import { useFullscreenEffect } from "@/compositions/fullscreen";
+import { deepCompare } from "@/views/common/App";
+import { baseURL, uploadFile } from '@/utils/axios';
+import {
+  getStatsMinio,
+} from "./Api";
+// import usrTenantStore from "@/store/tenant";
+
+let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+
+const emit = defineEmits([
+  "change",
+]);
+
+// 文件名列表
+let fileStats = $ref<{
+  id: string,
+  lbl: string,
+  content_type: string,
+}[]>([ ]);
+
+// 当前弹出框的标题
+let dialogTitle = $computed(() => {
+  let title = "";
+  if (fileStats.length > 0) {
+    title = fileStats[nowIndex]?.lbl;
+  }
+  return title;
+});
+
+let dialogVisible = $ref(false);
+
+let dialogModel = $ref({
+  modelValue: "",
+  maxSize: 1,
+  maxFileSize: 1024 * 1024 * 50,
+  readonly: false,
+});
+
+let oldDialogModel = $ref(dialogModel);
+
+let inited = $ref(false);
+
+let nowIndex = $ref(0);
+
+let iframeLoading = $ref(false);
+
+let modelValue = $ref("");
+
+// let tenantHost = $ref("");
+
+let urlList = $computed(() => {
+  const list = [];
+  if (!modelValue) return list;
+  let ids = modelValue.split(",").filter((x) => x);
+  
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const fileStat = fileStats && fileStats[i];
+    let lbl = fileStat?.lbl || "";
+    // let content_type = fileStat?.content_type || "";
+    if (lbl.length > 45) {
+      lbl = lbl.substring(0, 45) + "...";
+    }
+    let url = `${ baseURL }/api/minio/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
+    // if (tenantHost) {
+    //   if (content_type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    //     url = "https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(tenantHost + url);
+    //   }
+    // }
+    list.push(url);
+  }
+  return list;
+});
+
+// 已经加载过的iframe索引
+let iframeShoweds = $ref<boolean[]>([ ]);
+
+// 打开对话框
+async function showDialog(
+  { model }: { model?: typeof dialogModel },
+): Promise<void> {
+  inited = false;
+  // const tenantStore = usrTenantStore();
+  // const { host } = await tenantStore.getHost();
+  // tenantHost = host;
+  let isChg = false;
+  if (model.modelValue !== modelValue) {
+    isChg = true;
+  }
+  dialogModel = {
+    modelValue: "",
+    ...model,
+  };
+  oldDialogModel = {
+    modelValue: "",
+    ...model,
+  };
+  modelValue = dialogModel.modelValue;
+  if (isChg) {
+    nowIndex = 0;
+    iframeRefs = [ ];
+    fileStats = [ ];
+    iframeShoweds = [ true ];
+    const ids = modelValue.split(",").filter((x) => x);
+    await getStatsMinioEfc(ids);
+  }
+  inited = true;
+  dialogVisible = true;
+}
+
+// 是否有改动
+let isModelDirty = $computed(() => !deepCompare(dialogModel, oldDialogModel));
+
+async function getStatsMinioEfc(ids: string[]): Promise<{
+  id: string,
+  lbl: string,
+}[]> {
+  const data = await getStatsMinio(ids);
+  fileStats = fileStats.concat(data);
+  return data;
+}
+
+function beforeNextIframe() {
+  const iframeWindow = iframeRefs[nowIndex]?.contentWindow;
+  const iframeDocument = iframeWindow?.document;
+  if (iframeDocument) {
+    const videoEls = iframeDocument.getElementsByTagName("video");
+    for (let i = 0; i < videoEls.length; i++) {
+      const videoEl = videoEls[i];
+      videoEl.pause();
+    }
+  }
+}
+
+function afterNextIframe() {
+  if (!iframeShoweds[nowIndex]) {
+    iframeLoading = true;
+    setTimeout(() => {
+      iframeLoading = false;
+    }, 2000);
+    iframeShoweds[nowIndex] = true;
+    return;
+  }
+  const iframeWindow = iframeRefs[nowIndex]?.contentWindow;
+  const iframeDocument = iframeWindow?.document;
+  if (iframeDocument) {
+    const videoEls = iframeDocument.getElementsByTagName("video");
+    for (let i = 0; i < videoEls.length; i++) {
+      const videoEl = videoEls[i];
+      videoEl.play();
+    }
+  }
+}
+
+function previousClk() {
+  if (nowIndex > 0) {
+    beforeNextIframe();
+    nowIndex--;
+    afterNextIframe();
+  }
+}
+
+function nextClk() {
+  if (nowIndex < urlList.length - 1) {
+    beforeNextIframe();
+    nowIndex++;
+    afterNextIframe();
+  }
+}
+
+function iframeLoad() {
+  iframeShoweds[nowIndex] = true;
+  iframeLoading = false;
+  for (let i = 0; i < iframeRefs.length; i++) {
+    const iframeRef = iframeRefs[i];
+    try {
+      initIframeEl(iframeRef);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+let iframeRefs = $ref<any[]>([ ]);
+
+function initIframeEl(iframeRef: HTMLIFrameElement) {
+  const iframeWindow: Window = iframeRef?.contentWindow;
+  const iframeDocument = iframeWindow.document;
+  let cssText = `
+    ::-webkit-scrollbar-track-piece {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+      background-color: transparent;
+      cursor: pointer;
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background-color: rgba(144, 146, 152, 0.3);
+    }
+  `;
+  const styleEl = iframeDocument.createElement("style");
+  styleEl.appendChild(iframeDocument.createTextNode(cssText));
+  iframeDocument.getElementsByTagName("head")[0]?.appendChild(styleEl);
+  const body = <HTMLBodyElement>iframeDocument.body;
+  const imgs = iframeDocument.getElementsByTagName("img");
+  if (imgs.length > 0) {
+    const clientWidth = body.clientWidth;
+    const img: HTMLImageElement = imgs[0];
+    img.style.maxWidth = "100%";
+    if (img.width > clientWidth) {
+      img.style.width = "100%";
+    }
+  }
+}
+
+// 下载
+function downloadClk() {
+  let ids = modelValue.split(",").filter((x) => x);
+  const id = ids[nowIndex];
+  const url = `${ baseURL }/api/minio/download?inline=0&id=${ encodeURIComponent(id) }`;
+  window.location.href = url;
+}
+
+// 打印
+function printClk() {
+  const iframeWindow = iframeRefs[nowIndex]?.contentWindow;
+  if (iframeWindow) {
+    iframeWindow.print();
+  }
+}
+
+let fileRef = $ref(undefined);
+
+async function inputChg() {
+  if (!fileRef) return;
+  const ids = modelValue.split(",").filter((x) => x);
+  if (ids.length >= dialogModel.maxSize) {
+    fileRef.value = "";
+    ElMessage.error(`最多只能上传 ${ dialogModel.maxSize } 个附件`);
+    return;
+  }
+  const file = fileRef.files[0];
+  fileRef.value = "";
+  if (!file) return;
+  if (file.size > dialogModel.maxFileSize) {
+    ElMessage.error(`文件大小不能超过 ${ dialogModel.maxFileSize / 1024 / 1024 }M`);
+    return;
+  }
+  const rvData = await uploadFile(file);
+  if (rvData.code !== 0) {
+    return;
+  }
+  ElMessage.success("上传成功!");
+  const id = rvData.data;
+  if (ids.length > 0) {
+    nowIndex++;
+  }
+  ids.splice(nowIndex, 0, id);
+  modelValue = ids.join(",");
+  afterNextIframe();
+  await getStatsMinioEfc([ id ]);
+  emit("change", modelValue);
+}
+
+// 点击上传附件
+function uploadClk() {
+  if (!fileRef) return;
+  const ids = modelValue.split(",").filter((x) => x);
+  if (ids.length >= dialogModel.maxSize) {
+    fileRef.value = "";
+    ElMessage.error(`最多只能上传 ${ dialogModel.maxSize } 个附件!`);
+    return;
+  }
+  fileRef.click();
+}
+
+// 删除附件
+async function deleteClk() {
+  try {
+    await ElMessageBox.confirm("确定删除当前附件吗？");
+  } catch (err) {
+    return;
+  }
+  const ids = modelValue.split(",").filter((x) => x);
+  const ids2 = ids.filter((_, i) => i !== nowIndex);
+  iframeShoweds = iframeShoweds.filter((_, i) => i !== nowIndex);
+  fileStats = fileStats.filter((_, i) => i !== nowIndex);
+  iframeRefs = iframeRefs.filter((_, i) => i !== nowIndex);
+  modelValue = ids2.join(",");
+  if (nowIndex >= ids2.length && ids2.length > 0) {
+    nowIndex = ids2.length - 1;
+    afterNextIframe();
+  }
+  ElMessage.success("删除成功!");
+  emit("change", modelValue);
+}
+
+// 当前附件向前移动
+function moveLeftClk() {
+  const ids = modelValue.split(",").filter((x) => x);
+  const ids2 = ids.filter((_, i) => i !== nowIndex);
+  const id = ids[nowIndex];
+  ids2.splice(nowIndex - 1, 0, id);
+  modelValue = ids2.join(",");
+  previousClk();
+  emit("change", modelValue);
+}
+
+// 当前附件向后移动
+function moveRightClk() {
+  const ids = modelValue.split(",").filter((x) => x);
+  const ids2 = ids.filter((_, i) => i !== nowIndex);
+  const id = ids[nowIndex];
+  ids2.splice(nowIndex + 1, 0, id);
+  modelValue = ids2.join(",");
+  nextClk();
+  emit("change", modelValue);
+}
+
+function beforeClose(done: (cancel: boolean) => void) {
+  beforeNextIframe();
+  done(false);
+}
+
+defineExpose({ showDialog });
+</script>
+
+<style lang="scss" scoped>
+.wrap_div {
+  flex: 1 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-basis: inherit;
+}
+.content_div {
+  flex: 1 0 0;
+  overflow: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  flex-basis: inherit;
+  padding-left: 5px;
+  // padding-right: 5px;
+  padding-bottom: 5px;
+  position: relative;
+}
+.toolbox_div {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  display: flex;
+  align-items: center;
+}
+.pagination_row {
+  padding-bottom: 5px;
+  display: flex;
+  justify-content: center;
+}
+.pagination_div {
+  display: flex;
+  align-items: center;
+  // margin-right: 5px;
+}
+.pagination_span {
+  color: gray;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.isModelDirty_span {
+  color: red;
+  position: relative;
+  top: 2px;
+  font-weight: bold;
+  margin-left: 3px;
+}
+.iframe {
+  display: flex;
+  flex: 1 0 0;
+  overflow: hidden;
+  width: 100%;
+}
+.empty {
+  display: flex;
+  flex: 1 0 0;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+  font-size: 22px;
+}
+.loading_div {
+  display: flex;
+  flex: 1 0 0;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  background-color: #FFF;
+}
+</style>
+
+<style lang="scss">
+.AttDialog {
+  width: 900px;
+}
+</style>

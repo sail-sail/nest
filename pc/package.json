@@ -1,0 +1,51 @@
+{
+  "name": "pc",
+  "version": "0.0.0",
+  "scripts": {
+    "s": "vite",
+    "start": "vite",
+    "build": "vite build --emptyOutDir",
+    "rsw:build": "rsw && npm run build",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "1.1.4",
+    "@types/lodash-es": "4.17.6",
+    "@vue/shared": "3.2.31",
+    "axios": "0.26.1",
+    "driver.js": "0.9.8",
+    "element-plus": "2.1.6",
+    "file-saver": "2.0.5",
+    "pinia": "2.0.12",
+    "pinia-plugin-persistedstate": "1.5.1",
+    "screenfull": "6.0.1",
+    "vue": "3.2.31",
+    "vue-router": "4.0.14",
+    "vuedraggable": "4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.23",
+    "@typescript-eslint/eslint-plugin": "5.16.0",
+    "@typescript-eslint/parser": "5.16.0",
+    "@vitejs/plugin-vue": "2.2.4",
+    "@vitejs/plugin-vue-jsx": "1.3.8",
+    "@vue/runtime-dom": "3.2.31",
+    "eslint": "8.12.0",
+    "eslint-config-google": "0.14.0",
+    "eslint-plugin-vue": "8.5.0",
+    "husky": "7.0.4",
+    "sass": "1.49.9",
+    "stylus": "0.57.0",
+    "typescript": "4.6.3",
+    "vite": "2.8.6",
+    "vite-plugin-terminal": "1.0.1",
+    "vue-tsc": "0.33.9"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "rollup"
+      ]
+    }
+  }
+}

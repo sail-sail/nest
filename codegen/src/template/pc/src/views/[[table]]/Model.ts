@@ -1,0 +1,178 @@
+
+export interface <#=tableUp#>Model {
+  [key: string]: any,
+  is_deleted?: 0|1,<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    // if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    let data_type = column.DATA_TYPE;
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    if (column_name === 'id') {
+      data_type = 'string';
+    }
+    else if (foreignKey) {
+      if (foreignKey.multiple) {
+        data_type = 'string[]';
+      } else {
+        data_type = 'string';
+      }
+    }
+    else if (column.DATA_TYPE === 'varchar') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'date') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'datetime') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'int') {
+      data_type = 'number';
+    }
+    else if (column.DATA_TYPE === 'json') {
+      data_type = 'any';
+    }
+    else if (column.DATA_TYPE === 'text') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'tinyint') {
+      data_type = "0|1";
+    }
+    else if (column.DATA_TYPE === 'decimal') {
+      data_type = 'number';
+    }
+    if (column_name.startsWith("is_")) {
+      data_type = "0|1";
+    }
+    let column_comment = column.COLUMN_COMMENT;
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (data_type === 'id') column_comment = '';
+    else {
+      column_comment = ' //' + column_comment;
+    }
+  #><#
+    if (!foreignKey) {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#><#
+    } else {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>ID
+  _<#=column_name#>?: <#
+    if (foreignKey && foreignKey.multiple) {
+  #>string[],<#
+    } else {
+  #>string,<#
+    }
+  #><#=column_comment#>名称<#
+    }
+  }
+  #>
+}
+
+export interface <#=tableUp#>Search {
+  is_deleted?: 0|1,
+  orderBy?: string,
+  orderDec?: string,<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    // if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const search = column.search;
+    if (column_name === 'id') {
+      data_type = 'string';
+    }
+    else if (foreignKey) {
+      if (foreignKey.multiple) {
+        data_type = 'string[]';
+      } else {
+        data_type = 'string';
+      }
+    }
+    else if (column.DATA_TYPE === 'varchar') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'date') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'datetime') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'int') {
+      data_type = 'number';
+    }
+    else if (column.DATA_TYPE === 'json') {
+      data_type = 'any';
+    }
+    else if (column.DATA_TYPE === 'text') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'tinyint') {
+      data_type = "0|1";
+    }
+    else if (column.DATA_TYPE === 'decimal') {
+      data_type = 'number';
+    }
+    if (column_name.startsWith("is_")) {
+      data_type = "0|1";
+    }
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (foreignKey || selectList.length > 0) {
+      data_type = data_type+"[]";
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (data_type === 'id') {
+      column_comment = '';
+    } else {
+      column_comment = ' //' + column_comment;
+    }
+    if (!search) continue;
+  #><#
+    if (foreignKey) {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,
+  <#=foreignKey.table#>__<#=foreignKey.lbl#>?: <#=data_type#>,<#=column_comment#>,<#
+    } else if (selectList && selectList.length > 0) {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,<#
+    } else if (column_name === "id") {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,<#
+    } else if (data_type === "0|1") {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,<#
+    } else if (data_type === "number" || data_type === "Date") {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,
+  <#=column_name#>Gt?: <#=data_type#>,<#=column_comment#> 大于,
+  <#=column_name#>GtEq?: <#=data_type#>,<#=column_comment#> 大于等于,
+  <#=column_name#>Lt?: <#=data_type#>,<#=column_comment#> 小于,
+  <#=column_name#>LtEq?: <#=data_type#>,<#=column_comment#> 小于等于,<#
+    } else {
+  #>
+  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,
+  <#=column_name#>Like?: <#=data_type#>,<#=column_comment#>,<#
+    }
+  #><#
+  }
+  #>
+}

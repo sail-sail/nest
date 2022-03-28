@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+*.log
+*.diff
+package-lock.json
+yarn.lock
+unpackage
+
+/build
+/nest/_uploadfile
+/error.js
+.env
+pnpm-lock.yaml
+codegening.txt

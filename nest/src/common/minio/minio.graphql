@@ -1,0 +1,9 @@
+type GetStatusMinio {
+  id: ID!
+  lbl: String!
+  content_type: String
+}
+
+type Query {
+  getStatsMinio(ids: [ID]!): [GetStatusMinio]!
+}

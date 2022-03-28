@@ -1,0 +1,14 @@
+
+type Query {
+  "生成ID主键"
+  generateId(prex: String): String!
+  "检查是否已经登录"
+  checkLogin: Boolean!
+  "开发时获取vue模板script标签的开始行数"
+  getVueScriptLine(ph: String!, method: String!): Int!
+}
+
+type Mutation {
+  "清空缓存"
+  clearCache: Boolean!
+}

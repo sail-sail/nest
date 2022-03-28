@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "declaration": false,
+    "noImplicitAny": false,
+    "strict": false,
+    "jsx": "preserve",
+    "allowJs": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext"],
+    "types": [ "node" ],
+    "paths": {
+      "@/*": [ "./src/*" ],
+      "#/*": [ "./src/typings/*" ]
+    }
+  },
+  "exclude": [
+    "node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts"
+  ],
+  "include": [
+    "node_modules/vue/ref-macros.d.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ]
+}
