@@ -52,13 +52,33 @@ function watchFn() {
   };
   watcher.on("change", callback).on("add", callback).on("unlink", callback);
 }
-
+let restartNum = 0;
 stopWatch = false;
 watchFn();
 start();
 function start() {
   console.error('Mother process is running.');
-  ls = child_process.spawn("node", [ "-r", "ts-node/register", "./src/main.ts" ], { cwd: pjPath, env: process.env });
+  restartNum++;
+  let TS_NODE_PROJECT = process.env.TS_NODE_PROJECT;
+  if (!TS_NODE_PROJECT) {
+    TS_NODE_PROJECT = `${ pjPath }/tsconfig.swc.json`;
+    console.log(`第 ${ restartNum } 次重启, 已取消 debug !`);
+  }
+  ls = child_process.spawn(
+    "node",
+    [
+      "-r",
+      "ts-node/register",
+      "./src/main.ts",
+    ],
+    {
+      cwd: pjPath,
+      env: {
+        ...process.env,
+        TS_NODE_PROJECT,
+      },
+    },
+  );
   ls.stdout.on("data", function(data) {
     // data = data.toString();
     // data = data.substring(0, data.length-1);

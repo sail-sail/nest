@@ -4,11 +4,11 @@
   "description": "",
   "license": "MIT",
   "scripts": {
-    "start": "node -r ts-node/register src/main.ts",
-    "initdb": "node -r ts-node/register src/common/util/npmInitDB.ts",
-    "uuid": "node -r ts-node/register src/common/util/npmShortUuidV4.ts",
-    "pwd": "node -r ts-node/register src/common/util/npmPassword.ts",
-    "build": "npx gulp",
+    "start": "ts-node src/main.ts",
+    "initdb": "ts-node src/common/util/npmInitDB.ts",
+    "uuid": "ts-node src/common/util/npmShortUuidV4.ts",
+    "pwd": "ts-node src/common/util/npmPassword.ts",
+    "build": "gulp",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {

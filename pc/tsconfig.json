@@ -2,8 +2,8 @@
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "importHelpers": true,
-    "removeComments": true,
+    "importHelpers": false,
+    "removeComments": false,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",

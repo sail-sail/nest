@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "nest",
+      "name": "debug",
       "runtimeArgs": [
         "-r",
         "ts-node/register"
@@ -17,17 +17,25 @@
       "env": {
         "UV_THREADPOOL_SIZE": "6",
         "NODE_ENV": "hmr"
-      }
+      },
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "internal/**/*.js"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Mother",
+      "name": "release",
       "cwd": "${workspaceRoot}/nest",
       "program": "src/Mother.js",
       "env": {
         "NODE_ENV": "hmr"
-      }
+      },
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "internal/**/*.js"
+      ]
     }
   ]
 }

@@ -26,7 +26,10 @@
         "uni/dist/**": true,
         "**/.env": true,
         "**/.rsw": true,
-        "**/@rsw": true
+        "**/@rsw": true,
+        "nest/src/Mother.js": true,
+        "nest/tsconfig.build.json": true,
+        "nest/tsconfig.swc.json": true
     },
     "search.exclude": {
         "**/.git": true,
@@ -53,7 +56,10 @@
         "uni/dist/**": true,
         "**/.env": true,
         "**/.rsw": true,
-        "**/@rsw": true
+        "**/@rsw": true,
+        "nest/src/Mother.js": true,
+        "nest/tsconfig.build.json": true,
+        "nest/tsconfig.swc.json": true
     },
     "debug.inlineValues": true
     ,"npm.registry": "https://registry.npmmirror.com"
