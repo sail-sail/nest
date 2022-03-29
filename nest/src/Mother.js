@@ -62,7 +62,7 @@ function start() {
   let TS_NODE_PROJECT = process.env.TS_NODE_PROJECT;
   if (!TS_NODE_PROJECT) {
     TS_NODE_PROJECT = `${ pjPath }/tsconfig.swc.json`;
-    console.log(`第 ${ restartNum } 次重启, 已取消 debug !`);
+    console.log(`第 ${ restartNum } 次重启, 当前 release 模式!`);
   }
   ls = child_process.spawn(
     "node",
