@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "codegen": "node -r @swc-node/register src/bin/codegen.ts && node -r @swc-node/register src/bin/codeapply.ts",
-    "codeapply": "node -r @swc-node/register src/bin/codeapply.ts"
+    "codeapply": "node -r @swc-node/register src/bin/codeapply.ts",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "chalk": "4.1.2",
