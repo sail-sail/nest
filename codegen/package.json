@@ -4,8 +4,8 @@
   "description": "codegen",
   "license": "MIT",
   "scripts": {
-    "codegen": "node -r @swc-node/register src/bin/codegen.ts && node -r @swc-node/register src/bin/codeapply.ts",
-    "codeapply": "node -r @swc-node/register src/bin/codeapply.ts",
+    "codegen": "ts-node src/bin/codegen.ts && ts-node src/bin/codeapply.ts",
+    "codeapply": "ts-node src/bin/codeapply.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
