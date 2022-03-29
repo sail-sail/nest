@@ -1,7 +1,9 @@
 {
   "recommendations": [
+    "xuedao.super-translate",
     "aaron-bond.better-comments",
     "alefragnani.bookmarks",
+    "antfu.vite",
     "ms-ceintl.vscode-language-pack-zh-hans",
     "oouo-diogo-perdigao.docthis",
     "mikestead.dotenv",

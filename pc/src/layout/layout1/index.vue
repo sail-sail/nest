@@ -1,6 +1,6 @@
 <template>
-<Login v-if="!usrStore.access_token"></Login>
 <div class="wrap_div">
+  <Login v-if="!usrStore.access_token"></Login>
   <div class="menu_div" :class="{ menu_collapse: menuStore.isCollapse }">
     <div class="top_div">
       <Top></Top>
@@ -46,9 +46,11 @@
 </template>
 
 <script setup lang="ts">
+import locale from "@/locales";
 import {
   ElMessage,
   ElMessageBox,
+  ElConfigProvider,
   ElIcon,
   ElDropdown,
   ElDropdownItem,

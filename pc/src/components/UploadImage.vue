@@ -1,7 +1,15 @@
 <template>
-<div style="width: 100%;height: 100%;position: relative;" @mouseenter="imgMouseenter" @mouseleave="imgMouseleave">
+<div
+  style="
+    width: 100%;
+    height: 100%;
+    position: relative;
+  "
+  @mouseenter="imgMouseenter"
+  @mouseleave="imgMouseleave"
+>
   <el-image
-    v-bind="$attrs"
+  v-bind="$attrs"
     :src="urlList[nowIndex]"
   >
     <template #placeholder>

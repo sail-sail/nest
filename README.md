@@ -1,4 +1,4 @@
-1.  安装Mysql数据库
+1. 安装Mysql数据库
 ```sql
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS nest CHARSET utf8mb4;
@@ -16,12 +16,12 @@ grant drop,index,select,insert,update,delete,execute,alter,create,references,loc
 flush privileges;
 ```
 
-2.  linux检查端口是否被占用
+2. linux检查端口是否被占用
 ```
 netstat -tunlp |grep 1883
 ```
 
-3.  安装nginx
+3. 安装nginx
 ```
 yum install nginx -y
 设置开机自动启动: systemctl enable nginx
@@ -29,17 +29,17 @@ yum install nginx -y
 重新读取配置文件: nginx -s reload
 ```
 
-4.  CentOS压缩文件夹
+4. CentOS压缩文件夹
 ```
 tar zcfv /data/nest.tar.gz /data/nest
 ```
 
-5.  CentOS解压文件夹
+5. CentOS解压文件夹
 ```
 tar -xzvf /data/software/nest.tar.gz /data/
 ```
 
-6.  CentOS通过yum安装nodejs
+6. CentOS通过yum安装nodejs
 ```
 curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
 yum -y install nodejs
@@ -55,19 +55,19 @@ npm config list
 npm i -g pm2
 ```
 
-7.  Ubuntu 通过apt安装nodejs
+7. Ubuntu 通过apt安装nodejs
 ```
 curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 apt -y install nodejs
 node -v
 apt-get install build-essential
 给文件加入配置 /root/.npmrc
-  registry=https://npmmirror.com
+ registry=https://npmmirror.com
 npm config list
 npm i -g pm2
 ```
 
-8.  Ubuntu 通过apt安装nginx
+8. Ubuntu 通过apt安装nginx
 ```
 apt-get -y install nginx
 
@@ -81,7 +81,7 @@ service nginx status
 service nginx restart
 ```
 
-9.  Ubuntu 查看端口是否开放
+9. Ubuntu 查看端口是否开放
 ```
 lsof -i:50000
 ```
@@ -100,14 +100,14 @@ mkdir /data/mysql
 chown mysql /data/mysql
 
 /etc/my.conf 配置文件:
-  [mysqld]
-  port=3389
-  innodb_buffer_pool_size = 512M
-  datadir=/data/mysql
-  socket=/data/mysql/mysql.sock
-  symbolic-links=0
-  log-error=/data/mysql/mysqld.log
-  pid-file=/data/mysql/mysqld.pid
+ [mysqld]
+ port=3389
+ innodb_buffer_pool_size = 512M
+ datadir=/data/mysql
+ socket=/data/mysql/mysql.sock
+ symbolic-links=0
+ log-error=/data/mysql/mysqld.log
+ pid-file=/data/mysql/mysqld.pid
 
 systemctl start mysqld
 
@@ -208,5 +208,5 @@ vi /etc/redis.conf
 ```
 1. 一打开界面, App.vue 中调用 utils/request/uniLogin 若登录已经失效, 后端通过 code2Session 获取 openid 和 session_key 同时进行登录(获取access_token)
 2. 每次调用request请求或者GraphQL请求(utils/request/request)时, 有 access_token 就带上 access_token 否则就不带
-   后端检测 access_token 是否过期, 过期则重新调用 utils/request/uniLogin
+  后端检测 access_token 是否过期, 过期则重新调用 utils/request/uniLogin
 ```

@@ -1,15 +1,17 @@
 <template>
-<el-link v-if="urlList.length > 0" @click="linkClk" type="primary">
-  <slot name="default">
-    {{ urlList.length }}
-  </slot>
-</el-link>
-<div style="color: light-gray;" v-else>
-  0
+<div>
+  <el-link v-if="urlList.length > 0" @click="linkClk" type="primary">
+    <slot name="default">
+      {{ urlList.length }}
+    </slot>
+  </el-link>
+  <div style="color: light-gray;" v-else>
+    0
+  </div>
+  <teleport to="body" v-if="urlList.length > 0 && showImageViewer">
+    <el-image-viewer :urlList="urlList" @close="showImageViewer = false" hideOnClickModal></el-image-viewer>
+  </teleport>
 </div>
-<teleport to="body" v-if="urlList.length > 0 && showImageViewer">
-  <el-image-viewer :urlList="urlList" @close="showImageViewer = false" hideOnClickModal></el-image-viewer>
-</teleport>
 </template>
 
 <script lang="ts" setup>

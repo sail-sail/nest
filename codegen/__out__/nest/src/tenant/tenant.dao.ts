@@ -87,7 +87,7 @@ export class TenantDao {
       args.push(search.is_enabled);
     }
     if (search?.menu_ids && search?.menu_ids.length > 0) {
-      whereQuery += ` and t.menu_ids in (?)`;
+      whereQuery += ` and menu.id in (?)`;
       args.push(search.menu_ids);
     }
     if (search?.menu__lbl && search.menu__lbl?.length > 0) {

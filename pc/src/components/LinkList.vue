@@ -1,40 +1,42 @@
 <template>
-<el-popover
-  v-if="modelValue && modelValue.length > maxSize"
-  :width="modelValue && modelValue.length > 5 ? 500 : 'auto'"
->
-  <template #reference>
-    <el-link :underline="false" type="primary">
+<div>
+  <el-popover
+    v-if="modelValue && modelValue.length > maxSize"
+    :width="modelValue && modelValue.length > 5 ? 500 : 'auto'"
+  >
+    <template #reference>
+      <el-link :underline="false" type="primary">
+        <el-tag
+          v-for="item in labelValue"
+          :key="item"
+          type="info"
+          style="margin: 1px;"
+        >
+          {{ item }}
+        </el-tag>
+        ...
+      </el-link>
+    </template>
+    <template v-for="item in modelValue" :key="item">
       <el-tag
-        v-for="item in labelValue"
-        :key="item"
         type="info"
         style="margin: 1px;"
       >
         {{ item }}
       </el-tag>
-      ...
-    </el-link>
-  </template>
-  <template v-for="item in modelValue" :key="item">
+    </template>
+  </el-popover>
+  <template v-else>
     <el-tag
+      v-for="item in modelValue"
+      :key="item"
       type="info"
       style="margin: 1px;"
     >
       {{ item }}
     </el-tag>
   </template>
-</el-popover>
-<template v-else>
-  <el-tag
-    v-for="item in modelValue"
-    :key="item"
-    type="info"
-    style="margin: 1px;"
-  >
-    {{ item }}
-  </el-tag>
-</template>
+</div>
 </template>
 
 <script lang="ts" setup>

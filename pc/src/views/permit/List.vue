@@ -9,7 +9,9 @@
       @keyup.enter.native="searchClk"
     >
       
-      <label class="form_label">名称</label>
+      <label class="form_label">
+        名称
+      </label>
       <el-form-item prop="lblLike">
         <el-input
           class="form_input"
@@ -33,7 +35,9 @@
       </el-form-item>
       
       <div style="min-width: 20px;"></div>
-      <el-form-item style="justify-self: flex-start;">
+      <el-form-item
+        class="form_btn_item"
+      >
         <el-button
           type="primary"
           :icon="Search"
@@ -438,22 +442,33 @@ watch(
 }
 .search_form {
   display: grid;
-  grid-template-columns: repeat(4, minmax(min-content, max-content) 180px);
+  grid-template-columns: repeat(
+    4,
+    minmax(min-content, max-content)
+    minmax(min-content, max-content)
+  );
   justify-items: end;
   align-items: center;
   grid-row-gap: 15px;
 }
 .form_label {
-  margin-right: 5px;
+  margin-right: 3px;
   color: gray;
-  margin-left: 15px;
+  margin-left: 10px;
   white-space: nowrap;
 }
 .form_label::after {
   content: ":";
 }
 .form_input {
-  width: 100%;
+  max-width: 240px;
+  min-width: 200px;
+}
+.form_btn_item {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-self: flex-start;
+  min-width: 170px;
 }
 .toolbar_div {
   margin-left: 10px;

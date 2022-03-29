@@ -54,7 +54,7 @@ export class <#=tableUp#>Dao {
       if (foreignKey) {
     #>
     if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
-      whereQuery += ` and t.<#=column_name#> in (?)`;
+      whereQuery += ` and <#=foreignKey.table#>.id in (?)`;
       args.push(search.<#=column_name#>);
     }
     if (search?.<#=foreignKey.table#>__<#=foreignKey.lbl#> && search.<#=foreignKey.table#>__<#=foreignKey.lbl#>?.length > 0) {
