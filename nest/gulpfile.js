@@ -11,22 +11,23 @@ const ecosystem = require("./ecosystem.config");
 
 require("dotenv").config();
 
-if (!process.env.SSH_HOST) {
-  throw new Error("SSH_HOST environment variable is not set!");
+const project = ecosystem.apps[0].name;
+
+if (!process.env[`${ project }_SSH_HOST`] || process.env.SSH_HOST) {
+  throw new Error(`SSH_HOST or ${ project }_SSH_HOST environment variable is not set!`);
 }
 
-const project = ecosystem.apps[0].name;
 const dist = "../build/nest";
-const sshDist = process.env.SSH_DIST;
+const sshDist = process.env[`${ project }_SSH_DIST`] || process.env.SSH_DIST;
 if (!sshDist) {
   throw new Error("SSH_DIST environment variable is not set!");
 }
 
 const sshConfig = {
-  host: process.env.SSH_HOST,
-  port: process.env.SSH_PORT || 22,
-  username: process.env.SSH_USERNAME,
-  password: process.env.SSH_PASSWORD,
+  host: process.env[`${ project }_SSH_HOST`] || process.env.SSH_HOST,
+  port: process.env[`${ project }_SSH_PORT`] || process.env.SSH_PORT || 22,
+  username: process.env[`${ project }_SSH_USERNAME`] || process.env.SSH_USERNAME,
+  password: process.env[`${ project }_SSH_PASSWORD`] || process.env.SSH_PASSWORD,
 };
 
 console.log({ ...sshConfig, password: undefined });

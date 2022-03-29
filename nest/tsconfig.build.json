@@ -7,6 +7,6 @@
   ],
   "allowJs": true,
   "removeComments": true,
-  "checkJs": true,
+  "checkJs": false,
   "noEmit": false
 }

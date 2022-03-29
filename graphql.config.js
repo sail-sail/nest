@@ -1,7 +1,7 @@
 module.exports = {
   projects: {
-    db: {
-      schema: "/nest/src/**/*.graphql",
+    pc: {
+      schema: "nest/src/**/*.graphql",
       extensions: {
         endpoints: {
           default: {
@@ -13,5 +13,5 @@ module.exports = {
         },
       },
     },
-  }
+  },
 };
