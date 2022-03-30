@@ -2,7 +2,7 @@
 <div class="wrap_div">
   <div class="login_div">
     <div
-      style="color: gray;margin-top: 20px;margin-left: 20px;font-size: 14px;"
+      style="margin-top: 20px;margin-left: 20px;font-size: 14px;"
     >
       登录
     </div>
@@ -12,17 +12,11 @@
       :rules="form_rules"
       :validate-on-rule-change="false"
       @keyup.enter.native="loginClk"
-      style="
-        margin: 20px;
-        flex: 1 0 0;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-      "
+      class="login_form"
     >
       <el-form-item prop="tenant_id">
         <el-select
+          class="from_input"
           style="width: 100%;"
           v-model="model.tenant_id"
           filterable
@@ -41,6 +35,7 @@
       
       <el-form-item prop="username">
         <el-input
+          class="from_input"
           size="large"
           type="text"
           placeholder="请输入用户名"
@@ -55,6 +50,7 @@
       
       <el-form-item prop="password">
         <el-input
+          class="from_input"
           size="large"
           placeholder="请输入密码"
           type="password"
@@ -67,7 +63,14 @@
         </el-input>
       </el-form-item>
       
-      <el-button size="large" type="primary" style="width: 100%;margin-top: 20px;" @click="loginClk">登录</el-button>
+      <el-button
+        size="large"
+        type="primary"
+        style="width: 100%;margin-top: 20px;"
+        @click="loginClk"
+      >
+        登录
+      </el-button>
       
     </el-form>
   </div>
@@ -132,11 +135,10 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 async function loginClk() {
   const access_token = await login(model);
   usrStore.setAccess_token(access_token);
-  if (access_token) {
-    // tabsStore.activeTab({ lbl: String(route.name || ""), active: true, path: route.path, query: route.query });
-    // tabsStore.closeOtherTabs(route.path);
-    router.replace("/");
-  }
+  // if (access_token) {
+  //   await router.replace("/");
+  //   await tabsStore.refreshTab();
+  // }
 }
 
 let tenants = $ref<{
@@ -160,17 +162,15 @@ let tenants = $ref<{
   right: 0;
   bottom: 0;
   z-index: 2000;
-  background-image: url("/src/assets/img/login_bg.jpg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
+  background-color: #072540;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 .login_div {
-  background-color: #fff;
+  background-color: #114f86;
+  color: #FFF;
   width: 380px;
   min-height: 320px;
   box-shadow: 0 0 5px lightblue;
@@ -178,5 +178,20 @@ let tenants = $ref<{
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.login_form {
+  margin: 20px;
+  flex: 1 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.from_input {
+  color: #FFF;
+}
+.from_input :deep(.el-input__inner) {
+  color: #FFF;
+  background-color: transparent;
 }
 </style>

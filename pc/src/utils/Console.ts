@@ -106,6 +106,7 @@ if (process.env.NODE_ENV === "development") {
     }
     args2.push("\n" + str + "\n");
     JSON.stringify = stringify2;
+    args2 = args2.filter((item) => item != null);
     terminal.log(...args2);
     JSON.stringify = oldStringify;
     return rvObj;

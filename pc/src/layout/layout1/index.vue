@@ -46,11 +46,9 @@
 </template>
 
 <script setup lang="ts">
-import locale from "@/locales";
 import {
   ElMessage,
   ElMessageBox,
-  ElConfigProvider,
   ElIcon,
   ElDropdown,
   ElDropdownItem,
@@ -64,7 +62,7 @@ import {
 import {
   RouterView,
 } from "vue-router";
-import { watch } from "vue";
+import { onMounted, watch } from "vue";
 import useTabsStore from "@/store/tabs";
 import useUsrStore from "@/store/usr";
 import useMenuStore from "@/store/menu";
@@ -86,11 +84,17 @@ const usrStore = useUsrStore();
 const indexStore = useIndexStore();
 const menuStore = useMenuStore();
 
-watch([
+watch(
   () => route.path,
-], () => {
-  tabsStore.activeTab({ lbl: String(route.name || ""), active: true, path: route.path, query: route.query });
-});
+  async () => {
+    tabsStore.activeTab({
+      lbl: String(route.name || ""),
+      active: true,
+      path: route.path,
+      query: route.query,
+    });
+  }
+);
 
 // 关闭其它选项卡
 function closeOtherTabs() {
@@ -115,6 +119,10 @@ async function logoutClk() {
   }
   usrStore.setAccess_token("");
 }
+
+onMounted(async () => {
+  await tabsStore.refreshTab();
+});
 </script>
 
 <style lang="scss" scoped>

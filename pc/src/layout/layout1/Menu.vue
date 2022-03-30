@@ -107,7 +107,6 @@ import {
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
 import { getMenus } from "./Api";
-import { MenuModel } from "@/views/menu/Model";
 
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
@@ -125,66 +124,15 @@ watch([
 });
 
 function setDefaultActiveByRouter(path: string) {
-  for (let i = 0; i < menuStore.menus.length; i++) {
-    const menu = menuStore.menus[i];
-    if (menu.route_path === path) {
-      defaultActive = menu.id;
-      return;
-    }
-    for (let k = 0; k < menu.children.length; k++) {
-      const item = menu.children[k];
-      if (item.route_path === path) {
-        defaultActive = item.id;
-        return;
-      }
-      if (item.children && item.children.length > 0) {
-        for (let j = 0; j < item.children.length; j++) {
-          const item2 = item.children[j];
-          if (item2.route_path === path) {
-            defaultActive = item2.id;
-            return;
-          }
-          if (item2.children && item2.children.length > 0) {
-            for (let l = 0; l < item2.children.length; l++) {
-              const item3 = item2.children[l];
-              if (item3.route_path === path) {
-                defaultActive = item3.id;
-                return;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  const menu = menuStore.getMenuByPath(path);
+  defaultActive = menu ? menu.id : undefined;
 }
 
-function getParentIds(id: string): string[] {
-  let parentIds: string[] = [ ];
-  let menus = menuStore.menus;
-  let parentId = id;
-  const tmpFn = function(menus: MenuModel[]) {
-    for (let i = 0; i < menus.length; i++) {
-      const menu = menus[i];
-      if (menu.id === parentId) {
-        parentIds.push(menu.menu_id);
-        parentId = menu.menu_id;
-      }
-      const children = menu.children;
-      if (children && children.length > 0) {
-        tmpFn(children);
-      }
-    }
-  };
-  tmpFn(menus);
-  return parentIds;
+function menuOpen(index: string, _indexPath: string[]) {
+  openedIndex = [ index, ...menuStore.getParentIds(index) ];
 }
 
-function menuOpen(index: string, indexPath: string[]) {
-  openedIndex = [ index, ...getParentIds(index) ];
-}
-
-function menuClose(index: string, indexPath: string[]) {
+function menuClose(index: string, _indexPath: string[]) {
   openedIndex = openedIndex.filter((item) => item !== index);
 }
 
