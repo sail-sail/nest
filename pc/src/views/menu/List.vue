@@ -19,7 +19,7 @@
           @keyup.enter.native.stop
           v-model="search.menu_id"
           placeholder="请选择父菜单"
-          :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+          :options="menu4SelectV2"
           filterable
           clearable
           multiple
@@ -346,7 +346,23 @@ let {
 let tableData: MenuModel[] = $ref([ ]);
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
-let menuInfo: { count: number, data: MenuModel[] } = $ref({ count: 0, data: [ ] });
+
+let menuInfo: {
+  count: number;
+  data: MenuModel[];
+} = $ref({
+  count: 0,
+  data: [ ],
+});
+
+let menu4SelectV2 = $computed(() => {
+  return menuInfo.data.map((item) => {
+    return {
+      value: item.id,
+      label: item.lbl,
+    };
+  });
+});
 
 // 获取下拉框列表
 async function getSelectListEfc() {
@@ -467,6 +483,7 @@ async function deleteByIdsEfc() {
     ElMessage.success(`删除 ${ num } 条数据成功!`);
   }
 }
+
 // 点击还原
 async function revertByIdsEfc() {
   if (selectList.length === 0) {

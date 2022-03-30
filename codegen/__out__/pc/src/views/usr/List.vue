@@ -45,7 +45,7 @@
           @keyup.enter.native.stop
           v-model="search.role_ids"
           placeholder="请选择角色"
-          :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+          :options="role4SelectV2"
           filterable
           clearable
           multiple
@@ -342,7 +342,23 @@ let {
 let tableData: UsrModel[] = $ref([ ]);
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
-let roleInfo: { count: number, data: RoleModel[] } = $ref({ count: 0, data: [ ] });
+
+let roleInfo: {
+  count: number;
+  data: RoleModel[];
+} = $ref({
+  count: 0,
+  data: [ ],
+});
+
+let role4SelectV2 = $computed(() => {
+  return roleInfo.data.map((item) => {
+    return {
+      value: item.id,
+      label: item.lbl,
+    };
+  });
+});
 
 // 获取下拉框列表
 async function getSelectListEfc() {
@@ -456,6 +472,7 @@ async function deleteByIdsEfc() {
     ElMessage.success(`删除 ${ num } 条数据成功!`);
   }
 }
+
 // 点击还原
 async function revertByIdsEfc() {
   if (selectList.length === 0) {

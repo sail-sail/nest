@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === "development") {
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
-          vueScriptLine = JSON.parse(xhr.responseText).data.getVueScriptLine;
+          vueScriptLine = JSON.parse(xhr.responseText)?.data?.getVueScriptLine || 0;
         }
       }
     };
@@ -54,7 +54,10 @@ if (process.env.NODE_ENV === "development") {
     let arr2 = [ ];
     let termArr = [ ];
     const arr = stack.split("\n");
-    if (arr.length === 3 && arr[2].startsWith("    at <anonymous>:")) {
+    if (
+      (args[0] && args[0].startsWith("🍍")) ||
+      (arr.length === 3 && arr[2].startsWith("    at <anonymous>:"))
+    ) {
       log.apply(console, args);
       return;
     }
@@ -74,7 +77,8 @@ if (process.env.NODE_ENV === "development") {
       termArr.push({ method, url });
       arr2.push(` -- ${ method } ${ url }`);
     }
-    const rvObj = log.apply(console, args);
+    
+    
     log(arr2.join("\n") + "\n");
     let args2 = [ ...args ];
     let str = "";

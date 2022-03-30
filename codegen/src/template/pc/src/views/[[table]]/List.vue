@@ -50,7 +50,7 @@
           @keyup.enter.native.stop
           v-model="search.<#=column_name#>"
           placeholder="请选择<#=column_comment#>"
-          :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
+          :options="<#=foreignTable#>4SelectV2"
           filterable
           clearable
           multiple
@@ -636,7 +636,8 @@ let {
 // 表格数据
 let tableData: <#=tableUp#>Model[] = $ref([ ]);
 
-let detailRef = $ref<InstanceType<typeof Detail>>();<#
+let detailRef = $ref<InstanceType<typeof Detail>>();
+<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -654,7 +655,22 @@ for (let i = 0; i < columns.length; i++) {
 #><#
   if (foreignKey) {
 #>
-let <#=foreignTable#>Info: { count: number, data: <#=foreignTableUp#>Model[] } = $ref({ count: 0, data: [ ] });<#
+let <#=foreignTable#>Info: {
+  count: number;
+  data: <#=foreignTableUp#>Model[];
+} = $ref({
+  count: 0,
+  data: [ ],
+});
+
+let <#=foreignTable#>4SelectV2 = $computed(() => {
+  return <#=foreignTable#>Info.data.map((item) => {
+    return {
+      value: item.<#=foreignKey.column#>,
+      label: item.<#=foreignKey.lbl#>,
+    };
+  });
+});<#
   }
 }
 #>
@@ -831,6 +847,7 @@ async function deleteByIdsEfc() {
     ElMessage.success(`删除 ${ num } 条数据成功!`);
   }
 }
+
 // 点击还原
 async function revertByIdsEfc() {
   if (selectList.length === 0) {
