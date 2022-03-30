@@ -33,6 +33,7 @@ export default defineConfig({
     alias: {
       "@/": "/src/",
       "#/": "/src/typings/",
+      "element-plus": "element-plus-sl",
     },
   },
   base: "/",

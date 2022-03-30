@@ -423,7 +423,10 @@ async function sortChange(
 
 // 打开增加页面
 async function openAdd() {
-  await detailRef.showDialog({ title: "增加", action: "add" });
+  await detailRef.showDialog({
+    title: "增加",
+    action: "add",
+  });
 }
 
 // 打开修改页面
@@ -433,7 +436,13 @@ async function openEdit() {
     return;
   }
   const ids = tableData.filter((item) => selectList.includes(item)).map((item) => item.id);
-  await detailRef.showDialog({ title: "修改", action: "edit", model: { ids } });
+  await detailRef.showDialog({
+    title: "修改",
+    action: "edit",
+    model: {
+      ids,
+    },
+  });
 }
 
 // 点击删除
@@ -482,7 +491,12 @@ async function revertByIdsEfc() {
 }
 
 // 增加或修改后
-async function detailChg(payload: { action: "add"|"edit", ids: string[] }) {
+async function detailChg(
+  payload: {
+    action: "add"|"edit",
+    ids: string[],
+  },
+) {
   const { action, ids } = payload;
   if (action === "add") {
     await dataGrid(true);

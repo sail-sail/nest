@@ -47,7 +47,7 @@ if (process.env.NODE_ENV === "development") {
   const log = console.log;
   
   console.log = function(...args: any[]) {
-    if (args[0] && args[0].toString().startsWith("[vite] ")) {
+    if (args[0] && args[0].toString && args[0].toString().startsWith("[vite] ")) {
       return log.apply(console, args);
     }
     const stack = getStackTrace();
