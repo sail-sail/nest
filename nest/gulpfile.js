@@ -13,14 +13,14 @@ require("dotenv").config();
 
 const project = ecosystem.apps[0].name;
 
-if (!process.env[`${ project }_SSH_HOST`] || process.env.SSH_HOST) {
-  throw new Error(`SSH_HOST or ${ project }_SSH_HOST environment variable is not set!`);
+if (!process.env[`${ project }_SSH_HOST`] && !process.env.SSH_HOST) {
+  throw `SSH_HOST or ${ project }_SSH_HOST environment variable is not set!`;
 }
 
 const dist = "../build/nest";
 const sshDist = process.env[`${ project }_SSH_DIST`] || process.env.SSH_DIST;
 if (!sshDist) {
-  throw new Error("SSH_DIST environment variable is not set!");
+  throw `SSH_DIST or ${ project }_SSH_DIST environment variable is not set!`;
 }
 
 const sshConfig = {
@@ -30,7 +30,10 @@ const sshConfig = {
   password: process.env[`${ project }_SSH_PASSWORD`] || process.env.SSH_PASSWORD,
 };
 
-console.log({ ...sshConfig, password: undefined });
+console.log({
+  ...sshConfig,
+  password: undefined,
+});
 console.log(`${ sshDist }${ project }`);
 
 const version = Math.floor((Date.now() - (new Date("2019-06-10 00:00:00")).getTime())/(1000*60)).toString(36).split("").reverse().join("");
@@ -49,7 +52,14 @@ gulp.task("nest-config", function() {
     .pipe(gulp.dest(`${dist}`));
 });
 gulp.task("nest-ts", function() {
-  const nestProject = ts.createProject('tsconfig.build.json', { sourceMap: false, inlineSources: false, inlineSourceMap: false });
+  const nestProject = ts.createProject(
+    "tsconfig.build.json",
+    {
+      sourceMap: false,
+      inlineSources: false,
+      inlineSourceMap: false,
+    },
+  );
   return nestProject.src()
     .pipe(sourcemaps.init())
     .pipe(nestProject()).js

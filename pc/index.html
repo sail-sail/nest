@@ -12,7 +12,7 @@
   </head>
   <body>
     <script nomodule>
-      var msg = "请您切换到急速模式或者升级浏览器，建议使用Edge浏览器。";
+      var msg = "请您切换到 急速模式 或 升级浏览器 ，建议使用 Edge浏览器 。";
       alert(msg);
       if (window.confirm("现在安装Edge浏览器？")) {
         window.location.href = "https://www.microsoft.com/zh-cn/edge";
@@ -25,5 +25,25 @@
     </div>
     <div id="app" style="width: 100%;height: 100%;"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      function load() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("__reload__")) {
+          params.delete("__reload__");
+          let searchStr = params.toString();
+          if (searchStr) {
+            searchStr = "?" + searchStr;
+          }
+          let hash = window.sessionStorage.getItem("__hash__");
+          if (hash) {
+            window.sessionStorage.removeItem("__hash__");
+          } else {
+            hash = window.location.hash;
+          }
+          window.location.href = window.location.origin + window.location.pathname + searchStr + hash;
+        }
+      }
+      load();
+    </script>
   </body>
 </html>

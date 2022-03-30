@@ -62,7 +62,10 @@ import {
 import {
   RouterView,
 } from "vue-router";
-import { onMounted, watch } from "vue";
+import {
+  onMounted,
+  watch,
+} from "vue";
 import useTabsStore from "@/store/tabs";
 import useUsrStore from "@/store/usr";
 import useMenuStore from "@/store/menu";
@@ -120,8 +123,10 @@ async function logoutClk() {
   usrStore.setAccess_token("");
 }
 
-onMounted(async () => {
-  await tabsStore.refreshTab();
+onMounted(() => {
+  setTimeout(async () => {
+    await tabsStore.refreshTab();
+  }, 20);
 });
 </script>
 
