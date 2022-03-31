@@ -7,6 +7,7 @@ import { AuthModel } from "./auth/auth.constants";
 // import { createClient } from "redis";
 import * as Minio from "minio";
 import { Readable } from "stream";
+import { GraphQLError } from "graphql";
 // import { shortUuidV4 } from "./util/uuid";
 
 let shortUuidV4 = undefined;
@@ -348,20 +349,35 @@ export class Context {
   error(...args: any[]) {
     const t = this;
     if (process.env.NODE_ENV !== "production") {
-      args.unshift(t.req_id);
+      const args2 = [ ];
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        if (arg instanceof Error) {
-          args[i] = arg.stack;
+        if (arg instanceof GraphQLError) {
+          if (arg.stack.startsWith("GraphQLError: ")) {
+            args2.push("GraphQLError: " + arg.toString());
+          } else {
+            continue;
+          }
+        } else if (arg instanceof Error) {
+          args2.push(arg.stack);
         }
       }
-      // eslint-disable-next-line prefer-spread
-      console.error.apply(console, args);
+      if (args2.length > 0) {
+        args2.unshift(t.req_id);
+        // eslint-disable-next-line prefer-spread
+        console.error.apply(console, args2);
+      }
     } else {
       let str = "";
       for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        if (arg instanceof Error) {
+        if (arg instanceof GraphQLError) {
+          if (arg.stack.startsWith("GraphQLError: ")) {
+            str += "GraphQLError: " + arg.toString();
+          } else {
+            continue;
+          }
+        } else if (arg instanceof Error) {
           str += arg.stack;
         } else if (typeof arg === "object") {
           str += t.stringify(arg);
@@ -372,7 +388,9 @@ export class Context {
           str += " ";
         }
       }
-      console.error(`${ t.req_id } ${ str }`);
+      if (str) {
+        console.error(`${ t.req_id } ${ str }`);
+      }
     }
   }
   

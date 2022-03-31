@@ -1,14 +1,14 @@
-import { Ref } from "vue";
+import { Ref, watch } from "vue";
 import {
   ElForm,
   ElTable,
 } from "element-plus";
 
-export function useSearch<T>(dataGrid: Function, defModel: T) {
-  if ((<any>defModel).is_deleted == null) {
-    (<any>defModel).is_deleted = 0;
-  }
-  let search = $ref(defModel);
+export function useSearch<T>(dataGrid: Function) {
+  
+  let search = <T>$ref({
+    is_deleted: 0,
+  });
   
   // 搜索
   let searchFormRef = $ref<InstanceType<typeof ElForm>>();
@@ -69,6 +69,30 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 
 export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   // 当前多行选中的数据
   let selectList: T[] = $ref([ ]);
+  
+  watch(
+    () => selectList,
+    (newSelectList: T[], oldSelectList: T[]) => {
+      if (tableRef.value) {
+        if (newSelectList.length > 0) {
+          for (let i = 0; i < newSelectList.length; i++) {
+            const item = newSelectList[i];
+            tableRef.value.toggleRowSelection(item, true);
+          }
+        } else {
+          tableRef.value.clearSelection();
+        }
+        if (oldSelectList && oldSelectList.length > 0) {
+          for (let i = 0; i < oldSelectList.length; i++) {
+            const item = oldSelectList[i];
+            if (!newSelectList.includes(item)) {
+              tableRef.value.toggleRowSelection(item, false);
+            }
+          }
+        }
+      }
+    },
+  );
   
   // 多行选中
   function selectChg(list: any, row?: any) {

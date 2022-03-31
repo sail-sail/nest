@@ -1,4 +1,5 @@
 import { Catch, ArgumentsHost, HttpException } from "@nestjs/common";
+import { GraphQLError } from "graphql";
 // import { GqlExceptionFilter, GqlExecutionContext } from "@nestjs/graphql";
 // import { BaseWsExceptionFilter } from "@nestjs/websockets";
 import { contextSym } from "../interceptors/context.interceptor";
@@ -47,8 +48,24 @@ export class AllExceptionFilter {
       const context = gqlCtx.getContext();
       if (message instanceof ServiceException) {
         context.log(message.message || message.code);
+        throw new GraphQLError(
+          message.message || message.code,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          message,
+        );
       } else if (message instanceof String || typeof message === "string") {
         context.log(message);
+        throw new GraphQLError(
+          message.toString(),
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          new ServiceException(message.toString()),
+        );
       }
       if (message instanceof Error) {
         throw message;

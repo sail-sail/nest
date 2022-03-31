@@ -123,10 +123,8 @@ async function logoutClk() {
   usrStore.setAccess_token("");
 }
 
-onMounted(() => {
-  setTimeout(async () => {
-    await tabsStore.refreshTab();
-  }, 20);
+onMounted(async () => {
+  await tabsStore.refreshTab();
 });
 </script>
 
