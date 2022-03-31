@@ -10,25 +10,14 @@ import { renderExcel } from "ejsexcel";
 import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
 import { <#=tableUp#>Model, <#=tableUp#>Search } from './<#=table#>.model';
-import { <#=tableUp#>Dao } from "./<#=table#>.dao";<#
-let hasPassword = columns.some((column) => column.isPassword);
-if (hasPassword) {
-#>
-import { AuthService } from "../common/auth/auth.service";<#
-}
-#>
+import { <#=tableUp#>Dao } from "./<#=table#>.dao";
 
 @Injectable()
 export class <#=tableUp#>Service {
   
   constructor(
     private readonly eventEmitter2: EventEmitter2,
-    private readonly <#=table#>Dao: <#=tableUp#>Dao,<#
-    if (hasPassword) {
-    #>
-    private readonly authService: AuthService,<#
-    }
-    #>
+    private readonly <#=table#>Dao: <#=tableUp#>Dao,
   ) { }
   
   /**
@@ -154,29 +143,7 @@ export class <#=tableUp#>Service {
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
-    <#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      // if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      let isPassword = column.isPassword;
-    #><#
-      if (isPassword) {
-    #>
-    // <#=column_comment#>
-    if (model.<#=column_name#>) {
-      model.<#=column_name#> = t.authService.getPassword(model.<#=column_name#>);
-    }<#
-      }
-    }
-    #>
+    
     model.id = shortUuidV4();
     let result: ResultSetHeader = await t.<#=table#>Dao.create(model);
     
@@ -209,29 +176,7 @@ export class <#=tableUp#>Service {
     }
     if (process.env.NODE_ENV === "production") {
       await t.findById(id);
-    }<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      // if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      let isPassword = column.isPassword;
-    #><#
-      if (isPassword) {
-    #>
-    // <#=column_comment#>
-    if (model.<#=column_name#>) {
-      model.<#=column_name#> = t.authService.getPassword(model.<#=column_name#>);
-    }<#
-      }
     }
-    #>
     let result: ResultSetHeader = await t.<#=table#>Dao.updateById(id, model);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { model, id, result });

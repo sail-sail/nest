@@ -15,9 +15,6 @@
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
-        <span v-if="isModelDirty" class="isModelDirty_span">
-          *
-        </span>
       </div>
       <el-icon class="full_but" @click="setFullscreen">
         <FullScreen/>
@@ -122,6 +119,7 @@
             collapse-tags-tooltip
             class="form_input"
             @keyup.enter.native.stop
+            :set="dialogModel.menu_ids = dialogModel.menu_ids || [ ]"
             v-model="dialogModel.menu_ids"
             placeholder="请选择菜单"
             :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
@@ -164,7 +162,6 @@
     <div class="toolbox_div">
       <el-button
         type="primary"
-        :disabled="!isModelDirty"
         :icon="CircleCheck"
         class="save_but"
         @click="saveClk"
@@ -247,7 +244,6 @@ import {
 } from "./Api";
 
 const emit = defineEmits([
-  "change",
   "nextId",
 ]);
 
@@ -264,9 +260,6 @@ let dialogModel: TenantModel = $ref({
   menu_ids: [ ],
 });
 
-let oldDialogModel: TenantModel = $ref({
-  menu_ids: [ ],
-});
 let ids: string[] = $ref([ ]);
 let oldIds: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -276,13 +269,21 @@ let formRef = $ref<InstanceType<typeof ElForm>>();
 // 表单校验
 let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
   lbl: [
-    { required: true, message: "请输入名称" },
+    {
+      required: true,
+      message: "请输入名称",
+    },
   ],
 });
 
 // 下拉框列表
-
-let menuInfo: { count: number, data: MenuModel[] } = $ref({ count: 0, data: [ ] });
+let menuInfo: {
+  count: number;
+  data: MenuModel[];
+} = $ref({
+  count: 0,
+  data: [ ],
+});
 
 // 获取下拉框列表
 async function getSelectListEfc() {
@@ -306,14 +307,28 @@ async function menuFilterEfc(query: string) {
   menuInfo.data = await findAllMenu({
     orderBy: "order_by",
     orderDec: "ascending",
-    lbl: query ? `%${ query }%` : undefined,
+    lblLike: query,
   }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
 }
 
+let onCloseResolve = function(value: {
+  changedIds: string[];
+}) { };
+
 // 打开对话框
 async function showDialog(
-  { title, model, action }: { title?: string, model?: any, action: "add"|"edit" },
-): Promise<void> {
+  {
+    title,
+    model,
+    action,
+  }: {
+    title?: string;
+    model?: {
+      ids: string[];
+    };
+    action: "add"|"edit";
+  },
+) {
   inited = false;
   if (formRef) {
     formRef.resetFields();
@@ -326,46 +341,19 @@ async function showDialog(
   oldIds = [ ];
   changedIds = [ ];
   dialogModel = {
-    max_usr_num: 0,
-    is_enabled: 0,
-    menu_ids: [ ],
-    order_by: 0,
-  };
-  oldDialogModel = {
-    max_usr_num: 0,
-    is_enabled: 0,
-    menu_ids: [ ],
-    order_by: 0,
   };
   await getSelectListEfc();
   if (action === "add") {
     dialogModel = {
-      max_usr_num: 0,
-      is_enabled: 1,
-      menu_ids: [ ],
-      order_by: 0,
-      ...model,
-    };
-    oldDialogModel = {
-      max_usr_num: 0,
-      is_enabled: 0,
-      menu_ids: [ ],
-      order_by: 0,
       ...model,
     };
     const order_by = await findLastOrderBy();
     dialogModel.order_by = order_by + 1;
-    oldDialogModel.order_by = dialogModel.order_by;
   } else if (action === "edit") {
     ids = model.ids;
     oldIds = model.ids;
-    if (!ids || ids.length === 0 && model.id) {
-      ids = [ model.id ];
-      oldIds = [ model.id ];
-    }
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
-      oldDialogModel.id = ids[0];
       await refreshEfc();
     }
   }
@@ -374,10 +362,13 @@ async function showDialog(
   }
   inited = true;
   dialogVisible = true;
+  const reslut = await new Promise<{
+    changedIds: string[];
+  }>((resolve) => {
+    onCloseResolve = resolve;
+  });
+  return reslut;
 }
-
-// 是否有改动
-let isModelDirty = $computed(() => !deepCompare(dialogModel, oldDialogModel));
 
 // 刷新
 async function refreshEfc() {
@@ -387,19 +378,16 @@ async function refreshEfc() {
   const data = await findById(dialogModel.id);
   if (data) {
     dialogModel = data;
-    oldDialogModel = Object.assign({ }, data);
   }
 }
 
 // 点击上一页
 async function prevIdClk() {
-  if (!(await vldInputChg())) return;
   await prevId();
 }
 
 // 点击下一页
 async function nextIdClk() {
-  if (!(await vldInputChg())) return;
   await nextId();
 }
 
@@ -408,7 +396,6 @@ async function nextId() {
   if (!dialogModel.id) {
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
-      oldDialogModel.id = ids[0];
     } else {
       return false;
     }
@@ -416,7 +403,6 @@ async function nextId() {
     const idx = ids.indexOf(dialogModel.id);
     if (idx >= 0 && idx < ids.length - 1) {
       dialogModel.id = ids[idx + 1];
-      oldDialogModel.id = ids[idx + 1];
     } else {
       return false;
     }
@@ -431,13 +417,11 @@ async function prevId() {
   if (!dialogModel.id) {
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
-      oldDialogModel.id = ids[0];
     }
   } else {
     const idx = ids.indexOf(dialogModel.id);
     if (idx > 0) {
       dialogModel.id = ids[idx - 1];
-      oldDialogModel.id = ids[idx - 1];
     } else {
       return false;
     }
@@ -475,9 +459,7 @@ async function saveClk() {
     }
     if (!isNext) {
       dialogVisible = false;
-      emit("change", {
-        action: dialogAction,
-        ids: oldIds,
+      onCloseResolve({
         changedIds,
       });
     } else {
@@ -486,35 +468,12 @@ async function saveClk() {
   }
 }
 
-// 校验是否有改动
-async function vldInputChg(): Promise<boolean> {
-  if (isModelDirty) {
-    try {
-      await ElMessageBox.confirm(`尚未保存, 是否继续?`, {
-        confirmButtonText: "继续",
-        cancelButtonText: "取消",
-        type: "warning",
-      });
-    } catch (err) {
-      return false;
-    }
-    return true;
-  }
-  return true;
-}
-
 // 窗口关闭之前判断是否有改动
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (await vldInputChg()) {
-    if (changedIds.length > 0) {
-      emit("change", {
-        action: dialogAction,
-        ids: oldIds,
-        changedIds,
-      });
-    }
-    done(false);
-  }
+  onCloseResolve({
+    changedIds,
+  });
+  done(false);
 }
 
 defineExpose({ showDialog });
@@ -592,13 +551,6 @@ defineExpose({ showDialog });
   margin-right: 5px;
 }
 .next_but {
-  margin-left: 3px;
-}
-.isModelDirty_span {
-  color: red;
-  position: relative;
-  top: 2px;
-  font-weight: bold;
   margin-left: 3px;
 }
 </style>

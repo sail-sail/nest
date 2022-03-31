@@ -48,6 +48,7 @@
           :height="300"
           class="form_input"
           @keyup.enter.native.stop
+          :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
           v-model="search.<#=column_name#>"
           placeholder="请选择<#=column_comment#>"
           :options="<#=foreignTable#>4SelectV2"
@@ -190,6 +191,7 @@
       <div style="min-width: 20px;"></div>
       <el-form-item prop="is_deleted">
         <el-checkbox
+          :set="search.is_deleted = search.is_deleted || 0"
           v-model="search.is_deleted"
           :false-label="0"
           :true-label="1"
@@ -440,7 +442,6 @@
   </div>
   <Detail
     ref="detailRef"
-    @change="detailChg"
   ></Detail>
 </div>
 </template>
@@ -587,34 +588,6 @@ let {
   searchIptClr,
 } = $(useSearch<<#=tableUp#>Search>(
   dataGrid,
-  {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      const search = column.search;
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const foreignKey = column.foreignKey;
-    #><#
-      if (search && (foreignKey || selectList.length > 0)) {
-    #>
-    // <#=column_comment#>
-    <#=column_name#>: [ ],<#
-      }
-    }
-    #>
-  },
 ));
 
 // 分页功能
@@ -803,10 +776,16 @@ async function linkAttChg(row: <#=tableUp#>Model, key: string) {
 
 // 打开增加页面
 async function openAdd() {
-  await detailRef.showDialog({
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
     title: "增加",
     action: "add",
   });
+  if (changedIds && changedIds.length > 0) {
+    await dataGrid(true);
+    selectList = tableData.filter((item) => changedIds.includes(item.id));
+  }
 }
 
 // 打开修改页面
@@ -816,13 +795,19 @@ async function openEdit() {
     return;
   }
   const ids = tableData.filter((item) => selectList.includes(item)).map((item) => item.id);
-  await detailRef.showDialog({
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
     title: "修改",
     action: "edit",
     model: {
       ids,
     },
   });
+  if (changedIds && changedIds.length > 0) {
+    await dataGrid();
+    selectList = tableData.filter((item) => changedIds.includes(item.id));
+  }
 }
 
 // 点击删除
@@ -868,30 +853,6 @@ async function revertByIdsEfc() {
   if (num) {
     await dataGrid(true);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
-  }
-}
-
-// 增加或修改后
-async function detailChg(
-  payload: {
-    action: "add"|"edit",
-    ids: string[],
-  },
-) {
-  const { action, ids } = payload;
-  if (action === "add") {
-    await dataGrid(true);
-  } else {
-    await dataGrid();
-  }
-  if (ids) {
-    selectList = tableData.filter((item) => ids.includes(item.id));
-    if (tableRef) {
-      for (let i = 0; i < selectList.length; i++) {
-        const item = selectList[i];
-        tableRef.toggleRowSelection(item, true);
-      }
-    }
   }
 }
 

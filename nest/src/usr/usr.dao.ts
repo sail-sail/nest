@@ -6,12 +6,14 @@ import { PageModel } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { UsrModel, UsrSearch } from "./usr.model";
+import { AuthDao } from "../common/auth/auth.dao";
 
 @Injectable()
 export class UsrDao {
   
   constructor(
     private readonly eventEmitter2: EventEmitter2,
+    private readonly authDao: AuthDao,
   ) { }
   
   private getWhereQuery(
@@ -348,7 +350,7 @@ export class UsrDao {
     if (model.username !== undefined) {
       sql += `,username`;
     }
-    if (model.password !== undefined) {
+    if (!isEmpty(model.password)) {
       sql += `,password`;
     }
     if (model.is_enabled !== undefined) {
@@ -376,9 +378,9 @@ export class UsrDao {
       sql += `,?`;
       args.push(model.username);
     }
-    if (model.password !== undefined) {
+    if (!isEmpty(model.password)) {
       sql += `,?`;
-      args.push(model.password);
+      args.push(t.authDao.getPassword(model.password));
     }
     if (model.is_enabled !== undefined) {
       sql += `,?`;
@@ -464,9 +466,9 @@ export class UsrDao {
       sql += `,username = ?`;
       args.push(model.username);
     }
-    if (model.password !== undefined) {
+    if (!isEmpty(model.password)) {
       sql += `,password = ?`;
-      args.push(model.password);
+      args.push(t.authDao.getPassword(model.password));
     }
     if (model.is_enabled !== undefined) {
       sql += `,is_enabled = ?`;

@@ -85,9 +85,9 @@ function start() {
     // console.log(data);
   });
   ls.stderr.on("data", function(data) {
-    // data = data.toString();
-    // data = data.substring(0, data.length-1);
-    // console.error(data);
+    data = data.toString();
+    data = data.substring(0, data.length-1);
+    console.error(data);
   });
   ls.on("exit", function(code) {
     if (code != null) {

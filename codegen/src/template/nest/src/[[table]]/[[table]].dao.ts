@@ -1,5 +1,6 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const hasPassword = columns.some((column) => column.isPassword);
 #>import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ResultSetHeader } from "mysql2/promise";
@@ -7,13 +8,23 @@ import { useContext } from "../common/interceptors/context.interceptor";
 import { PageModel } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
-import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";
+import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";<#
+if (hasPassword) {
+#>
+import { AuthDao } from "../common/auth/auth.dao";<#
+}
+#>
 
 @Injectable()
 export class <#=tableUp#>Dao {
   
   constructor(
-    private readonly eventEmitter2: EventEmitter2,
+    private readonly eventEmitter2: EventEmitter2,<#
+      if (hasPassword) {
+    #>
+    private readonly authDao: AuthDao,<#
+      }
+    #>
   ) { }
   
   private getWhereQuery(
@@ -637,7 +648,12 @@ export class <#=tableUp#>Dao {
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
     #><#
-      if (foreignKey && foreignKey.type === "json") {
+      if (column.isPassword) {
+    #>
+    if (!isEmpty(model.<#=column_name#>)) {
+      sql += `,<#=column_name#>`;
+    }<#
+      } else if (foreignKey && foreignKey.type === "json") {
     #>
     if (model.<#=column_name#> !== undefined) {
       sql += `,<#=column_name#>`;
@@ -688,7 +704,13 @@ export class <#=tableUp#>Dao {
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     #><#
-      if (foreignKey && foreignKey.type === "json") {
+      if (column.isPassword) {
+    #>
+    if (!isEmpty(model.<#=column_name#>)) {
+      sql += `,?`;
+      args.push(t.authDao.getPassword(model.<#=column_name#>));
+    }<#
+      } else if (foreignKey && foreignKey.type === "json") {
     #>
     if (model.<#=column_name#> !== undefined) {
       sql += `,?`;
@@ -851,7 +873,13 @@ export class <#=tableUp#>Dao {
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     #><#
-      if (foreignKey && foreignKey.type === "json") {
+      if (column.isPassword) {
+    #>
+    if (!isEmpty(model.<#=column_name#>)) {
+      sql += `,<#=column_name#> = ?`;
+      args.push(t.authDao.getPassword(model.<#=column_name#>));
+    }<#
+      } else if (foreignKey && foreignKey.type === "json") {
     #>
     if (model.<#=column_name#> !== undefined) {
       sql += `,<#=column_name#> = ?`;

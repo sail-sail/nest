@@ -9,7 +9,6 @@ import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
 import { UsrModel, UsrSearch } from './usr.model';
 import { UsrDao } from "./usr.dao";
-import { AuthService } from "../common/auth/auth.service";
 
 @Injectable()
 export class UsrService {
@@ -17,7 +16,6 @@ export class UsrService {
   constructor(
     private readonly eventEmitter2: EventEmitter2,
     private readonly usrDao: UsrDao,
-    private readonly authService: AuthService,
   ) { }
   
   /**
@@ -144,10 +142,6 @@ export class UsrService {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
-    // 密码
-    if (model.password) {
-      model.password = t.authService.getPassword(model.password);
-    }
     model.id = shortUuidV4();
     let result: ResultSetHeader = await t.usrDao.create(model);
     
@@ -180,10 +174,6 @@ export class UsrService {
     }
     if (process.env.NODE_ENV === "production") {
       await t.findById(id);
-    }
-    // 密码
-    if (model.password) {
-      model.password = t.authService.getPassword(model.password);
     }
     let result: ResultSetHeader = await t.usrDao.updateById(id, model);
     

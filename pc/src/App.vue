@@ -213,16 +213,19 @@ body .el-table--small {
   // .el-table__cell:first-child .cell {
   //   padding-left: 3px;
   // }
+  .el-table__row {
+    height: 29px;
+  }
   .cell {
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
   font-size: 13px;
   th.el-table__cell {
     padding: 3px 0;
   }
   td.el-table__cell {
-    padding: 1px 0;
+    padding: 0;
   }
 }
 // 复选框

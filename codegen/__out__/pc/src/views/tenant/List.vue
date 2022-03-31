@@ -30,6 +30,7 @@
           :height="300"
           class="form_input"
           @keyup.enter.native.stop
+          :set="search.menu_ids = search.menu_ids || [ ]"
           v-model="search.menu_ids"
           placeholder="请选择菜单"
           :options="menu4SelectV2"
@@ -48,6 +49,7 @@
       <div style="min-width: 20px;"></div>
       <el-form-item prop="is_deleted">
         <el-checkbox
+          :set="search.is_deleted = search.is_deleted || 0"
           v-model="search.is_deleted"
           :false-label="0"
           :true-label="1"
@@ -241,7 +243,6 @@
   </div>
   <Detail
     ref="detailRef"
-    @change="detailChg"
   ></Detail>
 </div>
 </template>
@@ -326,10 +327,6 @@ let {
   searchIptClr,
 } = $(useSearch<TenantSearch>(
   dataGrid,
-  {
-    // 菜单
-    menu_ids: [ ],
-  },
 ));
 
 // 分页功能
@@ -445,10 +442,16 @@ async function sortChange(
 
 // 打开增加页面
 async function openAdd() {
-  await detailRef.showDialog({
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
     title: "增加",
     action: "add",
   });
+  if (changedIds && changedIds.length > 0) {
+    await dataGrid(true);
+    selectList = tableData.filter((item) => changedIds.includes(item.id));
+  }
 }
 
 // 打开修改页面
@@ -458,13 +461,19 @@ async function openEdit() {
     return;
   }
   const ids = tableData.filter((item) => selectList.includes(item)).map((item) => item.id);
-  await detailRef.showDialog({
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
     title: "修改",
     action: "edit",
     model: {
       ids,
     },
   });
+  if (changedIds && changedIds.length > 0) {
+    await dataGrid();
+    selectList = tableData.filter((item) => changedIds.includes(item.id));
+  }
 }
 
 // 点击删除
@@ -510,30 +519,6 @@ async function revertByIdsEfc() {
   if (num) {
     await dataGrid(true);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
-  }
-}
-
-// 增加或修改后
-async function detailChg(
-  payload: {
-    action: "add"|"edit",
-    ids: string[],
-  },
-) {
-  const { action, ids } = payload;
-  if (action === "add") {
-    await dataGrid(true);
-  } else {
-    await dataGrid();
-  }
-  if (ids) {
-    selectList = tableData.filter((item) => ids.includes(item.id));
-    if (tableRef) {
-      for (let i = 0; i < selectList.length; i++) {
-        const item = selectList[i];
-        tableRef.toggleRowSelection(item, true);
-      }
-    }
   }
 }
 
