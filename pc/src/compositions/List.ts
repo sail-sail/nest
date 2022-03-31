@@ -67,12 +67,15 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 
 }
 
 export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
-  // 当前多行选中的数据
+  
+  /** 当前多行选中的数据 */
   let selectList: T[] = $ref([ ]);
+  let prevSelectList: T[] = $ref([ ]);
   
   watch(
     () => selectList,
     (newSelectList: T[], oldSelectList: T[]) => {
+      prevSelectList = oldSelectList;
       if (tableRef.value) {
         if (newSelectList.length > 0) {
           for (let i = 0; i < newSelectList.length; i++) {
@@ -94,25 +97,68 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     },
   );
   
-  // 多行选中
-  function selectChg(list: any, row?: any) {
+  /**
+   * 多行或单行勾选
+   * @param {T[]} list
+   * @param {T} row?
+   */
+  function selectChg(list: T[], row?: T) {
     selectList = list;
   }
   
+  /**
+   * 点击一行
+   * @param {T} row
+   */
   async function rowClk(row: T) {
-    if (tableRef.value) {
-      tableRef.value.clearSelection();
-    }
     if (!row) {
       selectList = [ ];
     } else {
       selectList = [ row ];
-      if (tableRef.value) {
-        tableRef.value.toggleRowSelection(row, true);
+    }
+  }
+  
+  /**
+   * 按住ctrl键之后点击一行
+   * @param {PointerEvent} _event
+   */
+  function rowClkCtrl(_event: PointerEvent) {
+    const row = selectList[0];
+    if (row) {
+      if (!prevSelectList.includes(row)) {
+        selectList = [ ...prevSelectList, row ];
+      } else {
+        selectList = prevSelectList.filter((item) => item !== row);
       }
     }
   }
   
+  /**
+   * 按住shift键之后点击一行
+   * @param {PointerEvent} _event
+   */
+  function rowClkShift(_event: PointerEvent) {
+    const row = selectList[0];
+    const tableData = tableRef.value.data;
+    let fromIdx = tableData.length - 1;
+    for (let i = 0; i < prevSelectList.length; i++) {
+      const item = prevSelectList[i];
+      const idx = tableData.indexOf(item);
+      if (idx !== -1 && idx < fromIdx) {
+        fromIdx = idx;
+      }
+    }
+    if (fromIdx === tableData.length - 1) {
+      fromIdx = 0;
+    }
+    const toIndex = tableData.indexOf(row);
+    selectList = tableData.slice(Math.min(fromIdx, toIndex), Math.max(fromIdx, toIndex) + 1);
+  }
+  
+  /**
+   * 表格每一行的css样式
+   * @param {{ row: T, rowIndex: number }} { row, rowIndex }
+   */
   function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
     return selectList.includes(row) ? "table_current_row" : "";
   }
@@ -121,6 +167,8 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     selectList,
     selectChg,
     rowClk,
+    rowClkCtrl,
+    rowClkShift,
     rowClassName,
   });
 }

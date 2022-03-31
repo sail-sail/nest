@@ -120,6 +120,8 @@
         :empty-text="inited ? undefined : '加载中...'"
         @sort-change="sortChange"
         :default-sort="defaultSort"
+        @click.ctrl="rowClkCtrl"
+        @click.shift="rowClkShift"
       >
         
         <el-table-column
@@ -266,6 +268,8 @@ let {
   selectChg,
   rowClassName,
   rowClk,
+  rowClkCtrl,
+  rowClkShift,
 } = $(useSelect<PermitModel>(<any>$$(tableRef)));
 
 // 表格数据

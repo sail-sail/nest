@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === "development") {
     let termArr = [ ];
     const arr = stack.split("\n");
     if (
-      (args[0] && args[0].startsWith("🍍")) ||
+      (args[0] && args[0].startsWith && args[0].startsWith("🍍")) ||
       (arr.length === 3 && arr[2].startsWith("    at <anonymous>:"))
     ) {
       log.apply(console, args);
@@ -77,8 +77,7 @@ if (process.env.NODE_ENV === "development") {
       termArr.push({ method, url });
       arr2.push(` -- ${ method } ${ url }`);
     }
-    
-    
+    const rvObj = log.apply(console, args);
     log(arr2.join("\n") + "\n");
     let args2 = [ ...args ];
     let str = "";
