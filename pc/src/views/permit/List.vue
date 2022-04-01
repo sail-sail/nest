@@ -103,6 +103,13 @@
     >
       刷新
     </el-button>
+    <TableShowColumns
+      :tableColumns="tableColumns"
+      @resetColumns="resetColumns"
+      @storeColumns="storeColumns"
+    >
+      隐藏列
+    </TableShowColumns>
   </div>
   <div class="table_div">
     <div class="table_wrap">
@@ -122,6 +129,7 @@
         :default-sort="defaultSort"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
+        @header-dragend="headerDragend"
       >
         
         <el-table-column
@@ -131,29 +139,47 @@
           width="42"
         ></el-table-column>
         
-        <el-table-column
-          prop="_menu_id"
-          label="菜单"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="lbl"
-          label="名称"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="rem"
-          label="备注"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
+        <template v-for="col in tableColumns" :key="col.prop">
+          
+          <!-- 菜单 -->
+          <template v-if="'_menu_id' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 名称 -->
+          <template v-if="'lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-if="'rem' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+        </template>
         
       </el-table>
     </div>
@@ -191,10 +217,12 @@ import {
   ElInputNumber,
   ElCheckbox,
   ElButton,
+  ElIcon,
   ElTable,
   ElTableColumn,
   ElPagination,
 } from "element-plus";
+import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -208,12 +236,15 @@ import {
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
+import TableShowColumns from "@/components/TableShowColumns.vue";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
 import {
   usePage,
   useSearch,
   useSelect,
+  useTableColumns,
+  ColumnType,
 } from "@/compositions/List";
 import Detail from "./Detail.vue";
 import {
@@ -274,6 +305,29 @@ let {
 
 // 表格数据
 let tableData: PermitModel[] = $ref([ ]);
+
+let tableColumns = $ref<ColumnType[]>([
+  {
+    label: "名称",
+    prop: "lbl",
+  },
+  {
+    label: "备注",
+    prop: "rem",
+  },
+]);
+
+// 表格列
+let {
+  headerDragend,
+  resetColumns,
+  storeColumns,
+} = $(useTableColumns<MenuModel>(
+  $$(tableColumns),
+  {
+    persistKey: "0",
+  },
+));
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
@@ -343,7 +397,7 @@ let defaultSort = $ref<Sort>();
 
 // 排序
 async function sortChange(
-  { prop, order, column }: { column: InstanceType<typeof ElTableColumn> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<PermitModel> } & Sort,
 ) {
   search.orderBy = prop;
   search.orderDec = order;
@@ -434,8 +488,10 @@ async function revertByIdsEfc() {
 
 async function initFrame() {
   if (usrStore.access_token) {
-    await searchClk();
-    await getSelectListEfc();
+    await Promise.all([
+      searchClk(),
+      getSelectListEfc(),
+    ]);
   }
   inited = true;
 }

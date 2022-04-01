@@ -269,6 +269,13 @@
     >
       刷新
     </el-button>
+    <TableShowColumns
+      :tableColumns="tableColumns"
+      @resetColumns="resetColumns"
+      @storeColumns="storeColumns"
+    >
+      隐藏列
+    </TableShowColumns>
   </div>
   <div class="table_div">
     <div class="table_wrap">
@@ -288,6 +295,7 @@
         :default-sort="defaultSort"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
+        @header-dragend="headerDragend"
       >
         
         <el-table-column
@@ -295,137 +303,165 @@
           type="selection"
           align="center"
           width="42"
-        ></el-table-column><#
-        for (let i = 0; i < columns.length; i++) {
-          const column = columns[i];
-          if (column.ignoreCodegen) continue;
-          const column_name = column.COLUMN_NAME;
-          if (column_name === "id") continue;
-          const foreignKey = column.foreignKey;
-          let data_type = column.DATA_TYPE;
-          let column_type = column.COLUMN_TYPE;
-          let column_comment = column.COLUMN_COMMENT || "";
-          let selectList = [ ];
-          let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-          if (selectStr) {
-            selectList = eval(`(${ selectStr })`);
-          }
-          if (column_comment.indexOf("[") !== -1) {
-            column_comment = column_comment.substring(0, column_comment.indexOf("["));
-          }
-          let minWith = "";
-          if (column.minWith != null) {
-            minWith = "\r\n          min-width=\""+column.minWith+"\"";
-          }
-          let width = "";
-          if (column.width != null) {
-            width = "\r\n          width=\""+column.width+"\"";
-          }
-          let sortable = "";
-          if (column.sortable) {
-            sortable = "\r\n          sortable=\"custom\"";
-          }
-          const isPassword = column.isPassword;
-          if (isPassword) continue;
-          let align = "";
-          if (column.align) {
-            align = "\r\n          align=\""+column.align+"\"";
-          } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-            align = "\r\n          align=\"right\"";
-          } else {
-            align = "\r\n          align=\"center\"";
-          }
-          let headerAlign = "";
-          if (column.align) {
-            align = "\r\n          header-align=\""+column.headerAlign+"\"";
-          } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-            headerAlign = "\r\n          header-align=\"center\"";
-          }
-        #><#
-        if (column.isImg) {
-        #>
+        ></el-table-column>
         
-        <el-table-column
-          prop="<#=column_name#>"
-          label="<#=column_comment#>"<#=minWith#><#=width#><#=align#><#=headerAlign#>
-        >
-          <template #default="{ row, column }">
-            <LinkImage v-model="row[column.property]"></LinkImage>
-          </template>
-        </el-table-column><#
-        } else if (column.isAtt) {
-        #>
-        
-        <el-table-column
-          prop="<#=column_name#>"
-          label="<#=column_comment#>"<#=minWith#><#=width#><#=align#><#=headerAlign#>
-        >
-          <template #default="{ row, column }">
-            <LinkAtt
-              v-model="row[column.property]"
-              @change="linkAttChg(row, column.property)"<#
-              if (column.attMaxSize > 1) {
-              #>
-              :maxSize="<#=column.attMaxSize#>"<#
-              }
-              #><#
-              if (column.maxFileSize) {
-              #>
-              :maxFileSize="<#=column.maxFileSize#>"<#
-              }
-              #><#
-              if (column.attAccept) {
-              #>
-              accept="<#=column.attAccept#>"<#
-              }
-              #>
-            ></LinkAtt>
-          </template>
-        </el-table-column><#
-        } else if (!foreignKey && selectList.length === 0) {
-        #>
-        
-        <el-table-column
-          prop="<#=column_name#>"
-          label="<#=column_comment#>"<#=minWith#><#=width#><#=sortable#><#=align#><#=headerAlign#>
-          show-overflow-tooltip
-        >
-        </el-table-column><#
-          } else if (selectList.length > 0) {
-        #>
-        
-        <el-table-column
-          prop="_<#=column_name#>"
-          label="<#=column_comment#>"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
-          show-overflow-tooltip
-        >
-        </el-table-column><#
-          } else {
-        #>
-        
-        <el-table-column
-          prop="_<#=column_name#>"
-          label="<#=column_comment#>"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
-          show-overflow-tooltip
-        ><#
-          if (foreignKey.multiple) {
-        #>
-          <template #default="{ row, column }">
-            <LinkList
-              v-model="row[column.property]"<#
-              if (column.linkListMaxSize) {
-              #>
-              :maxSize="<#=column.linkListMaxSize#>"<#
-              }
-              #>
-            ></LinkList>
+        <template v-for="col in tableColumns" :key="col.prop"><#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            const column_name = column.COLUMN_NAME;
+            if (column_name === "id") continue;
+            const foreignKey = column.foreignKey;
+            let data_type = column.DATA_TYPE;
+            let column_type = column.COLUMN_TYPE;
+            let column_comment = column.COLUMN_COMMENT || "";
+            let selectList = [ ];
+            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+            if (selectStr) {
+              selectList = eval(`(${ selectStr })`);
+            }
+            if (column_comment.indexOf("[") !== -1) {
+              column_comment = column_comment.substring(0, column_comment.indexOf("["));
+            }
+            let minWith = "";
+            if (column.minWith != null) {
+              minWith = "\r\n              min-width=\""+column.minWith+"\"";
+            }
+            let width = "";
+            if (column.width != null) {
+              width = "\r\n              width=\""+column.width+"\"";
+            }
+            let sortable = "";
+            if (column.sortable) {
+              sortable = "\r\n              sortable=\"custom\"";
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            let align = "";
+            if (column.align) {
+              align = "\r\n              align=\""+column.align+"\"";
+            } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
+              align = "\r\n              align=\"right\"";
+            } else {
+              align = "\r\n              align=\"center\"";
+            }
+            let headerAlign = "";
+            if (column.align) {
+              align = "\r\n              header-align=\""+column.headerAlign+"\"";
+            } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
+              headerAlign = "\r\n              header-align=\"center\"";
+            }
+          #><#
+          if (column.isImg) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v-if="'<#=column_name#>' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"<#=minWith#><#=align#><#=headerAlign#>
+            >
+              <template #default="{ row, column }">
+                <LinkImage v-model="row[column.property]"></LinkImage>
+              </template>
+            </el-table-column>
           </template><#
+          } else if (column.isAtt) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v-if="'<#=column_name#>' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"<#=minWith#><#=align#><#=headerAlign#>
+            >
+              <template #default="{ row, column }">
+                <LinkAtt
+                  v-model="row[column.property]"
+                  @change="linkAttChg(row, column.property)"<#
+                  if (column.attMaxSize > 1) {
+                  #>
+                  :maxSize="<#=column.attMaxSize#>"<#
+                  }
+                  #><#
+                  if (column.maxFileSize) {
+                  #>
+                  :maxFileSize="<#=column.maxFileSize#>"<#
+                  }
+                  #><#
+                  if (column.attAccept) {
+                  #>
+                  accept="<#=column.attAccept#>"<#
+                  }
+                  #>
+                ></LinkAtt>
+              </template>
+            </el-table-column>
+          </template><#
+          } else if (!foreignKey && selectList.length === 0) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v-if="'<#=column_name#>' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template><#
+            } else if (selectList.length > 0) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v-if="'_<#=column_name#>' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template><#
+            } else {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v-if="'_<#=column_name#>' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
+              show-overflow-tooltip
+            ><#
+              if (foreignKey.multiple) {
+            #>
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"<#
+                  if (column.linkListMaxSize) {
+                  #>
+                  :maxSize="<#=column.linkListMaxSize#>"<#
+                  }
+                  #>
+                ></LinkList>
+              </template><#
+              }
+            #>
+            </el-table-column>
+          </template><#
+            }
           }
-        #>
-        </el-table-column><#
-          }
-        }
-        #>
+          #>
+        </template>
         
       </el-table>
     </div>
@@ -463,10 +499,12 @@ import {
   ElInputNumber,
   ElCheckbox,
   ElButton,
+  ElIcon,
   ElTable,
   ElTableColumn,
   ElPagination,
 } from "element-plus";
+import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -479,7 +517,8 @@ import {
   CirclePlus,
   CircleClose,
   CircleCheck,
-} from "@element-plus/icons-vue";<#
+} from "@element-plus/icons-vue";
+import TableShowColumns from "@/components/TableShowColumns.vue";<#
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
 #><#
@@ -499,6 +538,8 @@ import {
   usePage,
   useSearch,
   useSelect,
+  useTableColumns,
+  ColumnType,
 } from "@/compositions/List";
 import Detail from "./Detail.vue";
 import {
@@ -613,6 +654,115 @@ let {
 // 表格数据
 let tableData: <#=tableUp#>Model[] = $ref([ ]);
 
+let tableColumns = $ref<ColumnType[]>([<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  let minWith = "";
+  if (column.minWith != null) {
+    minWith = "\r\n          min-width=\""+column.minWith+"\"";
+  }
+  let width = "";
+  if (column.width != null) {
+    width = "\r\n          width=\""+column.width+"\"";
+  }
+  let sortable = "";
+  if (column.sortable) {
+    sortable = "\r\n          sortable=\"custom\"";
+  }
+  const isPassword = column.isPassword;
+  if (isPassword) continue;
+  let align = "";
+  if (column.align) {
+    align = "\r\n          align=\""+column.align+"\"";
+  } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
+    align = "\r\n          align=\"right\"";
+  } else {
+    align = "\r\n          align=\"center\"";
+  }
+  let headerAlign = "";
+  if (column.align) {
+    align = "\r\n          header-align=\""+column.headerAlign+"\"";
+  } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
+    headerAlign = "\r\n          header-align=\"center\"";
+  }
+#><#
+  if (column.isImg) {
+  #>
+  {
+    label: "<#=column_comment#>",
+    prop: "<#=column_name#>",<#
+    if (column.width) {
+    #>
+    width: <#=column.width#>,<#
+    }
+    #>
+  },<#
+  } else if (column.isAtt) {
+  #>
+  {
+    label: "<#=column_comment#>",
+    prop: "<#=column_name#>",<#
+    if (column.width) {
+    #>
+    width: <#=column.width#>,<#
+    }
+    #>
+  },<#
+  } else if (!foreignKey && selectList.length === 0) {
+  #>
+  {
+    label: "<#=column_comment#>",
+    prop: "<#=column_name#>",<#
+    if (column.width) {
+    #>
+    width: <#=column.width#>,<#
+    }
+    #>
+  },<#
+  } else if (selectList.length > 0 || (foreignKey && foreignKey.multiple)) {
+  #>
+  {
+    label: "<#=column_comment#>",
+    prop: "_<#=column_name#>",<#
+    if (column.width) {
+    #>
+    width: <#=column.width#>,<#
+    }
+    #>
+  },<#
+  }
+  #><#
+}
+#>
+]);
+
+// 表格列
+let {
+  headerDragend,
+  resetColumns,
+  storeColumns,
+} = $(useTableColumns<MenuModel>(
+  $$(tableColumns),
+  {
+    persistKey: "0",
+  },
+));
+
 let detailRef = $ref<InstanceType<typeof Detail>>();
 <#
 for (let i = 0; i < columns.length; i++) {
@@ -701,7 +851,7 @@ async function <#=foreignTable#>FilterEfc(query: string) {
     orderDec: "<#=defaultSort.order#>",<#
       }
     #>
-    lbl: query ? `%${ query }%` : undefined,
+    <#=foreignKey.lbl#>Like: query,
   }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
 }<#
 }
@@ -763,7 +913,7 @@ let defaultSort = $ref<Sort>();<#
 
 // 排序
 async function sortChange(
-  { prop, order, column }: { column: InstanceType<typeof ElTableColumn> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<<#=tableUp#>Model> } & Sort,
 ) {
   search.orderBy = prop;
   search.orderDec = order;
@@ -862,8 +1012,10 @@ async function revertByIdsEfc() {
 
 async function initFrame() {
   if (usrStore.access_token) {
-    await searchClk();
-    await getSelectListEfc();
+    await Promise.all([
+      searchClk(),
+      getSelectListEfc(),
+    ]);
   }
   inited = true;
 }

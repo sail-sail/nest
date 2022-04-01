@@ -3,6 +3,8 @@ import {
   ElForm,
   ElTable,
 } from "element-plus";
+import { useRoute } from "vue-router";
+import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 
 export function useSearch<T>(dataGrid: Function) {
   
@@ -170,5 +172,86 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     rowClkCtrl,
     rowClkShift,
     rowClassName,
+  });
+}
+
+export interface ColumnType {
+  prop: string,
+  label: string,
+  hide?: boolean,
+  width?: string|number,
+}
+
+export function useTableColumns<T>(
+  tableColumns: Ref<ColumnType[]>,
+  opt?: {
+    /**
+     * 表格列存储的唯一编码, 同一路由下必须唯一
+     * @type {string}
+     */
+    persistKey?: string,
+  },
+) {
+  const route = useRoute();
+  
+  const routePath = route.path;
+  
+  let tableColumn0s = tableColumns.value;
+  
+  let tableColumn1s: ColumnType[] = undefined;
+  
+  const persistKey = `TableColumns-${ routePath }--${ opt?.persistKey }`;
+  
+  if (opt?.persistKey) {
+    const str = window.localStorage.getItem(persistKey);
+    if (str) {
+      try {
+        tableColumn1s = JSON.parse(str);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    if (!tableColumn1s) {
+      tableColumn1s = tableColumn0s;
+    }
+  }
+  
+  tableColumns.value = tableColumn1s || tableColumn0s;
+  
+  function storeColumns(tableColumns2?: any) {
+    if (tableColumns2) {
+      tableColumns.value = tableColumns2;
+    }
+    window.localStorage.setItem(persistKey, JSON.stringify(tableColumns.value));
+  }
+  
+  function deleteColumns() {
+    window.localStorage.removeItem(persistKey);
+  }
+  
+  function headerDragend(
+    newWidth: number,
+    oldWidth: number,
+    column: TableColumnCtx<T>,
+    event: MouseEvent,
+  ) {
+    const prop = column.property;
+    const columnItem = tableColumns.value.find((item) => item.prop === prop);
+    if (columnItem) {
+      columnItem.width = newWidth;
+      storeColumns();
+    }
+  }
+  
+  function resetColumns() {
+    tableColumns.value = tableColumn0s;
+    deleteColumns();
+  }
+  
+  return $$({
+    headerDragend,
+    resetColumns,
+    storeColumns,
+    deleteColumns,
   });
 }

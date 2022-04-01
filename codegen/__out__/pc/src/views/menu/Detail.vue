@@ -64,7 +64,6 @@
             :height="300"
             class="form_input"
             @keyup.enter.native.stop
-            :set="dialogModel.menu_id = dialogModel.menu_id || [ ]"
             v-model="dialogModel.menu_id"
             placeholder="请选择父菜单"
             :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"

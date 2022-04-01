@@ -127,6 +127,13 @@
     >
       刷新
     </el-button>
+    <TableShowColumns
+      :tableColumns="tableColumns"
+      @resetColumns="resetColumns"
+      @storeColumns="storeColumns"
+    >
+      隐藏列
+    </TableShowColumns>
   </div>
   <div class="table_div">
     <div class="table_wrap">
@@ -146,6 +153,7 @@
         :default-sort="defaultSort"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
+        @header-dragend="headerDragend"
       >
         
         <el-table-column
@@ -155,78 +163,121 @@
           width="42"
         ></el-table-column>
         
-        <el-table-column
-          prop="lbl"
-          label="名称"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="host"
-          label="域名绑定"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="expiration"
-          label="到期日"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="max_usr_num"
-          label="最大用户数"
-          align="right"
-          header-align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="_is_enabled"
-          label="启用"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="_menu_ids"
-          label="菜单"
-          min-width="140"
-          align="center"
-          show-overflow-tooltip
-        >
-          <template #default="{ row, column }">
-            <LinkList
-              v-model="row[column.property]"
-            ></LinkList>
+        <template v-for="col in tableColumns" :key="col.prop">
+          
+          <!-- 名称 -->
+          <template v-if="'lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
           </template>
-        </el-table-column>
-        
-        <el-table-column
-          prop="order_by"
-          label="排序"
-          sortable="custom"
-          align="right"
-          header-align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
-        
-        <el-table-column
-          prop="rem"
-          label="备注"
-          align="center"
-          show-overflow-tooltip
-        >
-        </el-table-column>
+          
+          <!-- 域名绑定 -->
+          <template v-if="'host' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 到期日 -->
+          <template v-if="'expiration' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 最大用户数 -->
+          <template v-if="'max_usr_num' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="right"
+              header-align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 启用 -->
+          <template v-if="'_is_enabled' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 菜单 -->
+          <template v-if="'_menu_ids' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              min-width="140"
+              align="center"
+              show-overflow-tooltip
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 排序 -->
+          <template v-if="'order_by' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              sortable="custom"
+              align="right"
+              header-align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-if="'rem' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+        </template>
         
       </el-table>
     </div>
@@ -264,10 +315,12 @@ import {
   ElInputNumber,
   ElCheckbox,
   ElButton,
+  ElIcon,
   ElTable,
   ElTableColumn,
   ElPagination,
 } from "element-plus";
+import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -281,12 +334,15 @@ import {
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
+import TableShowColumns from "@/components/TableShowColumns.vue";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
 import {
   usePage,
   useSearch,
   useSelect,
+  useTableColumns,
+  ColumnType,
 } from "@/compositions/List";
 import Detail from "./Detail.vue";
 import {
@@ -352,6 +408,53 @@ let {
 // 表格数据
 let tableData: TenantModel[] = $ref([ ]);
 
+let tableColumns = $ref<ColumnType[]>([
+  {
+    label: "名称",
+    prop: "lbl",
+  },
+  {
+    label: "域名绑定",
+    prop: "host",
+  },
+  {
+    label: "到期日",
+    prop: "expiration",
+  },
+  {
+    label: "最大用户数",
+    prop: "max_usr_num",
+  },
+  {
+    label: "启用",
+    prop: "_is_enabled",
+  },
+  {
+    label: "菜单",
+    prop: "_menu_ids",
+  },
+  {
+    label: "排序",
+    prop: "order_by",
+  },
+  {
+    label: "备注",
+    prop: "rem",
+  },
+]);
+
+// 表格列
+let {
+  headerDragend,
+  resetColumns,
+  storeColumns,
+} = $(useTableColumns<MenuModel>(
+  $$(tableColumns),
+  {
+    persistKey: "0",
+  },
+));
+
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 let menuInfo: {
@@ -386,7 +489,7 @@ async function menuFilterEfc(query: string) {
   menuInfo.data = await findAllMenu({
     orderBy: "order_by",
     orderDec: "ascending",
-    lbl: query ? `%${ query }%` : undefined,
+    lblLike: query,
   }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
 }
 
@@ -437,7 +540,7 @@ let defaultSort = $ref<Sort>({
 
 // 排序
 async function sortChange(
-  { prop, order, column }: { column: InstanceType<typeof ElTableColumn> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<TenantModel> } & Sort,
 ) {
   search.orderBy = prop;
   search.orderDec = order;
@@ -528,8 +631,10 @@ async function revertByIdsEfc() {
 
 async function initFrame() {
   if (usrStore.access_token) {
-    await searchClk();
-    await getSelectListEfc();
+    await Promise.all([
+      searchClk(),
+      getSelectListEfc(),
+    ]);
   }
   inited = true;
 }

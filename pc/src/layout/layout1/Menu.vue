@@ -116,12 +116,13 @@ let selectedRouteNext = $ref(false);
 
 const route = useRoute();
 
-watch([
+watch(
   () => route.path,
-], () => {
-  if (selectedRouteNext) return;
-  setDefaultActiveByRouter(route.path);
-});
+  () => {
+    if (selectedRouteNext) return;
+    setDefaultActiveByRouter(route.path);
+  },
+);
 
 function setDefaultActiveByRouter(path: string) {
   const menu = menuStore.getMenuByPath(path);
@@ -147,9 +148,8 @@ let defaultActive = $ref<string>();
 
 async function getMenusEfc() {
   const data = await getMenus({ type: "pc" });
-  if (data) {
-    menuStore.setMenus(data);
-  }
+  menuStore.setMenus(data);
+  setDefaultActiveByRouter(route.path);
 }
 
 watch(

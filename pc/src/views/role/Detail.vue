@@ -88,9 +88,9 @@
             multiple
             collapse-tags
             collapse-tags-tooltip
+            :set="dialogModel.menu_ids = dialogModel.menu_ids || [ ]"
             class="form_input"
             @keyup.enter.native.stop
-            :set="dialogModel.menu_ids = dialogModel.menu_ids || [ ]"
             v-model="dialogModel.menu_ids"
             placeholder="请选择菜单"
             :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
