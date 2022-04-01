@@ -213,6 +213,11 @@ body .el-table--small {
   // .el-table__cell:first-child .cell {
   //   padding-left: 3px;
   // }
+  .el-table__header {
+    thead tr {
+      height: 29px;
+    }
+  }
   .el-table__row {
     height: 29px;
   }
