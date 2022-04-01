@@ -55,6 +55,9 @@ export class AllExceptionFilter {
           undefined,
           undefined,
           message,
+          {
+            exception: message,
+          },
         );
       } else if (message instanceof String || typeof message === "string") {
         context.log(message);
