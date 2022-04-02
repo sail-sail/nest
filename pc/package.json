@@ -19,8 +19,7 @@
     "pinia-plugin-persistedstate": "1.5.1",
     "screenfull": "6.0.1",
     "vue": "3.2.31",
-    "vue-router": "4.0.14",
-    "vuedraggable": "4.1.0"
+    "vue-router": "4.0.14"
   },
   "devDependencies": {
     "@types/lodash-es": "4.17.6",
