@@ -6,7 +6,7 @@ export default defineStore("menu", function() {
   let menus = $ref<MenuModel[]>([ ]);
   
   function setMenus(menus0: typeof menus) {
-    menus = menus0;
+    menus = menus0 || [ ];
   }
   
   /**

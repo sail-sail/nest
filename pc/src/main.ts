@@ -9,6 +9,7 @@ import router from "./router/index";
 import "./utils/DateUtil";
 // import "./utils/Console";
 import { errorHandler } from "./compositions/ErrorHandler";
+import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -19,5 +20,7 @@ setActivePinia(pinia);
 app.use(router);
 
 app.config.errorHandler = errorHandler;
+
+app.directive("header-order-drag", headerOrderDrag);
 
 app.mount("#app");

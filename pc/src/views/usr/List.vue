@@ -140,12 +140,14 @@
     >
       刷新
     </el-button>
+    <div class="split_toolbar">
+    </div>
     <TableShowColumns
       :tableColumns="tableColumns"
       @resetColumns="resetColumns"
       @storeColumns="storeColumns"
     >
-      隐藏列
+      列操作
     </TableShowColumns>
   </div>
   <div class="table_div">
@@ -167,6 +169,7 @@
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
+        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
       >
         
         <el-table-column
@@ -176,7 +179,7 @@
           width="42"
         ></el-table-column>
         
-        <template v-for="col in tableColumns" :key="col.prop">
+        <template v-for="(col, i) in tableColumns" :key="i + col">
           
           <!-- 名称 -->
           <template v-if="'lbl' === col.prop">
@@ -411,7 +414,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<MenuModel>(
+} = $(useTableColumns<UsrModel>(
   $$(tableColumns),
   {
     persistKey: "0",
@@ -649,6 +652,11 @@ watch(
 .toolbar_div {
   margin-left: 10px;
   margin-top: 10px;
+  margin-right: 10px;
+  display: flex;
+}
+.split_toolbar {
+  flex: 1 0 0;
 }
 .table_div {
   flex: 1 0 0;

@@ -75,8 +75,6 @@ const props = withDefaults(
   }>(),
   {
     tableColumns: undefined,
-    resetColumns: undefined,
-    storeColumns: undefined,
   },
 );
 
@@ -85,20 +83,18 @@ let dropdownRef: typeof ElDropdown = $ref();
 function handleCommand(command: { action: "reset"|"item", item?: ColumnType }) {
   const action = command.action;
   if (action === "reset") {
-    for (let i = 0; i < props.tableColumns.length; i++) {
-      const item2 = props.tableColumns[i];
-      item2.hide = false;
-    }
     if (dropdownRef) {
       dropdownRef.handleClose();
     }
     emit("resetColumns");
   } else {
+    let tableColumns = [ ...props.tableColumns ];
     const item = command.item;
+    const idx = tableColumns.indexOf(item);
     if (item) {
-      item.hide = !item.hide;
+      tableColumns[idx] = { ...item, hide: !item.hide };
     }
-    emit("storeColumns", props.tableColumns);
+    emit("storeColumns", tableColumns);
   }
 }
 </script>

@@ -196,7 +196,7 @@ export function useTableColumns<T>(
   
   const routePath = route.path;
   
-  let tableColumn0s = tableColumns.value;
+  let tableColumn0s = [ ...tableColumns.value ];
   
   let tableColumn1s: ColumnType[] = undefined;
   
@@ -212,11 +212,11 @@ export function useTableColumns<T>(
       }
     }
     if (!tableColumn1s) {
-      tableColumn1s = tableColumn0s;
+      tableColumn1s = [ ...tableColumn0s ];
     }
   }
   
-  tableColumns.value = tableColumn1s || tableColumn0s;
+  tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
   
   function storeColumns(tableColumns2?: any) {
     if (tableColumns2) {
@@ -236,15 +236,15 @@ export function useTableColumns<T>(
     _event: MouseEvent,
   ) {
     const prop = column.property;
-    const columnItem = tableColumns.value.find((item) => item.prop === prop);
-    if (columnItem) {
-      columnItem.width = newWidth;
+    const idx = tableColumns.value.findIndex((item) => item.prop === prop);
+    if (idx !== -1) {
+      tableColumns.value[idx] = { ...tableColumns.value[idx], width: newWidth };
       storeColumns();
     }
   }
   
   function resetColumns() {
-    tableColumns.value = tableColumn0s;
+    tableColumns.value = [ ...tableColumn0s ];
     deleteColumns();
   }
   
