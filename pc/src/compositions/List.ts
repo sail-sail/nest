@@ -231,9 +231,9 @@ export function useTableColumns<T>(
   
   function headerDragend(
     newWidth: number,
-    oldWidth: number,
+    _oldWidth: number,
     column: TableColumnCtx<T>,
-    event: MouseEvent,
+    _event: MouseEvent,
   ) {
     const prop = column.property;
     const columnItem = tableColumns.value.find((item) => item.prop === prop);

@@ -7,7 +7,8 @@ import "element-plus/dist/index.css";
 
 import router from "./router/index";
 import "./utils/DateUtil";
-import "./utils/Console";
+// import "./utils/Console";
+import { errorHandler } from "./compositions/ErrorHandler";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -17,27 +18,6 @@ setActivePinia(pinia);
 
 app.use(router);
 
-app.config.errorHandler = (err: Error, vm, info) => {
-  if (
-    err &&
-    err.message &&
-    (
-      err.message.includes("Failed to fetch dynamically imported module") ||
-      err.message.includes("Unable to preload CSS for")
-    )
-  ) {
-    if (window.confirm("发现新版本, 是否立即重新载入?")) {
-      let pathname = window.location.pathname;
-      const params = new URLSearchParams(window.location.search);
-      params.set("__reload__", "");
-      const searchStr = "?" + params.toString();
-      const hash = window.location.hash || "";
-      window.sessionStorage.setItem("__hash__", hash);
-      window.location.href = window.location.origin + pathname + searchStr + hash;
-      return;
-    }
-  }
-  console.error(err, vm, info);
-};
+app.config.errorHandler = errorHandler;
 
 app.mount("#app");
