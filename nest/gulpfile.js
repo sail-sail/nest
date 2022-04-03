@@ -108,7 +108,7 @@ gulp.task("nest-ssh", gulp.series(
 //----------------------------------------------------------------------------------------------------- pc
 gulp.task("pc-vue", async() => {
   shell.cd("../pc");
-  const rvObj = shell.exec("npx vite build --emptyOutDir", { silent: true });
+  const rvObj = shell.exec("npm run build", { silent: true });
   if (rvObj.code !== 0) {
     throw rvObj.stderr;
   }
