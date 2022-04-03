@@ -14,7 +14,7 @@ export class TenantDao {
     private readonly eventEmitter2: EventEmitter2,
   ) { }
   
-  private getWhereQuery(
+  getWhereQuery(
     args: any[],
     search?: TenantSearch,
   ) {
@@ -125,6 +125,36 @@ export class TenantDao {
     return whereQuery;
   }
   
+  getFromQuery() {
+    let fromQuery = `
+      tenant t
+      left join tenant_menu
+        on tenant_menu.tenant_id = t.id
+        and tenant_menu.is_deleted = 0
+      left join menu
+        on tenant_menu.menu_id = menu.id
+        and menu.is_deleted = 0
+      left join (
+        select
+          json_arrayagg(menu.id) menu_ids,
+          json_arrayagg(menu.lbl) _menu_ids,
+          tenant.id tenant_id
+        from tenant_menu
+        inner join menu
+          on menu.id = tenant_menu.menu_id
+          and menu.is_deleted = 0
+        inner join tenant
+          on tenant.id = tenant_menu.tenant_id
+          and tenant.is_deleted = 0
+        where
+          tenant_menu.is_deleted = 0
+        group by tenant_id
+      ) _menu
+        on _menu.tenant_id = t.id
+    `;
+    return fromQuery;
+  }
+  
   /**
    * 根据条件查找总数据数
    * @param {TenantSearch} [search]
@@ -147,28 +177,8 @@ export class TenantDao {
     let sql = `
       select
         count(1) total
-      from tenant t
-        left join tenant_menu
-          on tenant_menu.tenant_id = t.id and tenant_menu.is_deleted = 0
-        left join menu
-          on tenant_menu.menu_id = menu.id and menu.is_deleted = 0
-        left join (
-          select
-            json_arrayagg(menu.id) menu_ids,
-            json_arrayagg(menu.lbl) _menu_ids,
-            tenant.id tenant_id
-          from tenant_menu
-          inner join menu
-            on menu.id = tenant_menu.menu_id
-            and menu.is_deleted = 0
-          inner join tenant
-            on tenant.id = tenant_menu.tenant_id
-            and tenant.is_deleted = 0
-          where
-            tenant_menu.is_deleted = 0
-          group by tenant_id
-        ) _menu
-          on _menu.tenant_id = t.id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
     `;
@@ -210,30 +220,8 @@ export class TenantDao {
       select t.*
           ,max(menu_ids) menu_ids
           ,max(_menu_ids) _menu_ids
-      from tenant t
-        left join tenant_menu
-          on tenant_menu.tenant_id = t.id
-          and tenant_menu.is_deleted = 0
-        left join menu
-          on tenant_menu.menu_id = menu.id
-          and menu.is_deleted = 0
-        left join (
-          select
-            json_arrayagg(menu.id) menu_ids,
-            json_arrayagg(menu.lbl) _menu_ids,
-            tenant.id tenant_id
-          from tenant_menu
-          inner join menu
-            on menu.id = tenant_menu.menu_id
-            and menu.is_deleted = 0
-          inner join tenant
-            on tenant.id = tenant_menu.tenant_id
-            and tenant.is_deleted = 0
-          where
-            tenant_menu.is_deleted = 0
-          group by tenant_id
-        ) _menu
-          on _menu.tenant_id = t.id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
       group by t.id
@@ -464,7 +452,7 @@ export class TenantDao {
   
   /**
    * 删除缓存
-   * @memberof MenuDao
+   * @memberof TenantDao
    */
   async delCache() {
     const table = "tenant";

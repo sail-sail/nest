@@ -1,5 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+#><#
+const hasSummary = columns.some((column) => column.showSummary);
 #>import { Resolver, Tran } from "../common/graphql";
 import { SetMetadata, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
@@ -36,7 +38,20 @@ export class <#=tableUp#>Resolver {
     const t = this;
     const data = await t.<#=table#>Service.findAll(search, pageModel);
     return data;
+  }<#
+  if (hasSummary) {
+  #>
+  
+  @Query(undefined, { name: "findSummary<#=tableUp#>", description: "根据搜索条件查找合计" })
+  async findSummary(
+    @Args("search") search?: <#=tableUp#>Search,
+  ) {
+    const t = this;
+    const data = await t.<#=table#>Service.findSummary(search);
+    return data;
+  }<#
   }
+  #>
   
   @Query(undefined, { name: "findOne<#=tableUp#>", description: "根据条件查找第一条数据" })
   async findOne(

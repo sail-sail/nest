@@ -4,9 +4,9 @@
   "description": "",
   "license": "MIT",
   "scripts": {
-    "s": "cd pc && npx vite",
-    "start": "cd pc && npx vite",
-    "start:pc": "cd pc && npx vite",
+    "s": "cd pc && npm start",
+    "start": "cd pc && npm start",
+    "start:pc": "cd pc && npm start",
     "start:nest": "cd nest && node -r ts-node/register src/main.ts",
     "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts && node -r ts-node/register src/bin/codeapply.ts",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",

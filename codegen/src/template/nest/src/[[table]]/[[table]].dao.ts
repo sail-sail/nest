@@ -1,6 +1,8 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
+#><#
+const hasSummary = columns.some((column) => column.showSummary);
 #>import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ResultSetHeader } from "mysql2/promise";
@@ -9,6 +11,11 @@ import { PageModel } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";<#
+if (hasSummary) {
+#>
+import { <#=tableUp#>Summary } from "./<#=table#>.model";<#
+}
+#><#
 if (hasPassword) {
 #>
 import { AuthDao } from "../common/auth/auth.dao";<#
@@ -18,16 +25,16 @@ import { AuthDao } from "../common/auth/auth.dao";<#
 @Injectable()
 export class <#=tableUp#>Dao {
   
-  constructor(
-    private readonly eventEmitter2: EventEmitter2,<#
+  constructor(<#
       if (hasPassword) {
     #>
     private readonly authDao: AuthDao,<#
       }
     #>
+    private readonly eventEmitter2: EventEmitter2,
   ) { }
   
-  private getWhereQuery(
+  getWhereQuery(
     args: any[],
     search?: <#=tableUp#>Search,
   ) {
@@ -135,6 +142,57 @@ export class <#=tableUp#>Dao {
     return whereQuery;
   }
   
+  getFromQuery() {
+    let fromQuery = `
+      <#=table#> t<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        const column_name = column.COLUMN_NAME;
+        const foreignKey = column.foreignKey;
+        let data_type = column.DATA_TYPE;
+        if (!foreignKey) continue;
+        const foreignTable = foreignKey.table;
+        const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const many2many = column.many2many;
+      #><#
+        if (foreignKey && foreignKey.type === "many2many") {
+      #>
+      left join <#=many2many.table#>
+        on <#=many2many.table#>.<#=many2many.column1#> = t.id
+        and <#=many2many.table#>.is_deleted = 0
+      left join <#=foreignTable#>
+        on <#=many2many.table#>.<#=many2many.column2#> = <#=foreignTable#>.<#=foreignKey.column#>
+        and <#=foreignTable#>.is_deleted = 0
+      left join (
+        select
+          json_arrayagg(<#=foreignTable#>.id) <#=column_name#>,
+          json_arrayagg(<#=foreignTable#>.<#=foreignKey.lbl#>) _<#=column_name#>,
+          <#=table#>.id <#=many2many.column1#>
+        from <#=many2many.table#>
+        inner join <#=foreignKey.table#>
+          on <#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.table#>.<#=many2many.column2#>
+          and <#=foreignKey.table#>.is_deleted = 0
+        inner join <#=table#>
+          on <#=table#>.id = <#=many2many.table#>.<#=many2many.column1#>
+          and <#=table#>.is_deleted = 0
+        where
+          <#=many2many.table#>.is_deleted = 0
+        group by <#=many2many.column1#>
+      ) _<#=foreignTable#>
+        on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
+        } else if (foreignKey && !foreignKey.multiple) {
+      #>
+      left join <#=foreignTable#>
+        on <#=foreignTable#>.<#=foreignKey.column#> = t.<#=column_name#><#
+        }
+      #><#
+      }
+      #>
+    `;
+    return fromQuery;
+  }
+  
   /**
    * 根据条件查找总数据数
    * @param {<#=tableUp#>Search} [search]
@@ -157,49 +215,8 @@ export class <#=tableUp#>Dao {
     let sql = `
       select
         count(1) total
-      from <#=table#> t<#
-        for (let i = 0; i < columns.length; i++) {
-          const column = columns[i];
-          if (column.ignoreCodegen) continue;
-          const column_name = column.COLUMN_NAME;
-          const foreignKey = column.foreignKey;
-          let data_type = column.DATA_TYPE;
-          if (!foreignKey) continue;
-          const foreignTable = foreignKey.table;
-          const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-          const many2many = column.many2many;
-        #><#
-          if (foreignKey && foreignKey.type === "many2many") {
-        #>
-        left join <#=many2many.table#>
-          on <#=many2many.table#>.<#=many2many.column1#> = t.id and <#=many2many.table#>.is_deleted = 0
-        left join <#=foreignTable#>
-          on <#=many2many.table#>.<#=many2many.column2#> = <#=foreignTable#>.<#=foreignKey.column#> and <#=foreignTable#>.is_deleted = 0
-        left join (
-          select
-            json_arrayagg(<#=foreignTable#>.id) <#=foreignTable#>_ids,
-            json_arrayagg(<#=foreignTable#>.<#=foreignKey.lbl#>) _<#=foreignTable#>_ids,
-            <#=table#>.id <#=many2many.column1#>
-          from <#=many2many.table#>
-          inner join <#=foreignKey.table#>
-            on <#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.table#>.<#=many2many.column2#>
-            and <#=foreignKey.table#>.is_deleted = 0
-          inner join <#=table#>
-            on <#=table#>.id = <#=many2many.table#>.<#=many2many.column1#>
-            and <#=table#>.is_deleted = 0
-          where
-            <#=many2many.table#>.is_deleted = 0
-          group by <#=many2many.column1#>
-        ) _<#=foreignTable#>
-          on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
-          } else if (foreignKey && !foreignKey.multiple) {
-        #>
-        left join <#=foreignTable#>
-          on <#=foreignTable#>.<#=foreignKey.column#> = t.<#=column_name#><#
-          }
-        #><#
-        }
-        #>
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
     `;<#
@@ -269,51 +286,8 @@ export class <#=tableUp#>Dao {
         #><#
         }
         #>
-      from <#=table#> t<#
-        for (let i = 0; i < columns.length; i++) {
-          const column = columns[i];
-          if (column.ignoreCodegen) continue;
-          const column_name = column.COLUMN_NAME;
-          const foreignKey = column.foreignKey;
-          let data_type = column.DATA_TYPE;
-          if (!foreignKey) continue;
-          const foreignTable = foreignKey.table;
-          const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-          const many2many = column.many2many;
-        #><#
-          if (foreignKey && foreignKey.type === "many2many") {
-        #>
-        left join <#=many2many.table#>
-          on <#=many2many.table#>.<#=many2many.column1#> = t.id
-          and <#=many2many.table#>.is_deleted = 0
-        left join <#=foreignTable#>
-          on <#=many2many.table#>.<#=many2many.column2#> = <#=foreignTable#>.<#=foreignKey.column#>
-          and <#=foreignTable#>.is_deleted = 0
-        left join (
-          select
-            json_arrayagg(<#=foreignTable#>.id) <#=column_name#>,
-            json_arrayagg(<#=foreignTable#>.<#=foreignKey.lbl#>) _<#=column_name#>,
-            <#=table#>.id <#=many2many.column1#>
-          from <#=many2many.table#>
-          inner join <#=foreignKey.table#>
-            on <#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.table#>.<#=many2many.column2#>
-            and <#=foreignKey.table#>.is_deleted = 0
-          inner join <#=table#>
-            on <#=table#>.id = <#=many2many.table#>.<#=many2many.column1#>
-            and <#=table#>.is_deleted = 0
-          where
-            <#=many2many.table#>.is_deleted = 0
-          group by <#=many2many.column1#>
-        ) _<#=foreignTable#>
-          on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
-          } else if (foreignKey && !foreignKey.multiple) {
-        #>
-        left join <#=foreignTable#>
-          on <#=foreignTable#>.<#=foreignKey.column#> = t.<#=column_name#><#
-          }
-        #><#
-        }
-        #>
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
       group by t.id
@@ -339,60 +313,7 @@ export class <#=tableUp#>Dao {
     #>
     if (pageModel?.pgSize) {
       sql += ` limit ${ Number(pageModel?.pgOffset) || 0 },${ Number(pageModel.pgSize) }`;
-    }<#/*
-    let typeArr = [ ];
-    const froeignTypeArr = [ ];
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      // if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      let data_type = column.DATA_TYPE;
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      if (column_name === 'id') {
-        data_type = 'string';
-      }
-      else if (foreignKey) {
-        data_type = 'string';
-      }
-      else if (column.DATA_TYPE === 'varchar') {
-        data_type = 'string';
-      }
-      else if (column.DATA_TYPE === 'date') {
-        data_type = 'Date';
-      }
-      else if (column.DATA_TYPE === 'datetime') {
-        data_type = 'Date';
-      }
-      else if (column.DATA_TYPE === 'int') {
-        data_type = 'number';
-      }
-      else if (column.DATA_TYPE === 'json') {
-        data_type = '{ [key: string]: any }';
-      }
-      if (!foreignKey) {
-        typeArr.push({ name: column_name, type: data_type });
-      } else {
-        typeArr.push({ name: column_name, type: data_type });
-        froeignTypeArr.push({ name: `_${ column_name }`, type: data_type });
-      }
-    }
-    typeArr.push({ name: "tenant_id", type: "string" });
-    typeArr.push({ name: "create_usr_id", type: "string" });
-    typeArr.push({ name: "create_time", type: "Date" });
-    typeArr.push({ name: "update_usr_id", type: "string" });
-    typeArr.push({ name: "update_time", type: "Date" });
-    typeArr.push({ name: "is_deleted", type: "number" });
-    typeArr.push({ name: "delete_time", type: "Date" });
-    typeArr = typeArr.concat(froeignTypeArr);
-    let typeStr = "{\r\n";
-    for (let i = 0; i < typeArr.length; i++) {
-      const item = typeArr[i];
-      typeStr += `      ${ item.name }: ${ item.type },\r\n`;
-    }
-    typeStr += "    }";
-    */#><#
+    }<#
     if (cache) {
     #>
     
@@ -499,7 +420,62 @@ export class <#=tableUp#>Dao {
     if (afterEvent?.isReturn) return <typeof result>afterEvent.data;
     
     return result;
+  }<#
+  if (hasSummary) {
+  #>
+  
+  /**
+   * 根据搜索条件查找合计
+   * @param {<#=tableUp#>Search} [search]
+   * @return {Promise<<#=tableUp#>Summary>}
+   * @memberof <#=tableUp#>Dao
+   */
+  async findSummary(
+    search?: <#=tableUp#>Search,
+  ): Promise<<#=tableUp#>Summary> {
+    const t = this;
+    
+    const table = "<#=table#>";
+    const method = "findSummary";
+    
+    const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { search });
+    if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const context = useContext();
+    const args = [ ];
+    let sql = `
+      select<#
+        for (let i = 0; i < columns.length; i++) {
+          const column = columns[i];
+          if (column.ignoreCodegen) continue;
+          const column_name = column.COLUMN_NAME;
+          if (column_name === "id") continue;
+        #><#
+          if (column.showSummary) {
+        #>
+        sum(t.<#=column_name#>) <#=column_name#><#
+          }
+        #><#
+        }
+        #>
+      from
+        ${ t.getFromQuery() }
+      where
+        ${ t.getWhereQuery(args, search) }
+    `;
+    
+    const cacheKey1 = `dao.sql.${ table }`;
+    const cacheKey2 = JSON.stringify({ sql, args });
+    
+    const model = await context.queryOne<<#=tableUp#>Summary>(sql, args, { cacheKey1, cacheKey2 });
+    
+    const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { search });
+    if (afterEvent?.isReturn) return afterEvent.data;
+    
+    return model;
+  }<#
   }
+  #>
   
   /**
    * 根据条件查找第一条数据
@@ -784,7 +760,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 删除缓存
-   * @memberof MenuDao
+   * @memberof <#=tableUp#>Dao
    */
   async delCache() {
     const table = "<#=table#>";

@@ -12,11 +12,11 @@ import { AuthDao } from "../common/auth/auth.dao";
 export class UsrDao {
   
   constructor(
-    private readonly eventEmitter2: EventEmitter2,
     private readonly authDao: AuthDao,
+    private readonly eventEmitter2: EventEmitter2,
   ) { }
   
-  private getWhereQuery(
+  getWhereQuery(
     args: any[],
     search?: UsrSearch,
   ) {
@@ -79,6 +79,36 @@ export class UsrDao {
     return whereQuery;
   }
   
+  getFromQuery() {
+    let fromQuery = `
+      usr t
+      left join usr_role
+        on usr_role.usr_id = t.id
+        and usr_role.is_deleted = 0
+      left join role
+        on usr_role.role_id = role.id
+        and role.is_deleted = 0
+      left join (
+        select
+          json_arrayagg(role.id) role_ids,
+          json_arrayagg(role.lbl) _role_ids,
+          usr.id usr_id
+        from usr_role
+        inner join role
+          on role.id = usr_role.role_id
+          and role.is_deleted = 0
+        inner join usr
+          on usr.id = usr_role.usr_id
+          and usr.is_deleted = 0
+        where
+          usr_role.is_deleted = 0
+        group by usr_id
+      ) _role
+        on _role.usr_id = t.id
+    `;
+    return fromQuery;
+  }
+  
   /**
    * 根据条件查找总数据数
    * @param {UsrSearch} [search]
@@ -101,28 +131,8 @@ export class UsrDao {
     let sql = `
       select
         count(1) total
-      from usr t
-        left join usr_role
-          on usr_role.usr_id = t.id and usr_role.is_deleted = 0
-        left join role
-          on usr_role.role_id = role.id and role.is_deleted = 0
-        left join (
-          select
-            json_arrayagg(role.id) role_ids,
-            json_arrayagg(role.lbl) _role_ids,
-            usr.id usr_id
-          from usr_role
-          inner join role
-            on role.id = usr_role.role_id
-            and role.is_deleted = 0
-          inner join usr
-            on usr.id = usr_role.usr_id
-            and usr.is_deleted = 0
-          where
-            usr_role.is_deleted = 0
-          group by usr_id
-        ) _role
-          on _role.usr_id = t.id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
     `;
@@ -164,30 +174,8 @@ export class UsrDao {
       select t.*
           ,max(role_ids) role_ids
           ,max(_role_ids) _role_ids
-      from usr t
-        left join usr_role
-          on usr_role.usr_id = t.id
-          and usr_role.is_deleted = 0
-        left join role
-          on usr_role.role_id = role.id
-          and role.is_deleted = 0
-        left join (
-          select
-            json_arrayagg(role.id) role_ids,
-            json_arrayagg(role.lbl) _role_ids,
-            usr.id usr_id
-          from usr_role
-          inner join role
-            on role.id = usr_role.role_id
-            and role.is_deleted = 0
-          inner join usr
-            on usr.id = usr_role.usr_id
-            and usr.is_deleted = 0
-          where
-            usr_role.is_deleted = 0
-          group by usr_id
-        ) _role
-          on _role.usr_id = t.id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
       group by t.id
@@ -406,7 +394,7 @@ export class UsrDao {
   
   /**
    * 删除缓存
-   * @memberof MenuDao
+   * @memberof UsrDao
    */
   async delCache() {
     const table = "usr";

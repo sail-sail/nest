@@ -14,7 +14,7 @@ export class MenuDao {
     private readonly eventEmitter2: EventEmitter2,
   ) { }
   
-  private getWhereQuery(
+  getWhereQuery(
     args: any[],
     search?: MenuSearch,
   ) {
@@ -97,6 +97,15 @@ export class MenuDao {
     return whereQuery;
   }
   
+  getFromQuery() {
+    let fromQuery = `
+      menu t
+      left join menu
+        on menu.id = t.menu_id
+    `;
+    return fromQuery;
+  }
+  
   /**
    * 根据条件查找总数据数
    * @param {MenuSearch} [search]
@@ -119,9 +128,8 @@ export class MenuDao {
     let sql = `
       select
         count(1) total
-      from menu t
-        left join menu
-          on menu.id = t.menu_id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
     `;
@@ -162,9 +170,8 @@ export class MenuDao {
     let sql = `
       select t.*
           ,menu.lbl _menu_id
-      from menu t
-        left join menu
-          on menu.id = t.menu_id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
       group by t.id

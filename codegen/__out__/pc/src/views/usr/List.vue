@@ -176,7 +176,7 @@
           prop="id"
           type="selection"
           align="center"
-          width="42"
+          width="50"
         ></el-table-column>
         
         <template v-for="(col, i) in tableColumns" :key="i + col">
@@ -459,17 +459,9 @@ async function roleFilterEfc(query: string) {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  const search2: any = { };
-  const searchKeys = Object.keys(search);
-  for (let i = 0; i < searchKeys.length; i++) {
-    const key = searchKeys[i];
-    const val = search[key];
-    if ([ "orderBy", "orderDec" ].includes(key)) {
-      search2[key] = val;
-      continue;
-    }
-    search2[key] = val;
-  }
+  const search2 = {
+    ...search,
+  };
   if (!search2.orderBy && defaultSort && defaultSort.prop) {
     search2.orderBy = defaultSort.prop;
     search2.orderDec = defaultSort.order;
@@ -515,7 +507,9 @@ async function openAdd() {
     action: "add",
   });
   if (changedIds && changedIds.length > 0) {
-    await dataGrid(true);
+    await Promise.all([
+      dataGrid(true),
+    ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }
@@ -537,7 +531,9 @@ async function openEdit() {
     },
   });
   if (changedIds && changedIds.length > 0) {
-    await dataGrid();
+    await Promise.all([
+      dataGrid(),
+    ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }
@@ -560,7 +556,9 @@ async function deleteByIdsEfc() {
   const ids = selectList.map((item) => item.id);
   const num = await deleteByIds(ids);
   if (num) {
-    await dataGrid(true);
+    await Promise.all([
+      dataGrid(true),
+    ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
   }
 }
@@ -583,7 +581,9 @@ async function revertByIdsEfc() {
   const ids = selectList.map((item) => item.id);
   const num = await revertByIds(ids);
   if (num) {
-    await dataGrid(true);
+    await Promise.all([
+      dataGrid(true),
+    ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
   }
 }

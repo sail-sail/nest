@@ -1,4 +1,6 @@
-
+<#
+const hasSummary = columns.some((column) => column.showSummary);
+#>
 export interface <#=tableUp#>Model {
   [key: string]: any,<#
   for (let i = 0; i < columns.length; i++) {
@@ -189,4 +191,41 @@ export interface <#=tableUp#>Search {
   #><#
   }
   #>
+}<#
+if (hasSummary) {
+#>
+
+export interface <#=tableUp#>Summary {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT;
+    let data_type = column.DATA_TYPE;
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (data_type === 'id') column_comment = '';
+    else {
+      column_comment = ' //' + column_comment;
+    }
+  #><#
+    if (column.showSummary) {
+  #>
+  <#=column_name#>: number;<#=column_comment#><#
+    }
+  #><#
+  }
+  #>
+}<#
 }
+#>

@@ -1,4 +1,6 @@
-<template>
+<#
+const hasSummary = columns.some((column) => column.showSummary);
+#><template>
 <div class="wrap_div">
   <div class="search_div">
     <el-form
@@ -294,7 +296,13 @@
         ref="tableRef"
         :empty-text="inited ? undefined : '加载中...'"
         @sort-change="sortChange"
-        :default-sort="defaultSort"
+        :default-sort="defaultSort"<#
+        if (hasSummary) {
+        #>
+        show-summary
+        :summary-method="summaryMethod"<#
+        }
+        #>
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
@@ -305,7 +313,7 @@
           prop="id"
           type="selection"
           align="center"
-          width="42"
+          width="50"
         ></el-table-column>
         
         <template v-for="(col, i) in tableColumns" :key="i + col"><#
@@ -551,7 +559,12 @@ import {
   deleteByIds,
   revertByIds,
   exportExcel,
-  updateById,
+  updateById,<#
+    if (hasSummary) {
+  #>
+  findSummary,<#
+    }
+  #>
 } from "./Api";
 
 import {
@@ -864,17 +877,9 @@ async function <#=foreignTable#>FilterEfc(query: string) {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  const search2: any = { };
-  const searchKeys = Object.keys(search);
-  for (let i = 0; i < searchKeys.length; i++) {
-    const key = searchKeys[i];
-    const val = search[key];
-    if ([ "orderBy", "orderDec" ].includes(key)) {
-      search2[key] = val;
-      continue;
-    }
-    search2[key] = val;
-  }
+  const search2 = {
+    ...search,
+  };
   if (!search2.orderBy && defaultSort && defaultSort.prop) {
     search2.orderBy = defaultSort.prop;
     search2.orderDec = defaultSort.order;
@@ -929,6 +934,33 @@ async function linkAttChg(row: <#=tableUp#>Model, key: string) {
   await updateById(row.id, { [key]: row[key] });
 }<#
 }
+#><#
+if (hasSummary) {
+#>
+
+// 合计
+let summarys = $ref({ });
+
+async function dataSummary() {
+  summarys = await findSummary(search);
+}
+
+function summaryMethod(
+  summary: any,
+) {
+  const columns: TableColumnCtx<MenuModel>[] = summary.columns;
+  const sums: string[] = [ ];
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    let val = summarys[column.property] || "";
+    if (i === 0) {
+      val = `合计:${ val }`;
+    }
+    sums.push(val);
+  }
+  return sums;
+}<#
+}
 #>
 
 // 打开增加页面
@@ -940,7 +972,14 @@ async function openAdd() {
     action: "add",
   });
   if (changedIds && changedIds.length > 0) {
-    await dataGrid(true);
+    await Promise.all([
+      dataGrid(true),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }
@@ -962,7 +1001,14 @@ async function openEdit() {
     },
   });
   if (changedIds && changedIds.length > 0) {
-    await dataGrid();
+    await Promise.all([
+      dataGrid(),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }
@@ -985,7 +1031,14 @@ async function deleteByIdsEfc() {
   const ids = selectList.map((item) => item.id);
   const num = await deleteByIds(ids);
   if (num) {
-    await dataGrid(true);
+    await Promise.all([
+      dataGrid(true),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
   }
 }
@@ -1008,7 +1061,14 @@ async function revertByIdsEfc() {
   const ids = selectList.map((item) => item.id);
   const num = await revertByIds(ids);
   if (num) {
-    await dataGrid(true);
+    await Promise.all([
+      dataGrid(true),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
   }
 }
@@ -1017,7 +1077,12 @@ async function initFrame() {
   if (usrStore.access_token) {
     await Promise.all([
       searchClk(),
-      getSelectListEfc(),
+      getSelectListEfc(),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
     ]);
   }
   inited = true;

@@ -1,5 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+#><#
+const hasSummary = columns.some((column) => column.showSummary);
 #>import { ResultSetHeader } from "mysql2/promise";
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -9,7 +11,12 @@ import { renderExcelWorker } from "../common/util/ejsexcel_worker";
 import { renderExcel } from "ejsexcel";
 import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
-import { <#=tableUp#>Model, <#=tableUp#>Search } from './<#=table#>.model';
+import { <#=tableUp#>Model, <#=tableUp#>Search } from './<#=table#>.model';<#
+if (hasSummary) {
+#>
+import { <#=tableUp#>Summary } from './<#=table#>.model';<#
+}
+#>
 import { <#=tableUp#>Dao } from "./<#=table#>.dao";
 
 @Injectable()
@@ -68,7 +75,35 @@ export class <#=tableUp#>Service {
     if (afterEvent?.isReturn) return afterEvent.data;
     
     return result;
+  }<#
+  if (hasSummary) {
+  #>
+  
+  /**
+   * 根据条件和分页查找数据
+   * @param {<#=tableUp#>Search} search 搜索条件
+   * @return {Promise<<#=tableUp#>Summary>} 
+   * @memberof <#=tableUp#>Service
+   */
+  async findSummary(
+    search?: <#=tableUp#>Search,
+  ): Promise<<#=tableUp#>Summary> {
+    const t = this;
+    const table = "<#=table#>";
+    const method = "findSummary";
+    
+    const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { search });
+    if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    let result = await t.<#=table#>Dao.findSummary(search);
+    
+    const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
+    if (afterEvent?.isReturn) return afterEvent.data;
+    
+    return result;
+  }<#
   }
+  #>
   
   /**
    * 根据条件查找第一条数据

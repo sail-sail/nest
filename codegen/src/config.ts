@@ -329,6 +329,14 @@ export interface TableCloumn {
    * @memberof TableCloumn
    */
   sortable?: boolean,
+  
+  /**
+   * 是否显示合计
+   * @type {boolean}
+   * @memberof TableCloumn
+   */
+   showSummary?: boolean,
+   
 }
 
 export interface TablesConfigItem {

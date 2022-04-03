@@ -9,7 +9,7 @@ import { MenuModel, MenuSearch } from "../menu/Model";
  * @export findAll
  * @param {TenantSearch} search
  * @param {PageModel} page
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<TenantModel[]>}
  */
 export async function findAll(
@@ -52,7 +52,7 @@ export async function findAll(
  * @export findAllAndCount
  * @param {TenantSearch} search
  * @param {PageModel} page
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<{ data: TenantModel[], count: number }>} 
  */
 export async function findAllAndCount(
@@ -95,7 +95,7 @@ export async function findAllAndCount(
  * 创建一条数据
  * @export create
  * @param {TenantModel} model
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<string>} id
  */
 export async function create(
@@ -119,7 +119,7 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<boolean>}
  */
 export async function updateById(
@@ -145,7 +145,7 @@ export async function updateById(
  * 通过ID查找一条数据
  * @export findById
  * @param {string} id
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<TenantModel>}
  */
 export async function findById(
@@ -182,7 +182,7 @@ export async function findById(
  * 根据ID列表删除数据
  * @export deleteByIds
  * @param {string[]} ids
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<number>}
  */
 export async function deleteByIds(
@@ -206,7 +206,7 @@ export async function deleteByIds(
  * 根据ID列表从回收站还原数据
  * @export revertByIds
  * @param {string[]} ids
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<number>}
  */
 export async function revertByIds(
@@ -302,7 +302,7 @@ export async function exportExcel(
 /**
  * 查找order_by字段的最大值
  * @export findLastOrderBy
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

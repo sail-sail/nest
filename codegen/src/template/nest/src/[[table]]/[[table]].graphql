@@ -1,5 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+#><#
+const hasSummary = columns.some((column) => column.showSummary);
 #>type FindAll<#=tableUp#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -226,12 +228,52 @@ input <#=tableUp#>Search {
   #><#
   }
   #>
+}<#
+if (hasSummary) {
+#>
+type FindSummary<#=tableUp#> {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT;
+    let data_type = column.DATA_TYPE;
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (data_type === 'id') column_comment = '';
+  #><#
+    if (column.showSummary) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: Int<#
+    }
+  #><#
+  }
+  #>
+}<#
 }
+#>
 type Query {
   "根据条件查找据数总数"
   findCount<#=tableUp#>(search: <#=tableUp#>Search): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput): [FindAll<#=tableUp#>]!
+  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput): [FindAll<#=tableUp#>]!<#
+  if (hasSummary) {
+  #>
+  "根据搜索条件查找合计"
+  findSummary<#=tableUp#>(search: <#=tableUp#>Search): FindSummary<#=tableUp#>!<#
+  }
+  #>
   "根据条件查找第一条数据"
   findOne<#=tableUp#>(search: <#=tableUp#>Search): FindAll<#=tableUp#>
   "根据id查找一条数据"

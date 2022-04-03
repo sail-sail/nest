@@ -14,7 +14,7 @@ export class PermitDao {
     private readonly eventEmitter2: EventEmitter2,
   ) { }
   
-  private getWhereQuery(
+  getWhereQuery(
     args: any[],
     search?: PermitSearch,
   ) {
@@ -53,6 +53,15 @@ export class PermitDao {
     return whereQuery;
   }
   
+  getFromQuery() {
+    let fromQuery = `
+      permit t
+      left join menu
+        on menu.id = t.menu_id
+    `;
+    return fromQuery;
+  }
+  
   /**
    * 根据条件查找总数据数
    * @param {PermitSearch} [search]
@@ -75,9 +84,8 @@ export class PermitDao {
     let sql = `
       select
         count(1) total
-      from permit t
-        left join menu
-          on menu.id = t.menu_id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
     `;
@@ -118,9 +126,8 @@ export class PermitDao {
     let sql = `
       select t.*
           ,menu.lbl _menu_id
-      from permit t
-        left join menu
-          on menu.id = t.menu_id
+      from
+        ${ t.getFromQuery() }
       where
         ${ t.getWhereQuery(args, search) }
       group by t.id
@@ -304,7 +311,7 @@ export class PermitDao {
   
   /**
    * 删除缓存
-   * @memberof MenuDao
+   * @memberof PermitDao
    */
   async delCache() {
     const table = "permit";

@@ -1,5 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+#><#
+const hasSummary = columns.some((column) => column.showSummary);
 #>import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import useUsrStore from "@/store/usr";
@@ -24,7 +26,7 @@ import { <#=foreignTableUp#>Model, <#=foreignTableUp#>Search } from "../<#=forei
  * @export findAll
  * @param {<#=tableUp#>Search} search
  * @param {PageModel} page
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<<#=tableUp#>Model[]>}
  */
 export async function findAll(
@@ -95,7 +97,7 @@ export async function findAll(
  * @export findAllAndCount
  * @param {<#=tableUp#>Search} search
  * @param {PageModel} page
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<{ data: <#=tableUp#>Model[], count: number }>} 
  */
 export async function findAllAndCount(
@@ -160,13 +162,53 @@ export async function findAllAndCount(
   #>
   }
   return data;
+}<#
+if (hasSummary) {
+#>
+
+/**
+ * 根据搜索条件查找合计
+ * @param {<#=tableUp#>Search} search
+ * @param {GqlOpt} opt?
+ */
+export async function findSummary(
+  search?: <#=tableUp#>Search,
+  opt?: GqlOpt,
+) {
+  const rvData = await gqlQuery({
+    query: gql`
+      query($search: <#=tableUp#>Search) {
+        findSummary<#=tableUp#>(search: $search) {<#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            const column_name = column.COLUMN_NAME;
+            if (column_name === "id") continue;
+          #><#
+            if (column.showSummary) {
+          #>
+          <#=column_name#><#
+            }
+          #><#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  return rvData?.findSummary<#=tableUp#> || { };
+}<#
 }
+#>
 
 /**
  * 创建一条数据
  * @export create
  * @param {<#=tableUp#>Model} model
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<string>} id
  */
 export async function create(
@@ -190,7 +232,7 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<boolean>}
  */
 export async function updateById(
@@ -216,7 +258,7 @@ export async function updateById(
  * 通过ID查找一条数据
  * @export findById
  * @param {string} id
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<<#=tableUp#>Model>}
  */
 export async function findById(
@@ -281,7 +323,7 @@ export async function findById(
  * 根据ID列表删除数据
  * @export deleteByIds
  * @param {string[]} ids
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<number>}
  */
 export async function deleteByIds(
@@ -305,7 +347,7 @@ export async function deleteByIds(
  * 根据ID列表从回收站还原数据
  * @export revertByIds
  * @param {string[]} ids
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<number>}
  */
 export async function revertByIds(
@@ -415,7 +457,7 @@ if (hasOrderBy) {
 /**
  * 查找order_by字段的最大值
  * @export findLastOrderBy
- * @param {GqlOpt} [opt]
+ * @param {GqlOpt} opt?
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(

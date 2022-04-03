@@ -232,6 +232,11 @@ body .el-table--small {
   td.el-table__cell {
     padding: 0;
   }
+  .el-table__footer-wrapper {
+    .el-table__footer tr {
+      height: 29px;
+    }
+  }
 }
 // 复选框
 body .el-checkbox.el-checkbox--small {
