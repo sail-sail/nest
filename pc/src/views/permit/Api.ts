@@ -72,7 +72,10 @@ export async function findAllAndCount(
       page,
     },
   }, opt);
-  const data = { data: rvData?.findAllPermit || [ ], count: rvData?.findCountPermit || 0 };
+  const data = {
+    data: rvData?.findAllPermit || [ ],
+    count: rvData?.findCountPermit || 0,
+  };
   for (let i = 0; i < data.data.length; i++) {
     const item = data.data[i];
   }
@@ -228,7 +231,10 @@ export async function findAllAndCountMenu(
       page,
     },
   }, opt);
-  return { data: data?.findAllMenu || [ ], count: data?.findCountMenu || 0 };
+  return {
+    data: data?.findAllMenu || [ ],
+    count: data?.findCountMenu || 0,
+  };
 }
 
 export async function findAllMenu(

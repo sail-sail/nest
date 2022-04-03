@@ -80,7 +80,10 @@ export async function findAllAndCount(
       page,
     },
   }, opt);
-  const data = { data: rvData?.findAllUsr || [ ], count: rvData?.findCountUsr || 0 };
+  const data = {
+    data: rvData?.findAllUsr || [ ],
+    count: rvData?.findCountUsr || 0,
+  };
   for (let i = 0; i < data.data.length; i++) {
     const item = data.data[i];
   }
@@ -240,7 +243,10 @@ export async function findAllAndCountRole(
       page,
     },
   }, opt);
-  return { data: data?.findAllRole || [ ], count: data?.findCountRole || 0 };
+  return {
+    data: data?.findAllRole || [ ],
+    count: data?.findCountRole || 0,
+  };
 }
 
 export async function findAllRole(

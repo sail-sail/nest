@@ -144,7 +144,10 @@ export async function findAllAndCount(
       page,
     },
   }, opt);
-  const data = { data: rvData?.findAll<#=tableUp#> || [ ], count: rvData?.findCount<#=tableUp#> || 0 };
+  const data = {
+    data: rvData?.findAll<#=tableUp#> || [ ],
+    count: rvData?.findCount<#=tableUp#> || 0,
+  };
   for (let i = 0; i < data.data.length; i++) {
     const item = data.data[i];<#
   for (let i = 0; i < columns.length; i++) {
@@ -397,7 +400,10 @@ export async function findAllAndCount<#=foreignTableUp#>(
       page,
     },
   }, opt);
-  return { data: data?.findAll<#=foreignTableUp#> || [ ], count: data?.findCount<#=foreignTableUp#> || 0 };
+  return {
+    data: data?.findAll<#=foreignTableUp#> || [ ],
+    count: data?.findCount<#=foreignTableUp#> || 0,
+  };
 }
 
 export async function findAll<#=foreignTableUp#>(
