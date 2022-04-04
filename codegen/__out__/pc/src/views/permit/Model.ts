@@ -10,9 +10,9 @@ export interface PermitModel {
 }
 
 export interface PermitSearch {
-  is_deleted?: 0|1,
-  orderBy?: string,
-  orderDec?: string,
-  lbl?: string, //名称,
-  lblLike?: string, //名称,
+  is_deleted?: 0|1;
+  orderBy?: string;
+  orderDec?: string;
+  lbl?: string; //名称
+  lblLike?: string; //名称
 }

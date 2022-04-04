@@ -66,25 +66,15 @@ export class MenuDao {
       whereQuery += ` and t.is_enabled in (?)`;
       args.push(search.is_enabled);
     }
-    if (!isEmpty(search?.order_by)) {
-      whereQuery += ` and t.order_by = ?`;
-      args.push(search.order_by);
-    }
-    if (!isEmpty(search?.order_byGt)) {
-      whereQuery += ` and t.order_by > ?`;
-      args.push(search.order_byGt);
-    }
-    if (!isEmpty(search?.order_byLt)) {
-      whereQuery += ` and t.order_by < ?`;
-      args.push(search.order_byLt);
-    }
-    if (!isEmpty(search?.order_byGtEq)) {
-      whereQuery += ` and t.order_by >= ?`;
-      args.push(search.order_byGtEq);
-    }
-    if (!isEmpty(search?.order_byLtEq)) {
-      whereQuery += ` and t.order_by <= ?`;
-      args.push(search.order_byLtEq);
+    if (search?.order_by && search?.order_by?.length > 0) {
+      if (search.order_by[0] != null) {
+        whereQuery += ` and t.order_by >= ?`;
+        args.push(search.order_by[0]);
+      }
+      if (search.order_by[1] != null) {
+        whereQuery += ` and t.order_by <= ?`;
+        args.push(search.order_by[1]);
+      }
     }
     if (search?.rem !== undefined) {
       whereQuery += ` and t.rem = ?`;

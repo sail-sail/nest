@@ -42,45 +42,25 @@ export class TenantDao {
       whereQuery += ` and t.host like ?`;
       args.push(sqlLike(search.hostLike) + "%");
     }
-    if (!isEmpty(search?.expiration)) {
-      whereQuery += ` and t.expiration = ?`;
-      args.push(search.expiration);
+    if (search?.expiration && search?.expiration?.length > 0) {
+      if (search.expiration[0] != null) {
+        whereQuery += ` and t.expiration >= ?`;
+        args.push(search.expiration[0]);
+      }
+      if (search.expiration[1] != null) {
+        whereQuery += ` and t.expiration <= ?`;
+        args.push(search.expiration[1]);
+      }
     }
-    if (!isEmpty(search?.expirationGt)) {
-      whereQuery += ` and t.expiration > ?`;
-      args.push(search.expirationGt);
-    }
-    if (!isEmpty(search?.expirationLt)) {
-      whereQuery += ` and t.expiration < ?`;
-      args.push(search.expirationLt);
-    }
-    if (!isEmpty(search?.expirationGtEq)) {
-      whereQuery += ` and t.expiration >= ?`;
-      args.push(search.expirationGtEq);
-    }
-    if (!isEmpty(search?.expirationLtEq)) {
-      whereQuery += ` and t.expiration <= ?`;
-      args.push(search.expirationLtEq);
-    }
-    if (!isEmpty(search?.max_usr_num)) {
-      whereQuery += ` and t.max_usr_num = ?`;
-      args.push(search.max_usr_num);
-    }
-    if (!isEmpty(search?.max_usr_numGt)) {
-      whereQuery += ` and t.max_usr_num > ?`;
-      args.push(search.max_usr_numGt);
-    }
-    if (!isEmpty(search?.max_usr_numLt)) {
-      whereQuery += ` and t.max_usr_num < ?`;
-      args.push(search.max_usr_numLt);
-    }
-    if (!isEmpty(search?.max_usr_numGtEq)) {
-      whereQuery += ` and t.max_usr_num >= ?`;
-      args.push(search.max_usr_numGtEq);
-    }
-    if (!isEmpty(search?.max_usr_numLtEq)) {
-      whereQuery += ` and t.max_usr_num <= ?`;
-      args.push(search.max_usr_numLtEq);
+    if (search?.max_usr_num && search?.max_usr_num?.length > 0) {
+      if (search.max_usr_num[0] != null) {
+        whereQuery += ` and t.max_usr_num >= ?`;
+        args.push(search.max_usr_num[0]);
+      }
+      if (search.max_usr_num[1] != null) {
+        whereQuery += ` and t.max_usr_num <= ?`;
+        args.push(search.max_usr_num[1]);
+      }
     }
     if (search?.is_enabled && search?.is_enabled?.length > 0) {
       whereQuery += ` and t.is_enabled in (?)`;
@@ -94,25 +74,15 @@ export class TenantDao {
       whereQuery += ` and menu__lbl in (?)`;
       args.push(search.menu__lbl);
     }
-    if (!isEmpty(search?.order_by)) {
-      whereQuery += ` and t.order_by = ?`;
-      args.push(search.order_by);
-    }
-    if (!isEmpty(search?.order_byGt)) {
-      whereQuery += ` and t.order_by > ?`;
-      args.push(search.order_byGt);
-    }
-    if (!isEmpty(search?.order_byLt)) {
-      whereQuery += ` and t.order_by < ?`;
-      args.push(search.order_byLt);
-    }
-    if (!isEmpty(search?.order_byGtEq)) {
-      whereQuery += ` and t.order_by >= ?`;
-      args.push(search.order_byGtEq);
-    }
-    if (!isEmpty(search?.order_byLtEq)) {
-      whereQuery += ` and t.order_by <= ?`;
-      args.push(search.order_byLtEq);
+    if (search?.order_by && search?.order_by?.length > 0) {
+      if (search.order_by[0] != null) {
+        whereQuery += ` and t.order_by >= ?`;
+        args.push(search.order_by[0]);
+      }
+      if (search.order_by[1] != null) {
+        whereQuery += ` and t.order_by <= ?`;
+        args.push(search.order_by[1]);
+      }
     }
     if (search?.rem !== undefined) {
       whereQuery += ` and t.rem = ?`;

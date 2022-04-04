@@ -16,14 +16,14 @@ export interface PermitModel {
 }
 
 export interface PermitSearch {
-  is_deleted?: 0|1,
-  orderBy?: string,
-  orderDec?: string,
-  id?: string, //ID
-  menu_id?: string[], //菜单
-  menu__lbl?: string[], //菜单
-  lbl?: string, //名称
-  lblLike?: string, //名称
-  rem?: string, //备注
-  remLike?: string, //备注
+  is_deleted?: 0|1;
+  orderBy?: string;
+  orderDec?: string;
+  id?: string; //ID
+  menu_id?: string[]; //菜单,
+  menu__lbl?: string[]; //菜单
+  lbl?: string; //名称
+  lblLike?: string; //名称
+  rem?: string; //备注
+  remLike?: string; //备注
 }

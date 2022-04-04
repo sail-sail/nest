@@ -73,11 +73,7 @@ input MenuSearch {
   "启用"
   is_enabled: [Int]
   "排序"
-  order_by: Int
-  order_byGt: Int
-  order_byGtEq: Int
-  order_byLt: Int
-  order_byLtEq: Int
+  order_by: [Int]
   "备注"
   rem: String
   remLike: String

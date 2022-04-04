@@ -312,6 +312,7 @@ import {
   ElInput,
   ElInputNumber,
   ElCheckbox,
+  ElDatePicker,
   ElButton,
   ElIcon,
   ElTable,
@@ -649,8 +650,8 @@ watch(
   flex-direction: column;
 }
 .search_div {
-  margin-top: 10px;
-  margin-left: 10px;
+  margin-top: 6px;
+  margin-left: 6px;
   overflow-x: auto;
 }
 .search_form {
@@ -658,24 +659,24 @@ watch(
   grid-template-columns: repeat(
     4,
     minmax(min-content, max-content)
-    minmax(min-content, max-content)
+    210px
   );
   justify-items: end;
   align-items: center;
-  grid-row-gap: 15px;
+  grid-row-gap: 6px;
 }
 .form_label {
   margin-right: 3px;
   color: gray;
-  margin-left: 10px;
+  margin-left: 6px;
   white-space: nowrap;
+  overflow: hidden;
 }
 .form_label::after {
   content: ":";
 }
 .form_input {
-  max-width: 240px;
-  min-width: 200px;
+  width: 100%;
 }
 .form_btn_item {
   display: flex;
@@ -684,9 +685,9 @@ watch(
   min-width: 170px;
 }
 .toolbar_div {
-  margin-left: 10px;
-  margin-top: 10px;
-  margin-right: 10px;
+  margin-left: 6px;
+  margin-top: 6px;
+  margin-right: 6px;
   display: flex;
 }
 .split_toolbar {
@@ -695,7 +696,7 @@ watch(
 .table_div {
   flex: 1 0 0;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
 }
