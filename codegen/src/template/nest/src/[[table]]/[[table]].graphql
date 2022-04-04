@@ -157,13 +157,13 @@ input <#=tableUp#>Search {
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'String';
+      data_type = '[String]';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'String';
+      data_type = '[String]';
     }
     else if (column.DATA_TYPE === 'int') {
-      data_type = 'Int';
+      data_type = '[Int]';
     }
     else if (column.DATA_TYPE === 'json') {
       data_type = 'String';
@@ -172,10 +172,10 @@ input <#=tableUp#>Search {
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'tinyint') {
-      data_type = 'Int';
+      data_type = '[Int]';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'Float';
+      data_type = '[Float]';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';
@@ -211,14 +211,15 @@ input <#=tableUp#>Search {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    } else if (data_type === "Int" || data_type === "Float" || data_type === "Date") {
+    } else if (
+      column.DATA_TYPE === "int"
+      || column.DATA_TYPE === "decimal"
+      || column.DATA_TYPE === "date"
+      || column.DATA_TYPE === "datetime"
+    ) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
-  <#=column_name#>Gt: <#=data_type#>
-  <#=column_name#>GtEq: <#=data_type#>
-  <#=column_name#>Lt: <#=data_type#>
-  <#=column_name#>LtEq: <#=data_type#><#
+  <#=column_name#>: <#=data_type#><#
     } else {
   #>
   "<#=column_comment#>"

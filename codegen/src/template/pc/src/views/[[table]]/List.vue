@@ -28,9 +28,6 @@ const hasSummary = columns.some((column) => column.showSummary);
         }
         const require = column.require;
         const search = column.search;
-        if (data_type == "datetime" || data_type == "date") {
-          column_comment = column_comment + "开始";
-        }
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -103,18 +100,13 @@ const hasSummary = columns.some((column) => column.showSummary);
       </label>
       <el-form-item prop="<#=column_name#>">
         <el-date-picker
-          type="date"
+          type="daterange"
           class="form_input"
-          v-model="search.<#=column_name#>__begin"<#
-            if (data_type === "datetime") {
-          #>
-          value-format="YYYY-MM-DD HH:mm:ss"<#
-            } else if (data_type === "date") {
-          #>
+          :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+          v-model="search.<#=column_name#>"
           format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD 00:00:00"<#
-            }
-          #>
+          value-format="YYYY-MM-DD HH:mm:ss"
+          :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
           clearable
           @clear="searchIptClr"
         ></el-date-picker>
@@ -159,30 +151,6 @@ const hasSummary = columns.some((column) => column.showSummary);
           clearable
           @clear="searchIptClr"
         ></el-input>
-      </el-form-item><#
-      }
-      #><# if (data_type === "datetime" || data_type === "date") { #>
-      
-      <label class="form_label">
-        <#=(column.COLUMN_COMMENT || "").substring(0, -2)+"结束"#>
-      </label>
-      <el-form-item prop="<#=column_name#>">
-        <el-date-picker
-          type="date"
-          class="form_input"
-          v-model="search.<#=column_name#>__end"<#
-            if (data_type === "datetime") {
-          #>
-          value-format="YYYY-MM-DD HH:mm:ss"<#
-            } else if (data_type === "date") {
-          #>
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD 00:00:00"<#
-            }
-          #>
-          clearable
-          @clear="searchClk"
-        ></el-date-picker>
       </el-form-item><#
       }
       #><#
@@ -509,6 +477,7 @@ import {
   ElInput,
   ElInputNumber,
   ElCheckbox,
+  ElDatePicker,
   ElButton,
   ElIcon,
   ElTable,
@@ -1105,8 +1074,8 @@ watch(
   flex-direction: column;
 }
 .search_div {
-  margin-top: 10px;
-  margin-left: 10px;
+  margin-top: 6px;
+  margin-left: 6px;
   overflow-x: auto;
 }
 .search_form {
@@ -1114,24 +1083,24 @@ watch(
   grid-template-columns: repeat(
     4,
     minmax(min-content, max-content)
-    minmax(min-content, max-content)
+    210px
   );
   justify-items: end;
   align-items: center;
-  grid-row-gap: 15px;
+  grid-row-gap: 6px;
 }
 .form_label {
   margin-right: 3px;
   color: gray;
-  margin-left: 10px;
+  margin-left: 6px;
   white-space: nowrap;
+  overflow: hidden;
 }
 .form_label::after {
   content: ":";
 }
 .form_input {
-  max-width: 240px;
-  min-width: 200px;
+  width: 100%;
 }
 .form_btn_item {
   display: flex;
@@ -1140,9 +1109,9 @@ watch(
   min-width: 170px;
 }
 .toolbar_div {
-  margin-left: 10px;
-  margin-top: 10px;
-  margin-right: 10px;
+  margin-left: 6px;
+  margin-top: 6px;
+  margin-right: 6px;
   display: flex;
 }
 .split_toolbar {
@@ -1151,7 +1120,7 @@ watch(
 .table_div {
   flex: 1 0 0;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
 }

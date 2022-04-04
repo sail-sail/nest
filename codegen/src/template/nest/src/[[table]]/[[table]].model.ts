@@ -91,9 +91,9 @@ export interface <#=tableUp#>Model {
 }
 
 export interface <#=tableUp#>Search {
-  is_deleted?: 0|1,
-  orderBy?: string,
-  orderDec?: string,<#
+  is_deleted?: 0|1;
+  orderBy?: string;
+  orderDec?: string;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     // if (column.ignoreCodegen) continue;
@@ -119,10 +119,10 @@ export interface <#=tableUp#>Search {
       data_type = 'string';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'Date';
+      data_type = 'string';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'Date';
+      data_type = 'string';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'number';
@@ -165,28 +165,24 @@ export interface <#=tableUp#>Search {
   #><#
     if (foreignKey) {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#>
-  <#=foreignKey.table#>__<#=foreignKey.lbl#>?: <#=data_type#>,<#=column_comment#><#
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>,
+  <#=foreignKey.table#>__<#=foreignKey.lbl#>?: <#=data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#><#
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (column_name === "id") {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#><#
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (data_type === "0|1") {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#><#
-    } else if (data_type === "number" || data_type === "Date") {
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    } else if (column.DATA_TYPE === "int" || column.DATA_TYPE === "decimal" || column.DATA_TYPE === "double" || column.DATA_TYPE === "datetime" || column.DATA_TYPE === "date") {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#>,
-  <#=column_name#>Gt?: <#=data_type#>,<#=column_comment#> 大于
-  <#=column_name#>GtEq?: <#=data_type#>,<#=column_comment#> 大于等于
-  <#=column_name#>Lt?: <#=data_type#>,<#=column_comment#> 小于
-  <#=column_name#>LtEq?: <#=data_type#>,<#=column_comment#> 小于等于<#
+  <#=column_name#>?: <#=data_type#>[];<#=column_comment#><#
     } else {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#>
-  <#=column_name#>Like?: <#=data_type#>,<#=column_comment#><#
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
+  <#=column_name#>Like?: <#=data_type#>;<#=column_comment#><#
     }
   #><#
   }

@@ -99,25 +99,15 @@ export class <#=tableUp#>Dao {
     }<#
       } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
     #>
-    if (!isEmpty(search?.<#=column_name#>)) {
-      whereQuery += ` and t.<#=column_name#> = ?`;
-      args.push(search.<#=column_name#>);
-    }
-    if (!isEmpty(search?.<#=column_name#>Gt)) {
-      whereQuery += ` and t.<#=column_name#> > ?`;
-      args.push(search.<#=column_name#>Gt);
-    }
-    if (!isEmpty(search?.<#=column_name#>Lt)) {
-      whereQuery += ` and t.<#=column_name#> < ?`;
-      args.push(search.<#=column_name#>Lt);
-    }
-    if (!isEmpty(search?.<#=column_name#>GtEq)) {
-      whereQuery += ` and t.<#=column_name#> >= ?`;
-      args.push(search.<#=column_name#>GtEq);
-    }
-    if (!isEmpty(search?.<#=column_name#>LtEq)) {
-      whereQuery += ` and t.<#=column_name#> <= ?`;
-      args.push(search.<#=column_name#>LtEq);
+    if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
+      if (search.<#=column_name#>[0] != null) {
+        whereQuery += ` and t.<#=column_name#> >= ?`;
+        args.push(search.<#=column_name#>[0]);
+      }
+      if (search.<#=column_name#>[1] != null) {
+        whereQuery += ` and t.<#=column_name#> <= ?`;
+        args.push(search.<#=column_name#>[1]);
+      }
     }<#
     } else if (data_type === "tinyint") {
     #>
