@@ -36,6 +36,15 @@ export class PermitResolver {
     return data;
   }
   
+  @Query(undefined, { name: "exportExcelPermit", description: "根据搜索条件导出" })
+  async exportExcel(
+    @Args("search") search?: PermitSearch,
+  ) {
+    const t = this;
+    const data = await t.permitService.exportExcel(search);
+    return data;
+  }
+  
   @Query(undefined, { name: "findOnePermit", description: "根据条件查找第一条数据" })
   async findOne(
     @Args("search") search?: PermitSearch,

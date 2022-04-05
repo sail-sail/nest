@@ -36,6 +36,15 @@ export class MenuResolver {
     return data;
   }
   
+  @Query(undefined, { name: "exportExcelMenu", description: "根据搜索条件导出" })
+  async exportExcel(
+    @Args("search") search?: MenuSearch,
+  ) {
+    const t = this;
+    const data = await t.menuService.exportExcel(search);
+    return data;
+  }
+  
   @Query(undefined, { name: "findOneMenu", description: "根据条件查找第一条数据" })
   async findOne(
     @Args("search") search?: MenuSearch,

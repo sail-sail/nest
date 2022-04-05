@@ -1,6 +1,5 @@
 import { MenuModel, MenuSearch } from "./Model";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import useUsrStore from "@/store/usr";
 import { PageModel } from "@/utils/page.model";
 
 /**
@@ -291,29 +290,23 @@ export async function findAllMenu(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {MenuSearch} search
+ * @param {UsrSearch} search
  */
 export async function exportExcel(
-  search: MenuSearch,
-) {
-  let url = `${ baseURL }/api/exportExcelMenu`;
-  const usrStore = useUsrStore();
-  const access_token: string = usrStore.access_token;
-  const params = new URLSearchParams();
-  if (access_token) {
-    params.set("access_token", access_token);
-  }
-  if (search) {
-    const keys = Object.keys(search);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const value = search[key];
-      if (value == null) continue;
-      params.set(key, value);
-    }
-  }
-  url += "?" + params.toString();
-  window.location.href = url;
+  search?: MenuSearch,
+  opt?: GqlOpt,
+): Promise<string> {
+  const rvData = await gqlQuery({
+    query: gql`
+      query($search: MenuSearch) {
+        exportExcelMenu(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  return rvData?.exportExcelMenu || "";
 }
 
 /**

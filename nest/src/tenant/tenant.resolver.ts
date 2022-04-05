@@ -36,6 +36,15 @@ export class TenantResolver {
     return data;
   }
   
+  @Query(undefined, { name: "exportExcelTenant", description: "根据搜索条件导出" })
+  async exportExcel(
+    @Args("search") search?: TenantSearch,
+  ) {
+    const t = this;
+    const data = await t.tenantService.exportExcel(search);
+    return data;
+  }
+  
   @Query(undefined, { name: "findOneTenant", description: "根据条件查找第一条数据" })
   async findOne(
     @Args("search") search?: TenantSearch,

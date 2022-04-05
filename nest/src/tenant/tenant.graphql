@@ -78,6 +78,8 @@ type Query {
   findCountTenant(search: TenantSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllTenant(search: TenantSearch, page: PageInput): [FindAllTenant]!
+  "根据搜索条件导出"
+  exportExcelTenant(search: TenantSearch): String!
   "根据条件查找第一条数据"
   findOneTenant(search: TenantSearch): FindAllTenant
   "根据id查找一条数据"

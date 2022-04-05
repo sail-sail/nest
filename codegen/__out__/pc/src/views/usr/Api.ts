@@ -1,6 +1,5 @@
 import { UsrModel, UsrSearch } from "./Model";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import useUsrStore from "@/store/usr";
 import { PageModel } from "@/utils/page.model";
 
 import { RoleModel, RoleSearch } from "../role/Model";
@@ -277,24 +276,18 @@ export async function findAllRole(
  * @param {UsrSearch} search
  */
 export async function exportExcel(
-  search: UsrSearch,
-) {
-  let url = `${ baseURL }/api/exportExcelUsr`;
-  const usrStore = useUsrStore();
-  const access_token: string = usrStore.access_token;
-  const params = new URLSearchParams();
-  if (access_token) {
-    params.set("access_token", access_token);
-  }
-  if (search) {
-    const keys = Object.keys(search);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const value = search[key];
-      if (value == null) continue;
-      params.set(key, value);
-    }
-  }
-  url += "?" + params.toString();
-  window.location.href = url;
+  search?: UsrSearch,
+  opt?: GqlOpt,
+): Promise<string> {
+  const rvData = await gqlQuery({
+    query: gql`
+      query($search: UsrSearch) {
+        exportExcelUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  return rvData?.exportExcelUsr || "";
 }

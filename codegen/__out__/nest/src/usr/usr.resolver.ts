@@ -36,6 +36,15 @@ export class UsrResolver {
     return data;
   }
   
+  @Query(undefined, { name: "exportExcelUsr", description: "根据搜索条件导出" })
+  async exportExcel(
+    @Args("search") search?: UsrSearch,
+  ) {
+    const t = this;
+    const data = await t.usrService.exportExcel(search);
+    return data;
+  }
+  
   @Query(undefined, { name: "findOneUsr", description: "根据条件查找第一条数据" })
   async findOne(
     @Args("search") search?: UsrSearch,

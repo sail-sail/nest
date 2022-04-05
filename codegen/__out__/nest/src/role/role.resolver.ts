@@ -36,6 +36,15 @@ export class RoleResolver {
     return data;
   }
   
+  @Query(undefined, { name: "exportExcelRole", description: "根据搜索条件导出" })
+  async exportExcel(
+    @Args("search") search?: RoleSearch,
+  ) {
+    const t = this;
+    const data = await t.roleService.exportExcel(search);
+    return data;
+  }
+  
   @Query(undefined, { name: "findOneRole", description: "根据条件查找第一条数据" })
   async findOne(
     @Args("search") search?: RoleSearch,

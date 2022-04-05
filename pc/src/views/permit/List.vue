@@ -241,6 +241,7 @@ import {
   CircleCheck,
 } from "@element-plus/icons-vue";
 import TableShowColumns from "@/components/TableShowColumns.vue";
+import { getDownloadUrl } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
 import {
@@ -275,7 +276,12 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 // 导出Excel
 async function exportClk() {
-  await exportExcel(search);
+  const id = await exportExcel(search);
+  const url = getDownloadUrl({
+    id,
+    remove: "1",
+  });
+  window.location.href = url;
 }
 
 // 搜索功能

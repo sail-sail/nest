@@ -5,6 +5,7 @@ import { shortUuidV4 } from "../common/util/uuid";
 import { readFile } from "fs/promises";
 import { renderExcelWorker } from "../common/util/ejsexcel_worker";
 import { renderExcel } from "ejsexcel";
+import { MinioDao } from "../common/minio/minio.dao";
 import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
 import { UsrModel, UsrSearch } from './usr.model';
@@ -15,6 +16,7 @@ export class UsrService {
   
   constructor(
     private readonly eventEmitter2: EventEmitter2,
+    private readonly minioDao: MinioDao,
     private readonly usrDao: UsrDao,
   ) { }
   
@@ -234,12 +236,12 @@ export class UsrService {
   /**
    * 导出Excel
    * @param {UsrSearch} search 搜索条件
-   * @return {Promise<Buffer>}
+   * @return {Promise<String>}
    * @memberof <%=tableUp%>Service
    */
   async exportExcel(
     search?: UsrSearch,
-  ): Promise<Buffer> {
+  ): Promise<String> {
     const t = this;
     const table = "usr";
     const method = "exportExcel";
@@ -256,10 +258,16 @@ export class UsrService {
       buffer = await renderExcel(buffer0, { models });
     }
     
+    let reslut = await t.minioDao.upload({
+      data: buffer,
+      filename: "用户.xlsx",
+      mimetype: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, buffer });
     if (afterEvent?.isReturn) return afterEvent.data;
     
-    return buffer;
+    return reslut;
   }
   
 }
