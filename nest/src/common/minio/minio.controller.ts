@@ -17,7 +17,8 @@ export class MinioController {
     @Body("file") files: FileModel[],
   ): Promise<string> {
     const t = this;
-    const result = await t.minioService.upload(files);
+    if (!files || !files.length) return;
+    const result = await t.minioService.upload(files[0]);
     return result;
   }
   
@@ -26,7 +27,8 @@ export class MinioController {
     @Res() res: any,
     @Req() req: any,
     @Query("id") id: string,
-    @Param("filename") filename: string,
+    @Param("filename") filename?: string,
+    @Query("remove") remove?: "0"|"1",
     @Query("inline") inline?: "0"|"1",
   ): Promise<void> {
     try {
@@ -53,13 +55,18 @@ export class MinioController {
           res.raw.setHeader("ETag", stats.etag);
         }
         if (req.raw.headers["if-none-match"] === stats.etag) {
-          res.raw.setHeader('Content-Disposition', `${ attachment }; filename=${ encodeURIComponent(filename || id) }`);
+          res.raw.setHeader('Content-Disposition', `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
           res.status(304).send();
           return;
         }
       }
-      res.raw.setHeader('Content-Disposition', `${ attachment }; filename=${ encodeURIComponent(filename || id) }`);
+      res.raw.setHeader('Content-Disposition', `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
       const stream = await context.minioGetObject(id);
+      stream.once("close", async() => {
+        if (remove == "1") {
+          await context.minioDeleteObject(id);
+        }
+      });
       stream.pipe(res.raw);
     } catch (err) {
       if (err.code === "NotFound") {

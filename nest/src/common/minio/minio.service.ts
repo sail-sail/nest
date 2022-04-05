@@ -11,12 +11,12 @@ export class MinioService {
   
   /**
    * 上传文件
-   * @param {FileModel[]} files
+   * @param {FileModel} file
    * @memberof MinioService
    */
-  async upload(files: FileModel[]) {
+  async upload(file: FileModel) {
     const t = this;
-    const result = await t.minioDao.upload(files);
+    const result = await t.minioDao.upload(file);
     return result;
   }
   

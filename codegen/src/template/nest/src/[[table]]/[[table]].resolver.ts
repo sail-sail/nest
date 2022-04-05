@@ -38,6 +38,15 @@ export class <#=tableUp#>Resolver {
     const t = this;
     const data = await t.<#=table#>Service.findAll(search, pageModel);
     return data;
+  }
+  
+  @Query(undefined, { name: "exportExcel<#=tableUp#>", description: "根据搜索条件导出" })
+  async exportExcel(
+    @Args("search") search?: <#=tableUp#>Search,
+  ) {
+    const t = this;
+    const data = await t.<#=table#>Service.exportExcel(search);
+    return data;
   }<#
   if (hasSummary) {
   #>

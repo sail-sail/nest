@@ -10,13 +10,7 @@ export class LogerGqlPlugin {
   async requestDidStart(requestContext: any): Promise<any> {
     const context = requestContext.context;
     console.log("");
-    context.log(requestContext.request.query);
-    if (process.env.NODE_ENV !== "production") {
-      JSON.stringify(requestContext.request.variables);
-      context.log(requestContext.request.variables);
-    } else {
-      context.log(JSON.stringify(requestContext.request.variables));
-    }
+    context.log(requestContext.request.query, requestContext.request.variables);
     const time = Date.now();
     return {
       async didEncounterErrors(errors: any) {

@@ -11,12 +11,10 @@ export class MinioDao {
   
   /**
    * 上传文件
-   * @param {FileModel[]} files
+   * @param {FileModel} file
    * @memberof MinioDao
    */
-  async upload(files: FileModel[]) {
-    if (!files) return;
-    const file = files[0];
+  async upload(file: FileModel) {
     if (!file) return;
     if (file.limit) {
       throw "文件过大, 上传失败!";

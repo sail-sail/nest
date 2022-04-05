@@ -498,7 +498,8 @@ import {
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
-import TableShowColumns from "@/components/TableShowColumns.vue";<#
+import TableShowColumns from "@/components/TableShowColumns.vue";
+import { getDownloadUrl } from "@/utils/axios";<#
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
 #><#
@@ -604,7 +605,12 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 // 导出Excel
 async function exportClk() {
-  await exportExcel(search);
+  const id = await exportExcel(search);
+  const url = getDownloadUrl({
+    id,
+    remove: "1",
+  });
+  window.location.href = url;
 }
 
 // 搜索功能

@@ -124,3 +124,40 @@ export async function uploadFile(
   const rvData = res.data;
   return rvData;
 }
+
+/**
+ * 获得下载文件的url
+ * @export
+ * @param {({
+ *     id: string;
+ *     filename?: string;
+ *     inline?: "0"|"1";
+ *   })} model
+ * @return {string}
+ */
+export function getDownloadUrl(
+  model: {
+    id: string;
+    filename?: string;
+    remove?: "0"|"1";
+    inline?: "0"|"1";
+  },
+): string {
+  const usrStore = useUsrStore();
+  const access_token: string = usrStore.access_token;
+  const params = new URLSearchParams();
+  if (access_token) {
+    params.set("access_token", access_token);
+  }
+  params.set("id", model.id);
+  if (model.filename) {
+    params.set("filename", model.filename);
+  }
+  if (model.inline != null) {
+    params.set("inline", model.inline);
+  }
+  if (model.remove != null) {
+    params.set("remove", model.remove);
+  }
+  return `${ baseURL }/api/minio/download/${ model.filename || "" }?${ params.toString() }`;
+}

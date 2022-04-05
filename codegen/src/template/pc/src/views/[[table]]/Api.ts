@@ -4,7 +4,6 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import useUsrStore from "@/store/usr";
 import { PageModel } from "@/utils/page.model";
 <#
 for (let i = 0; i < columns.length; i++) {
@@ -433,29 +432,23 @@ export async function findAll<#=foreignTableUp#>(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {<#=tableUp#>Search} search
+ * @param {UsrSearch} search
  */
 export async function exportExcel(
-  search: <#=tableUp#>Search,
-) {
-  let url = `${ baseURL }/api/exportExcel<#=tableUp#>`;
-  const usrStore = useUsrStore();
-  const access_token: string = usrStore.access_token;
-  const params = new URLSearchParams();
-  if (access_token) {
-    params.set("access_token", access_token);
-  }
-  if (search) {
-    const keys = Object.keys(search);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const value = search[key];
-      if (value == null) continue;
-      params.set(key, value);
-    }
-  }
-  url += "?" + params.toString();
-  window.location.href = url;
+  search?: <#=tableUp#>Search,
+  opt?: GqlOpt,
+): Promise<string> {
+  const rvData = await gqlQuery({
+    query: gql`
+      query($search: <#=tableUp#>Search) {
+        exportExcel<#=tableUp#>(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  return rvData?.exportExcel<#=tableUp#> || "";
 }<#
 if (hasOrderBy) {
 #>
