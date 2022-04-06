@@ -127,9 +127,10 @@ export class MenuDao {
     const cacheKey1 = `dao.sql.${ table }`;
     const cacheKey2 = JSON.stringify({ sql, args });
     
-    const model = await context.queryOne<{
+    interface Result {
       total: number,
-    }>(sql, args, { cacheKey1, cacheKey2 });
+    }
+    const model = await context.queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
     let result = model?.total || 0;
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { search, result });
@@ -290,9 +291,10 @@ export class MenuDao {
     const cacheKey1 = `dao.sql.${ table }`;
     const cacheKey2 = JSON.stringify({ sql, args });
     
-    let model = await context.queryOne<{
+    interface Result {
       e: number,
-    }>(sql, args, { cacheKey1, cacheKey2 });
+    }
+    let model = await context.queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
     let result = model?.e === 1;
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { id, result });
@@ -618,9 +620,10 @@ export class MenuDao {
       limit 1
     `;
     
-    let model = await context.queryOne<{
-      order_by: number,
-    }>(sql, args);
+    interface Result {
+      order_by: number;
+    }
+    let model = await context.queryOne<Result>(sql, args);
     let result = model?.order_by || 1;
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { result });

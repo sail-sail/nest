@@ -58,7 +58,7 @@
     </el-form>
   </div>
   <div class="toolbar_div">
-    <template v-if="search.is_deleted === 0">
+    <template v-if="search.is_deleted !== 1">
       <el-button
         type="primary"
         :icon="CirclePlus"
