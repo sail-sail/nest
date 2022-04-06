@@ -53,6 +53,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.DATA_TYPE;
@@ -218,9 +219,10 @@ export class <#=tableUp#>Dao {
     }
     #>
     
-    const model = await context.queryOne<{
+    interface Result {
       total: number,
-    }>(sql, args<#
+    }
+    const model = await context.queryOne<Result>(sql, args<#
     if (cache) {
     #>, { cacheKey1, cacheKey2 }<#
     }
@@ -547,9 +549,10 @@ export class <#=tableUp#>Dao {
     }
     #>
     
-    let model = await context.queryOne<{
+    interface Result {
       e: number,
-    }>(sql, args<#
+    }
+    let model = await context.queryOne<Result>(sql, args<#
     if (cache) {
     #>, { cacheKey1, cacheKey2 }<#
     }
@@ -601,6 +604,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
@@ -827,6 +831,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
@@ -1047,9 +1052,10 @@ export class <#=tableUp#>Dao {
       limit 1
     `;
     
-    let model = await context.queryOne<{
-      order_by: number,
-    }>(sql, args);
+    interface Result {
+      order_by: number;
+    }
+    let model = await context.queryOne<Result>(sql, args);
     let result = model?.order_by || 1;
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { result });

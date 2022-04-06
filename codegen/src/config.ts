@@ -12,6 +12,34 @@ export interface TableCloumn {
   ignoreCodegen?: boolean,
   
   /**
+   * 前端不允许修改
+   * @type {boolean}
+   * @memberof TableCloumn
+   */
+  noEdit?: boolean;
+  
+  /**
+  * 前端不允许新增
+  * @type {boolean}
+  * @memberof TableCloumn
+  */
+  noAdd?: boolean;
+  
+  /**
+  * 前端不允许在表格中显示
+  * @type {boolean}
+  * @memberof TableCloumn
+  */
+  noList?: boolean;
+  
+  /**
+   * 是否虚拟字段, 虚拟自动不会在dao中生成增加, 修改操作
+   * @type {boolean}
+   * @memberof TableCloumn
+   */
+  isVirtual?: boolean;
+  
+  /**
    * 表限定符
    * @type {string}
    * @memberof TableCloumn
@@ -383,6 +411,30 @@ export interface TablesConfigItem {
      * @type {{ prop: string, order: string }}
      */
     defaultSort?: { prop: string, order: string };
+    
+    /**
+     * 不允许删除
+     * @type {boolean}
+     */
+    noDelete?: boolean;
+    
+    /**
+     * 不允许还原
+     * @type {boolean}
+     */
+    noRevert?: boolean;
+    
+    /**
+     * 不允许修改
+     * @type {boolean}
+     */
+    noEdit?: boolean;
+    
+    /**
+     * 不允许新增
+     * @type {boolean}
+     */
+    noAdd?: boolean;
     
   },
   columns?: TableCloumn[];

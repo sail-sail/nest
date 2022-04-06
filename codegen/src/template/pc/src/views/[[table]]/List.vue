@@ -157,7 +157,9 @@ const hasSummary = columns.some((column) => column.showSummary);
         }
       }
       #>
-      
+      <#
+      if (opts.noRevert !== true) {
+      #>
       <div style="min-width: 20px;"></div>
       <el-form-item prop="is_deleted">
         <el-checkbox
@@ -169,7 +171,9 @@ const hasSummary = columns.some((column) => column.showSummary);
         >
           回收站
         </el-checkbox>
-      </el-form-item>
+      </el-form-item><#
+      }
+      #>
       
       <div style="min-width: 20px;"></div>
       <el-form-item
@@ -194,21 +198,31 @@ const hasSummary = columns.some((column) => column.showSummary);
     </el-form>
   </div>
   <div class="toolbar_div">
-    <template v-if="search.is_deleted === 0">
+    <template v-if="search.is_deleted !== 1"><#
+      if (opts.noAdd !== true) {
+      #>
       <el-button
         type="primary"
         :icon="CirclePlus"
         @click="openAdd"
       >
         新增
-      </el-button>
+      </el-button><#
+      }
+      #><#
+      if (opts.noEdit !== true) {
+      #>
       <el-button
         type="primary"
         :icon="Edit"
         @click="openEdit"
       >
         编辑
-      </el-button>
+      </el-button><#
+      }
+      #><#
+      if (opts.noDelete !== true) {
+      #>
       <el-button
         type="danger"
         plain
@@ -216,16 +230,22 @@ const hasSummary = columns.some((column) => column.showSummary);
         @click="deleteByIdsEfc"
       >
         删除
-      </el-button>
+      </el-button><#
+      }
+      #>
     </template>
-    <template v-else>
+    <template v-else><#
+      if (opts.noRevert !== true) {
+      #>
       <el-button
         type="primary"
         :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
         还原
-      </el-button>
+      </el-button><#
+      }
+      #>
     </template>
     <el-button
       :icon="Download"
@@ -288,6 +308,7 @@ const hasSummary = columns.some((column) => column.showSummary);
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
+            if (column.noList) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
             const foreignKey = column.foreignKey;
@@ -937,7 +958,9 @@ function summaryMethod(
 }<#
 }
 #>
-
+<#
+if (opts.noAdd !== true) {
+#>
 // 打开增加页面
 async function openAdd() {
   const {
@@ -957,8 +980,12 @@ async function openAdd() {
     ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
+}<#
 }
-
+#>
+<#
+if (opts.noEdit !== true) {
+#>
 // 打开修改页面
 async function openEdit() {
   if (selectList.length === 0) {
@@ -986,8 +1013,12 @@ async function openEdit() {
     ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
+}<#
 }
-
+#>
+<#
+if (opts.noDelete !== true) {
+#>
 // 点击删除
 async function deleteByIdsEfc() {
   if (selectList.length === 0) {
@@ -1016,8 +1047,12 @@ async function deleteByIdsEfc() {
     ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
   }
+}<#
 }
-
+#>
+<#
+if (opts.noRevert !== true) {
+#>
 // 点击还原
 async function revertByIdsEfc() {
   if (selectList.length === 0) {
@@ -1046,7 +1081,9 @@ async function revertByIdsEfc() {
     ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
   }
+}<#
 }
+#>
 
 async function initFrame() {
   if (usrStore.access_token) {

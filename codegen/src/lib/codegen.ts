@@ -2,7 +2,7 @@ import { readFile, stat, writeFile, constants as fs_constants, access, readdir, 
 import * as ejsexcel from "ejsexcel";
 import { Context } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
-import { basename, dirname, resolve } from "path";
+import { basename, dirname, resolve, normalize } from "path";
 import * as chalk from "chalk";
 import * as shelljs from "shelljs";
 import * as uuid from "uuid";
@@ -28,7 +28,8 @@ const projectPh = resolve(`${ __dirname }/../../../`).replace(/\\/gm, "/");
 console.log(`${chalk.gray("工程路径:")} ${chalk.blue(projectPh)}`);
 
 export async function codegen(context: Context, schema: TablesConfigItem) {
-  let { tableUp, table, table_comment, defaultSort, hasTenant_id, cache } = schema.opts;
+  const opts = schema.opts;
+  let { tableUp, table, table_comment, defaultSort, hasTenant_id, cache } = opts;
   const columns = schema.columns;
   const formatMsg = formatMsg0;
   const uniqueID = uniqueID0;
@@ -145,7 +146,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
             if (!str0 || str2 !== str0) {
               writeFnArr.push(async function() {
                 await writeFile(`${out}/${dir3}`, str2);
-                // console.log(`${chalk.gray("生成文件:")} ${chalk.green(path.normalize(`${project}/${dir3}`))}`);
+                console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir3}`))}`);
               });
             }
           }
@@ -160,7 +161,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           if (!str0 || str0 !== str2) {
             writeFnArr.push(async function() {
               await writeFile(`${out}/${dir2}`, str2);
-              // console.log(`${chalk.gray("生成文件:")} ${chalk.green(path.normalize(`${project}/${dir2}`))}`);
+              console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
             });
           }
         }

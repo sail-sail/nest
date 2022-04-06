@@ -36,6 +36,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
+          if (column.noAdd && column.noEdit) continue;
           if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
@@ -54,15 +55,31 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
           const foreignKey = column.foreignKey;
           const foreignTable = foreignKey && foreignKey.table;
           const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+          let vIf = [ ];
+          if (column.noAdd) {
+            vIf.push("dialogAction !== 'add'");
+          }
+          if (column.noEdit) {
+            vIf.push("dialogAction !== 'edit'");
+          }
+          const vIfStr = vIf.join(" && ");
         #>
         
-        <label class="form_label"><# if (require) { #>
+        <label<#
+        if (vIfStr) {
+        #> v-if="<#=vIfStr#>"<#
+        }
+        #> class="form_label"><# if (require) { #>
           <span style="color: red;">*</span><#
           }
           #>
           <span><#=column_comment#></span>
         </label>
-        <el-form-item prop="<#=column_name#>"<#
+        <el-form-item<#
+        if (vIfStr) {
+        #> v-if="<#=vIfStr#>"<#
+        }
+        #> prop="<#=column_name#>"<#
           if (column.isImg) {
         #> class="img_form_item"<#
         }
@@ -206,7 +223,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
         if (column.isImg) {
         #>
         
-        <template v-if="columnNum > 4">
+        <template v-if="<#=vIfStr#> && columnNum > 4">
           <div></div>
           <div></div>
         </template><#
