@@ -5,7 +5,7 @@ import { shortUuidV4 } from "../common/util/uuid";
 import { readFile } from "fs/promises";
 import { renderExcelWorker } from "../common/util/ejsexcel_worker";
 import { renderExcel } from "ejsexcel";
-import { MinioDao } from "../common/minio/minio.dao";
+import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
 import { PermitModel, PermitSearch } from './permit.model';
@@ -16,7 +16,7 @@ export class PermitService {
   
   constructor(
     private readonly eventEmitter2: EventEmitter2,
-    private readonly minioDao: MinioDao,
+    private readonly tmpfileDao: TmpfileDao,
     private readonly permitDao: PermitDao,
   ) { }
   
@@ -236,7 +236,7 @@ export class PermitService {
   /**
    * 导出Excel
    * @param {PermitSearch} search 搜索条件
-   * @return {Promise<String>}
+   * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */
   async exportExcel(
@@ -258,7 +258,7 @@ export class PermitService {
       buffer = await renderExcel(buffer0, { models });
     }
     
-    let reslut = await t.minioDao.upload({
+    let reslut = await t.tmpfileDao.upload({
       data: buffer,
       filename: "权限.xlsx",
       mimetype: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
