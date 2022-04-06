@@ -48,6 +48,9 @@ export class TmpfileDao {
     const t = this;
     const client = await t.getRedisClient();
     const buf = await client.hGet(commandOptions({ returnBuffers: true }), id, "data");
+    if (!buf) {
+      return;
+    }
     return bufferToStream(buf);
   }
   

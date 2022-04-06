@@ -250,6 +250,7 @@
 
 <script setup lang="ts">
 import { watch } from "vue";
+import * as fileSaver from "file-saver";
 import useUsrStore from "@/store/usr";
 import {
   ElMessage,
@@ -329,7 +330,7 @@ async function exportClk() {
       id,
     },
   );
-  window.location.href = url;
+  fileSaver.saveAs(url);
 }
 
 // 搜索功能

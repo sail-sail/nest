@@ -52,15 +52,25 @@ export class TmpfileController {
       }
       res.raw.setHeader("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
       const stream = await t.tmpfileServie.getObject(id);
-      stream.on("close", async() => {
-        if (remove == "1") {
-          await t.tmpfileServie.deleteObject(id);
-        }
-      });
-      stream.pipe(res.raw);
+      if (stream) {
+        stream.on("close", async() => {
+          if (remove == "1") {
+            await t.tmpfileServie.deleteObject(id);
+          }
+        });
+        stream.pipe(res.raw);
+      } else {
+        const errMsg = Buffer.from("文件不存在!");
+        res.raw.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.raw.setHeader("Content-Length", errMsg.length);
+        res.raw.statusCode = 404;
+        res.raw.end(errMsg);
+        return;
+      }
     } catch (err) {
       if (err.code === "NotFound") {
         const errMsg = Buffer.from("文件不存在!");
+        res.raw.setHeader("Content-Type", "text/plain; charset=utf-8");
         res.raw.setHeader("Content-Length", errMsg.length);
         res.raw.statusCode = 404;
         res.raw.end(errMsg);
@@ -68,6 +78,7 @@ export class TmpfileController {
       }
       res.raw.statusCode = 500;
       const errMsg = Buffer.from(err?.message || err?.toString() || err || "");
+      res.raw.setHeader("Content-Type", "text/plain; charset=utf-8");
       res.raw.setHeader("Content-Length", errMsg.length);
       res.raw.end(errMsg);
       throw err;
