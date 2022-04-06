@@ -1,6 +1,8 @@
+import { Readable } from "stream";
 
 export interface FileModel {
-  data: Buffer;
+  data: Readable|Buffer|string;
+  size?: number;
   filename: string;
   mimetype: string;
   encoding?: string;

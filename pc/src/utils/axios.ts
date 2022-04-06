@@ -142,6 +142,7 @@ export function getDownloadUrl(
     remove?: "0"|"1";
     inline?: "0"|"1";
   },
+  type: "minio" | "tmpfile" = "tmpfile",
 ): string {
   const usrStore = useUsrStore();
   const access_token: string = usrStore.access_token;
@@ -159,5 +160,5 @@ export function getDownloadUrl(
   if (model.remove != null) {
     params.set("remove", model.remove);
   }
-  return `${ baseURL }/api/minio/download/${ model.filename || "" }?${ params.toString() }`;
+  return `${ baseURL }/api/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
 }

@@ -29,7 +29,16 @@ pendingTimeout = 15000
 [cache]
 type = "redis"
 database = 0
-[socket]
+[cache.socket]
+#path = "/tmp/redis.sock"
+host = "localhost"
+port = 6379
+
+[tmpfile]
+type = "redis"
+database = 3
+expire = 86400
+[tmpfile.socket]
 #path = "/tmp/redis.sock"
 host = "localhost"
 port = 6379

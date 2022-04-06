@@ -1,26 +1,13 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
-import { AuthGuard } from "../auth/auth.guard";
 import { FileModel } from "../file.model";
-import { useContext } from "../interceptors/context.interceptor";
-import { MinioService } from "./minio.service";
+import { TmpfileService } from "./tmpfile.service";
 
-@Controller("minio")
-export class MinioController {
+@Controller("tmpfile")
+export class TmpfileController {
   
   constructor(
-    private readonly minioService: MinioService,
+    private readonly tmpfileServie: TmpfileService,
   ) { }
-  
-  @Post("upload")
-  @UseGuards(AuthGuard)
-  async upload(
-    @Body("file") files: FileModel[],
-  ): Promise<string> {
-    const t = this;
-    if (!files || !files.length) return;
-    const result = await t.minioService.upload(files[0]);
-    return result;
-  }
   
   @Get("download/:filename")
   async download(
@@ -28,10 +15,11 @@ export class MinioController {
     @Req() req: any,
     @Query("id") id: string,
     @Param("filename") filename?: string,
+    @Query("remove") remove?: "0"|"1",
     @Query("inline") inline?: "0"|"1",
   ): Promise<void> {
+    const t = this;
     try {
-      const context = useContext();
       if (!inline) {
         inline = "1";
       }
@@ -39,7 +27,10 @@ export class MinioController {
       if (inline != "1") {
         attachment = "attachment";
       }
-      const stats = await context.minioStatObject(id);
+      if (!remove) {
+        remove = "1";
+      }
+      const stats = await t.tmpfileServie.statObject(id);
       if (stats) {
         if (stats.metaData["content-type"]) {
           res.raw.setHeader('Content-Type', stats.metaData["content-type"]);
@@ -54,13 +45,18 @@ export class MinioController {
           res.raw.setHeader("ETag", stats.etag);
         }
         if (req.raw.headers["if-none-match"] === stats.etag) {
-          res.raw.setHeader('Content-Disposition', `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
+          res.raw.setHeader("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
           res.status(304).send();
           return;
         }
       }
-      res.raw.setHeader('Content-Disposition', `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
-      const stream = await context.minioGetObject(id);
+      res.raw.setHeader("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
+      const stream = await t.tmpfileServie.getObject(id);
+      stream.on("close", async() => {
+        if (remove == "1") {
+          await t.tmpfileServie.deleteObject(id);
+        }
+      });
       stream.pipe(res.raw);
     } catch (err) {
       if (err.code === "NotFound") {

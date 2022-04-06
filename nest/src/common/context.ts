@@ -1,19 +1,13 @@
 import { createPool, Pool, PoolConnection, ResultSetHeader } from "mysql2/promise";
 import config, { _PROJECT_PATH } from "../common/config";
-// import { includeFtl, isEmpty as isEmpty0 } from "./util/StringUitl";
-// import * as dayjs from "dayjs";
-// import * as sqlstring from "sqlstring";
+import * as dayjs from "dayjs";
+import * as sqlstring from "sqlstring";
 import { AuthModel } from "./auth/auth.constants";
-// import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 import * as Minio from "minio";
 import { Readable } from "stream";
 import { GraphQLError } from "graphql";
-// import { shortUuidV4 } from "./util/uuid";
-
-let shortUuidV4 = undefined;
-let sqlstring = undefined;
-let createClient = undefined;
-let dayjs = undefined;
+import { shortUuidV4 } from "./util/uuid";
 
 let pool: Pool;
 
@@ -76,26 +70,22 @@ export class Context {
     t.req_id = dateNow.getTime();
   }
   
-  private _redisClient: any;
+  private _redisClient: RedisClientType;
   
-  private async getCacheClient() {
+  private async getCacheClient(): Promise<RedisClientType> {
     const t = this;
     if (config.cache && config.cache.type === "redis" && !t._redisClient) {
-      if (!createClient) {
-        createClient = require("redis").createClient;
-      }
       const client = createClient(config.cache);
       client.on("error", (err: Error) => {
         console.log(err.message);
       });
       await client.connect();
-      t._redisClient = client;
-      return client;
+      t._redisClient = <RedisClientType>client;
+      return t._redisClient;
     } else {
       return t._redisClient;
     }
   }
-  
   
   /**
    * 读取缓存
@@ -184,9 +174,6 @@ export class Context {
   }
   
   async shortUuidV4(): Promise<string> {
-    if (!shortUuidV4) {
-      shortUuidV4 = require("./util/uuid").shortUuidV4;
-    }
     return shortUuidV4();
   }
   
@@ -485,17 +472,11 @@ export class Context {
   
   escapeId(value: any, forbidQualified?: boolean) {
     if (value == null) return value;
-    if (!sqlstring) {
-      sqlstring = require("sqlstring");
-    }
     return sqlstring.escapeId(value, forbidQualified);
   }
   
   escape(value: any, forbidQualified?: boolean, timeZone?: string) {
     if (value == null) return value;
-    if (!sqlstring) {
-      sqlstring = require("sqlstring");
-    }
     return sqlstring.escape(value, forbidQualified, timeZone);
   }
   
@@ -516,9 +497,6 @@ export class Context {
    */
   private getDebugQuery(query: string, args: any[]): string {
     let i = 0;
-    if (!dayjs) {
-      dayjs = require("dayjs");
-    }
     const sql = query.replace(/\s+/gm, " ").replace(/\?/gm, () => {
       let val = null;
       let parameter = args && args[i];

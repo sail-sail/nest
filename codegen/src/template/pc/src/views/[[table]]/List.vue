@@ -627,10 +627,11 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 // 导出Excel
 async function exportClk() {
   const id = await exportExcel(search);
-  const url = getDownloadUrl({
-    id,
-    remove: "1",
-  });
+  const url = getDownloadUrl(
+    {
+      id,
+    },
+  );
   window.location.href = url;
 }
 

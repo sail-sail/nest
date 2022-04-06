@@ -30,7 +30,7 @@ export class MinioDao {
     }
     mateData["X-Amz-Meta-Filename"] = encodeURIComponent(filename);
     const id = shortUuidV4();
-    await context.minioPutObject(id, file.data, file.data.length, mateData);
+    await context.minioPutObject(id, file.data, file.size, mateData);
     return id;
   }
   

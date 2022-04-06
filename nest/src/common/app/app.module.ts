@@ -14,6 +14,7 @@ import { AppDao } from "./app.dao";
 import { WxappModule } from "../wxapp/wxapp.module";
 import { MinioModule } from "../minio/minio.module";
 import { LogerGqlPlugin } from "../interceptors/loger.interceptor";
+import { TmpfileModule } from "../tmpfile/tmpfile.module";
 
 @Global()
 @Module({
@@ -39,6 +40,7 @@ import { LogerGqlPlugin } from "../interceptors/loger.interceptor";
     AuthModule,
     WxappModule,
     MinioModule,
+    TmpfileModule,
     
     ...modulesGen,
   ],
