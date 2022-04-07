@@ -225,9 +225,9 @@ export interface TableCloumn {
     
     /**
      * 下拉框显示字段, 默认为: lbl
-     * @type {string}
+     * @type {string | string[]}
      */
-    lbl: string,
+    lbl: string | string[],
     
     /**
      * 外键关联的类型, json还是 多对多关联
@@ -363,7 +363,7 @@ export interface TableCloumn {
    * @type {boolean}
    * @memberof TableCloumn
    */
-   showSummary?: boolean,
+  showSummary?: boolean,
    
 }
 
@@ -435,6 +435,12 @@ export interface TablesConfigItem {
      * @type {boolean}
      */
     noAdd?: boolean;
+    
+    /**
+     * 唯一约束
+     * @type {string[]}
+     */
+    unique?: string[];
     
   },
   columns?: TableCloumn[];

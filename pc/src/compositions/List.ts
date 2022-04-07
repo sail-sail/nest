@@ -5,6 +5,7 @@ import {
 } from "element-plus";
 import { useRoute } from "vue-router";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
+import useIndexStore from "@/store/index";
 
 export function useSearch<T>(dataGrid: Function) {
   
@@ -206,9 +207,18 @@ export function useTableColumns<T>(
     const str = window.localStorage.getItem(persistKey);
     if (str) {
       try {
-        tableColumn1s = JSON.parse(str);
+        const strObj = JSON.parse(str);
+        tableColumn1s = strObj?.tableColumns;
+        let version: string = strObj?.version;
+        const indexStore = useIndexStore();
+        if (version !== indexStore.version) {
+          window.localStorage.removeItem(persistKey);
+          tableColumn1s = undefined;
+        }
       } catch (err) {
         console.error(err);
+        window.localStorage.removeItem(persistKey);
+        tableColumn1s = undefined;
       }
     }
     if (!tableColumn1s) {
@@ -222,7 +232,7 @@ export function useTableColumns<T>(
     if (tableColumns2) {
       tableColumns.value = tableColumns2;
     }
-    window.localStorage.setItem(persistKey, JSON.stringify(tableColumns.value));
+    window.localStorage.setItem(persistKey, JSON.stringify({ tableColumns: tableColumns.value, version: useIndexStore().version }));
   }
   
   function deleteColumns() {

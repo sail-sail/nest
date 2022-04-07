@@ -9,6 +9,7 @@ import { ResultSetHeader } from "mysql2/promise";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { PageModel } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
+import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";<#
 if (hasSummary) {
@@ -412,6 +413,132 @@ export class <#=tableUp#>Dao {
     if (afterEvent?.isReturn) return <typeof result>afterEvent.data;
     
     return result;
+  }
+  
+  /**
+   * 获得表的唯一字段名列表
+   * @return {{ uniqueKeys: string[]; uniqueComments: { [key: string]: string }; }}
+   * @memberof <#=tableUp#>Dao
+   */
+  getUniqueKeys(
+  ): {
+    uniqueKeys: string[];
+    uniqueComments: { [key: string]: string };
+    } {
+    const uniqueKeys = [<#
+    for (let i = 0; i < (opts.unique || []).length; i++) {
+      const uniqueKey = opts.unique[i];
+    #>
+      "<#=uniqueKey#>",<#
+    }
+    #>
+    ];
+    const uniqueComments = {<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        // if (column.ignoreCodegen) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === "id") continue;
+        const unique = opts.unique || [ ];
+        if (!unique.includes(column_name)) continue;
+        let column_comment = column.COLUMN_COMMENT || "";
+        if (column_comment.includes("[")) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        if (column_comment.includes("[")) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+    #>
+      <#=column_name#>: "<#=column_comment#>",<#
+      }
+    #>
+    };
+    return { uniqueKeys, uniqueComments };
+  }
+  
+  /**
+   * 通过唯一字段获得一行数据
+   * @param {<#=tableUp#>Search} search0
+   * @memberof <#=tableUp#>Dao
+   */
+  async findByUnique(
+    search0: <#=tableUp#>Search | <#=tableUp#>Model,
+  ) {
+    const t = this;
+    const { uniqueKeys } = t.getUniqueKeys();
+    if (!uniqueKeys || uniqueKeys.length === 0) return;
+    const search: <#=tableUp#>Search = { };
+    for (let i = 0; i < uniqueKeys.length; i++) {
+      const key = uniqueKeys[i];
+      if (!search0.hasOwnProperty(key)) {
+        throw new Error(`<#=tableUp#>Dao.findByUnique 缺少唯一字段：${ key }`);
+      }
+      const val = search0[key];
+      search[key] = val;
+    }
+    const model = await t.findOne(search);
+    return model;
+  }
+  
+  /**
+   * 根据唯一约束对比对象是否相等
+   * @param {<#=tableUp#>Model} oldModel
+   * @param {<#=tableUp#>Model} model
+   * @return {boolean}
+   * @memberof <#=tableUp#>Dao
+   */
+  equalsByUnique(
+    oldModel: <#=tableUp#>Model,
+    model: <#=tableUp#>Model,
+  ): boolean {
+    const t = this;
+    if (!oldModel || !model) return false;
+    const { uniqueKeys } = t.getUniqueKeys();
+    if (!uniqueKeys || uniqueKeys.length === 0) return false;
+    let isEquals = true;
+    for (let i = 0; i < uniqueKeys.length; i++) {
+      const key = uniqueKeys[i];
+      const oldVal = oldModel[key];
+      const val = model[key];
+      if (oldVal != val) {
+        isEquals = false;
+        break;
+      }
+    }
+    return isEquals;
+  }
+  
+  /**
+   * 通过唯一约束检查数据是否已经存在
+   * @param {<#=tableUp#>Model} model
+   * @param {<#=tableUp#>Model} oldModel
+   * @param {("ignore" | "throw" | "update")} uniqueType
+   * @return {Promise<ResultSetHeader>}
+   * @memberof <#=tableUp#>Dao
+   */
+  async checkByUnique(
+    model: <#=tableUp#>Model,
+    oldModel: <#=tableUp#>Model,
+    uniqueType: "ignore" | "throw" | "update",
+  ): Promise<ResultSetHeader> {
+    const t = this;
+    uniqueType = uniqueType || "throw";
+    const isEquals = t.equalsByUnique(oldModel, model);
+    if (isEquals) {
+      if (uniqueType === "throw") {
+        const { uniqueKeys, uniqueComments } = t.getUniqueKeys();
+        const lbl = uniqueKeys.map((key) => `${ uniqueComments[key] }: ${ model[`_${ key }`] ?? model[key] }`).join("; ");
+        throw new UniqueException(`${ lbl } 已存在!`);
+      }
+      if (uniqueType === "update") {
+        const resultSetHeader = await t.updateById(oldModel.id, model);
+        return resultSetHeader;
+      }
+      if (uniqueType === "ignore") {
+        return <ResultSetHeader> { affectedRows: 0 };
+      }
+    }
+    return;
   }<#
   if (hasSummary) {
   #>
@@ -568,11 +695,20 @@ export class <#=tableUp#>Dao {
   /**
    * 创建数据
    * @param {<#=tableUp#>Model} model
+   * @param {({
+   *   uniqueType?: "ignore" | "throw" | "update",
+   * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+   *   ignore: 忽略冲突
+   *   throw: 抛出异常
+   *   update: 更新冲突数据
    * @return {Promise<ResultSetHeader>} 
    * @memberof <#=tableUp#>Dao
    */
   async create(
     model: <#=tableUp#>Model,
+    options?: {
+      uniqueType?: "ignore" | "throw" | "update",
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     if (!model) {
@@ -583,6 +719,12 @@ export class <#=tableUp#>Dao {
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const oldModel = await t.findByUnique(model);
+    const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
+    if (resultSetHeader) {
+      return resultSetHeader;
+    }
     
     const context = useContext();
     const args = [ ];
@@ -800,12 +942,21 @@ export class <#=tableUp#>Dao {
    * 根据id修改数据
    * @param {string} id
    * @param {<#=tableUp#>Model} model
+   * @param {({
+   *   uniqueType?: "ignore" | "throw" | "update",
+   * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+   *   ignore: 忽略冲突
+   *   throw: 抛出异常
+   *   create: 级联插入新数据
    * @return {Promise<ResultSetHeader>}
    * @memberof <#=tableUp#>Dao
    */
   async updateById(
     id: string,
     model: <#=tableUp#>Model,
+    options?: {
+      uniqueType?: "ignore" | "throw" | "create",
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     
@@ -818,6 +969,22 @@ export class <#=tableUp#>Dao {
     if (!id || !model) {
       return;
     }
+    
+    const oldModel = await t.findByUnique(model);
+    if (oldModel) {
+      if (oldModel.id !== id && options?.uniqueType !== "create") {
+        const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
+        if (resultSetHeader) {
+          return resultSetHeader;
+        }
+      }
+    } else {
+      if (options?.uniqueType === "create") {
+        const resultSetHeader = await t.create({ ...model, id });
+        return resultSetHeader;
+      }
+    }
+    
     const context = useContext();
     const args = [ ];
     let sql = `
@@ -853,35 +1020,38 @@ export class <#=tableUp#>Dao {
       } else if (foreignKey && foreignKey.type === "json") {
     #>
     if (model.<#=column_name#> !== undefined) {
-      sql += `,<#=column_name#> = ?`;
-      args.push(model.<#=column_name#>);
+      if (isEmpty(model.<#=column_name#>)) {
+        model.<#=column_name#> = null;
+      }
+      if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
+        sql += `,<#=column_name#> = ?`;
+        args.push(model.<#=column_name#>);
+      }
     }<#
       } else if (foreignKey && foreignKey.type === "many2many") {
     #><#
       } else if (!foreignKey) {
     #>
     if (model.<#=column_name#> !== undefined) {
-      sql += `,<#=column_name#> = ?`;
-      args.push(model.<#=column_name#>);
+      if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
+        sql += `,<#=column_name#> = ?`;
+        args.push(model.<#=column_name#>);
+      }
     }<#
       } else {
     #>
     if (model.<#=column_name#> !== undefined) {
-      sql += `,<#=column_name#> = ?`;
-      args.push(model.<#=column_name#>);
+      if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
+        sql += `,<#=column_name#> = ?`;
+        args.push(model.<#=column_name#>);
+      }
     }<#
       }
     #><#
     }
     #>
     sql += ` where id = ? limit 1`;
-    args.push(id);<#
-    if (cache) {
-    #>
-    
-    await t.delCache();<#
-    }
-    #>
+    args.push(id);
     
     let result = await context.execute(sql, args);<#
     for (let i = 0; i < columns.length; i++) {
@@ -912,6 +1082,12 @@ export class <#=tableUp#>Dao {
     #><#
       }
     #><#
+    }
+    #><#
+    if (cache) {
+    #>
+    
+    await t.delCache();<#
     }
     #>
     

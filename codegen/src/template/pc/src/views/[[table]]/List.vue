@@ -748,7 +748,7 @@ for (let i = 0; i < columns.length; i++) {
     }
     #>
   },<#
-  } else if (selectList.length > 0 || (foreignKey && foreignKey.multiple)) {
+  } else if (selectList.length > 0 || foreignKey) {
   #>
   {
     label: "<#=column_comment#>",

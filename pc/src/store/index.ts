@@ -11,6 +11,8 @@ export default defineStore("index", function() {
   
   let loading = $ref(0);
   
+  let version = $ref<string>(localStorage.getItem("__version"));
+  
   function addLoading() {
     loading++;
     if (elLoading) {
@@ -51,6 +53,7 @@ export default defineStore("index", function() {
   
   return $$({
     loading,
+    version,
     addLoading,
     minusLoading,
     reset,

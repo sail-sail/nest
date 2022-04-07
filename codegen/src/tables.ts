@@ -4,6 +4,7 @@ export default defineConfig({
   role: {
     opts: {
       cache: true,
+      unique: [ "lbl" ],
     },
     columns: [
       {
@@ -19,6 +20,7 @@ export default defineConfig({
   tenant: {
     opts: {
       cache: true,
+      unique: [ "lbl" ],
     },
     columns: [
       {
@@ -35,6 +37,7 @@ export default defineConfig({
     opts: {
       cache: true,
       ignoreCodegen: false,
+      unique: [ "lbl" ],
     },
     columns: [
       {
@@ -73,6 +76,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      unique: [ "menu_id", "lbl" ],
     },
     columns: [
       {
@@ -97,6 +101,7 @@ export default defineConfig({
   permit: {
     opts: {
       cache: true,
+      unique: [ "menu_id", "lbl" ],
     },
   },
 });
