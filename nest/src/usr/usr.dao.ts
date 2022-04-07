@@ -4,6 +4,7 @@ import { ResultSetHeader } from "mysql2/promise";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { PageModel } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
+import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { UsrModel, UsrSearch } from "./usr.model";
 import { AuthDao } from "../common/auth/auth.dao";
@@ -215,6 +216,110 @@ export class UsrDao {
   }
   
   /**
+   * 获得表的唯一字段名列表
+   * @return {{ uniqueKeys: string[]; uniqueComments: { [key: string]: string }; }}
+   * @memberof UsrDao
+   */
+  getUniqueKeys(
+  ): {
+    uniqueKeys: string[];
+    uniqueComments: { [key: string]: string };
+    } {
+    const uniqueKeys = [
+      "lbl",
+    ];
+    const uniqueComments = {
+      lbl: "名称",
+    };
+    return { uniqueKeys, uniqueComments };
+  }
+  
+  /**
+   * 通过唯一字段获得一行数据
+   * @param {UsrSearch} search0
+   * @memberof UsrDao
+   */
+  async findByUnique(
+    search0: UsrSearch | UsrModel,
+  ) {
+    const t = this;
+    const { uniqueKeys } = t.getUniqueKeys();
+    if (!uniqueKeys || uniqueKeys.length === 0) return;
+    const search: UsrSearch = { };
+    for (let i = 0; i < uniqueKeys.length; i++) {
+      const key = uniqueKeys[i];
+      if (!search0.hasOwnProperty(key)) {
+        throw new Error(`UsrDao.findByUnique 缺少唯一字段：${ key }`);
+      }
+      const val = search0[key];
+      search[key] = val;
+    }
+    const model = await t.findOne(search);
+    return model;
+  }
+  
+  /**
+   * 根据唯一约束对比对象是否相等
+   * @param {UsrModel} oldModel
+   * @param {UsrModel} model
+   * @return {boolean}
+   * @memberof UsrDao
+   */
+  equalsByUnique(
+    oldModel: UsrModel,
+    model: UsrModel,
+  ): boolean {
+    const t = this;
+    if (!oldModel || !model) return false;
+    const { uniqueKeys } = t.getUniqueKeys();
+    if (!uniqueKeys || uniqueKeys.length === 0) return false;
+    let isEquals = true;
+    for (let i = 0; i < uniqueKeys.length; i++) {
+      const key = uniqueKeys[i];
+      const oldVal = oldModel[key];
+      const val = model[key];
+      if (oldVal != val) {
+        isEquals = false;
+        break;
+      }
+    }
+    return isEquals;
+  }
+  
+  /**
+   * 通过唯一约束检查数据是否已经存在
+   * @param {UsrModel} model
+   * @param {UsrModel} oldModel
+   * @param {("ignore" | "throw" | "update")} uniqueType
+   * @return {Promise<ResultSetHeader>}
+   * @memberof UsrDao
+   */
+  async checkByUnique(
+    model: UsrModel,
+    oldModel: UsrModel,
+    uniqueType: "ignore" | "throw" | "update",
+  ): Promise<ResultSetHeader> {
+    const t = this;
+    uniqueType = uniqueType || "throw";
+    const isEquals = t.equalsByUnique(oldModel, model);
+    if (isEquals) {
+      if (uniqueType === "throw") {
+        const { uniqueKeys, uniqueComments } = t.getUniqueKeys();
+        const lbl = uniqueKeys.map((key) => `${ uniqueComments[key] }: ${ model[`_${ key }`] ?? model[key] }`).join("; ");
+        throw new UniqueException(`${ lbl } 已存在!`);
+      }
+      if (uniqueType === "update") {
+        const resultSetHeader = await t.updateById(oldModel.id, model);
+        return resultSetHeader;
+      }
+      if (uniqueType === "ignore") {
+        return <ResultSetHeader> { affectedRows: 0 };
+      }
+    }
+    return;
+  }
+  
+  /**
    * 根据条件查找第一条数据
    * @param {UsrSearch} [search]
    * @return {Promise<UsrModel>} 
@@ -305,11 +410,20 @@ export class UsrDao {
   /**
    * 创建数据
    * @param {UsrModel} model
+   * @param {({
+   *   uniqueType?: "ignore" | "throw" | "update",
+   * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+   *   ignore: 忽略冲突
+   *   throw: 抛出异常
+   *   update: 更新冲突数据
    * @return {Promise<ResultSetHeader>} 
    * @memberof UsrDao
    */
   async create(
     model: UsrModel,
+    options?: {
+      uniqueType?: "ignore" | "throw" | "update",
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     if (!model) {
@@ -320,6 +434,12 @@ export class UsrDao {
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const oldModel = await t.findByUnique(model);
+    const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
+    if (resultSetHeader) {
+      return resultSetHeader;
+    }
     
     const context = useContext();
     const args = [ ];
@@ -420,12 +540,21 @@ export class UsrDao {
    * 根据id修改数据
    * @param {string} id
    * @param {UsrModel} model
+   * @param {({
+   *   uniqueType?: "ignore" | "throw" | "update",
+   * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+   *   ignore: 忽略冲突
+   *   throw: 抛出异常
+   *   create: 级联插入新数据
    * @return {Promise<ResultSetHeader>}
    * @memberof UsrDao
    */
   async updateById(
     id: string,
     model: UsrModel,
+    options?: {
+      uniqueType?: "ignore" | "throw" | "create",
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     
@@ -438,6 +567,22 @@ export class UsrDao {
     if (!id || !model) {
       return;
     }
+    
+    const oldModel = await t.findByUnique(model);
+    if (oldModel) {
+      if (oldModel.id !== id && options?.uniqueType !== "create") {
+        const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
+        if (resultSetHeader) {
+          return resultSetHeader;
+        }
+      }
+    } else {
+      if (options?.uniqueType === "create") {
+        const resultSetHeader = await t.create({ ...model, id });
+        return resultSetHeader;
+      }
+    }
+    
     const context = useContext();
     const args = [ ];
     let sql = `
@@ -449,33 +594,41 @@ export class UsrDao {
       args.push(context.getUsr_id());
     }
     if (model.lbl !== undefined) {
-      sql += `,lbl = ?`;
-      args.push(model.lbl);
+      if (model.lbl != oldModel?.lbl) {
+        sql += `,lbl = ?`;
+        args.push(model.lbl);
+      }
     }
     if (model.username !== undefined) {
-      sql += `,username = ?`;
-      args.push(model.username);
+      if (model.username != oldModel?.username) {
+        sql += `,username = ?`;
+        args.push(model.username);
+      }
     }
     if (!isEmpty(model.password)) {
       sql += `,password = ?`;
       args.push(t.authDao.getPassword(model.password));
     }
     if (model.is_enabled !== undefined) {
-      sql += `,is_enabled = ?`;
-      args.push(model.is_enabled);
+      if (model.is_enabled != oldModel?.is_enabled) {
+        sql += `,is_enabled = ?`;
+        args.push(model.is_enabled);
+      }
     }
     if (model.rem !== undefined) {
-      sql += `,rem = ?`;
-      args.push(model.rem);
+      if (model.rem != oldModel?.rem) {
+        sql += `,rem = ?`;
+        args.push(model.rem);
+      }
     }
     sql += ` where id = ? limit 1`;
     args.push(id);
     
-    await t.delCache();
-    
     let result = await context.execute(sql, args);
     // 角色
     await many2manyUpdate(model, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
+    
+    await t.delCache();
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { id, model, result });
     if (afterEvent?.isReturn) return afterEvent.data;

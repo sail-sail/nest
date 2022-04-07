@@ -320,6 +320,10 @@ let tableData: PermitModel[] = $ref([ ]);
 
 let tableColumns = $ref<ColumnType[]>([
   {
+    label: "菜单",
+    prop: "_menu_id",
+  },
+  {
     label: "名称",
     prop: "lbl",
   },

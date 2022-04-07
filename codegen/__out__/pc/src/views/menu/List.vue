@@ -420,6 +420,10 @@ let tableColumns = $ref<ColumnType[]>([
     prop: "_type",
   },
   {
+    label: "父菜单",
+    prop: "_menu_id",
+  },
+  {
     label: "名称",
     prop: "lbl",
   },

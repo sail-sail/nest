@@ -4,6 +4,7 @@ import { ResultSetHeader } from "mysql2/promise";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { PageModel } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
+import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { PermitModel, PermitSearch } from "./permit.model";
 
@@ -155,6 +156,112 @@ export class PermitDao {
   }
   
   /**
+   * 获得表的唯一字段名列表
+   * @return {{ uniqueKeys: string[]; uniqueComments: { [key: string]: string }; }}
+   * @memberof PermitDao
+   */
+  getUniqueKeys(
+  ): {
+    uniqueKeys: string[];
+    uniqueComments: { [key: string]: string };
+    } {
+    const uniqueKeys = [
+      "menu_id",
+      "lbl",
+    ];
+    const uniqueComments = {
+      menu_id: "菜单",
+      lbl: "名称",
+    };
+    return { uniqueKeys, uniqueComments };
+  }
+  
+  /**
+   * 通过唯一字段获得一行数据
+   * @param {PermitSearch} search0
+   * @memberof PermitDao
+   */
+  async findByUnique(
+    search0: PermitSearch | PermitModel,
+  ) {
+    const t = this;
+    const { uniqueKeys } = t.getUniqueKeys();
+    if (!uniqueKeys || uniqueKeys.length === 0) return;
+    const search: PermitSearch = { };
+    for (let i = 0; i < uniqueKeys.length; i++) {
+      const key = uniqueKeys[i];
+      if (!search0.hasOwnProperty(key)) {
+        throw new Error(`PermitDao.findByUnique 缺少唯一字段：${ key }`);
+      }
+      const val = search0[key];
+      search[key] = val;
+    }
+    const model = await t.findOne(search);
+    return model;
+  }
+  
+  /**
+   * 根据唯一约束对比对象是否相等
+   * @param {PermitModel} oldModel
+   * @param {PermitModel} model
+   * @return {boolean}
+   * @memberof PermitDao
+   */
+  equalsByUnique(
+    oldModel: PermitModel,
+    model: PermitModel,
+  ): boolean {
+    const t = this;
+    if (!oldModel || !model) return false;
+    const { uniqueKeys } = t.getUniqueKeys();
+    if (!uniqueKeys || uniqueKeys.length === 0) return false;
+    let isEquals = true;
+    for (let i = 0; i < uniqueKeys.length; i++) {
+      const key = uniqueKeys[i];
+      const oldVal = oldModel[key];
+      const val = model[key];
+      if (oldVal != val) {
+        isEquals = false;
+        break;
+      }
+    }
+    return isEquals;
+  }
+  
+  /**
+   * 通过唯一约束检查数据是否已经存在
+   * @param {PermitModel} model
+   * @param {PermitModel} oldModel
+   * @param {("ignore" | "throw" | "update")} uniqueType
+   * @return {Promise<ResultSetHeader>}
+   * @memberof PermitDao
+   */
+  async checkByUnique(
+    model: PermitModel,
+    oldModel: PermitModel,
+    uniqueType: "ignore" | "throw" | "update",
+  ): Promise<ResultSetHeader> {
+    const t = this;
+    uniqueType = uniqueType || "throw";
+    const isEquals = t.equalsByUnique(oldModel, model);
+    if (isEquals) {
+      if (uniqueType === "throw") {
+        const { uniqueKeys, uniqueComments } = t.getUniqueKeys();
+        const lbl = uniqueKeys.map((key) => `${ uniqueComments[key] }: ${ model[`_${ key }`] ?? model[key] }`).join("; ");
+        throw new UniqueException(`${ lbl } 已存在!`);
+      }
+      if (uniqueType === "update") {
+        const resultSetHeader = await t.updateById(oldModel.id, model);
+        return resultSetHeader;
+      }
+      if (uniqueType === "ignore") {
+        return <ResultSetHeader> { affectedRows: 0 };
+      }
+    }
+    return;
+  }
+  
+  /**
    * 根据条件查找第一条数据
    * @param {PermitSearch} [search]
    * @return {Promise<PermitModel>} 
@@ -245,11 +352,20 @@ export class PermitDao {
   /**
    * 创建数据
    * @param {PermitModel} model
+   * @param {({
+   *   uniqueType?: "ignore" | "throw" | "update",
+   * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+   *   ignore: 忽略冲突
+   *   throw: 抛出异常
+   *   update: 更新冲突数据
    * @return {Promise<ResultSetHeader>} 
    * @memberof PermitDao
    */
   async create(
     model: PermitModel,
+    options?: {
+      uniqueType?: "ignore" | "throw" | "update",
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     if (!model) {
@@ -260,6 +376,12 @@ export class PermitDao {
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const oldModel = await t.findByUnique(model);
+    const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
+    if (resultSetHeader) {
+      return resultSetHeader;
+    }
     
     const context = useContext();
     const args = [ ];
@@ -336,12 +458,21 @@ export class PermitDao {
    * 根据id修改数据
    * @param {string} id
    * @param {PermitModel} model
+   * @param {({
+   *   uniqueType?: "ignore" | "throw" | "update",
+   * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+   *   ignore: 忽略冲突
+   *   throw: 抛出异常
+   *   create: 级联插入新数据
    * @return {Promise<ResultSetHeader>}
    * @memberof PermitDao
    */
   async updateById(
     id: string,
     model: PermitModel,
+    options?: {
+      uniqueType?: "ignore" | "throw" | "create",
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     
@@ -354,6 +485,22 @@ export class PermitDao {
     if (!id || !model) {
       return;
     }
+    
+    const oldModel = await t.findByUnique(model);
+    if (oldModel) {
+      if (oldModel.id !== id && options?.uniqueType !== "create") {
+        const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
+        if (resultSetHeader) {
+          return resultSetHeader;
+        }
+      }
+    } else {
+      if (options?.uniqueType === "create") {
+        const resultSetHeader = await t.create({ ...model, id });
+        return resultSetHeader;
+      }
+    }
+    
     const context = useContext();
     const args = [ ];
     let sql = `
@@ -365,23 +512,29 @@ export class PermitDao {
       args.push(context.getUsr_id());
     }
     if (model.menu_id !== undefined) {
-      sql += `,menu_id = ?`;
-      args.push(model.menu_id);
+      if (model.menu_id != oldModel?.menu_id) {
+        sql += `,menu_id = ?`;
+        args.push(model.menu_id);
+      }
     }
     if (model.lbl !== undefined) {
-      sql += `,lbl = ?`;
-      args.push(model.lbl);
+      if (model.lbl != oldModel?.lbl) {
+        sql += `,lbl = ?`;
+        args.push(model.lbl);
+      }
     }
     if (model.rem !== undefined) {
-      sql += `,rem = ?`;
-      args.push(model.rem);
+      if (model.rem != oldModel?.rem) {
+        sql += `,rem = ?`;
+        args.push(model.rem);
+      }
     }
     sql += ` where id = ? limit 1`;
     args.push(id);
     
-    await t.delCache();
-    
     let result = await context.execute(sql, args);
+    
+    await t.delCache();
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { id, model, result });
     if (afterEvent?.isReturn) return afterEvent.data;
