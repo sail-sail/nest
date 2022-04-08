@@ -1,7 +1,7 @@
 import { gql, GqlOpt, gqlQuery } from "@/utils/graphql";
 
 // 获取附件信息列表, 包括文件名
-export async function getStatsMinio(
+export async function getStatsOss(
   ids: string[],
   opt?: GqlOpt,
 ): Promise<{
@@ -15,7 +15,7 @@ export async function getStatsMinio(
   const rvData = await gqlQuery({
     query: gql`
       query($ids: [ID]!) {
-        getStatsMinio(ids: $ids) {
+        getStatsOss(ids: $ids) {
           id
           lbl
           content_type
@@ -26,6 +26,6 @@ export async function getStatsMinio(
       ids,
     },
   }, opt);
-  const data = rvData?.getStatsMinio;
+  const data = rvData?.getStatsOss;
   return data;
 }

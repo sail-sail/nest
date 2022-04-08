@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Readable, Stream, Duplex } from "stream";
+import { Readable, Stream } from "stream";
 import { FileModel } from "../file.model";
 import { shortUuidV4 } from "../util/uuid";
 import config from "../config";
@@ -107,7 +107,7 @@ export class TmpfileDao {
   /**
    * 上传文件
    * @param {FileModel} file
-   * @memberof MinioDao
+   * @memberof TmpfileDao
    */
   async upload(file: FileModel) {
     if (!file) return;

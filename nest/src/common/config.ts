@@ -89,7 +89,8 @@ const config = <{
       port?: number,
     },
   },
-  minio?: {
+  oss?: {
+    type: "minio",
     accessKey?: string,
     secretKey?: string,
     endPoint?: string,

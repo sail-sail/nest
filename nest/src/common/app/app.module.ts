@@ -12,7 +12,7 @@ import { AppResolver } from "./app.resolver";
 import { AppService } from "./app.service";
 import { AppDao } from "./app.dao";
 import { WxappModule } from "../wxapp/wxapp.module";
-import { MinioModule } from "../minio/minio.module";
+import { OssModule } from "../oss/oss.module";
 import { LogerGqlPlugin } from "../interceptors/loger.interceptor";
 import { TmpfileModule } from "../tmpfile/tmpfile.module";
 
@@ -39,7 +39,7 @@ import { TmpfileModule } from "../tmpfile/tmpfile.module";
     EventEmitterModule.forRoot({ global: true, wildcard: true }),
     AuthModule,
     WxappModule,
-    MinioModule,
+    OssModule,
     TmpfileModule,
     
     ...modulesGen,

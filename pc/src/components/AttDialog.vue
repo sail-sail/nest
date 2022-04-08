@@ -157,7 +157,7 @@ import { useFullscreenEffect } from "@/compositions/fullscreen";
 import { deepCompare } from "@/views/common/App";
 import { baseURL, uploadFile } from '@/utils/axios';
 import {
-  getStatsMinio,
+  getStatsOss,
 } from "./Api";
 // import usrTenantStore from "@/store/tenant";
 
@@ -217,7 +217,7 @@ let urlList = $computed(() => {
     if (lbl.length > 45) {
       lbl = lbl.substring(0, 45) + "...";
     }
-    let url = `${ baseURL }/api/minio/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
+    let url = `${ baseURL }/api/oss/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
     // if (tenantHost) {
     //   if (content_type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
     //     url = "https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(tenantHost + url);
@@ -258,7 +258,7 @@ async function showDialog(
     fileStats = [ ];
     iframeShoweds = [ true ];
     const ids = modelValue.split(",").filter((x) => x);
-    await getStatsMinioEfc(ids);
+    await getStatsOssEfc(ids);
   }
   inited = true;
   dialogVisible = true;
@@ -267,11 +267,11 @@ async function showDialog(
 // 是否有改动
 let isModelDirty = $computed(() => !deepCompare(dialogModel, oldDialogModel));
 
-async function getStatsMinioEfc(ids: string[]): Promise<{
+async function getStatsOssEfc(ids: string[]): Promise<{
   id: string,
   lbl: string,
 }[]> {
-  const data = await getStatsMinio(ids);
+  const data = await getStatsOss(ids);
   fileStats = fileStats.concat(data);
   return data;
 }
@@ -376,7 +376,7 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
 function downloadClk() {
   let ids = modelValue.split(",").filter((x) => x);
   const id = ids[nowIndex];
-  const url = `${ baseURL }/api/minio/download?inline=0&id=${ encodeURIComponent(id) }`;
+  const url = `${ baseURL }/api/oss/download?inline=0&id=${ encodeURIComponent(id) }`;
   window.location.href = url;
 }
 
@@ -417,7 +417,7 @@ async function inputChg() {
   ids.splice(nowIndex, 0, id);
   modelValue = ids.join(",");
   afterNextIframe();
-  await getStatsMinioEfc([ id ]);
+  await getStatsOssEfc([ id ]);
   emit("change", modelValue);
 }
 

@@ -4,8 +4,6 @@ import * as dayjs from "dayjs";
 import * as sqlstring from "sqlstring";
 import { AuthModel } from "./auth/auth.constants";
 import { createClient, RedisClientType } from "redis";
-import * as Minio from "minio";
-import { Readable } from "stream";
 import { GraphQLError } from "graphql";
 import { shortUuidV4 } from "./util/uuid";
 
@@ -162,7 +160,7 @@ export class Context {
   
   /**
    * 清空整个缓存数据库
-   * @return {*}  {Promise<void>}
+   * @return {Promise<void>}
    * @memberof Context
    */
   async clearCache(): Promise<void> {
@@ -177,33 +175,6 @@ export class Context {
     return shortUuidV4();
   }
   
-  private _minioClient = undefined;
-  
-  private async getMinioClient(): Promise<typeof client> {
-    const t = this;
-    if (t._minioClient) return t._minioClient;
-    const client = new Minio.Client({
-      endPoint: config.minio.endPoint,
-      port: config.minio.port || 9000,
-      useSSL: false,
-      accessKey: config.minio.accessKey,
-      secretKey: config.minio.secretKey,
-    });
-    const _bucketExists = await client.bucketExists(config.minio.bucket);
-    if (!_bucketExists) {
-      await client.makeBucket(config.minio.bucket, config.minio.region || "us-east-1");
-    }
-    t._minioClient = client;
-    return client;
-  }
-  
-  async minioPutObject(objectName: string, stream: Readable|Buffer|string, size?: number, metaData?: { [key: string]: any }) {
-    const t = this;
-    const client = await t.getMinioClient();
-    const uploadedObjectInfo = await client.putObject(config.minio.bucket, objectName, stream, size, metaData);
-    return uploadedObjectInfo;
-  }
-  
   // streamToBuffer(stream: Readable): Promise<Buffer> { 
   //   return new Promise((resolve, reject) => {
   //     let buffers = [];
@@ -212,26 +183,6 @@ export class Context {
   //     stream.on('end', () => resolve(Buffer.concat(buffers)));
   //   });
   // }
-  
-  async minioGetObject(objectName: string, bucket = config.minio.bucket) {
-    const t = this;
-    const client = await t.getMinioClient();
-    const stream = await client.getObject(bucket, objectName);
-    return stream;
-  }
-  
-  async minioDeleteObject(objectName: string, bucket = config.minio.bucket) {
-    const t = this;
-    const client = await t.getMinioClient();
-    await client.removeObject(bucket, objectName);
-  }
-  
-  async minioStatObject(objectName: string, bucket = config.minio.bucket) {
-    const t = this;
-    const client = await t.getMinioClient();
-    const stat = await client.statObject(bucket, objectName);
-    return stat;
-  }
   
   /**
    * 拼装返回的resful成功协议结构

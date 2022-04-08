@@ -36,7 +36,7 @@ let urlList = $computed(() => {
   let ids = props.modelValue.split(",").filter((x) => x);
   for (let id of ids) {
     id = encodeURIComponent(id);
-    list.push(`${ baseURL }/api/minio/download?id=${ id }`);
+    list.push(`${ baseURL }/api/oss/download?id=${ id }`);
   }
   return list;
 });

@@ -17,7 +17,8 @@ connectionLimit = 4
 appid = ""
 secret = ""
 
-[minio]
+[oss]
+type = "minio"
 endPoint = "180.76.246.215"
 port = 9000
 accessKey = "WfLyt5Fkdgpr4YCV"

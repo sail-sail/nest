@@ -106,7 +106,7 @@ let nowIndex = $ref(0);
 let urlList = $computed(() => {
   if (!modelValue) return [ ];
   const ids = modelValue.split(",").filter((x) => x);
-  return ids.map((id) => `${ baseURL }/api/minio/download?id=${ encodeURIComponent(id) }`);
+  return ids.map((id) => `${ baseURL }/api/oss/download?id=${ encodeURIComponent(id) }`);
 });
 
 let fileRef = $ref(undefined);

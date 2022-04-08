@@ -104,7 +104,7 @@ export async function uploadFile(
   config?: AxiosRequestConfig<FormData>,
 ) {
   config = config || { };
-  config.url = config.url || `${ baseURL }/api/minio/upload`;
+  config.url = config.url || `${ baseURL }/api/oss/upload`;
   config.method = config.method || "post";
   const formData = new FormData();
   formData.append("file", file);
@@ -142,7 +142,7 @@ export function getDownloadUrl(
     remove?: "0"|"1";
     inline?: "0"|"1";
   },
-  type: "minio" | "tmpfile" = "tmpfile",
+  type: "oss" | "tmpfile" = "tmpfile",
 ): string {
   const usrStore = useUsrStore();
   const access_token: string = usrStore.access_token;
