@@ -19,8 +19,9 @@
         "NODE_ENV": "hmr"
       },
       "skipFiles": [
-        "${workspaceFolder}/node_modules/**/*.js",
-        "internal/**/*.js"
+        "${workspaceFolder}/nest/node_modules/**",
+        "${workspaceFolder}/nest/src/common/**",
+        "<node_internals>/**"
       ]
     },
     {
@@ -33,8 +34,9 @@
         "NODE_ENV": "hmr"
       },
       "skipFiles": [
-        "${workspaceFolder}/node_modules/**/*.js",
-        "internal/**/*.js"
+        "${workspaceFolder}/nest/node_modules/**",
+        "${workspaceFolder}/nest/src/common/**",
+        "<node_internals>/**"
       ]
     }
   ]
