@@ -804,6 +804,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
@@ -858,6 +859,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
@@ -908,6 +910,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
@@ -1057,6 +1060,7 @@ export class <#=tableUp#>Dao {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
