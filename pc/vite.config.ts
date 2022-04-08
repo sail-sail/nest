@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
-import Terminal from "vite-plugin-terminal";
 // import ViteRsw from "vite-plugin-rsw";
 
 // https://vitejs.dev/config/
@@ -18,9 +17,6 @@ export default defineConfig({
       reactivityTransform: /^((?!node_modules).)*$/,
     }),
     vueJsx(),
-    Terminal({
-      output: [ "terminal" ],
-    }),
     // ViteRsw({
     //   cli: "pnpm",
     //   root: "./",

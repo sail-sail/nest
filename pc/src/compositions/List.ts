@@ -5,7 +5,6 @@ import {
 } from "element-plus";
 import { useRoute } from "vue-router";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
-import useIndexStore from "@/store/index";
 
 export function useSearch<T>(dataGrid: Function) {
   
@@ -207,22 +206,35 @@ export function useTableColumns<T>(
     const str = window.localStorage.getItem(persistKey);
     if (str) {
       try {
-        const strObj = JSON.parse(str);
-        tableColumn1s = strObj?.tableColumns;
-        let version: string = strObj?.version;
-        const indexStore = useIndexStore();
-        if (version !== indexStore.version) {
-          window.localStorage.removeItem(persistKey);
-          tableColumn1s = undefined;
-        }
+        tableColumn1s = JSON.parse(str);
       } catch (err) {
         console.error(err);
         window.localStorage.removeItem(persistKey);
         tableColumn1s = undefined;
       }
     }
-    if (!tableColumn1s) {
-      tableColumn1s = [ ...tableColumn0s ];
+    if (tableColumn1s) {
+      let hasChg = false;
+      for (let i = 0; i < tableColumn0s.length; i++) {
+        const col0 = tableColumn0s[i];
+        if (tableColumn1s.some((col1) => col1.prop === col0.prop)) continue;
+        tableColumn1s.splice(i, 0, col0);
+        hasChg = true;
+      }
+      const rmvIdxs: number[] = [ ];
+      for (let i = 0; i < tableColumn1s.length; i++) {
+        const col1 = tableColumn1s[i];
+        if (tableColumn0s.some((col0) => col1.prop === col0.prop)) continue;
+        rmvIdxs.push(i);
+        hasChg = true;
+      }
+      for (let i = 0; i < rmvIdxs.length; i++) {
+        const rmvIdx = rmvIdxs[i];
+        tableColumn1s.splice(rmvIdx, 1);
+      }
+      if (hasChg) {
+        window.localStorage.setItem(persistKey, JSON.stringify(tableColumn1s));
+      }
     }
   }
   
@@ -232,7 +244,7 @@ export function useTableColumns<T>(
     if (tableColumns2) {
       tableColumns.value = tableColumns2;
     }
-    window.localStorage.setItem(persistKey, JSON.stringify({ tableColumns: tableColumns.value, version: useIndexStore().version }));
+    window.localStorage.setItem(persistKey, JSON.stringify(tableColumns.value));
   }
   
   function deleteColumns() {
