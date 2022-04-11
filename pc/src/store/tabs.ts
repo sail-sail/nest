@@ -16,7 +16,7 @@ export default defineStore("tabs", function() {
   let actTab = $computed(() => tabs.find((item) => item.active));
   
   function activeTab(tab?: TabInf) {
-    if (tab.path === actTab.path) {
+    if (tab?.path === actTab?.path) {
       return;
     }
     let idx = -1;

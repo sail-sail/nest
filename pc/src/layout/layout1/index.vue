@@ -110,7 +110,7 @@ watch(
   () => tabsStore.actTab,
   () => {
     nextTick(() => {
-      const oldTab_active = <HTMLDivElement> tabs_divRef.getElementsByClassName("tab_active")[0];
+      const oldTab_active = <HTMLDivElement> tabs_divRef?.getElementsByClassName("tab_active")[0];
       if (!oldTab_active) {
         return;
       }

@@ -7,7 +7,7 @@ export const baseURL = "";
 
 export const axios = Axios.create({
   baseURL,
-  timeout: 20000,
+  timeout: 60000,
   timeoutErrorMessage: "请求超时!",
 });
 
