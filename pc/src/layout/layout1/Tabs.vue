@@ -11,7 +11,6 @@
     <div class="tab_close_div" v-if="tabs.length > 1">
       <Close class="tab_close" @click.stop="closeClk(item)"/>
     </div>
-    <div class="tab_active_line" v-if="item.active"></div>
   </div>
 </div>
 </template>
@@ -104,21 +103,14 @@ async function closeClk(tab: TabInf) {
   justify-content: center;
   align-items: center;
 }
-.tab_active_line {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-bottom: 3px solid;
-}
 .tab_close_div {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  margin-top: 5px;
-  margin-right: 3px;
-  width: 16px;
-  height: 16px;
+  margin-top: 3px;
+  margin-right: -2px;
+  width: 13px;
+  height: 13px;
 }
 .tab_close {
   visibility: hidden;

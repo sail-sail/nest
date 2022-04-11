@@ -4,6 +4,8 @@ import {
   RouteRecordRaw,
 } from "vue-router";
 import { routesGen } from "./gen";
+import useMenuStore from "../store/menu";
+import useTabsStore from "../store/tabs";
 
 const routes: Array<RouteRecordRaw> = [
   ...routesGen,
@@ -24,7 +26,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-  console.log("beforeEach", to, from);
+  const tabsStore = useTabsStore();
+  if (tabsStore.actTab._hasPermit) {
+    return true;
+  }
+  const menuStore = useMenuStore();
+  const menu = menuStore.getMenuByPath(to.path);
+  if (!menu) {
+    tabsStore.activeTab({ path: from.path });
+    alert("无权限打开此菜单!");
+    return false;
+  }
+  tabsStore.actTab._hasPermit = true;
   return true;
 });
 

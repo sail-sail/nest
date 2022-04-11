@@ -8,7 +8,7 @@
     <LeftMenu class="left_menu"></LeftMenu>
   </div>
   <div class="center_div">
-    <div class="top_div center_top_div">
+    <div class="top_div center_top_div" ref="tabs_divRef">
       <el-icon class="fold_icon" @click="menuStore.isCollapse = !menuStore.isCollapse">
         <Expand v-if="menuStore.isCollapse"/>
         <Fold v-else/>
@@ -32,6 +32,9 @@
           </el-dropdown>
         </div>
       </div>
+    </div>
+    <div class="tab_active_line_div">
+      <div class="tab_active_line" ref="tab_active_lineRef"></div>
     </div>
     <div class="content_div">
       <router-view v-slot="{ Component, route }">
@@ -63,6 +66,7 @@ import {
   RouterView,
 } from "vue-router";
 import {
+  nextTick,
   onMounted,
   watch,
 } from "vue";
@@ -97,6 +101,29 @@ watch(
       query: route.query,
     });
   }
+);
+
+let tabs_divRef = $ref<HTMLDivElement>();
+let tab_active_lineRef = $ref<HTMLDivElement>();
+
+watch(
+  () => tabsStore.actTab,
+  () => {
+    nextTick(() => {
+      const oldTab_active = <HTMLDivElement> tabs_divRef.getElementsByClassName("tab_active")[0];
+      if (!oldTab_active) {
+        return;
+      }
+      const offsetLeft = oldTab_active.offsetLeft;
+      const offsetWidth = oldTab_active.offsetWidth;
+      tab_active_lineRef.style.display = "block";
+      tab_active_lineRef.style.left = `${ offsetLeft }px`;
+      tab_active_lineRef.style.width = `${ offsetWidth }px`;
+    });    
+  },
+  {
+    immediate: true,
+  },
 );
 
 // 关闭其它选项卡
@@ -134,6 +161,7 @@ onMounted(async () => {
   height: 100%;
   overflow: hidden;
   display: flex;
+  position: relative;
 }
 .top_div {
   height: $menu_top_height;
@@ -141,6 +169,7 @@ onMounted(async () => {
   color: #FFF;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 .center_top_div {
   display: flex;
@@ -175,6 +204,8 @@ onMounted(async () => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin-top: 2px;
+  box-sizing: border-box;
 }
 .tabs_div {
   flex: 1 0 0;
@@ -205,5 +236,22 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.tab_active_line_div {
+  height: 3px;
+  width: 100%;
+  position: relative;
+}
+.tab_active_line {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 23px;
+  background-color: var(--el-menu-active-color);
+  height: 3px;
+  border-radius: 3px;
+  transition-property: width, left;
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
 }
 </style>

@@ -6,6 +6,7 @@ export interface TabInf {
   path: string,
   active?: boolean,
   query?: { [key: string]: any },
+  _hasPermit?: boolean, // 当前选项卡是否有权限打开
 }
 
 export default defineStore("tabs", function() {
@@ -15,6 +16,9 @@ export default defineStore("tabs", function() {
   let actTab = $computed(() => tabs.find((item) => item.active));
   
   function activeTab(tab?: TabInf) {
+    if (tab.path === actTab.path) {
+      return;
+    }
     let idx = -1;
     if (tab) {
       idx = tabs.findIndex((item: TabInf) => item.path === tab.path);
