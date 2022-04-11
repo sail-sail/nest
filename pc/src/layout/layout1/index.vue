@@ -92,7 +92,10 @@ const indexStore = useIndexStore();
 const menuStore = useMenuStore();
 
 watch(
-  () => route.path,
+  [
+    () => route.path,
+    () => route.query,
+  ],
   async () => {
     tabsStore.activeTab({
       lbl: String(route.name || ""),

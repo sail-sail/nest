@@ -42,7 +42,7 @@ let tabs = $ref(toRef(props, "tabs"));
 
 async function activeTab(tab: TabInf) {
   tabsStore.activeTab(tab);
-  await router.push({ path: tab.path, query: tab.query });
+  await router.replace({ path: tab.path, query: tab.query });
 }
 
 async function closeClk(tab: TabInf) {
@@ -55,7 +55,7 @@ async function closeClk(tab: TabInf) {
       } else if (tabs[idx - 1]) {
         await activeTab(tabs[idx - 1]);
       } else {
-        await router.push({ path: "/", query: { } });
+        await router.replace({ path: "/", query: { } });
       }
     }
   }

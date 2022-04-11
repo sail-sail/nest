@@ -35,6 +35,10 @@ export default defineConfigWithTheme({
             text: '4. 后端redis缓存机制',
             link: '/frame/4.html',
           },
+          {
+            text: '5. 后台任务列表',
+            link: '/frame/background_task.html',
+          },
         ],
       },
       {

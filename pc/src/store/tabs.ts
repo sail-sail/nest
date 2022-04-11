@@ -16,8 +16,24 @@ export default defineStore("tabs", function() {
   let actTab = $computed(() => tabs.find((item) => item.active));
   
   function activeTab(tab?: TabInf) {
-    if (tab?.path === actTab?.path) {
-      return;
+    if (tab && actTab && tab.path === actTab.path) {
+      const keys1 = Object.keys(tab.query);
+      const keys2 = Object.keys(actTab.query);
+      if (keys1.length === keys2.length) {
+        let isEqual = true;
+        for (let i = 0; i < keys1.length; i++) {
+          const key1 = keys1[i];
+          const val1 = tab.query[key1];
+          const val2 = actTab.query[key1];
+          if (val1 !== val2) {
+            isEqual = false;
+            break;
+          }
+        }
+        if (isEqual) {
+          return;
+        }
+      }
     }
     let idx = -1;
     if (tab) {
@@ -30,6 +46,7 @@ export default defineStore("tabs", function() {
       }
     } else {
       tabs[idx].active = true;
+      tabs[idx].query = tab?.query;
     }
   }
   
