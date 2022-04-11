@@ -241,6 +241,7 @@ onMounted(async () => {
   height: 3px;
   width: 100%;
   position: relative;
+  background-color: rgba(0,0,0, 20%);
 }
 .tab_active_line {
   display: none;
