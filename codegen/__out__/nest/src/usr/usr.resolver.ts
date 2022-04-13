@@ -4,6 +4,7 @@ import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
 import { TENANT_ID } from "../common/auth/auth.constants";
 import { PageModel } from "../common/page.model";
+import { BackgroundTaskInterceptor, BACKGROUND_TASK_RESULT } from "../common/interceptors/background_task.interceptor";
 
 import { UsrService } from "./usr.service";
 import { UsrModel, UsrSearch } from "./usr.model";
@@ -36,6 +37,8 @@ export class UsrResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导出用户", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
   @Query(undefined, { name: "exportExcelUsr", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: UsrSearch,

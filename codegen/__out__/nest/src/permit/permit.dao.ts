@@ -23,6 +23,10 @@ export class PermitDao {
     let whereQuery = "";
     whereQuery += ` t.is_deleted = ?`;
     args.push(search?.is_deleted == null ? 0 : search.is_deleted);
+    if (context.tenant_id) {
+      whereQuery += ` and t.tenant_id = ?`;
+      args.push(context.tenant_id);
+    }
     if (!isEmpty(search?.id)) {
       whereQuery += ` and t.id = ?`;
       args.push(search.id);
@@ -390,6 +394,9 @@ export class PermitDao {
         id
         ,create_time
     `;
+    if (context.tenant_id) {
+      sql += `,tenant_id`;
+    }
     if (context.getUsr_id() !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -405,6 +412,10 @@ export class PermitDao {
     sql += `) values(?,?`;
     args.push(model.id);
     args.push(context.getReqDate());
+    if (context.tenant_id) {
+      sql += ",?";
+      args.push(context.tenant_id);
+    }
     if (context.getUsr_id() !== undefined) {
       sql += `,?`;
       args.push(context.getUsr_id());

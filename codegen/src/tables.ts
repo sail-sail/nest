@@ -104,4 +104,49 @@ export default defineConfig({
       unique: [ "menu_id", "lbl" ],
     },
   },
+  background_task: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      defaultSort: {
+        prop: "begin_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        minWith: 120,
+      },
+      {
+        COLUMN_NAME: "state",
+        require: true,
+        search: true,
+        minWith: 55,
+      },
+      {
+        COLUMN_NAME: "type",
+        require: true,
+        search: true,
+        minWith: 55,
+      },
+      {
+        COLUMN_NAME: "result",
+        minWith: 140,
+      },
+      {
+        COLUMN_NAME: "begin_time",
+        search: true,
+        sortable: true,
+        minWith: 110,
+      },
+      {
+        COLUMN_NAME: "end_time",
+        sortable: true,
+        minWith: 110,
+      },
+    ]
+  },
 });

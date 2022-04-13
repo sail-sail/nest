@@ -40,7 +40,6 @@ export class ContextInterceptor implements NestInterceptor {
     exeCtx: any,
     next: CallHandler<any>,
   ) {
-    
     const type: string = exeCtx.getType();
     let context: any;
     if (type === "http") {

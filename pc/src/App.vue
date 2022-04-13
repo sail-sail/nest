@@ -4,6 +4,7 @@
   :button="{ autoInsertSpace: false }"
 >
   <Layout1></Layout1>
+  <Background_taskListDialog></Background_taskListDialog>
 </el-config-provider>
 </template>
 
@@ -13,6 +14,7 @@ import {
 } from "element-plus";
 import locale from "@/locales";
 import Layout1 from "./layout/layout1/index.vue";
+import Background_taskListDialog from "./views/background_task/ListDialog.vue";
 
 </script>
 

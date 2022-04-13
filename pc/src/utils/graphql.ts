@@ -1,6 +1,7 @@
 import { ElMessage } from "element-plus";
 import { axios } from "./axios";
 import useUsrStore from "../store/usr";
+import useBackground_taskStore from "../store/background_task";
 export { axios, baseURL } from "./axios";
 
 export interface GqlArg {
@@ -70,13 +71,20 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const { data: { data, errors } } = rvData;
   const exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
   if (exception) {
+    const code = exception.code;
     const usrStore = useUsrStore();
-    if (exception.code === "refresh_token_expired") {
+    if (code === "refresh_token_expired") {
       usrStore.setAccess_token("");
       return data;
     }
-    if (exception.code === "token_empty") {
+    if (code === "token_empty") {
       usrStore.setAccess_token("");
+      return data;
+    }
+    if (code === "background_task") {
+      ElMessage.success(exception.message);
+      const background_taskStore = useBackground_taskStore();
+      background_taskStore.listDialogVisible = true;
       return data;
     }
   }

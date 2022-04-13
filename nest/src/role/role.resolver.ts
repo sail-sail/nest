@@ -4,6 +4,7 @@ import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
 import { TENANT_ID } from "../common/auth/auth.constants";
 import { PageModel } from "../common/page.model";
+import { BackgroundTaskInterceptor, BACKGROUND_TASK_RESULT } from "../common/interceptors/background_task.interceptor";
 
 import { RoleService } from "./role.service";
 import { RoleModel, RoleSearch } from "./role.model";
@@ -36,6 +37,8 @@ export class RoleResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导出角色", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
   @Query(undefined, { name: "exportExcelRole", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: RoleSearch,

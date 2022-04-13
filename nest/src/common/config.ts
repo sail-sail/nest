@@ -80,14 +80,15 @@ const config = <{
     },
   },
   tmpfile: {
-    type: "redis",
-    database: number,
-    expire: number,
-    socket?: {
-      path?: string,
-      host?: string,
-      port?: number,
-    },
+    type: "minio",
+    accessKey?: string,
+    secretKey?: string,
+    endPoint?: string,
+    port?: number,
+    bucket?: string,
+    region?: string,
+    poolSize?: number,
+    pendingTimeout?: number,
   },
   oss?: {
     type: "minio",

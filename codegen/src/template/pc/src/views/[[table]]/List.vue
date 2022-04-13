@@ -4,6 +4,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 <div class="wrap_div">
   <div class="search_div">
     <el-form
+      size="default"
       :model="search"
       ref="searchFormRef"
       inline-message
@@ -104,6 +105,8 @@ const hasSummary = columns.some((column) => column.showSummary);
           class="form_input"
           :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
           v-model="search.<#=column_name#>"
+          start-placeholder="开始"
+          end-placeholder="结束"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD HH:mm:ss"
           :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
@@ -628,12 +631,14 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 // 导出Excel
 async function exportClk() {
   const id = await exportExcel(search);
-  const url = getDownloadUrl(
-    {
-      id,
-    },
-  );
-  fileSaver.saveAs(url);
+  if (id) {
+    const url = getDownloadUrl(
+      {
+        id,
+      },
+    );
+    fileSaver.saveAs(url);
+  }
 }
 
 // 搜索功能
@@ -901,13 +906,13 @@ async function dataGrid(isCount = false) {
     tableRef.clearSelection();
   }
 }<#
-if (defaultSort) {
+if (defaultSort && defaultSort.prop) {
 #>
 
 // 默认排序
 let defaultSort = $ref<Sort>({
-  prop: "order_by",
-  order: "ascending",
+  prop: "<#=defaultSort.prop#>",
+  order: "<#=defaultSort.order || 'ascending'#>",
 });<#
 } else {
 #>
@@ -959,10 +964,10 @@ function summaryMethod(
   return sums;
 }<#
 }
-#>
-<#
+#><#
 if (opts.noAdd !== true) {
 #>
+
 // 打开增加页面
 async function openAdd() {
   const {
@@ -984,10 +989,10 @@ async function openAdd() {
   }
 }<#
 }
-#>
-<#
+#><#
 if (opts.noEdit !== true) {
 #>
+
 // 打开修改页面
 async function openEdit() {
   if (selectList.length === 0) {
@@ -1017,10 +1022,10 @@ async function openEdit() {
   }
 }<#
 }
-#>
-<#
+#><#
 if (opts.noDelete !== true) {
 #>
+
 // 点击删除
 async function deleteByIdsEfc() {
   if (selectList.length === 0) {
@@ -1051,10 +1056,10 @@ async function deleteByIdsEfc() {
   }
 }<#
 }
-#>
-<#
+#><#
 if (opts.noRevert !== true) {
 #>
+
 // 点击还原
 async function revertByIdsEfc() {
   if (selectList.length === 0) {
@@ -1117,6 +1122,8 @@ watch(
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 .search_div {
   margin-top: 6px;

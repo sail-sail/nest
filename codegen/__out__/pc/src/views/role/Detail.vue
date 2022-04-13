@@ -1,6 +1,5 @@
 <template>
 <el-dialog
-  draggable
   :fullscreen="fullscreen"
   v-model="dialogVisible"
   append-to-body
@@ -10,7 +9,7 @@
   :before-close="beforeClose"
 >
   <template v-slot:title>
-    <div class="dialog_title">
+    <div class="dialog_title" v-draggable>
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
@@ -24,6 +23,7 @@
   <div class="wrap_div">
     <div class="content_div">
       <el-form
+        size="default"
         :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
@@ -170,7 +170,6 @@ import {
 } from "@element-plus/icons-vue";
 import { useFullscreenEffect } from "@/compositions/fullscreen";
 import {
-  deepCompare,
   SELECT_V2_SIZE,
 } from "@/views/common/App";
 import {
@@ -205,7 +204,6 @@ let dialogModel: RoleModel = $ref({
 });
 
 let ids: string[] = $ref([ ]);
-let oldIds: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
@@ -282,7 +280,6 @@ async function showDialog(
     dialogTitle = title;
   }
   ids = [ ];
-  oldIds = [ ];
   changedIds = [ ];
   dialogModel = {
   };
@@ -293,7 +290,6 @@ async function showDialog(
     };
   } else if (action === "edit") {
     ids = model.ids;
-    oldIds = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
       await refreshEfc();
@@ -385,7 +381,6 @@ async function saveClk() {
   if (dialogAction === "add") {
     id = await create(dialogModel);
     dialogModel.id = id;
-    oldIds.push(id);
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
     id = await updateById(dialogModel.id, dialogModel);

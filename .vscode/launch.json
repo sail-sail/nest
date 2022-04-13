@@ -15,12 +15,10 @@
       "cwd": "${workspaceRoot}/nest",
       "program": "src/main.ts",
       "env": {
-        "UV_THREADPOOL_SIZE": "6",
         "NODE_ENV": "hmr"
       },
       "skipFiles": [
         "${workspaceFolder}/nest/node_modules/**",
-        "${workspaceFolder}/nest/src/common/**",
         "<node_internals>/**"
       ]
     },
@@ -35,7 +33,7 @@
       },
       "skipFiles": [
         "${workspaceFolder}/nest/node_modules/**",
-        "${workspaceFolder}/nest/src/common/**",
+        "${workspaceFolder}/nest/src/**",
         "<node_internals>/**"
       ]
     }

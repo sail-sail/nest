@@ -1,113 +1,81 @@
 import { Injectable } from "@nestjs/common";
-import { Readable, Stream } from "stream";
+import { Readable } from "stream";
+import * as Minio from "minio";
 import { FileModel } from "../file.model";
 import { shortUuidV4 } from "../util/uuid";
 import config from "../config";
-import { commandOptions, createClient, RedisClientType } from "redis";
 
-function bufferToStream(buffer: Buffer): Stream {
-  let stream = new Stream.Readable({
-    read: function(size: number) {
-      this.emit("data", buffer);
-      this.emit("end");
-      this.emit("close");
-    },
-  });
-  stream.emit("readable");
-  return stream;
-}
+// function bufferToStream(buffer: Buffer): Stream {
+//   let stream = new Stream.Readable({
+//     read: function(size: number) {
+//       this.emit("data", buffer);
+//       this.emit("end");
+//       this.emit("close");
+//     },
+//   });
+//   stream.emit("readable");
+//   return stream;
+// }
 
 @Injectable()
 export class TmpfileDao {
   
-  private _redisClient: RedisClientType;
+  private _minioClient: Minio.Client;
   
-  private async getRedisClient(): Promise<RedisClientType> {
+  private async getMinioClient(): Promise<typeof client> {
     const t = this;
-    if (config.cache && config.tmpfile.type === "redis" && !t._redisClient) {
-      const client = createClient(config.tmpfile);
-      client.on("error", (err: Error) => {
-        console.log(err.message);
-      });
-      await client.connect();
-      t._redisClient = <RedisClientType>client;
-      return t._redisClient;
-    } else {
-      return t._redisClient;
+    if (t._minioClient) return t._minioClient;
+    const client = new Minio.Client({
+      endPoint: config.tmpfile.endPoint,
+      port: config.tmpfile.port || 9000,
+      useSSL: false,
+      accessKey: config.tmpfile.accessKey,
+      secretKey: config.tmpfile.secretKey,
+    });
+    const _bucketExists = await client.bucketExists(config.tmpfile.bucket);
+    if (!_bucketExists) {
+      await client.makeBucket(config.tmpfile.bucket, config.tmpfile.region || "us-east-1");
     }
+    t._minioClient = client;
+    return client;
   }
   
-  async statObject(id: string) {
+  async statObject(objectName: string) {
     const t = this;
-    const client = await t.getRedisClient();
-    const str = await client.hGet(id, "metaData");
-    return JSON.parse(str);
+    const client = await t.getMinioClient();
+    const stat = await client.statObject(config.tmpfile.bucket, objectName);
+    return stat;
   }
   
-  async getObject(id: string): Promise<Stream> {
+  async getObject(objectName: string) {
     const t = this;
-    const client = await t.getRedisClient();
-    const buf = await client.hGet(commandOptions({ returnBuffers: true }), id, "data");
-    if (!buf) {
-      return;
-    }
-    return bufferToStream(buf);
+    const client = await t.getMinioClient();
+    const stream = await client.getObject(config.tmpfile.bucket, objectName);
+    return stream;
   }
   
-  async deleteObject(id: string) {
+  async deleteObject(objectName: string) {
     const t = this;
-    const client = await t.getRedisClient();
-    return await client.del(id);
+    const client = await t.getMinioClient();
+    await client.removeObject(config.tmpfile.bucket, objectName);
   }
   
   async putObject(
-    id: string,
+    objectName: string,
     stream: Readable|Buffer|string,
-    _size?: number,
+    size?: number,
     metaData?: { [key: string]: any },
   ) {
     const t = this;
-    let buf: Buffer;
-    if (Buffer.isBuffer(stream)) {
-      buf = stream;
-    } else if (stream instanceof Readable) {
-      buf = await new Promise<Buffer>((resolve, reject) => {
-        const buffers: Buffer[] = [];
-        stream.on("data", (chunk: Buffer) => {
-          buffers.push(chunk);
-        });
-        stream.on("end", () => {
-          resolve(Buffer.concat(buffers));
-        });
-        stream.on("error", (err) => {
-          reject(err);
-        });
-      });
-    } else {
-      buf = Buffer.from(stream);
-    }
-    const len = buf.length;
-    const client = await t.getRedisClient();
-    metaData = metaData || { };
-    const metaData2 = {
-      metaData,
-      etag: id,
-      size: len,
-    };
-    const multiClient = client.multi();
-    multiClient.hSet(id, "data", buf);
-    multiClient.hSet(id, "metaData", Buffer.from(JSON.stringify(metaData2)));
-    if (config.tmpfile.expire > 0) {
-      multiClient.expire(id, config.tmpfile.expire);
-    }
-    await multiClient.exec();
-    return len;
+    const client = await t.getMinioClient();
+    const uploadedObjectInfo = await client.putObject(config.tmpfile.bucket, objectName, stream, size, metaData);
+    return uploadedObjectInfo;
   }
   
   /**
    * 上传文件
    * @param {FileModel} file
-   * @memberof TmpfileDao
+   * @memberof MinioDao
    */
   async upload(file: FileModel) {
     if (!file) return;
@@ -123,7 +91,7 @@ export class TmpfileDao {
     if (filename.length > 255) {
       filename = filename.substring(0, 255);
     }
-    mateData["filename"] = encodeURIComponent(filename);
+    mateData["X-Amz-Meta-Filename"] = encodeURIComponent(filename);
     const id = shortUuidV4();
     await t.putObject(id, file.data, file.size, mateData);
     return id;

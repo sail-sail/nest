@@ -1,3 +1,6 @@
+import { Background_taskModule } from "./background_task/background_task.module";
+import { Background_task2Module } from "./background_task2/background_task2.module";
+
 import { MenuModule } from "./menu/menu.module";
 import { Menu2Module } from "./menu2/menu2.module";
 
@@ -15,6 +18,9 @@ import { Usr2Module } from "./usr2/usr2.module";
 
 
 export default [
+  
+  Background_taskModule, // 后台任务
+  Background_task2Module,
   
   MenuModule, // 菜单
   Menu2Module,

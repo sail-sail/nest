@@ -56,7 +56,6 @@ export default defineConfig({
     alias: {
       "@/": "/src/",
       "#/": "/src/typings/",
-      "element-plus": "element-plus-sl",
     },
   },
   base: "/",
@@ -70,6 +69,7 @@ export default defineConfig({
     port: 4000,
     open: false,
     cors: true,
+    strictPort: true,
     proxy: {
       "/api": {
         target: "http://localhost:4001",

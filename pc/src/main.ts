@@ -10,6 +10,7 @@ import "./utils/DateUtil";
 // import "./utils/Console";
 import { errorHandler } from "./compositions/ErrorHandler";
 import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
+import { draggable } from "./components/draggable";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -22,5 +23,6 @@ app.use(router);
 app.config.errorHandler = errorHandler;
 
 app.directive("header-order-drag", headerOrderDrag);
+app.directive("draggable", draggable);
 
 app.mount("#app");

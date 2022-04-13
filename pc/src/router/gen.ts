@@ -2,6 +2,11 @@ import { RouteRecordRaw } from "vue-router";
 
 export const routesGen: Array<RouteRecordRaw> = [
   {
+    path: "/background_task",
+    name: "后台任务",
+    component: () => import("@/views/background_task/List.vue"),
+  },
+  {
     path: "/menu",
     name: "菜单",
     component: () => import("@/views/menu/List.vue"),

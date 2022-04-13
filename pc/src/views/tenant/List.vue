@@ -2,6 +2,7 @@
 <div class="wrap_div">
   <div class="search_div">
     <el-form
+      size="default"
       :model="search"
       ref="searchFormRef"
       inline-message
@@ -380,12 +381,14 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 // 导出Excel
 async function exportClk() {
   const id = await exportExcel(search);
-  const url = getDownloadUrl(
-    {
-      id,
-    },
-  );
-  fileSaver.saveAs(url);
+  if (id) {
+    const url = getDownloadUrl(
+      {
+        id,
+      },
+    );
+    fileSaver.saveAs(url);
+  }
 }
 
 // 搜索功能
@@ -666,6 +669,8 @@ watch(
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 .search_div {
   margin-top: 6px;

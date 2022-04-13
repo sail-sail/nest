@@ -11,11 +11,11 @@ export class MinioDao {
   constructor(
   ) { }
     
-  private _ossClient = undefined;
+  private _minioClient: Minio.Client = undefined;
   
-  private async getOssClient(): Promise<typeof client> {
+  private async getMinioClient(): Promise<typeof client> {
     const t = this;
-    if (t._ossClient) return t._ossClient;
+    if (t._minioClient) return t._minioClient;
     const client = new Minio.Client({
       endPoint: config.oss.endPoint,
       port: config.oss.port || 9000,
@@ -27,13 +27,13 @@ export class MinioDao {
     if (!_bucketExists) {
       await client.makeBucket(config.oss.bucket, config.oss.region || "us-east-1");
     }
-    t._ossClient = client;
+    t._minioClient = client;
     return client;
   }
   
   async putObject(objectName: string, stream: Readable|Buffer|string, size?: number, metaData?: { [key: string]: any }) {
     const t = this;
-    const client = await t.getOssClient();
+    const client = await t.getMinioClient();
     const uploadedObjectInfo = await client.putObject(config.oss.bucket, objectName, stream, size, metaData);
     return uploadedObjectInfo;
   }
@@ -41,7 +41,7 @@ export class MinioDao {
   /**
    * 上传文件
    * @param {FileModel} file
-   * @memberof OssDao
+   * @memberof MinioDao
    */
   async upload(file: FileModel) {
     if (!file) return;
@@ -65,20 +65,20 @@ export class MinioDao {
   
   async getObject(objectName: string) {
     const t = this;
-    const client = await t.getOssClient();
+    const client = await t.getMinioClient();
     const stream = await client.getObject(config.oss.bucket, objectName);
     return stream;
   }
   
   async deleteObject(objectName: string) {
     const t = this;
-    const client = await t.getOssClient();
+    const client = await t.getMinioClient();
     await client.removeObject(config.oss.bucket, objectName);
   }
   
   async statObject(objectName: string) {
     const t = this;
-    const client = await t.getOssClient();
+    const client = await t.getMinioClient();
     const stat = await client.statObject(config.oss.bucket, objectName);
     return stat;
   }

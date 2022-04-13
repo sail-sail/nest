@@ -8,6 +8,7 @@ import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
 import { TENANT_ID } from "../common/auth/auth.constants";
 import { PageModel } from "../common/page.model";
+import { BackgroundTaskInterceptor, BACKGROUND_TASK_RESULT } from "../common/interceptors/background_task.interceptor";
 
 import { <#=tableUp#>Service } from "./<#=table#>.service";
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";
@@ -40,6 +41,8 @@ export class <#=tableUp#>Resolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导出<#=table_comment#>", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
   @Query(undefined, { name: "exportExcel<#=tableUp#>", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: <#=tableUp#>Search,
