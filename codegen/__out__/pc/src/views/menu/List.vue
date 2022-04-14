@@ -485,7 +485,9 @@ let menu4SelectV2 = $computed(() => {
 
 // 获取下拉框列表
 async function getSelectListEfc() {
-  [ menuInfo, ] = await Promise.all([
+  [
+    menuInfo,
+  ] = await Promise.all([
     findAllAndCountMenu({
       orderBy: "order_by",
       orderDec: "ascending",

@@ -454,7 +454,9 @@ let role4SelectV2 = $computed(() => {
 
 // 获取下拉框列表
 async function getSelectListEfc() {
-  [ roleInfo, ] = await Promise.all([
+  [
+    roleInfo,
+  ] = await Promise.all([
     findAllAndCountRole({
     }, { pgSize: SELECT_V2_SIZE }, { notLoading: true }),
   ]);

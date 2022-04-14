@@ -782,8 +782,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();
-<#
+let detailRef = $ref<InstanceType<typeof Detail>>();<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -801,6 +800,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
   if (foreignKey) {
 #>
+
 let <#=foreignTable#>Info: {
   count: number;
   data: <#=foreignTableUp#>Model[];
@@ -825,14 +825,16 @@ let <#=foreignTable#>4SelectV2 = $computed(() => {
 async function getSelectListEfc() {<#
   if (foreignTableArr.length > 0) {
   #>
-  [ <#
+  [<#
   for (let i = 0; i < foreignTableArr.length; i++) {
     const foreignTable = foreignTableArr[i];
     const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
-  #><#=foreignTable#>Info, <#
+  #>
+    <#=foreignTable#>Info,<#
   }
-  #>] = await Promise.all([<#
+  #>
+  ] = await Promise.all([<#
   for (let i = 0; i < foreignTableArr.length; i++) {
     const foreignTable = foreignTableArr[i];
     const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -852,8 +854,7 @@ async function getSelectListEfc() {<#
   ]);<#
   }
   #>
-}
-<#
+}<#
 for (let i = 0; i < foreignTableArr.length; i++) {
   const foreignTable = foreignTableArr[i];
   const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
@@ -861,6 +862,7 @@ for (let i = 0; i < foreignTableArr.length; i++) {
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   const column_comment = foreignKeyCommentArr[i];
 #>
+
 // <#=column_comment#>下拉框远程搜索
 async function <#=foreignTable#>FilterEfc(query: string) {
   <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>({<#
