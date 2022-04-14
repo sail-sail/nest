@@ -2,6 +2,7 @@ import Axios, { AxiosRequestConfig } from "axios";
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr";
 import useIndexStore from "../store/index";
+import { saveAs } from "file-saver";
 
 export const baseURL = "";
 
@@ -161,4 +162,35 @@ export function getDownloadUrl(
     params.set("remove", model.remove);
   }
   return `${ baseURL }/api/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
+}
+
+/**
+ * 下载文件
+ * @export
+ * @param {({
+ *     id: string;
+ *     filename?: string;
+ *     inline?: "0"|"1";
+ *   } | string)} id
+ */
+export function downloadById(
+  id: {
+    id: string;
+    filename?: string;
+    remove?: "0"|"1";
+    inline?: "0"|"1";
+  } | string,
+  type: "oss" | "tmpfile" = "tmpfile",
+) {
+  let model = { id: undefined };
+  if (typeof id === "string") {
+    model.id = id;
+  } else {
+    model = id;
+  }
+  if (!model || !model.id) {
+    return;
+  }
+  const url = getDownloadUrl(model, type);
+  saveAs(url);
 }

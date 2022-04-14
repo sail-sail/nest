@@ -53,11 +53,13 @@ export class TmpfileController {
       res.raw.setHeader("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
       const stream = await t.tmpfileServie.getObject(id);
       if (stream) {
-        stream.on("close", async() => {
-          if (remove == "1") {
-            await t.tmpfileServie.deleteObject(id);
-          }
-        });
+        if (stats.metaData["once"] === "1") {
+          stream.on("close", async() => {
+            if (remove == "1") {
+              await t.tmpfileServie.deleteObject(id);
+            }
+          });
+        }
         stream.pipe(res.raw);
       } else {
         const errMsg = Buffer.from("文件不存在!");

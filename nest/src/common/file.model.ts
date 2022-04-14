@@ -7,4 +7,6 @@ export interface FileModel {
   mimetype: string;
   encoding?: string;
   limit?: boolean;
+  /** @description 是否不允许多次下载 */
+  notDownloadMulti?: boolean;
 }

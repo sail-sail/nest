@@ -306,7 +306,6 @@
 
 <script setup lang="ts">
 import { watch } from "vue";
-import * as fileSaver from "file-saver";
 import useUsrStore from "@/store/usr";
 import {
   ElMessage,
@@ -325,6 +324,7 @@ import {
   ElTable,
   ElTableColumn,
   ElPagination,
+  ElLink,
 } from "element-plus";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
@@ -341,7 +341,7 @@ import {
   CircleCheck,
 } from "@element-plus/icons-vue";
 import TableShowColumns from "@/components/TableShowColumns.vue";
-import { getDownloadUrl } from "@/utils/axios";
+import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
 import {
@@ -381,14 +381,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 // 导出Excel
 async function exportClk() {
   const id = await exportExcel(search);
-  if (id) {
-    const url = getDownloadUrl(
-      {
-        id,
-      },
-    );
-    fileSaver.saveAs(url);
-  }
+  downloadById(id);
 }
 
 // 搜索功能

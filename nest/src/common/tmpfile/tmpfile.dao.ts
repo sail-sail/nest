@@ -92,6 +92,9 @@ export class TmpfileDao {
       filename = filename.substring(0, 255);
     }
     mateData["X-Amz-Meta-Filename"] = encodeURIComponent(filename);
+    if (file.notDownloadMulti) {
+      mateData["X-Amz-Meta-Once"] = "1";
+    }
     const id = shortUuidV4();
     await t.putObject(id, file.data, file.size, mateData);
     return id;

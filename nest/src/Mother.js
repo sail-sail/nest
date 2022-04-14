@@ -94,7 +94,7 @@ function start() {
       console.error("child process exited with code " + code);
     }
     delete(ls);
-    if (code === 2 || code === 3) {
+    if (code == 2 || code == 3 || code == 3221225477) {
       if (!stopWatch) {
         setImmediate(start);
       }
