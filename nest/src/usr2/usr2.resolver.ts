@@ -1,8 +1,6 @@
 import { UseInterceptors } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { Context } from "../common/context";
 import { Tran } from "../common/graphql";
-import { ContextDc } from "../common/interceptors/context.interceptor";
 
 import { Usr2Service } from "./usr2.service";
 
