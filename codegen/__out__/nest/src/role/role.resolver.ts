@@ -97,6 +97,17 @@ export class RoleResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入角色", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
+  @Mutation(undefined, { name: "importFileRole", description: "导入角色" })
+  async importFile(
+    @Args("id") id: string,
+  ) {
+    const t = this;
+    const data = await t.roleService.importFile(id);
+    return data;
+  }
+  
   @Mutation(undefined, { name: "revertByIdsRole", description: "根据ids还原数据" })
   @UseInterceptors(Tran)
   async revertByIds(

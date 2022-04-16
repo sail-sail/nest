@@ -97,6 +97,17 @@ export class Background_taskResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入后台任务", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
+  @Mutation(undefined, { name: "importFileBackground_task", description: "导入后台任务" })
+  async importFile(
+    @Args("id") id: string,
+  ) {
+    const t = this;
+    const data = await t.background_taskService.importFile(id);
+    return data;
+  }
+  
   @Mutation(undefined, { name: "revertByIdsBackground_task", description: "根据ids还原数据" })
   @UseInterceptors(Tran)
   async revertByIds(

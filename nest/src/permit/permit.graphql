@@ -55,6 +55,8 @@ type Mutation {
   createPermit(model: PermitInput!): ID!
   "根据id修改一条数据"
   updateByIdPermit(id: ID!, model: PermitInput!): ID!
+  "导入文件"
+  importFilePermit(id: ID!): String
   "根据ids删除数据"
   deleteByIdsPermit(ids: [ID]!): Int!
   "根据ids还原数据"

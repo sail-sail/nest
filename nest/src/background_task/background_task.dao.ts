@@ -239,7 +239,7 @@ export class Background_taskDao {
   }
   
   /**
-   * 通过唯一字段获得一行数据
+   * 通过唯一约束获得一行数据
    * @param {Background_taskSearch} search0
    * @memberof Background_taskDao
    */
@@ -252,10 +252,10 @@ export class Background_taskDao {
     const search: Background_taskSearch = { };
     for (let i = 0; i < uniqueKeys.length; i++) {
       const key = uniqueKeys[i];
-      if (!search0.hasOwnProperty(key)) {
-        throw new Error(`Background_taskDao.findByUnique 缺少唯一字段：${ key }`);
-      }
       const val = search0[key];
+      if (isEmpty(val)) {
+        return;
+      }
       search[key] = val;
     }
     const model = await t.findOne(search);

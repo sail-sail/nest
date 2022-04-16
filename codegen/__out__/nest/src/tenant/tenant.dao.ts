@@ -256,7 +256,7 @@ export class TenantDao {
   }
   
   /**
-   * 通过唯一字段获得一行数据
+   * 通过唯一约束获得一行数据
    * @param {TenantSearch} search0
    * @memberof TenantDao
    */
@@ -269,10 +269,10 @@ export class TenantDao {
     const search: TenantSearch = { };
     for (let i = 0; i < uniqueKeys.length; i++) {
       const key = uniqueKeys[i];
-      if (!search0.hasOwnProperty(key)) {
-        throw new Error(`TenantDao.findByUnique 缺少唯一字段：${ key }`);
-      }
       const val = search0[key];
+      if (isEmpty(val)) {
+        return;
+      }
       search[key] = val;
     }
     const model = await t.findOne(search);

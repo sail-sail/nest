@@ -97,6 +97,17 @@ export class MenuResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入菜单", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
+  @Mutation(undefined, { name: "importFileMenu", description: "导入菜单" })
+  async importFile(
+    @Args("id") id: string,
+  ) {
+    const t = this;
+    const data = await t.menuService.importFile(id);
+    return data;
+  }
+  
   @Mutation(undefined, { name: "revertByIdsMenu", description: "根据ids还原数据" })
   @UseInterceptors(Tran)
   async revertByIds(

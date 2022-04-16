@@ -97,6 +97,17 @@ export class UsrResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入用户", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
+  @Mutation(undefined, { name: "importFileUsr", description: "导入用户" })
+  async importFile(
+    @Args("id") id: string,
+  ) {
+    const t = this;
+    const data = await t.usrService.importFile(id);
+    return data;
+  }
+  
   @Mutation(undefined, { name: "revertByIdsUsr", description: "根据ids还原数据" })
   @UseInterceptors(Tran)
   async revertByIds(

@@ -90,6 +90,8 @@ type Mutation {
   createBackground_task(model: Background_taskInput!): ID!
   "根据id修改一条数据"
   updateByIdBackground_task(id: ID!, model: Background_taskInput!): ID!
+  "导入文件"
+  importFileBackground_task(id: ID!): String
   "根据ids删除数据"
   deleteByIdsBackground_task(ids: [ID]!): Int!
   "根据ids还原数据"

@@ -1,4 +1,5 @@
 import { UsrModel, UsrSearch } from "./Model";
+import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { PageModel } from "@/utils/page.model";
 
@@ -290,4 +291,29 @@ export async function exportExcel(
     },
   }, opt);
   return rvData?.exportExcelUsr || "";
+}
+
+/**
+ * 导入文件
+ * @param {File} file
+ * @export importFile
+ */
+export async function importFile(
+  file: File,
+  opt?: GqlOpt,
+): Promise<string> {
+  if (!file) return;
+  const id = await uploadFile(file, undefined, { type: "tmpfile" });
+  if (!id) return;
+  const rvData = await gqlQuery({
+    query: gql`
+      mutation($id: ID!) {
+        importFileUsr(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  return rvData?.importFileUsr || "";
 }

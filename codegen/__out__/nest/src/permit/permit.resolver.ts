@@ -97,6 +97,17 @@ export class PermitResolver {
     return data;
   }
   
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入权限", type: "download" })
+  @UseInterceptors(BackgroundTaskInterceptor)
+  @Mutation(undefined, { name: "importFilePermit", description: "导入权限" })
+  async importFile(
+    @Args("id") id: string,
+  ) {
+    const t = this;
+    const data = await t.permitService.importFile(id);
+    return data;
+  }
+  
   @Mutation(undefined, { name: "revertByIdsPermit", description: "根据ids还原数据" })
   @UseInterceptors(Tran)
   async revertByIds(

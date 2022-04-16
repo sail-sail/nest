@@ -5,6 +5,9 @@ import { shortUuidV4 } from "../common/util/uuid";
 import { readFile } from "fs/promises";
 import { renderExcelWorker } from "../common/util/ejsexcel_worker";
 import { renderExcel } from "ejsexcel";
+import { streamToBuffer } from "../common/util/stream";
+import { parseXlsx } from "xlsx-img";
+import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
@@ -174,15 +177,162 @@ export class TenantService {
     if (!id) {
       throw "updateById id can not be empty!";
     }
-    if (process.env.NODE_ENV === "production") {
-      await t.findById(id);
-    }
     let result: ResultSetHeader = await t.tenantDao.updateById(id, model);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { model, id, result });
     if (afterEvent?.isReturn) return afterEvent.data;
     
     return id;
+  }
+  
+  /**
+   * 第一行作为表头, 获得文件数据
+   * @param {string} id
+   * @memberof TenantService
+   */
+  async getImportFileRows(
+    id: string,
+  ) {
+    const t = this;
+    if (!id) {
+      throw "importFile id can not be empty!";
+    }
+    const stats = await t.tmpfileDao.statObject(id);
+    if (!stats) {
+      throw "文件不存在!";
+    }
+    let rows: { [key: string]: any }[] = [ ];
+    const contentType = stats.metaData["content-type"];
+    if (contentType === "text/csv") {
+      const stream = await t.tmpfileDao.getObject(id);
+      await new Promise((resolve, reject) => {
+        stream.pipe(csvParse({ headers: true }));
+        stream.on("error", reject);
+        stream.on("data", (row0: { [key: string]: any }) => {
+          const keys = Object.keys(row0);
+          const row = { };
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            let val = row0[key];
+            if (typeof val === "string") {
+              val = val.trim();
+            }
+            if (val !== "-") {
+              rows.push({ [key]: val });
+            }
+          }
+          rows.push(row);
+        });
+        stream.on("end", resolve);
+      });
+    } else if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      const stream = await t.tmpfileDao.getObject(id);
+      const buffer = await streamToBuffer(stream);
+      let worksheets: Awaited<ReturnType<typeof parseXlsx>>;
+      try {
+        worksheets = await parseXlsx(buffer);
+      } catch (err) {
+        throw "文件格式错误, 只能导入 .xlsx 或者 .xlsm 格式的Excel文件！";
+      }
+      const sheet = worksheets[0];
+      let data = sheet.data;
+      let keys: string[] = data[0];
+      for (let i = 1; i < data.length; i++) {
+        const vals = data[i];
+        const row = { };
+        for (let k = 0; k < keys.length; k++) {
+          const key = String(keys[k]).trim();
+          if (!key) continue;
+          let val = vals[k];
+          if (typeof val === "string") {
+            val = val.trim();
+          }
+          if (val !== "-") {
+            row[key] = val;
+          }
+        }
+        rows.push(row);
+      }
+    } else {
+      throw "文件类型不支持, 只支持 csv 或者 Excel 格式的文件!";
+    }
+    return rows;
+  }
+  
+  /**
+   * 导入文件
+   * @param {string} id
+   * @memberof TenantService
+   */
+  async importFile(
+    id: string,
+  ) {
+    const t = this;
+    const table = "tenant";
+    const method = "importFile";
+    
+    const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { id });
+    if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const rows = await t.getImportFileRows(id);
+    const header: { [key: string]: string } = {
+      "名称": "lbl",
+      "域名绑定": "host",
+      "到期日": "expiration",
+      "最大用户数": "max_usr_num",
+      "启用": "_is_enabled",
+      "菜单": "_menu_ids",
+      "排序": "order_by",
+      "备注": "rem",
+    };
+    const models: TenantModel[] = [ ];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const model: TenantModel = { };
+      const lbls = Object.keys(header);
+      for (let k = 0; k < lbls.length; k++) {
+        const lbl = lbls[k];
+        const key = header[lbl];
+        if (!key) continue;
+        const val = row[lbl];
+        if (val != null) {
+          model[key] = val;
+        }
+      }
+      models.push(model);
+    }
+    
+    let succNum = 0;
+    let failNum = 0;
+    let failErrMsgs: string[] = [ ];
+    
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
+      const id = shortUuidV4();
+      try {
+        await t.tenantDao.create({ ...model, id }, { uniqueType: "update" });
+        succNum++;
+      } catch (err) {
+        failNum++;
+        failErrMsgs.push(`第 ${ i + 1 } 行: ${ err.message || err.toString() }`);
+      }
+    }
+    
+    let result = "";
+    if (succNum > 0) {
+      result = `导入成功 ${ succNum } 条\r\n`;
+    }
+    if (failNum > 0) {
+      result += `导入失败 ${ failNum } 条\r\n`;
+    }
+    if (failErrMsgs.length > 0) {
+      result += failErrMsgs.join("\r\n");
+    }
+    
+    const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { id, result });
+    if (afterEvent?.isReturn) return afterEvent.data;
+    
+    return result;
   }
   
   /**

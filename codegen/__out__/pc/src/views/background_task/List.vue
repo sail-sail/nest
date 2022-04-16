@@ -131,6 +131,12 @@
       >
         删除
       </el-button>
+      <el-button
+        :icon="Upload"
+        @click="openUploadClk"
+      >
+        导入
+      </el-button>
     </template>
     <template v-else>
       <el-button
@@ -325,6 +331,7 @@
   <Detail
     ref="detailRef"
   ></Detail>
+  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog>
 </div>
 </template>
 
@@ -350,6 +357,7 @@ import {
   ElPagination,
   ElLink,
 } from "element-plus";
+import { MessageBox } from "@/components/MessageBox";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
@@ -360,11 +368,13 @@ import {
   Delete,
   Edit,
   Download,
+  Upload,
   CirclePlus,
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
 import TableShowColumns from "@/components/TableShowColumns.vue";
+import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
@@ -383,6 +393,7 @@ import {
   revertByIds,
   exportExcel,
   updateById,
+  importFile,
 } from "./Api";
 
 import {

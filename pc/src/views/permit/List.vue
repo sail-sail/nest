@@ -82,6 +82,12 @@
       >
         删除
       </el-button>
+      <el-button
+        :icon="Upload"
+        @click="openUploadClk"
+      >
+        导入
+      </el-button>
     </template>
     <template v-else>
       <el-button
@@ -203,6 +209,7 @@
   <Detail
     ref="detailRef"
   ></Detail>
+  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog>
 </div>
 </template>
 
@@ -228,6 +235,7 @@ import {
   ElPagination,
   ElLink,
 } from "element-plus";
+import { MessageBox } from "@/components/MessageBox";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
@@ -238,11 +246,13 @@ import {
   Delete,
   Edit,
   Download,
+  Upload,
   CirclePlus,
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
 import TableShowColumns from "@/components/TableShowColumns.vue";
+import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
@@ -261,6 +271,7 @@ import {
   revertByIds,
   exportExcel,
   updateById,
+  importFile,
 } from "./Api";
 
 import {
@@ -421,6 +432,21 @@ async function openAdd() {
     ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
+}
+
+let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+
+/**
+ * 弹出导入窗口
+*/
+async function openUploadClk() {
+  if (!uploadFileDialogRef) return;
+  const file = await uploadFileDialogRef.showDialog({
+    title: "导入权限",
+  });
+  const msg = await importFile(file);
+  MessageBox.success(msg);
+  await dataGrid(true);
 }
 
 // 打开修改页面
