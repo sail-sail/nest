@@ -126,13 +126,10 @@ async function inputChg() {
     ElMessage.error(`文件大小不能超过 ${ props.maxFileSize / 1024 / 1024 }M`);
     return;
   }
-  const data = await uploadFile(file);
-  if (data.code !== 0) {
-    ElMessage.error(data.msg || "上传失败!");
+  const id = await uploadFile(file);
+  if (!id) {
     return;
   }
-  ElMessage.success("上传成功!");
-  const id = data.data;
   idArr.push(id);
   modelValue = idArr.join(",");
   nowIndex = idArr.length - 1;

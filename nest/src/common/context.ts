@@ -294,7 +294,7 @@ export class Context {
           if (arg.stack.startsWith("GraphQLError: ")) {
             args2.push("GraphQLError: " + arg.toString());
           } else {
-            continue;
+            args2.push(arg.stack);
           }
         } else if (arg instanceof Error) {
           args2.push(arg.stack);
@@ -313,7 +313,7 @@ export class Context {
           if (arg.stack.startsWith("GraphQLError: ")) {
             str += "GraphQLError: " + arg.toString();
           } else {
-            continue;
+            str += arg.stack;
           }
         } else if (arg instanceof Error) {
           str += arg.stack;

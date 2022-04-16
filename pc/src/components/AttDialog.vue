@@ -1,6 +1,5 @@
 <template>
 <el-dialog
-  draggable
   :fullscreen="fullscreen"
   v-model="dialogVisible"
   append-to-body
@@ -9,11 +8,10 @@
   top="0"
   :before-close="beforeClose"
 >
-  <template v-slot:title>
-    <div class="dialog_title">
+  <template #title>
+    <div class="dialog_title" v-draggable>
       <div class="title_lbl">
         <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
-        <span v-if="isModelDirty" class="isModelDirty_span">*</span>
       </div>
       <el-icon class="full_but" @click="setFullscreen">
         <FullScreen/>
@@ -154,7 +152,6 @@ import {
   ArrowRight,
 } from "@element-plus/icons-vue";
 import { useFullscreenEffect } from "@/compositions/fullscreen";
-import { deepCompare } from "@/views/common/App";
 import { baseURL, uploadFile } from '@/utils/axios';
 import {
   getStatsOss,
@@ -191,8 +188,6 @@ let dialogModel = $ref({
   maxFileSize: 1024 * 1024 * 50,
   readonly: false,
 });
-
-let oldDialogModel = $ref(dialogModel);
 
 let inited = $ref(false);
 
@@ -247,10 +242,6 @@ async function showDialog(
     modelValue: "",
     ...model,
   };
-  oldDialogModel = {
-    modelValue: "",
-    ...model,
-  };
   modelValue = dialogModel.modelValue;
   if (isChg) {
     nowIndex = 0;
@@ -263,9 +254,6 @@ async function showDialog(
   inited = true;
   dialogVisible = true;
 }
-
-// 是否有改动
-let isModelDirty = $computed(() => !deepCompare(dialogModel, oldDialogModel));
 
 async function getStatsOssEfc(ids: string[]): Promise<{
   id: string,
@@ -405,12 +393,10 @@ async function inputChg() {
     ElMessage.error(`文件大小不能超过 ${ dialogModel.maxFileSize / 1024 / 1024 }M`);
     return;
   }
-  const rvData = await uploadFile(file);
-  if (rvData.code !== 0) {
+  const id = await uploadFile(file);
+  if (!id) {
     return;
   }
-  ElMessage.success("上传成功!");
-  const id = rvData.data;
   if (ids.length > 0) {
     nowIndex++;
   }
@@ -529,13 +515,6 @@ defineExpose({ showDialog });
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-.isModelDirty_span {
-  color: red;
-  position: relative;
-  top: 2px;
-  font-weight: bold;
-  margin-left: 3px;
 }
 .iframe {
   display: flex;

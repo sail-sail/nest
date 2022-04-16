@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
+import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { PageModel } from "@/utils/page.model";
 <#
@@ -432,7 +433,7 @@ export async function findAll<#=foreignTableUp#>(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {UsrSearch} search
+ * @param {<#=tableUp#>Search} search
  */
 export async function exportExcel(
   search?: <#=tableUp#>Search,
@@ -449,6 +450,31 @@ export async function exportExcel(
     },
   }, opt);
   return rvData?.exportExcel<#=tableUp#> || "";
+}
+
+/**
+ * 导入文件
+ * @param {File} file
+ * @export importFile
+ */
+export async function importFile(
+  file: File,
+  opt?: GqlOpt,
+): Promise<string> {
+  if (!file) return;
+  const id = await uploadFile(file, undefined, { type: "tmpfile" });
+  if (!id) return;
+  const rvData = await gqlQuery({
+    query: gql`
+      mutation($id: ID!) {
+        importFile<#=tableUp#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  return rvData?.importFile<#=tableUp#> || "";
 }<#
 if (hasOrderBy) {
 #>

@@ -26,7 +26,6 @@ import useTabsStore from "@/store/tabs";
 import { TabInf } from "@/store/tabs";
 
 const router = useRouter();
-
 const tabsStore = useTabsStore();
 
 const props = withDefaults(

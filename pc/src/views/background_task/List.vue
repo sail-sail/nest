@@ -253,6 +253,7 @@
                 </template>
                 <template v-else-if="row.type === 'download'">
                   <el-link
+                    v-if="row.state === 'success'"
                     :type="row.downloaded ? 'info' : 'primary'"
                     @click="downloadById(row[column.property]);row.downloaded = true;"
                   >

@@ -9,6 +9,9 @@ import { shortUuidV4 } from "../common/util/uuid";
 import { readFile } from "fs/promises";
 import { renderExcelWorker } from "../common/util/ejsexcel_worker";
 import { renderExcel } from "ejsexcel";
+import { streamToBuffer } from "../common/util/stream";
+import { parseXlsx } from "xlsx-img";
+import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from '../common/exceptions/service.exception';
 import { PageModel } from '../common/page.model';
@@ -211,15 +214,188 @@ export class <#=tableUp#>Service {
     if (!id) {
       throw "updateById id can not be empty!";
     }
-    if (process.env.NODE_ENV === "production") {
-      await t.findById(id);
-    }
     let result: ResultSetHeader = await t.<#=table#>Dao.updateById(id, model);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { model, id, result });
     if (afterEvent?.isReturn) return afterEvent.data;
     
     return id;
+  }
+  
+  /**
+   * 第一行作为表头, 获得文件数据
+   * @param {string} id
+   * @memberof <#=tableUp#>Service
+   */
+  async getImportFileRows(
+    id: string,
+  ) {
+    const t = this;
+    if (!id) {
+      throw "importFile id can not be empty!";
+    }
+    const stats = await t.tmpfileDao.statObject(id);
+    if (!stats) {
+      throw "文件不存在!";
+    }
+    let rows: { [key: string]: any }[] = [ ];
+    const contentType = stats.metaData["content-type"];
+    if (contentType === "text/csv") {
+      const stream = await t.tmpfileDao.getObject(id);
+      await new Promise((resolve, reject) => {
+        stream.pipe(csvParse({ headers: true }));
+        stream.on("error", reject);
+        stream.on("data", (row0: { [key: string]: any }) => {
+          const keys = Object.keys(row0);
+          const row = { };
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            let val = row0[key];
+            if (typeof val === "string") {
+              val = val.trim();
+            }
+            if (val !== "-") {
+              rows.push({ [key]: val });
+            }
+          }
+          rows.push(row);
+        });
+        stream.on("end", resolve);
+      });
+    } else if (contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      const stream = await t.tmpfileDao.getObject(id);
+      const buffer = await streamToBuffer(stream);
+      let worksheets: Awaited<ReturnType<typeof parseXlsx>>;
+      try {
+        worksheets = await parseXlsx(buffer);
+      } catch (err) {
+        throw "文件格式错误, 只能导入 .xlsx 或者 .xlsm 格式的Excel文件！";
+      }
+      const sheet = worksheets[0];
+      let data = sheet.data;
+      let keys: string[] = data[0];
+      for (let i = 1; i < data.length; i++) {
+        const vals = data[i];
+        const row = { };
+        for (let k = 0; k < keys.length; k++) {
+          const key = String(keys[k]).trim();
+          if (!key) continue;
+          let val = vals[k];
+          if (typeof val === "string") {
+            val = val.trim();
+          }
+          if (val !== "-") {
+            row[key] = val;
+          }
+        }
+        rows.push(row);
+      }
+    } else {
+      throw "文件类型不支持, 只支持 csv 或者 Excel 格式的文件!";
+    }
+    return rows;
+  }
+  
+  /**
+   * 导入文件
+   * @param {string} id
+   * @memberof <#=tableUp#>Service
+   */
+  async importFile(
+    id: string,
+  ) {
+    const t = this;
+    const table = "<#=table#>";
+    const method = "importFile";
+    
+    const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { id });
+    if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const rows = await t.getImportFileRows(id);
+    const header: { [key: string]: string } = {<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        // if (column.ignoreCodegen) continue;
+        const column_name = column.COLUMN_NAME;
+        let data_type = column.DATA_TYPE;
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        let column_comment = column.COLUMN_COMMENT;
+        let selectList = [ ];
+        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+        if (selectStr) {
+          selectList = eval(`(${ selectStr })`);
+        }
+        if (column_comment.includes("[")) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        if (column_comment.includes("[")) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        if (column_name === "id") {
+          continue;
+        }
+      #><#
+        if (!foreignKey && selectList.length === 0) {
+      #>
+      "<#=column_comment#>": "<#=column_name#>",<#
+        } else {
+      #>
+      "<#=column_comment#>": "_<#=column_name#>",<#
+        }
+      #><#
+      }
+      #>
+    };
+    const models: <#=tableUp#>Model[] = [ ];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const model: <#=tableUp#>Model = { };
+      const lbls = Object.keys(header);
+      for (let k = 0; k < lbls.length; k++) {
+        const lbl = lbls[k];
+        const key = header[lbl];
+        if (!key) continue;
+        const val = row[lbl];
+        if (val != null) {
+          model[key] = val;
+        }
+      }
+      models.push(model);
+    }
+    
+    let succNum = 0;
+    let failNum = 0;
+    let failErrMsgs: string[] = [ ];
+    
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
+      const id = shortUuidV4();
+      try {
+        await t.<#=table#>Dao.create({ ...model, id }, { uniqueType: "update" });
+        succNum++;
+      } catch (err) {
+        failNum++;
+        failErrMsgs.push(`第 ${ i + 1 } 行: ${ err.message || err.toString() }`);
+      }
+    }
+    
+    let result = "";
+    if (succNum > 0) {
+      result = `导入成功 ${ succNum } 条\\r\\n`;
+    }
+    if (failNum > 0) {
+      result += `导入失败 ${ failNum } 条\\r\\n`;
+    }
+    if (failErrMsgs.length > 0) {
+      result += failErrMsgs.join("\\r\\n");
+    }
+    
+    const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { id, result });
+    if (afterEvent?.isReturn) return afterEvent.data;
+    
+    return result;
   }
   
   /**

@@ -73,21 +73,21 @@ axios.interceptors.response.use(
   (error) => {
     const indexStore = useIndexStore();
     indexStore.minusLoading();
-    let errMsg = "";
-    if (error.response && error.response.data) {
-      // const code = error.response.status
-      errMsg = error.response.data.message;
-    } else {
-      errMsg = error;
-    }
-    if (errMsg) {
-      ElMessage({
-        offset: 0,
-        type: "error",
-        showClose: true,
-        message: (<any>errMsg).message || errMsg.toString(),
-      });
-    }
+    // let errMsg = "";
+    // if (error.response && error.response.data) {
+    //   // const code = error.response.status
+    //   errMsg = error.response.data.message;
+    // } else {
+    //   errMsg = error;
+    // }
+    // if (errMsg) {
+    //   ElMessage({
+    //     offset: 0,
+    //     type: "error",
+    //     showClose: true,
+    //     message: (<any>errMsg).message || errMsg.toString(),
+    //   });
+    // }
     return Promise.reject(error);
   },
 );
@@ -97,15 +97,16 @@ axios.interceptors.response.use(
  * @export
  * @param {File} file 需要上传的文件
  * @param {{ [key: string]: any }} data 上传文件时需要附带的数据
- * @param {AxiosRequestConfig<FormData>} config 配置选项
+ * @param {AxiosRequestConfig<FormData>} config 配置选项, type: oss 或者 tmpfile, 默认为 oss
  */
 export async function uploadFile(
   file: File,
   data?: { [key: string]: any },
-  config?: AxiosRequestConfig<FormData>,
+  config?: AxiosRequestConfig<FormData> & { type?: "oss"|"tmpfile" },
 ) {
   config = config || { };
-  config.url = config.url || `${ baseURL }/api/oss/upload`;
+  config.type = config.type || "oss";
+  config.url = config.url || `${ baseURL }/api/${ config.type }/upload`;
   config.method = config.method || "post";
   const formData = new FormData();
   formData.append("file", file);
@@ -122,8 +123,8 @@ export async function uploadFile(
     msg: string;
     data: string;
   }>(config);
-  const rvData = res.data;
-  return rvData;
+  const id = res.data.data;
+  return id;
 }
 
 /**

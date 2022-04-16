@@ -233,6 +233,12 @@ const hasSummary = columns.some((column) => column.showSummary);
         @click="deleteByIdsEfc"
       >
         删除
+      </el-button>
+      <el-button
+        :icon="Upload"
+        @click="openUploadClk"
+      >
+        导入
       </el-button><#
       }
       #>
@@ -484,6 +490,7 @@ const hasSummary = columns.some((column) => column.showSummary);
   <Detail
     ref="detailRef"
   ></Detail>
+  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog>
 </div>
 </template>
 
@@ -509,6 +516,7 @@ import {
   ElPagination,
   ElLink,
 } from "element-plus";
+import { MessageBox } from "@/components/MessageBox";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
@@ -519,11 +527,13 @@ import {
   Delete,
   Edit,
   Download,
+  Upload,
   CirclePlus,
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
 import TableShowColumns from "@/components/TableShowColumns.vue";
+import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";<#
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
@@ -554,7 +564,8 @@ import {
   deleteByIds,
   revertByIds,
   exportExcel,
-  updateById,<#
+  updateById,
+  importFile,<#
     if (hasSummary) {
   #>
   findSummary,<#
@@ -982,6 +993,21 @@ async function openAdd() {
     ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
+}
+
+let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+
+/**
+ * 弹出导入窗口
+*/
+async function openUploadClk() {
+  if (!uploadFileDialogRef) return;
+  const file = await uploadFileDialogRef.showDialog({
+    title: "导入<#=table_comment#>",
+  });
+  const msg = await importFile(file);
+  MessageBox.success(msg);
+  await dataGrid(true);
 }<#
 }
 #><#

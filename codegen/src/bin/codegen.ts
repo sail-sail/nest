@@ -1,8 +1,12 @@
 import { getAllTables, getSchema, initContext } from "../lib/information_schema";
-import { isEmpty } from "../lib/StringUitl";
 import { Command } from "commander";
-import { codegen, genMenu, genRouter } from "../lib/codegen";
+import {
+  codegen,
+  genRouter,
+  // genMenu,
+} from "../lib/codegen";
 import tables from "../tables";
+import { gitDiffOut } from "../lib/codegen";
 
 async function exec(table_names: string[]) {
   const context = await initContext();
@@ -35,7 +39,9 @@ const options = program.opts();
       table = table.split(",");
       table = table.map((item: string) => item.trim());
     }
+    console.log(`table:`, table);
     await exec(table);
+    await gitDiffOut();
   } catch(err) {
     console.error(err);
   } finally {

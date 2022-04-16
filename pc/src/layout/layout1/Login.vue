@@ -1,5 +1,5 @@
 <template>
-<div class="wrap_div">
+<div class="wrap_login_div">
   <div class="login_div">
     <div
       style="margin-top: 20px;margin-left: 20px;font-size: 14px;"
@@ -155,7 +155,7 @@ let tenants = $ref<{
 </script>
 
 <style scoped>
-.wrap_div {
+.wrap_login_div {
   position: absolute;
   top: 0;
   left: 0;

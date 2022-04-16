@@ -236,6 +236,12 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
     </div>
     <div class="toolbox_div">
       <el-button
+        :icon="CircleClose"
+        @click="cancelClk"
+      >
+        取消
+      </el-button>
+      <el-button
         type="primary"
         :icon="CircleCheck"
         class="save_but"
@@ -296,6 +302,7 @@ import {
 } from "element-plus";
 import {
   CircleCheck,
+  CircleClose,
   FullScreen,
 } from "@element-plus/icons-vue";<#
 const hasImg = columns.some((item) => item.isImg);
@@ -581,11 +588,7 @@ let onCloseResolve = function(value: {
 
 // 打开对话框
 async function showDialog(
-  {
-    title,
-    model,
-    action,
-  }: {
+  arg?: {
     title?: string;
     model?: {
       ids: string[];
@@ -597,6 +600,9 @@ async function showDialog(
   if (formRef) {
     formRef.resetFields();
   }
+  const title = arg?.title;
+  const model = arg?.model;
+  const action = arg?.action;
   dialogAction = action;
   if (title) {
     dialogTitle = title;
@@ -733,12 +739,18 @@ async function saveClk() {
   }
 }
 
-// 窗口关闭之前判断是否有改动
-async function beforeClose(done: (cancel: boolean) => void) {
+function cancelClk() {
+  dialogVisible = false;
   onCloseResolve({
     changedIds,
   });
+}
+
+async function beforeClose(done: (cancel: boolean) => void) {
   done(false);
+  onCloseResolve({
+    changedIds,
+  });
 }
 
 defineExpose({ showDialog });

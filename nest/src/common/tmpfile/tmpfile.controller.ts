@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "../auth/auth.guard";
 import { FileModel } from "../file.model";
 import { TmpfileService } from "./tmpfile.service";
 
@@ -8,6 +9,17 @@ export class TmpfileController {
   constructor(
     private readonly tmpfileServie: TmpfileService,
   ) { }
+  
+  @Post("upload")
+  @UseGuards(AuthGuard)
+  async upload(
+    @Body("file") files: FileModel[],
+  ): Promise<string> {
+    const t = this;
+    if (!files || !files.length) return;
+    const result = await t.tmpfileServie.upload(files[0]);
+    return result;
+  }
   
   @Get("download/:filename")
   async download(

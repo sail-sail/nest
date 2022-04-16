@@ -109,20 +109,25 @@ watch(
 let tabs_divRef = $ref<HTMLDivElement>();
 let tab_active_lineRef = $ref<HTMLDivElement>();
 
+function refreshTab_active_line() {
+  const oldTab_active = <HTMLDivElement> tabs_divRef?.getElementsByClassName("tab_active")[0];
+  if (!oldTab_active) {
+    return;
+  }
+  const offsetLeft = oldTab_active.offsetLeft;
+  const offsetWidth = oldTab_active.offsetWidth;
+  tab_active_lineRef.style.display = "block";
+  tab_active_lineRef.style.left = `${ offsetLeft }px`;
+  tab_active_lineRef.style.width = `${ offsetWidth }px`;
+}
+
 watch(
-  () => tabsStore.actTab,
+  [
+    () => tabsStore.actTab,
+    () => tabsStore.tabs,
+  ],
   () => {
-    nextTick(() => {
-      const oldTab_active = <HTMLDivElement> tabs_divRef?.getElementsByClassName("tab_active")[0];
-      if (!oldTab_active) {
-        return;
-      }
-      const offsetLeft = oldTab_active.offsetLeft;
-      const offsetWidth = oldTab_active.offsetWidth;
-      tab_active_lineRef.style.display = "block";
-      tab_active_lineRef.style.left = `${ offsetLeft }px`;
-      tab_active_lineRef.style.width = `${ offsetWidth }px`;
-    });    
+    nextTick(refreshTab_active_line);    
   },
   {
     immediate: true,

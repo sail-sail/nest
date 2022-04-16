@@ -293,6 +293,8 @@ type Mutation {
   create<#=tableUp#>(model: <#=tableUp#>Input!): ID!
   "根据id修改一条数据"
   updateById<#=tableUp#>(id: ID!, model: <#=tableUp#>Input!): ID!
+  "导入文件"
+  importFile<#=tableUp#>(id: ID!): String
   "根据ids删除数据"
   deleteByIds<#=tableUp#>(ids: [ID]!): Int!
   "根据ids还原数据"
