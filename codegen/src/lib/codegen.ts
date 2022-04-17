@@ -6,7 +6,7 @@ import { basename, dirname, resolve, normalize } from "path";
 import * as chalk from "chalk";
 import * as shelljs from "shelljs";
 import * as uuid from "uuid";
-import tables from "../tables";
+import tables from "../tables/tables";
 import { createHash } from "crypto";
 import { unlink } from "fs/promises";
 import { TablesConfigItem } from "../config";

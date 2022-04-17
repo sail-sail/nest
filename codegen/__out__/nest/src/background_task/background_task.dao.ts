@@ -436,6 +436,34 @@ export class Background_taskDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    // 状态
+    if (!isEmpty(model._state) && model.state === undefined) {
+      model._state = String(model._state).trim();
+      if (model._state === "运行中") {
+        model.state = "running";
+      } else if (model._state === "成功") {
+        model.state = "success";
+      } else if (model._state === "失败") {
+        model.state = "fail";
+      } else if (model._state === "取消") {
+        model.state = "cancel";
+      }
+    }
+    
+    // 类型
+    if (!isEmpty(model._type) && model.type === undefined) {
+      model._type = String(model._type).trim();
+      if (model._type === "文本") {
+        model.type = "text";
+      } else if (model._type === "下载") {
+        model.type = "download";
+      } else if (model._type === "查看") {
+        model.type = "inline";
+      } else if (model._type === "标签") {
+        model.type = "tag";
+      }
+    }
+    
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
     if (resultSetHeader) {
@@ -562,6 +590,34 @@ export class Background_taskDao {
     
     if (!id || !model) {
       return;
+    }
+    
+    // 状态
+    if (!isEmpty(model._state) && model.state === undefined) {
+      model._state = String(model._state).trim();
+      if (model._state === "运行中") {
+        model.state = "running";
+      } else if (model._state === "成功") {
+        model.state = "success";
+      } else if (model._state === "失败") {
+        model.state = "fail";
+      } else if (model._state === "取消") {
+        model.state = "cancel";
+      }
+    }
+    
+    // 类型
+    if (!isEmpty(model._type) && model.type === undefined) {
+      model._type = String(model._type).trim();
+      if (model._type === "文本") {
+        model.type = "text";
+      } else if (model._type === "下载") {
+        model.type = "download";
+      } else if (model._type === "查看") {
+        model.type = "inline";
+      } else if (model._type === "标签") {
+        model.type = "tag";
+      }
     }
     
     const oldModel = await t.findByUnique(model);

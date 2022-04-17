@@ -21,6 +21,38 @@ if (hasPassword) {
 #>
 import { AuthDao } from "../common/auth/auth.dao";<#
 }
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  // if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const many2many = column.many2many;
+  const isPassword = column.isPassword;
+#><#
+  if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
+    if (foreignTable === table) {
+      continue;
+    }
+#>
+import { <#=foreignTableUp#>Dao } from "../<#=foreignTable#>/<#=foreignTable#>.dao";<#
+  }
+#><#
+}
 #>
 
 @Injectable()
@@ -32,7 +64,39 @@ export class <#=tableUp#>Dao {
     private readonly authDao: AuthDao,<#
       }
     #>
-    private readonly eventEmitter2: EventEmitter2,
+    private readonly eventEmitter2: EventEmitter2,<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      // if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+      const isPassword = column.isPassword;
+    #><#
+      if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
+        if (foreignTable === table) {
+          continue;
+        }
+    #>
+    private readonly <#=foreignTable#>Dao: <#=foreignTableUp#>Dao,<#
+      }
+    #><#
+    }
+    #>
   ) { }
   
   getWhereQuery(
@@ -718,7 +782,69 @@ export class <#=tableUp#>Dao {
     const method = "create";
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
-    if (beforeEvent?.isReturn) return beforeEvent.data;
+    if (beforeEvent?.isReturn) return beforeEvent.data;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      // if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+      const isPassword = column.isPassword;
+    #><#
+      if (selectList.length > 0) {
+    #>
+    
+    // <#=column_comment#>
+    if (!isEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+      model._<#=column_name#> = String(model._<#=column_name#>).trim();<#
+        for (let i = 0; i < selectList.length; i++) {
+          const item = selectList[i];
+          let value = item.value;
+          let label = item.label;
+          if (typeof(value) === "string") {
+            value = `"${ value }"`;
+          } else if (typeof(value) === "number") {
+            value = value.toString();
+          }
+      #><#=i>0?" else ":"\r\n      "#>if (model._<#=column_name#> === "<#=label#>") {
+        model.<#=column_name#> = <#=value#>;
+      }<#
+        }
+      #>
+    }<#
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
+        let daoStr = "";
+        if (foreignTable !== table) {
+          daoStr = `.${ foreignTable }Dao`;
+        }
+    #>
+    
+    // <#=column_comment#>
+    if (!isEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+      model._<#=column_name#> = String(model._<#=column_name#>).trim();
+      const <#=foreignTable#>Model = await t<#=daoStr#>.findOne({ <#=foreignKey.lbl#>: model._<#=column_name#> });
+      if (<#=foreignTable#>Model) {
+        model.<#=column_name#> = <#=foreignTable#>Model.id;
+      }
+    }<#
+      }
+    #><#
+    }
+    #>
     
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
@@ -971,7 +1097,69 @@ export class <#=tableUp#>Dao {
     
     if (!id || !model) {
       return;
+    }<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      // if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+      const isPassword = column.isPassword;
+    #><#
+      if (selectList.length > 0) {
+    #>
+    
+    // <#=column_comment#>
+    if (!isEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+      model._<#=column_name#> = String(model._<#=column_name#>).trim();<#
+        for (let i = 0; i < selectList.length; i++) {
+          const item = selectList[i];
+          let value = item.value;
+          let label = item.label;
+          if (typeof(value) === "string") {
+            value = `"${ value }"`;
+          } else if (typeof(value) === "number") {
+            value = value.toString();
+          }
+      #><#=i>0?" else ":"\r\n      "#>if (model._<#=column_name#> === "<#=label#>") {
+        model.<#=column_name#> = <#=value#>;
+      }<#
+        }
+      #>
+    }<#
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
+        let daoStr = "";
+        if (foreignTable !== table) {
+          daoStr = `.${ foreignTable }Dao`;
+        }
+    #>
+    
+    // <#=column_comment#>
+    if (!isEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+      model._<#=column_name#> = String(model._<#=column_name#>).trim();
+      const <#=foreignTable#>Model = await t<#=daoStr#>.findOne({ <#=foreignKey.lbl#>: model._<#=column_name#> });
+      if (<#=foreignTable#>Model) {
+        model.<#=column_name#> = <#=foreignTable#>Model.id;
+      }
+    }<#
+      }
+    #><#
     }
+    #>
     
     const oldModel = await t.findByUnique(model);
     if (oldModel) {

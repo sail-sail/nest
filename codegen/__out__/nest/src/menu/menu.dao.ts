@@ -438,6 +438,35 @@ export class MenuDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    // 类型
+    if (!isEmpty(model._type) && model.type === undefined) {
+      model._type = String(model._type).trim();
+      if (model._type === "电脑端") {
+        model.type = "pc";
+      } else if (model._type === "手机端") {
+        model.type = "mobile";
+      }
+    }
+    
+    // 父菜单
+    if (!isEmpty(model._menu_id) && model.menu_id === undefined) {
+      model._menu_id = String(model._menu_id).trim();
+      const menuModel = await t.findOne({ lbl: model._menu_id });
+      if (menuModel) {
+        model.menu_id = menuModel.id;
+      }
+    }
+    
+    // 启用
+    if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
+      model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+        model.is_enabled = 1;
+      } else if (model._is_enabled === "否") {
+        model.is_enabled = 0;
+      }
+    }
+    
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
     if (resultSetHeader) {
@@ -580,6 +609,35 @@ export class MenuDao {
     
     if (!id || !model) {
       return;
+    }
+    
+    // 类型
+    if (!isEmpty(model._type) && model.type === undefined) {
+      model._type = String(model._type).trim();
+      if (model._type === "电脑端") {
+        model.type = "pc";
+      } else if (model._type === "手机端") {
+        model.type = "mobile";
+      }
+    }
+    
+    // 父菜单
+    if (!isEmpty(model._menu_id) && model.menu_id === undefined) {
+      model._menu_id = String(model._menu_id).trim();
+      const menuModel = await t.findOne({ lbl: model._menu_id });
+      if (menuModel) {
+        model.menu_id = menuModel.id;
+      }
+    }
+    
+    // 启用
+    if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
+      model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+        model.is_enabled = 1;
+      } else if (model._is_enabled === "否") {
+        model.is_enabled = 0;
+      }
     }
     
     const oldModel = await t.findByUnique(model);

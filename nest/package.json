@@ -5,9 +5,6 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/main.ts",
-    "initdb": "ts-node src/common/util/npmInitDB.ts",
-    "uuid": "ts-node src/common/util/npmShortUuidV4.ts",
-    "pwd": "ts-node src/common/util/npmPassword.ts",
     "build": "gulp",
     "preinstall": "npx only-allow pnpm"
   },

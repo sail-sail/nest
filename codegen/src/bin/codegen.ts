@@ -5,7 +5,7 @@ import {
   genRouter,
   // genMenu,
 } from "../lib/codegen";
-import tables from "../tables";
+import tables from "../tables/tables";
 import { gitDiffOut } from "../lib/codegen";
 
 async function exec(table_names: string[]) {

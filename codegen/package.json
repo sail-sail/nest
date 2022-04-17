@@ -6,12 +6,16 @@
   "scripts": {
     "codegen": "ts-node src/bin/codegen.ts",
     "codeapply": "ts-node src/bin/codeapply.ts",
+    "initdb": "ts-node src/util/npmInitDB.ts",
+    "uuid": "ts-node src/util/npmShortUuidV4.ts",
+    "pwd": "ts-node src/util/npmPassword.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "chalk": "4.1.2",
     "commander": "9.1.0",
     "ejsexcel": "4.0.0",
+    "fast-csv": "4.3.6",
     "fs-extra": "10.0.1",
     "iconv-lite": "0.6.3",
     "jschardet": "3.0.0",

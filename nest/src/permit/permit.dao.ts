@@ -7,12 +7,14 @@ import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { PermitModel, PermitSearch } from "./permit.model";
+import { MenuDao } from "../menu/menu.dao";
 
 @Injectable()
 export class PermitDao {
   
   constructor(
     private readonly eventEmitter2: EventEmitter2,
+    private readonly menuDao: MenuDao,
   ) { }
   
   getWhereQuery(
@@ -381,6 +383,15 @@ export class PermitDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    // 菜单
+    if (!isEmpty(model._menu_id) && model.menu_id === undefined) {
+      model._menu_id = String(model._menu_id).trim();
+      const menuModel = await t.menuDao.findOne({ lbl: model._menu_id });
+      if (menuModel) {
+        model.menu_id = menuModel.id;
+      }
+    }
+    
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
     if (resultSetHeader) {
@@ -495,6 +506,15 @@ export class PermitDao {
     
     if (!id || !model) {
       return;
+    }
+    
+    // 菜单
+    if (!isEmpty(model._menu_id) && model.menu_id === undefined) {
+      model._menu_id = String(model._menu_id).trim();
+      const menuModel = await t.menuDao.findOne({ lbl: model._menu_id });
+      if (menuModel) {
+        model.menu_id = menuModel.id;
+      }
     }
     
     const oldModel = await t.findByUnique(model);

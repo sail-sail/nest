@@ -1,11 +1,10 @@
-import { Context } from "../context";
-import { _PROJECT_PATH } from "../../common/config";
 import { readdir, stat, readFile } from "fs-extra";
-import { isEmpty } from "../../common/util/StringUitl";
 import * as path from "path";
 import { parse } from "fast-csv";
+import { Context } from "../lib/information_schema";
+import { isEmpty } from "../lib/StringUitl";
 
-const root = _PROJECT_PATH+"/src/";
+const root = `${ __dirname }/../tables/`;
 
 async function getSqlFiles(dir: string, sqlFiles: string[], csvFiles: string[]) {
   const files = await readdir(root+dir);
@@ -39,9 +38,9 @@ async function execSqlFile(context: Context, sqlFile: string) {
     sql = sql.replace(/--[\s\S]*?\n/gm, "");
     if (isEmpty(sql)) continue;
     try {
-      await context.execute(sql, undefined, { logResult: false });
+      await context.pool.execute(sql);
     } catch (err) {
-      context.log(err.message);
+      console.error(err);
     }
   }
 };
@@ -86,7 +85,7 @@ async function execCsvFile(context: Context, item: string) {
       }
     }
     sql += ")";
-    await context.execute(sql, undefined, { logResult: false });
+    await context.pool.execute(sql);
   }
 }
 

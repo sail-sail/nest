@@ -1,7 +1,7 @@
 import * as mysql from "mysql2";
 import { Pool, PoolConnection } from "mysql2/promise";
 import nestConfig from "./nest_config";
-import tables from "../tables";
+import tables from "../tables/tables";
 import config, { TableCloumn, TablesConfigItem } from "../config";
 
 export class Context {
@@ -106,12 +106,26 @@ export async function getSchema(
       if (record.COLUMN_NAME.endsWith("_ids")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_ids".length);
         const defaultSort = tables[table2].opts?.defaultSort;
-        record.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: true, type: "json", defaultSort };
+        record.foreignKey = { table: table2, column: "id", lbl: undefined, multiple: true, type: "json", defaultSort };
         // record.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
       } else if (record.COLUMN_NAME.endsWith("_id")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_id".length);
         const defaultSort = tables[table2].opts?.defaultSort;
-        record.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: false, defaultSort };
+        record.foreignKey = { table: table2, column: "id", lbl: undefined, multiple: false, defaultSort };
+      }
+    }
+    if (record.foreignKey) {
+      if (!record.foreignKey.lbl) {
+        const records = await getSchema0(context, record.foreignKey.table);
+        if (records.some((item) => item.COLUMN_NAME === "lbl")) {
+          record.foreignKey.lbl = "lbl";
+        }
+      }
+      if (!record.foreignKey.defaultSort) {
+        record.foreignKey.defaultSort = tables[record.foreignKey.table].opts?.defaultSort;
+      }
+      if (!record.foreignKey.column) {
+        record.foreignKey.column = "id";
       }
     }
     if (record.COLUMN_NAME === "lbl") {

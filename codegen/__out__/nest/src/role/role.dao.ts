@@ -415,6 +415,16 @@ export class RoleDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    // 启用
+    if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
+      model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+        model.is_enabled = 1;
+      } else if (model._is_enabled === "否") {
+        model.is_enabled = 0;
+      }
+    }
+    
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
     if (resultSetHeader) {
@@ -532,6 +542,16 @@ export class RoleDao {
     
     if (!id || !model) {
       return;
+    }
+    
+    // 启用
+    if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
+      model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+        model.is_enabled = 1;
+      } else if (model._is_enabled === "否") {
+        model.is_enabled = 0;
+      }
     }
     
     const oldModel = await t.findByUnique(model);
