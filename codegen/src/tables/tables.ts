@@ -110,6 +110,7 @@ export default defineConfig({
       noEdit: true,
       noImport: true,
       noExport: true,
+      filterDataByCreateUsr: true,
       defaultSort: {
         prop: "begin_time",
         order: "descending",

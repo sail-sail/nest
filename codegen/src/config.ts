@@ -463,6 +463,12 @@ export interface TablesConfigItem {
     noExport?: boolean;
     
     /**
+     * 只允许当前创建用户 create_usr_id 查看数据
+     * @type {boolean}
+     */
+    filterDataByCreateUsr?: boolean;
+    
+    /**
      * 唯一约束
      * @type {string[]}
      */

@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2/promise";
-import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Injectable } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { shortUuidV4 } from "../common/util/uuid";
 import { readFile } from "fs/promises";
 import { renderExcelWorker } from "../common/util/ejsexcel_worker";
@@ -9,9 +9,10 @@ import { streamToBuffer } from "../common/util/stream";
 import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
-import { ServiceException } from '../common/exceptions/service.exception';
-import { PageModel } from '../common/page.model';
-import { UsrModel, UsrSearch } from './usr.model';
+import { ServiceException } from "../common/exceptions/service.exception";
+import { PageModel } from "../common/page.model";
+import { useContext } from "../common/interceptors/context.interceptor";
+import { UsrModel, UsrSearch } from "./usr.model";
 import { UsrDao } from "./usr.dao";
 
 @Injectable()
@@ -64,6 +65,8 @@ export class UsrService {
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { search });
     if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const context = useContext();
     
     let result: UsrModel[] = await t.usrDao.findAll(search, pageModel);
     

@@ -3,8 +3,8 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { ResultSetHeader } from "mysql2/promise";
-import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Injectable } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { shortUuidV4 } from "../common/util/uuid";
 import { readFile } from "fs/promises";
 import { renderExcelWorker } from "../common/util/ejsexcel_worker";
@@ -13,12 +13,13 @@ import { streamToBuffer } from "../common/util/stream";
 import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
-import { ServiceException } from '../common/exceptions/service.exception';
-import { PageModel } from '../common/page.model';
-import { <#=tableUp#>Model, <#=tableUp#>Search } from './<#=table#>.model';<#
+import { ServiceException } from "../common/exceptions/service.exception";
+import { PageModel } from "../common/page.model";
+import { useContext } from "../common/interceptors/context.interceptor";
+import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";<#
 if (hasSummary) {
 #>
-import { <#=tableUp#>Summary } from './<#=table#>.model';<#
+import { <#=tableUp#>Summary } from "./<#=table#>.model";<#
 }
 #>
 import { <#=tableUp#>Dao } from "./<#=table#>.dao";
@@ -73,6 +74,15 @@ export class <#=tableUp#>Service {
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { search });
     if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const context = useContext();<#
+      if (opts.filterDataByCreateUsr) {
+    #>
+    
+    search = search || { };
+    search.create_usr_id = [ context.getUsr_id() ];<#
+      }
+    #>
     
     let result: <#=tableUp#>Model[] = await t.<#=table#>Dao.findAll(search, pageModel);
     
