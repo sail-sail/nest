@@ -21,5 +21,5 @@ export interface UsrSearch {
   username?: string; //用户名
   usernameLike?: string; //用户名
   role_ids?: string[][]; //角色,
-  role__lbl?: string[][]; //角色
+  _role_ids?: string[][]; //角色
 }

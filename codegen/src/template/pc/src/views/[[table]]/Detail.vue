@@ -1,5 +1,5 @@
 <template><#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
 #>
 <el-dialog
   :fullscreen="fullscreen"
@@ -36,6 +36,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
+          if (column.onlyCodegenNest) continue;
           if (column.noAdd && column.noEdit) continue;
           if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
@@ -331,6 +332,7 @@ import { <#=tableUp#>Model } from "./Model";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -347,6 +349,7 @@ import {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let data_type = column.DATA_TYPE;
@@ -373,7 +376,7 @@ const emit = defineEmits([
 ]);
 
 let inited = $ref(false);
-let columnNum = $ref(<#=columns.length-1#>);
+let columnNum = $ref(<#=columns.filter((item) => item.ignoreCodegen).length-1#>);
 
 let { fullscreen, setFullscreen } = $(useFullscreenEffect());
 
@@ -385,6 +388,7 @@ let dialogModel: <#=tableUp#>Model = $ref({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let data_type = column.DATA_TYPE;
@@ -415,6 +419,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let data_type = column.DATA_TYPE;
@@ -460,6 +465,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
@@ -491,6 +497,7 @@ async function getSelectListEfc() {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenNest) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       const data_type = column.DATA_TYPE;
@@ -514,6 +521,7 @@ async function getSelectListEfc() {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const data_type = column.DATA_TYPE;
@@ -550,6 +558,7 @@ async function getSelectListEfc() {
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;

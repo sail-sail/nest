@@ -17,5 +17,5 @@ export interface RoleSearch {
   lbl?: string; //名称
   lblLike?: string; //名称
   menu_ids?: string[][]; //菜单,
-  menu__lbl?: string[][]; //菜单
+  _menu_ids?: string[][]; //菜单
 }

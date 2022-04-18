@@ -38,4 +38,6 @@ export interface Background_taskSearch {
   end_time?: string[]; //结束时间
   rem?: string; //备注
   remLike?: string; //备注
+  create_usr_id?: string[]; //创建人,
+  _create_usr_id?: string[]; //创建人
 }

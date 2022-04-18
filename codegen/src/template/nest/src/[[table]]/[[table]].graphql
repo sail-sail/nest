@@ -1,11 +1,12 @@
 <#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>type FindAll<#=tableUp#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
@@ -70,7 +71,8 @@ const hasSummary = columns.some((column) => column.showSummary);
 input <#=tableUp#>Input {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
@@ -138,7 +140,8 @@ input <#=tableUp#>Search {
   orderDec: String<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -202,7 +205,7 @@ input <#=tableUp#>Search {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  <#=foreignKey.table#>__<#=foreignKey.lbl#>: <#=data_type#><#
+  _<#=column_name#>: <#=data_type#><#
     } else if (selectList && selectList.length > 0) {
   #>
   "<#=column_comment#>"
@@ -236,6 +239,7 @@ type FindSummary<#=tableUp#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT;

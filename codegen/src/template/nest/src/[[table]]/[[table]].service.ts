@@ -315,7 +315,8 @@ export class <#=tableUp#>Service {
     const header: { [key: string]: string } = {<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
-        // if (column.ignoreCodegen) continue;
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenNest) continue;
         const column_name = column.COLUMN_NAME;
         let data_type = column.DATA_TYPE;
         const foreignKey = column.foreignKey;

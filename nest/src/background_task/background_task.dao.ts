@@ -7,12 +7,14 @@ import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
 import { Background_taskModel, Background_taskSearch } from "./background_task.model";
+import { UsrDao } from "../usr/usr.dao";
 
 @Injectable()
 export class Background_taskDao {
   
   constructor(
     private readonly eventEmitter2: EventEmitter2,
+    private readonly usrDao: UsrDao,
   ) { }
   
   getWhereQuery(
@@ -91,12 +93,22 @@ export class Background_taskDao {
       whereQuery += ` and t.rem like ?`;
       args.push(sqlLike(search.remLike) + "%");
     }
+    if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+      whereQuery += ` and usr.id in (?)`;
+      args.push(search.create_usr_id);
+    }
+    if (search?._create_usr_id && search._create_usr_id?.length > 0) {
+      whereQuery += ` and _create_usr_id in (?)`;
+      args.push(search._create_usr_id);
+    }
     return whereQuery;
   }
   
   getFromQuery() {
     let fromQuery = `
       background_task t
+      left join usr
+        on usr.id = t.create_usr_id
     `;
     return fromQuery;
   }
@@ -162,6 +174,7 @@ export class Background_taskDao {
     const args = [ ];
     let sql = `
       select t.*
+          ,usr.lbl _create_usr_id
       from
         ${ t.getFromQuery() }
       where

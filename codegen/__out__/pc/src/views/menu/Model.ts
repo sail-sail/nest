@@ -19,7 +19,7 @@ export interface MenuSearch {
   orderBy?: string;
   orderDec?: string;
   menu_id?: string[]; //父菜单,
-  menu__lbl?: string[]; //父菜单
+  _menu_id?: string[]; //父菜单
   lbl?: string; //名称
   lblLike?: string; //名称
 }

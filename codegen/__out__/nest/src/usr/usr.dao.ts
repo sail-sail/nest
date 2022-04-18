@@ -65,9 +65,9 @@ export class UsrDao {
       whereQuery += ` and role.id in (?)`;
       args.push(search.role_ids);
     }
-    if (search?.role__lbl && search.role__lbl?.length > 0) {
-      whereQuery += ` and role__lbl in (?)`;
-      args.push(search.role__lbl);
+    if (search?._role_ids && search._role_ids?.length > 0) {
+      whereQuery += ` and _role_ids in (?)`;
+      args.push(search._role_ids);
     }
     if (search?.rem !== undefined) {
       whereQuery += ` and t.rem = ?`;

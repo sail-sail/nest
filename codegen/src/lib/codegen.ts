@@ -125,6 +125,9 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
+      if (opts.onlyCodegenNest && dir.startsWith("/pc/")) {
+        return;
+      }
       let htmlStr = includeFtl(await readFile(fileTng ,"utf8"), "<#", "#>");
       try {
         if(basename(dir2).startsWith("--")) {

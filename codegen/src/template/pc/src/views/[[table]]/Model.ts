@@ -6,7 +6,8 @@ export interface <#=tableUp#>Model {
   is_deleted?: 0|1,<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     const foreignKey = column.foreignKey;
@@ -82,7 +83,8 @@ export interface <#=tableUp#>Search {
   orderDec?: string;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -152,7 +154,7 @@ export interface <#=tableUp#>Search {
     if (foreignKey) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>,
-  <#=foreignKey.table#>__<#=foreignKey.lbl#>?: <#=data_type#>;<#=column_comment#><#
+  _<#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
@@ -181,6 +183,7 @@ export interface <#=tableUp#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT;

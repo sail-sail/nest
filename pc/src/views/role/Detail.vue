@@ -198,7 +198,7 @@ const emit = defineEmits([
 ]);
 
 let inited = $ref(false);
-let columnNum = $ref(4);
+let columnNum = $ref(6);
 
 let { fullscreen, setFullscreen } = $(useFullscreenEffect());
 

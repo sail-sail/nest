@@ -66,7 +66,7 @@ input TenantSearch {
   is_enabled: [Int]
   "菜单"
   menu_ids: [String]
-  menu__lbl: [String]
+  _menu_ids: [String]
   "排序"
   order_by: [Int]
   "备注"

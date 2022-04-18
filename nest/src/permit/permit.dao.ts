@@ -37,9 +37,9 @@ export class PermitDao {
       whereQuery += ` and menu.id in (?)`;
       args.push(search.menu_id);
     }
-    if (search?.menu__lbl && search.menu__lbl?.length > 0) {
-      whereQuery += ` and menu__lbl in (?)`;
-      args.push(search.menu__lbl);
+    if (search?._menu_id && search._menu_id?.length > 0) {
+      whereQuery += ` and _menu_id in (?)`;
+      args.push(search._menu_id);
     }
     if (search?.lbl !== undefined) {
       whereQuery += ` and t.lbl = ?`;

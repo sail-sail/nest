@@ -21,7 +21,7 @@ export interface PermitSearch {
   orderDec?: string;
   id?: string; //ID
   menu_id?: string[]; //菜单,
-  menu__lbl?: string[]; //菜单
+  _menu_id?: string[]; //菜单
   lbl?: string; //名称
   lblLike?: string; //名称
   rem?: string; //备注

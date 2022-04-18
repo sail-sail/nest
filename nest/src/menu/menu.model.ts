@@ -29,7 +29,7 @@ export interface MenuSearch {
   id?: string; //ID
   type?: string[]; //类型
   menu_id?: string[]; //父菜单,
-  menu__lbl?: string[]; //父菜单
+  _menu_id?: string[]; //父菜单
   lbl?: string; //名称
   lblLike?: string; //名称
   route_path?: string; //路由

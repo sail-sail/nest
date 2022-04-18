@@ -57,7 +57,7 @@ input UsrSearch {
   is_enabled: [Int]
   "角色"
   role_ids: [String]
-  role__lbl: [String]
+  _role_ids: [String]
   "备注"
   rem: String
   remLike: String

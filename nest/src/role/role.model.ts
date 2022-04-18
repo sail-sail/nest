@@ -28,5 +28,5 @@ export interface RoleSearch {
   remLike?: string; //备注
   is_enabled?: 0|1[]; //启用
   menu_ids?: string[][]; //菜单,
-  menu__lbl?: string[][]; //菜单
+  _menu_ids?: string[][]; //菜单
 }

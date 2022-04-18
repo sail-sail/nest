@@ -9,7 +9,14 @@ export interface TableCloumn {
    * @type {boolean}
    * @memberof TableCloumn
    */
-  ignoreCodegen?: boolean,
+  ignoreCodegen?: boolean;
+  
+  /**
+   * 是否在pc前端隐藏此字段
+   * @type {boolean}
+   * @memberof TableCloumn
+   */
+  onlyCodegenNest?: boolean;
   
   /**
    * 前端不允许修改
@@ -215,19 +222,19 @@ export interface TableCloumn {
      * 外键关联表字段
      * @type {string}
      */
-    column: string,
+    column?: string,
     
     /**
      * 下拉框是否多选
      * @type {boolean}
      */
-    multiple: boolean,
+    multiple?: boolean,
     
     /**
      * 下拉框显示字段, 默认为: lbl
      * @type {string | string[]}
      */
-    lbl: string | string[],
+    lbl?: string | string[],
     
     /**
      * 外键关联的类型, json还是 多对多关联
@@ -383,6 +390,13 @@ export interface TablesConfigItem {
     ignoreCodegen?: boolean;
     
     /**
+     * 是否只创建后端, 默认为false
+     * @type {boolean}
+     * @memberof TableCloumn
+     */
+    onlyCodegenNest?: boolean;
+    
+    /**
      * 表名
      * @type {string}
      */
@@ -435,6 +449,18 @@ export interface TablesConfigItem {
      * @type {boolean}
      */
     noAdd?: boolean;
+    
+    /**
+     * 不允许导入
+     * @type {boolean}
+     */
+    noImport?: boolean;
+    
+    /**
+     * 不允许导出
+     * @type {boolean}
+     */
+    noExport?: boolean;
     
     /**
      * 唯一约束

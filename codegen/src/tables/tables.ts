@@ -108,6 +108,8 @@ export default defineConfig({
     opts: {
       noAdd: true,
       noEdit: true,
+      noImport: true,
+      noExport: true,
       defaultSort: {
         prop: "begin_time",
         order: "descending",
@@ -146,6 +148,14 @@ export default defineConfig({
         COLUMN_NAME: "end_time",
         sortable: true,
         minWith: 110,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+        ignoreCodegen: false,
+        onlyCodegenNest: true,
+        foreignKey: {
+          table: "usr",
+        },
       },
     ]
   },

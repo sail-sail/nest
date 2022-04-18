@@ -30,7 +30,7 @@ input PermitSearch {
   id: ID
   "菜单"
   menu_id: [String]
-  menu__lbl: [String]
+  _menu_id: [String]
   "名称"
   lbl: String
   lblLike: String

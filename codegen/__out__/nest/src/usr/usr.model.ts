@@ -32,7 +32,7 @@ export interface UsrSearch {
   passwordLike?: string; //密码
   is_enabled?: 0|1[]; //启用
   role_ids?: string[][]; //角色,
-  role__lbl?: string[][]; //角色
+  _role_ids?: string[][]; //角色
   rem?: string; //备注
   remLike?: string; //备注
 }

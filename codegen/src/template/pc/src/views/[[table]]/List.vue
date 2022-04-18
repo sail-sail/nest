@@ -1,5 +1,5 @@
 <#
-const hasSummary = columns.some((column) => column.showSummary);
+const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenNest);
 #><template>
 <div class="wrap_div">
   <div class="search_div">
@@ -14,6 +14,7 @@ const hasSummary = columns.some((column) => column.showSummary);
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenNest) continue;
         const column_name = column.COLUMN_NAME;
         if (column_name === "id") continue;
         const data_type = column.DATA_TYPE;
@@ -224,7 +225,7 @@ const hasSummary = columns.some((column) => column.showSummary);
       </el-button><#
       }
       #><#
-      if (opts.noDelete !== true) {
+        if (opts.noDelete !== true) {
       #>
       <el-button
         type="danger"
@@ -233,14 +234,18 @@ const hasSummary = columns.some((column) => column.showSummary);
         @click="deleteByIdsEfc"
       >
         删除
-      </el-button>
+      </el-button><#
+        }
+      #><#
+        if (opts.noImport !== true) {
+      #>
       <el-button
         :icon="Upload"
         @click="openUploadClk"
       >
         导入
       </el-button><#
-      }
+        }
       #>
     </template>
     <template v-else><#
@@ -255,13 +260,17 @@ const hasSummary = columns.some((column) => column.showSummary);
       </el-button><#
       }
       #>
-    </template>
+    </template><#
+      if (opts.noExport !== true) {
+    #>
     <el-button
       :icon="Download"
       @click="exportClk"
     >
       导出
-    </el-button>
+    </el-button><#
+      }
+    #>
     <el-button
       :icon="Refresh"
       @click="searchClk"
@@ -317,6 +326,7 @@ const hasSummary = columns.some((column) => column.showSummary);
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenNest) continue;
             if (column.noList) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
@@ -489,8 +499,12 @@ const hasSummary = columns.some((column) => column.showSummary);
   </div>
   <Detail
     ref="detailRef"
-  ></Detail>
-  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog>
+  ></Detail><#
+    if (opts.noImport !== true) {
+  #>
+  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog><#
+    }
+  #>
 </div>
 </template>
 
@@ -532,8 +546,12 @@ import {
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
-import TableShowColumns from "@/components/TableShowColumns.vue";
-import UploadFileDialog from "@/components/UploadFileDialog.vue";
+import TableShowColumns from "@/components/TableShowColumns.vue";<#
+  if (opts.noImport !== true) {
+#>
+import UploadFileDialog from "@/components/UploadFileDialog.vue";<#
+  }
+#>
 import { downloadById } from "@/utils/axios";<#
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
@@ -560,12 +578,28 @@ import {
 import Detail from "./Detail.vue";
 import {
   findAll,
-  findAllAndCount,
+  findAllAndCount,<#
+    if (opts.noDelete !== true) {
+  #>
   deleteByIds,
-  revertByIds,
-  exportExcel,
-  updateById,
+  revertByIds,<#
+    }
+  #><#
+    if (opts.noExport !== true) {
+  #>
+  exportExcel,<#
+    }
+  #><#
+    if (opts.noEdit !== true) {
+  #>
+  updateById,<#
+    }
+  #><#
+    if (opts.noImport !== true) {
+  #>
   importFile,<#
+    }
+  #><#
     if (hasSummary) {
   #>
   findSummary,<#
@@ -580,6 +614,7 @@ import {
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -598,6 +633,7 @@ const foreignKeyCommentArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   let data_type = column.DATA_TYPE;
@@ -637,13 +673,17 @@ const usrStore = useUsrStore();
 let inited = $ref(false);
 
 // 表格
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+  if (opts.noExport !== true) {
+#>
 
 // 导出Excel
 async function exportClk() {
   const id = await exportExcel(search);
   downloadById(id);
-}
+}<#
+  }
+#>
 
 // 搜索功能
 let {
@@ -681,6 +721,7 @@ let tableColumns = $ref<ColumnType[]>([<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const foreignKey = column.foreignKey;
@@ -790,6 +831,7 @@ let detailRef = $ref<InstanceType<typeof Detail>>();<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
@@ -939,8 +981,12 @@ async function sortChange(
 if (hasAtt) {
 #>
 
-async function linkAttChg(row: <#=tableUp#>Model, key: string) {
-  await updateById(row.id, { [key]: row[key] });
+async function linkAttChg(row: <#=tableUp#>Model, key: string) {<#
+    if (opts.noEdit !== true) {
+#>
+  await updateById(row.id, { [key]: row[key] });<#
+    }
+  #>
 }<#
 }
 #><#
@@ -993,7 +1039,9 @@ async function openAdd() {
     ]);
     selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
-}
+}<#
+  if (opts.noImport !== true) {
+#>
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
@@ -1011,6 +1059,8 @@ async function openUploadClk() {
     await dataGrid(true);
   }
 }<#
+  }
+#><#
 }
 #><#
 if (opts.noEdit !== true) {

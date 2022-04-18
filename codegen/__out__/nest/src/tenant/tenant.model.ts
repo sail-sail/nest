@@ -34,7 +34,7 @@ export interface TenantSearch {
   max_usr_num?: number[]; //最大用户数
   is_enabled?: 0|1[]; //启用
   menu_ids?: string[][]; //菜单,
-  menu__lbl?: string[][]; //菜单
+  _menu_ids?: string[][]; //菜单
   order_by?: number[]; //排序
   rem?: string; //备注
   remLike?: string; //备注

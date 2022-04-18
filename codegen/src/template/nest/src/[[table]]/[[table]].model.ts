@@ -5,8 +5,9 @@ export interface <#=tableUp#>Model {
   [key: string]: any,<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    if ([ "tenant_id", "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted", "delete_time" ].includes(column_name)) continue;
     let data_type = column.DATA_TYPE;
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
@@ -96,8 +97,9 @@ export interface <#=tableUp#>Search {
   orderDec?: string;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    if ([ "is_deleted" ].includes(column_name)) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -166,7 +168,7 @@ export interface <#=tableUp#>Search {
     if (foreignKey) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>,
-  <#=foreignKey.table#>__<#=foreignKey.lbl#>?: <#=data_type#>;<#=column_comment#><#
+  _<#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#

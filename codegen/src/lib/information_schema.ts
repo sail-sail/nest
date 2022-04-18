@@ -97,20 +97,19 @@ export async function getSchema(
     if (column) {
       Object.assign(record, column);
     }
-    if (config.ignoreCodegen.includes(record.COLUMN_NAME)) {
-      continue;
-    } else {
-      columns.push(record);
+    columns.push(record);
+    if (config.ignoreCodegen.includes(record.COLUMN_NAME) && record.ignoreCodegen == null) {
+      record.ignoreCodegen = true;
     }
     if (!record.foreignKey) {
       if (record.COLUMN_NAME.endsWith("_ids")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_ids".length);
-        const defaultSort = tables[table2].opts?.defaultSort;
+        const defaultSort = tables[table2]?.opts?.defaultSort;
         record.foreignKey = { table: table2, column: "id", lbl: undefined, multiple: true, type: "json", defaultSort };
         // record.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
       } else if (record.COLUMN_NAME.endsWith("_id")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_id".length);
-        const defaultSort = tables[table2].opts?.defaultSort;
+        const defaultSort = tables[table2]?.opts?.defaultSort;
         record.foreignKey = { table: table2, column: "id", lbl: undefined, multiple: false, defaultSort };
       }
     }
@@ -122,7 +121,7 @@ export async function getSchema(
         }
       }
       if (!record.foreignKey.defaultSort) {
-        record.foreignKey.defaultSort = tables[record.foreignKey.table].opts?.defaultSort;
+        record.foreignKey.defaultSort = tables[record.foreignKey.table]?.opts?.defaultSort;
       }
       if (!record.foreignKey.column) {
         record.foreignKey.column = "id";
@@ -165,12 +164,12 @@ export async function getSchema(
     if (!column.foreignKey) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
         const table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_ids".length);
-        const defaultSort = tables[table2].opts?.defaultSort;
+        const defaultSort = tables[table2]?.opts?.defaultSort;
         column.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: true, type: "many2many", defaultSort };
         column.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
       } else if (column.COLUMN_NAME.endsWith("_id")) {
         const table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_id".length);
-        const defaultSort = tables[table2].opts?.defaultSort;
+        const defaultSort = tables[table2]?.opts?.defaultSort;
         column.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: false, defaultSort };
       }
     }
@@ -185,7 +184,7 @@ export async function getSchema(
     return 0;
   });
   tables[table_name].columns = columns;
-  let defaultSort = tables[table_name].opts?.defaultSort;
+  let defaultSort = tables[table_name]?.opts?.defaultSort;
   const orderByColumn = columns.find((item) => item.COLUMN_NAME === "order_by");
   if (orderByColumn) {
     if (orderByColumn.sortable == null) {
@@ -198,7 +197,10 @@ export async function getSchema(
       };
     }
   }
-  tables[table_name].opts.defaultSort = defaultSort;
+  if (tables[table_name] && defaultSort)  {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.defaultSort = defaultSort;
+  }
   return tables[table_name];
 }
 

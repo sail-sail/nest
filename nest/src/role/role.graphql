@@ -46,7 +46,7 @@ input RoleSearch {
   is_enabled: [Int]
   "菜单"
   menu_ids: [String]
-  menu__lbl: [String]
+  _menu_ids: [String]
 }
 type Query {
   "根据条件查找据数总数"

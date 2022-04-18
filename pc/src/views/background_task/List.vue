@@ -131,12 +131,6 @@
       >
         删除
       </el-button>
-      <el-button
-        :icon="Upload"
-        @click="openUploadClk"
-      >
-        导入
-      </el-button>
     </template>
     <template v-else>
       <el-button
@@ -147,12 +141,6 @@
         还原
       </el-button>
     </template>
-    <el-button
-      :icon="Download"
-      @click="exportClk"
-    >
-      导出
-    </el-button>
     <el-button
       :icon="Refresh"
       @click="searchClk"
@@ -345,7 +333,6 @@
   <Detail
     ref="detailRef"
   ></Detail>
-  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog>
 </div>
 </template>
 
@@ -388,7 +375,6 @@ import {
   CircleCheck,
 } from "@element-plus/icons-vue";
 import TableShowColumns from "@/components/TableShowColumns.vue";
-import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
@@ -405,9 +391,6 @@ import {
   findAllAndCount,
   deleteByIds,
   revertByIds,
-  exportExcel,
-  updateById,
-  importFile,
 } from "./Api";
 
 import {
@@ -421,12 +404,6 @@ let inited = $ref(false);
 
 // 表格
 let tableRef = $ref<InstanceType<typeof ElTable>>();
-
-// 导出Excel
-async function exportClk() {
-  const id = await exportExcel(search);
-  downloadById(id);
-}
 
 // 搜索功能
 let {

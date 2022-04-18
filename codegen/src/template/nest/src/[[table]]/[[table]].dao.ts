@@ -22,9 +22,10 @@ if (hasPassword) {
 import { AuthDao } from "../common/auth/auth.dao";<#
 }
 #><#
+const hasImportDaos = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
-  // if (column.ignoreCodegen) continue;
+  if (column.ignoreCodegen) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   let data_type = column.DATA_TYPE;
@@ -48,6 +49,8 @@ for (let i = 0; i < columns.length; i++) {
     if (foreignTable === table) {
       continue;
     }
+    if (hasImportDaos.includes(foreignTable)) continue;
+    hasImportDaos.push(foreignTable);
 #>
 import { <#=foreignTableUp#>Dao } from "../<#=foreignTable#>/<#=foreignTable#>.dao";<#
   }
@@ -67,7 +70,7 @@ export class <#=tableUp#>Dao {
     private readonly eventEmitter2: EventEmitter2,<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
@@ -91,6 +94,7 @@ export class <#=tableUp#>Dao {
         if (foreignTable === table) {
           continue;
         }
+        if (!hasImportDaos.includes(foreignTable)) continue;
     #>
     private readonly <#=foreignTable#>Dao: <#=foreignTableUp#>Dao,<#
       }
@@ -117,7 +121,7 @@ export class <#=tableUp#>Dao {
     #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
@@ -143,9 +147,9 @@ export class <#=tableUp#>Dao {
     }<#
       if (foreignKey.lbl) {
     #>
-    if (search?.<#=foreignKey.table#>__<#=foreignKey.lbl#> && search.<#=foreignKey.table#>__<#=foreignKey.lbl#>?.length > 0) {
-      whereQuery += ` and <#=foreignKey.table#>__<#=foreignKey.lbl#> in (?)`;
-      args.push(search.<#=foreignKey.table#>__<#=foreignKey.lbl#>);
+    if (search?._<#=column_name#> && search._<#=column_name#>?.length > 0) {
+      whereQuery += ` and _<#=column_name#> in (?)`;
+      args.push(search._<#=column_name#>);
     }<#
       }
     #><#
@@ -394,7 +398,7 @@ export class <#=tableUp#>Dao {
     #>);<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
@@ -429,7 +433,7 @@ export class <#=tableUp#>Dao {
       const model = result[i];<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
-        // if (column.ignoreCodegen) continue;
+        if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
         if (column_name === "id") continue;
         let data_type = column.DATA_TYPE;
@@ -512,7 +516,7 @@ export class <#=tableUp#>Dao {
     const uniqueComments = {<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
-        // if (column.ignoreCodegen) continue;
+        if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
         if (column_name === "id") continue;
         const unique = opts.unique || [ ];
@@ -799,9 +803,9 @@ export class <#=tableUp#>Dao {
     const context = useContext();<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
+      if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -910,10 +914,12 @@ export class <#=tableUp#>Dao {
     }<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -968,10 +974,12 @@ export class <#=tableUp#>Dao {
     }<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -1017,7 +1025,7 @@ export class <#=tableUp#>Dao {
     let result = await context.execute(sql, args);<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
@@ -1140,9 +1148,9 @@ export class <#=tableUp#>Dao {
     const context = useContext();<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
+      if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -1253,10 +1261,10 @@ export class <#=tableUp#>Dao {
     }<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
+      if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -1312,10 +1320,10 @@ export class <#=tableUp#>Dao {
     let result = await context.execute(sql, args);<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
-      // if (column.ignoreCodegen) continue;
+      if (column.ignoreCodegen) continue;
       if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
+      if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";

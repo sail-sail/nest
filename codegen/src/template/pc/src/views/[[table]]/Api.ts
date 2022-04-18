@@ -1,5 +1,5 @@
 <#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
@@ -10,6 +10,7 @@ import { PageModel } from "@/utils/page.model";
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -41,6 +42,7 @@ export async function findAll(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenNest) continue;
             const column_name = column.COLUMN_NAME;
             let column_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -77,7 +79,8 @@ export async function findAll(
     const item = data[i];<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     if (data_type === "json") {
@@ -112,6 +115,7 @@ export async function findAllAndCount(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenNest) continue;
             const column_name = column.COLUMN_NAME;
             let column_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -152,7 +156,8 @@ export async function findAllAndCount(
     const item = data.data[i];<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     if (data_type === "json") {
@@ -185,6 +190,7 @@ export async function findSummary(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenNest) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
           #><#
@@ -275,6 +281,7 @@ export async function findById(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenNest) continue;
             const column_name = column.COLUMN_NAME;
             let column_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -308,7 +315,8 @@ export async function findById(
   const data = rvData?.findById<#=tableUp#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    // if (column.ignoreCodegen) continue;
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     if (data_type === "json") {
@@ -372,6 +380,7 @@ export async function revertByIds(
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
