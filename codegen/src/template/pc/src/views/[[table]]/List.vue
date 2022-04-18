@@ -1005,9 +1005,11 @@ async function openUploadClk() {
   const file = await uploadFileDialogRef.showDialog({
     title: "导入<#=table_comment#>",
   });
-  const msg = await importFile(file);
-  MessageBox.success(msg);
-  await dataGrid(true);
+  if (file) {
+    const msg = await importFile(file);
+    MessageBox.success(msg);
+    await dataGrid(true);
+  }
 }<#
 }
 #><#

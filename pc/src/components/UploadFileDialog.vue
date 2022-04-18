@@ -88,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick } from "vue";
 import {
   ElDialog,
   ElMessage,
@@ -128,6 +129,18 @@ async function showDialog(arg?: { title?: string }) {
     size: 0,
   };
   dialogVisible = true;
+  if (fileRef) {
+    fileRef.value = "";
+    fileRef.click();
+  } else {
+    nextTick(() => {
+      console.log(fileRef);
+      if (fileRef) {
+        fileRef.value = "";
+        fileRef.click();
+      }
+    });
+  }
   const reslut = await new Promise<File>((resolve) => {
     onCloseResolve = resolve;
   });
@@ -165,7 +178,7 @@ async function cancelClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  if (fileObj) {
+  if (fileObj && fileInfo.name) {
     try {
       await ElMessageBox.confirm(`文件 ${ fileInfo.name } 尚未导入, 取消导入? `, {
         confirmButtonText: "取消导入",

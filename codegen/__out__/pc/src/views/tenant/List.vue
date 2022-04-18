@@ -586,9 +586,11 @@ async function openUploadClk() {
   const file = await uploadFileDialogRef.showDialog({
     title: "导入租户",
   });
-  const msg = await importFile(file);
-  MessageBox.success(msg);
-  await dataGrid(true);
+  if (file) {
+    const msg = await importFile(file);
+    MessageBox.success(msg);
+    await dataGrid(true);
+  }
 }
 
 // 打开修改页面
