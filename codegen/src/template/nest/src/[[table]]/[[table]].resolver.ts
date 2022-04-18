@@ -2,7 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import { Resolver, Tran } from "../common/graphql";
+#>import { Resolver, TranInterceptor } from "../common/graphql";
 import { SetMetadata, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
@@ -84,7 +84,7 @@ export class <#=tableUp#>Resolver {
   }
   
   @Mutation(undefined, { name: "create<#=tableUp#>", description: "创建一条数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async create(
     @Args("model") model: <#=tableUp#>Model,
   ) {
@@ -94,7 +94,7 @@ export class <#=tableUp#>Resolver {
   }
   
   @Mutation(undefined, { name: "updateById<#=tableUp#>", description: "根据id修改一条数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async updateById(
     @Args("id") id: string,
     @Args("model") model: <#=tableUp#>Model,
@@ -105,7 +105,7 @@ export class <#=tableUp#>Resolver {
   }
   
   @Mutation(undefined, { name: "deleteByIds<#=tableUp#>", description: "根据ids删除数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async deleteByIds(
     @Args("ids") ids: string[],
   ) {
@@ -126,7 +126,7 @@ export class <#=tableUp#>Resolver {
   }
   
   @Mutation(undefined, { name: "revertByIds<#=tableUp#>", description: "根据ids还原数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async revertByIds(
     @Args("ids") ids: string[],
   ) {

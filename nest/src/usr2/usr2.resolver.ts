@@ -1,6 +1,6 @@
 import { UseInterceptors } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { Tran } from "../common/graphql";
+import { TranInterceptor } from "../common/graphql";
 
 import { Usr2Service } from "./usr2.service";
 
@@ -12,7 +12,7 @@ export class Usr2Resolver {
   ) { }
   
   @Mutation(() => String, { name: "login", description: "登录" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async login(
     @Args("username") username: string,
     @Args("password") password: string,

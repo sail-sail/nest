@@ -309,7 +309,7 @@ export class UsrDao {
         throw new UniqueException(`${ lbl } 已存在!`);
       }
       if (uniqueType === "update") {
-        const resultSetHeader = await t.updateById(oldModel.id, model);
+        const resultSetHeader = await t.updateById(oldModel.id, { ...model, id: undefined });
         return resultSetHeader;
       }
       if (uniqueType === "ignore") {
@@ -321,7 +321,7 @@ export class UsrDao {
   
   /**
    * 根据条件查找第一条数据
-   * @param {UsrSearch} [search]
+   * @param {UsrSearch} search?
    * @return {Promise<UsrModel>} 
    * @memberof UsrDao
    */
@@ -354,7 +354,7 @@ export class UsrDao {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {UsrSearch} [search]
+   * @param {UsrSearch} search?
    * @return {Promise<boolean>} 
    * @memberof UsrDao
    */
@@ -435,6 +435,8 @@ export class UsrDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    const context = useContext();
+    
     // 启用
     if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
       model._is_enabled = String(model._is_enabled).trim();
@@ -445,13 +447,36 @@ export class UsrDao {
       }
     }
     
+    // 角色
+    if (!model.role_ids && model._role_ids) {
+      if (typeof model._role_ids === "string" || model._role_ids instanceof String) {
+        model._role_ids = model._role_ids.split(",");
+      }
+      model._role_ids = model._role_ids.map((item) => item.trim());
+      let sql = `
+        select
+          t.id
+        from
+          role t
+        where
+          t.lbl in (?)
+      `;
+      const args = [
+        model._role_ids,
+      ];
+      interface Result {
+        id: string;
+      }
+      const models = await context.query<Result>(sql, args);
+      model.role_ids = models.map((item) => item.id);
+    }
+    
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
     if (resultSetHeader) {
       return resultSetHeader;
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       insert into usr(
@@ -512,11 +537,11 @@ export class UsrDao {
     }
     sql += `)`;
     
-    await t.delCache();
-    
     let result = await context.execute(sql, args);
     // 角色
     await many2manyUpdate(model, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
+    
+    await t.delCache();
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { model, result });
     if (afterEvent?.isReturn) return afterEvent.data;
@@ -547,7 +572,7 @@ export class UsrDao {
   }
   
   /**
-   * 根据id修改数据
+   * 根据id修改一行数据
    * @param {string} id
    * @param {UsrModel} model
    * @param {({
@@ -577,6 +602,7 @@ export class UsrDao {
     if (!id || !model) {
       return;
     }
+    const context = useContext();
     
     // 启用
     if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
@@ -586,6 +612,30 @@ export class UsrDao {
       } else if (model._is_enabled === "否") {
         model.is_enabled = 0;
       }
+    }
+  
+    // 角色
+    if (!model.role_ids && model._role_ids) {
+      if (typeof model._role_ids === "string" || model._role_ids instanceof String) {
+        model._role_ids = model._role_ids.split(",");
+      }
+      model._role_ids = model._role_ids.map((item) => item.trim());
+      let sql = `
+        select
+          t.id
+        from
+          role t
+        where
+          t.lbl in (?)
+      `;
+      const args = [
+        model._role_ids,
+      ];
+      interface Result {
+        id: string;
+      }
+      const models = await context.query<Result>(sql, args);
+      model.role_ids = models.map((item) => item.id);
     }
     
     const oldModel = await t.findByUnique(model);
@@ -603,7 +653,6 @@ export class UsrDao {
       }
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       update usr set update_time = ?
@@ -646,7 +695,7 @@ export class UsrDao {
     
     let result = await context.execute(sql, args);
     // 角色
-    await many2manyUpdate(model, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
+    await many2manyUpdate({ ...model, id }, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
     
     await t.delCache();
     
@@ -657,8 +706,8 @@ export class UsrDao {
   }
   
   /**
-   * 根据id删除数据
-   * @param {string} id
+   * 根据 ids 删除数据
+   * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof UsrDao
    */
@@ -699,7 +748,7 @@ export class UsrDao {
   
   
   /**
-   * 根据id列表还原数据
+   * 根据 ids 还原数据
    * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof UsrDao

@@ -1,8 +1,6 @@
-import { Injectable, UseInterceptors } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 // import { OnEvent } from "@nestjs/event-emitter";
-// import { Context } from "../common/context";
 import { AuthService } from "../common/auth/auth.service";
-import { Tran } from "../common/graphql";
 import { isEmpty } from "../common/util/StringUitl";
 import { Usr2Dao } from "./usr2.dao";
 
@@ -22,7 +20,6 @@ export class Usr2Service {
    * @return {Promise<string>} 返回token
    * @memberof Usr2Service
    */
-  @UseInterceptors(Tran)
   async login(
     username: string,
     password: string,
@@ -42,7 +39,7 @@ export class Usr2Service {
   }
   
   // @OnEvent('usr.updateById.before', { promisify: true })
-  // async onUsrCreateAftEvt(event: { context: Context, id: string }) {
+  // async onUsrCreateAftEvt(event: { id: string }) {
   // }
   
 }

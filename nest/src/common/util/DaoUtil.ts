@@ -11,7 +11,7 @@ export async function setModelIds(models: any[], flds: { table: string, fld: str
         if (!Array.isArray(model[item.fld]) && model[item.fld].includes(",")) {
           model[item.fld] = model[item.fld].split(",");
         }
-        if (!Array.isArray(model[item.fld])) {
+        if (!Array.isArray(model[item.fld]) && item.lbl) {
           const id = model[item.fld];
           const _id = (await context.queryOne<{ lbl: string }>(`
             select t.${ item.lbl } as lbl
@@ -21,7 +21,7 @@ export async function setModelIds(models: any[], flds: { table: string, fld: str
               and id = ?
           `, [ id ]))?.lbl;
           model[`_${ item.fld }`] = _id;
-        } else {
+        } else if (item.lbl) {
           const _ids = [ ];
           for (let k = 0; k < model[item.fld].length; k++) {
             const id = model[item.fld][k];
@@ -55,46 +55,52 @@ export async function many2manyUpdate(
   },
 ) {
   const context = useContext();
-  const column2Ids: string[] = model[column_name] || [ ];
-  const models = await context.query<{
-    id: string,
-    column1Id: string,
-    column2Id: string,
-    is_deleted: 0|1,
-  }>(`
-    select
-      t.id,
-      t.${ context.escapeId(many.column1) } column1Id,
-      t.${ context.escapeId(many.column2) } column2Id,
-      t.is_deleted
-    from ${ context.escapeId(many.table) } t
-    where
-      t.${ context.escapeId(many.column1) } = ?
-  `, [ model.id ]);
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    if (column2Ids.includes(model.column2Id) && model.is_deleted === 1) {
-      let sql = `
-        update
-          ${ context.escapeId(many.table) }
-        set
-          is_deleted = 0
-          ,delete_time = ?
-        where
-          id = ?
-      `;
-      await context.execute(sql, [ context.getReqDate(), model.id ]);
-    } else if (!column2Ids.includes(model.column2Id) && model.is_deleted === 0) {
-      let sql = `
-        update
-          ${ context.escapeId(many.table) }
-        set
-          is_deleted = 1
-          ,delete_time = ?
-        where
-          id = ?
-      `;
-      await context.execute(sql, [ context.getReqDate(), model.id ]);
+  let column2Ids: string[] = model[column_name];
+  if (!column2Ids) {
+    return;
+  }
+  let models: any[] = [ ];
+  if (model.id) {
+    models = await context.query<{
+      id: string,
+      column1Id: string,
+      column2Id: string,
+      is_deleted: 0|1,
+    }>(`
+      select
+        t.id,
+        t.${ context.escapeId(many.column1) } column1Id,
+        t.${ context.escapeId(many.column2) } column2Id,
+        t.is_deleted
+      from ${ context.escapeId(many.table) } t
+      where
+        t.${ context.escapeId(many.column1) } = ?
+    `, [ model.id ]);
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
+      if (column2Ids.includes(model.column2Id) && model.is_deleted === 1) {
+        let sql = `
+          update
+            ${ context.escapeId(many.table) }
+          set
+            is_deleted = 0
+            ,delete_time = ?
+          where
+            id = ?
+        `;
+        await context.execute(sql, [ context.getReqDate(), model.id ]);
+      } else if (!column2Ids.includes(model.column2Id) && model.is_deleted === 0) {
+        let sql = `
+          update
+            ${ context.escapeId(many.table) }
+          set
+            is_deleted = 1
+            ,delete_time = ?
+          where
+            id = ?
+        `;
+        await context.execute(sql, [ context.getReqDate(), model.id ]);
+      }
     }
   }
   const column2Ids2 = column2Ids.filter((column2Id) => models.every((model) => model.column2Id !== column2Id));

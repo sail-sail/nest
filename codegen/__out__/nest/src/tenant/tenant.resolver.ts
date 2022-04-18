@@ -1,4 +1,4 @@
-import { Resolver, Tran } from "../common/graphql";
+import { Resolver, TranInterceptor } from "../common/graphql";
 import { SetMetadata, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
@@ -67,7 +67,7 @@ export class TenantResolver {
   }
   
   @Mutation(undefined, { name: "createTenant", description: "创建一条数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async create(
     @Args("model") model: TenantModel,
   ) {
@@ -77,7 +77,7 @@ export class TenantResolver {
   }
   
   @Mutation(undefined, { name: "updateByIdTenant", description: "根据id修改一条数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async updateById(
     @Args("id") id: string,
     @Args("model") model: TenantModel,
@@ -88,7 +88,7 @@ export class TenantResolver {
   }
   
   @Mutation(undefined, { name: "deleteByIdsTenant", description: "根据ids删除数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async deleteByIds(
     @Args("ids") ids: string[],
   ) {
@@ -109,7 +109,7 @@ export class TenantResolver {
   }
   
   @Mutation(undefined, { name: "revertByIdsTenant", description: "根据ids还原数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async revertByIds(
     @Args("ids") ids: string[],
   ) {

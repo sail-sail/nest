@@ -1,4 +1,4 @@
-import { Resolver, Tran } from "../common/graphql";
+import { Resolver, TranInterceptor } from "../common/graphql";
 import { SetMetadata, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
@@ -67,7 +67,7 @@ export class Background_taskResolver {
   }
   
   @Mutation(undefined, { name: "createBackground_task", description: "创建一条数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async create(
     @Args("model") model: Background_taskModel,
   ) {
@@ -77,7 +77,7 @@ export class Background_taskResolver {
   }
   
   @Mutation(undefined, { name: "updateByIdBackground_task", description: "根据id修改一条数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async updateById(
     @Args("id") id: string,
     @Args("model") model: Background_taskModel,
@@ -88,7 +88,7 @@ export class Background_taskResolver {
   }
   
   @Mutation(undefined, { name: "deleteByIdsBackground_task", description: "根据ids删除数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async deleteByIds(
     @Args("ids") ids: string[],
   ) {
@@ -109,7 +109,7 @@ export class Background_taskResolver {
   }
   
   @Mutation(undefined, { name: "revertByIdsBackground_task", description: "根据ids还原数据" })
-  @UseInterceptors(Tran)
+  @UseInterceptors(TranInterceptor)
   async revertByIds(
     @Args("ids") ids: string[],
   ) {

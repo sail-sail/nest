@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Res, UseInterceptors } from "@nestjs/common";
 import { WxappService } from "./wxapp.service";
-import { Tran } from "../graphql";
+import { TranInterceptor } from "../graphql";
 import { ServerResponse } from "http";
 
 @Controller("wxapp")
@@ -14,11 +14,11 @@ export class WxappController {
    * 登录凭证校验
    * @param {{ raw: ServerResponse }} res
    * @param {{ code: string }} model
-   * @return {*}  {Promise<void>}
+   * @return {Promise<void>}
    * @memberof WxappController
    */
   @Post("code2Session")
-  @UseGuards(Tran)
+  @UseInterceptors(TranInterceptor)
   async code2Session(
     @Res() res: { raw: ServerResponse },
     @Body() model: { code: string },

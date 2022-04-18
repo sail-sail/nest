@@ -257,7 +257,7 @@ export class PermitDao {
         throw new UniqueException(`${ lbl } 已存在!`);
       }
       if (uniqueType === "update") {
-        const resultSetHeader = await t.updateById(oldModel.id, model);
+        const resultSetHeader = await t.updateById(oldModel.id, { ...model, id: undefined });
         return resultSetHeader;
       }
       if (uniqueType === "ignore") {
@@ -269,7 +269,7 @@ export class PermitDao {
   
   /**
    * 根据条件查找第一条数据
-   * @param {PermitSearch} [search]
+   * @param {PermitSearch} search?
    * @return {Promise<PermitModel>} 
    * @memberof PermitDao
    */
@@ -302,7 +302,7 @@ export class PermitDao {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {PermitSearch} [search]
+   * @param {PermitSearch} search?
    * @return {Promise<boolean>} 
    * @memberof PermitDao
    */
@@ -383,6 +383,8 @@ export class PermitDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    const context = useContext();
+    
     // 菜单
     if (!isEmpty(model._menu_id) && model.menu_id === undefined) {
       model._menu_id = String(model._menu_id).trim();
@@ -398,7 +400,6 @@ export class PermitDao {
       return resultSetHeader;
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       insert into permit(
@@ -445,9 +446,9 @@ export class PermitDao {
     }
     sql += `)`;
     
-    await t.delCache();
-    
     let result = await context.execute(sql, args);
+    
+    await t.delCache();
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { model, result });
     if (afterEvent?.isReturn) return afterEvent.data;
@@ -477,7 +478,7 @@ export class PermitDao {
   }
   
   /**
-   * 根据id修改数据
+   * 根据id修改一行数据
    * @param {string} id
    * @param {PermitModel} model
    * @param {({
@@ -507,6 +508,7 @@ export class PermitDao {
     if (!id || !model) {
       return;
     }
+    const context = useContext();
     
     // 菜单
     if (!isEmpty(model._menu_id) && model.menu_id === undefined) {
@@ -532,7 +534,6 @@ export class PermitDao {
       }
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       update permit set update_time = ?
@@ -574,8 +575,8 @@ export class PermitDao {
   }
   
   /**
-   * 根据id删除数据
-   * @param {string} id
+   * 根据 ids 删除数据
+   * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof PermitDao
    */
@@ -616,7 +617,7 @@ export class PermitDao {
   
   
   /**
-   * 根据id列表还原数据
+   * 根据 ids 还原数据
    * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof PermitDao

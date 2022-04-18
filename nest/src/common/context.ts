@@ -219,45 +219,40 @@ export class Context {
   log(...args: any[]) {
     const t = this;
     if (process.env.NODE_ENV !== "production") {
-      const stack2 = [ ];
-      const stack = t.getStackTrace();
-      const arr = stack.split("\n");
-      for (let i = 0; i < arr.length; i++) {
-        let line = arr[i];
-        if (!/.+(Dao|Service|Resolver|Controller)\..+/.test(line)) {
-          continue;
-        }
-        line = line.trim();
-        const arrTmp = line.replace("at async ", "at ").split(" ");
-        const method = arrTmp[1];
-        let ph = arrTmp[2].substring(1, arrTmp[2].length - 1);
-        // const num1 = ph.substring(ph.lastIndexOf(":") + 1, ph.length);
-        // ph = ph.substring(0, ph.lastIndexOf(":"));
-        // const num2 = ph.substring(ph.lastIndexOf(":") + 1, ph.length);
-        // ph = ph.substring(0, ph.lastIndexOf(":"));
-        // ph = ph.replace(_PROJECT_PATH.replace(/\//g, "\\"), "") + ":" + num1 + ":" + num2;
-        stack2.push({ method, ph });
-      }
+      // const stack2 = [ ];
+      // const stack = t.getStackTrace();
+      // const arr = stack.split("\n");
+      // for (let i = 0; i < arr.length; i++) {
+      //   let line = arr[i];
+      //   if (!/.+(Dao|Service|Resolver|Controller)\..+/.test(line)) {
+      //     continue;
+      //   }
+      //   line = line.trim();
+      //   const arrTmp = line.replace("at async ", "at ").split(" ");
+      //   const method = arrTmp[1];
+      //   let ph = arrTmp[2].substring(1, arrTmp[2].length - 1);
+      //   stack2.push({ method, ph });
+      // }
       args.unshift(t.req_id);
-      let maxTnum = 0;
-      for (let k = 0; k < stack2.length; k++) {
-        const itemTmp = stack2[k];
-        let num = itemTmp.method.length;
-        if (maxTnum < num) {
-          maxTnum = num;
-        }
-      }
-      let str2 = "";
-      for (let k = 0; k < stack2.length; k++) {
-        const itemTmp = stack2[k];
-        str2 += "\t" + itemTmp.method + " ".repeat(maxTnum - itemTmp.method.length + 1) + itemTmp.ph;
-        if (k !== stack2.length - 1) {
-          str2 += "\n";
-        }
-      }
-      if (str2) {
-        console.log("%c" + str2, "color: gray;");
-      }
+      // let maxTnum = 0;
+      // for (let k = 0; k < stack2.length; k++) {
+      //   const itemTmp = stack2[k];
+      //   let num = itemTmp.method.length;
+      //   if (maxTnum < num) {
+      //     maxTnum = num;
+      //   }
+      // }
+      // let str2 = "";
+      // for (let k = 0; k < stack2.length; k++) {
+      //   const itemTmp = stack2[k];
+      //   str2 += "\t" + itemTmp.method + " ".repeat(maxTnum - itemTmp.method.length + 1) + itemTmp.ph;
+      //   if (k !== stack2.length - 1) {
+      //     str2 += "\n";
+      //   }
+      // }
+      // if (str2) {
+      //   console.log("%c" + str2, "color: gray;");
+      // }
       // eslint-disable-next-line prefer-spread
       console.log.apply(console, args);
     } else {
@@ -370,17 +365,17 @@ export class Context {
   
   /**
    * 开启事务, 如果事务已经开启则直接返回数据库链接
-   * @return {*}  {Promise<PoolConnection>}
+   * @return {Promise<PoolConnection>}
    * @memberof Context
    */
   async beginTran(): Promise<PoolConnection> {
     const t = this;
     let conn = t.conn;
     if (conn) return conn;
-    t.log("beginTran;");
     const pool = getPool();
     conn = await pool.getConnection();
     t.conn = conn;
+    t.log("beginTran;" + " /* "+ conn.threadId +" */");
     await conn.beginTransaction();
     return conn;
   }
@@ -394,9 +389,9 @@ export class Context {
     const t = this;
     let conn = t.conn;
     if (!conn) return;
-    t.log("rollback;");
+    t.conn = undefined;
+    t.log("rollback;" + " /* "+ conn.threadId +" */");
     try {
-      conn = await t.beginTran();
       await conn.rollback();
     } finally {
       conn.release();
@@ -405,16 +400,16 @@ export class Context {
   
   /**
    * 提交事务
-   * @return {*} 
+   * @return {Promise<void>} 
    * @memberof Context
    */
   async commit(): Promise<void> {
     const t = this;
     let conn = t.conn;
     if (!conn) return;
-    t.log("commit;");
+    t.conn = undefined;
+    t.log("commit;" + " /* "+ conn.threadId +" */");
     try {
-      conn = await t.beginTran();
       await conn.commit();
     } finally {
       conn.release();
@@ -541,7 +536,7 @@ export class Context {
    * @param {{ debug?: boolean, logResult?: boolean }} [opt]
    *   debug: 是否打印sql日志,默认为true
    *   logResult: 是否打印执行sql返回的结果,默认为true
-   * @return {*}  {Promise<T[]>}
+   * @return {Promise<T[]>}
    * @memberof Context
    */
   async query<T = any>(
@@ -562,7 +557,7 @@ export class Context {
     if (t.is_tran) {
       const conn = await t.beginTran();
       if (!opt || opt.debug !== false) {
-        t.log(t.getDebugQuery(sql, args));
+        t.log(t.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
       }
       result0 = await conn.query(sql, args);
     } else {
@@ -584,8 +579,8 @@ export class Context {
    * 执行sql更新或删除语句
    * @template T
    * @param {string} sql SQL语句
-   * @param {any[]?} [args] 参数
-   * @param {{ debug?: boolean, logResult?: boolean }} [opt]
+   * @param {any[]} args? 参数
+   * @param {{ debug?: boolean, logResult?: boolean }} opt?
    * @return {Promise<ResultSetHeader>}
    * @memberof Context
    */
@@ -599,7 +594,7 @@ export class Context {
     if (t.is_tran) {
       const conn = await t.beginTran();
       if (!opt || opt.debug !== false) {
-        t.log(t.getDebugQuery(sql, args));
+        t.log(t.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
       }
       result = await conn.execute(sql, args);
     } else {

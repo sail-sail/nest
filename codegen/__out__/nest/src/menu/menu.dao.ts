@@ -312,7 +312,7 @@ export class MenuDao {
         throw new UniqueException(`${ lbl } 已存在!`);
       }
       if (uniqueType === "update") {
-        const resultSetHeader = await t.updateById(oldModel.id, model);
+        const resultSetHeader = await t.updateById(oldModel.id, { ...model, id: undefined });
         return resultSetHeader;
       }
       if (uniqueType === "ignore") {
@@ -324,7 +324,7 @@ export class MenuDao {
   
   /**
    * 根据条件查找第一条数据
-   * @param {MenuSearch} [search]
+   * @param {MenuSearch} search?
    * @return {Promise<MenuModel>} 
    * @memberof MenuDao
    */
@@ -357,7 +357,7 @@ export class MenuDao {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {MenuSearch} [search]
+   * @param {MenuSearch} search?
    * @return {Promise<boolean>} 
    * @memberof MenuDao
    */
@@ -438,6 +438,8 @@ export class MenuDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    const context = useContext();
+    
     // 类型
     if (!isEmpty(model._type) && model.type === undefined) {
       model._type = String(model._type).trim();
@@ -473,7 +475,6 @@ export class MenuDao {
       return resultSetHeader;
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       insert into menu(
@@ -548,9 +549,9 @@ export class MenuDao {
     }
     sql += `)`;
     
-    await t.delCache();
-    
     let result = await context.execute(sql, args);
+    
+    await t.delCache();
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { model, result });
     if (afterEvent?.isReturn) return afterEvent.data;
@@ -580,7 +581,7 @@ export class MenuDao {
   }
   
   /**
-   * 根据id修改数据
+   * 根据id修改一行数据
    * @param {string} id
    * @param {MenuModel} model
    * @param {({
@@ -610,6 +611,7 @@ export class MenuDao {
     if (!id || !model) {
       return;
     }
+    const context = useContext();
     
     // 类型
     if (!isEmpty(model._type) && model.type === undefined) {
@@ -655,7 +657,6 @@ export class MenuDao {
       }
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       update menu set update_time = ?
@@ -727,8 +728,8 @@ export class MenuDao {
   }
   
   /**
-   * 根据id删除数据
-   * @param {string} id
+   * 根据 ids 删除数据
+   * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof MenuDao
    */
@@ -769,7 +770,7 @@ export class MenuDao {
   
   
   /**
-   * 根据id列表还原数据
+   * 根据 ids 还原数据
    * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof MenuDao
@@ -810,9 +811,8 @@ export class MenuDao {
   }
     
   /**
-   * 查找order_by字段的最大值
-   * @param {Context} context
-   * @return {*}  {Promise<number>}
+   * 查找 order_by 字段的最大值
+   * @return {Promise<number>}
    * @memberof MenuDao
    */
   async findLastOrderBy(): Promise<number> {

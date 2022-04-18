@@ -20,6 +20,7 @@ import config from './common/config';
 import { ContextInterceptor } from './common/interceptors/context.interceptor';
 import { AppModule } from "./common/app/app.module";
 import { hmr } from "./common/hmr";
+import { TranGlobalInterceptor } from "./common/graphql";
 
 later.date.localTime();
 
@@ -29,6 +30,7 @@ logFn.init(config.log);
 const validationPipe = new ValidationPipe();
 const contextInterceptor = new ContextInterceptor();
 const logerInterceptor = new LogerInterceptor();
+const tranGlobalInterceptor = new TranGlobalInterceptor();
 const allExceptionFilter = new AllExceptionFilter();
 
 // const configSwagger = new DocumentBuilder()
@@ -49,6 +51,7 @@ async function bootstrap() {
   // nestApplication.useWebSocketAdapter(new WsAdapter(nestApplication));
   nestApplication.useGlobalInterceptors(contextInterceptor);
   nestApplication.useGlobalInterceptors(logerInterceptor);
+  nestApplication.useGlobalInterceptors(tranGlobalInterceptor);
   nestApplication.useGlobalFilters(allExceptionFilter);
   nestApplication.setGlobalPrefix("api");
   

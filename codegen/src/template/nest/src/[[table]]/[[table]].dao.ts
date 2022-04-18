@@ -140,11 +140,15 @@ export class <#=tableUp#>Dao {
     if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
       whereQuery += ` and <#=foreignKey.table#>.id in (?)`;
       args.push(search.<#=column_name#>);
-    }
+    }<#
+      if (foreignKey.lbl) {
+    #>
     if (search?.<#=foreignKey.table#>__<#=foreignKey.lbl#> && search.<#=foreignKey.table#>__<#=foreignKey.lbl#>?.length > 0) {
       whereQuery += ` and <#=foreignKey.table#>__<#=foreignKey.lbl#> in (?)`;
       args.push(search.<#=foreignKey.table#>__<#=foreignKey.lbl#>);
     }<#
+      }
+    #><#
       } else if (selectList && selectList.length > 0) {
     #>
     if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
@@ -222,8 +226,12 @@ export class <#=tableUp#>Dao {
         and <#=foreignTable#>.is_deleted = 0
       left join (
         select
-          json_arrayagg(<#=foreignTable#>.id) <#=column_name#>,
-          json_arrayagg(<#=foreignTable#>.<#=foreignKey.lbl#>) _<#=column_name#>,
+          json_arrayagg(<#=foreignTable#>.id) <#=column_name#>,<#
+            if (foreignKey.lbl) {
+          #>
+          json_arrayagg(<#=foreignTable#>.<#=foreignKey.lbl#>) _<#=column_name#>,<#
+            }
+          #>
           <#=table#>.id <#=many2many.column1#>
         from <#=many2many.table#>
         inner join <#=foreignKey.table#>
@@ -336,7 +344,7 @@ export class <#=tableUp#>Dao {
         #>
           ,max(<#=column_name#>) <#=column_name#>
           ,max(_<#=column_name#>) _<#=column_name#><#
-        } else if (foreignKey && !foreignKey.multiple) {
+        } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
         #>
           ,<#=foreignTable#>.<#=foreignKey.lbl#> _<#=column_name#><#
           }
@@ -402,7 +410,11 @@ export class <#=tableUp#>Dao {
     #><#
       if (foreignKey && foreignKey.type === "json") {
     #>
-    await setModelIds(result, [ { table: "<#=foreignTable#>", fld: "<#=column_name#>", lbl: "<#=foreignKey.lbl#>" } ]);<#
+    await setModelIds(result, [ { table: "<#=foreignTable#>", fld: "<#=column_name#>"<#
+      if (foreignKey.lbl) {
+    #>, lbl: "<#=foreignKey.lbl#>"<#
+      }
+    #> } ]);<#
       } else if (foreignKey && foreignKey.type === "many2many") {
     #><#
       } else if (!foreignKey) {
@@ -595,7 +607,7 @@ export class <#=tableUp#>Dao {
         throw new UniqueException(`${ lbl } 已存在!`);
       }
       if (uniqueType === "update") {
-        const resultSetHeader = await t.updateById(oldModel.id, model);
+        const resultSetHeader = await t.updateById(oldModel.id, { ...model, id: undefined });
         return resultSetHeader;
       }
       if (uniqueType === "ignore") {
@@ -609,7 +621,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 根据搜索条件查找合计
-   * @param {<#=tableUp#>Search} [search]
+   * @param {<#=tableUp#>Search} search?
    * @return {Promise<<#=tableUp#>Summary>}
    * @memberof <#=tableUp#>Dao
    */
@@ -662,7 +674,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 根据条件查找第一条数据
-   * @param {<#=tableUp#>Search} [search]
+   * @param {<#=tableUp#>Search} search?
    * @return {Promise<<#=tableUp#>Model>} 
    * @memberof <#=tableUp#>Dao
    */
@@ -695,7 +707,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {<#=tableUp#>Search} [search]
+   * @param {<#=tableUp#>Search} search?
    * @return {Promise<boolean>} 
    * @memberof <#=tableUp#>Dao
    */
@@ -782,7 +794,9 @@ export class <#=tableUp#>Dao {
     const method = "create";
     
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
-    if (beforeEvent?.isReturn) return beforeEvent.data;<#
+    if (beforeEvent?.isReturn) return beforeEvent.data;
+    
+    const context = useContext();<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
@@ -826,7 +840,7 @@ export class <#=tableUp#>Dao {
         }
       #>
     }<#
-      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
         let daoStr = "";
         if (foreignTable !== table) {
           daoStr = `.${ foreignTable }Dao`;
@@ -841,6 +855,32 @@ export class <#=tableUp#>Dao {
         model.<#=column_name#> = <#=foreignTable#>Model.id;
       }
     }<#
+      } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+    #>
+    
+    // <#=column_comment#>
+    if (!model.<#=column_name#> && model._<#=column_name#>) {
+      if (typeof model._<#=column_name#> === "string" || model._<#=column_name#> instanceof String) {
+        model._<#=column_name#> = model._<#=column_name#>.split(",");
+      }
+      model._<#=column_name#> = model._<#=column_name#>.map((item) => item.trim());
+      let sql = `
+        select
+          t.id
+        from
+          <#=foreignTable#> t
+        where
+          t.<#=foreignKey.lbl#> in (?)
+      `;
+      const args = [
+        model._<#=column_name#>,
+      ];
+      interface Result {
+        id: string;
+      }
+      const models = await context.query<Result>(sql, args);
+      model.<#=column_name#> = models.map((item) => item.id);
+    }<#
       }
     #><#
     }
@@ -852,7 +892,6 @@ export class <#=tableUp#>Dao {
       return resultSetHeader;
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       insert into <#=table#>(
@@ -973,13 +1012,7 @@ export class <#=tableUp#>Dao {
     #><#
     }
     #>
-    sql += `)`;<#
-    if (cache) {
-    #>
-    
-    await t.delCache();<#
-    }
-    #>
+    sql += `)`;
     
     let result = await context.execute(sql, args);<#
     for (let i = 0; i < columns.length; i++) {
@@ -1011,6 +1044,12 @@ export class <#=tableUp#>Dao {
     #><#
       }
     #><#
+    }
+    #><#
+    if (cache) {
+    #>
+    
+    await t.delCache();<#
     }
     #>
     
@@ -1068,7 +1107,7 @@ export class <#=tableUp#>Dao {
   #>
   
   /**
-   * 根据id修改数据
+   * 根据id修改一行数据
    * @param {string} id
    * @param {<#=tableUp#>Model} model
    * @param {({
@@ -1097,7 +1136,8 @@ export class <#=tableUp#>Dao {
     
     if (!id || !model) {
       return;
-    }<#
+    }
+    const context = useContext();<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       // if (column.ignoreCodegen) continue;
@@ -1141,7 +1181,7 @@ export class <#=tableUp#>Dao {
         }
       #>
     }<#
-      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
         let daoStr = "";
         if (foreignTable !== table) {
           daoStr = `.${ foreignTable }Dao`;
@@ -1155,6 +1195,32 @@ export class <#=tableUp#>Dao {
       if (<#=foreignTable#>Model) {
         model.<#=column_name#> = <#=foreignTable#>Model.id;
       }
+    }<#
+      } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+    #>
+  
+    // <#=column_comment#>
+    if (!model.<#=column_name#> && model._<#=column_name#>) {
+      if (typeof model._<#=column_name#> === "string" || model._<#=column_name#> instanceof String) {
+        model._<#=column_name#> = model._<#=column_name#>.split(",");
+      }
+      model._<#=column_name#> = model._<#=column_name#>.map((item) => item.trim());
+      let sql = `
+        select
+          t.id
+        from
+          <#=foreignTable#> t
+        where
+          t.<#=foreignKey.lbl#> in (?)
+      `;
+      const args = [
+        model._<#=column_name#>,
+      ];
+      interface Result {
+        id: string;
+      }
+      const models = await context.query<Result>(sql, args);
+      model.<#=column_name#> = models.map((item) => item.id);
     }<#
       }
     #><#
@@ -1176,7 +1242,6 @@ export class <#=tableUp#>Dao {
       }
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       update <#=table#> set update_time = ?
@@ -1267,7 +1332,7 @@ export class <#=tableUp#>Dao {
       } else if (foreignKey && foreignKey.type === "many2many") {
     #>
     // <#=column_comment#>
-    await many2manyUpdate(model, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
+    await many2manyUpdate({ ...model, id }, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
       } else if (!foreignKey) {
     #><#
       } else {
@@ -1290,8 +1355,8 @@ export class <#=tableUp#>Dao {
   }
   
   /**
-   * 根据id删除数据
-   * @param {string} id
+   * 根据 ids 删除数据
+   * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof <#=tableUp#>Dao
    */
@@ -1336,7 +1401,7 @@ export class <#=tableUp#>Dao {
   
   
   /**
-   * 根据id列表还原数据
+   * 根据 ids 还原数据
    * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof <#=tableUp#>Dao
@@ -1383,9 +1448,8 @@ export class <#=tableUp#>Dao {
   #>
     
   /**
-   * 查找order_by字段的最大值
-   * @param {Context} context
-   * @return {*}  {Promise<number>}
+   * 查找 order_by 字段的最大值
+   * @return {Promise<number>}
    * @memberof <#=tableUp#>Dao
    */
   async findLastOrderBy(): Promise<number> {

@@ -330,7 +330,7 @@ export class TenantDao {
         throw new UniqueException(`${ lbl } 已存在!`);
       }
       if (uniqueType === "update") {
-        const resultSetHeader = await t.updateById(oldModel.id, model);
+        const resultSetHeader = await t.updateById(oldModel.id, { ...model, id: undefined });
         return resultSetHeader;
       }
       if (uniqueType === "ignore") {
@@ -342,7 +342,7 @@ export class TenantDao {
   
   /**
    * 根据条件查找第一条数据
-   * @param {TenantSearch} [search]
+   * @param {TenantSearch} search?
    * @return {Promise<TenantModel>} 
    * @memberof TenantDao
    */
@@ -375,7 +375,7 @@ export class TenantDao {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {TenantSearch} [search]
+   * @param {TenantSearch} search?
    * @return {Promise<boolean>} 
    * @memberof TenantDao
    */
@@ -456,6 +456,8 @@ export class TenantDao {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`dao.before.sql.${ method }.${ table }`, { model });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
+    const context = useContext();
+    
     // 启用
     if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
       model._is_enabled = String(model._is_enabled).trim();
@@ -466,13 +468,36 @@ export class TenantDao {
       }
     }
     
+    // 菜单
+    if (!model.menu_ids && model._menu_ids) {
+      if (typeof model._menu_ids === "string" || model._menu_ids instanceof String) {
+        model._menu_ids = model._menu_ids.split(",");
+      }
+      model._menu_ids = model._menu_ids.map((item) => item.trim());
+      let sql = `
+        select
+          t.id
+        from
+          menu t
+        where
+          t.lbl in (?)
+      `;
+      const args = [
+        model._menu_ids,
+      ];
+      interface Result {
+        id: string;
+      }
+      const models = await context.query<Result>(sql, args);
+      model.menu_ids = models.map((item) => item.id);
+    }
+    
     const oldModel = await t.findByUnique(model);
     const resultSetHeader = await t.checkByUnique(model, oldModel, options?.uniqueType);
     if (resultSetHeader) {
       return resultSetHeader;
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       insert into tenant(
@@ -540,11 +565,11 @@ export class TenantDao {
     }
     sql += `)`;
     
-    await t.delCache();
-    
     let result = await context.execute(sql, args);
     // 菜单
     await many2manyUpdate(model, "menu_ids", { table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
+    
+    await t.delCache();
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`dao.after.sql.${ method }.${ table }`, { model, result });
     if (afterEvent?.isReturn) return afterEvent.data;
@@ -575,7 +600,7 @@ export class TenantDao {
   }
   
   /**
-   * 根据id修改数据
+   * 根据id修改一行数据
    * @param {string} id
    * @param {TenantModel} model
    * @param {({
@@ -605,6 +630,7 @@ export class TenantDao {
     if (!id || !model) {
       return;
     }
+    const context = useContext();
     
     // 启用
     if (!isEmpty(model._is_enabled) && model.is_enabled === undefined) {
@@ -614,6 +640,30 @@ export class TenantDao {
       } else if (model._is_enabled === "否") {
         model.is_enabled = 0;
       }
+    }
+  
+    // 菜单
+    if (!model.menu_ids && model._menu_ids) {
+      if (typeof model._menu_ids === "string" || model._menu_ids instanceof String) {
+        model._menu_ids = model._menu_ids.split(",");
+      }
+      model._menu_ids = model._menu_ids.map((item) => item.trim());
+      let sql = `
+        select
+          t.id
+        from
+          menu t
+        where
+          t.lbl in (?)
+      `;
+      const args = [
+        model._menu_ids,
+      ];
+      interface Result {
+        id: string;
+      }
+      const models = await context.query<Result>(sql, args);
+      model.menu_ids = models.map((item) => item.id);
     }
     
     const oldModel = await t.findByUnique(model);
@@ -631,7 +681,6 @@ export class TenantDao {
       }
     }
     
-    const context = useContext();
     const args = [ ];
     let sql = `
       update tenant set update_time = ?
@@ -688,7 +737,7 @@ export class TenantDao {
     
     let result = await context.execute(sql, args);
     // 菜单
-    await many2manyUpdate(model, "menu_ids", { table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
+    await many2manyUpdate({ ...model, id }, "menu_ids", { table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
     
     await t.delCache();
     
@@ -699,8 +748,8 @@ export class TenantDao {
   }
   
   /**
-   * 根据id删除数据
-   * @param {string} id
+   * 根据 ids 删除数据
+   * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof TenantDao
    */
@@ -741,7 +790,7 @@ export class TenantDao {
   
   
   /**
-   * 根据id列表还原数据
+   * 根据 ids 还原数据
    * @param {string[]} ids
    * @return {Promise<number>}
    * @memberof TenantDao
@@ -782,9 +831,8 @@ export class TenantDao {
   }
     
   /**
-   * 查找order_by字段的最大值
-   * @param {Context} context
-   * @return {*}  {Promise<number>}
+   * 查找 order_by 字段的最大值
+   * @return {Promise<number>}
    * @memberof TenantDao
    */
   async findLastOrderBy(): Promise<number> {
