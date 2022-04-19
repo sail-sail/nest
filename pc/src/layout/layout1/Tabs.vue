@@ -113,8 +113,7 @@ async function closeClk(tab: TabInf) {
 }
 .tab_close {
   opacity: 0;
-  transition: opacity .5s;
-  transition: background-color .5s;
+  transition: opacity .5s,background-color .5s;
   font-size: 12px;
   width: 100%;
   height: 100%;
