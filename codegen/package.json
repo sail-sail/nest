@@ -6,6 +6,7 @@
   "scripts": {
     "codegen": "ts-node src/bin/codegen.ts",
     "codeapply": "ts-node src/bin/codeapply.ts",
+    "coderemove": "ts-node src/bin/coderemove.ts",
     "initdb": "ts-node src/util/npmInitDB.ts",
     "uuid": "ts-node src/util/npmShortUuidV4.ts",
     "pwd": "ts-node src/util/npmPassword.ts",

@@ -10,6 +10,7 @@
     "start:nest": "cd nest && node -r ts-node/register src/main.ts",
     "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
+    "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
     "initdb": "cd codegen && node -r ts-node/register src/util/npmInitDB.ts",
     "uuid": "cd codegen && node -r ts-node/register src/util/npmShortUuidV4.ts",
     "pwd": "cd codegen && node -r ts-node/register src/util/npmPassword.ts",
