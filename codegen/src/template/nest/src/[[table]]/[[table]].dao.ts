@@ -263,7 +263,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 根据条件查找总数据数
-   * @param {<#=tableUp#>Search} [search]
+   * @param {<#=tableUp#>Search} search?
    * @return {Promise<number>}
    * @memberof <#=tableUp#>Dao
    */
@@ -314,7 +314,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {<#=tableUp#>Search} search 搜索条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @memberof <#=tableUp#>Dao
    */
   async findAll(
@@ -625,7 +625,7 @@ export class <#=tableUp#>Dao {
   
   /**
    * 根据搜索条件查找合计
-   * @param {<#=tableUp#>Search} search?
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @return {Promise<<#=tableUp#>Summary>}
    * @memberof <#=tableUp#>Dao
    */

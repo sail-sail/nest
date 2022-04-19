@@ -114,7 +114,7 @@ export class <#=tableUp#>Resolver {
     return data;
   }
   
-  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入<#=table_comment#>", type: "download" })
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入<#=table_comment#>", type: "text" })
   @UseInterceptors(BackgroundTaskInterceptor)
   @Mutation(undefined, { name: "importFile<#=tableUp#>", description: "导入<#=table_comment#>" })
   async importFile(

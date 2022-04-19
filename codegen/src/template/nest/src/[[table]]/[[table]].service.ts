@@ -35,7 +35,7 @@ export class <#=tableUp#>Service {
   
   /**
    * 根据条件查找总数据数
-   * @param {<#=tableUp#>Search} search 搜索条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @return {Promise<number>}
    * @memberof <#=tableUp#>Service
    */
@@ -59,8 +59,8 @@ export class <#=tableUp#>Service {
   
   /**
    * 根据条件和分页查找数据
-   * @param {<#=tableUp#>Search} search 搜索条件
-   * @param {PageModel} pageModel 分页条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
+   * @param {PageModel} pageModel? 分页条件
    * @return {Promise<<#=tableUp#>Model[]>} 
    * @memberof <#=tableUp#>Service
    */
@@ -96,7 +96,7 @@ export class <#=tableUp#>Service {
   
   /**
    * 根据条件和分页查找数据
-   * @param {<#=tableUp#>Search} search 搜索条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @return {Promise<<#=tableUp#>Summary>} 
    * @memberof <#=tableUp#>Service
    */
@@ -122,7 +122,7 @@ export class <#=tableUp#>Service {
   
   /**
    * 根据条件查找第一条数据
-   * @param {<#=tableUp#>Search} search 搜索条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @return {Promise<<#=tableUp#>Model>} 
    * @memberof <#=tableUp#>Service
    */
@@ -151,7 +151,7 @@ export class <#=tableUp#>Service {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {<#=tableUp#>Search} search 搜索条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @return {Promise<boolean>}
    * @memberof <#=tableUp#>Service
    */
@@ -459,7 +459,7 @@ export class <#=tableUp#>Service {
   
   /**
    * 导出Excel
-   * @param {<#=tableUp#>Search} search 搜索条件
+   * @param {<#=tableUp#>Search} search? 搜索条件
    * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */
@@ -497,7 +497,7 @@ export class <#=tableUp#>Service {
   #>
   
   /**
-   * 查找order_by字段的最大值
+   * 查找 order_by 字段的最大值
    * @return {Promise<number>}
    * @memberof <#=tableUp#>Service
    */
