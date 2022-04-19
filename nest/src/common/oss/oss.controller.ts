@@ -38,6 +38,9 @@ export class OssController {
       if (inline != "1") {
         attachment = "attachment";
       }
+      if (filename) {
+        filename = encodeURIComponent(filename);
+      }
       const stats = await t.ossService.statObject(id);
       if (stats) {
         if (stats.metaData["content-type"]) {
@@ -63,12 +66,15 @@ export class OssController {
       stream.pipe(res.raw);
     } catch (err) {
       if (err.code === "NotFound") {
-        const errMsg = Buffer.from("文件不存在!");
-        res.raw.setHeader("Content-Length", errMsg.length);
+        const errMsg = "文件不存在!";
+        console.error(errMsg);
+        const errMsgBuf = Buffer.from(errMsg);
+        res.raw.setHeader("Content-Length", errMsgBuf.length);
         res.raw.statusCode = 404;
-        res.raw.end(errMsg);
+        res.raw.end(errMsgBuf);
         return;
       }
+      console.error(err.stack);
       res.raw.statusCode = 500;
       const errMsg = Buffer.from(err?.message || err?.toString() || err || "");
       res.raw.setHeader("Content-Length", errMsg.length);

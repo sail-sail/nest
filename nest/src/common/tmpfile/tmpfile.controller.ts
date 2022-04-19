@@ -42,6 +42,9 @@ export class TmpfileController {
       if (!remove) {
         remove = "1";
       }
+      if (filename) {
+        filename = encodeURIComponent(filename);
+      }
       const stats = await t.tmpfileServie.statObject(id);
       if (stats) {
         if (stats.metaData["content-type"]) {
