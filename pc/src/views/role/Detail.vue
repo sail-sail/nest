@@ -107,6 +107,7 @@
     <div class="toolbox_div">
       <el-button
         :icon="CircleClose"
+        class="cancel_but"
         @click="cancelClk"
       >
         取消
@@ -483,9 +484,6 @@ defineExpose({ showDialog });
 }
 .form_input {
   width: 100%;
-}
-.save_but {
-  margin-left: inherit;
 }
 .page_div {
   position: absolute;
