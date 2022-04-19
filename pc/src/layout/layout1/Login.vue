@@ -13,6 +13,7 @@
       :validate-on-rule-change="false"
       @keyup.enter.native="loginClk"
       class="login_form"
+      size="large"
     >
       <el-form-item prop="tenant_id">
         <el-select
@@ -21,8 +22,12 @@
           v-model="model.tenant_id"
           filterable
           default-first-option
-          size="large"
         >
+          <template #prefix>
+            <el-icon>
+              <User />
+            </el-icon>
+          </template>
           <el-option
             v-for="item in tenants"
             :key="item.id"
@@ -36,12 +41,9 @@
       <el-form-item prop="username">
         <el-input
           class="from_input"
-          size="large"
-          type="text"
           placeholder="请输入用户名"
           v-model="model.username"
           :inputStyle="inputStyle"
-          autofocus
           clearable
           :prefix-icon="User"
         >
@@ -86,6 +88,7 @@ import {
   ElSelect,
   ElOption,
   FormItemRule,
+  ElIcon,
 } from "element-plus";
 import {
   User,
@@ -188,10 +191,11 @@ let tenants = $ref<{
   justify-content: space-around;
 }
 .from_input {
-  color: #FFF;
+  --el-input-bg-color: transparent;
+  --el-fill-color-blank: transparent;
 }
-.from_input :deep(.el-input__inner) {
+.from_input :deep(.el-input__inner),.from_input {
   color: #FFF;
-  background-color: transparent;
+  border: 0 !important;
 }
 </style>
