@@ -80,7 +80,7 @@ async function closeClk(tab: TabInf) {
   transition: width 1s;
   background-color: #041c31;
   .tab_close {
-    visibility: visible;
+    opacity: 1;
   }
 }
 .tab_active {
@@ -89,7 +89,7 @@ async function closeClk(tab: TabInf) {
   background-color: rgba(0,0,0,.8);
   box-shadow: inset 0px 0px 2px #34404a;
   .tab_close {
-    visibility: visible;
+    opacity: 1;
   }
 }
 .tab_div.tab_active:hover {
@@ -112,15 +112,17 @@ async function closeClk(tab: TabInf) {
   height: 13px;
 }
 .tab_close {
-  visibility: hidden;
+  opacity: 0;
+  transition: opacity .5s;
+  transition: background-color .5s;
   font-size: 12px;
   width: 100%;
   height: 100%;
   cursor: pointer;
+  border-radius: 50%;
 }
 .tab_close:hover {
   color: red;
   background-color: #FFF;
-  border-radius: 50%;
 }
 </style>

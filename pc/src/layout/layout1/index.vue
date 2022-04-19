@@ -124,7 +124,7 @@ function refreshTab_active_line() {
 watch(
   [
     () => tabsStore.actTab,
-    () => tabsStore.tabs,
+    () => tabsStore.tabs.length,
   ],
   () => {
     nextTick(refreshTab_active_line);    
