@@ -33,6 +33,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
         :validate-on-rule-change="false"
         @keyup.enter.native="saveClk"
       ><#
+        let columnNum = 0;
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
@@ -64,6 +65,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
             vIf.push("dialogAction !== 'edit'");
           }
           const vIfStr = vIf.join(" && ");
+          columnNum++;
         #>
         
         <label<#
@@ -376,7 +378,7 @@ const emit = defineEmits([
 ]);
 
 let inited = $ref(false);
-let columnNum = $ref(<#=columns.filter((item) => item.ignoreCodegen).length-1#>);
+let columnNum = $ref(<#=columnNum#>);
 
 let { fullscreen, setFullscreen } = $(useFullscreenEffect());
 

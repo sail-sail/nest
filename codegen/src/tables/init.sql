@@ -110,14 +110,13 @@ CREATE TABLE if not exists `permit` (
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` int(1) NOT NULL DEFAULT '0' COMMENT '删除',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`, `tenant_id`),
+  INDEX (`menu_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='权限';
 
