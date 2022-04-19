@@ -99,7 +99,7 @@ export class MenuDao {
   
   /**
    * 根据条件查找总数据数
-   * @param {MenuSearch} [search]
+   * @param {MenuSearch} search?
    * @return {Promise<number>}
    * @memberof MenuDao
    */
@@ -142,7 +142,7 @@ export class MenuDao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {MenuSearch} search 搜索条件
+   * @param {MenuSearch} search? 搜索条件
    * @memberof MenuDao
    */
   async findAll(

@@ -112,7 +112,7 @@ export class UsrDao {
   
   /**
    * 根据条件查找总数据数
-   * @param {UsrSearch} [search]
+   * @param {UsrSearch} search?
    * @return {Promise<number>}
    * @memberof UsrDao
    */
@@ -155,7 +155,7 @@ export class UsrDao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {UsrSearch} search 搜索条件
+   * @param {UsrSearch} search? 搜索条件
    * @memberof UsrDao
    */
   async findAll(

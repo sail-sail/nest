@@ -71,7 +71,7 @@ export class PermitDao {
   
   /**
    * 根据条件查找总数据数
-   * @param {PermitSearch} [search]
+   * @param {PermitSearch} search?
    * @return {Promise<number>}
    * @memberof PermitDao
    */
@@ -114,7 +114,7 @@ export class PermitDao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {PermitSearch} search 搜索条件
+   * @param {PermitSearch} search? 搜索条件
    * @memberof PermitDao
    */
   async findAll(

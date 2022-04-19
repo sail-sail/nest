@@ -26,7 +26,7 @@ export class PermitService {
   
   /**
    * 根据条件查找总数据数
-   * @param {PermitSearch} search 搜索条件
+   * @param {PermitSearch} search? 搜索条件
    * @return {Promise<number>}
    * @memberof PermitService
    */
@@ -50,8 +50,8 @@ export class PermitService {
   
   /**
    * 根据条件和分页查找数据
-   * @param {PermitSearch} search 搜索条件
-   * @param {PageModel} pageModel 分页条件
+   * @param {PermitSearch} search? 搜索条件
+   * @param {PageModel} pageModel? 分页条件
    * @return {Promise<PermitModel[]>} 
    * @memberof PermitService
    */
@@ -78,7 +78,7 @@ export class PermitService {
   
   /**
    * 根据条件查找第一条数据
-   * @param {PermitSearch} search 搜索条件
+   * @param {PermitSearch} search? 搜索条件
    * @return {Promise<PermitModel>} 
    * @memberof PermitService
    */
@@ -107,7 +107,7 @@ export class PermitService {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {PermitSearch} search 搜索条件
+   * @param {PermitSearch} search? 搜索条件
    * @return {Promise<boolean>}
    * @memberof PermitService
    */
@@ -383,7 +383,7 @@ export class PermitService {
   
   /**
    * 导出Excel
-   * @param {PermitSearch} search 搜索条件
+   * @param {PermitSearch} search? 搜索条件
    * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */

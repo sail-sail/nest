@@ -26,7 +26,7 @@ export class Background_taskService {
   
   /**
    * 根据条件查找总数据数
-   * @param {Background_taskSearch} search 搜索条件
+   * @param {Background_taskSearch} search? 搜索条件
    * @return {Promise<number>}
    * @memberof Background_taskService
    */
@@ -50,8 +50,8 @@ export class Background_taskService {
   
   /**
    * 根据条件和分页查找数据
-   * @param {Background_taskSearch} search 搜索条件
-   * @param {PageModel} pageModel 分页条件
+   * @param {Background_taskSearch} search? 搜索条件
+   * @param {PageModel} pageModel? 分页条件
    * @return {Promise<Background_taskModel[]>} 
    * @memberof Background_taskService
    */
@@ -81,7 +81,7 @@ export class Background_taskService {
   
   /**
    * 根据条件查找第一条数据
-   * @param {Background_taskSearch} search 搜索条件
+   * @param {Background_taskSearch} search? 搜索条件
    * @return {Promise<Background_taskModel>} 
    * @memberof Background_taskService
    */
@@ -110,7 +110,7 @@ export class Background_taskService {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {Background_taskSearch} search 搜索条件
+   * @param {Background_taskSearch} search? 搜索条件
    * @return {Promise<boolean>}
    * @memberof Background_taskService
    */
@@ -391,7 +391,7 @@ export class Background_taskService {
   
   /**
    * 导出Excel
-   * @param {Background_taskSearch} search 搜索条件
+   * @param {Background_taskSearch} search? 搜索条件
    * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */

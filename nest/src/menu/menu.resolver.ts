@@ -97,7 +97,7 @@ export class MenuResolver {
     return data;
   }
   
-  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入菜单", type: "download" })
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入菜单", type: "text" })
   @UseInterceptors(BackgroundTaskInterceptor)
   @Mutation(undefined, { name: "importFileMenu", description: "导入菜单" })
   async importFile(

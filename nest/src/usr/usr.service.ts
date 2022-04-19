@@ -26,7 +26,7 @@ export class UsrService {
   
   /**
    * 根据条件查找总数据数
-   * @param {UsrSearch} search 搜索条件
+   * @param {UsrSearch} search? 搜索条件
    * @return {Promise<number>}
    * @memberof UsrService
    */
@@ -50,8 +50,8 @@ export class UsrService {
   
   /**
    * 根据条件和分页查找数据
-   * @param {UsrSearch} search 搜索条件
-   * @param {PageModel} pageModel 分页条件
+   * @param {UsrSearch} search? 搜索条件
+   * @param {PageModel} pageModel? 分页条件
    * @return {Promise<UsrModel[]>} 
    * @memberof UsrService
    */
@@ -78,7 +78,7 @@ export class UsrService {
   
   /**
    * 根据条件查找第一条数据
-   * @param {UsrSearch} search 搜索条件
+   * @param {UsrSearch} search? 搜索条件
    * @return {Promise<UsrModel>} 
    * @memberof UsrService
    */
@@ -107,7 +107,7 @@ export class UsrService {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {UsrSearch} search 搜索条件
+   * @param {UsrSearch} search? 搜索条件
    * @return {Promise<boolean>}
    * @memberof UsrService
    */
@@ -386,7 +386,7 @@ export class UsrService {
   
   /**
    * 导出Excel
-   * @param {UsrSearch} search 搜索条件
+   * @param {UsrSearch} search? 搜索条件
    * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */

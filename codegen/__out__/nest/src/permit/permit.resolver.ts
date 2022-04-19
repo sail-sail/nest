@@ -97,7 +97,7 @@ export class PermitResolver {
     return data;
   }
   
-  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入权限", type: "download" })
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入权限", type: "text" })
   @UseInterceptors(BackgroundTaskInterceptor)
   @Mutation(undefined, { name: "importFilePermit", description: "导入权限" })
   async importFile(

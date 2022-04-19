@@ -97,7 +97,7 @@ export class TenantResolver {
     return data;
   }
   
-  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入租户", type: "download" })
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入租户", type: "text" })
   @UseInterceptors(BackgroundTaskInterceptor)
   @Mutation(undefined, { name: "importFileTenant", description: "导入租户" })
   async importFile(

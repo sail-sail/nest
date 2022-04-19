@@ -128,7 +128,7 @@ export class TenantDao {
   
   /**
    * 根据条件查找总数据数
-   * @param {TenantSearch} [search]
+   * @param {TenantSearch} search?
    * @return {Promise<number>}
    * @memberof TenantDao
    */
@@ -171,7 +171,7 @@ export class TenantDao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {TenantSearch} search 搜索条件
+   * @param {TenantSearch} search? 搜索条件
    * @memberof TenantDao
    */
   async findAll(

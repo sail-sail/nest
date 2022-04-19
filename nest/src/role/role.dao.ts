@@ -94,7 +94,7 @@ export class RoleDao {
   
   /**
    * 根据条件查找总数据数
-   * @param {RoleSearch} [search]
+   * @param {RoleSearch} search?
    * @return {Promise<number>}
    * @memberof RoleDao
    */
@@ -137,7 +137,7 @@ export class RoleDao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {RoleSearch} search 搜索条件
+   * @param {RoleSearch} search? 搜索条件
    * @memberof RoleDao
    */
   async findAll(

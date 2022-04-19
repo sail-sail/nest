@@ -97,7 +97,7 @@ export class UsrResolver {
     return data;
   }
   
-  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入用户", type: "download" })
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入用户", type: "text" })
   @UseInterceptors(BackgroundTaskInterceptor)
   @Mutation(undefined, { name: "importFileUsr", description: "导入用户" })
   async importFile(

@@ -97,7 +97,7 @@ export class RoleResolver {
     return data;
   }
   
-  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入角色", type: "download" })
+  @SetMetadata(BACKGROUND_TASK_RESULT, { lbl: "导入角色", type: "text" })
   @UseInterceptors(BackgroundTaskInterceptor)
   @Mutation(undefined, { name: "importFileRole", description: "导入角色" })
   async importFile(

@@ -26,7 +26,7 @@ export class TenantService {
   
   /**
    * 根据条件查找总数据数
-   * @param {TenantSearch} search 搜索条件
+   * @param {TenantSearch} search? 搜索条件
    * @return {Promise<number>}
    * @memberof TenantService
    */
@@ -50,8 +50,8 @@ export class TenantService {
   
   /**
    * 根据条件和分页查找数据
-   * @param {TenantSearch} search 搜索条件
-   * @param {PageModel} pageModel 分页条件
+   * @param {TenantSearch} search? 搜索条件
+   * @param {PageModel} pageModel? 分页条件
    * @return {Promise<TenantModel[]>} 
    * @memberof TenantService
    */
@@ -78,7 +78,7 @@ export class TenantService {
   
   /**
    * 根据条件查找第一条数据
-   * @param {TenantSearch} search 搜索条件
+   * @param {TenantSearch} search? 搜索条件
    * @return {Promise<TenantModel>} 
    * @memberof TenantService
    */
@@ -107,7 +107,7 @@ export class TenantService {
   
   /**
    * 根据搜索条件判断数据是否存在
-   * @param {TenantSearch} search 搜索条件
+   * @param {TenantSearch} search? 搜索条件
    * @return {Promise<boolean>}
    * @memberof TenantService
    */
@@ -388,7 +388,7 @@ export class TenantService {
   
   /**
    * 导出Excel
-   * @param {TenantSearch} search 搜索条件
+   * @param {TenantSearch} search? 搜索条件
    * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */
@@ -424,7 +424,7 @@ export class TenantService {
   }
   
   /**
-   * 查找order_by字段的最大值
+   * 查找 order_by 字段的最大值
    * @return {Promise<number>}
    * @memberof TenantService
    */

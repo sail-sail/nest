@@ -115,7 +115,7 @@ export class Background_taskDao {
   
   /**
    * 根据条件查找总数据数
-   * @param {Background_taskSearch} [search]
+   * @param {Background_taskSearch} search?
    * @return {Promise<number>}
    * @memberof Background_taskDao
    */
@@ -155,7 +155,7 @@ export class Background_taskDao {
   
   /**
    * 根据搜索条件和分页查找数据
-   * @param {Background_taskSearch} search 搜索条件
+   * @param {Background_taskSearch} search? 搜索条件
    * @memberof Background_taskDao
    */
   async findAll(
