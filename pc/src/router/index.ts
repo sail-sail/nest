@@ -30,6 +30,9 @@ router.beforeEach((to, from) => {
   if (tabsStore.actTab._hasPermit) {
     return true;
   }
+  if (to.path === "/index" || to.path === "/" || to.path === "") {
+    return true;
+  }
   const menuStore = useMenuStore();
   const menu = menuStore.getMenuByPath(to.path);
   if (!menu) {
