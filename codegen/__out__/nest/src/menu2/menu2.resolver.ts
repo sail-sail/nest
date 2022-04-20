@@ -1,6 +1,6 @@
 import { UseInterceptors } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { Tran } from "../common/graphql";
+import { TranInterceptor } from "../common/graphql";
 
 import { Menu2Service } from "./menu2.service";
 
