@@ -53,6 +53,7 @@ ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-
 
 npm config list
 npm i -g pm2
+npm i -g pnpm
 ```
 
 7. Ubuntu 通过apt安装nodejs
@@ -61,10 +62,15 @@ curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 apt -y install nodejs
 node -v
 apt-get install build-essential
+
 给文件加入配置 /root/.npmrc
- registry=https://npmmirror.com
+registry=https://registry.npmmirror.com
+electron_mirror=https://npmmirror.com/mirrors/electron/
+ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/
+
 npm config list
 npm i -g pm2
+npm i -g pnpm
 ```
 
 8. Ubuntu 通过apt安装nginx
@@ -88,13 +94,13 @@ lsof -i:50000
 
 ```
 CentOS8安装mysql5.7
-wget https://downloads.mysql.com/archives/get/p/23/file/mysql-5.7.35-1.el7.x86_64.rpm-bundle.tar
-tar -xvf mysql-5.7.35-1.el7.x86_64.rpm-bundle.tar
+wget https://downloads.mysql.com/archives/get/p/23/file/mysql-5.7.36-1.el7.x86_64.rpm-bundle.tar
+tar -xvf mysql-5.7.36-1.el7.x86_64.rpm-bundle.tar
 yum install perl
-rpm -ivh mysql-community-common-5.7.35-1.el7.x86_64.rpm
-rpm -ivh mysql-community-libs-5.7.35-1.el7.x86_64.rpm
-rpm -ivh mysql-community-client-5.7.35-1.el7.x86_64.rpm
-rpm -ivh mysql-community-server-5.7.35-1.el7.x86_64.rpm
+rpm -ivh mysql-community-common-5.7.36-1.el7.x86_64.rpm
+rpm -ivh mysql-community-libs-5.7.36-1.el7.x86_64.rpm
+rpm -ivh mysql-community-client-5.7.36-1.el7.x86_64.rpm
+rpm -ivh mysql-community-server-5.7.36-1.el7.x86_64.rpm
 
 mkdir /data/mysql
 chown mysql /data/mysql
@@ -192,6 +198,7 @@ npm run build
 #### CentOS8 安装redis
 ```
 1. 安装
+yum install epel-release
 yum install redis
 
 2. 启动
