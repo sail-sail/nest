@@ -4,23 +4,26 @@ import { Plugin } from "@nestjs/apollo";
 import { contextSym } from "./context.interceptor";
 import { RollbackReturn, ServiceException } from "../exceptions/service.exception";
 import { GraphQLError } from "graphql";
+import { Context } from "../context";
 
 @Plugin()
 export class LogerGqlPlugin {
   async requestDidStart(requestContext: any): Promise<any> {
-    const context = requestContext.context;
+    const context: Context = requestContext.context;
     console.log("");
     context.log(requestContext.request.query, requestContext.request.variables);
     const time = Date.now();
     return {
       async didEncounterErrors(errors: any) {
         const errors2 = errors.errors.filter((error: GraphQLError) => {
-          const originalError = error.originalError;
+          const originalError = error?.originalError;
+          let exception = (originalError as any)?.extensions?.exception;
+          exception = exception || originalError;
           if (
-            originalError instanceof ServiceException
-            || originalError instanceof RollbackReturn
-            || originalError instanceof String
-            || typeof(originalError) === "string"
+            exception instanceof ServiceException
+            || exception instanceof RollbackReturn
+            || exception instanceof String
+            || typeof(exception) === "string"
           ) {
             return false;
           }
@@ -34,11 +37,11 @@ export class LogerGqlPlugin {
         }
       },
       async willSendResponse(requestContext: any) {
-        const data = requestContext.response.data;
-        if (data != null) {
-          context.log(data);
-        }
-        context.log(`gql_end: ${ Date.now() - time }ms`);
+        // const data = requestContext.response.data;
+        // if (data != null) {
+        //   context.log(data);
+        // }
+        context.log(`gql: ${ Date.now() - time }ms`);
       },
     };
   }

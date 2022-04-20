@@ -61,13 +61,17 @@ export class AllExceptionFilter {
         );
       } else if (message instanceof String || typeof message === "string") {
         context.log(message);
+        const errTmp = new ServiceException(message as string);
         throw new GraphQLError(
-          message.toString(),
+          message as string,
           undefined,
           undefined,
           undefined,
           undefined,
-          new ServiceException(message.toString()),
+          errTmp,
+          {
+            exception: errTmp,
+          },
         );
       }
       if (message instanceof Error) {

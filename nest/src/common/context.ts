@@ -103,7 +103,8 @@ export class Context {
       const str = await client.hGet(cacheKey1, cacheKey2);
       if (str) {
         const data = JSON.parse(str);
-        t.log(`getCache: ${ cacheKey1 }: `, data);
+        // t.log(`getCache: ${ cacheKey1 }: `, data);
+        t.log(`getCache: ${ cacheKey1 }`);
         return data;
       }
     }
@@ -292,7 +293,9 @@ export class Context {
             args2.push(arg.stack);
           }
         } else if (arg instanceof Error) {
-          args2.push(arg.stack);
+          args2.push(arg.stack || arg.message || arg.toString());
+        } else {
+          args2.push(arg);
         }
       }
       if (args2.length > 0) {
@@ -308,7 +311,7 @@ export class Context {
           if (arg.stack.startsWith("GraphQLError: ")) {
             str += "GraphQLError: " + arg.toString();
           } else {
-            str += arg.stack;
+            str += arg.stack || arg.message || arg.toString();
           }
         } else if (arg instanceof Error) {
           str += arg.stack;
