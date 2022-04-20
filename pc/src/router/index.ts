@@ -27,7 +27,7 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const tabsStore = useTabsStore();
-  if (tabsStore.actTab._hasPermit) {
+  if (tabsStore.actTab?._hasPermit) {
     return true;
   }
   if (to.path === "/index" || to.path === "/" || to.path === "") {
@@ -40,7 +40,9 @@ router.beforeEach((to, from) => {
     alert("无权限打开此菜单!");
     return false;
   }
-  tabsStore.actTab._hasPermit = true;
+  if (tabsStore.actTab) {
+    tabsStore.actTab._hasPermit = true;
+  }
   return true;
 });
 
