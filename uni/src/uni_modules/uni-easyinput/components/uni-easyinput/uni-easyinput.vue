@@ -8,7 +8,7 @@
 			 :maxlength="inputMaxlength" :focus="focused" :autoHeight="autoHeight" @input="onInput" @blur="onBlur"  @focus="onFocus"
 			 @confirm="onConfirm"></textarea>
 			<input v-else :type="type === 'password'?'text':type" class="uni-easyinput__content-input" :style="{
-				 'padding-right':type === 'password' ||clearable || prefixIcon?'25px':'10px',
+				 'padding-right':type === 'password' ||clearable || prefixIcon?'':'10px',
 				 'padding-left':prefixIcon?'':'10px'
 			 }"
 			 :name="name" :value="val" :password="!showPassword && type === 'password'" :placeholder="placeholder"
@@ -23,7 +23,7 @@
 			</template>
 			<template v-else>
 				<uni-icons class="content-clear-icon" :class="{'is-textarea-icon':type==='textarea'}" type="clear" :size="clearSize"
-				 v-if="clearable && val && !disabled" color="#c0c4cc" @click="onClear"></uni-icons>
+				 v-if="clearable && (val !== '') && !disabled" color="#c0c4cc" @click="onClear"></uni-icons>
 			</template>
 			<slot name="right"></slot>
 		</view>
@@ -48,7 +48,7 @@
 	 * 	@value idcard		身份证输入键盘，信、支付宝、百度、QQ小程序
 	 * 	@value digit		带小数点的数字键盘	，App的nvue页面、微信、支付宝、百度、头条、QQ小程序支持
 	 * @property {Boolean}	clearable	是否显示右侧清空内容的图标控件，点击可清空输入框内容（默认true）
-	 * @property {Boolean}	autoHeight	是否自动增高输入区域，type为textarea时有效（默认true）
+	 * @property {Boolean}	autoHeight	是否自动增高输入区域，type为textarea时有效（默认false）
 	 * @property {String }	placeholder	输入框的提示文字
 	 * @property {String }	placeholderStyle	placeholder的样式(内联样式，字符串)，如"color: #ddd"
 	 * @property {Boolean}	focus	是否自动获得焦点（默认false）
@@ -203,10 +203,10 @@
 			}
 		},
 		created() {
-			if(!this.value){
+			if(!this.value && this.value !== 0){
 				this.val = this.modelValue
 			}
-			if(!this.modelValue){
+			if(!this.modelValue && this.modelValue !== 0){
 				this.val = this.value
 			}
 			this.form = this.getForm('uniForms')
@@ -316,7 +316,7 @@
 	};
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 	$uni-error: #e43d33;
 	$uni-border-1: #DCDFE6 !default;
 	.uni-easyinput {
