@@ -37,6 +37,12 @@ const hasSummary = columns.some((column) => column.showSummary);
     else if (column.DATA_TYPE === 'json') {
       data_type = 'JSON';
     }
+    else if (column.DATA_TYPE === 'text') {
+      data_type = 'String';
+    }
+    else if (column.DATA_TYPE === 'tinyint') {
+      data_type = 'Int';
+    }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Float';
     }
@@ -105,6 +111,12 @@ input <#=tableUp#>Input {<#
     }
     else if (column.DATA_TYPE === 'json') {
       data_type = 'JSON';
+    }
+    else if (column.DATA_TYPE === 'text') {
+      data_type = 'String';
+    }
+    else if (column.DATA_TYPE === 'tinyint') {
+      data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'Float';
@@ -178,10 +190,10 @@ input <#=tableUp#>Search {
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'tinyint') {
-      data_type = '[Int]';
+      data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = '[Float]';
+      data_type = 'Float';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';
@@ -202,6 +214,13 @@ input <#=tableUp#>Search {
     }
     if (column_name === 'id') {
       column_comment = 'ID';
+    }
+    if (selectList.length > 0) {
+      if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
+        data_type = "[Int]";
+      } else {
+        data_type = "[String]";
+      }
     }
   #><#
     if (foreignKey) {

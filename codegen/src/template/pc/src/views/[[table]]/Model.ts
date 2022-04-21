@@ -42,7 +42,7 @@ export interface <#=tableUp#>Model {
       data_type = 'string';
     }
     else if (column.DATA_TYPE === 'tinyint') {
-      data_type = "0|1";
+      data_type = "number";
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'number';
@@ -122,7 +122,7 @@ export interface <#=tableUp#>Search {
       data_type = 'string';
     }
     else if (column.DATA_TYPE === 'tinyint') {
-      data_type = "0|1";
+      data_type = "number";
     }
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'number';
