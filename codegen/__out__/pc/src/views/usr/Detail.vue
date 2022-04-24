@@ -270,10 +270,16 @@ async function getSelectListEfc() {
     roleInfo,
   ] = await Promise.all([
     findAllAndCountRole(
-      {
-      },
+      undefined,
       {
         pgSize: SELECT_V2_SIZE,
+      },
+      [
+        {
+        },
+      ],
+      {
+        notLoading: true,
       },
     ),
   ]);
@@ -281,9 +287,21 @@ async function getSelectListEfc() {
 
 // 角色下拉框远程搜索
 async function roleFilterEfc(query: string) {
-  roleInfo.data = await findAllRole({
-    lblLike: query,
-  }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
+  roleInfo.data = await findAllRole(
+    {
+      lblLike: query,
+    },
+    {
+      pgSize: SELECT_V2_SIZE,
+    },
+    [
+      {
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
 }
 
 let onCloseResolve = function(value: {

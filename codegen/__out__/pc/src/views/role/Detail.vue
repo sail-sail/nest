@@ -241,12 +241,18 @@ async function getSelectListEfc() {
     menuInfo,
   ] = await Promise.all([
     findAllAndCountMenu(
-      {
-        orderBy: "order_by",
-        orderDec: "ascending",
-      },
+      undefined,
       {
         pgSize: SELECT_V2_SIZE,
+      },
+      [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ],
+      {
+        notLoading: true,
       },
     ),
   ]);
@@ -254,11 +260,23 @@ async function getSelectListEfc() {
 
 // 菜单下拉框远程搜索
 async function menuFilterEfc(query: string) {
-  menuInfo.data = await findAllMenu({
-    orderBy: "order_by",
-    orderDec: "ascending",
-    lblLike: query,
-  }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
+  menuInfo.data = await findAllMenu(
+    {
+      lblLike: query,
+    },
+    {
+      pgSize: SELECT_V2_SIZE,
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
 }
 
 let onCloseResolve = function(value: {

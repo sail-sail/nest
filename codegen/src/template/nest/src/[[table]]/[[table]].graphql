@@ -150,9 +150,7 @@ input <#=tableUp#>Input {<#
   #>
 }
 input <#=tableUp#>Search {
-  is_deleted: Int
-  orderBy: String
-  orderDec: String<#
+  is_deleted: Int<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

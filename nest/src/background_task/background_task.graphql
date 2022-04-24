@@ -48,8 +48,6 @@ input Background_taskInput {
 }
 input Background_taskSearch {
   is_deleted: Int
-  orderBy: String
-  orderDec: String
   "ID"
   id: ID
   "名称"

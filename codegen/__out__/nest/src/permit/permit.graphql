@@ -24,8 +24,6 @@ input PermitInput {
 }
 input PermitSearch {
   is_deleted: Int
-  orderBy: String
-  orderDec: String
   "ID"
   id: ID
   "菜单"

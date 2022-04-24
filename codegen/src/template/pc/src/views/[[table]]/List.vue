@@ -679,7 +679,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();<#
 
 // 导出Excel
 async function exportClk() {
-  const id = await exportExcel(search, sort);
+  const id = await exportExcel(search, [ sort ]);
   downloadById(id);
 }<#
   }
@@ -887,14 +887,25 @@ async function getSelectListEfc() {<#
     const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
   #>
-    findAllAndCount<#=foreignTableUp#>(undefined, { pgSize: SELECT_V2_SIZE }, [ {<#
-      if (defaultSort && defaultSort.prop) {
-    #>
-      prop: "<#=defaultSort.prop#>",
-      order: "<#=defaultSort.order#>",<#
-      }
-    #>
-    } ], { notLoading: true }),<#
+    findAllAndCount<#=foreignTableUp#>(
+      undefined,
+      {
+        pgSize: SELECT_V2_SIZE,
+      },
+      [
+        {<#
+          if (defaultSort && defaultSort.prop) {
+        #>
+          prop: "<#=defaultSort.prop#>",
+          order: "<#=defaultSort.order#>",<#
+          }
+        #>
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),<#
   }
   #>
   ]);<#
@@ -911,16 +922,27 @@ for (let i = 0; i < foreignTableArr.length; i++) {
 
 // <#=column_comment#>下拉框远程搜索
 async function <#=foreignTable#>FilterEfc(query: string) {
-  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>({
-    <#=foreignKey.lbl#>Like: query,
-  }, { pgSize: SELECT_V2_SIZE }, [ {<#
-      if (defaultSort && defaultSort.prop) {
-    #>
-      prop: "<#=defaultSort.prop#>",
-      order: "<#=defaultSort.order#>",<#
-      }
-    #>
-  } ], { notLoading: true });
+  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>(
+    {
+      <#=foreignKey.lbl#>Like: query,
+    },
+    {
+      pgSize: SELECT_V2_SIZE,
+    },
+    [
+      {<#
+        if (defaultSort && defaultSort.prop) {
+      #>
+        prop: "<#=defaultSort.prop#>",
+        order: "<#=defaultSort.order#>",<#
+        }
+      #>
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
 }<#
 }
 #>

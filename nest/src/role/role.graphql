@@ -32,8 +32,6 @@ input RoleInput {
 }
 input RoleSearch {
   is_deleted: Int
-  orderBy: String
-  orderDec: String
   "ID"
   id: ID
   "名称"

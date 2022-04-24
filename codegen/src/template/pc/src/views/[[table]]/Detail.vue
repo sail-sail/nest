@@ -541,16 +541,22 @@ async function getSelectListEfc() {
     if (foreignKey) {
   #>
     findAllAndCount<#=foreignTableUp#>(
-      {<#
-        if (defaultSort && defaultSort.prop) {
-      #>
-        orderBy: "<#=defaultSort.prop#>",
-        orderDec: "<#=defaultSort.order#>",<#
-        }
-      #>
-      },
+      undefined,
       {
         pgSize: SELECT_V2_SIZE,
+      },
+      [
+        {<#
+          if (defaultSort && defaultSort.prop) {
+        #>
+          prop: "<#=defaultSort.prop#>",
+          order: "<#=defaultSort.order#>",<#
+          }
+        #>
+        },
+      ],
+      {
+        notLoading: true,
       },
     ),<#
     }
@@ -580,15 +586,27 @@ for (let i = 0; i < columns.length; i++) {
 
 // <#=column_comment#>下拉框远程搜索
 async function <#=foreignTable#>FilterEfc(query: string) {
-  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>({<#
-      if (defaultSort && defaultSort.prop) {
-    #>
-    orderBy: "<#=defaultSort.prop#>",
-    orderDec: "<#=defaultSort.order#>",<#
-      }
-    #>
-    <#=foreignKey.lbl#>Like: query,
-  }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
+  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>(
+    {
+      <#=foreignKey.lbl#>Like: query,
+    },
+    {
+      pgSize: SELECT_V2_SIZE,
+    },
+    [
+      {<#
+        if (defaultSort && defaultSort.prop) {
+      #>
+        prop: "<#=defaultSort.prop#>",
+        order: "<#=defaultSort.order#>",<#
+        }
+      #>
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
 }<#
   }
 }

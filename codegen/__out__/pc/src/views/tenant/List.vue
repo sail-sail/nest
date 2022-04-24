@@ -391,7 +391,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 // 导出Excel
 async function exportClk() {
-  const id = await exportExcel(search, sort);
+  const id = await exportExcel(search, [ sort ]);
   downloadById(id);
 }
 
@@ -498,21 +498,43 @@ async function getSelectListEfc() {
   [
     menuInfo,
   ] = await Promise.all([
-    findAllAndCountMenu(undefined, { pgSize: SELECT_V2_SIZE }, [ {
-      prop: "order_by",
-      order: "ascending",
-    } ], { notLoading: true }),
+    findAllAndCountMenu(
+      undefined,
+      {
+        pgSize: SELECT_V2_SIZE,
+      },
+      [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),
   ]);
 }
 
 // 菜单下拉框远程搜索
 async function menuFilterEfc(query: string) {
-  menuInfo.data = await findAllMenu({
-    lblLike: query,
-  }, { pgSize: SELECT_V2_SIZE }, [ {
-      prop: "order_by",
-      order: "ascending",
-  } ], { notLoading: true });
+  menuInfo.data = await findAllMenu(
+    {
+      lblLike: query,
+    },
+    {
+      pgSize: SELECT_V2_SIZE,
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
 }
 
 // 刷新表格

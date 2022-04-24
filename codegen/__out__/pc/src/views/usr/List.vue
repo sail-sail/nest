@@ -366,7 +366,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 // 导出Excel
 async function exportClk() {
-  const id = await exportExcel(search, sort);
+  const id = await exportExcel(search, [ sort ]);
   downloadById(id);
 }
 
@@ -461,17 +461,39 @@ async function getSelectListEfc() {
   [
     roleInfo,
   ] = await Promise.all([
-    findAllAndCountRole(undefined, { pgSize: SELECT_V2_SIZE }, [ {
-    } ], { notLoading: true }),
+    findAllAndCountRole(
+      undefined,
+      {
+        pgSize: SELECT_V2_SIZE,
+      },
+      [
+        {
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),
   ]);
 }
 
 // 角色下拉框远程搜索
 async function roleFilterEfc(query: string) {
-  roleInfo.data = await findAllRole({
-    lblLike: query,
-  }, { pgSize: SELECT_V2_SIZE }, [ {
-  } ], { notLoading: true });
+  roleInfo.data = await findAllRole(
+    {
+      lblLike: query,
+    },
+    {
+      pgSize: SELECT_V2_SIZE,
+    },
+    [
+      {
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
 }
 
 // 刷新表格

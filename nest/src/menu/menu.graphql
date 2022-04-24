@@ -52,8 +52,6 @@ input MenuInput {
 }
 input MenuSearch {
   is_deleted: Int
-  orderBy: String
-  orderDec: String
   "ID"
   id: ID
   "类型"

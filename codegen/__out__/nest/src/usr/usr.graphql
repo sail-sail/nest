@@ -40,8 +40,6 @@ input UsrInput {
 }
 input UsrSearch {
   is_deleted: Int
-  orderBy: String
-  orderDec: String
   "ID"
   id: ID
   "名称"
