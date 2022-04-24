@@ -403,7 +403,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
 ): Promise<{ data: <#=foreignTableUp#>Model[], count: number }> {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: SortInput) {
+      query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>

@@ -374,10 +374,10 @@ export class <#=tableUp#>Dao {
           order: "<#=defaultSort.order#>",
         },
       ];
-    }
-    if (!Array.isArray(sort)) {
+    } else if (!Array.isArray(sort)) {
       sort = [ sort ];
     }
+    sort = sort.filter((item) => item.prop);
     for (let i = 0; i < sort.length; i++) {
       const item = sort[i];
       if (i === 0) {
@@ -391,9 +391,12 @@ export class <#=tableUp#>Dao {
     #>
     
     // 排序
-    if (!Array.isArray(sort)) {
+    if (!sort) {
+      sort = [ ];
+    } else if (!Array.isArray(sort)) {
       sort = [ sort ];
     }
+    sort = sort.filter((item) => item?.prop);
     for (let i = 0; i < sort.length; i++) {
       const item = sort[i];
       if (i === 0) {

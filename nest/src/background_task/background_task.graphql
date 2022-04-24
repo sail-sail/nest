@@ -77,7 +77,7 @@ type Query {
   "根据条件查找据数总数"
   findCountBackground_task(search: Background_taskSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllBackground_task(search: Background_taskSearch, page: PageInput): [FindAllBackground_task]!
+  findAllBackground_task(search: Background_taskSearch, page: PageInput, sort: [SortInput]): [FindAllBackground_task]!
   "根据搜索条件导出"
   exportExcelBackground_task(search: Background_taskSearch): String!
   "根据条件查找第一条数据"

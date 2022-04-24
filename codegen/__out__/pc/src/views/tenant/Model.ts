@@ -16,8 +16,6 @@ export interface TenantModel {
 
 export interface TenantSearch {
   is_deleted?: 0|1;
-  orderBy?: string;
-  orderDec?: string;
   lbl?: string; //名称
   lblLike?: string; //名称
   menu_ids?: string[][]; //菜单,

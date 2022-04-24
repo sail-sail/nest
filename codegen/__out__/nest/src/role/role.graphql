@@ -52,7 +52,7 @@ type Query {
   "根据条件查找据数总数"
   findCountRole(search: RoleSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllRole(search: RoleSearch, page: PageInput): [FindAllRole]!
+  findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput]): [FindAllRole]!
   "根据搜索条件导出"
   exportExcelRole(search: RoleSearch): String!
   "根据条件查找第一条数据"

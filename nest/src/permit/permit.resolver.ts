@@ -3,7 +3,7 @@ import { SetMetadata, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthGuard } from "../common/auth/auth.guard";
 import { TENANT_ID } from "../common/auth/auth.constants";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { BackgroundTaskInterceptor, BACKGROUND_TASK_RESULT } from "../common/interceptors/background_task.interceptor";
 
 import { PermitService } from "./permit.service";
@@ -30,10 +30,11 @@ export class PermitResolver {
   @Query(undefined, { name: "findAllPermit", description: "根据搜索条件和分页查找数据" })
   async findAll(
     @Args("search") search?: PermitSearch,
-    @Args("page") pageModel?: PageModel,
+    @Args("page") page?: Page,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.permitService.findAll(search, pageModel);
+    const data = await t.permitService.findAll(search, page, sort);
     return data;
   }
   

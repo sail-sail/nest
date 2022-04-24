@@ -15,8 +15,6 @@ export interface Background_taskModel {
 
 export interface Background_taskSearch {
   is_deleted?: 0|1;
-  orderBy?: string;
-  orderDec?: string;
   lbl?: string; //名称
   lblLike?: string; //名称
   state?: string[]; //状态

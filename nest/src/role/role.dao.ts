@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ResultSetHeader } from "mysql2/promise";
 import { useContext } from "../common/interceptors/context.interceptor";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
@@ -138,11 +138,13 @@ export class RoleDao {
   /**
    * 根据搜索条件和分页查找数据
    * @param {RoleSearch} search? 搜索条件
+   * @param {Sort|Sort[]} sort? 排序
    * @memberof RoleDao
    */
   async findAll(
     search?: RoleSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ) {
     const t = this;
     
@@ -164,13 +166,30 @@ export class RoleDao {
         ${ t.getWhereQuery(args, search) }
       group by t.id
     `;
-    if (search?.orderBy) {
-      sql += ` order by ${ context.escapeId(search.orderBy) } ${ context.escapeDec(search.orderDec) }`;
+    
+    // 排序
+    if (!sort) {
+      sort = [ ];
+    } else if (!Array.isArray(sort)) {
+      sort = [ sort ];
     }
-    if (pageModel?.pgSize) {
-      sql += ` limit ${ Number(pageModel?.pgOffset) || 0 },${ Number(pageModel.pgSize) }`;
+    sort = sort.filter((item) => item?.prop);
+    for (let i = 0; i < sort.length; i++) {
+      const item = sort[i];
+      if (i === 0) {
+        sql += ` order by`;
+      } else {
+        sql += `,`;
+      }
+      sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
     }
     
+    // 分页
+    if (page?.pgSize) {
+      sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
+    }
+    
+    // 缓存
     const cacheKey1 = `dao.sql.${ table }`;
     const cacheKey2 = JSON.stringify({ sql, args });
     
@@ -309,11 +328,11 @@ export class RoleDao {
     search?: RoleSearch,
   ): Promise<RoleModel> {
     const t = this;
-    const pageModel: PageModel = {
+    const page: Page = {
       pgOffset: 0,
       pgSize: 1,
     };
-    const [ model ] = await t.findAll(search, pageModel);
+    const [ model ] = await t.findAll(search, page);
     return model;
   }
   

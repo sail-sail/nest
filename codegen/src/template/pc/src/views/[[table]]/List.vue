@@ -951,7 +951,7 @@ async function dataGrid(isCount = false) {
 if (defaultSort && defaultSort.prop) {
 #>
 
-// 默认排序
+// 排序
 let sort = $ref<Sort>({
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
@@ -959,8 +959,11 @@ let sort = $ref<Sort>({
 } else {
 #>
 
-// 默认排序
-let sort = $ref<Sort>();<#
+// 排序
+let sort = $ref<Sort>({
+  prop: null,
+  order: null,
+});<#
 }
 #>
 

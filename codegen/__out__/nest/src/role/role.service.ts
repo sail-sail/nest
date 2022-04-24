@@ -10,7 +10,7 @@ import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from "../common/exceptions/service.exception";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { RoleModel, RoleSearch } from "./role.model";
 import { RoleDao } from "./role.dao";
@@ -51,13 +51,15 @@ export class RoleService {
   /**
    * 根据条件和分页查找数据
    * @param {RoleSearch} search? 搜索条件
-   * @param {PageModel} pageModel? 分页条件
+   * @param {Page} page? 分页条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<RoleModel[]>} 
    * @memberof RoleService
    */
   async findAll(
     search?: RoleSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ): Promise<RoleModel[]> {
     const t = this;
     const table = "role";
@@ -68,7 +70,7 @@ export class RoleService {
     
     const context = useContext();
     
-    let result: RoleModel[] = await t.roleDao.findAll(search, pageModel);
+    let result: RoleModel[] = await t.roleDao.findAll(search, page, sort);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
     if (afterEvent?.isReturn) return afterEvent.data;

@@ -42,7 +42,7 @@ type Query {
   "根据条件查找据数总数"
   findCountPermit(search: PermitSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllPermit(search: PermitSearch, page: PageInput): [FindAllPermit]!
+  findAllPermit(search: PermitSearch, page: PageInput, sort: [SortInput]): [FindAllPermit]!
   "根据搜索条件导出"
   exportExcelPermit(search: PermitSearch): String!
   "根据条件查找第一条数据"

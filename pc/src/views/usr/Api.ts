@@ -1,26 +1,28 @@
 import { UsrModel, UsrSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { PageModel } from "@/utils/page.model";
+import { Page, Sort } from "@/utils/page.model";
 
 import { RoleModel, RoleSearch } from "../role/Model";
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {UsrSearch} search
- * @param {PageModel} page
+ * @param {UsrSearch} search?
+ * @param {Page} page
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<UsrModel[]>}
  */
 export async function findAll(
   search?: UsrSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<UsrModel[]> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: UsrSearch, $page: PageInput) {
-        findAllUsr(search: $search, page: $page) {
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
           id
           lbl
           username
@@ -36,6 +38,7 @@ export async function findAll(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = rvData?.findAllUsr || [ ];
@@ -48,20 +51,22 @@ export async function findAll(
 /**
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
- * @param {UsrSearch} search
- * @param {PageModel} page
+ * @param {UsrSearch} search?
+ * @param {Page} page?
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<{ data: UsrModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: UsrSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: UsrModel[], count: number }> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: UsrSearch, $page: PageInput) {
-        findAllUsr(search: $search, page: $page) {
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
           id
           lbl
           username
@@ -78,6 +83,7 @@ export async function findAllAndCount(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = {
@@ -225,13 +231,14 @@ export async function revertByIds(
 
 export async function findAllAndCountRole(
   search?: RoleSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: RoleModel[], count: number }> {
   const data = await gqlQuery({
     query: gql`
-      query($search: RoleSearch, $page: PageInput) {
-        findAllRole(search: $search, page: $page) {
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -241,6 +248,7 @@ export async function findAllAndCountRole(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   return {
@@ -251,13 +259,14 @@ export async function findAllAndCountRole(
 
 export async function findAllRole(
   search?: RoleSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<RoleModel[]> {
   const data = await gqlQuery({
     query: gql`
-      query($search: RoleSearch, $page: PageInput) {
-        findAllRole(search: $search, page: $page) {
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -266,6 +275,7 @@ export async function findAllRole(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   return data?.findAllRole || [ ];

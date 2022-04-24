@@ -10,7 +10,7 @@ import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from "../common/exceptions/service.exception";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { MenuModel, MenuSearch } from "./menu.model";
 import { MenuDao } from "./menu.dao";
@@ -51,13 +51,15 @@ export class MenuService {
   /**
    * 根据条件和分页查找数据
    * @param {MenuSearch} search? 搜索条件
-   * @param {PageModel} pageModel? 分页条件
+   * @param {Page} page? 分页条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<MenuModel[]>} 
    * @memberof MenuService
    */
   async findAll(
     search?: MenuSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ): Promise<MenuModel[]> {
     const t = this;
     const table = "menu";
@@ -68,7 +70,7 @@ export class MenuService {
     
     const context = useContext();
     
-    let result: MenuModel[] = await t.menuDao.findAll(search, pageModel);
+    let result: MenuModel[] = await t.menuDao.findAll(search, page, sort);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
     if (afterEvent?.isReturn) return afterEvent.data;

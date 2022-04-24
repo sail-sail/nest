@@ -21,8 +21,6 @@ export interface UsrModel {
 
 export interface UsrSearch {
   is_deleted?: 0|1;
-  orderBy?: string;
-  orderDec?: string;
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称

@@ -10,7 +10,7 @@ import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from "../common/exceptions/service.exception";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { Background_taskModel, Background_taskSearch } from "./background_task.model";
 import { Background_taskDao } from "./background_task.dao";
@@ -51,13 +51,15 @@ export class Background_taskService {
   /**
    * 根据条件和分页查找数据
    * @param {Background_taskSearch} search? 搜索条件
-   * @param {PageModel} pageModel? 分页条件
+   * @param {Page} page? 分页条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<Background_taskModel[]>} 
    * @memberof Background_taskService
    */
   async findAll(
     search?: Background_taskSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ): Promise<Background_taskModel[]> {
     const t = this;
     const table = "background_task";
@@ -71,7 +73,7 @@ export class Background_taskService {
     search = search || { };
     search.create_usr_id = [ context.getUsr_id() ];
     
-    let result: Background_taskModel[] = await t.background_taskDao.findAll(search, pageModel);
+    let result: Background_taskModel[] = await t.background_taskDao.findAll(search, page, sort);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
     if (afterEvent?.isReturn) return afterEvent.data;

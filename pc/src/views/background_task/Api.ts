@@ -1,25 +1,27 @@
 import { Background_taskModel, Background_taskSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { PageModel } from "@/utils/page.model";
+import { Page, Sort } from "@/utils/page.model";
 
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {Background_taskSearch} search
- * @param {PageModel} page
+ * @param {Background_taskSearch} search?
+ * @param {Page} page
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<Background_taskModel[]>}
  */
 export async function findAll(
   search?: Background_taskSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<Background_taskModel[]> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: Background_taskSearch, $page: PageInput) {
-        findAllBackground_task(search: $search, page: $page) {
+      query($search: Background_taskSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
           lbl
           state
@@ -37,6 +39,7 @@ export async function findAll(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = rvData?.findAllBackground_task || [ ];
@@ -49,20 +52,22 @@ export async function findAll(
 /**
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
- * @param {Background_taskSearch} search
- * @param {PageModel} page
+ * @param {Background_taskSearch} search?
+ * @param {Page} page?
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<{ data: Background_taskModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: Background_taskSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: Background_taskModel[], count: number }> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: Background_taskSearch, $page: PageInput) {
-        findAllBackground_task(search: $search, page: $page) {
+      query($search: Background_taskSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
           lbl
           state
@@ -81,6 +86,7 @@ export async function findAllAndCount(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = {

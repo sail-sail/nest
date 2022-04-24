@@ -16,8 +16,6 @@ export interface MenuModel {
 
 export interface MenuSearch {
   is_deleted?: 0|1;
-  orderBy?: string;
-  orderDec?: string;
   menu_id?: string[]; //父菜单,
   _menu_id?: string[]; //父菜单
   lbl?: string; //名称

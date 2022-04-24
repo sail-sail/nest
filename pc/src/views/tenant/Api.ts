@@ -1,26 +1,28 @@
 import { TenantModel, TenantSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { PageModel } from "@/utils/page.model";
+import { Page, Sort } from "@/utils/page.model";
 
 import { MenuModel, MenuSearch } from "../menu/Model";
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {TenantSearch} search
- * @param {PageModel} page
+ * @param {TenantSearch} search?
+ * @param {Page} page
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<TenantModel[]>}
  */
 export async function findAll(
   search?: TenantSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<TenantModel[]> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: TenantSearch, $page: PageInput) {
-        findAllTenant(search: $search, page: $page) {
+      query($search: TenantSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllTenant(search: $search, page: $page, sort: $sort) {
           id
           lbl
           host
@@ -38,6 +40,7 @@ export async function findAll(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = rvData?.findAllTenant || [ ];
@@ -50,20 +53,22 @@ export async function findAll(
 /**
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
- * @param {TenantSearch} search
- * @param {PageModel} page
+ * @param {TenantSearch} search?
+ * @param {Page} page?
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<{ data: TenantModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: TenantSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: TenantModel[], count: number }> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: TenantSearch, $page: PageInput) {
-        findAllTenant(search: $search, page: $page) {
+      query($search: TenantSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllTenant(search: $search, page: $page, sort: $sort) {
           id
           lbl
           host
@@ -82,6 +87,7 @@ export async function findAllAndCount(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = {
@@ -231,13 +237,14 @@ export async function revertByIds(
 
 export async function findAllAndCountMenu(
   search?: MenuSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: MenuModel[], count: number }> {
   const data = await gqlQuery({
     query: gql`
-      query($search: MenuSearch, $page: PageInput) {
-        findAllMenu(search: $search, page: $page) {
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllMenu(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -247,6 +254,7 @@ export async function findAllAndCountMenu(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   return {
@@ -257,13 +265,14 @@ export async function findAllAndCountMenu(
 
 export async function findAllMenu(
   search?: MenuSearch,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<MenuModel[]> {
   const data = await gqlQuery({
     query: gql`
-      query($search: MenuSearch, $page: PageInput) {
-        findAllMenu(search: $search, page: $page) {
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllMenu(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -272,6 +281,7 @@ export async function findAllMenu(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   return data?.findAllMenu || [ ];

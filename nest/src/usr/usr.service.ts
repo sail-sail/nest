@@ -10,7 +10,7 @@ import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from "../common/exceptions/service.exception";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { UsrModel, UsrSearch } from "./usr.model";
 import { UsrDao } from "./usr.dao";
@@ -51,13 +51,15 @@ export class UsrService {
   /**
    * 根据条件和分页查找数据
    * @param {UsrSearch} search? 搜索条件
-   * @param {PageModel} pageModel? 分页条件
+   * @param {Page} page? 分页条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<UsrModel[]>} 
    * @memberof UsrService
    */
   async findAll(
     search?: UsrSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ): Promise<UsrModel[]> {
     const t = this;
     const table = "usr";
@@ -68,7 +70,7 @@ export class UsrService {
     
     const context = useContext();
     
-    let result: UsrModel[] = await t.usrDao.findAll(search, pageModel);
+    let result: UsrModel[] = await t.usrDao.findAll(search, page, sort);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
     if (afterEvent?.isReturn) return afterEvent.data;

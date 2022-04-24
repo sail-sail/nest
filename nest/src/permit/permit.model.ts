@@ -17,8 +17,6 @@ export interface PermitModel {
 
 export interface PermitSearch {
   is_deleted?: 0|1;
-  orderBy?: string;
-  orderDec?: string;
   id?: string; //ID
   menu_id?: string[]; //菜单,
   _menu_id?: string[]; //菜单

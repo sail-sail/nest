@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ResultSetHeader } from "mysql2/promise";
 import { useContext } from "../common/interceptors/context.interceptor";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { isEmpty, sqlLike } from "../common/util/StringUitl";
 import { UniqueException } from "../common/exceptions/unique.execption";
 import { many2manyUpdate, setModelIds } from "../common/util/DaoUtil";
@@ -172,11 +172,13 @@ export class TenantDao {
   /**
    * 根据搜索条件和分页查找数据
    * @param {TenantSearch} search? 搜索条件
+   * @param {Sort|Sort[]} sort? 排序
    * @memberof TenantDao
    */
   async findAll(
     search?: TenantSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ) {
     const t = this;
     
@@ -198,20 +200,35 @@ export class TenantDao {
         ${ t.getWhereQuery(args, search) }
       group by t.id
     `;
-    if (!search) {
-      search = { };
+    
+    // 排序
+    if (!sort) {
+      sort = [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ];
+    } else if (!Array.isArray(sort)) {
+      sort = [ sort ];
     }
-    if (!search.orderBy) {
-      search.orderBy = "order_by";
-      search.orderDec = "ascending";
-    }
-    if (search.orderBy) {
-      sql += ` order by ${ context.escapeId(search.orderBy) } ${ context.escapeDec(search.orderDec) }`;
-    }
-    if (pageModel?.pgSize) {
-      sql += ` limit ${ Number(pageModel?.pgOffset) || 0 },${ Number(pageModel.pgSize) }`;
+    sort = sort.filter((item) => item.prop);
+    for (let i = 0; i < sort.length; i++) {
+      const item = sort[i];
+      if (i === 0) {
+        sql += ` order by`;
+      } else {
+        sql += `,`;
+      }
+      sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
     }
     
+    // 分页
+    if (page?.pgSize) {
+      sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
+    }
+    
+    // 缓存
     const cacheKey1 = `dao.sql.${ table }`;
     const cacheKey2 = JSON.stringify({ sql, args });
     
@@ -350,11 +367,11 @@ export class TenantDao {
     search?: TenantSearch,
   ): Promise<TenantModel> {
     const t = this;
-    const pageModel: PageModel = {
+    const page: Page = {
       pgOffset: 0,
       pgSize: 1,
     };
-    const [ model ] = await t.findAll(search, pageModel);
+    const [ model ] = await t.findAll(search, page);
     return model;
   }
   

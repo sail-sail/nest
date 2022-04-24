@@ -135,7 +135,7 @@
         ref="tableRef"
         :empty-text="inited ? undefined : '加载中...'"
         @sort-change="sortChange"
-        :default-sort="defaultSort"
+        :default-sort="sort"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
@@ -379,21 +379,14 @@ async function getSelectListEfc() {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  const search2 = {
-    ...search,
-  };
-  if (!search2.orderBy && defaultSort && defaultSort.prop) {
-    search2.orderBy = defaultSort.prop;
-    search2.orderDec = defaultSort.order;
-  }
   let data: PermitModel[];
   let count = 0;
   if (isCount) {
-    const rvData = await findAllAndCount(search2, { pgSize, pgOffset });
+    const rvData = await findAllAndCount(search, { pgSize, pgOffset }, [ sort ]);
     data = rvData.data;
     count = rvData.count || 0;
   } else {
-    data = await findAll(search2, { pgSize, pgOffset });
+    data = await findAll(search, { pgSize, pgOffset }, [ sort ]);
     count = undefined;
   }
   tableData = data || [ ];
@@ -406,15 +399,18 @@ async function dataGrid(isCount = false) {
   }
 }
 
-// 默认排序
-let defaultSort = $ref<Sort>();
+// 排序
+let sort = $ref<Sort>({
+  prop: null,
+  order: null,
+});
 
 // 排序
 async function sortChange(
   { prop, order, column }: { column: TableColumnCtx<PermitModel> } & Sort,
 ) {
-  search.orderBy = prop;
-  search.orderDec = order;
+  sort.prop = prop;
+  sort.order = order;
   await dataGrid();
 }
 

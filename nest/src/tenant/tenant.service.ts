@@ -10,7 +10,7 @@ import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from "../common/exceptions/service.exception";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { TenantModel, TenantSearch } from "./tenant.model";
 import { TenantDao } from "./tenant.dao";
@@ -51,13 +51,15 @@ export class TenantService {
   /**
    * 根据条件和分页查找数据
    * @param {TenantSearch} search? 搜索条件
-   * @param {PageModel} pageModel? 分页条件
+   * @param {Page} page? 分页条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<TenantModel[]>} 
    * @memberof TenantService
    */
   async findAll(
     search?: TenantSearch,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ): Promise<TenantModel[]> {
     const t = this;
     const table = "tenant";
@@ -68,7 +70,7 @@ export class TenantService {
     
     const context = useContext();
     
-    let result: TenantModel[] = await t.tenantDao.findAll(search, pageModel);
+    let result: TenantModel[] = await t.tenantDao.findAll(search, page, sort);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
     if (afterEvent?.isReturn) return afterEvent.data;

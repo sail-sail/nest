@@ -82,7 +82,7 @@ type Query {
   "根据条件查找据数总数"
   findCountMenu(search: MenuSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllMenu(search: MenuSearch, page: PageInput): [FindAllMenu]!
+  findAllMenu(search: MenuSearch, page: PageInput, sort: [SortInput]): [FindAllMenu]!
   "根据搜索条件导出"
   exportExcelMenu(search: MenuSearch): String!
   "根据条件查找第一条数据"
