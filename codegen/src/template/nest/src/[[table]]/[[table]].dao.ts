@@ -284,9 +284,15 @@ export class <#=tableUp#>Dao {
       select
         count(1) total
       from
-        ${ t.getFromQuery() }
-      where
-        ${ t.getWhereQuery(args, search) }
+        (
+          select
+            1
+          from
+            ${ t.getFromQuery() }
+          where
+            ${ t.getWhereQuery(args, search) }
+          group by t.id
+        ) t
     `;<#
     if (cache) {
     #>
