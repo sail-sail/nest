@@ -2,9 +2,9 @@
 /**
  * 分页
  * @export
- * @interface PageModel
+ * @interface Page
  */
-export interface PageModel {
+export interface Page {
   
   /**
    * 偏移量
@@ -27,8 +27,29 @@ export interface PageModel {
    */
   pgTotal?: number,
   
-  orderBy?: string,
+}
+
+/**
+ * 排序
+ * @export
+ * @interface Sort
+ */
+export interface Sort {
   
-  orderDec?: "asc"|"desc"|"ascending"|"descending",
+  
+  /**
+   * 排序字段
+   * @type {string}
+   * @memberof Sort
+   */
+  prop?: string,
+  
+  
+  /**
+   * 排序方式
+   * @type {("asc"|"desc"|"ascending"|"descending")}
+   * @memberof Sort
+   */
+  order?: "asc"|"desc"|"ascending"|"descending",
   
 }

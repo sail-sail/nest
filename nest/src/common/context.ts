@@ -46,6 +46,12 @@ export function getPool(): Pool {
   return pool;
 }
 
+// redis连接池
+const redisClientMap = new Map<any, {
+  err?: Error;
+  client?: RedisClientType;
+}>();
+
 export class Context {
   
   private is_tran: boolean = false;
@@ -68,21 +74,32 @@ export class Context {
     t.req_id = dateNow.getTime();
   }
   
-  private _redisClient: RedisClientType;
-  
   private async getCacheClient(): Promise<RedisClientType> {
     const t = this;
-    if (config.cache && config.cache.type === "redis" && !t._redisClient) {
-      const client = createClient(config.cache);
-      client.on("error", (err: Error) => {
-        console.log(err.message);
-      });
-      await client.connect();
-      t._redisClient = <RedisClientType>client;
-      return t._redisClient;
-    } else {
-      return t._redisClient;
+    if (!config.cache || config.cache.type !== "redis") return;
+    let clientInfo = redisClientMap.get(config.cache);
+    if (!clientInfo) {
+      clientInfo = { };
+      redisClientMap.set(config.cache, clientInfo);
     }
+    if (clientInfo.err) {
+      // t.error(clientInfo.err);
+      return;
+    }
+    let client = clientInfo.client;
+    if (!client) {
+      try {
+        client = createClient(config.cache);
+        await client.connect();
+        clientInfo.client = client;
+      } catch (err) {
+        client = undefined;
+        clientInfo.client = undefined;
+        clientInfo.err = err;
+        t.error(err);
+      }
+    }
+    return client;
   }
   
   /**
@@ -496,11 +513,11 @@ export class Context {
    * 查询一条数据,数据不存在则返回undefined
    * @template T
    * @param {string} sql sql语句
-   * @param {any[]?} [args] 参数
-   * @param {{ debug?: boolean, logResult?: boolean }} [opt]
+   * @param {any[]} args? 参数
+   * @param {{ debug?: boolean, logResult?: boolean }} opt?
    *   debug: 是否打印sql日志,默认为true
    *   logResult: 是否打印执行sql返回的结果,默认为true
-   * @return {*}  {Promise<T>}
+   * @return {Promise<T>}
    * @memberof Context
    */
   async queryOne<T = any>(
@@ -535,8 +552,8 @@ export class Context {
    * 执行sql查询语句
    * @template T
    * @param {string} sql sql语句
-   * @param {any[]?} [args] 参数
-   * @param {{ debug?: boolean, logResult?: boolean }} [opt]
+   * @param {any[]} args? 参数
+   * @param {{ debug?: boolean, logResult?: boolean }} opt?
    *   debug: 是否打印sql日志,默认为true
    *   logResult: 是否打印执行sql返回的结果,默认为true
    * @return {Promise<T[]>}
@@ -545,7 +562,12 @@ export class Context {
   async query<T = any>(
     sql: string,
     args?: any[],
-    opt?: { debug?: boolean, logResult?: boolean, cacheKey1?: string, cacheKey2?: string },
+    opt?: {
+      debug?: boolean,
+      // logResult?: boolean,
+      cacheKey1?: string,
+      cacheKey2?: string,
+    },
   ): Promise<T[]> {
     const t = this;
     sql = sql.trim();
@@ -557,24 +579,31 @@ export class Context {
       return result;
     }
     let result0: any;
-    if (t.is_tran) {
-      const conn = await t.beginTran();
-      if (!opt || opt.debug !== false) {
-        t.log(t.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
+    try {
+      if (t.is_tran) {
+        const conn = await t.beginTran();
+        if (!opt || opt.debug !== false) {
+          t.log(t.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
+        }
+        result0 = await conn.query(sql, args);
+      } else {
+        if (!opt || opt.debug !== false) {
+          t.log(t.getDebugQuery(sql, args));
+        }
+        const pool = getPool();
+        result0 = await pool.query(sql, args);
       }
-      result0 = await conn.query(sql, args);
-    } else {
-      if (!opt || opt.debug !== false) {
-        t.log(t.getDebugQuery(sql, args));
+    } catch (err) {
+      if (err.code === "EHOSTUNREACH") {
+        err.message = "连接数据库失败!";
       }
-      const pool = getPool();
-      result0 = await pool.query(sql, args);
+      throw err;
     }
     result = result0[0];
     await t.setCache(opt?.cacheKey1, opt?.cacheKey2, result);
-    if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
-      t.log(JSON.stringify(result));
-    }
+    // if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
+    //   t.log(result);
+    // }
     return result;
   }
   
@@ -590,27 +619,37 @@ export class Context {
   async execute(
     sql: string,
     args?: any[],
-    opt?: { debug?: boolean, logResult?: boolean },
+    opt?: {
+      debug?: boolean,
+      // logResult?: boolean,
+    },
   ): Promise<ResultSetHeader> {
     const t = this;
     let result: any;
-    if (t.is_tran) {
-      const conn = await t.beginTran();
-      if (!opt || opt.debug !== false) {
-        t.log(t.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
+    try {
+      if (t.is_tran) {
+        const conn = await t.beginTran();
+        if (!opt || opt.debug !== false) {
+          t.log(t.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
+        }
+        result = await conn.execute(sql, args);
+      } else {
+        if (!opt || opt.debug !== false) {
+          t.log(t.getDebugQuery(sql, args));
+        }
+        const pool = getPool();
+        result = await pool.execute(sql, args);
       }
-      result = await conn.execute(sql, args);
-    } else {
-      if (!opt || opt.debug !== false) {
-        t.log(t.getDebugQuery(sql, args));
+    } catch (err) {
+      if (err.code === "EHOSTUNREACH") {
+        err.message = "连接数据库失败!";
       }
-      const pool = getPool();
-      result = await pool.execute(sql, args);
+      throw err;
     }
     const result2 = result[0];
-    if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
-      t.log(JSON.stringify(result2));
-    }
+    // if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
+    //   t.log(result2);
+    // }
     return result2;
   }
   

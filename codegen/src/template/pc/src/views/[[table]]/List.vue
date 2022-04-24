@@ -302,7 +302,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
         ref="tableRef"
         :empty-text="inited ? undefined : '加载中...'"
         @sort-change="sortChange"
-        :default-sort="defaultSort"<#
+        :default-sort="sort"<#
         if (hasSummary) {
         #>
         show-summary
@@ -887,14 +887,14 @@ async function getSelectListEfc() {<#
     const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
   #>
-    findAllAndCount<#=foreignTableUp#>({<#
+    findAllAndCount<#=foreignTableUp#>(undefined, { pgSize: SELECT_V2_SIZE }, [ {<#
       if (defaultSort && defaultSort.prop) {
     #>
-      orderBy: "<#=defaultSort.prop#>",
-      orderDec: "<#=defaultSort.order#>",<#
+      prop: "<#=defaultSort.prop#>",
+      order: "<#=defaultSort.order#>",<#
       }
     #>
-    }, { pgSize: SELECT_V2_SIZE }, { notLoading: true }),<#
+    } ], { notLoading: true }),<#
   }
   #>
   ]);<#
@@ -911,15 +911,16 @@ for (let i = 0; i < foreignTableArr.length; i++) {
 
 // <#=column_comment#>下拉框远程搜索
 async function <#=foreignTable#>FilterEfc(query: string) {
-  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>({<#
+  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>({
+    <#=foreignKey.lbl#>Like: query,
+  }, { pgSize: SELECT_V2_SIZE }, [ {<#
       if (defaultSort && defaultSort.prop) {
     #>
-    orderBy: "<#=defaultSort.prop#>",
-    orderDec: "<#=defaultSort.order#>",<#
+      prop: "<#=defaultSort.prop#>",
+      order: "<#=defaultSort.order#>",<#
       }
     #>
-    <#=foreignKey.lbl#>Like: query,
-  }, { pgSize: SELECT_V2_SIZE }, { notLoading: true });
+  } ], { notLoading: true });
 }<#
 }
 #>
@@ -928,21 +929,14 @@ async function <#=foreignTable#>FilterEfc(query: string) {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  const search2 = {
-    ...search,
-  };
-  if (!search2.orderBy && defaultSort && defaultSort.prop) {
-    search2.orderBy = defaultSort.prop;
-    search2.orderDec = defaultSort.order;
-  }
   let data: <#=tableUp#>Model[];
   let count = 0;
   if (isCount) {
-    const rvData = await findAllAndCount(search2, { pgSize, pgOffset });
+    const rvData = await findAllAndCount(search, { pgSize, pgOffset }, [ sort ]);
     data = rvData.data;
     count = rvData.count || 0;
   } else {
-    data = await findAll(search2, { pgSize, pgOffset });
+    data = await findAll(search, { pgSize, pgOffset }, [ sort ]);
     count = undefined;
   }
   tableData = data || [ ];
@@ -958,7 +952,7 @@ if (defaultSort && defaultSort.prop) {
 #>
 
 // 默认排序
-let defaultSort = $ref<Sort>({
+let sort = $ref<Sort>({
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
 });<#
@@ -966,7 +960,7 @@ let defaultSort = $ref<Sort>({
 #>
 
 // 默认排序
-let defaultSort = $ref<Sort>();<#
+let sort = $ref<Sort>();<#
 }
 #>
 
@@ -974,8 +968,8 @@ let defaultSort = $ref<Sort>();<#
 async function sortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=tableUp#>Model> } & Sort,
 ) {
-  search.orderBy = prop;
-  search.orderDec = order;
+  sort.prop = prop;
+  sort.order = order;
   await dataGrid();
 }<#
 if (hasAtt) {

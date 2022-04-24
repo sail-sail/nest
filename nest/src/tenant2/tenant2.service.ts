@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ServiceException } from "../common/exceptions/service.exception";
+import { Sort } from "../common/page.model";
 import { TenantDao } from "../tenant/tenant.dao";
 import { TenantSearch } from "../tenant/tenant.model";
 import { Tenant2Dao } from "./tenant2.dao";
@@ -22,14 +23,15 @@ export class Tenant2Service {
     host: string,
   ): Promise<{ id: string, lbl: string }[]> {
     const t = this;
-    const search: TenantSearch = {
-      orderBy: "order_by",
-      orderDec: "asc",
+    const sort: Sort = {
+      prop: "order_by",
+      order: "asc",
     };
+    const search: TenantSearch = { };
     if (process.env.NODE_ENV === "production") {
       search.host = host;
     }
-    const models = await t.tenantDao.findAll(search);
+    const models = await t.tenantDao.findAll(search, undefined, sort);
     return models.map((model) => ({
       id: model.id,
       lbl: model.lbl,

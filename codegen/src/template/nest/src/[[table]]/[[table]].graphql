@@ -294,7 +294,7 @@ type Query {
   "根据条件查找据数总数"
   findCount<#=tableUp#>(search: <#=tableUp#>Search): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput): [FindAll<#=tableUp#>]!
+  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput, sort: [SortInput]): [FindAll<#=tableUp#>]!
   "根据搜索条件导出"
   exportExcel<#=tableUp#>(search: <#=tableUp#>Search): String!<#
   if (hasSummary) {

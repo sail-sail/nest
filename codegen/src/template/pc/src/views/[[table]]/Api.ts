@@ -5,7 +5,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 #>import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { PageModel } from "@/utils/page.model";
+import { Page, Sort } from "@/utils/page.model";
 <#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -25,20 +25,22 @@ import { <#=foreignTableUp#>Model, <#=foreignTableUp#>Search } from "../<#=forei
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {<#=tableUp#>Search} search
- * @param {PageModel} page
+ * @param {<#=tableUp#>Search} search?
+ * @param {Page} page
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<<#=tableUp#>Model[]>}
  */
 export async function findAll(
   search?: <#=tableUp#>Search,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<<#=tableUp#>Model[]> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search, $page: PageInput) {
-        findAll<#=tableUp#>(search: $search, page: $page) {<#
+      query($search: <#=tableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+        findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -72,6 +74,7 @@ export async function findAll(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = rvData?.findAll<#=tableUp#> || [ ];
@@ -98,20 +101,22 @@ export async function findAll(
 /**
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
- * @param {<#=tableUp#>Search} search
- * @param {PageModel} page
+ * @param {<#=tableUp#>Search} search?
+ * @param {Page} page?
+ * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  * @return {Promise<{ data: <#=tableUp#>Model[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: <#=tableUp#>Search,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: <#=tableUp#>Model[], count: number }> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search, $page: PageInput) {
-        findAll<#=tableUp#>(search: $search, page: $page) {<#
+      query($search: <#=tableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+        findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -146,6 +151,7 @@ export async function findAllAndCount(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   const data = {
@@ -391,13 +397,14 @@ for (let i = 0; i < columns.length; i++) {
 
 export async function findAllAndCount<#=foreignTableUp#>(
   search?: <#=foreignTableUp#>Search,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<{ data: <#=foreignTableUp#>Model[], count: number }> {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=foreignTableUp#>Search, $page: PageInput) {
-        findAll<#=foreignTableUp#>(search: $search, page: $page) {
+      query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: SortInput) {
+        findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -407,6 +414,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   return {
@@ -417,13 +425,14 @@ export async function findAllAndCount<#=foreignTableUp#>(
 
 export async function findAll<#=foreignTableUp#>(
   search?: <#=foreignTableUp#>Search,
-  page?: PageModel,
+  page?: Page,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<<#=foreignTableUp#>Model[]> {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=foreignTableUp#>Search, $page: PageInput) {
-        findAll<#=foreignTableUp#>(search: $search, page: $page) {
+      query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+        findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -432,6 +441,7 @@ export async function findAll<#=foreignTableUp#>(
     variables: {
       search,
       page,
+      sort,
     },
   }, opt);
   return data?.findAll<#=foreignTableUp#> || [ ];

@@ -78,9 +78,7 @@ export interface <#=tableUp#>Model {
 }
 
 export interface <#=tableUp#>Search {
-  is_deleted?: 0|1;
-  orderBy?: string;
-  orderDec?: string;<#
+  is_deleted?: 0|1;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

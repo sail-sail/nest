@@ -14,7 +14,7 @@ import { parseXlsx } from "xlsx-img";
 import { parse as csvParse } from "fast-csv";
 import { TmpfileDao } from "../common/tmpfile/tmpfile.dao";
 import { ServiceException } from "../common/exceptions/service.exception";
-import { PageModel } from "../common/page.model";
+import { Page, Sort } from "../common/page.model";
 import { useContext } from "../common/interceptors/context.interceptor";
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model";<#
 if (hasSummary) {
@@ -60,13 +60,15 @@ export class <#=tableUp#>Service {
   /**
    * 根据条件和分页查找数据
    * @param {<#=tableUp#>Search} search? 搜索条件
-   * @param {PageModel} pageModel? 分页条件
+   * @param {Page} page? 分页条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<<#=tableUp#>Model[]>} 
    * @memberof <#=tableUp#>Service
    */
   async findAll(
     search?: <#=tableUp#>Search,
-    pageModel?: PageModel,
+    page?: Page,
+    sort?: Sort|Sort[],
   ): Promise<<#=tableUp#>Model[]> {
     const t = this;
     const table = "<#=table#>";
@@ -84,7 +86,7 @@ export class <#=tableUp#>Service {
       }
     #>
     
-    let result: <#=tableUp#>Model[] = await t.<#=table#>Dao.findAll(search, pageModel);
+    let result: <#=tableUp#>Model[] = await t.<#=table#>Dao.findAll(search, page, sort);
     
     const [ afterEvent ] = await t.eventEmitter2.emitAsync(`service.after.${ method }.${ table }`, { search, result });
     if (afterEvent?.isReturn) return afterEvent.data;
