@@ -6,6 +6,19 @@ import { AuthModel } from "./auth/auth.constants";
 import { createClient, RedisClientType } from "redis";
 import { GraphQLError } from "graphql";
 import { shortUuidV4 } from "./util/uuid";
+import { createPool as genericCreatePool } from "generic-pool";
+
+// redis连接池
+const redisClientPool = genericCreatePool({
+  async create() {
+    let client: RedisClientType = createClient(config.cache);
+    await client.connect();
+    return client;
+  },
+  async destroy(client: RedisClientType) {
+    await client.disconnect();
+  },
+}, { max: 10, min: 0 });
 
 let pool: Pool;
 
@@ -46,12 +59,6 @@ export function getPool(): Pool {
   return pool;
 }
 
-// redis连接池
-const redisClientMap = new Map<any, {
-  err?: Error;
-  client?: RedisClientType;
-}>();
-
 export class Context {
   
   private is_tran: boolean = false;
@@ -74,34 +81,6 @@ export class Context {
     t.req_id = dateNow.getTime();
   }
   
-  private async getCacheClient(): Promise<RedisClientType> {
-    const t = this;
-    if (!config.cache || config.cache.type !== "redis") return;
-    let clientInfo = redisClientMap.get(config.cache);
-    if (!clientInfo) {
-      clientInfo = { };
-      redisClientMap.set(config.cache, clientInfo);
-    }
-    if (clientInfo.err) {
-      // t.error(clientInfo.err);
-      return;
-    }
-    let client = clientInfo.client;
-    if (!client) {
-      try {
-        client = createClient(config.cache);
-        await client.connect();
-        clientInfo.client = client;
-      } catch (err) {
-        client = undefined;
-        clientInfo.client = undefined;
-        clientInfo.err = err;
-        t.error(err);
-      }
-    }
-    return client;
-  }
-  
   /**
    * 读取缓存
    * @param {string} cacheKey1
@@ -115,15 +94,20 @@ export class Context {
   ): Promise<any> {
     const t = this;
     if (!cacheKey1 || !cacheKey2) return;
-    const client = await t.getCacheClient();
-    if (client) {
-      const str = await client.hGet(cacheKey1, cacheKey2);
-      if (str) {
-        const data = JSON.parse(str);
-        // t.log(`getCache: ${ cacheKey1 }: `, data);
-        t.log(`getCache: ${ cacheKey1 }`);
-        return data;
-      }
+    const client = await redisClientPool.acquire();
+    let str: string;
+    try {
+      str = await client.hGet(cacheKey1, cacheKey2);
+      await redisClientPool.release(client);
+    } catch (err) {
+      await redisClientPool.destroy(client);
+      throw err;
+    }
+    if (str) {
+      const data = JSON.parse(str);
+      // t.log(`getCache: ${ cacheKey1 }: `, data);
+      t.log(`getCache: ${ cacheKey1 }`);
+      return data;
     }
     return;
   }
@@ -145,11 +129,15 @@ export class Context {
   ): Promise<void> {
     const t = this;
     if (data === undefined || !cacheKey1 || !cacheKey2) return;
-    const client = await t.getCacheClient();
-    if (client) {
-      // t.log(`setCache: ${ cacheKey1 }: `, data);
-      const str = JSON.stringify(data);
+    // t.log(`setCache: ${ cacheKey1 }: `, data);
+    const str = JSON.stringify(data);
+    const client = await redisClientPool.acquire();
+    try {
       await client.hSet(cacheKey1, cacheKey2, str);
+      await redisClientPool.release(client);
+    } catch (err) {
+      await redisClientPool.destroy(client);
+      throw err;
     }
   }
   
@@ -168,10 +156,14 @@ export class Context {
       return;
     }
     t.cacheKey1s.push(cacheKey1);
-    const client = await t.getCacheClient();
-    if (client) {
-      t.log(`delCache: ${ cacheKey1 }`);
+    t.log(`delCache: ${ cacheKey1 }`);
+    const client = await redisClientPool.acquire();
+    try {
       await client.del(cacheKey1);
+      await redisClientPool.release(client);
+    } catch (err) {
+      await redisClientPool.destroy(client);
+      throw err;
     }
     t.cacheKey1s = t.cacheKey1s.filter((item) => item !== cacheKey1);
   }
@@ -183,9 +175,14 @@ export class Context {
    */
   async clearCache(): Promise<void> {
     const t = this;
-    const client = await t.getCacheClient();
-    if (client) {
+    t.log(`clearCache`);
+    const client = await redisClientPool.acquire();
+    try {
       await client.flushDb();
+      await redisClientPool.release(client);
+    } catch (err) {
+      await redisClientPool.destroy(client);
+      throw err;
     }
   }
   
@@ -679,17 +676,22 @@ export class Context {
     const args = [ t.authModel.id ];
     let table = "usr";
     
-    const client = await t.getCacheClient();
     const cacheKey1 = `dao.sql.${ table }`;
-    if (client) {
-      const cacheKey2 = JSON.stringify({ sql, args, key: cacheKey1 });
-      const str = await client.hGet(cacheKey1, cacheKey2);
-      if (str) {
-        // t.log(`setTenant_id.getCache: ${ str }`);
-        const data = JSON.parse(str);
-        t.authModel.tenant_id = data;
-        return data;
-      }
+    const cacheKey2 = JSON.stringify({ sql, args, key: cacheKey1 });
+    const client = await redisClientPool.acquire();
+    let str: string;
+    try {
+      str = await client.hGet(cacheKey1, cacheKey2);
+      await redisClientPool.release(client);
+    } catch (err) {
+      await redisClientPool.destroy(client);
+      throw err;
+    }
+    if (str) {
+      // t.log(`setTenant_id.getCache: ${ str }`);
+      const data = JSON.parse(str);
+      t.authModel.tenant_id = data;
+      return data;
     }
     
     let model: { tenant_id: string } = await t.queryOne(sql, args, { debug: false, logResult: false });
