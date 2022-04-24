@@ -278,20 +278,23 @@ export async function findAllMenu(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {RoleSearch} search
+ * @param {RoleSearch} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: RoleSearch,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: RoleSearch) {
-        exportExcelRole(search: $search)
+      query($search: RoleSearch, $sort: [SortInput]) {
+        exportExcelRole(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcelRole || "";

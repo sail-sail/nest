@@ -301,20 +301,23 @@ export async function findAllMenu(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {MenuSearch} search
+ * @param {MenuSearch} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: MenuSearch,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: MenuSearch) {
-        exportExcelMenu(search: $search)
+      query($search: MenuSearch, $sort: [SortInput]) {
+        exportExcelMenu(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcelMenu || "";

@@ -79,7 +79,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAllBackground_task(search: Background_taskSearch, page: PageInput, sort: [SortInput]): [FindAllBackground_task]!
   "根据搜索条件导出"
-  exportExcelBackground_task(search: Background_taskSearch): String!
+  exportExcelBackground_task(search: Background_taskSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
   findOneBackground_task(search: Background_taskSearch): FindAllBackground_task
   "根据id查找一条数据"

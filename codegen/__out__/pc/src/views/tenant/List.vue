@@ -391,7 +391,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 // 导出Excel
 async function exportClk() {
-  const id = await exportExcel(search);
+  const id = await exportExcel(search, sort);
   downloadById(id);
 }
 

@@ -237,20 +237,23 @@ export async function revertByIds(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {Background_taskSearch} search
+ * @param {Background_taskSearch} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: Background_taskSearch,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: Background_taskSearch) {
-        exportExcelBackground_task(search: $search)
+      query($search: Background_taskSearch, $sort: [SortInput]) {
+        exportExcelBackground_task(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcelBackground_task || "";

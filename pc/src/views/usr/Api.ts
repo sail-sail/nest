@@ -284,20 +284,23 @@ export async function findAllRole(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {UsrSearch} search
+ * @param {UsrSearch} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: UsrSearch,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: UsrSearch) {
-        exportExcelUsr(search: $search)
+      query($search: UsrSearch, $sort: [SortInput]) {
+        exportExcelUsr(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcelUsr || "";

@@ -272,20 +272,23 @@ export async function findAllMenu(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {PermitSearch} search
+ * @param {PermitSearch} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: PermitSearch,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: PermitSearch) {
-        exportExcelPermit(search: $search)
+      query($search: PermitSearch, $sort: [SortInput]) {
+        exportExcelPermit(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcelPermit || "";

@@ -290,20 +290,23 @@ export async function findAllMenu(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {TenantSearch} search
+ * @param {TenantSearch} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: TenantSearch,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: TenantSearch) {
-        exportExcelTenant(search: $search)
+      query($search: TenantSearch, $sort: [SortInput]) {
+        exportExcelTenant(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcelTenant || "";

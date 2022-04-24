@@ -296,7 +296,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput, sort: [SortInput]): [FindAll<#=tableUp#>]!
   "根据搜索条件导出"
-  exportExcel<#=tableUp#>(search: <#=tableUp#>Search): String!<#
+  exportExcel<#=tableUp#>(search: <#=tableUp#>Search, sort: [SortInput]): String!<#
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"

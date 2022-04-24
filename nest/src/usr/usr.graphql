@@ -68,7 +68,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput]): [FindAllUsr]!
   "根据搜索条件导出"
-  exportExcelUsr(search: UsrSearch): String!
+  exportExcelUsr(search: UsrSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
   findOneUsr(search: UsrSearch): FindAllUsr
   "根据id查找一条数据"

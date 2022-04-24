@@ -54,7 +54,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput]): [FindAllRole]!
   "根据搜索条件导出"
-  exportExcelRole(search: RoleSearch): String!
+  exportExcelRole(search: RoleSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
   findOneRole(search: RoleSearch): FindAllRole
   "根据id查找一条数据"

@@ -84,7 +84,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAllMenu(search: MenuSearch, page: PageInput, sort: [SortInput]): [FindAllMenu]!
   "根据搜索条件导出"
-  exportExcelMenu(search: MenuSearch): String!
+  exportExcelMenu(search: MenuSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
   findOneMenu(search: MenuSearch): FindAllMenu
   "根据id查找一条数据"

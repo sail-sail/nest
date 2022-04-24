@@ -79,7 +79,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAllTenant(search: TenantSearch, page: PageInput, sort: [SortInput]): [FindAllTenant]!
   "根据搜索条件导出"
-  exportExcelTenant(search: TenantSearch): String!
+  exportExcelTenant(search: TenantSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
   findOneTenant(search: TenantSearch): FindAllTenant
   "根据id查找一条数据"

@@ -452,20 +452,23 @@ export async function findAll<#=foreignTableUp#>(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {<#=tableUp#>Search} search
+ * @param {<#=tableUp#>Search} search?
+ * @param {Sort[]} sort?
  */
 export async function exportExcel(
   search?: <#=tableUp#>Search,
+  sort?: Sort[],
   opt?: GqlOpt,
 ): Promise<string> {
   const rvData = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search) {
-        exportExcel<#=tableUp#>(search: $search)
+      query($search: <#=tableUp#>Search, $sort: [SortInput]) {
+        exportExcel<#=tableUp#>(search: $search, sort: $sort)
       }
     `,
     variables: {
       search,
+      sort,
     },
   }, opt);
   return rvData?.exportExcel<#=tableUp#> || "";

@@ -44,7 +44,7 @@ type Query {
   "根据搜索条件和分页查找数据"
   findAllPermit(search: PermitSearch, page: PageInput, sort: [SortInput]): [FindAllPermit]!
   "根据搜索条件导出"
-  exportExcelPermit(search: PermitSearch): String!
+  exportExcelPermit(search: PermitSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
   findOnePermit(search: PermitSearch): FindAllPermit
   "根据id查找一条数据"
