@@ -43,9 +43,10 @@ export class Background_taskResolver {
   @Query(undefined, { name: "exportExcelBackground_task", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: Background_taskSearch,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.background_taskService.exportExcel(search);
+    const data = await t.background_taskService.exportExcel(search, sort);
     return data;
   }
   

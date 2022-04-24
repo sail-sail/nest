@@ -389,11 +389,13 @@ export class UsrService {
   /**
    * 导出Excel
    * @param {UsrSearch} search? 搜索条件
+   * @param {Sort|Sort[]} sort? 排序
    * @return {Promise<String>} 临时文件id
    * @memberof <%=tableUp%>Service
    */
   async exportExcel(
     search?: UsrSearch,
+    sort?: Sort|Sort[],
   ): Promise<String> {
     const t = this;
     const table = "usr";
@@ -402,7 +404,7 @@ export class UsrService {
     const [ beforeEvent ] = await t.eventEmitter2.emitAsync(`service.before.${ method }.${ table }`, { search });
     if (beforeEvent?.isReturn) return beforeEvent.data;
     
-    const models = await t.findAll(search);
+    const models = await t.findAll(search, undefined, sort);
     const buffer0 = await readFile(`${ __dirname }/usr.xlsx`);
     let buffer: Buffer;
     if (models.length > 1000) {

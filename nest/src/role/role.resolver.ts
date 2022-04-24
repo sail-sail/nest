@@ -43,9 +43,10 @@ export class RoleResolver {
   @Query(undefined, { name: "exportExcelRole", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: RoleSearch,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.roleService.exportExcel(search);
+    const data = await t.roleService.exportExcel(search, sort);
     return data;
   }
   

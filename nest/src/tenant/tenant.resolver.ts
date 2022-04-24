@@ -43,9 +43,10 @@ export class TenantResolver {
   @Query(undefined, { name: "exportExcelTenant", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: TenantSearch,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.tenantService.exportExcel(search);
+    const data = await t.tenantService.exportExcel(search, sort);
     return data;
   }
   

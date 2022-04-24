@@ -43,9 +43,10 @@ export class MenuResolver {
   @Query(undefined, { name: "exportExcelMenu", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: MenuSearch,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.menuService.exportExcel(search);
+    const data = await t.menuService.exportExcel(search, sort);
     return data;
   }
   

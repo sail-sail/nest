@@ -43,9 +43,10 @@ export class PermitResolver {
   @Query(undefined, { name: "exportExcelPermit", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: PermitSearch,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.permitService.exportExcel(search);
+    const data = await t.permitService.exportExcel(search, sort);
     return data;
   }
   

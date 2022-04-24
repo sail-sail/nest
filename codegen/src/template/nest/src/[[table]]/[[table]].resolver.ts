@@ -47,9 +47,10 @@ export class <#=tableUp#>Resolver {
   @Query(undefined, { name: "exportExcel<#=tableUp#>", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: <#=tableUp#>Search,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.<#=table#>Service.exportExcel(search);
+    const data = await t.<#=table#>Service.exportExcel(search, sort);
     return data;
   }<#
   if (hasSummary) {

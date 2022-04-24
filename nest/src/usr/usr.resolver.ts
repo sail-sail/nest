@@ -43,9 +43,10 @@ export class UsrResolver {
   @Query(undefined, { name: "exportExcelUsr", description: "根据搜索条件导出" })
   async exportExcel(
     @Args("search") search?: UsrSearch,
+    @Args("sort") sort?: Sort[],
   ) {
     const t = this;
-    const data = await t.usrService.exportExcel(search);
+    const data = await t.usrService.exportExcel(search, sort);
     return data;
   }
   
