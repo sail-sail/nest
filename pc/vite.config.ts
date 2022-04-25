@@ -2,6 +2,9 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { VitePWA } from "vite-plugin-pwa";
+import Unocss from "unocss/vite";
+import presetWind from "@unocss/preset-wind";
+import transformerDirective from "@unocss/transformer-directives";
 // import ViteRsw from "vite-plugin-rsw";
 
 // https://vitejs.dev/config/
@@ -14,6 +17,14 @@ export default defineConfig({
     },
   },
   plugins: [
+    Unocss({
+      presets: [
+        <any>presetWind(),
+      ],
+      transformers: [
+        transformerDirective(),
+      ],
+    }),
     vue({
       reactivityTransform: /^((?!node_modules).)*$/,
     }),
