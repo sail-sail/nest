@@ -8,6 +8,7 @@
     "start": "cd pc && npm start",
     "start:pc": "cd pc && npm start",
     "start:nest": "cd nest && node -r ts-node/register src/main.ts",
+    "mother": "cd nest && node src/Mother.js",
     "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
     "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",

@@ -62,11 +62,9 @@ async function bootstrap() {
   await nestApplication.init();
   await nestApplication.listen(config.server.port);
   console.log(`${ await nestApplication.getUrl() }`);
-  // if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "hmr") {
-  // }
   const date2 = new Date();
   console.log(date2.getTime() - date1.getTime()+"ms");
-  if (process.env.NODE_ENV === "hmr") {
+  if (process.env.NODE_ENV !== "production") {
     hmr();
   }
 }

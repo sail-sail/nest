@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/main.ts",
+    "mother": "node src/Mother.js",
     "build": "gulp",
     "preinstall": "npx only-allow pnpm"
   },
