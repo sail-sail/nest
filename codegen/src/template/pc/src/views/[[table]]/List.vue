@@ -277,7 +277,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
     >
       刷新
     </el-button>
-    <div class="split_toolbar">
+    <div class="flex-[1_0_0]">
     </div>
     <TableShowColumns
       :tableColumns="tableColumns"
@@ -1257,9 +1257,6 @@ watch(
   margin-top: 6px;
   margin-right: 6px;
   display: flex;
-}
-.split_toolbar {
-  flex: 1 0 0;
 }
 .table_div {
   flex: 1 0 0;

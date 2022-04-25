@@ -28,6 +28,8 @@
     "jock.svg",
     "johnsoncodehk.volar",
     "vscode-icons-team.vscode-icons",
-    "redhat.vscode-xml"
+    "redhat.vscode-xml",
+    "bradlc.vscode-tailwindcss",
+    "antfu.unocss"
   ]
 }
