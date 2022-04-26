@@ -9,5 +9,12 @@ input PageInput {
 
 input SortInput {
   prop: String
-  order: String
+  order: SortOrderEnum
+}
+
+enum SortOrderEnum {
+  asc
+  ascending
+  desc
+  descending
 }

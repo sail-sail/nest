@@ -97,6 +97,15 @@ watch(
     () => route.query,
   ],
   async () => {
+    const menu = menuStore.getMenuByPath(route.path);
+    if (!menu && route.path !== "/" && usrStore.access_token) {
+      alert("无权限打开此菜单!");
+      router.go(-1);
+      return;
+    }
+    if (route.query) {
+      menu.route_query = route.query;
+    }
     tabsStore.activeTab({
       lbl: String(route.name || ""),
       active: true,

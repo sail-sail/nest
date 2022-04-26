@@ -162,6 +162,10 @@ body .el-button {
   padding-left: 8px;
   padding-right: 8px;
 }
+div.el-range-editor.el-input__inner {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
 .el-select-v2 {
   .el-select-v2__wrapper {
     padding-left: 0;

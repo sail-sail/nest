@@ -80,9 +80,9 @@ function start() {
     },
   );
   ls.stdout.on("data", function(data) {
-    // data = data.toString();
-    // data = data.substring(0, data.length-1);
-    // console.log(data);
+    data = data.toString();
+    data = data.substring(0, data.length-1);
+    console.log(data);
   });
   ls.stderr.on("data", function(data) {
     data = data.toString();

@@ -15,6 +15,7 @@ export const routesGen: Array<RouteRecordRaw> = [<#
     path: "/<#=table_name#>",
     name: "<#=table_comment || table_name#>",
     component: () => import("@/views/<#=table_name#>/List.vue"),
+    props: (route) => route.query,
   },<#
   }
   #>

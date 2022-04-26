@@ -349,6 +349,7 @@ import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
+import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
   useSearch,
@@ -396,9 +397,60 @@ let {
   searchClk,
   searchReset,
   searchIptClr,
-} = $(useSearch<MenuSearch>(
-  dataGrid,
-));
+} = $(useSearch<MenuSearch>(dataGrid));
+
+const props = defineProps<{
+  is_deleted?: string;
+  id?: string; //ID
+  type?: string|string[]; //类型
+  menu_id?: string|string[]; //父菜单
+  _menu_id?: string|string[]; //父菜单
+  lbl?: string; //名称
+  lblLike?: string; //名称
+  route_path?: string; //路由
+  route_pathLike?: string; //路由
+  route_query?: string; //参数
+  route_queryLike?: string; //参数
+  is_enabled?: string|string[]; //启用
+  order_by?: string; //排序
+  rem?: string; //备注
+  remLike?: string; //备注
+}>();
+
+const props2Type = {
+  type: "string[]",
+  _type: "string[]",
+  menu_id: "string[]",
+  _menu_id: "string[]",
+  is_enabled: "number[]",
+  _is_enabled: "string[]",
+  order_by: "number[]",
+  _order_by: "string[]",
+};
+
+const props2 = $computed(() => {
+  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  for (const item of entries) {
+    if (item[0] === "is_deleted") {
+      item[1] = (item[1] === "0" ? 0 : 1) as any;
+      continue;
+    }
+    if (props2Type[item[0]] === "number[]") {
+      if (!Array.isArray(item[1])) {
+        item[1] = [ item[1] as string ]; 
+      }
+      item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
+      continue;
+    }
+    if (props2Type[item[0]] === "string[]") {
+      if (!Array.isArray(item[1])) {
+        item[1] = [ item[1] as string ]; 
+      }
+      continue;
+    }
+  }
+  return Object.fromEntries(entries);
+});
 
 // 分页功能
 let {
@@ -690,6 +742,16 @@ async function initFrame() {
 watch(
   () => usrStore.access_token,
   initFrame,
+);
+
+watch(
+  () => props2,
+  async (newVal, oldVal) => {
+    if (!deepCompare(oldVal, newVal)) {
+      search = <any> { ...search, ...newVal };
+      await initFrame();
+    }
+  },
   {
     immediate: true,
   },

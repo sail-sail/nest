@@ -18,7 +18,7 @@ export default defineStore("tabs", function() {
   function activeTab(tab?: TabInf) {
     if (tab && actTab && tab.path === actTab.path) {
       const keys1 = Object.keys(tab.query);
-      const keys2 = Object.keys(actTab.query);
+      const keys2 = Object.keys(actTab?.query || { });
       if (keys1.length === keys2.length) {
         let isEqual = true;
         for (let i = 0; i < keys1.length; i++) {

@@ -161,7 +161,7 @@ export interface <#=tableUp#>Search {
     } else {
       column_comment = ' //' + column_comment;
     }
-    /*if (!search) continue;*/
+    /* if (!search) continue; */
   #><#
     if (foreignKey) {
   #>

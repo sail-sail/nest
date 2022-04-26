@@ -78,7 +78,7 @@ export interface <#=tableUp#>Model {
 }
 
 export interface <#=tableUp#>Search {
-  is_deleted?: 0|1;<#
+  is_deleted?: 0|1|"0"|"1";<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -126,7 +126,7 @@ export interface <#=tableUp#>Search {
       data_type = 'number';
     }
     if (column_name.startsWith("is_")) {
-      data_type = "0|1";
+      data_type = "0|1|\"0\"|\"1\"";
     }
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -147,11 +147,11 @@ export interface <#=tableUp#>Search {
     } else {
       column_comment = ' //' + column_comment;
     }
-    if (!search) continue;
+    /* if (!search) continue; */
   #><#
     if (foreignKey) {
   #>
-  <#=column_name#>?: <#=data_type#>;<#=column_comment#>,
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
   _<#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
   #>

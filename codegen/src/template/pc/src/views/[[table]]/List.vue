@@ -568,6 +568,7 @@ import LinkAtt from "@/components/LinkAtt.vue";<#
 #>
 import LinkList from "@/components/LinkList.vue";
 import { SELECT_V2_SIZE } from "../common/App";
+import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
   useSearch,
@@ -692,9 +693,161 @@ let {
   searchClk,
   searchReset,
   searchIptClr,
-} = $(useSearch<<#=tableUp#>Search>(
-  dataGrid,
-));
+} = $(useSearch<<#=tableUp#>Search>(dataGrid));
+
+const props = defineProps<{
+  is_deleted?: string;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
+    const column_name = column.COLUMN_NAME;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const search = column.search;
+    if (column_name === 'id') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'varchar') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'date') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'datetime') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'int') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'json') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'text') {
+      data_type = 'string';
+    }
+    else if (column.DATA_TYPE === 'tinyint') {
+      data_type = "string";
+    }
+    else if (column.DATA_TYPE === 'decimal') {
+      data_type = 'string';
+    }
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (foreignKey || selectList.length > 0) {
+      data_type = "string|string[]";
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (data_type === 'id') {
+      column_comment = '';
+    } else {
+      column_comment = ' //' + column_comment;
+    }
+    /* if (!search) continue; */
+  #><#
+    if (foreignKey) {
+  #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
+  _<#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    } else if (selectList && selectList.length > 0) {
+  #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    } else if (column_name === "id") {
+  #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    } else if (column.DATA_TYPE === "int" || column.DATA_TYPE === "decimal" || column.DATA_TYPE === "double" || column.DATA_TYPE === "datetime" || column.DATA_TYPE === "date") {
+  #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    } else {
+  #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
+  <#=column_name#>Like?: <#=data_type#>;<#=column_comment#><#
+    }
+  #><#
+  }
+  #>
+}>();
+
+const props2Type = {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
+    const column_name = column.COLUMN_NAME;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (foreignKey || selectList.length > 0) {
+      data_type = data_type+"[]";
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+  #><#
+    if (foreignKey) {
+  #>
+  <#=column_name#>: "string[]",
+  _<#=column_name#>: "string[]",<#
+    } else if (selectList && selectList.length > 0 && column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
+  #>
+  <#=column_name#>: "number[]",
+  _<#=column_name#>: "string[]",<#
+    } else if (selectList && selectList.length > 0) {
+  #>
+  <#=column_name#>: "string[]",
+  _<#=column_name#>: "string[]",<#
+    }
+  #><#
+  }
+  #>
+};
+
+const props2 = $computed(() => {
+  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  for (const item of entries) {
+    if (item[0] === "is_deleted") {
+      item[1] = (item[1] === "0" ? 0 : 1) as any;
+      continue;
+    }
+    if (props2Type[item[0]] === "number[]") {
+      if (!Array.isArray(item[1])) {
+        item[1] = [ item[1] as string ]; 
+      }
+      item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
+      continue;
+    }
+    if (props2Type[item[0]] === "string[]") {
+      if (!Array.isArray(item[1])) {
+        item[1] = [ item[1] as string ]; 
+      }
+      continue;
+    }
+  }
+  return Object.fromEntries(entries);
+});
 
 // 分页功能
 let {
@@ -1202,6 +1355,16 @@ async function initFrame() {
 watch(
   () => usrStore.access_token,
   initFrame,
+);
+
+watch(
+  () => props2,
+  async (newVal, oldVal) => {
+    if (!deepCompare(oldVal, newVal)) {
+      search = <any> { ...search, ...newVal };
+      await initFrame();
+    }
+  },
   {
     immediate: true,
   },
