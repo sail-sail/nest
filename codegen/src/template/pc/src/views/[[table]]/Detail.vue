@@ -68,170 +68,172 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
           columnNum++;
         #>
         
-        <label<#
-        if (vIfStr) {
-        #> v-if="<#=vIfStr#>"<#
-        }
-        #> class="form_label"><# if (require) { #>
-          <span style="color: red;">*</span><#
+        <template v-if="builtInModel?.<#=column_name#> == null">
+          <label<#
+          if (vIfStr) {
+          #> v-if="<#=vIfStr#>"<#
           }
-          #>
-          <span><#=column_comment#></span>
-        </label>
-        <el-form-item<#
-        if (vIfStr) {
-        #> v-if="<#=vIfStr#>"<#
-        }
-        #> prop="<#=column_name#>"<#
-          if (column.isImg) {
-        #> class="img_form_item"<#
-        }
-        #>><#
-          if (column.isImg) {
-          #>
-          <UploadImage
-            v-model="dialogModel.<#=column_name#>"<#
-            if (column.attMaxSize > 1) {
-          #>
-            :maxSize="column.attMaxSize"<#
-            }
-          #><#
-          if (column.maxFileSize) {
-          #>
-            :maxFileSize="<#=column.maxFileSize#>"<#
-          }
-          #><#
-          if (column.attAccept) {
-          #>
-            accept="<#=column.attAccept#>"<#
-          }
-          #>
-          ></UploadImage><#
-          } else if (foreignKey) {
-          #>
-          <el-select-v2
-            :height="300"<#
-            if (foreignKey.multiple) {
-            #>
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ]"<#
+          #> class="form_label"><# if (require) { #>
+            <span style="color: red;">*</span><#
             }
             #>
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.<#=column_name#>"
-            placeholder="请选择<#=column_comment#>"
-            :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
-            filterable
-            clearable
-            :loading="!inited"
-            :remote="<#=foreignTable#>Info.count > SELECT_V2_SIZE"
-            :remote-method="<#=foreignTable#>FilterEfc"
-          ></el-select-v2><#
-          } else if (selectList.length > 0) {
-          #>
-          <el-select
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.<#=column_name#>"
-            placeholder="请选择<#=column_comment#>"
-            filterable
-            default-first-option
-            clearable
-          ><#
-            for (let item of selectList) {
-              let value = item.value;
-              let label = item.label;
-              if (typeof(value) === "string") {
-                value = `'${ value }'`;
-              } else if (typeof(value) === "number") {
-                value = value.toString();
+            <span><#=column_comment#></span>
+          </label>
+          <el-form-item<#
+          if (vIfStr) {
+          #> v-if="<#=vIfStr#>"<#
+          }
+          #> prop="<#=column_name#>"<#
+            if (column.isImg) {
+          #> class="img_form_item"<#
+          }
+          #>><#
+            if (column.isImg) {
+            #>
+            <UploadImage
+              v-model="dialogModel.<#=column_name#>"<#
+              if (column.attMaxSize > 1) {
+            #>
+              :maxSize="column.attMaxSize"<#
               }
-          #>
-            <el-option
-              :value="<#=value#>"
-              label="<#=label#>"
-            ></el-option><#
+            #><#
+            if (column.maxFileSize) {
+            #>
+              :maxFileSize="<#=column.maxFileSize#>"<#
             }
-          #>
-          </el-select><#
-          } else if (data_type === "datetime" || data_type === "date") {
-          #>
-          <el-date-picker
-            type="date"
-            class="form_input"
-            v-model="dialogModel.<#=column_name#>"<#
-              if (data_type === "datetime") {
+            #><#
+            if (column.attAccept) {
             #>
-            value-format="YYYY-MM-DD HH:mm:ss"<#
-              } else if (data_type === "date") {
+              accept="<#=column.attAccept#>"<#
+            }
             #>
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD 00:00:00"<#
+            ></UploadImage><#
+            } else if (foreignKey) {
+            #>
+            <el-select-v2
+              :height="300"<#
+              if (foreignKey.multiple) {
+              #>
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ]"<#
+              }
+              #>
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.<#=column_name#>"
+              placeholder="请选择<#=column_comment#>"
+              :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
+              filterable
+              clearable
+              :loading="!inited"
+              :remote="<#=foreignTable#>Info.count > SELECT_V2_SIZE"
+              :remote-method="<#=foreignTable#>FilterEfc"
+            ></el-select-v2><#
+            } else if (selectList.length > 0) {
+            #>
+            <el-select
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.<#=column_name#>"
+              placeholder="请选择<#=column_comment#>"
+              filterable
+              default-first-option
+              clearable
+            ><#
+              for (let item of selectList) {
+                let value = item.value;
+                let label = item.label;
+                if (typeof(value) === "string") {
+                  value = `'${ value }'`;
+                } else if (typeof(value) === "number") {
+                  value = value.toString();
+                }
+            #>
+              <el-option
+                :value="<#=value#>"
+                label="<#=label#>"
+              ></el-option><#
               }
             #>
-            placeholder="请选择<#=column_comment#>"
-          ></el-date-picker><#
-          } else if (column_type === "int(1)") {
-          #>
-          <el-checkbox
-            class="form_input"
-            :set="0"
-            v-model="dialogModel.<#=column_name#>"
-            :false-label="0"
-            :true-label="1"
-          >
-            <#=column_comment#>
-          </el-checkbox><#
-          } else if (column_type.startsWith("int")) {
-          #>
-          <el-input-number
-            class="form_input"
-            v-model="dialogModel.<#=column_name#>"
-            :precision="0"
-            :step="1"
-            :step-strictly="true"
-            :controls="false"
-            placeholder="请输入<#=column_comment#>"
-          ></el-input-number><#
-          } else if (column.DATA_TYPE === "decimal") {
-            let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
-            let precision = Number(arr[1]);
-            let max = "";
-            for (let m = 0; m < Number(arr[0])-precision; m++) {
-              max += "9";
+            </el-select><#
+            } else if (data_type === "datetime" || data_type === "date") {
+            #>
+            <el-date-picker
+              type="date"
+              class="form_input"
+              v-model="dialogModel.<#=column_name#>"<#
+                if (data_type === "datetime") {
+              #>
+              value-format="YYYY-MM-DD HH:mm:ss"<#
+                } else if (data_type === "date") {
+              #>
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD 00:00:00"<#
+                }
+              #>
+              placeholder="请选择<#=column_comment#>"
+            ></el-date-picker><#
+            } else if (column_type === "int(1)" || column_type === "tinyint(1)") {
+            #>
+            <el-checkbox
+              class="form_input"
+              :set="0"
+              v-model="dialogModel.<#=column_name#>"
+              :false-label="0"
+              :true-label="1"
+            >
+              <#=column_comment#>
+            </el-checkbox><#
+            } else if (column_type.startsWith("int")) {
+            #>
+            <el-input-number
+              class="form_input"
+              v-model="dialogModel.<#=column_name#>"
+              :precision="0"
+              :step="1"
+              :step-strictly="true"
+              :controls="false"
+              placeholder="请输入<#=column_comment#>"
+            ></el-input-number><#
+            } else if (column.DATA_TYPE === "decimal") {
+              let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+              let precision = Number(arr[1]);
+              let max = "";
+              for (let m = 0; m < Number(arr[0])-precision; m++) {
+                max += "9";
+              }
+              max = Number(max)+1-Math.pow(10, -precision);
+            #>
+            <el-input-number
+              class="form_input"
+              v-model="dialogModel.<#=column_name#>"
+              :max="<#=max#>"
+              :precision="<#=precision#>"
+              :controls="false"
+              placeholder="请输入<#=column_comment#>"
+            ></el-input-number><#
+            } else {
+            #>
+            <el-input
+              class="form_input"
+              v-model="dialogModel.<#=column_name#>"
+              placeholder="请输入<#=column_comment#>"
+            ></el-input><#
             }
-            max = Number(max)+1-Math.pow(10, -precision);
+            #>
+          </el-form-item><#
+          if (column.isImg) {
           #>
-          <el-input-number
-            class="form_input"
-            v-model="dialogModel.<#=column_name#>"
-            :max="<#=max#>"
-            :precision="<#=precision#>"
-            :controls="false"
-            placeholder="请输入<#=column_comment#>"
-          ></el-input-number><#
-          } else {
-          #>
-          <el-input
-            class="form_input"
-            v-model="dialogModel.<#=column_name#>"
-            placeholder="请输入<#=column_comment#>"
-          ></el-input><#
+          
+          <template v-if="<#=vIfStr#> && columnNum > 4">
+            <div></div>
+            <div></div>
+          </template><#
           }
           #>
-        </el-form-item><#
-        if (column.isImg) {
-        #>
-        
-        <template v-if="<#=vIfStr#> && columnNum > 4">
-          <div></div>
-          <div></div>
         </template><#
-        }
-        #><#
         }
         #>
         
@@ -616,10 +618,14 @@ let onCloseResolve = function(value: {
   changedIds: string[];
 }) { };
 
+// 内置变量
+let builtInModel = $ref<<#=tableUp#>Model>();
+
 // 打开对话框
 async function showDialog(
   arg?: {
     title?: string;
+    builtInModel?: <#=tableUp#>Model;
     model?: {
       ids: string[];
     };
@@ -633,6 +639,7 @@ async function showDialog(
   const title = arg?.title;
   const model = arg?.model;
   const action = arg?.action;
+  builtInModel = arg?.builtInModel;
   dialogAction = action;
   if (title) {
     dialogTitle = title;
@@ -740,14 +747,14 @@ async function saveClk() {
   } catch (err) {
     return;
   }
-  let id = undefined;
+  let id: string = undefined;
   let msg = "";
   if (dialogAction === "add") {
-    id = await create(dialogModel);
+    id = await create({ ...dialogModel, ...builtInModel });
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
-    id = await updateById(dialogModel.id, dialogModel);
+    id = await updateById(dialogModel.id, { ...dialogModel, ...builtInModel });
     msg = `修改成功!`;
   }
   if (id) {

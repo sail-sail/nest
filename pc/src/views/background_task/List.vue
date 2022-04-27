@@ -10,94 +10,104 @@
       @keyup.enter.native="searchClk"
     >
       
-      <label class="form_label">
-        名称
-      </label>
-      <el-form-item prop="lblLike">
-        <el-input
-          class="form_input"
-          v-model="search.lblLike"
-          placeholder="请输入名称"
-          clearable
-          @clear="searchIptClr"
-        ></el-input>
-      </el-form-item>
+      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+        <label class="form_label">
+          名称
+        </label>
+        <el-form-item prop="lblLike">
+          <el-input
+            class="form_input"
+            v-model="search.lblLike"
+            placeholder="请输入名称"
+            clearable
+            @clear="searchIptClr"
+          ></el-input>
+        </el-form-item>
+      </template>
       
-      <label class="form_label">
-        状态
-      </label>
-      <el-form-item prop="state">
-        <el-select
-          class="form_input"
-          @keyup.enter.native.stop
-          v-model="search.state"
-          placeholder="请选择状态"
-          filterable
-          default-first-option
-          clearable
-          multiple
-          @clear="searchIptClr"
-        >
-          <el-option :value="'running'" label="运行中"></el-option>
-          <el-option :value="'success'" label="成功"></el-option>
-          <el-option :value="'fail'" label="失败"></el-option>
-          <el-option :value="'cancel'" label="取消"></el-option>
-        </el-select>
-      </el-form-item>
+      <template v-if="builtInSearch?.state == null">
+        <label class="form_label">
+          状态
+        </label>
+        <el-form-item prop="state">
+          <el-select
+            class="form_input"
+            @keyup.enter.native.stop
+            v-model="search.state"
+            placeholder="请选择状态"
+            filterable
+            default-first-option
+            clearable
+            multiple
+            @clear="searchIptClr"
+          >
+            <el-option :value="'running'" label="运行中"></el-option>
+            <el-option :value="'success'" label="成功"></el-option>
+            <el-option :value="'fail'" label="失败"></el-option>
+            <el-option :value="'cancel'" label="取消"></el-option>
+          </el-select>
+        </el-form-item>
+      </template>
       
-      <label class="form_label">
-        类型
-      </label>
-      <el-form-item prop="type">
-        <el-select
-          class="form_input"
-          @keyup.enter.native.stop
-          v-model="search.type"
-          placeholder="请选择类型"
-          filterable
-          default-first-option
-          clearable
-          multiple
-          @clear="searchIptClr"
-        >
-          <el-option :value="'text'" label="文本"></el-option>
-          <el-option :value="'download'" label="下载"></el-option>
-          <el-option :value="'inline'" label="查看"></el-option>
-          <el-option :value="'tag'" label="标签"></el-option>
-        </el-select>
-      </el-form-item>
+      <template v-if="builtInSearch?.type == null">
+        <label class="form_label">
+          类型
+        </label>
+        <el-form-item prop="type">
+          <el-select
+            class="form_input"
+            @keyup.enter.native.stop
+            v-model="search.type"
+            placeholder="请选择类型"
+            filterable
+            default-first-option
+            clearable
+            multiple
+            @clear="searchIptClr"
+          >
+            <el-option :value="'text'" label="文本"></el-option>
+            <el-option :value="'download'" label="下载"></el-option>
+            <el-option :value="'inline'" label="查看"></el-option>
+            <el-option :value="'tag'" label="标签"></el-option>
+          </el-select>
+        </el-form-item>
+      </template>
       
-      <label class="form_label">
-        开始时间
-      </label>
-      <el-form-item prop="begin_time">
-        <el-date-picker
-          type="daterange"
-          class="form_input"
-          :set="search.begin_time = search.begin_time || [ ]"
-          v-model="search.begin_time"
-          start-placeholder="开始"
-          end-placeholder="结束"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-          clearable
-          @clear="searchIptClr"
-        ></el-date-picker>
-      </el-form-item>
+      <template v-if="builtInSearch?.begin_time == null">
+        <label class="form_label">
+          开始时间
+        </label>
+        <el-form-item prop="begin_time">
+          <el-date-picker
+            type="daterange"
+            class="form_input"
+            :set="search.begin_time = search.begin_time || [ ]"
+            v-model="search.begin_time"
+            start-placeholder="开始"
+            end-placeholder="结束"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
+            clearable
+            @clear="searchIptClr"
+          ></el-date-picker>
+        </el-form-item>
+      </template>
       
-      <div style="min-width: 20px;"></div>
-      <el-form-item prop="is_deleted">
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted || 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="searchClk"
-        >
-          回收站
-        </el-checkbox>
-      </el-form-item>
+      <template v-if="builtInSearch?.is_deleted == null">
+        <div style="min-width: 20px;"></div>
+        <el-form-item prop="is_deleted">
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="searchClk"
+          >
+            回收站
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <div style="min-width: 20px;"></div>
       <el-form-item
@@ -406,14 +416,30 @@ let inited = $ref(false);
 // 表格
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
-// 搜索功能
-let {
-  search,
-  searchFormRef,
-  searchClk,
-  searchReset,
-  searchIptClr,
-} = $(useSearch<Background_taskSearch>(dataGrid));
+// 搜索
+function initSearch() {
+  return <Background_taskSearch>{
+    is_deleted: 0,
+  };
+}
+
+let search = $ref(initSearch());
+
+// 搜索
+async function searchClk() {
+  await dataGrid(true);
+}
+
+// 重置搜索
+async function searchReset() {
+  search = initSearch();
+  await searchClk();
+}
+
+// 清空搜索框事件
+async function searchIptClr() {
+  await searchClk();
+}
 
 const props = defineProps<{
   is_deleted?: string;
@@ -432,35 +458,66 @@ const props = defineProps<{
   remLike?: string; //备注
 }>();
 
-const props2Type = {
+const builtInSearchType = {
   state: "string[]",
   _state: "string[]",
   type: "string[]",
   _type: "string[]",
 };
 
-const props2 = $computed(() => {
+// 内置搜索条件
+const builtInSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ _, val ]) => val);
   for (const item of entries) {
     if (item[0] === "is_deleted") {
       item[1] = (item[1] === "0" ? 0 : 1) as any;
       continue;
     }
-    if (props2Type[item[0]] === "number[]") {
+    if (builtInSearchType[item[0]] === "number[]") {
       if (!Array.isArray(item[1])) {
         item[1] = [ item[1] as string ]; 
       }
       item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
       continue;
     }
-    if (props2Type[item[0]] === "string[]") {
+    if (builtInSearchType[item[0]] === "string[]") {
       if (!Array.isArray(item[1])) {
         item[1] = [ item[1] as string ]; 
       }
       continue;
     }
   }
-  return Object.fromEntries(entries);
+  return <Background_taskSearch> Object.fromEntries(entries);
+});
+
+// 内置变量
+const builtInModel = $computed(() => {
+  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  for (const item of entries) {
+    if (item[0] === "is_deleted") {
+      item[1] = (item[1] === "0" ? 0 : 1) as any;
+      continue;
+    }
+    if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
+      if (Array.isArray(item[1]) && item[1].length === 1) {
+        if (!isNaN(Number(item[1][0]))) {
+          item[1] = <any> Number(item[1][0]);
+        }
+      } else {
+        if (!isNaN(Number(item[1]))) {
+          item[1] = <any> Number(item[1]);
+        }
+      }
+      continue;
+    }
+    if (builtInSearchType[item[0]] === "string[]" || builtInSearchType[item[0]] === "string") {
+      if (Array.isArray(item[1]) && item[1].length === 1) {
+        item[1] = item[1][0]; 
+      }
+      continue;
+    }
+  }
+  return <Background_taskModel> Object.fromEntries(entries);
 });
 
 // 分页功能
@@ -543,12 +600,16 @@ async function dataGrid(isCount = false) {
   const pgOffset = (page.current - 1) * page.size;
   let data: Background_taskModel[];
   let count = 0;
+  let search2 = {
+    ...search,
+    ...builtInSearch,
+  };
   if (isCount) {
-    const rvData = await findAllAndCount(search, { pgSize, pgOffset }, [ sort ]);
+    const rvData = await findAllAndCount(search2, { pgSize, pgOffset }, [ sort ]);
     data = rvData.data;
     count = rvData.count || 0;
   } else {
-    data = await findAll(search, { pgSize, pgOffset }, [ sort ]);
+    data = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
     count = undefined;
   }
   tableData = data || [ ];
@@ -642,10 +703,9 @@ watch(
 );
 
 watch(
-  () => props2,
+  () => builtInSearch,
   async (newVal, oldVal) => {
     if (!deepCompare(oldVal, newVal)) {
-      search = <any> { ...search, ...newVal };
       await initFrame();
     }
   },

@@ -6,39 +6,6 @@ import {
 import { useRoute } from "vue-router";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 
-export function useSearch<T>(dataGrid: Function) {
-  
-  let search = <T>$ref({
-    is_deleted: 0,
-  });
-  
-  // 搜索
-  let searchFormRef = $ref<InstanceType<typeof ElForm>>();
-  
-  async function searchClk() {
-    await dataGrid(true);
-  }
-  
-  // 重置搜索
-  async function searchReset() {
-    searchFormRef.resetFields();
-    await searchClk();
-  }
-  
-  // 清空某个搜索框
-  async function searchIptClr() {
-    await searchClk();
-  }
-  
-  return $$({
-    search,
-    searchFormRef,
-    searchClk,
-    searchReset,
-    searchIptClr,
-  });
-}
-
 export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
   // 分页

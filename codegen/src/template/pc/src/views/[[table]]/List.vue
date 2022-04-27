@@ -41,121 +41,133 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
       #><#
       } else if (foreignKey) {
       #>
-      <label class="form_label">
-        <#=column_comment#>
-      </label>
-      <el-form-item prop="<#=column_name#>">
-        <el-select-v2
-          :height="300"
-          class="form_input"
-          @keyup.enter.native.stop
-          :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-          v-model="search.<#=column_name#>"
-          placeholder="请选择<#=column_comment#>"
-          :options="<#=foreignTable#>4SelectV2"
-          filterable
-          clearable
-          multiple
-          collapse-tags
-          collapse-tags-tooltip
-          :loading="!inited"
-          :remote="<#=foreignTable#>Info.count > SELECT_V2_SIZE"
-          :remote-method="<#=foreignTable#>FilterEfc"
-          @clear="searchIptClr"
-        ></el-select-v2>
-      </el-form-item><#
+      <template v-if="builtInSearch?.<#=column_name#> == null">
+        <label class="form_label">
+          <#=column_comment#>
+        </label>
+        <el-form-item prop="<#=column_name#>">
+          <el-select-v2
+            :height="300"
+            class="form_input"
+            @keyup.enter.native.stop
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            v-model="search.<#=column_name#>"
+            placeholder="请选择<#=column_comment#>"
+            :options="<#=foreignTable#>4SelectV2"
+            filterable
+            clearable
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            :loading="!inited"
+            :remote="<#=foreignTable#>Info.count > SELECT_V2_SIZE"
+            :remote-method="<#=foreignTable#>FilterEfc"
+            @clear="searchIptClr"
+          ></el-select-v2>
+        </el-form-item>
+      </template><#
       } else if (selectList.length > 0) {
       #>
-      <label class="form_label">
-        <#=column_comment#>
-      </label>
-      <el-form-item prop="<#=column_name#>">
-        <el-select
-          class="form_input"
-          @keyup.enter.native.stop
-          v-model="search.<#=column_name#>"
-          placeholder="请选择<#=column_comment#>"
-          filterable
-          default-first-option
-          clearable
-          multiple
-          @clear="searchIptClr"
-        ><#
-          for (let item of selectList) {
-            let value = item.value;
-            let label = item.label;
-            if (typeof(value) === "string") {
-              value = `'${ value }'`;
-            } else if (typeof(value) === "number") {
-              value = value.toString();
+      <template v-if="builtInSearch?.<#=column_name#> == null">
+        <label class="form_label">
+          <#=column_comment#>
+        </label>
+        <el-form-item prop="<#=column_name#>">
+          <el-select
+            class="form_input"
+            @keyup.enter.native.stop
+            v-model="search.<#=column_name#>"
+            placeholder="请选择<#=column_comment#>"
+            filterable
+            default-first-option
+            clearable
+            multiple
+            @clear="searchIptClr"
+          ><#
+            for (let item of selectList) {
+              let value = item.value;
+              let label = item.label;
+              if (typeof(value) === "string") {
+                value = `'${ value }'`;
+              } else if (typeof(value) === "number") {
+                value = value.toString();
+              }
+          #>
+            <el-option :value="<#=value#>" label="<#=label#>"></el-option><#
             }
-        #>
-          <el-option :value="<#=value#>" label="<#=label#>"></el-option><#
-          }
-        #>
-        </el-select>
-      </el-form-item><#
+          #>
+          </el-select>
+        </el-form-item>
+      </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <label class="form_label">
-        <#=column_comment#>
-      </label>
-      <el-form-item prop="<#=column_name#>">
-        <el-date-picker
-          type="daterange"
-          class="form_input"
-          :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-          v-model="search.<#=column_name#>"
-          start-placeholder="开始"
-          end-placeholder="结束"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-          clearable
-          @clear="searchIptClr"
-        ></el-date-picker>
-      </el-form-item><#
+      <template v-if="builtInSearch?.<#=column_name#> == null">
+        <label class="form_label">
+          <#=column_comment#>
+        </label>
+        <el-form-item prop="<#=column_name#>">
+          <el-date-picker
+            type="daterange"
+            class="form_input"
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            v-model="search.<#=column_name#>"
+            start-placeholder="开始"
+            end-placeholder="结束"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
+            clearable
+            @clear="searchIptClr"
+          ></el-date-picker>
+        </el-form-item>
+      </template><#
       } else if (column_type === "int(1)") {
       #>
-      <label class="form_label">
-        <#=column_comment#>
-      </label>
-      <el-form-item prop="<#=column_name#>">
-        <el-checkbox
-          class="form_input"
-          v-model="search.<#=column_name#>"
-          :false-label="0"
-          :true-label="1"
-        ><#=column_comment#></el-checkbox>
-      </el-form-item><#
+      <template v-if="builtInSearch?.<#=column_name#> == null">
+        <label class="form_label">
+          <#=column_comment#>
+        </label>
+        <el-form-item prop="<#=column_name#>">
+          <el-checkbox
+            class="form_input"
+            v-model="search.<#=column_name#>"
+            :false-label="0"
+            :true-label="1"
+          ><#=column_comment#></el-checkbox>
+        </el-form-item>
+      </template><#
       } else if (column_type.startsWith("int")) {
       #>
-      <label class="form_label">
-        <#=column_comment#>
-      </label>
-      <el-form-item prop="<#=column_name#>">
-        <el-input-number
-          class="form_input"
-          v-model="search.<#=column_name#>"
-          :controls="false"
-          clearable
-          @clear="searchIptClr"
-        ></el-input-number>
-      </el-form-item><#
+      <template v-if="builtInSearch?.<#=column_name#> == null">
+        <label class="form_label">
+          <#=column_comment#>
+        </label>
+        <el-form-item prop="<#=column_name#>">
+          <el-input-number
+            class="form_input"
+            v-model="search.<#=column_name#>"
+            :controls="false"
+            clearable
+            @clear="searchIptClr"
+          ></el-input-number>
+        </el-form-item>
+      </template><#
       } else {
       #>
-      <label class="form_label">
-        <#=column_comment#>
-      </label>
-      <el-form-item prop="<#=column_name#>Like">
-        <el-input
-          class="form_input"
-          v-model="search.<#=column_name#>Like"
-          placeholder="请输入<#=column_comment#>"
-          clearable
-          @clear="searchIptClr"
-        ></el-input>
-      </el-form-item><#
+      <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
+        <label class="form_label">
+          <#=column_comment#>
+        </label>
+        <el-form-item prop="<#=column_name#>Like">
+          <el-input
+            class="form_input"
+            v-model="search.<#=column_name#>Like"
+            placeholder="请输入<#=column_comment#>"
+            clearable
+            @clear="searchIptClr"
+          ></el-input>
+        </el-form-item>
+      </template><#
       }
       #><#
         }
@@ -164,18 +176,20 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
       <#
       if (opts.noRevert !== true) {
       #>
-      <div style="min-width: 20px;"></div>
-      <el-form-item prop="is_deleted">
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted || 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="searchClk"
-        >
-          回收站
-        </el-checkbox>
-      </el-form-item><#
+      <template v-if="builtInSearch?.is_deleted == null">
+        <div style="min-width: 20px;"></div>
+        <el-form-item prop="is_deleted">
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="searchClk"
+          >
+            回收站
+          </el-checkbox>
+        </el-form-item>
+      </template><#
       }
       #>
       
@@ -686,14 +700,30 @@ async function exportClk() {
   }
 #>
 
-// 搜索功能
-let {
-  search,
-  searchFormRef,
-  searchClk,
-  searchReset,
-  searchIptClr,
-} = $(useSearch<<#=tableUp#>Search>(dataGrid));
+// 搜索
+function initSearch() {
+  return <<#=tableUp#>Search>{
+    is_deleted: 0,
+  };
+}
+
+let search = $ref(initSearch());
+
+// 搜索
+async function searchClk() {
+  await dataGrid(true);
+}
+
+// 重置搜索
+async function searchReset() {
+  search = initSearch();
+  await searchClk();
+}
+
+// 清空搜索框事件
+async function searchIptClr() {
+  await searchClk();
+}
 
 const props = defineProps<{
   is_deleted?: string;<#
@@ -780,7 +810,7 @@ const props = defineProps<{
   #>
 }>();
 
-const props2Type = {<#
+const builtInSearchType = {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -819,34 +849,68 @@ const props2Type = {<#
   #>
   <#=column_name#>: "string[]",
   _<#=column_name#>: "string[]",<#
-    }
+    } else if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int' || column.DATA_TYPE === 'decimal') {
+  #>
+  <#=column_name#>: "number",<#
+  }
   #><#
   }
   #>
 };
 
-const props2 = $computed(() => {
+// 内置搜索条件
+const builtInSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ _, val ]) => val);
   for (const item of entries) {
     if (item[0] === "is_deleted") {
       item[1] = (item[1] === "0" ? 0 : 1) as any;
       continue;
     }
-    if (props2Type[item[0]] === "number[]") {
+    if (builtInSearchType[item[0]] === "number[]") {
       if (!Array.isArray(item[1])) {
         item[1] = [ item[1] as string ]; 
       }
       item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
       continue;
     }
-    if (props2Type[item[0]] === "string[]") {
+    if (builtInSearchType[item[0]] === "string[]") {
       if (!Array.isArray(item[1])) {
         item[1] = [ item[1] as string ]; 
       }
       continue;
     }
   }
-  return Object.fromEntries(entries);
+  return <<#=tableUp#>Search> Object.fromEntries(entries);
+});
+
+// 内置变量
+const builtInModel = $computed(() => {
+  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  for (const item of entries) {
+    if (item[0] === "is_deleted") {
+      item[1] = (item[1] === "0" ? 0 : 1) as any;
+      continue;
+    }
+    if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
+      if (Array.isArray(item[1]) && item[1].length === 1) {
+        if (!isNaN(Number(item[1][0]))) {
+          item[1] = <any> Number(item[1][0]);
+        }
+      } else {
+        if (!isNaN(Number(item[1]))) {
+          item[1] = <any> Number(item[1]);
+        }
+      }
+      continue;
+    }
+    if (builtInSearchType[item[0]] === "string[]" || builtInSearchType[item[0]] === "string") {
+      if (Array.isArray(item[1]) && item[1].length === 1) {
+        item[1] = item[1][0]; 
+      }
+      continue;
+    }
+  }
+  return <<#=tableUp#>Model> Object.fromEntries(entries);
 });
 
 // 分页功能
@@ -1106,12 +1170,16 @@ async function dataGrid(isCount = false) {
   const pgOffset = (page.current - 1) * page.size;
   let data: <#=tableUp#>Model[];
   let count = 0;
+  let search2 = {
+    ...search,
+    ...builtInSearch,
+  };
   if (isCount) {
-    const rvData = await findAllAndCount(search, { pgSize, pgOffset }, [ sort ]);
+    const rvData = await findAllAndCount(search2, { pgSize, pgOffset }, [ sort ]);
     data = rvData.data;
     count = rvData.count || 0;
   } else {
-    data = await findAll(search, { pgSize, pgOffset }, [ sort ]);
+    data = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
     count = undefined;
   }
   tableData = data || [ ];
@@ -1199,6 +1267,7 @@ async function openAdd() {
   } = await detailRef.showDialog({
     title: "增加",
     action: "add",
+    builtInModel,
   });
   if (changedIds && changedIds.length > 0) {
     await Promise.all([
@@ -1250,6 +1319,7 @@ async function openEdit() {
   } = await detailRef.showDialog({
     title: "修改",
     action: "edit",
+    builtInModel,
     model: {
       ids,
     },
@@ -1358,10 +1428,9 @@ watch(
 );
 
 watch(
-  () => props2,
+  () => builtInSearch,
   async (newVal, oldVal) => {
     if (!deepCompare(oldVal, newVal)) {
-      search = <any> { ...search, ...newVal };
       await initFrame();
     }
   },

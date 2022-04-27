@@ -32,142 +32,158 @@
         @keyup.enter.native="saveClk"
       >
         
-        <label class="form_label">
-          <span style="color: red;">*</span>
-          <span>名称</span>
-        </label>
-        <el-form-item prop="lbl">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.lbl"
-            placeholder="请输入名称"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.lbl == null">
+          <label class="form_label">
+            <span style="color: red;">*</span>
+            <span>名称</span>
+          </label>
+          <el-form-item prop="lbl">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.lbl"
+              placeholder="请输入名称"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span style="color: red;">*</span>
-          <span>状态</span>
-        </label>
-        <el-form-item prop="state">
-          <el-select
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.state"
-            placeholder="请选择状态"
-            filterable
-            default-first-option
-            clearable
-          >
-            <el-option
-              :value="'running'"
-              label="运行中"
-            ></el-option>
-            <el-option
-              :value="'success'"
-              label="成功"
-            ></el-option>
-            <el-option
-              :value="'fail'"
-              label="失败"
-            ></el-option>
-            <el-option
-              :value="'cancel'"
-              label="取消"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+        <template v-if="builtInModel?.state == null">
+          <label class="form_label">
+            <span style="color: red;">*</span>
+            <span>状态</span>
+          </label>
+          <el-form-item prop="state">
+            <el-select
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.state"
+              placeholder="请选择状态"
+              filterable
+              default-first-option
+              clearable
+            >
+              <el-option
+                :value="'running'"
+                label="运行中"
+              ></el-option>
+              <el-option
+                :value="'success'"
+                label="成功"
+              ></el-option>
+              <el-option
+                :value="'fail'"
+                label="失败"
+              ></el-option>
+              <el-option
+                :value="'cancel'"
+                label="取消"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span style="color: red;">*</span>
-          <span>类型</span>
-        </label>
-        <el-form-item prop="type">
-          <el-select
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.type"
-            placeholder="请选择类型"
-            filterable
-            default-first-option
-            clearable
-          >
-            <el-option
-              :value="'text'"
-              label="文本"
-            ></el-option>
-            <el-option
-              :value="'download'"
-              label="下载"
-            ></el-option>
-            <el-option
-              :value="'inline'"
-              label="查看"
-            ></el-option>
-            <el-option
-              :value="'tag'"
-              label="标签"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+        <template v-if="builtInModel?.type == null">
+          <label class="form_label">
+            <span style="color: red;">*</span>
+            <span>类型</span>
+          </label>
+          <el-form-item prop="type">
+            <el-select
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.type"
+              placeholder="请选择类型"
+              filterable
+              default-first-option
+              clearable
+            >
+              <el-option
+                :value="'text'"
+                label="文本"
+              ></el-option>
+              <el-option
+                :value="'download'"
+                label="下载"
+              ></el-option>
+              <el-option
+                :value="'inline'"
+                label="查看"
+              ></el-option>
+              <el-option
+                :value="'tag'"
+                label="标签"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>执行结果</span>
-        </label>
-        <el-form-item prop="result">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.result"
-            placeholder="请输入执行结果"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.result == null">
+          <label class="form_label">
+            <span>执行结果</span>
+          </label>
+          <el-form-item prop="result">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.result"
+              placeholder="请输入执行结果"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>错误信息</span>
-        </label>
-        <el-form-item prop="err_msg">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.err_msg"
-            placeholder="请输入错误信息"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.err_msg == null">
+          <label class="form_label">
+            <span>错误信息</span>
+          </label>
+          <el-form-item prop="err_msg">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.err_msg"
+              placeholder="请输入错误信息"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>开始时间</span>
-        </label>
-        <el-form-item prop="begin_time">
-          <el-date-picker
-            type="date"
-            class="form_input"
-            v-model="dialogModel.begin_time"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择开始时间"
-          ></el-date-picker>
-        </el-form-item>
+        <template v-if="builtInModel?.begin_time == null">
+          <label class="form_label">
+            <span>开始时间</span>
+          </label>
+          <el-form-item prop="begin_time">
+            <el-date-picker
+              type="date"
+              class="form_input"
+              v-model="dialogModel.begin_time"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              placeholder="请选择开始时间"
+            ></el-date-picker>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>结束时间</span>
-        </label>
-        <el-form-item prop="end_time">
-          <el-date-picker
-            type="date"
-            class="form_input"
-            v-model="dialogModel.end_time"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择结束时间"
-          ></el-date-picker>
-        </el-form-item>
+        <template v-if="builtInModel?.end_time == null">
+          <label class="form_label">
+            <span>结束时间</span>
+          </label>
+          <el-form-item prop="end_time">
+            <el-date-picker
+              type="date"
+              class="form_input"
+              v-model="dialogModel.end_time"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              placeholder="请选择结束时间"
+            ></el-date-picker>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>备注</span>
-        </label>
-        <el-form-item prop="rem">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.rem"
-            placeholder="请输入备注"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.rem == null">
+          <label class="form_label">
+            <span>备注</span>
+          </label>
+          <el-form-item prop="rem">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.rem"
+              placeholder="请输入备注"
+            ></el-input>
+          </el-form-item>
+        </template>
         
       </el-form>
     </div>
@@ -314,10 +330,14 @@ let onCloseResolve = function(value: {
   changedIds: string[];
 }) { };
 
+// 内置变量
+let builtInModel = $ref<Background_taskModel>();
+
 // 打开对话框
 async function showDialog(
   arg?: {
     title?: string;
+    builtInModel?: Background_taskModel;
     model?: {
       ids: string[];
     };
@@ -331,6 +351,7 @@ async function showDialog(
   const title = arg?.title;
   const model = arg?.model;
   const action = arg?.action;
+  builtInModel = arg?.builtInModel;
   dialogAction = action;
   if (title) {
     dialogTitle = title;
@@ -432,14 +453,14 @@ async function saveClk() {
   } catch (err) {
     return;
   }
-  let id = undefined;
+  let id: string = undefined;
   let msg = "";
   if (dialogAction === "add") {
-    id = await create(dialogModel);
+    id = await create({ ...dialogModel, ...builtInModel });
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
-    id = await updateById(dialogModel.id, dialogModel);
+    id = await updateById(dialogModel.id, { ...dialogModel, ...builtInModel });
     msg = `修改成功!`;
   }
   if (id) {

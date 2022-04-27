@@ -103,9 +103,9 @@ watch(
       router.go(-1);
       return;
     }
-    if (route.query) {
-      menu.route_query = route.query;
-    }
+    // if (route.query) {
+    //   menu.route_query = route.query;
+    // }
     tabsStore.activeTab({
       lbl: String(route.name || ""),
       active: true,

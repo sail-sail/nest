@@ -32,132 +32,148 @@
         @keyup.enter.native="saveClk"
       >
         
-        <label class="form_label">
-          <span>类型</span>
-        </label>
-        <el-form-item prop="type">
-          <el-select
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.type"
-            placeholder="请选择类型"
-            filterable
-            default-first-option
-            clearable
-          >
-            <el-option
-              :value="'pc'"
-              label="电脑端"
-            ></el-option>
-            <el-option
-              :value="'mobile'"
-              label="手机端"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+        <template v-if="builtInModel?.type == null">
+          <label class="form_label">
+            <span>类型</span>
+          </label>
+          <el-form-item prop="type">
+            <el-select
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.type"
+              placeholder="请选择类型"
+              filterable
+              default-first-option
+              clearable
+            >
+              <el-option
+                :value="'pc'"
+                label="电脑端"
+              ></el-option>
+              <el-option
+                :value="'mobile'"
+                label="手机端"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>父菜单</span>
-        </label>
-        <el-form-item prop="menu_id">
-          <el-select-v2
-            :height="300"
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.menu_id"
-            placeholder="请选择父菜单"
-            :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            :loading="!inited"
-            :remote="menuInfo.count > SELECT_V2_SIZE"
-            :remote-method="menuFilterEfc"
-          ></el-select-v2>
-        </el-form-item>
+        <template v-if="builtInModel?.menu_id == null">
+          <label class="form_label">
+            <span>父菜单</span>
+          </label>
+          <el-form-item prop="menu_id">
+            <el-select-v2
+              :height="300"
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.menu_id"
+              placeholder="请选择父菜单"
+              :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+              filterable
+              clearable
+              :loading="!inited"
+              :remote="menuInfo.count > SELECT_V2_SIZE"
+              :remote-method="menuFilterEfc"
+            ></el-select-v2>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span style="color: red;">*</span>
-          <span>名称</span>
-        </label>
-        <el-form-item prop="lbl">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.lbl"
-            placeholder="请输入名称"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.lbl == null">
+          <label class="form_label">
+            <span style="color: red;">*</span>
+            <span>名称</span>
+          </label>
+          <el-form-item prop="lbl">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.lbl"
+              placeholder="请输入名称"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>路由</span>
-        </label>
-        <el-form-item prop="route_path">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.route_path"
-            placeholder="请输入路由"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.route_path == null">
+          <label class="form_label">
+            <span>路由</span>
+          </label>
+          <el-form-item prop="route_path">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.route_path"
+              placeholder="请输入路由"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>参数</span>
-        </label>
-        <el-form-item prop="route_query">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.route_query"
-            placeholder="请输入参数"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.route_query == null">
+          <label class="form_label">
+            <span>参数</span>
+          </label>
+          <el-form-item prop="route_query">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.route_query"
+              placeholder="请输入参数"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>启用</span>
-        </label>
-        <el-form-item prop="is_enabled">
-          <el-select
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.is_enabled"
-            placeholder="请选择启用"
-            filterable
-            default-first-option
-            clearable
-          >
-            <el-option
-              :value="1"
-              label="是"
-            ></el-option>
-            <el-option
-              :value="0"
-              label="否"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+        <template v-if="builtInModel?.is_enabled == null">
+          <label class="form_label">
+            <span>启用</span>
+          </label>
+          <el-form-item prop="is_enabled">
+            <el-select
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.is_enabled"
+              placeholder="请选择启用"
+              filterable
+              default-first-option
+              clearable
+            >
+              <el-option
+                :value="1"
+                label="是"
+              ></el-option>
+              <el-option
+                :value="0"
+                label="否"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>排序</span>
-        </label>
-        <el-form-item prop="order_by">
-          <el-input-number
-            class="form_input"
-            v-model="dialogModel.order_by"
-            :precision="0"
-            :step="1"
-            :step-strictly="true"
-            :controls="false"
-            placeholder="请输入排序"
-          ></el-input-number>
-        </el-form-item>
+        <template v-if="builtInModel?.order_by == null">
+          <label class="form_label">
+            <span>排序</span>
+          </label>
+          <el-form-item prop="order_by">
+            <el-input-number
+              class="form_input"
+              v-model="dialogModel.order_by"
+              :precision="0"
+              :step="1"
+              :step-strictly="true"
+              :controls="false"
+              placeholder="请输入排序"
+            ></el-input-number>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>备注</span>
-        </label>
-        <el-form-item prop="rem">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.rem"
-            placeholder="请输入备注"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.rem == null">
+          <label class="form_label">
+            <span>备注</span>
+          </label>
+          <el-form-item prop="rem">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.rem"
+              placeholder="请输入备注"
+            ></el-input>
+          </el-form-item>
+        </template>
         
       </el-form>
     </div>
@@ -339,10 +355,14 @@ let onCloseResolve = function(value: {
   changedIds: string[];
 }) { };
 
+// 内置变量
+let builtInModel = $ref<MenuModel>();
+
 // 打开对话框
 async function showDialog(
   arg?: {
     title?: string;
+    builtInModel?: MenuModel;
     model?: {
       ids: string[];
     };
@@ -356,6 +376,7 @@ async function showDialog(
   const title = arg?.title;
   const model = arg?.model;
   const action = arg?.action;
+  builtInModel = arg?.builtInModel;
   dialogAction = action;
   if (title) {
     dialogTitle = title;
@@ -459,14 +480,14 @@ async function saveClk() {
   } catch (err) {
     return;
   }
-  let id = undefined;
+  let id: string = undefined;
   let msg = "";
   if (dialogAction === "add") {
-    id = await create(dialogModel);
+    id = await create({ ...dialogModel, ...builtInModel });
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
-    id = await updateById(dialogModel.id, dialogModel);
+    id = await updateById(dialogModel.id, { ...dialogModel, ...builtInModel });
     msg = `修改成功!`;
   }
   if (id) {

@@ -10,31 +10,35 @@
       @keyup.enter.native="searchClk"
     >
       
-      <label class="form_label">
-        名称
-      </label>
-      <el-form-item prop="lblLike">
-        <el-input
-          class="form_input"
-          v-model="search.lblLike"
-          placeholder="请输入名称"
-          clearable
-          @clear="searchIptClr"
-        ></el-input>
-      </el-form-item>
+      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+        <label class="form_label">
+          名称
+        </label>
+        <el-form-item prop="lblLike">
+          <el-input
+            class="form_input"
+            v-model="search.lblLike"
+            placeholder="请输入名称"
+            clearable
+            @clear="searchIptClr"
+          ></el-input>
+        </el-form-item>
+      </template>
       
-      <div style="min-width: 20px;"></div>
-      <el-form-item prop="is_deleted">
-        <el-checkbox
-          :set="search.is_deleted = search.is_deleted || 0"
-          v-model="search.is_deleted"
-          :false-label="0"
-          :true-label="1"
-          @change="searchClk"
-        >
-          回收站
-        </el-checkbox>
-      </el-form-item>
+      <template v-if="builtInSearch?.is_deleted == null">
+        <div style="min-width: 20px;"></div>
+        <el-form-item prop="is_deleted">
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="searchClk"
+          >
+            回收站
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <div style="min-width: 20px;"></div>
       <el-form-item
@@ -294,14 +298,30 @@ async function exportClk() {
   downloadById(id);
 }
 
-// 搜索功能
-let {
-  search,
-  searchFormRef,
-  searchClk,
-  searchReset,
-  searchIptClr,
-} = $(useSearch<PermitSearch>(dataGrid));
+// 搜索
+function initSearch() {
+  return <PermitSearch>{
+    is_deleted: 0,
+  };
+}
+
+let search = $ref(initSearch());
+
+// 搜索
+async function searchClk() {
+  await dataGrid(true);
+}
+
+// 重置搜索
+async function searchReset() {
+  search = initSearch();
+  await searchClk();
+}
+
+// 清空搜索框事件
+async function searchIptClr() {
+  await searchClk();
+}
 
 const props = defineProps<{
   is_deleted?: string;
@@ -314,33 +334,64 @@ const props = defineProps<{
   remLike?: string; //备注
 }>();
 
-const props2Type = {
+const builtInSearchType = {
   menu_id: "string[]",
   _menu_id: "string[]",
 };
 
-const props2 = $computed(() => {
+// 内置搜索条件
+const builtInSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ _, val ]) => val);
   for (const item of entries) {
     if (item[0] === "is_deleted") {
       item[1] = (item[1] === "0" ? 0 : 1) as any;
       continue;
     }
-    if (props2Type[item[0]] === "number[]") {
+    if (builtInSearchType[item[0]] === "number[]") {
       if (!Array.isArray(item[1])) {
         item[1] = [ item[1] as string ]; 
       }
       item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
       continue;
     }
-    if (props2Type[item[0]] === "string[]") {
+    if (builtInSearchType[item[0]] === "string[]") {
       if (!Array.isArray(item[1])) {
         item[1] = [ item[1] as string ]; 
       }
       continue;
     }
   }
-  return Object.fromEntries(entries);
+  return <PermitSearch> Object.fromEntries(entries);
+});
+
+// 内置变量
+const builtInModel = $computed(() => {
+  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  for (const item of entries) {
+    if (item[0] === "is_deleted") {
+      item[1] = (item[1] === "0" ? 0 : 1) as any;
+      continue;
+    }
+    if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
+      if (Array.isArray(item[1]) && item[1].length === 1) {
+        if (!isNaN(Number(item[1][0]))) {
+          item[1] = <any> Number(item[1][0]);
+        }
+      } else {
+        if (!isNaN(Number(item[1]))) {
+          item[1] = <any> Number(item[1]);
+        }
+      }
+      continue;
+    }
+    if (builtInSearchType[item[0]] === "string[]" || builtInSearchType[item[0]] === "string") {
+      if (Array.isArray(item[1]) && item[1].length === 1) {
+        item[1] = item[1][0]; 
+      }
+      continue;
+    }
+  }
+  return <PermitModel> Object.fromEntries(entries);
 });
 
 // 分页功能
@@ -420,12 +471,16 @@ async function dataGrid(isCount = false) {
   const pgOffset = (page.current - 1) * page.size;
   let data: PermitModel[];
   let count = 0;
+  let search2 = {
+    ...search,
+    ...builtInSearch,
+  };
   if (isCount) {
-    const rvData = await findAllAndCount(search, { pgSize, pgOffset }, [ sort ]);
+    const rvData = await findAllAndCount(search2, { pgSize, pgOffset }, [ sort ]);
     data = rvData.data;
     count = rvData.count || 0;
   } else {
-    data = await findAll(search, { pgSize, pgOffset }, [ sort ]);
+    data = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
     count = undefined;
   }
   tableData = data || [ ];
@@ -460,6 +515,7 @@ async function openAdd() {
   } = await detailRef.showDialog({
     title: "增加",
     action: "add",
+    builtInModel,
   });
   if (changedIds && changedIds.length > 0) {
     await Promise.all([
@@ -498,6 +554,7 @@ async function openEdit() {
   } = await detailRef.showDialog({
     title: "修改",
     action: "edit",
+    builtInModel,
     model: {
       ids,
     },
@@ -576,10 +633,9 @@ watch(
 );
 
 watch(
-  () => props2,
+  () => builtInSearch,
   async (newVal, oldVal) => {
     if (!deepCompare(oldVal, newVal)) {
-      search = <any> { ...search, ...newVal };
       await initFrame();
     }
   },

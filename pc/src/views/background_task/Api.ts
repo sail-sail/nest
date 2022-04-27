@@ -128,13 +128,13 @@ export async function create(
  * @export updateById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<boolean>}
+ * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
   model: Background_taskModel,
   opt?: GqlOpt,
-): Promise<boolean> {
+): Promise<string> {
   const data = await gqlQuery({
     query: gql`
       mutation($id: ID!, $model: Background_taskInput!) {

@@ -32,98 +32,110 @@
         @keyup.enter.native="saveClk"
       >
         
-        <label class="form_label">
-          <span style="color: red;">*</span>
-          <span>名称</span>
-        </label>
-        <el-form-item prop="lbl">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.lbl"
-            placeholder="请输入名称"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.lbl == null">
+          <label class="form_label">
+            <span style="color: red;">*</span>
+            <span>名称</span>
+          </label>
+          <el-form-item prop="lbl">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.lbl"
+              placeholder="请输入名称"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span style="color: red;">*</span>
-          <span>用户名</span>
-        </label>
-        <el-form-item prop="username">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.username"
-            placeholder="请输入用户名"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.username == null">
+          <label class="form_label">
+            <span style="color: red;">*</span>
+            <span>用户名</span>
+          </label>
+          <el-form-item prop="username">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.username"
+              placeholder="请输入用户名"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>密码</span>
-        </label>
-        <el-form-item prop="password">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.password"
-            placeholder="请输入密码"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.password == null">
+          <label class="form_label">
+            <span>密码</span>
+          </label>
+          <el-form-item prop="password">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.password"
+              placeholder="请输入密码"
+            ></el-input>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>启用</span>
-        </label>
-        <el-form-item prop="is_enabled">
-          <el-select
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.is_enabled"
-            placeholder="请选择启用"
-            filterable
-            default-first-option
-            clearable
-          >
-            <el-option
-              :value="1"
-              label="是"
-            ></el-option>
-            <el-option
-              :value="0"
-              label="否"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+        <template v-if="builtInModel?.is_enabled == null">
+          <label class="form_label">
+            <span>启用</span>
+          </label>
+          <el-form-item prop="is_enabled">
+            <el-select
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.is_enabled"
+              placeholder="请选择启用"
+              filterable
+              default-first-option
+              clearable
+            >
+              <el-option
+                :value="1"
+                label="是"
+              ></el-option>
+              <el-option
+                :value="0"
+                label="否"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>角色</span>
-        </label>
-        <el-form-item prop="role_ids">
-          <el-select-v2
-            :height="300"
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :set="dialogModel.role_ids = dialogModel.role_ids || [ ]"
-            class="form_input"
-            @keyup.enter.native.stop
-            v-model="dialogModel.role_ids"
-            placeholder="请选择角色"
-            :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            :loading="!inited"
-            :remote="roleInfo.count > SELECT_V2_SIZE"
-            :remote-method="roleFilterEfc"
-          ></el-select-v2>
-        </el-form-item>
+        <template v-if="builtInModel?.role_ids == null">
+          <label class="form_label">
+            <span>角色</span>
+          </label>
+          <el-form-item prop="role_ids">
+            <el-select-v2
+              :height="300"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              :set="dialogModel.role_ids = dialogModel.role_ids || [ ]"
+              class="form_input"
+              @keyup.enter.native.stop
+              v-model="dialogModel.role_ids"
+              placeholder="请选择角色"
+              :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+              filterable
+              clearable
+              :loading="!inited"
+              :remote="roleInfo.count > SELECT_V2_SIZE"
+              :remote-method="roleFilterEfc"
+            ></el-select-v2>
+          </el-form-item>
+        </template>
         
-        <label class="form_label">
-          <span>备注</span>
-        </label>
-        <el-form-item prop="rem">
-          <el-input
-            class="form_input"
-            v-model="dialogModel.rem"
-            placeholder="请输入备注"
-          ></el-input>
-        </el-form-item>
+        <template v-if="builtInModel?.rem == null">
+          <label class="form_label">
+            <span>备注</span>
+          </label>
+          <el-form-item prop="rem">
+            <el-input
+              class="form_input"
+              v-model="dialogModel.rem"
+              placeholder="请输入备注"
+            ></el-input>
+          </el-form-item>
+        </template>
         
       </el-form>
     </div>
@@ -308,10 +320,14 @@ let onCloseResolve = function(value: {
   changedIds: string[];
 }) { };
 
+// 内置变量
+let builtInModel = $ref<UsrModel>();
+
 // 打开对话框
 async function showDialog(
   arg?: {
     title?: string;
+    builtInModel?: UsrModel;
     model?: {
       ids: string[];
     };
@@ -325,6 +341,7 @@ async function showDialog(
   const title = arg?.title;
   const model = arg?.model;
   const action = arg?.action;
+  builtInModel = arg?.builtInModel;
   dialogAction = action;
   if (title) {
     dialogTitle = title;
@@ -426,14 +443,14 @@ async function saveClk() {
   } catch (err) {
     return;
   }
-  let id = undefined;
+  let id: string = undefined;
   let msg = "";
   if (dialogAction === "add") {
-    id = await create(dialogModel);
+    id = await create({ ...dialogModel, ...builtInModel });
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
-    id = await updateById(dialogModel.id, dialogModel);
+    id = await updateById(dialogModel.id, { ...dialogModel, ...builtInModel });
     msg = `修改成功!`;
   }
   if (id) {
