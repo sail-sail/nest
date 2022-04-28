@@ -158,25 +158,6 @@ body .el-button {
     }
   }
 }
-.el-input .el-input__inner {
-  padding-left: 8px;
-  padding-right: 8px;
-}
-div.el-range-editor.el-input__inner {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
-.el-select-v2 {
-  .el-select-v2__wrapper {
-    padding-left: 0;
-    .el-select-v2__input-wrapper, .el-select-v2__placeholder {
-      margin-inline-start: 8px;
-    }
-  }
-  // .el-select-v2__placeholder {
-  //   color: lightgray;
-  // }
-}
 div.el-overlay.is-message-box::after {
   content: none;
 }
@@ -298,8 +279,6 @@ body .el-menu {
 }
 body .el-input-number.is-without-controls .el-input__inner {
   text-align: left;
-  padding-left: 8px;
-  padding-right: 8px;
 }
 .el-table {
   .table_current_row {

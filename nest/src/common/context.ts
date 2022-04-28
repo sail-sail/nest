@@ -54,6 +54,9 @@ export function getPool(): Pool {
     } else {
       opt.dateStrings = true;
     }
+    opt.supportBigNumbers = true;
+    opt.bigNumberStrings = true;
+    opt.stringifyObjects = true;
     pool = createPool(opt);
   }
   return pool;
@@ -455,7 +458,7 @@ export class Context {
    * @private
    * @param {string} query
    * @param {any[]} args
-   * @return {*}  {string}
+   * @return {string}
    * @memberof Context
    */
   private getDebugQuery(query: string, args: any[]): string {
