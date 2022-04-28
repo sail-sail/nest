@@ -49,7 +49,9 @@
       </div>
     </div>
   </transition>
-  <input type="file"
+  <input
+    type="file"
+    :accept="accept"
     @change="inputChg"
     style="display: none;"
     ref="fileRef"
@@ -84,11 +86,13 @@ const props = withDefaults(
     modelValue: string;
     maxFileSize?: number;
     maxSize?: number;
+    accept?: string;
   }>(),
   {
     modelValue: "",
     maxFileSize: 1024 * 1024 * 50,
     maxSize: 1,
+    accept: "image/png,image/jpeg",
   },
 );
 
@@ -106,7 +110,7 @@ let nowIndex = $ref(0);
 let urlList = $computed(() => {
   if (!modelValue) return [ ];
   const ids = modelValue.split(",").filter((x) => x);
-  return ids.map((id) => `${ baseURL }/api/oss/download?id=${ encodeURIComponent(id) }`);
+  return ids.map((id) => `${ baseURL }/api/oss/download/?id=${ encodeURIComponent(id) }`);
 });
 
 let fileRef = $ref(undefined);

@@ -227,7 +227,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
           if (column.isImg) {
           #>
           
-          <template v-if="<#=vIfStr#> && columnNum > 4">
+          <template v-if="<#=vIfStr?vIfStr+" && ":""#>columnNum > 4">
             <div></div>
             <div></div>
           </template><#

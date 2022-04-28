@@ -126,7 +126,9 @@
       </div>
     </div>
   </div>
-  <input type="file"
+  <input
+    type="file"
+    :accept="dialogModel.accept"
     @change="inputChg"
     style="display: none;"
     ref="fileRef"
@@ -187,6 +189,7 @@ let dialogModel = $ref({
   maxSize: 1,
   maxFileSize: 1024 * 1024 * 50,
   readonly: false,
+  accept: "",
 });
 
 let inited = $ref(false);
@@ -364,7 +367,7 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
 function downloadClk() {
   let ids = modelValue.split(",").filter((x) => x);
   const id = ids[nowIndex];
-  const url = `${ baseURL }/api/oss/download?inline=0&id=${ encodeURIComponent(id) }`;
+  const url = `${ baseURL }/api/oss/download/?inline=0&id=${ encodeURIComponent(id) }`;
   window.location.href = url;
 }
 
