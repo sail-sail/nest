@@ -94,7 +94,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
               v-model="dialogModel.<#=column_name#>"<#
               if (column.attMaxSize > 1) {
             #>
-              :maxSize="column.attMaxSize"<#
+              :maxSize="<#=column.attMaxSize#>"<#
               }
             #><#
             if (column.maxFileSize) {
