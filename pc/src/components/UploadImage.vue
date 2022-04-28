@@ -210,8 +210,7 @@ function nextClk() {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: rgba($color: #000, $alpha: .3);
-  cursor: pointer;
+  background-color: rgba($color: #000, $alpha: .1);
 }
 .upload_toolbar {
   flex: 1 0 0;
