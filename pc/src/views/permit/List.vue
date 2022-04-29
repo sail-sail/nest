@@ -1,5 +1,5 @@
 <template>
-<div class="wrap_div">
+<div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col w-full h-full">
   <div class="search_div">
     <el-form
       size="default"
@@ -263,7 +263,6 @@ import { SELECT_V2_SIZE } from "../common/App";
 import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
-  useSearch,
   useSelect,
   useTableColumns,
   ColumnType,
@@ -646,14 +645,6 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-.wrap_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-}
 .search_div {
   margin-top: 6px;
   margin-left: 6px;
