@@ -1,7 +1,7 @@
 <#
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenNest);
 #><template>
-<div class="flex-1 flex-shrink-0 overflow-hidden flex-col w-full h-full">
+<div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col w-full h-full">
   <div class="search_div">
     <el-form
       size="default"
