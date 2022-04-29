@@ -109,7 +109,7 @@ export class Context {
     if (str) {
       const data = JSON.parse(str);
       // t.log(`getCache: ${ cacheKey1 }: `, data);
-      t.log(`getCache: ${ cacheKey1 }`);
+      // t.log(`getCache: ${ cacheKey1 }`);
       return data;
     }
     return;
@@ -251,7 +251,8 @@ export class Context {
       //   let ph = arrTmp[2].substring(1, arrTmp[2].length - 1);
       //   stack2.push({ method, ph });
       // }
-      args.unshift(t.req_id);
+      const chalk = require("chalk");
+      args.unshift(chalk.green(t.req_id));
       // let maxTnum = 0;
       // for (let k = 0; k < stack2.length; k++) {
       //   const itemTmp = stack2[k];
