@@ -6,7 +6,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
-import FastifyMultipart from "fastify-multipart";
+import FastifyMultipart from "@fastify/multipart";
 // import { WsAdapter } from '@nestjs/platform-ws';
 // import { IoAdapter } from '@nestjs/platform-socket.io';
 // import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';

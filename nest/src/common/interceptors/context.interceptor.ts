@@ -51,9 +51,8 @@ export class ContextInterceptor implements NestInterceptor {
         context.req = request;
         request[contextSym] = context;
       }
-      const handle = next.handle();
       return asyncLocalStorage.run(context, async function() {
-        return await firstValueFrom(handle.pipe(
+        return await firstValueFrom(next.handle().pipe(
           map((data: any) => {
             return context.resSuc(data);
           }),
