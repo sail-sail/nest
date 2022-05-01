@@ -60,7 +60,7 @@ async function bootstrap() {
   
   global.__nestApplication = nestApplication;
   await nestApplication.init();
-  await nestApplication.listen(config.server.port);
+  await nestApplication.listen(config.server.port, "0.0.0.0");
   console.log(`${ await nestApplication.getUrl() }`);
   const date2 = new Date();
   console.log(date2.getTime() - date1.getTime()+"ms");
