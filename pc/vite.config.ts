@@ -63,7 +63,7 @@ export default defineConfig({
     outDir: "../build/pc",
   },
   define: {
-    
+    __VUE_OPTIONS_API__: false,
   },
   server: {
     port: 4000,
