@@ -64,4 +64,13 @@
     "debug.inlineValues": true
     ,"npm.registry": "https://registry.npmmirror.com"
     ,"npm.updateStrategy": "LATEST"
+    ,"deno.enable": true
+    ,"deno.lint": true
+    ,"deno.unstable": true
+    ,"deno.enablePaths": [
+      "./deno/src"
+    ]
+    ,"deno.importMap": "./deno/importmap.json"
+    ,"deno.config": "./deno/deno.jsonc"
+    ,"editor.defaultFormatter": "denoland.vscode-deno"
 }

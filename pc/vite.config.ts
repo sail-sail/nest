@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
+// import Inspector from "vite-plugin-vue-inspector";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +18,7 @@ export default defineConfig({
     vue({
       reactivityTransform: /^((?!node_modules).)*$/,
     }),
+    // Inspector(),
     vueJsx(),
     VitePWA({
       manifest: {
