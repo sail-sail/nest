@@ -11,22 +11,22 @@ export const contextSym = Symbol("context");
 
 const asyncLocalStorage = new AsyncLocalStorage();
 
-export const ContextDc = createParamDecorator(
-  (data: unknown, exeCtx) => {
-    const type: any = exeCtx.getType();
-    if (type === "http") {
-      const request = exeCtx.switchToHttp().getRequest();
-      return request[contextSym];
-    } else if (type === "graphql") {
-      if (!GqlExecutionContext) {
-        GqlExecutionContext = require("@nestjs/graphql").GqlExecutionContext;
-      }
-      const gqlCtx = GqlExecutionContext.create(exeCtx);
-      const context = gqlCtx.getContext();
-      return context;
-    }
-  },
-);
+// export const ContextDc = createParamDecorator(
+//   (data: unknown, exeCtx) => {
+//     const type: any = exeCtx.getType();
+//     if (type === "http") {
+//       const request = exeCtx.switchToHttp().getRequest();
+//       return request[contextSym];
+//     } else if (type === "graphql") {
+//       if (!GqlExecutionContext) {
+//         GqlExecutionContext = require("@nestjs/graphql").GqlExecutionContext;
+//       }
+//       const gqlCtx = GqlExecutionContext.create(exeCtx);
+//       const context = gqlCtx.getContext();
+//       return context;
+//     }
+//   },
+// );
 
 export function useContext() {
   const context = asyncLocalStorage.getStore();
