@@ -8,6 +8,8 @@ const GulpSSH = require('gulp-ssh');
 const replace = require('gulp-replace');
 const tar = require('gulp-tar');
 const ecosystem = require("./ecosystem.config");
+const fs = require("fs");
+const path = require("path");
 
 require("dotenv").config();
 
@@ -71,7 +73,23 @@ gulp.task("nest-ts", function() {
     .pipe(gulp.dest(`${dist}/src`));
 });
 gulp.task("nest-graphql", function() {
-  return gulp.src(["src/**/*.graphql", "src/**/*.xlsx", "src/**/*.js", "src/**/*.js.map"])
+  const graphqlArr = [];
+  function treeFiles(dir) {
+    const files = fs.readdirSync(dir);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (fs.statSync(`${dir}/${file}`).isDirectory()) {
+        treeFiles(`${dir}/${file}`);
+      } else {
+        if (path.extname(file) === ".graphql") {
+          graphqlArr.push(fs.readFileSync(`${dir}/${file}`, "utf8"));
+        }
+      }
+    }
+  }
+  treeFiles(`${ __dirname }/src`);
+  fs.writeFileSync(`${dist}/src/index.graphql`, graphqlArr.join("\n"));
+  return gulp.src(["src/**/*.xlsx", "src/**/*.js", "src/**/*.js.map"])
     .pipe(gulp.dest(`${dist}/src`));
 });
 gulp.task("nest-tar", () => {

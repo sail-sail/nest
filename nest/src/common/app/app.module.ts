@@ -21,7 +21,9 @@ import { TmpfileModule } from "../tmpfile/tmpfile.module";
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      typePaths: [ "./**/*.graphql" ],
+      typePaths: [
+        process.env.NODE_ENV !== 'production' ? "./**/*.graphql" : "./index.graphql",
+      ],
       resolvers: [
         { "JSON": GraphQLJSON },
       ],
