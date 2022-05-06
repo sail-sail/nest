@@ -99,8 +99,7 @@ watch(
   async () => {
     const menu = menuStore.getMenuByPath(route.path);
     if (!menu && route.path !== "/" && usrStore.access_token) {
-      alert("无权限打开此菜单!");
-      router.go(-1);
+      ElMessage.warning("无权限打开此菜单!");
       return;
     }
     // if (route.query) {

@@ -38,33 +38,58 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 
 export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   
   /** 当前多行选中的数据 */
-  let selectList: T[] = $ref([ ]);
-  let prevSelectList: T[] = $ref([ ]);
+  let selectedIds: string[] = $ref([ ]);
+  let prevSelectedIds: string[] = $ref([ ]);
+  
+  function useSelectedIds() {
+    if (!tableRef.value || !tableRef.value.data) return;
+    const newSelectList = [ ];
+    const select2falseList = [ ];
+    for (let i = 0; i < tableRef.value.data.length; i++) {
+      const item = tableRef.value.data[i];
+      if (selectedIds.includes(item.id)) {
+        newSelectList.push(item);
+      } else if (prevSelectedIds.includes(item.id)) {
+        select2falseList.push(item);
+      }
+    }
+    if (newSelectList.length > 0) {
+      for (let i = 0; i < newSelectList.length; i++) {
+        const item = newSelectList[i];
+        tableRef.value.toggleRowSelection(item, true);
+      }
+      for (let i = 0; i < select2falseList.length; i++) {
+        const item = select2falseList[i];
+        tableRef.value.toggleRowSelection(item, false);
+      }
+    } else {
+      tableRef.value.clearSelection();
+    }
+  }
   
   watch(
-    () => selectList,
-    (newSelectList: T[], oldSelectList: T[]) => {
-      prevSelectList = oldSelectList;
-      if (tableRef.value) {
-        if (newSelectList.length > 0) {
-          for (let i = 0; i < newSelectList.length; i++) {
-            const item = newSelectList[i];
-            tableRef.value.toggleRowSelection(item, true);
-          }
-        } else {
-          tableRef.value.clearSelection();
-        }
-        if (oldSelectList && oldSelectList.length > 0) {
-          for (let i = 0; i < oldSelectList.length; i++) {
-            const item = oldSelectList[i];
-            if (!newSelectList.includes(item)) {
-              tableRef.value.toggleRowSelection(item, false);
-            }
-          }
-        }
-      }
+    () => tableRef.value?.data,
+    () => {
+      if (!tableRef.value?.data) return;
+      useSelectedIds();
+    },
+    {
+      immediate: true,
     },
   );
+  
+  watch(
+    () => selectedIds,
+    (newSelectIds: string[], oldSelectIds: string[]) => {
+      if (!tableRef.value?.data) return;
+      prevSelectedIds = oldSelectIds;
+      useSelectedIds();
+    },
+  );
+  
+  function clearSelect() {
+    selectedIds = [ ];
+  }
   
   /**
    * 多行或单行勾选
@@ -72,7 +97,28 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
    * @param {T} row?
    */
   function selectChg(list: T[], row?: T) {
-    selectList = list;
+    if (!row) {
+      if (list.length === 0) {
+        selectedIds = [ ];
+      } else {
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i];
+          if (!selectedIds.includes((item as any).id)) {
+            selectedIds.push((item as any).id);
+          }
+        }
+      }
+    } else {
+      if (list.includes(row)) {
+        if (!selectedIds.includes((row as any).id)) {
+          selectedIds.push((row as any).id);
+        }
+      } else {
+        if (selectedIds.includes((row as any).id)) {
+          selectedIds = selectedIds.filter((id) => id !== (row as any).id);
+        }
+      }
+    }
   }
   
   /**
@@ -81,9 +127,9 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
    */
   async function rowClk(row: T) {
     if (!row) {
-      selectList = [ ];
+      selectedIds = [ ];
     } else {
-      selectList = [ row ];
+      selectedIds = [ (<any>row).id ];
     }
   }
   
@@ -92,12 +138,12 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
    * @param {PointerEvent} _event
    */
   function rowClkCtrl(_event: PointerEvent) {
-    const row = selectList[0];
-    if (row) {
-      if (!prevSelectList.includes(row)) {
-        selectList = [ ...prevSelectList, row ];
+    const id = selectedIds[0];
+    if (id) {
+      if (!prevSelectedIds.includes(id)) {
+        selectedIds = [ ...prevSelectedIds, id ];
       } else {
-        selectList = prevSelectList.filter((item) => item !== row);
+        selectedIds = prevSelectedIds.filter((item) => item !== id);
       }
     }
   }
@@ -107,11 +153,11 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
    * @param {PointerEvent} _event
    */
   function rowClkShift(_event: PointerEvent) {
-    const row = selectList[0];
+    const id = selectedIds[0];
     const tableData = tableRef.value.data;
     let fromIdx = tableData.length - 1;
-    for (let i = 0; i < prevSelectList.length; i++) {
-      const item = prevSelectList[i];
+    for (let i = 0; i < prevSelectedIds.length; i++) {
+      const item = prevSelectedIds[i];
       const idx = tableData.indexOf(item);
       if (idx !== -1 && idx < fromIdx) {
         fromIdx = idx;
@@ -120,8 +166,8 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     if (fromIdx === tableData.length - 1) {
       fromIdx = 0;
     }
-    const toIndex = tableData.indexOf(row);
-    selectList = tableData.slice(Math.min(fromIdx, toIndex), Math.max(fromIdx, toIndex) + 1);
+    const toIndex = tableData.findIndex((item) => item === id);
+    selectedIds = tableData.slice(Math.min(fromIdx, toIndex), Math.max(fromIdx, toIndex) + 1);
   }
   
   /**
@@ -129,12 +175,13 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
    * @param {{ row: T, rowIndex: number }} { row, rowIndex }
    */
   function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
-    return selectList.includes(row) ? "table_current_row" : "";
+    return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
   
   return $$({
-    selectList,
+    selectedIds,
     selectChg,
+    clearSelect,
     rowClk,
     rowClkCtrl,
     rowClkShift,

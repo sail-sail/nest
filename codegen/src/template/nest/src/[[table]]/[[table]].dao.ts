@@ -164,6 +164,10 @@ export class <#=tableUp#>Dao {
     if (!isEmpty(search?.<#=column_name#>)) {
       whereQuery += ` and t.<#=column_name#> = ?`;
       args.push(search.<#=column_name#>);
+    }
+    if (search?.ids && search?.ids.length > 0) {
+      whereQuery += ` and t.id in (?)`;
+      args.push(search.ids);
     }<#
     } else if (data_type === "int" && column_name.startsWith("is_")) {
     #>

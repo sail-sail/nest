@@ -92,7 +92,8 @@ export interface <#=tableUp#>Model {
 }
 
 export interface <#=tableUp#>Search {
-  is_deleted?: 0|1;<#
+  is_deleted?: 0|1; // 是否已删除
+  ids?: string[]; //ID列表<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

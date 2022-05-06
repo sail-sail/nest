@@ -150,7 +150,10 @@ input <#=tableUp#>Input {<#
   #>
 }
 input <#=tableUp#>Search {
-  is_deleted: Int<#
+  "是否已删除"
+  is_deleted: Int
+  "ID列表"
+  ids: [ID]<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
