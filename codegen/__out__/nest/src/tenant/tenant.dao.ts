@@ -27,6 +27,10 @@ export class TenantDao {
       whereQuery += ` and t.id = ?`;
       args.push(search.id);
     }
+    if (search?.ids && search?.ids.length > 0) {
+      whereQuery += ` and t.id in (?)`;
+      args.push(search.ids);
+    }
     if (search?.lbl !== undefined) {
       whereQuery += ` and t.lbl = ?`;
       args.push(search.lbl);

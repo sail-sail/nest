@@ -14,6 +14,7 @@ export interface UsrModel {
 
 export interface UsrSearch {
   is_deleted?: 0|1|"0"|"1";
+  ids?: string[]; // ids
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称

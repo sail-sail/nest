@@ -22,7 +22,8 @@ export interface Background_taskModel {
 }
 
 export interface Background_taskSearch {
-  is_deleted?: 0|1;
+  is_deleted?: 0|1; // 是否已删除
+  ids?: string[]; //ID列表
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称

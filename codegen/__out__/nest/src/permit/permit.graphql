@@ -23,7 +23,10 @@ input PermitInput {
   rem: String
 }
 input PermitSearch {
+  "是否已删除"
   is_deleted: Int
+  "ID列表"
+  ids: [ID]
   "ID"
   id: ID
   "菜单"

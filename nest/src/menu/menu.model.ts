@@ -23,7 +23,8 @@ export interface MenuModel {
 }
 
 export interface MenuSearch {
-  is_deleted?: 0|1;
+  is_deleted?: 0|1; // 是否已删除
+  ids?: string[]; //ID列表
   id?: string; //ID
   type?: string[]; //类型
   menu_id?: string[]; //父菜单,

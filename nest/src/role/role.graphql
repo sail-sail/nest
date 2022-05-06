@@ -31,7 +31,10 @@ input RoleInput {
   _menu_ids: [String]
 }
 input RoleSearch {
+  "是否已删除"
   is_deleted: Int
+  "ID列表"
+  ids: [ID]
   "ID"
   id: ID
   "名称"

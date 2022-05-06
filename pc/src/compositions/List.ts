@@ -87,35 +87,31 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     },
   );
   
-  function clearSelect() {
-    selectedIds = [ ];
-  }
-  
   /**
    * 多行或单行勾选
-   * @param {T[]} list
-   * @param {T} row?
+   * @param {(T & { id: string })[]} list
+   * @param {(T & { id: string })} row?
    */
-  function selectChg(list: T[], row?: T) {
+  function selectChg(list: (T & { id: string })[], row?: (T & { id: string })) {
     if (!row) {
       if (list.length === 0) {
         selectedIds = [ ];
       } else {
         for (let i = 0; i < list.length; i++) {
           const item = list[i];
-          if (!selectedIds.includes((item as any).id)) {
-            selectedIds.push((item as any).id);
+          if (!selectedIds.includes(item.id)) {
+            selectedIds.push(item.id);
           }
         }
       }
     } else {
       if (list.includes(row)) {
-        if (!selectedIds.includes((row as any).id)) {
-          selectedIds.push((row as any).id);
+        if (!selectedIds.includes(row.id)) {
+          selectedIds = [ ...selectedIds, row.id ];
         }
       } else {
-        if (selectedIds.includes((row as any).id)) {
-          selectedIds = selectedIds.filter((id) => id !== (row as any).id);
+        if (selectedIds.includes(row.id)) {
+          selectedIds = selectedIds.filter((id) => id !== row.id);
         }
       }
     }
@@ -123,13 +119,23 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   
   /**
    * 点击一行
-   * @param {T} row
+   * @param {(T & { id: string })} row
+   * @param {TableColumnCtx<T>} column
+   * @param {PointerEvent} event
    */
-  async function rowClk(row: T) {
-    if (!row) {
-      selectedIds = [ ];
+  async function rowClk(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
+    if (column.type === "selection") {
+      if (selectedIds.includes(row.id)) {
+        selectedIds = selectedIds.filter((id) => id !== row.id);
+      } else {
+        selectedIds = [ ...selectedIds, row.id ];
+      }
     } else {
-      selectedIds = [ (<any>row).id ];
+      if (!row) {
+        selectedIds = [ ];
+      } else {
+        selectedIds = [ row.id ];
+      }
     }
   }
   
@@ -181,7 +187,6 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   return $$({
     selectedIds,
     selectChg,
-    clearSelect,
     rowClk,
     rowClkCtrl,
     rowClkShift,

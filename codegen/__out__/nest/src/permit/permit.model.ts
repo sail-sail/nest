@@ -16,7 +16,8 @@ export interface PermitModel {
 }
 
 export interface PermitSearch {
-  is_deleted?: 0|1;
+  is_deleted?: 0|1; // 是否已删除
+  ids?: string[]; //ID列表
   id?: string; //ID
   menu_id?: string[]; //菜单,
   _menu_id?: string[]; //菜单

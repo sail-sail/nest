@@ -193,36 +193,34 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
       }
       #>
       
-      <template v-if="builtInSearch?.idsChecked == null">
-        <div style="min-width: 20px;"></div>
-        <el-form-item prop="idsChecked">
-          <el-checkbox
-            v-model="idsChecked"
-            :false-label="0"
-            :true-label="1"
-            @change="searchClk"
-            :disabled="selectedIds.length === 0"
+      <div style="min-width: 20px;"></div>
+      <el-form-item prop="idsChecked">
+        <el-checkbox
+          v-model="idsChecked"
+          :false-label="0"
+          :true-label="1"
+          @change="searchClk"
+          :disabled="selectedIds.length === 0"
+        >
+          <span>已选择</span>
+          <span>(</span>
+          <span
+            class="mx-1 text-[green]"
+            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': null }"
           >
-            <span>已选择</span>
-            <span>(</span>
-            <span
-              class="mx-1 text-[green]"
-              :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': null }"
-            >
-              {{ selectedIds.length }}
-            </span>
-            <span>)</span>
-          </el-checkbox>
-          <el-icon
-            title="清空已选择"
-            v-show="selectedIds.length > 0"
-            @click="clearSelect"
-            class="cursor-pointer mx-3 hover:text-[red]"
-          >
-            <CircleClose />
-          </el-icon>
-        </el-form-item>
-      </template>
+            {{ selectedIds.length }}
+          </span>
+          <span>)</span>
+        </el-checkbox>
+        <el-icon
+          title="清空已选择"
+          v-show="selectedIds.length > 0"
+          @click="clearSelect"
+          class="cursor-pointer mx-3 hover:text-[red]"
+        >
+          <CircleClose />
+        </el-icon>
+      </el-form-item>
       
       <div style="min-width: 20px;"></div>
       <el-form-item
@@ -757,6 +755,7 @@ async function searchClk() {
 // 重置搜索
 async function searchReset() {
   search = initSearch();
+  idsChecked = 0;
   await searchClk();
 }
 
@@ -768,8 +767,7 @@ async function searchIptClr() {
 const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表
-  idsChecked?: string; //是否只显示已选中的行<#
+  selectedIds?: string[]; //已选择行的id列表<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -855,8 +853,7 @@ const props = defineProps<{
 
 const builtInSearchType = {
   is_deleted: "0|1",
-  ids: "string[]",
-  idsChecked: "0|1",<#
+  ids: "string[]",<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -975,12 +972,18 @@ let {
 let {
   selectedIds,
   selectChg,
-  clearSelect,
   rowClassName,
   rowClk,
   rowClkCtrl,
   rowClkShift,
 } = $(useSelect<<#=tableUp#>Model>(<any>$$(tableRef)));
+
+// 取消已选择筛选
+async function clearSelect() {
+  selectedIds = [ ];
+  idsChecked = 0;
+  await dataGrid(true);
+}
 
 // 若传进来的参数或者url有selectedIds，则使用传进来的选中行
 watch(
@@ -1000,20 +1003,6 @@ watch(
 );
 
 let idsChecked = $ref<0|1>(0);
-
-watch(
-  () => props.idsChecked,
-  (val) => {
-    if (val != null && val !== "0") {
-      idsChecked = 1;
-    } else {
-      idsChecked = 0;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
 
 // 表格数据
 let tableData: <#=tableUp#>Model[] = $ref([ ]);
@@ -1277,10 +1266,6 @@ async function dataGrid(isCount = false) {
   if (count != null) {
     page.total = count;
   }
-  selectList = [ ];
-  if (tableRef) {
-    tableRef.clearSelection();
-  }
 }<#
 if (defaultSort && defaultSort.prop) {
 #>
@@ -1370,7 +1355,6 @@ async function openAdd() {
       }
       #>
     ]);
-    selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }<#
   if (opts.noImport !== true) {

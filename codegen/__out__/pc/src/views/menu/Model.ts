@@ -16,6 +16,7 @@ export interface MenuModel {
 
 export interface MenuSearch {
   is_deleted?: 0|1|"0"|"1";
+  ids?: string[]; // ids
   id?: string; //ID
   type?: string[]; //类型
   menu_id?: string[]; //父菜单

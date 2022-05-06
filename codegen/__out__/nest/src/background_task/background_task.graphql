@@ -47,7 +47,10 @@ input Background_taskInput {
   rem: String
 }
 input Background_taskSearch {
+  "是否已删除"
   is_deleted: Int
+  "ID列表"
+  ids: [ID]
   "ID"
   id: ID
   "名称"

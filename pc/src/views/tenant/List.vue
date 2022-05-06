@@ -67,6 +67,35 @@
       </template>
       
       <div style="min-width: 20px;"></div>
+      <el-form-item prop="idsChecked">
+        <el-checkbox
+          v-model="idsChecked"
+          :false-label="0"
+          :true-label="1"
+          @change="searchClk"
+          :disabled="selectedIds.length === 0"
+        >
+          <span>已选择</span>
+          <span>(</span>
+          <span
+            class="mx-1 text-[green]"
+            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': null }"
+          >
+            {{ selectedIds.length }}
+          </span>
+          <span>)</span>
+        </el-checkbox>
+        <el-icon
+          title="清空已选择"
+          v-show="selectedIds.length > 0"
+          @click="clearSelect"
+          class="cursor-pointer mx-3 hover:text-[red]"
+        >
+          <CircleClose />
+        </el-icon>
+      </el-form-item>
+      
+      <div style="min-width: 20px;"></div>
       <el-form-item
         class="form_btn_item"
       >
@@ -113,6 +142,12 @@
         删除
       </el-button>
       <el-button
+        :icon="Download"
+        @click="exportClk"
+      >
+        导出
+      </el-button>
+      <el-button
         :icon="Upload"
         @click="openUploadClk"
       >
@@ -127,13 +162,13 @@
       >
         还原
       </el-button>
+      <el-button
+        :icon="Download"
+        @click="exportClk"
+      >
+        导出
+      </el-button>
     </template>
-    <el-button
-      :icon="Download"
-      @click="exportClk"
-    >
-      导出
-    </el-button>
     <el-button
       :icon="Refresh"
       @click="searchClk"
@@ -418,6 +453,7 @@ async function searchClk() {
 // 重置搜索
 async function searchReset() {
   search = initSearch();
+  idsChecked = 0;
   await searchClk();
 }
 
@@ -428,6 +464,8 @@ async function searchIptClr() {
 
 const props = defineProps<{
   is_deleted?: string;
+  ids?: string[]; //ids
+  selectedIds?: string[]; //已选择行的id列表
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称
@@ -444,6 +482,8 @@ const props = defineProps<{
 }>();
 
 const builtInSearchType = {
+  is_deleted: "0|1",
+  ids: "string[]",
   max_usr_num: "number[]",
   _max_usr_num: "string[]",
   is_enabled: "number[]",
@@ -454,11 +494,15 @@ const builtInSearchType = {
   _order_by: "string[]",
 };
 
+const propsNotInSearch: string[] = [
+  "selectedIds",
+];
+
 // 内置搜索条件
 const builtInSearch = $computed(() => {
-  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
-    if (item[0] === "is_deleted") {
+    if (builtInSearchType[item[0]] === "0|1") {
       item[1] = (item[1] === "0" ? 0 : 1) as any;
       continue;
     }
@@ -481,9 +525,9 @@ const builtInSearch = $computed(() => {
 
 // 内置变量
 const builtInModel = $computed(() => {
-  const entries = Object.entries(props).filter(([ _, val ]) => val);
+  const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
-    if (item[0] === "is_deleted") {
+    if (builtInSearchType[item[0]] === "0|1") {
       item[1] = (item[1] === "0" ? 0 : 1) as any;
       continue;
     }
@@ -519,13 +563,39 @@ let {
 
 // 表格选择功能
 let {
-  selectList,
+  selectedIds,
   selectChg,
   rowClassName,
   rowClk,
   rowClkCtrl,
   rowClkShift,
 } = $(useSelect<TenantModel>(<any>$$(tableRef)));
+
+// 取消已选择筛选
+async function clearSelect() {
+  selectedIds = [ ];
+  idsChecked = 0;
+  await dataGrid(true);
+}
+
+// 若传进来的参数或者url有selectedIds，则使用传进来的选中行
+watch(
+  () => props.selectedIds,
+  (val) => {
+    if (Array.isArray(val)) {
+      selectedIds = val;
+    } else if (val) {
+      selectedIds = [ val ];
+    } else {
+      selectedIds = [ ];
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+let idsChecked = $ref<0|1>(0);
 
 // 表格数据
 let tableData: TenantModel[] = $ref([ ]);
@@ -649,7 +719,14 @@ async function dataGrid(isCount = false) {
   let search2 = {
     ...search,
     ...builtInSearch,
+    idsChecked: undefined,
   };
+  if (idsChecked) {
+    search2.ids = selectedIds;
+  }
+  if (search2.ids && search2.ids.length === 0) {
+    search2.ids = undefined;
+  }
   if (isCount) {
     const rvData = await findAllAndCount(search2, { pgSize, pgOffset }, [ sort ]);
     data = rvData.data;
@@ -661,10 +738,6 @@ async function dataGrid(isCount = false) {
   tableData = data || [ ];
   if (count != null) {
     page.total = count;
-  }
-  selectList = [ ];
-  if (tableRef) {
-    tableRef.clearSelection();
   }
 }
 
@@ -693,10 +766,10 @@ async function openAdd() {
     builtInModel,
   });
   if (changedIds && changedIds.length > 0) {
+    selectedIds = [ ...selectedIds, ...changedIds ];
     await Promise.all([
       dataGrid(true),
     ]);
-    selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }
 
@@ -719,11 +792,10 @@ async function openUploadClk() {
 
 // 打开修改页面
 async function openEdit() {
-  if (selectList.length === 0) {
+  if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要编辑的数据!`);
     return;
   }
-  const ids = tableData.filter((item) => selectList.includes(item)).map((item) => item.id);
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -731,25 +803,24 @@ async function openEdit() {
     action: "edit",
     builtInModel,
     model: {
-      ids,
+      ids: selectedIds,
     },
   });
   if (changedIds && changedIds.length > 0) {
     await Promise.all([
       dataGrid(),
     ]);
-    selectList = tableData.filter((item) => changedIds.includes(item.id));
   }
 }
 
 // 点击删除
 async function deleteByIdsEfc() {
-  if (selectList.length === 0) {
+  if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要删除的数据!`);
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定删除已选择的 ${ selectList.length } 条数据?`, {
+    await ElMessageBox.confirm(`确定删除已选择的 ${ selectedIds.length } 条数据?`, {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
@@ -757,9 +828,9 @@ async function deleteByIdsEfc() {
   } catch (err) {
     return;
   }
-  const ids = selectList.map((item) => item.id);
-  const num = await deleteByIds(ids);
+  const num = await deleteByIds(selectedIds);
   if (num) {
+    selectedIds = [ ];
     await Promise.all([
       dataGrid(true),
     ]);
@@ -769,12 +840,12 @@ async function deleteByIdsEfc() {
 
 // 点击还原
 async function revertByIdsEfc() {
-  if (selectList.length === 0) {
+  if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要还原的数据!`);
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定还原已选择的 ${ selectList.length } 条数据?`, {
+    await ElMessageBox.confirm(`确定还原已选择的 ${ selectedIds.length } 条数据?`, {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
@@ -782,8 +853,7 @@ async function revertByIdsEfc() {
   } catch (err) {
     return;
   }
-  const ids = selectList.map((item) => item.id);
-  const num = await revertByIds(ids);
+  const num = await revertByIds(selectedIds);
   if (num) {
     await Promise.all([
       dataGrid(true),

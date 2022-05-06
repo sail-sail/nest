@@ -12,6 +12,7 @@ export interface RoleModel {
 
 export interface RoleSearch {
   is_deleted?: 0|1|"0"|"1";
+  ids?: string[]; // ids
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称
