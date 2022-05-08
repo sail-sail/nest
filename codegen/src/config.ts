@@ -216,7 +216,7 @@ export interface TableCloumn {
      * 外键关联表名
      * @type {string}
      */
-    table: string,
+    table?: string,
     
     /**
      * 外键关联表字段
@@ -252,7 +252,7 @@ export interface TableCloumn {
      * 页面上的显示方式
      * @type {string} tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
      */
-    showType: string;
+    showType?: string;
     
   },
   

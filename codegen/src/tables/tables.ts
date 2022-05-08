@@ -13,7 +13,10 @@ export default defineConfig({
         ORDINAL_POSITION: 5,
         require: false,
         search: true,
-        minWith: 140,
+        minWith: 50,
+        foreignKey: {
+          showType: "dialog",
+        },
       },
     ],
   },
@@ -29,7 +32,10 @@ export default defineConfig({
         ORDINAL_POSITION: 6,
         require: false,
         search: true,
-        minWith: 140,
+        minWith: 50,
+        foreignKey: {
+          showType: "dialog",
+        },
       },
     ],
   },

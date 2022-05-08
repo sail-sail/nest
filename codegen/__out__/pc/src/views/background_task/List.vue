@@ -411,6 +411,9 @@ import {
   ColumnType,
 } from "@/compositions/List";
 import Detail from "./Detail.vue";
+
+import ListSelectDialog from "@/components/ListSelectDialog.vue";
+
 import {
   findAll,
   findAllAndCount,
@@ -426,6 +429,8 @@ import {
 const usrStore = useUsrStore();
 
 let inited = $ref(false);
+
+const emit = defineEmits([ "selectedIdsChg" ]);
 
 // 表格
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -560,6 +565,13 @@ let {
   rowClkCtrl,
   rowClkShift,
 } = $(useSelect<Background_taskModel>(<any>$$(tableRef)));
+
+watch(
+  () => selectedIds,
+  () => {
+    emit("selectedIdsChg", selectedIds);
+  },
+);
 
 // 取消已选择筛选
 async function clearSelect() {

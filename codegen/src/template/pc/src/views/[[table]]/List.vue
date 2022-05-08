@@ -502,7 +502,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
             >
             </el-table-column>
           </template><#
-            } else {
+            } else if (foreignKey) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -514,7 +514,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
               :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
               show-overflow-tooltip
             ><#
-              if (foreignKey.multiple) {
+              if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType)) {
             #>
               <template #default="{ row, column }">
                 <LinkList
@@ -526,11 +526,23 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
                   #>
                 ></LinkList>
               </template><#
+              } else if (foreignKey.multiple && foreignKey.showType === "dialog") {
+            #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="<#=column_name#>Clk(row)"
+                  class="min-w-[30px]"
+                >
+                  {{ row[column.property].length }}
+                </el-link>
+              </template><#
               }
             #>
             </el-table-column>
           </template><#
             }
+          #><#
           }
           #>
         </template>
@@ -549,7 +561,39 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
         :total="page.total"
       ></el-pagination>
     </div>
-  </div>
+  </div><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenNest) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const require = column.require;
+    const search = column.search;
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  #><#
+    if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
+  #>
+  <ListSelectDialog ref="<#=column_name#>ListSelectDialogRef" v-slot="{ selectedIds }">
+    <<#=foreignTableUp#>List :selectedIds="selectedIds" @selectedIdsChg="<#=column_name#>ListSelectDialogRef.selectedIdsChg($event)"></<#=foreignTableUp#>List>
+  </ListSelectDialog><#
+    }
+  #><#
+  }
+  #>
   <Detail
     ref="detailRef"
   ></Detail><#
@@ -629,6 +673,39 @@ import {
   ColumnType,
 } from "@/compositions/List";
 import Detail from "./Detail.vue";
+
+import ListSelectDialog from "@/components/ListSelectDialog.vue";<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const require = column.require;
+  const search = column.search;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+#><#
+  if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
+#>
+import <#=foreignTableUp#>List from "../<#=foreignTable#>/List.vue";<#
+  }
+#><#
+}
+#>
+
 import {
   findAll,
   findAllAndCount,<#
@@ -724,6 +801,8 @@ import {<#
 const usrStore = useUsrStore();
 
 let inited = $ref(false);
+
+const emit = defineEmits([ "selectedIdsChg" ]);
 
 // 表格
 let tableRef = $ref<InstanceType<typeof ElTable>>();<#
@@ -977,6 +1056,13 @@ let {
   rowClkCtrl,
   rowClkShift,
 } = $(useSelect<<#=tableUp#>Model>(<any>$$(tableRef)));
+
+watch(
+  () => selectedIds,
+  () => {
+    emit("selectedIdsChg", selectedIds);
+  },
+);
 
 // 取消已选择筛选
 async function clearSelect() {
@@ -1510,7 +1596,68 @@ watch(
   {
     immediate: true,
   },
-);
+);<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenNest) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const require = column.require;
+  const search = column.search;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+#><#
+  if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
+#>
+let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+
+async function <#=column_name#>Clk(row: TenantModel) {
+  if (!<#=column_name#>ListSelectDialogRef) return;
+  row.<#=column_name#> = row.<#=column_name#> || [ ];
+  let {
+    selectedIds: selectedIds2,
+    action
+  } = await <#=column_name#>ListSelectDialogRef.showDialog({
+    selectedIds: row.<#=column_name#>,
+  });
+  if (action === "select") {
+    selectedIds2 = selectedIds2 || [ ];
+    let isEqual = true;
+    if (selectedIds2.length === row.<#=column_name#>.length) {
+      for (let i = 0; i < selectedIds2.length; i++) {
+        const item = selectedIds2[i];
+        if (!row.<#=column_name#>.includes(item)) {
+          isEqual = false;
+          break;
+        }
+      }
+    } else {
+      isEqual = false;
+    }
+    if (!isEqual) {
+      row.<#=column_name#> = selectedIds2;
+      await updateById(row.id, { <#=column_name#>: selectedIds2 });
+      await dataGrid();
+    }
+  }
+}<#
+  }
+#><#
+}
+#>
 </script>
 
 <style lang="scss" scoped>

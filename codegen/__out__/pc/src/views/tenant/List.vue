@@ -289,14 +289,18 @@
               :prop="col.prop"
               :label="col.label"
               :width="col.width"
-              min-width="140"
+              min-width="50"
               align="center"
               show-overflow-tooltip
             >
               <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
+                <el-link
+                  type="primary"
+                  @click="menu_idsClk(row)"
+                  class="min-w-[30px]"
+                >
+                  {{ row[column.property].length }}
+                </el-link>
               </template>
             </el-table-column>
           </template>
@@ -345,6 +349,9 @@
       ></el-pagination>
     </div>
   </div>
+  <ListSelectDialog ref="menu_idsListSelectDialogRef" v-slot="{ selectedIds }">
+    <MenuList :selectedIds="selectedIds" @selectedIdsChg="menu_idsListSelectDialogRef.selectedIdsChg($event)"></MenuList>
+  </ListSelectDialog>
   <Detail
     ref="detailRef"
   ></Detail>
@@ -403,6 +410,10 @@ import {
   ColumnType,
 } from "@/compositions/List";
 import Detail from "./Detail.vue";
+
+import ListSelectDialog from "@/components/ListSelectDialog.vue";
+import MenuList from "../menu/List.vue";
+
 import {
   findAll,
   findAllAndCount,
@@ -426,6 +437,8 @@ import {
 const usrStore = useUsrStore();
 
 let inited = $ref(false);
+
+const emit = defineEmits([ "selectedIdsChg" ]);
 
 // 表格
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -570,6 +583,13 @@ let {
   rowClkCtrl,
   rowClkShift,
 } = $(useSelect<TenantModel>(<any>$$(tableRef)));
+
+watch(
+  () => selectedIds,
+  () => {
+    emit("selectedIdsChg", selectedIds);
+  },
+);
 
 // 取消已选择筛选
 async function clearSelect() {
@@ -888,6 +908,38 @@ watch(
     immediate: true,
   },
 );
+let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+
+async function menu_idsClk(row: TenantModel) {
+  if (!menu_idsListSelectDialogRef) return;
+  row.menu_ids = row.menu_ids || [ ];
+  let {
+    selectedIds: selectedIds2,
+    action
+  } = await menu_idsListSelectDialogRef.showDialog({
+    selectedIds: row.menu_ids,
+  });
+  if (action === "select") {
+    selectedIds2 = selectedIds2 || [ ];
+    let isEqual = true;
+    if (selectedIds2.length === row.menu_ids.length) {
+      for (let i = 0; i < selectedIds2.length; i++) {
+        const item = selectedIds2[i];
+        if (!row.menu_ids.includes(item)) {
+          isEqual = false;
+          break;
+        }
+      }
+    } else {
+      isEqual = false;
+    }
+    if (!isEqual) {
+      row.menu_ids = selectedIds2;
+      await updateById(row.id, { menu_ids: selectedIds2 });
+      await dataGrid();
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
