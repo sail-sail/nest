@@ -9,6 +9,6 @@ unpackage
 /build
 /nest/_uploadfile
 /error.js
-.env
+/nest/.env
 pnpm-lock.yaml
 codegening.txt

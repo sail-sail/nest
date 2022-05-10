@@ -24,7 +24,6 @@
     "codegen/__out__/**": false,
     "**/node_modules/**": true,
     "uni/dist/**": true,
-    "**/.env": true,
     "**/.rsw": true,
     "**/@rsw": true,
     "nest/src/Mother.js": true,
@@ -54,14 +53,21 @@
     "codegen/__out__/**": true,
     "**/node_modules/**": true,
     "uni/dist/**": true,
-    "**/.env": true,
     "**/.rsw": true,
     "**/@rsw": true,
     "nest/src/Mother.js": true,
     "nest/tsconfig.build.json": true,
     "nest/tsconfig.swc.json": true
-  },
-  "debug.inlineValues": true
+  }
   ,"npm.registry": "https://registry.npmmirror.com"
   ,"npm.updateStrategy": "LATEST"
+  
+  ,"deno.enable": true
+  ,"deno.lint": true
+  ,"deno.unstable": true
+  ,"deno.enablePaths": [
+    "./deno"
+  ]
+  ,"deno.importMap": "./deno/importmap.json"
+  ,"deno.config": "./deno/tsconfig.json"
 }
