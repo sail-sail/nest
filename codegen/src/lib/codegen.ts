@@ -122,6 +122,9 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       if (dir === "/nest/src/modules.gen.ts") {
         return;
       }
+      if (dir === "/deno/gen/graphql.ts") {
+        return;
+      }
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
@@ -258,6 +261,7 @@ export async function genRouter(context: Context) {
   const files = [
     "pc/src/router/gen.ts",
     "nest/src/modules.gen.ts",
+    "deno/gen/graphql.ts",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -265,7 +269,11 @@ export async function genRouter(context: Context) {
     try {
       let str2 = eval(htmlStr);
       str2 = str2.replace(/\r\n/gm, "\n").replace(/\n/gm, "\r\n");
-      const str0 = await readFile(`${ out }/${ file }`, "utf8");
+      let str0: string;
+      try {
+        str0 = await readFile(`${ out }/${ file }`, "utf8");
+      } catch (err) {
+      }
       if (str0 !== str2) {
         await writeFile(`${ out }/${ file }`, str2);
       }
@@ -339,4 +347,9 @@ async function treeDir(dir: string = "") {
       }
     }
   }
+}
+
+export async function denoGenTypes() {
+  shelljs.cd(`${ projectPh }/deno`);
+  shelljs.exec("npm run gqlgen");
 }

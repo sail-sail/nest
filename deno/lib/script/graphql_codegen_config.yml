@@ -1,0 +1,13 @@
+schema:
+  - './gen/**/*.graphql.ts'
+  - './src/**/*.graphql.ts'
+  - './lib/oak/gql.ts'
+generates:
+  ./gen/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+  ../pc/src/typings/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations

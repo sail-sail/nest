@@ -1,0 +1,26 @@
+{
+  "name": "deno",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "node lib/script/mother.js",
+    "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.yml",
+    "build": "npm run gqlgen && deno run -A ./lib/script/precompile.ts && deno compile -A --import-map ./import_map.json --output ./build/deno ./mod.ts",
+    "build:linux": "npm run gqlgen && deno run -A ./lib/script/precompile.ts && deno compile -A --import-map ./import_map.json --target \"x86_64-unknown-linux-gnu\" --output ./deno ./mod.ts",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "dependencies": {
+    "graphql": "16.5.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/typescript": "2.4.11",
+    "@graphql-codegen/typescript-operations": "2.4.0",
+    "@types/node": "17.0.32",
+    "chokidar": "3.5.3",
+    "dotenv": "16.0.0",
+    "graphql-ts-client-codegen": "3.0.15",
+    "typescript": "4.6.4"
+  }
+}

@@ -69,7 +69,10 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     }
   }
   const { data: { data, errors } } = rvData;
-  const exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
+  let exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
+  if (!exception) {
+    exception = errors?.[0];
+  }
   if (exception) {
     const code = exception.code;
     const usrStore = useUsrStore();

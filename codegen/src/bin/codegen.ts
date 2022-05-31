@@ -4,6 +4,7 @@ import {
   codegen,
   genRouter,
   // genMenu,
+  denoGenTypes,
 } from "../lib/codegen";
 import tables from "../tables/tables";
 import { gitDiffOut } from "../lib/codegen";
@@ -22,6 +23,7 @@ async function exec(table_names: string[]) {
   }
   await genRouter(context);
   // await genMenu(context);
+  await denoGenTypes(context);
 }
 
 const envArgs = process.argv;
