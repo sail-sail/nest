@@ -119,6 +119,9 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
         }
         return;
       }
+      if (dir.startsWith("/nest/")) {
+        return;
+      }
       if (dir === "/nest/src/modules.gen.ts") {
         return;
       }
