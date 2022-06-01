@@ -8,7 +8,7 @@
   top="0"
   :before-close="beforeClose"
 >
-  <template #title>
+  <template #header>
     <div class="dialog_title" v-draggable>
       <div class="title_lbl">
         <span class="dialogTitle_span">
