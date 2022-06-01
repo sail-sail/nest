@@ -3,6 +3,7 @@ import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
@@ -13,71 +14,56 @@ import { UsrModel, UsrSearch } from "./usr.model.ts";
 
 async function getWhereQuery(
   context: Context,
-  args: any[],
+  args: QueryArgs,
   search?: UsrSearch,
 ) {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ?`;
-  args.push(search?.is_deleted == null ? 0 : search.is_deleted);
+  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ?`;
-      args.push(tenant_id);
+      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
   }
   if (isNotEmpty(search?.id)) {
-    whereQuery += ` and t.id = ?`;
-    args.push(search?.id);
+    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
-    whereQuery += ` and t.id in (?)`;
-    args.push(search.ids);
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.lbl !== undefined) {
-    whereQuery += ` and t.lbl = ?`;
-    args.push(search.lbl);
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ?`;
-    args.push(sqlLike(search?.lblLike) + "%");
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.username !== undefined) {
-    whereQuery += ` and t.username = ?`;
-    args.push(search.username);
+    whereQuery += ` and t.username = ${ args.push(search.username) }`;
   }
   if (isNotEmpty(search?.usernameLike)) {
-    whereQuery += ` and t.username like ?`;
-    args.push(sqlLike(search?.usernameLike) + "%");
+    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.usernameLike) + "%") }`;
   }
   if (search?.password !== undefined) {
-    whereQuery += ` and t.password = ?`;
-    args.push(search.password);
+    whereQuery += ` and t.password = ${ args.push(search.password) }`;
   }
   if (isNotEmpty(search?.passwordLike)) {
-    whereQuery += ` and t.password like ?`;
-    args.push(sqlLike(search?.passwordLike) + "%");
+    whereQuery += ` and t.password like ${ args.push(sqlLike(search?.passwordLike) + "%") }`;
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in (?)`;
-    args.push(search.is_enabled);
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.role_ids && search?.role_ids.length > 0) {
-    whereQuery += ` and role.id in (?)`;
-    args.push(search.role_ids);
+    whereQuery += ` and role.id in (${ args.push(search.role_ids) })`;
   }
   if (search?._role_ids && search._role_ids?.length > 0) {
-    whereQuery += ` and _role_ids in (?)`;
-    args.push(search._role_ids);
+    whereQuery += ` and _role_ids in (${ args.push(search._role_ids) })`;
   }
   if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ?`;
-    args.push(search.rem);
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ?`;
-    args.push(sqlLike(search?.remLike) + "%");
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
   return whereQuery;
 }
@@ -126,7 +112,7 @@ export async function findCount(
   const table = "usr";
   const method = "findCount";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select
       count(1) total
@@ -169,7 +155,7 @@ export async function findAll(
   const table = "usr";
   const method = "findAll";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select t.*
         ,max(role_ids) role_ids
@@ -387,10 +373,10 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  let sql = `
-    select 1 e from usr where id = ? limit 1
+  const args = new QueryArgs();
+  const sql = `
+    select 1 e from usr where id = ${ args.push(id) } limit 1
   `;
-  let args = [ id ];
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
@@ -448,17 +434,15 @@ export async function create(
       model._role_ids = model._role_ids.split(",");
     }
     model._role_ids = model._role_ids.map((item: string) => item.trim());
-    let sql = `
+    const args = new QueryArgs();
+    const sql = `
       select
         t.id
       from
         role t
       where
-        t.lbl in (?)
+        t.lbl in (${ args.push(model._role_ids) })
     `;
-    const args = [
-      model._role_ids,
-    ];
     interface Result {
       id: string;
     }
@@ -474,7 +458,7 @@ export async function create(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     insert into usr(
       id
@@ -508,43 +492,34 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
-  sql += `) values(?,?`;
-  args.push(model.id);
-  args.push(context.getReqDate());
+  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
     if (tenant_id) {
-      sql += ",?";
-      args.push(tenant_id);
+      sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,?`;
-      args.push(usr_id);
+      sql += `,${ args.push(usr_id) }`;
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,?`;
-    args.push(model.lbl);
+    sql += `,${ args.push(model.lbl) }`;
   }
   if (model.username !== undefined) {
-    sql += `,?`;
-    args.push(model.username);
+    sql += `,${ args.push(model.username) }`;
   }
   if (isNotEmpty(model.password)) {
-    sql += `,?`;
-    args.push(getPassword(model.password));
+    sql += `,${ args.push(getPassword(model.password)) }`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,?`;
-    args.push(model.is_enabled);
+    sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.rem !== undefined) {
-    sql += `,?`;
-    args.push(model.rem);
+    sql += `,${ args.push(model.rem) }`;
   }
   sql += `)`;
   
@@ -622,17 +597,15 @@ export async function updateById(
       model._role_ids = model._role_ids.split(",");
     }
     model._role_ids = model._role_ids.map((item: string) => item.trim());
-    let sql = `
+    const args = new QueryArgs();
+    const sql = `
       select
         t.id
       from
         role t
       where
-        t.lbl in (?)
+        t.lbl in (${ args.push(model._role_ids) })
     `;
-    const args = [
-      model._role_ids,
-    ];
     interface Result {
       id: string;
     }
@@ -655,28 +628,24 @@ export async function updateById(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
-    update usr set update_time = ?
+    update usr set update_time = ${ args.push(context.getReqDate()) }
   `;
-  args.push(context.getReqDate());
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,update_usr_id = ?`;
-      args.push(usr_id);
+      sql += `,update_usr_id = ${ args.push(usr_id) }`;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ?`;
-      args.push(model.lbl);
+      sql += `,lbl = ${ args.push(model.lbl) }`;
     }
   }
   if (model.username !== undefined) {
     if (model.username != oldModel?.username) {
-      sql += `,username = ?`;
-      args.push(model.username);
+      sql += `,username = ${ args.push(model.username) }`;
     }
   }
   if (isNotEmpty(model.password)) {
@@ -685,18 +654,15 @@ export async function updateById(
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,is_enabled = ?`;
-      args.push(model.is_enabled);
+      sql += `,is_enabled = ${ args.push(model.is_enabled) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ?`;
-      args.push(model.rem);
+      sql += `,rem = ${ args.push(model.rem) }`;
     }
   }
-  sql += ` where id = ? limit 1`;
-  args.push(id);
+  sql += ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   // 角色
@@ -724,12 +690,19 @@ export async function deleteByIds(
   }
   
   let num = 0;
-  let sql = `
-    update usr set is_deleted = 1,delete_time = ? where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
+    const args = new QueryArgs();
     const id = ids[i];
-    const args = [ context.getReqDate(), id ];
+    const sql = `
+      update
+        usr
+      set
+        is_deleted = 1,
+        delete_time = ${ args.push(context.getReqDate()) }
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
@@ -755,12 +728,18 @@ export async function revertByIds(
   }
   
   let num = 0;
-  let sql = `
-    update usr set is_deleted = 0 where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const args = [ id ];
+    const args = new QueryArgs();
+    const sql = `
+      update
+        usr
+      set
+        is_deleted = 0
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }

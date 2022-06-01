@@ -3,6 +3,7 @@ import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
@@ -13,77 +14,60 @@ import { MenuModel, MenuSearch } from "./menu.model.ts";
 
 async function getWhereQuery(
   context: Context,
-  args: any[],
+  args: QueryArgs,
   search?: MenuSearch,
 ) {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ?`;
-  args.push(search?.is_deleted == null ? 0 : search.is_deleted);
+  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (isNotEmpty(search?.id)) {
-    whereQuery += ` and t.id = ?`;
-    args.push(search?.id);
+    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
-    whereQuery += ` and t.id in (?)`;
-    args.push(search.ids);
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.type && search?.type?.length > 0) {
-    whereQuery += ` and t.type in (?)`;
-    args.push(search.type);
+    whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
   if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and menu.id in (?)`;
-    args.push(search.menu_id);
+    whereQuery += ` and menu.id in (${ args.push(search.menu_id) })`;
   }
   if (search?._menu_id && search._menu_id?.length > 0) {
-    whereQuery += ` and _menu_id in (?)`;
-    args.push(search._menu_id);
+    whereQuery += ` and _menu_id in (${ args.push(search._menu_id) })`;
   }
   if (search?.lbl !== undefined) {
-    whereQuery += ` and t.lbl = ?`;
-    args.push(search.lbl);
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ?`;
-    args.push(sqlLike(search?.lblLike) + "%");
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.route_path !== undefined) {
-    whereQuery += ` and t.route_path = ?`;
-    args.push(search.route_path);
+    whereQuery += ` and t.route_path = ${ args.push(search.route_path) }`;
   }
   if (isNotEmpty(search?.route_pathLike)) {
-    whereQuery += ` and t.route_path like ?`;
-    args.push(sqlLike(search?.route_pathLike) + "%");
+    whereQuery += ` and t.route_path like ${ args.push(sqlLike(search?.route_pathLike) + "%") }`;
   }
   if (search?.route_query !== undefined) {
-    whereQuery += ` and t.route_query = ?`;
-    args.push(search.route_query);
+    whereQuery += ` and t.route_query = ${ args.push(search.route_query) }`;
   }
   if (isNotEmpty(search?.route_queryLike)) {
-    whereQuery += ` and t.route_query like ?`;
-    args.push(sqlLike(search?.route_queryLike) + "%");
+    whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_queryLike) + "%") }`;
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in (?)`;
-    args.push(search.is_enabled);
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ?`;
-      args.push(search.order_by[0]);
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
     }
     if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ?`;
-      args.push(search.order_by[1]);
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
   }
   if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ?`;
-    args.push(search.rem);
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ?`;
-    args.push(sqlLike(search?.remLike) + "%");
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
   return whereQuery;
 }
@@ -111,7 +95,7 @@ export async function findCount(
   const table = "menu";
   const method = "findCount";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select
       count(1) total
@@ -154,7 +138,7 @@ export async function findAll(
   const table = "menu";
   const method = "findAll";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select t.*
         ,menu.lbl _menu_id
@@ -386,10 +370,10 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  let sql = `
-    select 1 e from menu where id = ? limit 1
+  const args = new QueryArgs();
+  const sql = `
+    select 1 e from menu where id = ${ args.push(id) } limit 1
   `;
-  let args = [ id ];
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
@@ -468,7 +452,7 @@ export async function create(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     insert into menu(
       id
@@ -504,47 +488,36 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
-  sql += `) values(?,?`;
-  args.push(model.id);
-  args.push(context.getReqDate());
+  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,?`;
-      args.push(usr_id);
+      sql += `,${ args.push(usr_id) }`;
     }
   }
   if (model.type !== undefined) {
-    sql += `,?`;
-    args.push(model.type);
+    sql += `,${ args.push(model.type) }`;
   }
   if (model.menu_id !== undefined) {
-    sql += `,?`;
-    args.push(model.menu_id);
+    sql += `,${ args.push(model.menu_id) }`;
   }
   if (model.lbl !== undefined) {
-    sql += `,?`;
-    args.push(model.lbl);
+    sql += `,${ args.push(model.lbl) }`;
   }
   if (model.route_path !== undefined) {
-    sql += `,?`;
-    args.push(model.route_path);
+    sql += `,${ args.push(model.route_path) }`;
   }
   if (model.route_query !== undefined) {
-    sql += `,?`;
-    args.push(model.route_query);
+    sql += `,${ args.push(model.route_query) }`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,?`;
-    args.push(model.is_enabled);
+    sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.order_by !== undefined) {
-    sql += `,?`;
-    args.push(model.order_by);
+    sql += `,${ args.push(model.order_by) }`;
   }
   if (model.rem !== undefined) {
-    sql += `,?`;
-    args.push(model.rem);
+    sql += `,${ args.push(model.rem) }`;
   }
   sql += `)`;
   
@@ -647,68 +620,57 @@ export async function updateById(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
-    update menu set update_time = ?
+    update menu set update_time = ${ args.push(context.getReqDate()) }
   `;
-  args.push(context.getReqDate());
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,update_usr_id = ?`;
-      args.push(usr_id);
+      sql += `,update_usr_id = ${ args.push(usr_id) }`;
     }
   }
   if (model.type !== undefined) {
     if (model.type != oldModel?.type) {
-      sql += `,type = ?`;
-      args.push(model.type);
+      sql += `,type = ${ args.push(model.type) }`;
     }
   }
   if (model.menu_id !== undefined) {
     if (model.menu_id != oldModel?.menu_id) {
-      sql += `,menu_id = ?`;
-      args.push(model.menu_id);
+      sql += `,menu_id = ${ args.push(model.menu_id) }`;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ?`;
-      args.push(model.lbl);
+      sql += `,lbl = ${ args.push(model.lbl) }`;
     }
   }
   if (model.route_path !== undefined) {
     if (model.route_path != oldModel?.route_path) {
-      sql += `,route_path = ?`;
-      args.push(model.route_path);
+      sql += `,route_path = ${ args.push(model.route_path) }`;
     }
   }
   if (model.route_query !== undefined) {
     if (model.route_query != oldModel?.route_query) {
-      sql += `,route_query = ?`;
-      args.push(model.route_query);
+      sql += `,route_query = ${ args.push(model.route_query) }`;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,is_enabled = ?`;
-      args.push(model.is_enabled);
+      sql += `,is_enabled = ${ args.push(model.is_enabled) }`;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `,order_by = ?`;
-      args.push(model.order_by);
+      sql += `,order_by = ${ args.push(model.order_by) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ?`;
-      args.push(model.rem);
+      sql += `,rem = ${ args.push(model.rem) }`;
     }
   }
-  sql += ` where id = ? limit 1`;
-  args.push(id);
+  sql += ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   
@@ -734,12 +696,19 @@ export async function deleteByIds(
   }
   
   let num = 0;
-  let sql = `
-    update menu set is_deleted = 1,delete_time = ? where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
+    const args = new QueryArgs();
     const id = ids[i];
-    const args = [ context.getReqDate(), id ];
+    const sql = `
+      update
+        menu
+      set
+        is_deleted = 1,
+        delete_time = ${ args.push(context.getReqDate()) }
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
@@ -765,12 +734,18 @@ export async function revertByIds(
   }
   
   let num = 0;
-  let sql = `
-    update menu set is_deleted = 0 where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const args = [ id ];
+    const args = new QueryArgs();
+    const sql = `
+      update
+        menu
+      set
+        is_deleted = 0
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
@@ -792,10 +767,11 @@ export async function findLastOrderBy(
   let sql = `
     select
       t.order_by order_by
-    from menu t
+    from
+      menu t
   `;
   const whereQuery: string[] = [ ];
-  let args: any[] = [ ];
+  const args = new QueryArgs();
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }

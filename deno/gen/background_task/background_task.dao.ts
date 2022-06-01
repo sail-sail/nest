@@ -3,6 +3,7 @@ import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
@@ -14,95 +15,75 @@ import * as usrDao from "/gen/usr/usr.dao.ts";
 
 async function getWhereQuery(
   context: Context,
-  args: any[],
+  args: QueryArgs,
   search?: Background_taskSearch,
 ) {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ?`;
-  args.push(search?.is_deleted == null ? 0 : search.is_deleted);
+  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ?`;
-      args.push(tenant_id);
+      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
   }
   if (isNotEmpty(search?.id)) {
-    whereQuery += ` and t.id = ?`;
-    args.push(search?.id);
+    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
-    whereQuery += ` and t.id in (?)`;
-    args.push(search.ids);
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.lbl !== undefined) {
-    whereQuery += ` and t.lbl = ?`;
-    args.push(search.lbl);
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ?`;
-    args.push(sqlLike(search?.lblLike) + "%");
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.state && search?.state?.length > 0) {
-    whereQuery += ` and t.state in (?)`;
-    args.push(search.state);
+    whereQuery += ` and t.state in (${ args.push(search.state) })`;
   }
   if (search?.type && search?.type?.length > 0) {
-    whereQuery += ` and t.type in (?)`;
-    args.push(search.type);
+    whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
   if (search?.result !== undefined) {
-    whereQuery += ` and t.result = ?`;
-    args.push(search.result);
+    whereQuery += ` and t.result = ${ args.push(search.result) }`;
   }
   if (isNotEmpty(search?.resultLike)) {
-    whereQuery += ` and t.result like ?`;
-    args.push(sqlLike(search?.resultLike) + "%");
+    whereQuery += ` and t.result like ${ args.push(sqlLike(search?.resultLike) + "%") }`;
   }
   if (search?.err_msg !== undefined) {
-    whereQuery += ` and t.err_msg = ?`;
-    args.push(search.err_msg);
+    whereQuery += ` and t.err_msg = ${ args.push(search.err_msg) }`;
   }
   if (isNotEmpty(search?.err_msgLike)) {
-    whereQuery += ` and t.err_msg like ?`;
-    args.push(sqlLike(search?.err_msgLike) + "%");
+    whereQuery += ` and t.err_msg like ${ args.push(sqlLike(search?.err_msgLike) + "%") }`;
   }
   if (search?.begin_time && search?.begin_time?.length > 0) {
     if (search.begin_time[0] != null) {
-      whereQuery += ` and t.begin_time >= ?`;
-      args.push(search.begin_time[0]);
+      whereQuery += ` and t.begin_time >= ${ args.push(search.begin_time[0]) }`;
     }
     if (search.begin_time[1] != null) {
-      whereQuery += ` and t.begin_time <= ?`;
-      args.push(search.begin_time[1]);
+      whereQuery += ` and t.begin_time <= ${ args.push(search.begin_time[1]) }`;
     }
   }
   if (search?.end_time && search?.end_time?.length > 0) {
     if (search.end_time[0] != null) {
-      whereQuery += ` and t.end_time >= ?`;
-      args.push(search.end_time[0]);
+      whereQuery += ` and t.end_time >= ${ args.push(search.end_time[0]) }`;
     }
     if (search.end_time[1] != null) {
-      whereQuery += ` and t.end_time <= ?`;
-      args.push(search.end_time[1]);
+      whereQuery += ` and t.end_time <= ${ args.push(search.end_time[1]) }`;
     }
   }
   if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ?`;
-    args.push(search.rem);
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ?`;
-    args.push(sqlLike(search?.remLike) + "%");
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
   if (search?.create_usr_id && search?.create_usr_id.length > 0) {
-    whereQuery += ` and usr.id in (?)`;
-    args.push(search.create_usr_id);
+    whereQuery += ` and usr.id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?._create_usr_id && search._create_usr_id?.length > 0) {
-    whereQuery += ` and _create_usr_id in (?)`;
-    args.push(search._create_usr_id);
+    whereQuery += ` and _create_usr_id in (${ args.push(search._create_usr_id) })`;
   }
   return whereQuery;
 }
@@ -130,7 +111,7 @@ export async function findCount(
   const table = "background_task";
   const method = "findCount";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select
       count(1) total
@@ -170,7 +151,7 @@ export async function findAll(
   const table = "background_task";
   const method = "findAll";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select t.*
         ,usr.lbl _create_usr_id
@@ -402,10 +383,10 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  let sql = `
-    select 1 e from background_task where id = ? limit 1
+  const args = new QueryArgs();
+  const sql = `
+    select 1 e from background_task where id = ${ args.push(id) } limit 1
   `;
-  let args = [ id ];
   
   interface Result {
     e: number,
@@ -480,7 +461,7 @@ export async function create(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     insert into background_task(
       id
@@ -523,55 +504,43 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
-  sql += `) values(?,?`;
-  args.push(model.id);
-  args.push(context.getReqDate());
+  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
     if (tenant_id) {
-      sql += ",?";
-      args.push(tenant_id);
+      sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,?`;
-      args.push(usr_id);
+      sql += `,${ args.push(usr_id) }`;
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,?`;
-    args.push(model.lbl);
+    sql += `,${ args.push(model.lbl) }`;
   }
   if (model.state !== undefined) {
-    sql += `,?`;
-    args.push(model.state);
+    sql += `,${ args.push(model.state) }`;
   }
   if (model.type !== undefined) {
-    sql += `,?`;
-    args.push(model.type);
+    sql += `,${ args.push(model.type) }`;
   }
   if (model.result !== undefined) {
-    sql += `,?`;
-    args.push(model.result);
+    sql += `,${ args.push(model.result) }`;
   }
   if (model.err_msg !== undefined) {
-    sql += `,?`;
-    args.push(model.err_msg);
+    sql += `,${ args.push(model.err_msg) }`;
   }
   if (model.begin_time !== undefined) {
-    sql += `,?`;
-    args.push(model.begin_time);
+    sql += `,${ args.push(model.begin_time) }`;
   }
   if (model.end_time !== undefined) {
-    sql += `,?`;
-    args.push(model.end_time);
+    sql += `,${ args.push(model.end_time) }`;
   }
   if (model.rem !== undefined) {
-    sql += `,?`;
-    args.push(model.rem);
+    sql += `,${ args.push(model.rem) }`;
   }
   sql += `)`;
   
@@ -650,68 +619,57 @@ export async function updateById(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
-    update background_task set update_time = ?
+    update background_task set update_time = ${ args.push(context.getReqDate()) }
   `;
-  args.push(context.getReqDate());
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,update_usr_id = ?`;
-      args.push(usr_id);
+      sql += `,update_usr_id = ${ args.push(usr_id) }`;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ?`;
-      args.push(model.lbl);
+      sql += `,lbl = ${ args.push(model.lbl) }`;
     }
   }
   if (model.state !== undefined) {
     if (model.state != oldModel?.state) {
-      sql += `,state = ?`;
-      args.push(model.state);
+      sql += `,state = ${ args.push(model.state) }`;
     }
   }
   if (model.type !== undefined) {
     if (model.type != oldModel?.type) {
-      sql += `,type = ?`;
-      args.push(model.type);
+      sql += `,type = ${ args.push(model.type) }`;
     }
   }
   if (model.result !== undefined) {
     if (model.result != oldModel?.result) {
-      sql += `,result = ?`;
-      args.push(model.result);
+      sql += `,result = ${ args.push(model.result) }`;
     }
   }
   if (model.err_msg !== undefined) {
     if (model.err_msg != oldModel?.err_msg) {
-      sql += `,err_msg = ?`;
-      args.push(model.err_msg);
+      sql += `,err_msg = ${ args.push(model.err_msg) }`;
     }
   }
   if (model.begin_time !== undefined) {
     if (model.begin_time != oldModel?.begin_time) {
-      sql += `,begin_time = ?`;
-      args.push(model.begin_time);
+      sql += `,begin_time = ${ args.push(model.begin_time) }`;
     }
   }
   if (model.end_time !== undefined) {
     if (model.end_time != oldModel?.end_time) {
-      sql += `,end_time = ?`;
-      args.push(model.end_time);
+      sql += `,end_time = ${ args.push(model.end_time) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ?`;
-      args.push(model.rem);
+      sql += `,rem = ${ args.push(model.rem) }`;
     }
   }
-  sql += ` where id = ? limit 1`;
-  args.push(id);
+  sql += ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   
@@ -735,12 +693,19 @@ export async function deleteByIds(
   }
   
   let num = 0;
-  let sql = `
-    update background_task set is_deleted = 1,delete_time = ? where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
+    const args = new QueryArgs();
     const id = ids[i];
-    const args = [ context.getReqDate(), id ];
+    const sql = `
+      update
+        background_task
+      set
+        is_deleted = 1,
+        delete_time = ${ args.push(context.getReqDate()) }
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
@@ -765,12 +730,18 @@ export async function revertByIds(
   }
   
   let num = 0;
-  let sql = `
-    update background_task set is_deleted = 0 where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const args = [ id ];
+    const args = new QueryArgs();
+    const sql = `
+      update
+        background_task
+      set
+        is_deleted = 0
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }

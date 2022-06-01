@@ -559,7 +559,7 @@ export class Context {
    * 执行sql更新或删除语句
    * @template T
    * @param {string} sql SQL语句
-   * @param {any[]} args? 参数
+   * @param {any[]|QueryArgs} args? 参数
    * @param {{ debug?: boolean, logResult?: boolean }} opt?
    * @return {Promise<ResultSetHeader>}
    * @memberof Context
@@ -567,12 +567,15 @@ export class Context {
   async execute(
     sql: string,
     // deno-lint-ignore no-explicit-any
-    args?: any[],
+    args?: any[]|QueryArgs,
     opt?: {
       debug?: boolean,
       // logResult?: boolean,
     },
   ): Promise<ResultSetHeader> {
+    if (args instanceof QueryArgs) {
+      args = args.value;
+    }
     // deno-lint-ignore no-explicit-any
     let result: any;
     try {

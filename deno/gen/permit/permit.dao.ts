@@ -3,6 +3,7 @@ import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
@@ -14,43 +15,34 @@ import * as menuDao from "/gen/menu/menu.dao.ts";
 
 async function getWhereQuery(
   context: Context,
-  args: any[],
+  args: QueryArgs,
   search?: PermitSearch,
 ) {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ?`;
-  args.push(search?.is_deleted == null ? 0 : search.is_deleted);
+  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (isNotEmpty(search?.id)) {
-    whereQuery += ` and t.id = ?`;
-    args.push(search?.id);
+    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
-    whereQuery += ` and t.id in (?)`;
-    args.push(search.ids);
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and menu.id in (?)`;
-    args.push(search.menu_id);
+    whereQuery += ` and menu.id in (${ args.push(search.menu_id) })`;
   }
   if (search?._menu_id && search._menu_id?.length > 0) {
-    whereQuery += ` and _menu_id in (?)`;
-    args.push(search._menu_id);
+    whereQuery += ` and _menu_id in (${ args.push(search._menu_id) })`;
   }
   if (search?.lbl !== undefined) {
-    whereQuery += ` and t.lbl = ?`;
-    args.push(search.lbl);
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ?`;
-    args.push(sqlLike(search?.lblLike) + "%");
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ?`;
-    args.push(search.rem);
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ?`;
-    args.push(sqlLike(search?.remLike) + "%");
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
   return whereQuery;
 }
@@ -78,7 +70,7 @@ export async function findCount(
   const table = "permit";
   const method = "findCount";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select
       count(1) total
@@ -121,7 +113,7 @@ export async function findAll(
   const table = "permit";
   const method = "findAll";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select t.*
         ,menu.lbl _menu_id
@@ -328,10 +320,10 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  let sql = `
-    select 1 e from permit where id = ? limit 1
+  const args = new QueryArgs();
+  const sql = `
+    select 1 e from permit where id = ${ args.push(id) } limit 1
   `;
-  let args = [ id ];
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
@@ -390,7 +382,7 @@ export async function create(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     insert into permit(
       id
@@ -411,27 +403,21 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
-  sql += `) values(?,?`;
-  args.push(model.id);
-  args.push(context.getReqDate());
+  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,?`;
-      args.push(usr_id);
+      sql += `,${ args.push(usr_id) }`;
     }
   }
   if (model.menu_id !== undefined) {
-    sql += `,?`;
-    args.push(model.menu_id);
+    sql += `,${ args.push(model.menu_id) }`;
   }
   if (model.lbl !== undefined) {
-    sql += `,?`;
-    args.push(model.lbl);
+    sql += `,${ args.push(model.lbl) }`;
   }
   if (model.rem !== undefined) {
-    sql += `,?`;
-    args.push(model.rem);
+    sql += `,${ args.push(model.rem) }`;
   }
   sql += `)`;
   
@@ -514,38 +500,32 @@ export async function updateById(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
-    update permit set update_time = ?
+    update permit set update_time = ${ args.push(context.getReqDate()) }
   `;
-  args.push(context.getReqDate());
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,update_usr_id = ?`;
-      args.push(usr_id);
+      sql += `,update_usr_id = ${ args.push(usr_id) }`;
     }
   }
   if (model.menu_id !== undefined) {
     if (model.menu_id != oldModel?.menu_id) {
-      sql += `,menu_id = ?`;
-      args.push(model.menu_id);
+      sql += `,menu_id = ${ args.push(model.menu_id) }`;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ?`;
-      args.push(model.lbl);
+      sql += `,lbl = ${ args.push(model.lbl) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ?`;
-      args.push(model.rem);
+      sql += `,rem = ${ args.push(model.rem) }`;
     }
   }
-  sql += ` where id = ? limit 1`;
-  args.push(id);
+  sql += ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   
@@ -571,12 +551,19 @@ export async function deleteByIds(
   }
   
   let num = 0;
-  let sql = `
-    update permit set is_deleted = 1,delete_time = ? where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
+    const args = new QueryArgs();
     const id = ids[i];
-    const args = [ context.getReqDate(), id ];
+    const sql = `
+      update
+        permit
+      set
+        is_deleted = 1,
+        delete_time = ${ args.push(context.getReqDate()) }
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
@@ -602,12 +589,18 @@ export async function revertByIds(
   }
   
   let num = 0;
-  let sql = `
-    update permit set is_deleted = 0 where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const args = [ id ];
+    const args = new QueryArgs();
+    const sql = `
+      update
+        permit
+      set
+        is_deleted = 0
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }

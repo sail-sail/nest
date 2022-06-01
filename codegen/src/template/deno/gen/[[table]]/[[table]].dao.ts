@@ -8,6 +8,7 @@ import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
@@ -58,20 +59,18 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.
 
 async function getWhereQuery(
   context: Context,
-  args: any[],
+  args: QueryArgs,
   search?: <#=tableUp#>Search,
 ) {
   let whereQuery = "";
-  whereQuery += ` t.is_deleted = ?`;
-  args.push(search?.is_deleted == null ? 0 : search.is_deleted);<#
+  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
   if (hasTenant_id) {
   #>
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
     if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ?`;
-      args.push(tenant_id);
+      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
   }<#
   }
@@ -99,66 +98,55 @@ async function getWhereQuery(
     if (foreignKey) {
   #>
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
-    whereQuery += ` and <#=foreignKey.table#>.id in (?)`;
-    args.push(search.<#=column_name#>);
+    whereQuery += ` and <#=foreignKey.table#>.id in (${ args.push(search.<#=column_name#>) })`;
   }<#
     if (foreignKey.lbl) {
   #>
   if (search?._<#=column_name#> && search._<#=column_name#>?.length > 0) {
-    whereQuery += ` and _<#=column_name#> in (?)`;
-    args.push(search._<#=column_name#>);
+    whereQuery += ` and _<#=column_name#> in (${ args.push(search._<#=column_name#>) })`;
   }<#
     }
   #><#
     } else if (selectList && selectList.length > 0) {
   #>
   if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
-    whereQuery += ` and t.<#=column_name#> in (?)`;
-    args.push(search.<#=column_name#>);
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>) })`;
   }<#
     } else if (column_name === "id") {
   #>
   if (isNotEmpty(search?.<#=column_name#>)) {
-    whereQuery += ` and t.<#=column_name#> = ?`;
-    args.push(search?.<#=column_name#>);
+    whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
-    whereQuery += ` and t.id in (?)`;
-    args.push(search.ids);
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }<#
   } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
   if (isNotEmpty(search?.<#=column_name#>)) {
-    whereQuery += ` and t.<#=column_name#> = ?`;
-    args.push(search?.<#=column_name#>);
+    whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
     if (search.<#=column_name#>[0] != null) {
-      whereQuery += ` and t.<#=column_name#> >= ?`;
-      args.push(search.<#=column_name#>[0]);
+      whereQuery += ` and t.<#=column_name#> >= ${ args.push(search.<#=column_name#>[0]) }`;
     }
     if (search.<#=column_name#>[1] != null) {
-      whereQuery += ` and t.<#=column_name#> <= ?`;
-      args.push(search.<#=column_name#>[1]);
+      whereQuery += ` and t.<#=column_name#> <= ${ args.push(search.<#=column_name#>[1]) }`;
     }
   }<#
   } else if (data_type === "tinyint") {
   #>
   if (isNotEmpty(search?.<#=column_name#>)) {
-    whereQuery += ` and t.<#=column_name#> = ?`;
-    args.push(search?.<#=column_name#>);
+    whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }<#
     } else {
   #>
   if (search?.<#=column_name#> !== undefined) {
-    whereQuery += ` and t.<#=column_name#> = ?`;
-    args.push(search.<#=column_name#>);
+    whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
   }
   if (isNotEmpty(search?.<#=column_name#>Like)) {
-    whereQuery += ` and t.<#=column_name#> like ?`;
-    args.push(sqlLike(search?.<#=column_name#>Like) + "%");
+    whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>Like) + "%") }`;
   }<#
     }
   #><#
@@ -236,7 +224,7 @@ export async function findCount(
   const table = "<#=table#>";
   const method = "findCount";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select
       count(1) total
@@ -287,7 +275,7 @@ export async function findAll(
   const table = "<#=table#>";
   const method = "findAll";
   
-  const args: any[] = [ ];
+  const args = new QueryArgs();
   let sql = `
     select t.*<#
       for (let i = 0; i < columns.length; i++) {
@@ -706,10 +694,10 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  let sql = `
-    select 1 e from <#=table#> where id = ? limit 1
-  `;
-  let args = [ id ];<#
+  const args = new QueryArgs();
+  const sql = `
+    select 1 e from <#=table#> where id = ${ args.push(id) } limit 1
+  `;<#
   if (cache) {
   #>
   
@@ -825,17 +813,15 @@ export async function create(
       model._<#=column_name#> = model._<#=column_name#>.split(",");
     }
     model._<#=column_name#> = model._<#=column_name#>.map((item: string) => item.trim());
-    let sql = `
+    const args = new QueryArgs();
+    const sql = `
       select
         t.id
       from
         <#=foreignTable#> t
       where
-        t.<#=foreignKey.lbl#> in (?)
+        t.<#=foreignKey.lbl#> in (${ args.push(model._<#=column_name#>) })
     `;
-    const args = [
-      model._<#=column_name#>,
-    ];
     interface Result {
       id: string;
     }
@@ -855,7 +841,7 @@ export async function create(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     insert into <#=table#>(
       id
@@ -923,17 +909,14 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(?,?`;
-  args.push(model.id);
-  args.push(context.getReqDate());<#
+  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;<#
   if (hasTenant_id) {
   #>
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
     if (tenant_id) {
-      sql += ",?";
-      args.push(tenant_id);
+      sql += `,${ args.push(tenant_id) }`;
     }
   }<#
   }
@@ -941,8 +924,7 @@ export async function create(
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,?`;
-      args.push(usr_id);
+      sql += `,${ args.push(usr_id) }`;
     }
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -966,28 +948,24 @@ export async function create(
     if (column.isPassword) {
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,?`;
-    args.push(getPassword(model.<#=column_name#>));
+    sql += `,${ args.push(getPassword(model.<#=column_name#>)) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,?`;
-    args.push(model.<#=column_name#>);
+    sql += `,${ args.push(model.<#=column_name#>) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,?`;
-    args.push(model.<#=column_name#>);
+    sql += `,${ args.push(model.<#=column_name#>) }`;
   }<#
     } else {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,?`;
-    args.push(model.<#=column_name#>);
+    sql += `,${ args.push(model.<#=column_name#>) }`;
   }<#
     }
   #><#
@@ -1177,17 +1155,15 @@ export async function updateById(
       model._<#=column_name#> = model._<#=column_name#>.split(",");
     }
     model._<#=column_name#> = model._<#=column_name#>.map((item: string) => item.trim());
-    let sql = `
+    const args = new QueryArgs();
+    const sql = `
       select
         t.id
       from
         <#=foreignTable#> t
       where
-        t.<#=foreignKey.lbl#> in (?)
+        t.<#=foreignKey.lbl#> in (${ args.push(model._<#=column_name#>) })
     `;
-    const args = [
-      model._<#=column_name#>,
-    ];
     interface Result {
       id: string;
     }
@@ -1214,16 +1190,14 @@ export async function updateById(
     }
   }
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
-    update <#=table#> set update_time = ?
+    update <#=table#> set update_time = ${ args.push(context.getReqDate()) }
   `;
-  args.push(context.getReqDate());
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     if (usr_id !== undefined) {
-      sql += `,update_usr_id = ?`;
-      args.push(usr_id);
+      sql += `,update_usr_id = ${ args.push(usr_id) }`;
     }
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -1255,8 +1229,7 @@ export async function updateById(
       model.<#=column_name#> = null;
     }
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,<#=column_name#> = ?`;
-      args.push(model.<#=column_name#>);
+      sql += `,<#=column_name#> = ${ args.push(model.<#=column_name#>) }`;
     }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -1265,24 +1238,21 @@ export async function updateById(
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,<#=column_name#> = ?`;
-      args.push(model.<#=column_name#>);
+      sql += `,<#=column_name#> = ${ args.push(model.<#=column_name#>) }`;
     }
   }<#
     } else {
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,<#=column_name#> = ?`;
-      args.push(model.<#=column_name#>);
+      sql += `,<#=column_name#> = ${ args.push(model.<#=column_name#>) }`;
     }
   }<#
     }
   #><#
   }
   #>
-  sql += ` where id = ? limit 1`;
-  args.push(id);
+  sql += ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);<#
   for (let i = 0; i < columns.length; i++) {
@@ -1343,12 +1313,19 @@ export async function deleteByIds(
   }
   
   let num = 0;
-  let sql = `
-    update <#=table#> set is_deleted = 1,delete_time = ? where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
+    const args = new QueryArgs();
     const id = ids[i];
-    const args = [ context.getReqDate(), id ];
+    const sql = `
+      update
+        <#=table#>
+      set
+        is_deleted = 1,
+        delete_time = ${ args.push(context.getReqDate()) }
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }<#
@@ -1378,12 +1355,18 @@ export async function revertByIds(
   }
   
   let num = 0;
-  let sql = `
-    update <#=table#> set is_deleted = 0 where id = ? limit 1
-  `;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const args = [ id ];
+    const args = new QueryArgs();
+    const sql = `
+      update
+        <#=table#>
+      set
+        is_deleted = 0
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }<#
@@ -1411,17 +1394,17 @@ export async function findLastOrderBy(
   let sql = `
     select
       t.order_by order_by
-    from <#=table#> t
+    from
+      <#=table#> t
   `;
   const whereQuery: string[] = [ ];
-  let args: any[] = [ ];<#
+  const args = new QueryArgs();<#
   if (hasTenant_id) {
   #>
   {
     const { id: usr_id } = await getAuthModel(context) as AuthModel;
     const tenant_id = await getTenant_id(context, usr_id);
-    whereQuery.push("t.tenant_id = ?");
-    args.push(tenant_id);
+    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }
   #>
