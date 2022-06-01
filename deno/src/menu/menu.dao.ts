@@ -3,13 +3,14 @@ import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { MenuModel } from "/gen/menu/menu.model.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 
 async function _getMenus(
   context: Context,
   type?: string,
   menu_id?: string,
 ) {
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     select
       t.id,
@@ -36,23 +37,17 @@ async function _getMenus(
       and t.is_enabled = 1
   `;
   if (type) {
-    sql += ` and t.type = ?`;
-    args.push(type);
+    sql += ` and t.type = ${ args.push(type) }`;
   }
   const { id: usr_id } = await getAuthModel(context) as AuthModel;
   const tenant_id = await getTenant_id(context, usr_id);
   if (tenant_id) {
-    sql += ` and tenant_menu.tenant_id = ?`;
-    args.push(tenant_id);
+    sql += ` and tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
   if (menu_id) {
-    sql += ` and t.menu_id = ?`;
-    args.push(menu_id);
+    sql += ` and t.menu_id = ${ args.push(menu_id) }`;
   }
-  
-  sql += ` and usr_role.usr_id = ?`;
-  args.push(usr_id);
-  
+  sql += ` and usr_role.usr_id = ${ args.push(usr_id) }`;
   sql += ` order by t.order_by asc`;
   
   const table = "menu";
