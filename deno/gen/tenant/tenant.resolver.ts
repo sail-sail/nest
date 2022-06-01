@@ -69,6 +69,7 @@ export async function createTenant(
   context: Context,
   model: TenantModel,
 ) {
+  context.is_tran = true;
   const result = await tenantService.create(context, model);
   return result;
 }
@@ -81,6 +82,7 @@ export async function updateByIdTenant(
   id: string,
   model: TenantModel,
 ) {
+  context.is_tran = true;
   const result = await tenantService.updateById(context, id, model);
   return result;
 }
@@ -92,6 +94,7 @@ export async function deleteByIdsTenant(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await tenantService.deleteByIds(context, ids);
   return result;
 }
@@ -114,6 +117,7 @@ export async function revertByIdsTenant(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await tenantService.revertByIds(context, ids);
   return result;
 }

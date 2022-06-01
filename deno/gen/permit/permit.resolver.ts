@@ -69,6 +69,7 @@ export async function createPermit(
   context: Context,
   model: PermitModel,
 ) {
+  context.is_tran = true;
   const result = await permitService.create(context, model);
   return result;
 }
@@ -81,6 +82,7 @@ export async function updateByIdPermit(
   id: string,
   model: PermitModel,
 ) {
+  context.is_tran = true;
   const result = await permitService.updateById(context, id, model);
   return result;
 }
@@ -92,6 +94,7 @@ export async function deleteByIdsPermit(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await permitService.deleteByIds(context, ids);
   return result;
 }
@@ -114,6 +117,7 @@ export async function revertByIdsPermit(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await permitService.revertByIds(context, ids);
   return result;
 }

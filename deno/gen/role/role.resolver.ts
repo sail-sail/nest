@@ -69,6 +69,7 @@ export async function createRole(
   context: Context,
   model: RoleModel,
 ) {
+  context.is_tran = true;
   const result = await roleService.create(context, model);
   return result;
 }
@@ -81,6 +82,7 @@ export async function updateByIdRole(
   id: string,
   model: RoleModel,
 ) {
+  context.is_tran = true;
   const result = await roleService.updateById(context, id, model);
   return result;
 }
@@ -92,6 +94,7 @@ export async function deleteByIdsRole(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await roleService.deleteByIds(context, ids);
   return result;
 }
@@ -114,6 +117,7 @@ export async function revertByIdsRole(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await roleService.revertByIds(context, ids);
   return result;
 }

@@ -69,6 +69,7 @@ export async function createBackground_task(
   context: Context,
   model: Background_taskModel,
 ) {
+  context.is_tran = true;
   const result = await background_taskService.create(context, model);
   return result;
 }
@@ -81,6 +82,7 @@ export async function updateByIdBackground_task(
   id: string,
   model: Background_taskModel,
 ) {
+  context.is_tran = true;
   const result = await background_taskService.updateById(context, id, model);
   return result;
 }
@@ -92,6 +94,7 @@ export async function deleteByIdsBackground_task(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await background_taskService.deleteByIds(context, ids);
   return result;
 }
@@ -114,6 +117,7 @@ export async function revertByIdsBackground_task(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await background_taskService.revertByIds(context, ids);
   return result;
 }

@@ -13,7 +13,7 @@ export function factory<S>(): Middleware<S> {
     // deno-lint-ignore no-explicit-any
     const context = (ctx as any)._context;
     if (context) {
-      context.log(rt);
+      context.log(`${ rt }ms`);
     }
   };
 }

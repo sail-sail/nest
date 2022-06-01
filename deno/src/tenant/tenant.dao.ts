@@ -31,3 +31,28 @@ export async function getHostTenant(
   const result = await context.queryOne<Result>(sql, args)
   return result;
 }
+
+export async function getLoginTenants(
+  context: Context,
+  _host: string,
+): Promise<typeof result> {
+  const args = new QueryArgs();
+  const sql = `
+    select
+      t.id,
+      t.lbl
+    from tenant t
+    where
+      t.is_deleted = 0
+      and t.is_enabled = 1
+  `;
+  // if (window.process.env.NODE_ENV === "production") {
+  //   sql += ` and t.host = ${ args.push(host) }`;
+  // }
+  interface Result {
+    id: string,
+    lbl: string,
+  }
+  const result = await context.query<Result>(sql, args)
+  return result;
+}

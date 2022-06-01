@@ -87,7 +87,8 @@ async function download(ctx: RouterContext<any>) {
         await tmpfileServie.deleteObject(id);
       }
     }
-    response.body = objInfo.body;
+    const res = new Response(objInfo.body);
+    response.body = await res.arrayBuffer();
   } catch (err) {
     if (err.code === "NotFound") {
       const errMsg = "文件不存在!";

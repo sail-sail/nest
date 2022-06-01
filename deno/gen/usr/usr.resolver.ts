@@ -69,6 +69,7 @@ export async function createUsr(
   context: Context,
   model: UsrModel,
 ) {
+  context.is_tran = true;
   const result = await usrService.create(context, model);
   return result;
 }
@@ -81,6 +82,7 @@ export async function updateByIdUsr(
   id: string,
   model: UsrModel,
 ) {
+  context.is_tran = true;
   const result = await usrService.updateById(context, id, model);
   return result;
 }
@@ -92,6 +94,7 @@ export async function deleteByIdsUsr(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await usrService.deleteByIds(context, ids);
   return result;
 }
@@ -114,6 +117,7 @@ export async function revertByIdsUsr(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await usrService.revertByIds(context, ids);
   return result;
 }

@@ -88,6 +88,7 @@ export async function create<#=tableUp#>(
   context: Context,
   model: <#=tableUp#>Model,
 ) {
+  context.is_tran = true;
   const result = await <#=table#>Service.create(context, model);
   return result;
 }
@@ -100,6 +101,7 @@ export async function updateById<#=tableUp#>(
   id: string,
   model: <#=tableUp#>Model,
 ) {
+  context.is_tran = true;
   const result = await <#=table#>Service.updateById(context, id, model);
   return result;
 }
@@ -111,6 +113,7 @@ export async function deleteByIds<#=tableUp#>(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await <#=table#>Service.deleteByIds(context, ids);
   return result;
 }
@@ -133,6 +136,7 @@ export async function revertByIds<#=tableUp#>(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await <#=table#>Service.revertByIds(context, ids);
   return result;
 }<#

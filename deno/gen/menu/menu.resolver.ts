@@ -69,6 +69,7 @@ export async function createMenu(
   context: Context,
   model: MenuModel,
 ) {
+  context.is_tran = true;
   const result = await menuService.create(context, model);
   return result;
 }
@@ -81,6 +82,7 @@ export async function updateByIdMenu(
   id: string,
   model: MenuModel,
 ) {
+  context.is_tran = true;
   const result = await menuService.updateById(context, id, model);
   return result;
 }
@@ -92,6 +94,7 @@ export async function deleteByIdsMenu(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await menuService.deleteByIds(context, ids);
   return result;
 }
@@ -114,6 +117,7 @@ export async function revertByIdsMenu(
   context: Context,
   ids: string[],
 ) {
+  context.is_tran = true;
   const result = await menuService.revertByIds(context, ids);
   return result;
 }
