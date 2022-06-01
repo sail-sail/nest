@@ -198,11 +198,11 @@ export interface ColumnType {
   prop: string,
   label: string,
   hide?: boolean,
-  width?: string|number,
+  width?: string | number,
 }
 
 export function useTableColumns<T>(
-  tableColumns: Ref<ColumnType[]>,
+  _tableColumns: any,
   opt?: {
     /**
      * 表格列存储的唯一编码, 同一路由下必须唯一
@@ -211,6 +211,7 @@ export function useTableColumns<T>(
     persistKey?: string,
   },
 ) {
+  const tableColumns: Ref<ColumnType[]> = _tableColumns;
   const route = useRoute();
   
   const routePath = route.path;
