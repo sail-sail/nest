@@ -258,7 +258,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
       <div class="page_div">
         <template v-if="ids && ids.length > 0">
           <el-button
-            type="text"
+            link
             class="prev_but"
             :disabled="ids.indexOf(dialogModel.id) <= 0"
             @click="prevIdClk"
@@ -271,7 +271,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
             </span>
           </span>
           <el-button
-            type="text"
+            link
             class="next_but"
             :disabled="ids.indexOf(dialogModel.id) >= ids.length - 1"
             @click="nextIdClk"
