@@ -131,7 +131,7 @@
       <div class="page_div">
         <template v-if="ids && ids.length > 0">
           <el-button
-            type="text"
+            link
             class="prev_but"
             :disabled="ids.indexOf(dialogModel.id) <= 0"
             @click="prevIdClk"
@@ -144,7 +144,7 @@
             </span>
           </span>
           <el-button
-            type="text"
+            link
             class="next_but"
             :disabled="ids.indexOf(dialogModel.id) >= ids.length - 1"
             @click="nextIdClk"
