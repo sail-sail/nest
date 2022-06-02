@@ -389,8 +389,8 @@ export async function create(
       ,create_time
   `;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
       sql += `,create_usr_id`;
     }
   }
@@ -405,9 +405,9 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
-      sql += `,${ args.push(usr_id) }`;
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
     }
   }
   if (model.menu_id !== undefined) {
@@ -505,9 +505,9 @@ export async function updateById(
     update permit set update_time = ${ args.push(context.getReqDate()) }
   `;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(usr_id) }`;
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
   if (model.menu_id !== undefined) {

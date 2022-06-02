@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN, SECRET_KEY } from "./auth.constants.ts";
+import { ACCESS_TOKEN, AuthModel, SECRET_KEY } from "./auth.constants.ts";
 import { ServiceException } from "../exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
@@ -19,7 +19,16 @@ export function getAccess_token(
   return access_token;
 }
 
-export async function getAuthModel<T extends JWTPayload>(
+export async function getAuthModel<T extends AuthModel>(
+  context: Context,
+): Promise<T>;
+
+export async function getAuthModel<T extends AuthModel>(
+  context: Context,
+  notVerifyToken: boolean,
+): Promise<T | undefined>;
+
+export async function getAuthModel<T extends AuthModel>(
   context: Context,
   notVerifyToken = false,
 ) {

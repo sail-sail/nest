@@ -67,8 +67,8 @@ async function getWhereQuery(
   if (hasTenant_id) {
   #>
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -850,8 +850,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -859,8 +859,8 @@ export async function create(
   }
   #>
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
       sql += `,create_usr_id`;
     }
   }<#
@@ -913,8 +913,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -922,9 +922,9 @@ export async function create(
   }
   #>
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
-      sql += `,${ args.push(usr_id) }`;
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
     }
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -1195,9 +1195,9 @@ export async function updateById(
     update <#=table#> set update_time = ${ args.push(context.getReqDate()) }
   `;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(usr_id) }`;
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -1402,8 +1402,8 @@ export async function findLastOrderBy(
   if (hasTenant_id) {
   #>
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }

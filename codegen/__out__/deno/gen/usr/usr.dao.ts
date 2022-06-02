@@ -20,8 +20,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -465,15 +465,15 @@ export async function create(
       ,create_time
   `;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
   }
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
       sql += `,create_usr_id`;
     }
   }
@@ -494,16 +494,16 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    const tenant_id = await getTenant_id(context, usr_id);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
-      sql += `,${ args.push(usr_id) }`;
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
     }
   }
   if (model.lbl !== undefined) {
@@ -633,9 +633,9 @@ export async function updateById(
     update usr set update_time = ${ args.push(context.getReqDate()) }
   `;
   {
-    const { id: usr_id } = await getAuthModel(context) as AuthModel;
-    if (usr_id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(usr_id) }`;
+    const authModel = await getAuthModel(context);
+    if (authModel.id !== undefined) {
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
   if (model.lbl !== undefined) {
