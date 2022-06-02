@@ -5,8 +5,7 @@ import { AuthModel } from "/lib/auth/auth.constants.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
-import { getTemplate } from "/lib/excel_template/excel_template.dao.ts";
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import { readFile } from "std/node/fs/promises.ts";
 
 import { MenuModel, MenuSearch } from "./menu.model.ts";
 import * as menuDao from "./menu.dao.ts";
@@ -159,10 +158,7 @@ export async function exportExcel(
   sort?: Sort|Sort[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
-  const buffer0 = await getTemplate(`menu.xlsx`);
-  if (!buffer0) {
-    throw new ServiceException(`模板文件 menu.xlsx 不存在!`);
-  }
+  const buffer0 = await readFile(`./menu.xlsx`);
   const buffer = await renderExcel(buffer0, { models });
   const result = await tmpfileDao.upload(
     {

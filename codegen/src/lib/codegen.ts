@@ -27,6 +27,9 @@ const projectPh = resolve(`${ __dirname }/../../../`).replace(/\\/gm, "/");
 
 console.log(`${chalk.gray("工程路径:")} ${chalk.blue(projectPh)}`);
 
+// 是否有graphql文件内容发生改变
+let graphqlHasChanged = false;
+
 export async function codegen(context: Context, schema: TablesConfigItem) {
   const opts = schema.opts;
   let { tableUp, table, table_comment, defaultSort, hasTenant_id, cache } = opts;
@@ -168,6 +171,9 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           } catch (err) {
           }
           if (!str0 || str0 !== str2) {
+            if (dir2.endsWith(".graphql.ts")) {
+              graphqlHasChanged = true;
+            }
             writeFnArr.push(async function() {
               await writeFile(`${out}/${dir2}`, str2);
               console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
@@ -353,6 +359,9 @@ async function treeDir(dir: string = "") {
 }
 
 export async function denoGenTypes() {
+  if (!graphqlHasChanged) {
+    return;
+  }
   shelljs.cd(`${ projectPh }/deno`);
   shelljs.exec("npm run gqlgen");
 }

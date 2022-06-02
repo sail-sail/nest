@@ -121,13 +121,13 @@ export async function deleteByIds<#=tableUp#>(
 /**
  * 导入<#=table_comment#>
  */
-// export async function importFile<#=tableUp#>(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await <#=table#>Service.importFile(context, id);
-//   return result;
-// }
+export async function importFile<#=tableUp#>(
+  context: Context,
+  id: string,
+) {
+  const result = await <#=table#>Service.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

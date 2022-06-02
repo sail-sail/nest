@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-let envKey = "";
+let envKey = "dev";
 
 for (let i = 0; i < Deno.args.length; i++) {
   const item = Deno.args[i];

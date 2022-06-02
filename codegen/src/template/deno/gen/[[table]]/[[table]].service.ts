@@ -3,13 +3,14 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
 import { renderExcel } from "ejsexcel";
+import { Page, Sort } from "/lib/page.model.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
-import { readFile } from "std/node/fs/promises.ts";
+import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
@@ -181,6 +182,82 @@ export async function revertByIds(
 }
 
 /**
+ * 导入文件
+ * @param {string} id
+ */
+export async function importFile(
+  context: Context,
+  id: string,
+) {
+  const header: { [key: string]: string } = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenNest) continue;
+      const column_name = column.COLUMN_NAME;
+      let data_type = column.DATA_TYPE;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_name === "id") {
+        continue;
+      }
+    #><#
+      if (!foreignKey && selectList.length === 0) {
+    #>
+    "<#=column_comment#>": "<#=column_name#>",<#
+      } else {
+    #>
+    "<#=column_comment#>": "_<#=column_name#>",<#
+      }
+    #><#
+    }
+    #>
+  };
+  const models = await getImportFileRows(id, header);
+  
+  let succNum = 0;
+  let failNum = 0;
+  const failErrMsgs: string[] = [ ];
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    try {
+      await <#=table#>Dao.create(context, model, { uniqueType: "update" });
+      succNum++;
+    } catch (err) {
+      failNum++;
+      failErrMsgs.push(`第 ${ i + 1 } 行: ${ err.message || err.toString() }`);
+    }
+  }
+  
+  let result = "";
+  if (succNum > 0) {
+    result = `导入成功 ${ succNum } 条\\r\\n`;
+  }
+  if (failNum > 0) {
+    result += `导入失败 ${ failNum } 条\\r\\n`;
+  }
+  if (failErrMsgs.length > 0) {
+    result += failErrMsgs.join("\\r\\n");
+  }
+  
+  return result;
+}
+
+/**
  * 导出Excel
  * @param {<#=tableUp#>Search} search? 搜索条件
  * @param {Sort|Sort[]} sort? 排序
@@ -192,7 +269,10 @@ export async function exportExcel(
   sort?: Sort|Sort[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
-  const buffer0 = await readFile(`./<#=table#>.xlsx`);
+  const buffer0 = await getTemplate(`<#=table#>.xlsx`);
+  if (!buffer0) {
+    throw new ServiceException(`模板文件 <#=table#>.xlsx 不存在!`);
+  }
   const buffer = await renderExcel(buffer0, { models });
   const result = await tmpfileDao.upload(
     {
