@@ -102,13 +102,13 @@ export async function deleteByIdsTenant(
 /**
  * 导入租户
  */
-// export async function importFileTenant(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await tenantService.importFile(context, id);
-//   return result;
-// }
+export async function importFileTenant(
+  context: Context,
+  id: string,
+) {
+  const result = await tenantService.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

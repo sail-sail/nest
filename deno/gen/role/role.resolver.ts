@@ -102,13 +102,13 @@ export async function deleteByIdsRole(
 /**
  * 导入角色
  */
-// export async function importFileRole(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await roleService.importFile(context, id);
-//   return result;
-// }
+export async function importFileRole(
+  context: Context,
+  id: string,
+) {
+  const result = await roleService.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

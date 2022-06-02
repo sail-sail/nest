@@ -102,13 +102,13 @@ export async function deleteByIdsBackground_task(
 /**
  * 导入后台任务
  */
-// export async function importFileBackground_task(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await background_taskService.importFile(context, id);
-//   return result;
-// }
+export async function importFileBackground_task(
+  context: Context,
+  id: string,
+) {
+  const result = await background_taskService.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

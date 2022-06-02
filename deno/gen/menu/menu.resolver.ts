@@ -102,13 +102,13 @@ export async function deleteByIdsMenu(
 /**
  * 导入菜单
  */
-// export async function importFileMenu(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await menuService.importFile(context, id);
-//   return result;
-// }
+export async function importFileMenu(
+  context: Context,
+  id: string,
+) {
+  const result = await menuService.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

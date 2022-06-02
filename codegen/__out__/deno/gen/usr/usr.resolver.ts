@@ -102,13 +102,13 @@ export async function deleteByIdsUsr(
 /**
  * 导入用户
  */
-// export async function importFileUsr(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await usrService.importFile(context, id);
-//   return result;
-// }
+export async function importFileUsr(
+  context: Context,
+  id: string,
+) {
+  const result = await usrService.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

@@ -102,13 +102,13 @@ export async function deleteByIdsPermit(
 /**
  * 导入权限
  */
-// export async function importFilePermit(
-//   context: Context,
-//   id: string,
-// ) {
-//   const result = await permitService.importFile(context, id);
-//   return result;
-// }
+export async function importFilePermit(
+  context: Context,
+  id: string,
+) {
+  const result = await permitService.importFile(context, id);
+  return result;
+}
 
 /**
  * 根据ids还原数据

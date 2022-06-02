@@ -1,11 +1,12 @@
 import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
 import { renderExcel } from "ejsexcel";
+import { Page, Sort } from "/lib/page.model.ts";
 import { AuthModel } from "/lib/auth/auth.constants.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
-import { readFile } from "std/node/fs/promises.ts";
+import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import { TenantModel, TenantSearch } from "./tenant.model.ts";
 import * as tenantDao from "./tenant.dao.ts";
@@ -147,6 +148,55 @@ export async function revertByIds(
 }
 
 /**
+ * 导入文件
+ * @param {string} id
+ */
+export async function importFile(
+  context: Context,
+  id: string,
+) {
+  const header: { [key: string]: string } = {
+    "名称": "lbl",
+    "域名绑定": "host",
+    "到期日": "expiration",
+    "最大用户数": "max_usr_num",
+    "启用": "_is_enabled",
+    "菜单": "_menu_ids",
+    "排序": "order_by",
+    "备注": "rem",
+  };
+  const models = await getImportFileRows(id, header);
+  
+  let succNum = 0;
+  let failNum = 0;
+  const failErrMsgs: string[] = [ ];
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    try {
+      await tenantDao.create(context, model, { uniqueType: "update" });
+      succNum++;
+    } catch (err) {
+      failNum++;
+      failErrMsgs.push(`第 ${ i + 1 } 行: ${ err.message || err.toString() }`);
+    }
+  }
+  
+  let result = "";
+  if (succNum > 0) {
+    result = `导入成功 ${ succNum } 条\r\n`;
+  }
+  if (failNum > 0) {
+    result += `导入失败 ${ failNum } 条\r\n`;
+  }
+  if (failErrMsgs.length > 0) {
+    result += failErrMsgs.join("\r\n");
+  }
+  
+  return result;
+}
+
+/**
  * 导出Excel
  * @param {TenantSearch} search? 搜索条件
  * @param {Sort|Sort[]} sort? 排序
@@ -158,7 +208,10 @@ export async function exportExcel(
   sort?: Sort|Sort[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
-  const buffer0 = await readFile(`./tenant.xlsx`);
+  const buffer0 = await getTemplate(`tenant.xlsx`);
+  if (!buffer0) {
+    throw new ServiceException(`模板文件 tenant.xlsx 不存在!`);
+  }
   const buffer = await renderExcel(buffer0, { models });
   const result = await tmpfileDao.upload(
     {
