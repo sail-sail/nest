@@ -19,7 +19,9 @@ axios.interceptors.request.use(
     const indexStore = useIndexStore();
     const authorization: string = usrStore.authorization;
     if (authorization) {
-      config.headers.authorization = authorization;
+      if (!authorization.startsWith("Bearer ")) {
+        config.headers.Authorization = `Bearer ${ authorization }`;
+      }
     }
     if ((<any>config).notLoading !== true) {
       indexStore.addLoading();
