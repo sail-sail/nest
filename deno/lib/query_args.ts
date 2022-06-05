@@ -8,6 +8,10 @@ export class QueryArgs {
     return this.value;
   }
   
+  reset() {
+    this.value = [ ];
+  }
+  
   toString() {
     return this.value.join(",");
   }
