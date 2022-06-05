@@ -1,8 +1,8 @@
-import { JWTPayload } from "jose/index.ts";
+import { AuthModel } from "./auth.constants.ts";
 import { Context } from "/lib/context.ts";
 import * as authDao from "./auth.dao.ts";
 
-export async function getAuthModel<T extends JWTPayload>(
+export async function getAuthModel<T extends AuthModel>(
   context: Context,
   notVerifyToken = false,
 ) {
@@ -14,7 +14,7 @@ export async function getAuthModel<T extends JWTPayload>(
  * @param {T} obj 对象
  * @returns Promise<{ expires_in: number, authorization: string }> expires_in: 过期时间
  */
-export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expires_in: number, authorization: string }> {
+export async function createToken<T extends AuthModel>(obj :T): Promise<{ expires_in: number, authorization: string }> {
   return await authDao.createToken(obj);
 }
 
@@ -23,7 +23,7 @@ export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expir
  * @param {string} authorization
  * @returns Promise<T> 验证成功后的对象
  */
-export async function verifyToken<T extends JWTPayload>(authorization :string): Promise<T> {
+export async function verifyToken<T extends AuthModel>(authorization :string): Promise<T> {
   return await authDao.verifyToken(authorization);
 }
 
@@ -32,7 +32,7 @@ export async function verifyToken<T extends JWTPayload>(authorization :string): 
  * @param {string} authorization
  * @returns T 验证成功后的对象
  */
-export function decodeToken<T extends JWTPayload>(authorization :string) :T {
+export function decodeToken<T extends AuthModel>(authorization :string) :T {
   return authDao.decodeToken(authorization);
 }
 
