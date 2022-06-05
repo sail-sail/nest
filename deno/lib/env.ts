@@ -12,7 +12,7 @@ declare global {
 
 let envKey = "dev";
 
-function initEnv() {
+export function initEnv() {
   for (let i = 0; i < Deno.args.length; i++) {
     const item = Deno.args[i];
     if (item.startsWith("-e=") || item.startsWith("--env=")) {
