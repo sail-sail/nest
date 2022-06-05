@@ -5,7 +5,7 @@ import * as usrDao from "./usr.dao.ts";
 import { MutationLoginArgs } from "/gen/types.ts";
 
 /**
- * 登录获得access_token
+ * 登录获得 authorization
  * @param {Context} context
  * @param {MutationLoginArgs["username"]} username 用户名
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
@@ -28,6 +28,6 @@ export async function login(
   if (!model || !model.id) {
     throw "用户名或密码错误!";
   }
-  const { access_token } = await authService.createToken({ id: model.id });
-  return access_token;
+  const { authorization } = await authService.createToken({ id: model.id });
+  return authorization;
 }

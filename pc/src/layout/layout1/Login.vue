@@ -136,9 +136,9 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 });
 
 async function loginClk() {
-  const access_token = await login(model);
-  usrStore.setAccess_token(access_token);
-  // if (access_token) {
+  const authorization = await login(model);
+  usrStore.setAuthorization(authorization);
+  // if (authorization) {
   //   await router.replace("/");
   //   await tabsStore.refreshTab();
   // }

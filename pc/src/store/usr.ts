@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 
 export default defineStore("usr", function() {
   
-  let access_token = $ref("");
+  let authorization = $ref("");
   
-  function setAccess_token(access_token0: typeof access_token) {
-    access_token = access_token0;
+  function setAuthorization(authorization0: typeof authorization) {
+    authorization = authorization0;
   }
   
   let lang = $ref("");
@@ -15,19 +15,19 @@ export default defineStore("usr", function() {
   }
   
   function clear() {
-    access_token = "",
+    authorization = "",
     lang = "";
   }
   
   function reset() {
-    access_token = "",
+    authorization = "",
     lang = "";
   }
   
   return $$({
-    access_token,
+    authorization,
     lang,
-    setAccess_token,
+    setAuthorization,
     setLang,
     clear,
     reset,

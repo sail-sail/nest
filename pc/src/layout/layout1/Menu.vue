@@ -153,9 +153,9 @@ async function getMenusEfc() {
 }
 
 watch(
-  () => usrStore.access_token,
+  () => usrStore.authorization,
   async () => {
-    if (usrStore.access_token) {
+    if (usrStore.authorization) {
       await getMenusEfc();
     } else {
       menuStore.setMenus([ ]);

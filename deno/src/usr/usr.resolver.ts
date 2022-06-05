@@ -7,7 +7,7 @@ import {
 } from "/gen/types.ts"
 
 /**
- * 登录获得access_token
+ * 登录获得 authorization
  * @param {Context} context
  * @param {MutationLoginArgs["username"]} username 用户名
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次

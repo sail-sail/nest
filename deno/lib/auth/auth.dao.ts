@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN, AuthModel, SECRET_KEY } from "./auth.constants.ts";
+import { AUTHORIZATION, AuthModel, SECRET_KEY } from "./auth.constants.ts";
 import { ServiceException } from "../exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
@@ -6,17 +6,20 @@ import { SignJWT, jwtVerify, JWTPayload, decodeJwt } from "jose/index.ts";
 import { JWTExpired } from "jose/util/errors.ts";
 import { Context } from "../context.ts";
 
-export function getAccess_token(
+export function getAuthorization(
   context: Context,
 ) {
   const request = context.oakCtx.request;
   const headers = request.headers;
-  let access_token: string|null = headers.get(ACCESS_TOKEN);
-  if (!access_token) {
+  let authorization: string|null = headers.get(AUTHORIZATION);
+  if (!authorization) {
     const searchParams = request.url.searchParams;
-    access_token = searchParams.get(ACCESS_TOKEN);
+    authorization = searchParams.get(AUTHORIZATION);
   }
-  return access_token;
+  if (authorization && authorization.startsWith("Bearer ")) {
+    authorization = authorization.substring(7);
+  }
+  return authorization;
 }
 
 export async function getAuthModel<T extends AuthModel>(
@@ -33,8 +36,8 @@ export async function getAuthModel<T extends AuthModel>(
   notVerifyToken = false,
 ) {
   const response = context.oakCtx.response;
-  const access_token = getAccess_token(context);
-  if (!access_token) {
+  const authorization = getAuthorization(context);
+  if (!authorization) {
     if (notVerifyToken) {
       return undefined;
     } else {
@@ -42,12 +45,12 @@ export async function getAuthModel<T extends AuthModel>(
     }
   }
   if (notVerifyToken) {
-    const authModel = decodeToken<T>(access_token);
+    const authModel = decodeToken<T>(authorization);
     return authModel;
   }
   let authModel: T|undefined;
   try {
-    authModel = await verifyToken<T>(access_token);
+    authModel = await verifyToken<T>(authorization);
   } catch (err: unknown) {
     if (err instanceof JWTExpired) {
       authModel = undefined;
@@ -56,23 +59,23 @@ export async function getAuthModel<T extends AuthModel>(
     }
   }
   if (!authModel) {
-    const tokenInfo = await refreshToken(access_token);
-    if (tokenInfo && tokenInfo.access_token) {
-      response.headers.set(ACCESS_TOKEN, tokenInfo.access_token);
-      authModel = await verifyToken<T>(tokenInfo.access_token);
+    const tokenInfo = await refreshToken(authorization);
+    if (tokenInfo && tokenInfo.authorization) {
+      response.headers.set(AUTHORIZATION, "Bearer " + tokenInfo.authorization);
+      authModel = await verifyToken<T>(tokenInfo.authorization);
     }
   } else {
-    response.headers.set(ACCESS_TOKEN, "");
+    response.headers.set(AUTHORIZATION, "");
   }
   return authModel;
 }
 
 /**
- * 创建access_token
+ * 创建 authorization
  * @param {T} obj 对象
- * @returns Promise<{ expires_in: number, access_token: string }> expires_in: 过期时间
+ * @returns Promise<{ expires_in: number, authorization: string }> expires_in: 过期时间
  */
-export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expires_in: number, access_token: string }> {
+export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expires_in: number, authorization: string }> {
   const token_timeout = Number(Deno.env.get("server_tokenTimeout"));
   if (!(token_timeout > 10)) {
     throw new Error("Env server_tokenTimeout must larger then 10!");
@@ -83,37 +86,37 @@ export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expir
     .sign(new TextEncoder().encode(SECRET_KEY));
   return {
     expires_in: token_timeout,
-    access_token: token,
+    authorization: token,
   };
 }
 
 /**
- * 验证access_token
- * @param {string} access_token
+ * 验证 authorization
+ * @param {string} authorization
  * @returns Promise<T> 验证成功后的对象
  */
-export async function verifyToken<T extends JWTPayload>(access_token :string): Promise<T> {
-  const { payload } = await jwtVerify(access_token, new TextEncoder().encode(SECRET_KEY));
+export async function verifyToken<T extends JWTPayload>(authorization :string): Promise<T> {
+  const { payload } = await jwtVerify(authorization, new TextEncoder().encode(SECRET_KEY));
   return <T>payload;
 }
 
 /**
- * 验证access_token
- * @param {string} access_token
+ * 验证 authorization
+ * @param {string} authorization
  * @returns T 验证成功后的对象
  */
-export function decodeToken<T extends JWTPayload>(access_token :string): T {
-  const obj = <T>decodeJwt(access_token);
+export function decodeToken<T extends JWTPayload>(authorization :string): T {
+  const obj = <T>decodeJwt(authorization);
   return obj;
 }
 
 /**
  * 通过旧token创建新token
- * @param  {string} access_token 旧token
- * @returns Promise<{ expires_in: number, access_token: string }> 新tokenInfo
+ * @param  {string} authorization 旧token
+ * @returns Promise<{ expires_in: number, authorization: string }> 新tokenInfo
  */
-export async function refreshToken(access_token: string): Promise<{ expires_in: number, access_token: string }> {
-  const obj = decodeJwt(access_token);
+export async function refreshToken(authorization: string): Promise<{ expires_in: number, authorization: string }> {
+  const obj = decodeJwt(authorization);
   if (!obj || !obj.exp) {
     throw new ServiceException("令牌超时!", "refresh_token_expired");
   }

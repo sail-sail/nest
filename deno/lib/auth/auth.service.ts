@@ -10,39 +10,39 @@ export async function getAuthModel<T extends JWTPayload>(
 }
 
 /**
- * 创建access_token
+ * 创建 authorization
  * @param {T} obj 对象
- * @returns Promise<{ expires_in: number, access_token: string }> expires_in: 过期时间
+ * @returns Promise<{ expires_in: number, authorization: string }> expires_in: 过期时间
  */
-export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expires_in: number, access_token: string }> {
+export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expires_in: number, authorization: string }> {
   return await authDao.createToken(obj);
 }
 
 /**
- * 验证access_token
- * @param {string} access_token
+ * 验证 authorization
+ * @param {string} authorization
  * @returns Promise<T> 验证成功后的对象
  */
-export async function verifyToken<T extends JWTPayload>(access_token :string): Promise<T> {
-  return await authDao.verifyToken(access_token);
+export async function verifyToken<T extends JWTPayload>(authorization :string): Promise<T> {
+  return await authDao.verifyToken(authorization);
 }
 
 /**
- * 验证access_token
- * @param {string} access_token
+ * 验证 authorization
+ * @param {string} authorization
  * @returns T 验证成功后的对象
  */
-export function decodeToken<T extends JWTPayload>(access_token :string) :T {
-  return authDao.decodeToken(access_token);
+export function decodeToken<T extends JWTPayload>(authorization :string) :T {
+  return authDao.decodeToken(authorization);
 }
 
 /**
  * 通过旧token创建新token
- * @param  {string} access_token 旧token
- * @returns Promise<{ expires_in: number, access_token: string }> 新tokenInfo
+ * @param  {string} authorization 旧token
+ * @returns Promise<{ expires_in: number, authorization: string }> 新tokenInfo
  */
-export async function refreshToken(access_token: string) :Promise<{ expires_in: number, access_token: string }> {
-  return await authDao.refreshToken(access_token);
+export async function refreshToken(authorization: string) :Promise<{ expires_in: number, authorization: string }> {
+  return await authDao.refreshToken(authorization);
 }
 
 /**

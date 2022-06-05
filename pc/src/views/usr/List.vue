@@ -831,7 +831,7 @@ async function revertByIdsEfc() {
 }
 
 async function initFrame() {
-  if (usrStore.access_token) {
+  if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
       getSelectListEfc(),
@@ -841,7 +841,7 @@ async function initFrame() {
 }
 
 watch(
-  () => usrStore.access_token,
+  () => usrStore.authorization,
   initFrame,
 );
 

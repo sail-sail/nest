@@ -213,7 +213,7 @@ vi /etc/redis.conf
 
 ### uni-app 微信登录流程
 ```
-1. 一打开界面, App.vue 中调用 utils/request/uniLogin 若登录已经失效, 后端通过 code2Session 获取 openid 和 session_key 同时进行登录(获取access_token)
-2. 每次调用request请求或者GraphQL请求(utils/request/request)时, 有 access_token 就带上 access_token 否则就不带
-  后端检测 access_token 是否过期, 过期则重新调用 utils/request/uniLogin
+1. 一打开界面, App.vue 中调用 utils/request/uniLogin 若登录已经失效, 后端通过 code2Session 获取 openid 和 session_key 同时进行登录(获取 authorization)
+2. 每次调用request请求或者GraphQL请求(utils/request/request)时, 有 authorization 就带上 authorization 否则就不带
+  后端检测 authorization 是否过期, 过期则重新调用 utils/request/uniLogin
 ```

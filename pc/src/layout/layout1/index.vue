@@ -1,6 +1,6 @@
 <template>
 <div class="wrap_div">
-  <Login v-if="!usrStore.access_token"></Login>
+  <Login v-if="!usrStore.authorization"></Login>
   <div class="menu_div" :class="{ menu_collapse: menuStore.isCollapse }">
     <div class="top_div">
       <Top></Top>
@@ -98,7 +98,7 @@ watch(
   ],
   async () => {
     const menu = menuStore.getMenuByPath(route.path);
-    if (!menu && route.path !== "/" && usrStore.access_token) {
+    if (!menu && route.path !== "/" && usrStore.authorization) {
       ElMessage.warning("无权限打开此菜单!");
       return;
     }
@@ -163,7 +163,7 @@ async function logoutClk() {
   } catch (err) {
     return;
   }
-  usrStore.setAccess_token("");
+  usrStore.setAuthorization("");
 }
 
 onMounted(async () => {

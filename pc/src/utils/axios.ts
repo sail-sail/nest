@@ -17,9 +17,9 @@ axios.interceptors.request.use(
   (config) => {
     const usrStore = useUsrStore();
     const indexStore = useIndexStore();
-    const access_token: string = usrStore.access_token;
-    if (access_token) {
-      config.headers.access_token = access_token;
+    const authorization: string = usrStore.authorization;
+    if (authorization) {
+      config.headers.authorization = authorization;
     }
     if ((<any>config).notLoading !== true) {
       indexStore.addLoading();
@@ -43,8 +43,12 @@ axios.interceptors.response.use(
       indexStore.minusLoading();
     }
     const headers = response.headers;
-    if (headers["access_token"]) {
-      usrStore.setAccess_token(headers["access_token"]);
+    if (headers["authorization"]) {
+      let authorization = headers["authorization"];
+      if (authorization.startsWith("Bearer ")) {
+        authorization = authorization.substring(7);
+      }
+      usrStore.setAuthorization(authorization);
     }
     if ((<any>config).reqType === "graphql") {
       return response;
@@ -147,10 +151,10 @@ export function getDownloadUrl(
   type: "oss" | "tmpfile" = "tmpfile",
 ): string {
   const usrStore = useUsrStore();
-  const access_token: string = usrStore.access_token;
+  const authorization: string = usrStore.authorization;
   const params = new URLSearchParams();
-  if (access_token) {
-    params.set("access_token", access_token);
+  if (authorization) {
+    params.set("authorization", authorization);
   }
   params.set("id", model.id);
   if (model.filename) {
