@@ -17,7 +17,6 @@
     "file-saver": "2.0.5",
     "pinia": "2.0.14",
     "pinia-plugin-persistedstate": "1.6.1",
-    "screenfull": "6.0.1",
     "vue": "3.2.33",
     "vue-router": "4.0.15"
   },
