@@ -59,8 +59,8 @@ async function download(ctx: RouterContext<any>) {
       if (stats.contentType) {
         response.headers.set("Content-Type", stats.contentType);
       }
-      if (!filename && stats?.meta?.["x-amz-meta-filename"]) {
-        filename = stats?.meta?.["x-amz-meta-filename"];
+      if (!filename && stats?.meta?.filename) {
+        filename = stats?.meta?.filename;
       }
       if (stats.contentLength) {
         response.headers.set("Content-Length", stats.contentLength.toString());
@@ -82,7 +82,7 @@ async function download(ctx: RouterContext<any>) {
       (err as any).code = "NotFound";
       throw err;
     }
-    if (stats?.meta?.["x-amz-meta-once"] === "1") {
+    if (stats?.meta?.once === "1") {
       if (remove === "1") {
         await tmpfileServie.deleteObject(id);
       }

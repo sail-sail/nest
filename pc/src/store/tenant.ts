@@ -17,8 +17,8 @@ export default defineStore("tenant", function() {
     return data;
   }
   
-  return $$({
-    getHost,
-  });
+  return {
+    getHost: $$(getHost),
+  };
   
 });

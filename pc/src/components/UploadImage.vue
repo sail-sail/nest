@@ -19,7 +19,7 @@
     </template>
     <template #error>
       <el-icon style="font-size: inherit;" color="gray">
-        <Loading v-if="indexStore.loading > 0"></Loading>
+        <Loading v-if="(indexStore.loading as any) > 0"></Loading>
         <Picture v-else></Picture>
       </el-icon>
     </template>

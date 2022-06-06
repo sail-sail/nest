@@ -25,14 +25,14 @@ export async function upload(
     content = await Deno.readFile(file.filename!);
   }
   const meta: {
-    "x-amz-meta-filename"?: string;
-    "x-amz-meta-once"?: string;
+    filename?: string;
+    once?: string;
   } = { };
   if (file.originalName) {
-    meta["x-amz-meta-filename"] = encodeURIComponent(file.originalName);
+    meta.filename = encodeURIComponent(file.originalName);
   }
   if (opt?.notDownloadMulti) {
-    meta["x-amz-meta-once"] = "1";
+    meta.once = "1";
   }
   const id = shortUuidV4();
   await bucket.putObject(id, content, {

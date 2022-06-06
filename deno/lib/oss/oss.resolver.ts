@@ -23,7 +23,7 @@ export async function getStatsOss(
         throw err;
       }
     }
-    const filename = stats?.meta?.["x-amz-meta-filename"];
+    const filename = stats?.meta?.filename;
     if (filename) {
       lbl = decodeURIComponent(filename || "");
     }

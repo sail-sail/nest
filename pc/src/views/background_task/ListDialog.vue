@@ -79,7 +79,7 @@ async function showDialog(
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
-  background_taskStore.listDialogVisible = false;
+  (background_taskStore.listDialogVisible as unknown as boolean) = false;
   onCloseResolve();
   done(false);
 }
