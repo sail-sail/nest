@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toRef, watch } from "vue";
+import { watch } from "vue";
 import {
   ElPopover,
   ElTag,
@@ -58,7 +58,7 @@ const props = withDefaults(
   },
 );
 
-let maxSize = $ref(toRef(props, "maxSize"));
+let maxSize = $toRef(props, "maxSize");
 
 let modelValue = $ref<string[]>();
 let labelValue = $ref<string[]>();
