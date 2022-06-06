@@ -6,12 +6,11 @@ import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 export async function getTemplate(
   template: string,
-): Promise<Buffer | undefined> {
+): Promise<Uint8Array | undefined> {
   // deno-lint-ignore no-explicit-any
   if ((window as any).process.env.NODE_ENV === "development") {
     const tmpFn = async function(dir: string): Promise<Buffer | undefined> {
       for await (const dirEntry of Deno.readDir(dir)) {
-        console.log(dirEntry.name);
         if (dirEntry.name === "node_modules" || dirEntry.name === "test") {
           continue;
         }
@@ -37,7 +36,7 @@ export async function getTemplate(
     }
     return buffer;
   }
-  const buffer = await readFile(`${ Deno.cwd() }/excel_template/${ template }`);
+  const buffer = await Deno.readFile(`${ Deno.cwd() }/excel_template/${ template }`);
   return buffer;
 }
 
