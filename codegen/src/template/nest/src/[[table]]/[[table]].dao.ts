@@ -879,7 +879,7 @@ export class <#=tableUp#>Dao {
           } else if (typeof(value) === "number") {
             value = value.toString();
           }
-      #><#=i>0?" else ":"\r\n      "#>if (model._<#=column_name#> === "<#=label#>") {
+      #><#=i>0?" else ":"\n      "#>if (model._<#=column_name#> === "<#=label#>") {
         model.<#=column_name#> = <#=value#>;
       }<#
         }
@@ -1224,7 +1224,7 @@ export class <#=tableUp#>Dao {
           } else if (typeof(value) === "number") {
             value = value.toString();
           }
-      #><#=i>0?" else ":"\r\n      "#>if (model._<#=column_name#> === "<#=label#>") {
+      #><#=i>0?" else ":"\n      "#>if (model._<#=column_name#> === "<#=label#>") {
         model.<#=column_name#> = <#=value#>;
       }<#
         }

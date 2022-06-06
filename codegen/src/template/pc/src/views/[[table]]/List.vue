@@ -397,31 +397,31 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
             }
             let minWith = "";
             if (column.minWith != null) {
-              minWith = "\r\n              min-width=\""+column.minWith+"\"";
+              minWith = "\n              min-width=\""+column.minWith+"\"";
             }
             let width = "";
             if (column.width != null) {
-              width = "\r\n              width=\""+column.width+"\"";
+              width = "\n              width=\""+column.width+"\"";
             }
             let sortable = "";
             if (column.sortable) {
-              sortable = "\r\n              sortable=\"custom\"";
+              sortable = "\n              sortable=\"custom\"";
             }
             const isPassword = column.isPassword;
             if (isPassword) continue;
             let align = "";
             if (column.align) {
-              align = "\r\n              align=\""+column.align+"\"";
+              align = "\n              align=\""+column.align+"\"";
             } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-              align = "\r\n              align=\"right\"";
+              align = "\n              align=\"right\"";
             } else {
-              align = "\r\n              align=\"center\"";
+              align = "\n              align=\"center\"";
             }
             let headerAlign = "";
             if (column.align) {
-              align = "\r\n              header-align=\""+column.headerAlign+"\"";
+              align = "\n              header-align=\""+column.headerAlign+"\"";
             } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-              headerAlign = "\r\n              header-align=\"center\"";
+              headerAlign = "\n              header-align=\"center\"";
             }
           #><#
           if (column.isImg) {
@@ -1114,31 +1114,31 @@ for (let i = 0; i < columns.length; i++) {
   }
   let minWith = "";
   if (column.minWith != null) {
-    minWith = "\r\n          min-width=\""+column.minWith+"\"";
+    minWith = "\n          min-width=\""+column.minWith+"\"";
   }
   let width = "";
   if (column.width != null) {
-    width = "\r\n          width=\""+column.width+"\"";
+    width = "\n          width=\""+column.width+"\"";
   }
   let sortable = "";
   if (column.sortable) {
-    sortable = "\r\n          sortable=\"custom\"";
+    sortable = "\n          sortable=\"custom\"";
   }
   const isPassword = column.isPassword;
   if (isPassword) continue;
   let align = "";
   if (column.align) {
-    align = "\r\n          align=\""+column.align+"\"";
+    align = "\n          align=\""+column.align+"\"";
   } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-    align = "\r\n          align=\"right\"";
+    align = "\n          align=\"right\"";
   } else {
-    align = "\r\n          align=\"center\"";
+    align = "\n          align=\"center\"";
   }
   let headerAlign = "";
   if (column.align) {
-    align = "\r\n          header-align=\""+column.headerAlign+"\"";
+    align = "\n          header-align=\""+column.headerAlign+"\"";
   } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-    headerAlign = "\r\n          header-align=\"center\"";
+    headerAlign = "\n          header-align=\"center\"";
   }
 #><#
   if (column.isImg) {

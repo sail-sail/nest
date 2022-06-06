@@ -149,7 +149,6 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           }
           if(!isExist) {
             let str2 = eval(htmlStr);
-            str2 = str2.replace(/\r\n/gm, "\n").replace(/\n/gm, "\r\n");
             let str0: string;
             try {
               str0 = await readFile(`${out}/${dir3}`, "utf8");
@@ -164,7 +163,6 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           }
         } else {
           let str2 = eval(htmlStr);
-          str2 = str2.replace(/\r\n/gm, "\n").replace(/\n/gm, "\r\n");
           let str0: string;
           try {
             str0 = await readFile(`${out}/${dir2}`, "utf8");
@@ -277,7 +275,6 @@ export async function genRouter(context: Context) {
     const htmlStr = includeFtl(await readFile(`${ rootPh }/${ file }` ,"utf8"), "<#", "#>");
     try {
       let str2 = eval(htmlStr);
-      str2 = str2.replace(/\r\n/gm, "\n").replace(/\n/gm, "\r\n");
       let str0: string;
       try {
         str0 = await readFile(`${ out }/${ file }`, "utf8");
