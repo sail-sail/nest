@@ -4,8 +4,6 @@
     "allowUnreachableCode": true,
     "allowUnusedLabels": true,
     "experimentalDecorators": true,
-    "inlineSourceMap": false,
-    "sourceMap": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "skipLibCheck": true
