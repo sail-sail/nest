@@ -23,4 +23,7 @@ if (isNaN(port) || port < 1024) {
 }
 console.log(`app started: ${ port }`);
 
-await app.listen({ port });
+await app.listen({
+  port,
+  hostname: Deno.env.get("server_host"),
+});

@@ -45,7 +45,7 @@
     "@dcloudio/uni-mp-toutiao": "3.0.0-alpha-3040520220413002",
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-3040520220413002",
     "@dcloudio/uni-quickapp-webview": "3.0.0-alpha-3040520220413002",
-    "pinia": "2.0.13",
+    "pinia": "2.0.14",
     "vue": "3.2.33",
     "vue-demi": "0.12.5"
   },

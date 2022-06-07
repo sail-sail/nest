@@ -25,12 +25,14 @@ const props = withDefaults(
     maxSize?: number;
     maxFileSize?: number;
     readonly?: boolean;
+    accept?: string;
   }>(),
   {
     modelValue: "",
     maxSize: 1,
     maxFileSize: 1024 * 1024 * 50,
     readonly: false,
+    accept: "",
   },
 );
 
@@ -62,6 +64,7 @@ async function linkClk() {
       maxSize: props.maxSize,
       maxFileSize: props.maxFileSize,
       readonly: props.readonly,
+      accept: props.accept,
     },
   });
 }

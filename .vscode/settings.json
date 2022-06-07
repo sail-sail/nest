@@ -66,7 +66,7 @@
   ,"deno.lint": true
   ,"deno.unstable": true
   ,"deno.enablePaths": [
-    "./deno"
+    "./deno/"
   ]
   ,"deno.importMap": "./deno/import_map.json"
   ,"deno.config": "./deno/tsconfig.json"

@@ -22,10 +22,10 @@ export default defineStore("usr", function() {
     showAuth = showAuth1;
   }
   
-  return $$({
-    access_token,
-    showAuth,
+  return {
+    access_token: $$(access_token),
+    showAuth: $$(showAuth),
     setAccessToken,
     setShowAuth,
-  });
+  };
 });
