@@ -1,5 +1,6 @@
 import { MutationLoginArgs } from "/gen/types.ts";
 import { Context } from "/lib/context.ts";
+import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { QueryArgs } from "/lib/query_args.ts";
 
 /**
@@ -38,10 +39,25 @@ export async function findLoginUsr(
  */
 export async function getTenant_id(
   context: Context,
-  usr_id: string,
+  usr_id?: string,
+  options?: {
+    notVerifyToken?: boolean,
+  },
 ): Promise<string | undefined> {
+  if (options?.notVerifyToken) {
+    const authModel = await getAuthModel(context, true);
+    if (!authModel) {
+      return;
+    }
+    usr_id = authModel.id;
+  } else {
+    if (!usr_id) {
+      const authModel = await getAuthModel(context);
+      usr_id = authModel.id;
+    }
+  }
   const args = new QueryArgs();
-  const sql = `
+  const sql = /*sql*/`
     select
       t.tenant_id
     from usr t
@@ -52,7 +68,7 @@ export async function getTenant_id(
   const table = "usr";
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args, key: cacheKey1 });
+  const cacheKey2 = JSON.stringify({ sql, args });
   
   interface Result {
     tenant_id?: string;

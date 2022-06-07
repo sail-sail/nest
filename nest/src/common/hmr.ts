@@ -203,10 +203,10 @@ export async function hmr() {
                       context.query = oldQuery;
                     }
                     if (typeArr) {
-                      let typeStr = "{\r\n";
+                      let typeStr = "{\n";
                       for (let i = 0; i < typeArr.length; i++) {
                         const item = typeArr[i];
-                        typeStr += `      ${ item.name }: ${ item.type },\r\n`;
+                        typeStr += `      ${ item.name }: ${ item.type },\n`;
                       }
                       typeStr += "    }";
                       let idx = methodStr2.lastIndexOf("await context.query(");

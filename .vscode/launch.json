@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "address": "127.0.0.1",
+      "localRoot": "${workspaceFolder}/deno",
+      "name": "Debug deno",
+      "port": 9229,
+      "request": "attach",
+      "type": "node"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "debug",

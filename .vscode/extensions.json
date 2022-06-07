@@ -31,6 +31,7 @@
     "redhat.vscode-xml",
     "bradlc.vscode-tailwindcss",
     "mattpocock.ts-error-translator",
-    "usernamehw.errorlens"
+    "usernamehw.errorlens",
+    "derefs.vscode-inline-sql-highlight"
   ]
 }

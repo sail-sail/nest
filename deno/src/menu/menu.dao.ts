@@ -1,7 +1,6 @@
 import { Context } from "/lib/context.ts";
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
-import { AuthModel } from "/lib/auth/auth.constants.ts";
 import { MenuModel } from "/gen/menu/menu.model.ts";
 import { QueryArgs } from "/lib/query_args.ts";
 
@@ -11,7 +10,7 @@ async function _getMenus(
   menu_id?: string,
 ) {
   const args = new QueryArgs();
-  let sql = /* sql */`
+  let sql = /*sql*/`
     select
       t.id,
       t.type,

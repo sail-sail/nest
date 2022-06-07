@@ -49,7 +49,7 @@ export function logInit(conf: LogConfig) {
         const lgFlNm = dateMom.format(separate)+".log";
         const lgPh = conf.path+"/"+lgFlNm;
         if(!expire_day || expire_day <= 0) {
-          await appendFile(lgPh,pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\r\n");
+          await appendFile(lgPh,pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\n");
           return;
         }
         let exists = true;
@@ -75,7 +75,7 @@ export function logInit(conf: LogConfig) {
             }
           }
         }
-        await appendFile(lgPh,pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\r\n");
+        await appendFile(lgPh,pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\n");
       };
     });
   }
