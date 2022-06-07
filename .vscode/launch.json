@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Chrome",
+      "port": 9222,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}/pc"
+    },
+    {
       "address": "127.0.0.1",
       "localRoot": "${workspaceFolder}/deno",
       "name": "Debug deno",

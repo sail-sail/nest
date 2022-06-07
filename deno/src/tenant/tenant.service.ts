@@ -5,6 +5,6 @@ export async function getLoginTenants(
   context: Context,
   host: string,
 ): Promise<{ id: string, lbl: string }[]> {
-  const result = await tenantDao.getLoginTenants(context, host)
+  const result = await tenantDao.getLoginTenants(context, host);
   return result;
 }

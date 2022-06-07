@@ -183,6 +183,9 @@ function defineGraphql(
 ) {
   if (str) {
     gqlSchemaStr += str + "\n";
+    if (gqlSchema) {
+      resetGqlSchema();
+    }
   }
   if (callback) {
     const keys = Object.keys(callback);
