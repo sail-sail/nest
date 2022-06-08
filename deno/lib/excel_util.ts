@@ -1,5 +1,3 @@
-import { readFile } from "std/node/fs/promises.ts";
-import { Buffer } from "std/node/buffer.ts";
 import { MimeMapping } from "common_mime_types";
 import { XLSX } from "/deps.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
@@ -9,7 +7,7 @@ export async function getTemplate(
 ): Promise<Uint8Array | undefined> {
   // deno-lint-ignore no-explicit-any
   if ((window as any).process.env.NODE_ENV === "development") {
-    const tmpFn = async function(dir: string): Promise<Buffer | undefined> {
+    const tmpFn = async function(dir: string): Promise<Uint8Array | undefined> {
       for await (const dirEntry of Deno.readDir(dir)) {
         if (dirEntry.name === "node_modules" || dirEntry.name === "test") {
           continue;
@@ -24,7 +22,7 @@ export async function getTemplate(
             continue;
           }
           if (dirEntry.name === template) {
-            const buffer: Buffer = await readFile(dir + "/" + dirEntry.name);
+            const buffer: Uint8Array = await Deno.readFile(dir + "/" + dirEntry.name);
             return buffer;
           }
         }

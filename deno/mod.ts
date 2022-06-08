@@ -3,10 +3,7 @@ import "/lib/env.ts";
 import { initApp } from "/lib/oak/mod.ts";
 import { logInit } from "/lib/log.ts";
 
-import "/gen/graphql.ts";
-import "/src/graphql.ts";
-import "/lib/oss/oss.graphql.ts";
-import "/lib/app/app.graphql.ts";
+import "./graphql.ts";
 
 if (window.process.env.NODE_ENV === "production") {
   logInit({

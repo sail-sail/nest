@@ -5,7 +5,7 @@ import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 const gqlRouter = new Router();
 
-let gqlSchemaStr = /* GraphQL */`
+const _gqlSchemaStr = /* GraphQL */`
 scalar JSON
 input PageInput {
   pgOffset: Int
@@ -27,6 +27,19 @@ type Query {
   _version: String
 }
 `;
+
+let gqlSchemaStr = _gqlSchemaStr;
+
+let gqlSchema: GraphQLSchema|undefined;
+
+const _gqlRootValue = {
+  _version: function() {
+    return "1.0.0";
+  },
+};
+
+// deno-lint-ignore ban-types
+const gqlRootValue: { [key: string]: Function | undefined; } = Object.assign({ }, _gqlRootValue);
 
 function mergeSchema(gqlSchemaStr: string): string {
   let gqlSchemaStr2 = "";
@@ -78,21 +91,12 @@ ${ mutationStr }
   return gqlSchemaStr2;
 }
 
-let gqlSchema: GraphQLSchema|undefined;
-
 export function resetGqlSchema() {
   if (gqlSchema) {
     console.log("resetGqlSchema")
   }
   gqlSchema = buildSchema(mergeSchema(gqlSchemaStr));
 }
-
-// deno-lint-ignore ban-types
-const gqlRootValue: { [key: string]: Function; } = {
-  _version: function() {
-    return "1.0.0";
-  },
-};
 
 gqlRouter.post("/graphql", async function(ctx) {
   const body = ctx.request.body();
@@ -184,7 +188,7 @@ function defineGraphql(
   if (str) {
     gqlSchemaStr += str + "\n";
     if (gqlSchema) {
-      resetGqlSchema();
+      gqlSchema = undefined;
     }
   }
   if (callback) {
