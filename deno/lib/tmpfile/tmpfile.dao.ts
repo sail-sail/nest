@@ -1,15 +1,16 @@
 import { FormDataFile } from "oak";
 import { S3 } from "S3";
-import { shortUuidV4 } from "../string_util.ts";
+import { getEnv } from "/lib/env.ts";
+import { shortUuidV4 } from "/lib/string_util.ts";
 
-function getBucket() {
+async function getBucket() {
   const s3 = new S3({
-    accessKeyID: Deno.env.get("tmpfile_accesskey")!,
-    secretKey: Deno.env.get("tmpfile_secretkey")!,
+    accessKeyID: await getEnv("tmpfile_accesskey"),
+    secretKey: await getEnv("tmpfile_secretkey"),
     region: "us-east-1",
-    endpointURL: Deno.env.get("tmpfile_endpoint"),
+    endpointURL: await getEnv("tmpfile_endpoint"),
   });
-  const bucket = s3.getBucket(Deno.env.get("tmpfile_bucket")!);
+  const bucket = s3.getBucket(await getEnv("tmpfile_bucket"));
   return bucket;
 }
 
@@ -19,7 +20,7 @@ export async function upload(
     notDownloadMulti?: boolean,
   },
 ) {
-  const bucket = getBucket();
+  const bucket = await getBucket();
   let content = file.content;
   if (!content) {
     content = await Deno.readFile(file.filename!);
@@ -43,13 +44,13 @@ export async function upload(
 }
 
 export async function statObject(id: string) {
-  const bucket = getBucket();
+  const bucket = await getBucket();
   const obj = await bucket.headObject(id);
   return obj;
 }
 
 export async function getObject(id: string) {
-  const bucket = getBucket();
+  const bucket = await getBucket();
   const obj = await bucket.getObject(id);
   if (!obj) {
     return;
@@ -61,6 +62,6 @@ export async function getObject(id: string) {
 }
 
 export async function deleteObject(id: string) {
-  const bucket = getBucket();
+  const bucket = await getBucket();
   await bucket.deleteObject(id);
 }

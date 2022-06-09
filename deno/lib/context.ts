@@ -7,6 +7,7 @@ import { Context as OakContext } from "oak";
 
 import { createPool as genericCreatePool, Pool as GenPool } from "generic_pool";
 import { QueryArgs } from "/lib/query_args.ts";
+import { getEnv } from "/lib/env.ts";
 
 declare global {
   interface Window {
@@ -29,9 +30,9 @@ function redisClientPool() {
       if (cache_ECONNREFUSED) return;
       let client: Awaited<ReturnType<typeof redisConnect>> | undefined;
       const option = {
-        hostname: Deno.env.get("cache_hostname") || "127.0.0.1",
-        port: Deno.env.get("cache_port") || 6379,
-        db: Number(Deno.env.get("cache_db")) || 0,
+        hostname: await getEnv("cache_hostname") || "127.0.0.1",
+        port: Number(await getEnv("cache_port")) || 6379,
+        db: Number(await getEnv("cache_db")) || 0,
       };
       try {
         client = await redisConnect(option);
@@ -54,37 +55,37 @@ function redisClientPool() {
 
 let pool: mysql2.Pool;
 
-export function getPool(): mysql2.Pool {
+export async function getPool(): Promise<mysql2.Pool> {
   if (!pool) {
     const opt: PoolOptions = {
-      user: Deno.env.get("database_username"),
-      database: Deno.env.get("database_database"),
-      password: Deno.env.get("database_password"),
+      user: await getEnv("database_username"),
+      database: await getEnv("database_database"),
+      password: await getEnv("database_password"),
     };
-    const socketPath = Deno.env.get("database_socketPath");
+    const socketPath = await getEnv("database_socketpath");
     if (socketPath) {
       opt.socketPath = socketPath;
     } else {
-      opt.host = Deno.env.get("database_host");
-      opt.port = Number(Deno.env.get("database_port"));
+      opt.host = await getEnv("database_host");
+      opt.port = Number(await getEnv("database_port"));
     }
-    const waitForConnections = Deno.env.get("database_waitForConnections") === "true";
+    const waitForConnections = await getEnv("database_waitForconnections") === "true";
     if (waitForConnections != null) {
       opt.waitForConnections = waitForConnections;
     }
-    const connectionLimit = Deno.env.get("database_connectionLimit");
+    const connectionLimit = await getEnv("database_connectionlimit");
     if (connectionLimit != null) {
       opt.connectionLimit = Number(connectionLimit);
     }
-    const debug = Deno.env.get("database_debug") === "true";
+    const debug = await getEnv("database_debug") === "true";
     if (debug != null) {
       opt.debug = debug;
     }
-    // const stream = Deno.env.get("database_stream") === "true";
+    // const stream = await getEnv("database_stream") === "true";
     // if (stream != null) {
     //   opt.stream = stream;
     // }
-    const dateStrings = Deno.env.get("database_dateStrings") === "true";
+    const dateStrings = await getEnv("database_datestrings") === "true";
     if (dateStrings != null) {
       opt.dateStrings = dateStrings;
     } else {
@@ -343,7 +344,7 @@ export class Context {
   async beginTran() {
     let conn = this.#conn;
     if (conn) return conn;
-    const pool = getPool();
+    const pool = await getPool();
     conn = await pool.getConnection();
     this.#conn = conn;
     if (conn) {
@@ -543,7 +544,7 @@ export class Context {
         if (!opt || opt.debug !== false) {
           this.log(this.getDebugQuery(sql, args));
         }
-        const pool = getPool();
+        const pool = await getPool();
         result0 = await pool.query(sql, args);
       }
     } catch (err) {
@@ -594,7 +595,7 @@ export class Context {
         if (!opt || opt.debug !== false) {
           this.log(this.getDebugQuery(sql, args));
         }
-        const pool = getPool();
+        const pool = await getPool();
         result = await pool.execute(sql, args);
       }
     } catch (err) {

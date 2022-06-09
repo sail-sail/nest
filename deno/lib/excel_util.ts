@@ -1,5 +1,5 @@
 import { MimeMapping } from "common_mime_types";
-import { XLSX } from "/deps.ts";
+import { getXLSX } from "/deps.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 export async function getTemplate(
@@ -59,6 +59,7 @@ export async function getTemplate(
   if (!objInfo || !objInfo.body) {
     throw "Excel文件不存在!";
   }
+  const XLSX = await getXLSX();
   const buffer = await new Response(objInfo.body).arrayBuffer();
   const workbook = XLSX.read(buffer, {
     type: "buffer",
@@ -68,7 +69,7 @@ export async function getTemplate(
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows: T[] = [ ];
   // deno-lint-ignore no-explicit-any
-  const data = XLSX.utils.sheet_to_json<any>(worksheet);
+  const data: any = XLSX.utils.sheet_to_json(worksheet);
   const keys = Object.keys(data[0]);
   for (let i = 0; i < data.length; i++) {
     const vals = data[i];

@@ -1,10 +1,11 @@
 import { AUTHORIZATION, AuthModel, SECRET_KEY } from "./auth.constants.ts";
-import { ServiceException } from "../exceptions/service.exception.ts";
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
 import { SignJWT, jwtVerify, JWTPayload, decodeJwt } from "jose/index.ts";
 import { JWTExpired } from "jose/util/errors.ts";
-import { Context } from "../context.ts";
+import { Context } from "/lib/context.ts";
+import { getEnv } from "/lib/env.ts";
 
 export function getAuthorization(
   context: Context,
@@ -76,9 +77,9 @@ export async function getAuthModel<T extends AuthModel>(
  * @returns Promise<{ expires_in: number, authorization: string }> expires_in: 过期时间
  */
 export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expires_in: number, authorization: string }> {
-  const token_timeout = Number(Deno.env.get("server_tokenTimeout"));
+  const token_timeout = Number(await getEnv("server_tokentimeout"));
   if (!(token_timeout > 10)) {
-    throw new Error("Env server_tokenTimeout must larger then 10!");
+    throw new Error("Env server_tokentimeout must larger then 10!");
   }
   const token = await new SignJWT(obj)
     .setExpirationTime(token_timeout+'s')
@@ -120,7 +121,7 @@ export async function refreshToken(authorization: string): Promise<{ expires_in:
   if (!obj || !obj.exp) {
     throw new ServiceException("令牌超时!", "refresh_token_expired");
   }
-  const token_timeout = Number(Deno.env.get("server_tokenTimeout"));
+  const token_timeout = Number(await getEnv("server_tokentimeout"));
   const date = new Date();
   if (date.getTime() / 1000 - token_timeout > obj.exp) {
     throw new ServiceException("令牌超时!", "refresh_token_expired");

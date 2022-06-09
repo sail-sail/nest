@@ -18,7 +18,7 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
-  await Deno.copyFile(Deno.cwd()+"/.env.prod", `${ buildDir }/.env`);
+  await Deno.copyFile(Deno.cwd()+"/.env.prod", `${ buildDir }/.env.prod`);
 }
 
 async function excel_template() {
@@ -60,25 +60,45 @@ async function gqlgen() {
   }
 }
 
+function escapeRegExp(str: string) {
+  return str.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
+}
+
 async function compile() {
-  console.log("compile");
-  let cmds = [ "deno", "compile", "-A", "--import-map", "./import_map.json"];
-  if (target) {
-    cmds = cmds.concat([ "--target", target ]);
-  }
-  cmds = cmds.concat([ "--output", `${ buildDir }/deno`, "./mod.ts" ]);
-  const proc = Deno.run({
-    cmd: cmds,
-    cwd: Deno.cwd(),
-    stderr: 'piped',
-    stdout: "null",
-  });
-  const [ stderr ] = await Promise.all([
-    proc.stderrOutput(),
-  ]);
-  const stderrStr = new TextDecoder().decode(stderr);
-  if (stderrStr) {
-    console.error(stderrStr);
+  const depsStr = await Deno.readTextFile(Deno.cwd()+"/deps.ts");
+  const reg = new RegExp(escapeRegExp(`/**prod`)+"([\\s\\S]*?)"+escapeRegExp(`*/`), "gm");
+  const depsStr2 = depsStr.replace(reg, function(str) {
+    str = str.trim();
+    const len = str.length;
+    const openLen = `/**prod`.length;
+    const closeLen = `*/`.length;
+    str = str.substring(openLen, len-closeLen).trim();
+    return str;
+  }).replace("declare const XLSX: any;", "");
+  await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr2);
+  
+  try {
+    let cmds = [ "deno", "compile", "-A", "--import-map", "./import_map.json" ];
+    if (target) {
+      cmds = cmds.concat([ "--target", target ]);
+    }
+    cmds = cmds.concat([ "--output", `${ buildDir }/start`, "./mod.ts", "-e=prod" ]);
+    console.log(cmds.join(" "));
+    const proc = Deno.run({
+      cmd: cmds,
+      cwd: Deno.cwd(),
+      stderr: 'piped',
+      stdout: "null",
+    });
+    const [ stderr ] = await Promise.all([
+      proc.stderrOutput(),
+    ]);
+    const stderrStr = new TextDecoder().decode(stderr);
+    if (stderrStr) {
+      console.error(stderrStr);
+    }
+  } finally {
+    await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr);
   }
 }
 
