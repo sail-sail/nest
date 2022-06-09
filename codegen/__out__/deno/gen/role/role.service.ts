@@ -1,7 +1,6 @@
 import { Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
 import { Page, Sort } from "/lib/page.model.ts";
-import { AuthModel } from "/lib/auth/auth.constants.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
