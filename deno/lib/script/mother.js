@@ -56,7 +56,7 @@ function watchFn() {
       }
       delete(ls);
       start();
-    }, 50);
+    }, 30);
   };
   watcher.on("change", callback).on("add", callback).on("unlink", callback);
 }
