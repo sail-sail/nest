@@ -76,7 +76,6 @@ function start() {
     "./import_map.json",
     "--no-check",
     "./mod.ts",
-    "-e=development",
   ];
   console.log("deno " + arr.join(" "));
   const startTime = Date.now();
