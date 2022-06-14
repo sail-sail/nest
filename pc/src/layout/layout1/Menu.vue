@@ -19,7 +19,7 @@
       v-if="item.children && item.children.length > 0 && !item.route_path"
       :index="item.id"
     >
-      <template #header>
+      <template #title>
         <el-icon>
           <FolderOpened v-if="openedIndex.includes(item.id)"/>
           <Folder v-else/>
@@ -34,7 +34,7 @@
           v-if="item2.children && item2.children.length > 0 && !item2.route_path"
           :index="item2.id"
         >
-          <template #header>
+          <template #title>
             <el-icon>
               <FolderOpened v-if="openedIndex.includes(item2.id)"/>
               <Folder v-else/>
