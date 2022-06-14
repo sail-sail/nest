@@ -21,7 +21,7 @@ async function getWhereQuery(
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = authModel && await getTenant_id(context, authModel.id);
+    const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -468,7 +468,7 @@ export async function create(
   `;
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = authModel && await getTenant_id(context, authModel.id);
+    const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -506,7 +506,7 @@ export async function create(
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = authModel && await getTenant_id(context, authModel.id);
+    const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
