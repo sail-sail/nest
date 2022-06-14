@@ -24,6 +24,11 @@ function getMethods(str: string) {
           "export async function".length,
           line.indexOf("(")
         ).trim();
+      } else {
+        nowMethodName = line.substring(
+          "async function".length,
+          line.indexOf("(")
+        ).trim();
       }
     }
     if (methodBegin && line.trimEnd() === "}") {
@@ -84,6 +89,16 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
     const keys = Object.keys(methods);
     for (let j = 0; j < keys.length; j++) {
       const methodName = keys[j];
+      let methodFn = dao[methodName];
+      if (!methodFn && methodName.startsWith("_")) {
+        methodFn = dao[methodName.substring(1, methodName.length)];
+      }
+      if (!methodFn && methodName.endsWith("_")) {
+        methodFn = dao[methodName.substring(0, methodName.length - 1)];
+      }
+      if (!methodFn) {
+        continue;
+      }
       const methodStr = methods[methodName];
       let methodStr2 = methodStr;
       methodStr2 = methodStr2.replace(/await context.query<\{[\s\S]*?\}>\(/gmi, "await context.query(");
@@ -238,6 +253,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           context.query = oldQuery;
           hasErr = true;
           console.error(err);
+          console.error("methodName: " + methodName);
           continue;
         }
       }
