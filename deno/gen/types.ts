@@ -196,6 +196,7 @@ export type FindAllUsr = {
 
 export type GetLoginTenants = {
   __typename?: 'GetLoginTenants';
+  /** ID */
   id?: Maybe<Scalars['ID']>;
   /** 名称 */
   lbl?: Maybe<Scalars['String']>;

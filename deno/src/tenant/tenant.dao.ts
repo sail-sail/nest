@@ -37,7 +37,7 @@ export async function getLoginTenants(
   _host: string,
 ): Promise<typeof result> {
   const args = new QueryArgs();
-  const sql = `
+  const sql = /*sql*/`
     select
       t.id,
       t.lbl

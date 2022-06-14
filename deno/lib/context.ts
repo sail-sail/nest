@@ -85,12 +85,13 @@ export async function getPool(): Promise<mysql2.Pool> {
     // if (stream != null) {
     //   opt.stream = stream;
     // }
-    const dateStrings = await getEnv("database_datestrings") === "true";
-    if (dateStrings != null) {
-      opt.dateStrings = dateStrings;
-    } else {
-      opt.dateStrings = true;
-    }
+    // const dateStrings = await getEnv("database_datestrings") === "true";
+    // if (dateStrings != null) {
+    //   opt.dateStrings = dateStrings;
+    // } else {
+    //   opt.dateStrings = true;
+    // }
+    opt.dateStrings = true;
     opt.supportBigNumbers = true;
     opt.bigNumberStrings = true;
     opt.stringifyObjects = true;
@@ -108,12 +109,12 @@ export class Context {
   
   reqDate: Date;
   
-  oakCtx: OakContext;
+  oakCtx?: OakContext;
   
   // deno-lint-ignore no-explicit-any
   cacheMap: Map<any, any> = new Map();
   
-  constructor(oakCtx: OakContext) {
+  constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
     const dateNow = new Date();
     this.reqDate = dateNow;
