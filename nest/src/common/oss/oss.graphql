@@ -1,9 +1,0 @@
-type GetStatusOss {
-  id: ID!
-  lbl: String!
-  content_type: String
-}
-
-type Query {
-  getStatsOss(ids: [ID]!): [GetStatusOss]!
-}
