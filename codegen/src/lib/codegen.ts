@@ -125,9 +125,6 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       if (dir.startsWith("/nest/")) {
         return;
       }
-      if (dir === "/nest/src/modules.gen.ts") {
-        return;
-      }
       if (dir === "/deno/gen/graphql.ts") {
         return;
       }
@@ -267,7 +264,6 @@ export async function genRouter(context: Context) {
   const records: any = result[0];
   const files = [
     "pc/src/router/gen.ts",
-    "nest/src/modules.gen.ts",
     "deno/gen/graphql.ts",
   ];
   for (let i = 0; i < files.length; i++) {
