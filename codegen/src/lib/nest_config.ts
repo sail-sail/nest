@@ -21,7 +21,8 @@ const config = {
     username: conf.database_username,
     password: conf.database_password,
     database: conf.database_database,
-  }
+  },
+  ...conf,
 };
 
 export default config;

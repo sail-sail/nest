@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node lib/script/mother.js",
     "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.yml",
-    "build": "deno run -A ./lib/script/build.ts",
+    "build": "deno run -A --import-map=./import_map.json ./lib/script/build.ts -e=prod",
     "build:linux": "deno run -A ./lib/script/build.ts --target linux",
     "preinstall": "npx only-allow pnpm"
   },

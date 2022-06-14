@@ -1,3 +1,5 @@
+import "/lib/env.ts";
+import { getEnv } from "/lib/env.ts";
 
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
@@ -78,11 +80,17 @@ async function compile() {
   await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr2);
   
   try {
+    for await (const dirEntry of Deno.readDir(Deno.cwd()+"/../build/")) {
+      if (dirEntry.isFile) {
+        await Deno.remove(Deno.cwd()+"/../build/"+dirEntry.name);
+      }
+    }
     let cmds = [ "deno", "compile", "-A", "--import-map", "./import_map.json" ];
     if (target) {
       cmds = cmds.concat([ "--target", target ]);
     }
-    cmds = cmds.concat([ "--output", `${ buildDir }/start`, "./mod.ts", "-e=prod" ]);
+    const server_title = await getEnv("server_title") || "start";
+    cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "-e=prod" ]);
     console.log(cmds.join(" "));
     const proc = Deno.run({
       cmd: cmds,
