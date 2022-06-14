@@ -49,8 +49,10 @@ export async function findAll(
   #>
   
   search = search || { };
-  const { id: usr_id } = await authDao.getAuthModel(context) as AuthModel;
-  search.create_usr_id = [ usr_id ];<#
+  const authModel = await authDao.getAuthModel(context);
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }<#
     }
   #>
   const result: <#=tableUp#>Model[] = await <#=table#>Dao.findAll(context, search, page, sort);

@@ -39,14 +39,16 @@ async function _getMenus(
     sql += ` and t.type = ${ args.push(type) }`;
   }
   const authModel = await getAuthModel(context);
-  const tenant_id = await getTenant_id(context, authModel.id);
+  const tenant_id = await getTenant_id(context, authModel?.id);
   if (tenant_id) {
     sql += ` and tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
   if (menu_id) {
     sql += ` and t.menu_id = ${ args.push(menu_id) }`;
   }
-  sql += ` and usr_role.usr_id = ${ args.push(authModel.id) }`;
+  if (authModel?.id) {
+    sql += ` and usr_role.usr_id = ${ args.push(authModel.id) }`;
+  }
   sql += ` order by t.order_by asc`;
   
   const table = "menu";
