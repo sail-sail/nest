@@ -17,7 +17,7 @@ export async function findLoginUsr(
   tenant_id: MutationLoginArgs["tenant_id"],
 ) {
   const args = new QueryArgs();
-  const sql = `
+  const sql = /*sql*/`
     select
       t.id
     from usr t

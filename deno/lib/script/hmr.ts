@@ -1,5 +1,6 @@
 import "/lib/env.ts";
 import { Context } from "/lib/context.ts";
+import { QueryArgs } from "/lib/query_args.ts";
 let watchTimeout: number|undefined = undefined;
 
 function getMethods(str: string) {
@@ -95,10 +96,13 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
         context.query = async function(
           sql: string,
           // deno-lint-ignore no-explicit-any
-          args?: any[],
+          args?: any[]|QueryArgs,
           opt?: { debug?: boolean },
         // deno-lint-ignore no-explicit-any
         ): Promise<any> {
+          if (args instanceof QueryArgs) {
+            args = args.value;
+          }
           opt = opt || { };
           opt.debug = false;
           sql = sql.trim();
@@ -190,10 +194,13 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
         context.query = async function(
           sql: string,
           // deno-lint-ignore no-explicit-any
-          args?: any[],
+          args?: any[]|QueryArgs,
           opt?: { debug?: boolean },
         // deno-lint-ignore no-explicit-any
         ): Promise<any> {
+          if (args instanceof QueryArgs) {
+            args = args.value;
+          }
           opt = opt || { };
           opt.debug = false;
           sql = sql.trim();
@@ -257,7 +264,7 @@ export async function hmr() {
   }
   const context = await createContext();
   let filenames: string[] = [ ];
-  watcher = Deno.watchFs(`${ Deno.cwd() }`, { recursive: true });
+  watcher = Deno.watchFs(`${ Deno.cwd() }/src`, { recursive: true });
   for await (const event of watcher) {
     for (let i = 0; i < event.paths.length; i++) {
       const file = event.paths[i];
