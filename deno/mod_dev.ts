@@ -1,3 +1,4 @@
+import { hmr } from "/lib/script/hmr.ts";
 import "/lib/env.ts";
 import "/lib/date_util.ts";
 import { getEnv } from "/lib/env.ts";
@@ -5,6 +6,8 @@ import { initApp } from "/lib/oak/mod.ts";
 import { logInit } from "/lib/log.ts";
 
 import "/lib/graphql.ts";
+
+hmr();
 
 if (window.process.env.NODE_ENV === "production") {
   logInit({

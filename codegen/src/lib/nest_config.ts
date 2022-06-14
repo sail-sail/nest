@@ -1,27 +1,25 @@
-import { parse as tomlParse } from "toml";
 import { readFileSync } from "fs";
+import * as dotenv from "dotenv";
 
 type database = {
-  [key: string]: any,
-  name?: string,
   type: "postgres"|"mysql"|"oracle",
   host: string,
   port?: number,
   username: string,
   password?: string,
   database?: string,
-  logging?: string,
-  synchronize?: boolean,
-  extra: any,
-  cache?: {
-    host?: string,
-    port?: number,
-  },
 };
 
-const configStr = readFileSync(`../nest/config.toml`, "utf8");
-const config = <{
-  database: database,
-}>tomlParse(configStr);
+const buf = readFileSync(`../deno/.env.dev`);
+const conf = dotenv.parse(buf);
+
+const config = {
+  type: conf.database_type,
+  host: conf.database_host,
+  port: conf.database_port,
+  username: conf.database_username,
+  password: conf.database_password,
+  database: conf.database_database,
+};
 
 export default config;

@@ -7,22 +7,6 @@ import { JWTExpired } from "jose/util/errors.ts";
 import { Context } from "/lib/context.ts";
 import { getEnv } from "/lib/env.ts";
 
-export function getAuthorization(
-  context: Context,
-) {
-  const request = context.oakCtx.request;
-  const headers = request.headers;
-  let authorization: string|null = headers.get(AUTHORIZATION);
-  if (!authorization) {
-    const searchParams = request.url.searchParams;
-    authorization = searchParams.get(AUTHORIZATION);
-  }
-  if (authorization && authorization.startsWith("Bearer ")) {
-    authorization = authorization.substring(7);
-  }
-  return authorization;
-}
-
 export async function getAuthModel<T extends AuthModel>(
   context: Context,
 ): Promise<T>;
@@ -36,8 +20,8 @@ export async function getAuthModel<T extends AuthModel>(
   context: Context,
   notVerifyToken = false,
 ) {
-  const response = context.oakCtx.response;
-  const authorization = getAuthorization(context);
+  const response = context.oakCtx?.response;
+  const authorization = context.getAuthorization();
   if (!authorization) {
     if (notVerifyToken) {
       return undefined;
@@ -62,11 +46,11 @@ export async function getAuthModel<T extends AuthModel>(
   if (!authModel) {
     const tokenInfo = await refreshToken(authorization);
     if (tokenInfo && tokenInfo.authorization) {
-      response.headers.set(AUTHORIZATION, "Bearer " + tokenInfo.authorization);
+      response?.headers.set(AUTHORIZATION, "Bearer " + tokenInfo.authorization);
       authModel = await verifyToken<T>(tokenInfo.authorization);
     }
   } else {
-    response.headers.set(AUTHORIZATION, "");
+    response?.headers.set(AUTHORIZATION, "");
   }
   return authModel;
 }

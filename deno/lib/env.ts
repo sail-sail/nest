@@ -11,6 +11,7 @@ declare global {
 }
 
 let envKey = "dev";
+let cwd = Deno.cwd();
 
 function initEnv() {
   for (let i = 0; i < Deno.args.length; i++) {
@@ -19,6 +20,12 @@ function initEnv() {
       const envKeyTmp = item.replace(/^-e=/, "").replace(/^--env=/, "");
       if (envKeyTmp) {
         envKey = envKeyTmp;
+      }
+    } else if (item.startsWith("-c=") || item.startsWith("--cwd=")) {
+      const cwdTmp = item.replace(/^-c=/, "").replace(/^--cwd=/, "");
+      if (cwdTmp) {
+        cwd = cwdTmp;
+        Deno.cwd = () => cwd;
       }
     }
   }
@@ -41,7 +48,6 @@ initEnv();
 let parsedEnv: DotenvConfig;
 
 async function parseEnv() {
-  const cwd = Deno.cwd();
   if (envKey === "development") {
     parsedEnv = await configAsync({
       export: false,

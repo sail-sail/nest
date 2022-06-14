@@ -29,6 +29,7 @@ function watchFn() {
         `${ pjPath }/**/*.test.ts`,
         `${ pjPath }/**/*_test.ts`,
         `${ pjPath }/lib/script/**`,
+        `${ pjPath }/src/**/*.dao.ts`,
         `${ pjPath }/src/types.ts`,
         `${ pjPath }/.eslintrc.js`,
         `${ pjPath }/.gitignore`,
@@ -60,6 +61,7 @@ function watchFn() {
   };
   watcher.on("change", callback).on("add", callback).on("unlink", callback);
 }
+
 let restartNum = 0;
 stopWatch = false;
 watchFn();
@@ -75,7 +77,7 @@ function start() {
     "--import-map",
     "./import_map.json",
     "--no-check",
-    "./mod.ts",
+    "./mod_dev.ts",
   ];
   console.log("deno " + arr.join(" "));
   const startTime = Date.now();

@@ -8,6 +8,7 @@ import { Context as OakContext } from "oak";
 import { createPool as genericCreatePool, Pool as GenPool } from "generic_pool";
 import { QueryArgs } from "/lib/query_args.ts";
 import { getEnv } from "/lib/env.ts";
+import { AUTHORIZATION } from "./auth/auth.constants.ts";
 
 declare global {
   interface Window {
@@ -121,11 +122,26 @@ export class Context {
     this.#req_id = dateNow.getTime();
   }
   
+  getAuthorization() {
+    const request = this.oakCtx?.request;
+    const headers = request?.headers;
+    let authorization: string|null|undefined = headers?.get(AUTHORIZATION);
+    if (!authorization) {
+      const searchParams = request?.url?.searchParams;
+      authorization = searchParams?.get(AUTHORIZATION);
+    }
+    if (authorization && authorization.startsWith("Bearer ")) {
+      authorization = authorization.substring(7);
+    }
+    return authorization;
+  }
+  
   async getCache(
     cacheKey1: string|undefined,
     cacheKey2: string|undefined,
   // deno-lint-ignore no-explicit-any
   ): Promise<any> {
+    if (!this.cacheEnabled) return;
     if (!cacheKey1 || !cacheKey2) return;
     const client = await redisClientPool().acquire();
     if (!client) return;
@@ -162,6 +178,7 @@ export class Context {
     // deno-lint-ignore no-explicit-any
     data: any,
   ): Promise<void> {
+    if (!this.cacheEnabled) return;
     if (data === undefined || !cacheKey1 || !cacheKey2) return;
     const str = JSON.stringify(data);
     const client = await redisClientPool().acquire();
@@ -184,6 +201,7 @@ export class Context {
   async delCache(
     cacheKey1: string,
   ): Promise<void> {
+    if (!this.cacheEnabled) return;
     if (!cacheKey1) return;
     if (this.#cacheKey1s.includes(cacheKey1)) {
       return;
@@ -202,12 +220,15 @@ export class Context {
     this.#cacheKey1s = this.#cacheKey1s.filter((item) => item !== cacheKey1);
   }
   
+  cacheEnabled = true;
+  
   /**
    * 清空整个缓存数据库
    * @return {Promise<void>}
    * @memberof Context
    */
   async clearCache(): Promise<void> {
+    if (!this.cacheEnabled) return;
     this.log(`clearCache`);
     const client = await redisClientPool().acquire();
     if (!client) return;
@@ -342,14 +363,16 @@ export class Context {
    * 开启事务, 如果事务已经开启则直接返回数据库链接
    * @memberof Context
    */
-  async beginTran() {
+  async beginTran(opt?: { debug?: boolean }): Promise<mysql2.PoolConnection> {
     let conn = this.#conn;
     if (conn) return conn;
     const pool = await getPool();
     conn = await pool.getConnection();
     this.#conn = conn;
-    if (conn) {
+    if (!opt || opt.debug !== false) {
       this.log("beginTran;" + " /* "+ conn.threadId +" */");
+    }
+    if (conn) {
       await conn.beginTransaction();
     }
     return conn;
@@ -360,11 +383,13 @@ export class Context {
    * @return {Promise<void>} 
    * @memberof Context
    */
-  async rollback(): Promise<void> {
-    const conn = this.#conn;
+  async rollback(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+    if (!conn) conn = this.#conn;
     if (!conn) return;
     this.#conn = undefined;
-    this.log("rollback;" + " /* "+ conn.threadId +" */");
+    if (!opt || opt.debug !== false) {
+      this.log("rollback;" + " /* "+ conn.threadId +" */");
+    }
     try {
       await conn.rollback();
     } finally {
@@ -377,16 +402,27 @@ export class Context {
    * @return {Promise<void>} 
    * @memberof Context
    */
-  async commit(): Promise<void> {
-    const conn = this.#conn;
+  async commit(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+    if (!conn) conn = this.#conn;
     if (!conn) return;
     this.#conn = undefined;
-    this.log("commit;" + " /* "+ conn.threadId +" */");
+    if (!opt || opt.debug !== false) {
+      this.log("commit;" + " /* "+ conn.threadId +" */");
+    }
     try {
       await conn.commit();
     } finally {
       conn.release();
     }
+  }
+  
+  async closePool() {
+    if (this.#conn) {
+      const conn = this.#conn;
+      this.#conn = undefined;
+      conn.release();
+    }
+    await pool.end();
   }
   
   // deno-lint-ignore no-explicit-any
