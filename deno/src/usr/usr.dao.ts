@@ -44,7 +44,11 @@ export async function getTenant_id(
     notVerifyToken?: boolean,
   },
 ): Promise<string | undefined> {
-  if (options?.notVerifyToken) {
+  let notVerifyToken = options?.notVerifyToken;
+  if (context.notVerifyToken) {
+    notVerifyToken = true;
+  }
+  if (notVerifyToken) {
     const authModel = await getAuthModel(context, true);
     if (!authModel) {
       return;
@@ -53,8 +57,15 @@ export async function getTenant_id(
   } else {
     if (!usr_id) {
       const authModel = await getAuthModel(context);
+      if (!authModel) {
+        return;
+      }
       usr_id = authModel.id;
     }
+  }
+  let tenant_id: string|undefined = context.cacheMap.get("usr_tenant_id_" + usr_id);
+  if (tenant_id) {
+    return tenant_id;
   }
   const args = new QueryArgs();
   const sql = /*sql*/`
@@ -83,6 +94,9 @@ export async function getTenant_id(
       logResult: false,
     },
   );
-  const tenant_id = model?.tenant_id;
+  tenant_id = model?.tenant_id;
+  if (tenant_id) {
+    context.cacheMap.set("usr_tenant_id_" + usr_id, tenant_id);
+  }
   return tenant_id;
 }
