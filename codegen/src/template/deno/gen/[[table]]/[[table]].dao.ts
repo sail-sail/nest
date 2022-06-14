@@ -71,7 +71,7 @@ async function getWhereQuery(
   #>
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel.id);
+    const tenant_id = authModel && await getTenant_id(context, authModel.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -854,7 +854,7 @@ export async function create(
   #>
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel.id);
+    const tenant_id = authModel && await getTenant_id(context, authModel.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -863,7 +863,7 @@ export async function create(
   #>
   {
     const authModel = await getAuthModel(context);
-    if (authModel.id !== undefined) {
+    if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
   }<#
@@ -917,7 +917,7 @@ export async function create(
   #>
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel.id);
+    const tenant_id = authModel && await getTenant_id(context, authModel.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -926,7 +926,7 @@ export async function create(
   #>
   {
     const authModel = await getAuthModel(context);
-    if (authModel.id !== undefined) {
+    if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }<#
@@ -1199,7 +1199,7 @@ export async function updateById(
   `;
   {
     const authModel = await getAuthModel(context);
-    if (authModel.id !== undefined) {
+    if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }<#
@@ -1406,7 +1406,7 @@ export async function findLastOrderBy(
   #>
   {
     const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel.id);
+    const tenant_id = authModel && await getTenant_id(context, authModel.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }

@@ -108,6 +108,8 @@ export class Context {
   #conn: mysql2.PoolConnection|undefined;
   #req_id = 0;
   
+  notVerifyToken = false;
+  
   reqDate: Date;
   
   oakCtx?: OakContext;

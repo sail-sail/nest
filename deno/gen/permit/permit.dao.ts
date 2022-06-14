@@ -389,7 +389,7 @@ export async function create(
   `;
   {
     const authModel = await getAuthModel(context);
-    if (authModel.id !== undefined) {
+    if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
   }
@@ -405,7 +405,7 @@ export async function create(
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const authModel = await getAuthModel(context);
-    if (authModel.id !== undefined) {
+    if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
@@ -505,7 +505,7 @@ export async function updateById(
   `;
   {
     const authModel = await getAuthModel(context);
-    if (authModel.id !== undefined) {
+    if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }

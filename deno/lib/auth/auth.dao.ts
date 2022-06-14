@@ -9,19 +9,13 @@ import { getEnv } from "/lib/env.ts";
 
 export async function getAuthModel<T extends AuthModel>(
   context: Context,
-): Promise<T>;
-
-export async function getAuthModel<T extends AuthModel>(
-  context: Context,
-  notVerifyToken: boolean,
-): Promise<T | undefined>;
-
-export async function getAuthModel<T extends AuthModel>(
-  context: Context,
   notVerifyToken = false,
-) {
+): Promise<T | undefined> {
   const response = context.oakCtx?.response;
   const authorization = context.getAuthorization();
+  if (context.notVerifyToken) {
+    notVerifyToken = true;
+  }
   if (!authorization) {
     if (notVerifyToken) {
       return undefined;
