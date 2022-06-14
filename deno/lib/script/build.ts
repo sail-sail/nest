@@ -85,7 +85,7 @@ async function compile() {
         await Deno.remove(Deno.cwd()+"/../build/"+dirEntry.name);
       }
     }
-    let cmds = [ "deno", "compile", "-A", "--import-map", "./import_map.json" ];
+    let cmds = [ "deno", "compile", "-A", "--unstable", "--import-map", "./import_map.json" ];
     if (target) {
       cmds = cmds.concat([ "--target", target ]);
     }
