@@ -70,27 +70,21 @@ export async function getPool(): Promise<mysql2.Pool> {
       opt.host = await getEnv("database_host");
       opt.port = Number(await getEnv("database_port"));
     }
-    const waitForConnections = await getEnv("database_waitForconnections") === "true";
+    const waitForConnections = await getEnv("database_waitForconnections");
     if (waitForConnections != null) {
-      opt.waitForConnections = waitForConnections;
+      opt.waitForConnections = waitForConnections === "true";
     }
     const connectionLimit = await getEnv("database_connectionlimit");
     if (connectionLimit != null) {
       opt.connectionLimit = Number(connectionLimit);
     }
-    const debug = await getEnv("database_debug") === "true";
+    const debug = await getEnv("database_debug");
     if (debug != null) {
-      opt.debug = debug;
+      opt.debug = debug === "true";
     }
-    // const stream = await getEnv("database_stream") === "true";
+    // const stream = await getEnv("database_stream");
     // if (stream != null) {
-    //   opt.stream = stream;
-    // }
-    // const dateStrings = await getEnv("database_datestrings") === "true";
-    // if (dateStrings != null) {
-    //   opt.dateStrings = dateStrings;
-    // } else {
-    //   opt.dateStrings = true;
+    //   opt.stream = stream === "true";
     // }
     opt.dateStrings = true;
     opt.supportBigNumbers = true;
