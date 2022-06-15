@@ -28,7 +28,7 @@ async function getWhereQuery(
     whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
   if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and menu.id in (${ args.push(search.menu_id) })`;
+    whereQuery += ` and _menu_id.id in (${ args.push(search.menu_id) })`;
   }
   if (search?._menu_id && search._menu_id?.length > 0) {
     whereQuery += ` and _menu_id in (${ args.push(search._menu_id) })`;
@@ -76,8 +76,8 @@ function getFromQuery(
 ) {
   const fromQuery = `
     menu t
-    left join menu
-      on menu.id = t.menu_id
+    left join menu _menu_id
+      on _menu_id.id = t.menu_id
   `;
   return fromQuery;
 }
@@ -140,7 +140,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-        ,menu.lbl _menu_id
+        ,_menu_id.lbl _menu_id
     from
       ${ getFromQuery(context) }
     where

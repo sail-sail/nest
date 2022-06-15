@@ -79,7 +79,7 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
   if (search?.create_usr_id && search?.create_usr_id.length > 0) {
-    whereQuery += ` and usr.id in (${ args.push(search.create_usr_id) })`;
+    whereQuery += ` and _create_usr_id.id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?._create_usr_id && search._create_usr_id?.length > 0) {
     whereQuery += ` and _create_usr_id in (${ args.push(search._create_usr_id) })`;
@@ -92,8 +92,8 @@ function getFromQuery(
 ) {
   const fromQuery = `
     background_task t
-    left join usr
-      on usr.id = t.create_usr_id
+    left join usr _create_usr_id
+      on _create_usr_id.id = t.create_usr_id
   `;
   return fromQuery;
 }
@@ -153,7 +153,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-        ,usr.lbl _create_usr_id
+        ,_create_usr_id.lbl _create_usr_id
     from
       ${ getFromQuery(context) }
     where

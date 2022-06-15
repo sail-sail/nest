@@ -53,7 +53,7 @@ async function getWhereQuery(
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.role_ids && search?.role_ids.length > 0) {
-    whereQuery += ` and role.id in (${ args.push(search.role_ids) })`;
+    whereQuery += ` and _role_ids.id in (${ args.push(search.role_ids) })`;
   }
   if (search?._role_ids && search._role_ids?.length > 0) {
     whereQuery += ` and _role_ids in (${ args.push(search._role_ids) })`;
