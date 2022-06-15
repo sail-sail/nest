@@ -334,6 +334,7 @@ import {
 } from "./Api";
 
 import { <#=tableUp#>Model } from "./Model";<#
+const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -345,12 +346,15 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (table === foreignTable) continue;
+  if (foreignTableArr.includes(foreignTable)) continue;
+  foreignTableArr.push(foreignTable);
 #>
 import { <#=foreignTableUp#>Model } from "../<#=foreignTable#>/Model";<#
 }
 #>
 
 import {<#
+  const foreignTableArr2 = [];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -366,6 +370,8 @@ import {<#
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    if (foreignTableArr2.includes(foreignTable)) continue;
+    foreignTableArr2.push(foreignTable);
   #><#
     if (foreignKey) {
   #>
@@ -467,6 +473,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
 });
 
 // 下拉框列表<#
+const foreignTableArr3 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -482,6 +489,8 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (foreignTableArr3.includes(foreignTable)) continue;
+  foreignTableArr3.push(foreignTable);
 #><#
   if (foreignKey) {
 #>
@@ -566,6 +575,7 @@ async function getSelectListEfc() {
   #>
   ]);
 }<#
+const foreignTableArr4 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -584,6 +594,8 @@ for (let i = 0; i < columns.length; i++) {
   const defaultSort = foreignKey && foreignKey.defaultSort;
 #><#
   if (foreignKey) {
+  if (foreignTableArr4.includes(foreignTable)) continue;
+  foreignTableArr4.push(foreignTable);
 #>
 
 // <#=column_comment#>下拉框远程搜索

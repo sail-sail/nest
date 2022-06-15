@@ -383,6 +383,7 @@ export async function revertByIds(
   }, opt);
   return data?.revertByIds<#=tableUp#>;
 }<#
+const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -393,6 +394,8 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignKey) continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (foreignTableArr.includes(foreignTable)) continue;
+  foreignTableArr.push(foreignTable);
 #>
 
 export async function findAllAndCount<#=foreignTableUp#>(

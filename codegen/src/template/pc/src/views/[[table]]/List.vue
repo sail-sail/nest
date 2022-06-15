@@ -741,6 +741,8 @@ import {
   <#=tableUp#>Model,
   <#=tableUp#>Search,
 } from "./Model";<#
+{
+const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -752,8 +754,11 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (table === foreignTable) continue;
+  if (foreignTableUpArr.includes(foreignTableUp)) continue;
+  foreignTableUpArr.push(foreignTableUp);
 #>
 import { <#=foreignTableUp#>Model } from "../<#=foreignTable#>/Model";<#
+}
 }
 #><#
 const foreignTableArr = [ ];
@@ -778,8 +783,10 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey && foreignKey.table;
   const search = column.search;
   if (search && foreignTable) {
-    foreignTableArr.push(foreignTable);
-    foreignKeyCommentArr.push(column_comment);
+    if (!foreignTableArr.includes(foreignTable)) {
+      foreignTableArr.push(foreignTable);
+      foreignKeyCommentArr.push(column_comment);
+    }
   }
 }
 #><#
@@ -1204,6 +1211,7 @@ let {
 ));
 
 let detailRef = $ref<InstanceType<typeof Detail>>();<#
+const foreignTableTmpArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1219,6 +1227,8 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (foreignTableTmpArr.includes(foreignTable)) continue;
+  foreignTableTmpArr.push(foreignTable);
 #><#
   if (foreignKey) {
 #>

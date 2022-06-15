@@ -101,7 +101,7 @@ async function getWhereQuery(
     if (foreignKey) {
   #>
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
-    whereQuery += ` and <#=foreignKey.table#>.id in (${ args.push(search.<#=column_name#>) })`;
+    whereQuery += ` and _<#=column_name#>.id in (${ args.push(search.<#=column_name#>) })`;
   }<#
     if (foreignKey.lbl) {
   #>
@@ -205,8 +205,8 @@ function getFromQuery(
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
-    left join <#=foreignTable#>
-      on <#=foreignTable#>.<#=foreignKey.column#> = t.<#=column_name#><#
+    left join <#=foreignTable#> _<#=column_name#>
+      on _<#=column_name#>.<#=foreignKey.column#> = t.<#=column_name#><#
       }
     #><#
     }
@@ -298,7 +298,7 @@ export async function findAll(
         ,max(_<#=column_name#>) _<#=column_name#><#
       } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
       #>
-        ,<#=foreignTable#>.<#=foreignKey.lbl#> _<#=column_name#><#
+        ,_<#=column_name#>.<#=foreignKey.lbl#> _<#=column_name#><#
         }
       #><#
       }
