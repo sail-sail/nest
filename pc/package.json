@@ -12,6 +12,7 @@
     "@element-plus/icons-vue": "2.0.4",
     "@vue/shared": "3.2.36",
     "axios": "0.27.2",
+    "dayjs": "1.11.3",
     "driver.js": "0.9.8",
     "element-plus": "2.2.4",
     "file-saver": "2.0.5",

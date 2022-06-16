@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { MenuModel, MenuSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
@@ -46,9 +47,7 @@ export async function findAll(
   const data = rvData?.findAllMenu || [ ];
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
-    if (item.route_query) {
-      item.route_query = JSON.stringify(item.route_query);
-    }
+    item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
   return data;
 }
@@ -100,9 +99,7 @@ export async function findAllAndCount(
   };
   for (let i = 0; i < data.data.length; i++) {
     const item = data.data[i];
-    if (item.route_query) {
-      item.route_query = JSON.stringify(item.route_query);
-    }
+    item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
   return data;
 }

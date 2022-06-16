@@ -2,7 +2,8 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
+#>import dayjs from "dayjs";
+import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { Page, Sort } from "@/utils/page.model";
@@ -85,13 +86,20 @@ export async function findAll(
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
-    let data_type = column.DATA_TYPE;
-    if (data_type === "json") {
-  #>
-    if (item.<#=column_name#>) {
-      item.<#=column_name#> = JSON.stringify(item.<#=column_name#>);
-    }<#
+    const data_type = column.DATA_TYPE;
+    let formatter = column.formatter;
+    if (!formatter) {
+      if (data_type === "json") {
+        formatter = `item.${ column_name } = item.${ column_name } && JSON.stringify(item.${ column_name }) || "";`;
+      } else if (data_type === "date") {
+        formatter = `item.${ column_name } = item.${ column_name } && new Date(item.${ column_name }).toLocaleDateString() || "";`;
+      }
     }
+    if (formatter) {
+  #>
+    <#=formatter#><#
+    }
+  #><#
   }
   #>
   }
@@ -165,12 +173,18 @@ export async function findAllAndCount(
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
-    let data_type = column.DATA_TYPE;
-    if (data_type === "json") {
+    const data_type = column.DATA_TYPE;
+    let formatter = column.formatter;
+    if (!formatter) {
+      if (data_type === "json") {
+        formatter = `item.${ column_name } = item.${ column_name } && JSON.stringify(item.${ column_name }) || "";`;
+      } else if (data_type === "date") {
+        formatter = `item.${ column_name } = item.${ column_name } && dayjs(item.${ column_name }).format("YYYY-MM-DD") || "";`;
+      }
+    }
+    if (formatter) {
   #>
-    if (item.<#=column_name#>) {
-      item.<#=column_name#> = JSON.stringify(item.<#=column_name#>);
-    }<#
+    <#=formatter#><#
     }
   }
   #>
