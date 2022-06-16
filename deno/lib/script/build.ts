@@ -20,6 +20,7 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
+  await Deno.copyFile(Deno.cwd()+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
   await Deno.copyFile(Deno.cwd()+"/.env.prod", `${ buildDir }/.env.prod`);
 }
 
@@ -67,6 +68,7 @@ function escapeRegExp(str: string) {
 }
 
 async function compile() {
+  console.log("compile");
   const depsStr = await Deno.readTextFile(Deno.cwd()+"/deps.ts");
   const reg = new RegExp(escapeRegExp(`/**prod`)+"([\\s\\S]*?)"+escapeRegExp(`*/`), "gm");
   const depsStr2 = depsStr.replace(reg, function(str) {
@@ -110,9 +112,56 @@ async function compile() {
   }
 }
 
-// async function publish() {
-  
-// }
+async function pc() {
+  console.log("pc");
+  const proc = Deno.run({
+    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "build" ],
+    cwd: Deno.cwd() + "/../pc",
+    stderr: 'piped',
+    stdout: "null",
+  });
+  const [ stderr ] = await Promise.all([
+    proc.stderrOutput(),
+  ]);
+  const stderrStr = new TextDecoder().decode(stderr);
+  if (stderrStr) {
+    console.error(stderrStr);
+  }
+}
+
+async function docs() {
+  console.log("docs");
+  const proc = Deno.run({
+    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "build" ],
+    cwd: Deno.cwd() + "/../",
+    stderr: 'piped',
+    stdout: "null",
+  });
+  const [ stderr ] = await Promise.all([
+    proc.stderrOutput(),
+  ]);
+  const stderrStr = new TextDecoder().decode(stderr);
+  if (stderrStr) {
+    console.error(stderrStr);
+  }
+}
+
+async function publish() {
+  console.log("publish");
+  const proc = Deno.run({
+    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "publish" ],
+    cwd: Deno.cwd(),
+    stderr: 'piped',
+    stdout: "null",
+  });
+  const [ stderr ] = await Promise.all([
+    proc.stderrOutput(),
+  ]);
+  const stderrStr = new TextDecoder().decode(stderr);
+  if (stderrStr) {
+    console.error(stderrStr);
+  }
+}
 
 for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();
@@ -124,12 +173,23 @@ for (let i = 0; i < commands.length; i++) {
     await gqlgen();
   } else if (command === "compile") {
     await compile();
+  } else if (command === "pc") {
+    await pc();
+  } else if (command === "docs") {
+    await docs();
+  } else if (command === "publish") {
+    await publish();
   }
 }
 
 if (commands.length === 0) {
+  await Deno.remove(`${ buildDir }/`, { recursive: true });
+  await Deno.mkdir(`${ buildDir }/`, { recursive: true });
   await copyEnv();
   await excel_template();
   await gqlgen();
   await compile();
+  await pc();
+  await docs();
+  await publish();
 }

@@ -7,8 +7,8 @@ yarn.lock
 unpackage
 
 /build
-/nest/_uploadfile
 /error.js
-/nest/.env
 pnpm-lock.yaml
 codegening.txt
+
+/deno/lib/script/publish_cnf.js
