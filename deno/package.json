@@ -9,6 +9,7 @@
     "build": "deno run -A --import-map=./import_map.json ./lib/script/build.ts --target linux",
     "publish": "node lib/script/publish.js",
     "build:win": "deno run -A --import-map=./import_map.json ./lib/script/build.ts",
+    "codegen": "cd .. && npm run codegen",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
