@@ -127,6 +127,9 @@ async function pc() {
   if (stderrStr) {
     console.error(stderrStr);
   }
+  const str = await Deno.readTextFile(`${ buildDir }/../pc/index.html`);
+  const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
+  await Deno.writeTextFile(`${ buildDir }/../pc/index.html`, str2);
 }
 
 async function docs() {
