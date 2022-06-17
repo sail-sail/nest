@@ -323,6 +323,14 @@ let onCloseResolve = function(value: {
 // 内置变量
 let builtInModel = $ref<UsrModel>();
 
+// 增加时的默认值
+async function getDefaultModel(): Promise<UsrModel> {
+  const defaultModel: UsrModel = {
+    is_enabled: 1,
+  };
+  return defaultModel;
+}
+
 // 打开对话框
 async function showDialog(
   arg?: {
@@ -352,7 +360,9 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
+    const defaultModel = await getDefaultModel();
     dialogModel = {
+      ...defaultModel,
       ...model,
     };
   } else if (action === "edit") {

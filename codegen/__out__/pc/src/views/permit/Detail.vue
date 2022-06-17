@@ -263,6 +263,13 @@ let onCloseResolve = function(value: {
 // 内置变量
 let builtInModel = $ref<PermitModel>();
 
+// 增加时的默认值
+async function getDefaultModel(): Promise<PermitModel> {
+  const defaultModel: PermitModel = {
+  };
+  return defaultModel;
+}
+
 // 打开对话框
 async function showDialog(
   arg?: {
@@ -292,7 +299,9 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
+    const defaultModel = await getDefaultModel();
     dialogModel = {
+      ...defaultModel,
       ...model,
     };
   } else if (action === "edit") {

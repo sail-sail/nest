@@ -358,6 +358,16 @@ let onCloseResolve = function(value: {
 // 内置变量
 let builtInModel = $ref<MenuModel>();
 
+// 增加时的默认值
+async function getDefaultModel(): Promise<MenuModel> {
+  const defaultModel: MenuModel = {
+    type: "pc",
+    is_enabled: 1,
+    order_by: 0,
+  };
+  return defaultModel;
+}
+
 // 打开对话框
 async function showDialog(
   arg?: {
@@ -387,7 +397,9 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
+    const defaultModel = await getDefaultModel();
     dialogModel = {
+      ...defaultModel,
       ...model,
     };
     const order_by = await findLastOrderBy();

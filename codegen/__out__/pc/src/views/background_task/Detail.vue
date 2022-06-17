@@ -333,6 +333,13 @@ let onCloseResolve = function(value: {
 // 内置变量
 let builtInModel = $ref<Background_taskModel>();
 
+// 增加时的默认值
+async function getDefaultModel(): Promise<Background_taskModel> {
+  const defaultModel: Background_taskModel = {
+  };
+  return defaultModel;
+}
+
 // 打开对话框
 async function showDialog(
   arg?: {
@@ -362,7 +369,9 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
+    const defaultModel = await getDefaultModel();
     dialogModel = {
+      ...defaultModel,
       ...model,
     };
   } else if (action === "edit") {
