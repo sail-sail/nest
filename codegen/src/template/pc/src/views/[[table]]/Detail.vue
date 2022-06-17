@@ -175,7 +175,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
               #>
               placeholder="请选择<#=column_comment#>"
             ></el-date-picker><#
-            } else if (column_type === "int(1)" || column_type === "tinyint(1)") {
+            } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
             <el-checkbox
               class="form_input"
@@ -633,6 +633,47 @@ let onCloseResolve = function(value: {
 // 内置变量
 let builtInModel = $ref<<#=tableUp#>Model>();
 
+// 增加时的默认值
+async function getDefaultModel(): Promise<<#=tableUp#>Model> {
+  const defaultModel: <#=tableUp#>Model = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenNest) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (!column.COLUMN_DEFAULT) continue;
+      let defaultValue = column.COLUMN_DEFAULT.toString();
+      if (selectList.length > 0) {
+        if (typeof selectList[0].value === "string") {
+          defaultValue = `"${ defaultValue }"`;
+        } else {
+          defaultValue = defaultValue;
+        }
+      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
+        defaultValue = defaultValue;
+      } else {
+        defaultValue = `"${ defaultValue }"`;
+      }
+    #>
+    <#=column_name#>: <#=defaultValue#>,<#
+    }
+    #>
+  };
+  return defaultModel;
+}
+
 // 打开对话框
 async function showDialog(
   arg?: {
@@ -662,7 +703,9 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
+    const defaultModel = await getDefaultModel();
     dialogModel = {
+      ...defaultModel,
       ...model,
     };<#
     if (hasOrderBy) {
