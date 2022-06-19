@@ -1,7 +1,7 @@
 {
   "projects": {
     "pc": {
-      "schema": "nest/src/**/*.graphql",
+      "schema": "deno/**/*.graphql.ts",
       "extensions": {
         "endpoints": {
           "default": {

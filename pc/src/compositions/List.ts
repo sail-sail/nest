@@ -141,9 +141,9 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   
   /**
    * 按住ctrl键之后点击一行
-   * @param {PointerEvent} _event
+   * @param {MouseEvent} _event
    */
-  function rowClkCtrl(_event: PointerEvent) {
+  function rowClkCtrl(_event?: MouseEvent) {
     const id = selectedIds[0];
     if (id) {
       if (!prevSelectedIds.includes(id)) {
@@ -156,9 +156,9 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   
   /**
    * 按住shift键之后点击一行
-   * @param {PointerEvent} _event
+   * @param {MouseEvent} _event
    */
-  function rowClkShift(_event: PointerEvent) {
+  function rowClkShift(_event?: MouseEvent) {
     const id = selectedIds[0];
     const tableData = tableRef.value.data;
     let fromIdx = tableData.length - 1;

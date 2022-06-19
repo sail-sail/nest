@@ -184,7 +184,13 @@ let dialogTitle = $computed(() => {
 
 let dialogVisible = $ref(false);
 
-let dialogModel = $ref({
+let dialogModel: {
+  modelValue?: string,
+  maxSize?: number,
+  maxFileSize?: number,
+  readonly?: boolean,
+  accept?: string,
+} = $ref({
   modelValue: "",
   maxSize: 1,
   maxFileSize: 1024 * 1024 * 50,
@@ -198,12 +204,12 @@ let nowIndex = $ref(0);
 
 let iframeLoading = $ref(false);
 
-let modelValue = $ref("");
+let modelValue: string|undefined = $ref("");
 
 // let tenantHost = $ref("");
 
 let urlList = $computed(() => {
-  const list = [];
+  const list: string[] = [];
   if (!modelValue) return list;
   let ids = modelValue.split(",").filter((x) => x);
   
@@ -238,7 +244,7 @@ async function showDialog(
   // const { host } = await tenantStore.getHost();
   // tenantHost = host;
   let isChg = false;
-  if (model.modelValue !== modelValue) {
+  if (model?.modelValue !== modelValue) {
     isChg = true;
   }
   dialogModel = {
@@ -251,17 +257,20 @@ async function showDialog(
     iframeRefs = [ ];
     fileStats = [ ];
     iframeShoweds = [ true ];
-    const ids = modelValue.split(",").filter((x) => x);
+    const ids = modelValue?.split(",").filter((x) => x);
     await getStatsOssEfc(ids);
   }
   inited = true;
   dialogVisible = true;
 }
 
-async function getStatsOssEfc(ids: string[]): Promise<{
+async function getStatsOssEfc(ids?: string[]): Promise<{
   id: string,
   lbl: string,
 }[]> {
+  if (!ids) {
+    return [];
+  }
   const data = await getStatsOss(ids);
   fileStats = fileStats.concat(data);
   return data;
@@ -331,8 +340,11 @@ function iframeLoad() {
 let iframeRefs = $ref<any[]>([ ]);
 
 function initIframeEl(iframeRef: HTMLIFrameElement) {
-  const iframeWindow: Window = iframeRef?.contentWindow;
-  const iframeDocument = iframeWindow.document;
+  const iframeWindow = iframeRef?.contentWindow;
+  const iframeDocument = iframeWindow?.document;
+  if (!iframeDocument) {
+    return;
+  }
   let cssText = `
     ::-webkit-scrollbar-track-piece {
       background-color: transparent;
@@ -365,6 +377,9 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
 
 // 下载
 function downloadClk() {
+  if (!modelValue) {
+    return;
+  }
   let ids = modelValue.split(",").filter((x) => x);
   const id = ids[nowIndex];
   const url = `${ baseURL }/api/oss/download/?inline=0&id=${ encodeURIComponent(id) }`;
@@ -379,20 +394,23 @@ function printClk() {
   }
 }
 
-let fileRef = $ref(undefined);
+let fileRef: HTMLInputElement|undefined = $ref(undefined);
 
 async function inputChg() {
   if (!fileRef) return;
+  if (!modelValue) {
+    return;
+  }
   const ids = modelValue.split(",").filter((x) => x);
-  if (ids.length >= dialogModel.maxSize) {
+  if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
     fileRef.value = "";
     ElMessage.error(`最多只能上传 ${ dialogModel.maxSize } 个附件`);
     return;
   }
-  const file = fileRef.files[0];
+  const file = fileRef?.files?.[0];
   fileRef.value = "";
   if (!file) return;
-  if (file.size > dialogModel.maxFileSize) {
+  if (dialogModel?.maxFileSize && file.size > dialogModel.maxFileSize) {
     ElMessage.error(`文件大小不能超过 ${ dialogModel.maxFileSize / 1024 / 1024 }M`);
     return;
   }
@@ -413,8 +431,8 @@ async function inputChg() {
 // 点击上传附件
 function uploadClk() {
   if (!fileRef) return;
-  const ids = modelValue.split(",").filter((x) => x);
-  if (ids.length >= dialogModel.maxSize) {
+  const ids = modelValue?.split(",").filter((x) => x) || [];
+  if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
     fileRef.value = "";
     ElMessage.error(`最多只能上传 ${ dialogModel.maxSize } 个附件!`);
     return;
@@ -429,7 +447,10 @@ async function deleteClk() {
   } catch (err) {
     return;
   }
-  const ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue?.split(",").filter((x) => x);
+  if (!ids || ids.length === 0) {
+    return;
+  }
   const ids2 = ids.filter((_, i) => i !== nowIndex);
   iframeShoweds = iframeShoweds.filter((_, i) => i !== nowIndex);
   fileStats = fileStats.filter((_, i) => i !== nowIndex);
@@ -445,7 +466,10 @@ async function deleteClk() {
 
 // 当前附件向前移动
 function moveLeftClk() {
-  const ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue?.split(",").filter((x) => x);
+  if (!ids || ids.length === 0) {
+    return;
+  }
   const ids2 = ids.filter((_, i) => i !== nowIndex);
   const id = ids[nowIndex];
   ids2.splice(nowIndex - 1, 0, id);
@@ -456,7 +480,10 @@ function moveLeftClk() {
 
 // 当前附件向后移动
 function moveRightClk() {
-  const ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue?.split(",").filter((x) => x);
+  if (!ids || ids.length === 0) {
+    return;
+  }
   const ids2 = ids.filter((_, i) => i !== nowIndex);
   const id = ids[nowIndex];
   ids2.splice(nowIndex + 1, 0, id);

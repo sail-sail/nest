@@ -71,14 +71,14 @@ let inited = $ref(false);
 
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
-let dialogAction = $ref("select");
+let dialogAction: string = $ref("select");
 
-let selectedIds = $ref<string[]>([ ]);
-let oldSelectedIds: string[] = [ ];
+let selectedIds: string[]|undefined = $ref([ ]);
+let oldSelectedIds: string[]|undefined = [ ];
 
 let onCloseResolve = function(value: {
   action: "select" | "close" | "cancel";
-  selectedIds: string[];
+  selectedIds: string[]|undefined;
 }) { };
 
 // 打开对话框
@@ -92,7 +92,7 @@ async function showDialog(
   inited = false;
   const title = arg?.title;
   const action = arg?.action;
-  dialogAction = action;
+  dialogAction = action || "select";
   if (title) {
     dialogTitle = title;
   }
@@ -107,7 +107,7 @@ async function showDialog(
   inited = true;
   const reslut = await new Promise<{
     action: "select" | "close" | "cancel";
-    selectedIds: string[];
+    selectedIds: string[]|undefined;
   }>(function(resolve) {
     onCloseResolve = resolve;
   });
@@ -127,7 +127,7 @@ async function saveClk() {
 }
 
 function revertClk() {
-  selectedIds = [ ...oldSelectedIds ];
+  selectedIds = oldSelectedIds && [ ...oldSelectedIds ];
 }
 
 function cancelClk() {

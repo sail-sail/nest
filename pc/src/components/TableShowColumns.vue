@@ -90,6 +90,9 @@ function handleCommand(command: { action: "reset"|"item", item?: ColumnType }) {
   } else {
     let tableColumns = [ ...props.tableColumns ];
     const item = command.item;
+    if (!item) {
+      return;
+    }
     const idx = tableColumns.indexOf(item);
     if (item) {
       tableColumns[idx] = { ...item, hide: !item.hide };

@@ -36,13 +36,13 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref("");
+let modelValue: string = $ref("");
 
 watch(
   () => props.modelValue,
   (newVal) => {
     if (modelValue !== newVal) {
-      modelValue = newVal;
+      modelValue = newVal || "";
     }
   },
   {

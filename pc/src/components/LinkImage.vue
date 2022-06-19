@@ -31,7 +31,7 @@ const props = withDefaults(
 );
 
 let urlList = $computed(() => {
-  const list = [];
+  const list: string[] = [];
   if (!props.modelValue) return list;
   let ids = props.modelValue.split(",").filter((x) => x);
   for (let id of ids) {

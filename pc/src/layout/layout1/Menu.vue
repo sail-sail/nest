@@ -17,11 +17,11 @@
   >
     <el-sub-menu
       v-if="item.children && item.children.length > 0 && !item.route_path"
-      :index="item.id"
+      :index="item.id || ''"
     >
       <template #title>
         <el-icon>
-          <FolderOpened v-if="openedIndex.includes(item.id)"/>
+          <FolderOpened v-if="openedIndex.includes(item.id || '')"/>
           <Folder v-else/>
         </el-icon>
         <span>{{ item.lbl }}</span>
@@ -144,7 +144,7 @@ function menuSelect(index: string) {
   }, 0);
 }
 
-let defaultActive = $ref<string>();
+let defaultActive: string|undefined = $ref();
 
 async function getMenusEfc() {
   const data = await getMenus({ type: "pc" });

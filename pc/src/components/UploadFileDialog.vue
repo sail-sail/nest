@@ -122,7 +122,7 @@ let onCloseResolve = function(value?: File) { };
 
 async function showDialog(arg?: { title?: string }) {
   if (arg) {
-    dialogTitle = arg.title;
+    dialogTitle = arg.title || "导入";
   }
   fileInfo = {
     name: "",
@@ -141,15 +141,20 @@ async function showDialog(arg?: { title?: string }) {
       }
     });
   }
-  const reslut = await new Promise<File>((resolve) => {
+  const reslut = await new Promise<File|undefined>((resolve) => {
     onCloseResolve = resolve;
   });
   return reslut;
 }
 
 async function inputChg() {
-  if (!fileRef) return;
-  const file = fileRef.files[0];
+  if (!fileRef) {
+    return;
+  }
+  const file = fileRef.files?.[0];
+  if (!file) {
+    return;
+  }
   fileRef.value = "";
   fileInfo.name = file.name;
   fileInfo.size = file.size;
@@ -157,7 +162,9 @@ async function inputChg() {
 }
 
 async function confirmClk() {
-  if (!fileObj) return;
+  if (!fileObj) {
+    return;
+  }
   dialogVisible = false;
   onCloseResolve(fileObj);
 }

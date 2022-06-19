@@ -160,20 +160,20 @@
           <el-button
             link
             class="prev_but"
-            :disabled="ids.indexOf(dialogModel.id) <= 0"
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
             @click="prevIdClk"
           >
             上一页
           </el-button>
           <span class="detail_pg_span">
             <span>
-              {{ ids.indexOf(dialogModel.id) + 1 }} / {{ ids.length }}
+              {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
             </span>
           </span>
           <el-button
             link
             class="next_but"
-            :disabled="ids.indexOf(dialogModel.id) >= ids.length - 1"
+            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
             @click="nextIdClk"
           >
             下一页
@@ -321,7 +321,7 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel = $ref<UsrModel>();
+let builtInModel: Background_taskModel|undefined = $ref<UsrModel>();
 
 // 增加时的默认值
 async function getDefaultModel(): Promise<UsrModel> {
@@ -350,7 +350,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  dialogAction = action;
+  dialogAction = action || "add";
   if (title) {
     dialogTitle = title;
   }
@@ -366,6 +366,9 @@ async function showDialog(
       ...model,
     };
   } else if (action === "edit") {
+    if (!model) {
+      return;
+    }
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
@@ -389,6 +392,9 @@ async function showDialog(
 async function refreshEfc() {
   if (formRef) {
     formRef.clearValidate();
+  }
+  if (!dialogModel.id) {
+    return;
   }
   const data = await findById(dialogModel.id);
   if (data) {
@@ -453,18 +459,23 @@ async function saveClk() {
   } catch (err) {
     return;
   }
-  let id: string = undefined;
+  let id: string|undefined = undefined;
   let msg = "";
   if (dialogAction === "add") {
     id = await create({ ...dialogModel, ...builtInModel });
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
+    if (!dialogModel.id) {
+      return;
+    }
     id = await updateById(dialogModel.id, { ...dialogModel, ...builtInModel });
     msg = `修改成功!`;
   }
   if (id) {
-    changedIds.push(dialogModel.id);
+    if (dialogModel.id) {
+      changedIds.push(dialogModel.id);
+    }
     ElMessage.success(msg);
     const oldId = dialogModel.id;
     let isNext = await nextId();

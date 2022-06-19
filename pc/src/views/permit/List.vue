@@ -53,7 +53,7 @@
           <span>(</span>
           <span
             class="mx-1 text-[green]"
-            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': null }"
+            :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
           >
             {{ selectedIds.length }}
           </span>
@@ -376,7 +376,7 @@ const props = defineProps<{
   remLike?: string; //备注
 }>();
 
-const builtInSearchType = {
+const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   menu_id: "string[]",
@@ -551,7 +551,7 @@ async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   let data: PermitModel[];
-  let count = 0;
+  let count: number|undefined = 0;
   let search2 = {
     ...search,
     ...builtInSearch,

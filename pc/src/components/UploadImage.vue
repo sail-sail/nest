@@ -113,7 +113,7 @@ let urlList = $computed(() => {
   return ids.map((id) => `${ baseURL }/api/oss/download/?id=${ encodeURIComponent(id) }`);
 });
 
-let fileRef = $ref(undefined);
+let fileRef: HTMLInputElement|undefined = $ref(undefined);
 
 async function inputChg() {
   if (!fileRef) return;
@@ -123,9 +123,11 @@ async function inputChg() {
     ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
     return;
   }
-  const file = fileRef.files[0];
+  const file = fileRef?.files?.[0];
   fileRef.value = "";
-  if (!file) return;
+  if (!file) {
+    return;
+  }
   if (file.size > props.maxFileSize) {
     ElMessage.error(`文件大小不能超过 ${ props.maxFileSize / 1024 / 1024 }M`);
     return;
