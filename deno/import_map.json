@@ -17,7 +17,7 @@
     "dayjs": "https://raw.githubusercontent.com/sail-sail/dayjs/dev/mod.ts",
     "csv": "https://deno.land/x/csv@v0.7.4/mod.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
-    "ejsexcel": "https://raw.githubusercontent.com/sail-sail/deno_ejsexcel/3a5d6eb2695e7a7a329d39858e3b550872c90436/mod.ts",
+    "ejsexcel": "https://deno.land/x/ejsexcel@v1.0.0/mod.ts",
     "sheetjs": "https://cdn.sheetjs.com/xlsx-latest/package/xlsx.mjs",
     "sheetjs_cptable": "https://cdn.sheetjs.com/xlsx-latest/package/dist/cpexcel.full.mjs",
     "common_mime_types": "https://deno.land/x/common_mime_types@0.1.1/mod.ts"
