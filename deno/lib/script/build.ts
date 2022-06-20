@@ -135,7 +135,7 @@ async function pc() {
 async function docs() {
   console.log("docs");
   const proc = Deno.run({
-    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "build" ],
+    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "docs:build" ],
     cwd: Deno.cwd() + "/../",
     stderr: 'piped',
     stdout: "null",
