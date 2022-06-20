@@ -22,12 +22,6 @@ const publishPath = `${ publishBase }/${ projectName }/`;
   await ssh.connect();
   const sftp = ssh.sftp();
   
-  try {
-    await fs.rename(`${ buildPath }/deno/${ projectName }`, `${ buildPath }/deno/${ projectName }2`);
-  } catch (err) {
-    console.error(err.message);
-  }
-  
   let data;
   
   try {
@@ -81,8 +75,6 @@ const publishPath = `${ publishBase }/${ projectName }/`;
     }
   };
   await treeDir("");
-  
-  await sftp.rename(`${ publishPath }/deno/${ projectName }2`, `${ publishPath }/deno/${ projectName }`);
   
   await ssh.exec(`chmod -R 755 ${ publishPath }/deno/${ projectName }`);
   
