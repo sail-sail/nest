@@ -687,7 +687,7 @@ async function dataGrid(isCount = false) {
 }
 
 // 排序
-let sort = $ref<Sort>({
+let sort: Sort = $ref({
   prop: "begin_time",
   order: "descending",
 });
@@ -743,6 +743,7 @@ async function revertByIdsEfc() {
   }
   const num = await revertByIds(selectedIds);
   if (num) {
+    search.is_deleted = 0;
     await Promise.all([
       dataGrid(true),
     ]);

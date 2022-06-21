@@ -331,7 +331,7 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel: Background_taskModel|undefined = $ref<Background_taskModel>();
+let builtInModel: Background_taskModel|undefined = $ref();
 
 // 增加时的默认值
 async function getDefaultModel(): Promise<Background_taskModel> {

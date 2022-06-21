@@ -1244,8 +1244,8 @@ let <#=foreignTable#>Info: {
 let <#=foreignTable#>4SelectV2 = $computed(() => {
   return <#=foreignTable#>Info.data.map((item) => {
     return {
-      value: item.<#=foreignKey.column#>,
-      label: item.<#=foreignKey.lbl#>,
+      value: item.<#=foreignKey.column#>!,
+      label: item.<#=foreignKey.lbl#>!,
     };
   });
 });<#
@@ -1367,7 +1367,7 @@ if (defaultSort && defaultSort.prop) {
 #>
 
 // 排序
-let sort = $ref<Sort>({
+let sort: Sort = $ref({
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
 });<#
@@ -1375,9 +1375,9 @@ let sort = $ref<Sort>({
 #>
 
 // 排序
-let sort = $ref<Sort>({
-  prop: null,
-  order: null,
+let sort: Sort = $ref({
+  prop: "",
+  order: "ascending",
 });<#
 }
 #>
@@ -1434,15 +1434,14 @@ if (opts.noAdd !== true) {
 
 // 打开增加页面
 async function openAdd() {
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
+  const dialogResult = await detailRef.showDialog({
     title: "增加",
     action: "add",
     builtInModel,
   });
+  const changedIds = dialogResult?.changedIds;
   if (changedIds && changedIds.length > 0) {
-    selectedIds = [ ...selectedIds, ...changedIds ];
+    selectedIds = [ ...changedIds ];
     await Promise.all([
       dataGrid(true),<#
       if (hasSummary) {
@@ -1485,9 +1484,7 @@ async function openEdit() {
     ElMessage.warning(`请选择需要编辑的数据!`);
     return;
   }
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
+  const dialogResult = await detailRef.showDialog({
     title: "修改",
     action: "edit",
     builtInModel,
@@ -1495,6 +1492,7 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  const changedIds = dialogResult?.changedIds;
   if (changedIds && changedIds.length > 0) {
     await Promise.all([
       dataGrid(),<#
@@ -1562,6 +1560,7 @@ async function revertByIdsEfc() {
   }
   const num = await revertByIds(selectedIds);
   if (num) {
+    search.is_deleted = 0;
     await Promise.all([
       dataGrid(true),<#
       if (hasSummary) {

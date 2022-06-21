@@ -69,7 +69,7 @@
               @keyup.enter.native.stop
               v-model="dialogModel.menu_id"
               placeholder="请选择父菜单"
-              :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+              :options="menuInfo.data.map((item) => ({ value: item.id!, label: item.lbl! }))"
               filterable
               clearable
               :loading="!inited"
@@ -356,7 +356,7 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel: Background_taskModel|undefined = $ref<MenuModel>();
+let builtInModel: MenuModel|undefined = $ref();
 
 // 增加时的默认值
 async function getDefaultModel(): Promise<MenuModel> {

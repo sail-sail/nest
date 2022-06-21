@@ -114,7 +114,7 @@
               @keyup.enter.native.stop
               v-model="dialogModel.role_ids"
               placeholder="请选择角色"
-              :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+              :options="roleInfo.data.map((item) => ({ value: item.id!, label: item.lbl! }))"
               filterable
               clearable
               :loading="!inited"
@@ -321,7 +321,7 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel: Background_taskModel|undefined = $ref<UsrModel>();
+let builtInModel: UsrModel|undefined = $ref();
 
 // 增加时的默认值
 async function getDefaultModel(): Promise<UsrModel> {

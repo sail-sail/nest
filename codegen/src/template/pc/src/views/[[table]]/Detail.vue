@@ -124,7 +124,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
               @keyup.enter.native.stop
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
-              :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
+              :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>!, label: item.<#=foreignKey.lbl#>! }))"
               filterable
               clearable
               :loading="!inited"
@@ -631,7 +631,7 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel: Background_taskModel|undefined = $ref<<#=tableUp#>Model>();
+let builtInModel: <#=tableUp#>Model|undefined = $ref();
 
 // 增加时的默认值
 async function getDefaultModel(): Promise<<#=tableUp#>Model> {
