@@ -173,7 +173,7 @@ export async function getSchema(
         column.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: false, defaultSort };
       }
     }
-    if (!column.foreignKey.table) {
+    if (column.foreignKey && !column.foreignKey.table) {
       let table2: string = "";
       if (column.COLUMN_NAME.endsWith("_ids")) {
         table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_ids".length);
@@ -182,38 +182,38 @@ export async function getSchema(
       }
       column.foreignKey.table = table2;
     }
-    if (!column.foreignKey.type) {
+    if (column.foreignKey && !column.foreignKey.type) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
         column.foreignKey.type = "many2many";
       }
     }
-    if (!column.many2many) {
+    if (column.COLUMN_NAME.endsWith("_ids") && !column.many2many) {
       const table2 = column.foreignKey.table;
       column.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
     }
-    if (!column.many2many.table) {
+    if (column.many2many && !column.many2many.table) {
       column.many2many.table = `${ table_name }_${ column.foreignKey.table }`;
     }
-    if (!column.many2many.column1) {
+    if (column.many2many && !column.many2many.column1) {
       column.many2many.column1 = `${ table_name }_id`;
     }
-    if (!column.many2many.column2) {
+    if (column.many2many && !column.many2many.column2) {
       column.many2many.column2 = `${ column.foreignKey.table }_id`;
     }
-    if (!column.foreignKey.column) {
+    if (column.foreignKey && !column.foreignKey.column) {
       column.foreignKey.column = "id";
     }
-    if (!column.foreignKey.lbl) {
+    if (column.foreignKey && !column.foreignKey.lbl) {
       column.foreignKey.lbl = "lbl";
     }
-    if (column.foreignKey.multiple == null) {
+    if (column.foreignKey && column.foreignKey.multiple == null) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
         column.foreignKey.multiple = true;
       } else if (column.COLUMN_NAME.endsWith("_id")) {
         column.foreignKey.multiple = false;
       }
     }
-    if (!column.foreignKey.defaultSort) {
+    if (column.foreignKey && !column.foreignKey.defaultSort) {
       column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
     }
     columns.push({
