@@ -166,6 +166,7 @@ function getFromQuery(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
@@ -284,6 +285,7 @@ export async function findAll(
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
+        if (column.isVirtual) continue;
         const column_name = column.COLUMN_NAME;
         const foreignKey = column.foreignKey;
         let data_type = column.DATA_TYPE;
@@ -889,24 +891,24 @@ export async function create(
     if (column.isPassword) {
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,<#=column_name#>`;
+    sql += `,\\`<#=column_name#>\\``;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,<#=column_name#>`;
+    sql += `,\\`<#=column_name#>\\``;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,<#=column_name#>`;
+    sql += `,\\`<#=column_name#>\\``;
   }<#
     } else {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,<#=column_name#>`;
+    sql += `,\\`<#=column_name#>\\``;
   }<#
     }
   #><#
@@ -1232,7 +1234,7 @@ export async function updateById(
       model.<#=column_name#> = null;
     }
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,<#=column_name#> = ${ args.push(model.<#=column_name#>) }`;
+      sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
     }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -1241,14 +1243,14 @@ export async function updateById(
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,<#=column_name#> = ${ args.push(model.<#=column_name#>) }`;
+      sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
     }
   }<#
     } else {
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,<#=column_name#> = ${ args.push(model.<#=column_name#>) }`;
+      sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
     }
   }<#
     }
