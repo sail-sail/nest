@@ -394,13 +394,13 @@ export async function create(
     }
   }
   if (model.menu_id !== undefined) {
-    sql += `,menu_id`;
+    sql += `,\`menu_id\``;
   }
   if (model.lbl !== undefined) {
-    sql += `,lbl`;
+    sql += `,\`lbl\``;
   }
   if (model.rem !== undefined) {
-    sql += `,rem`;
+    sql += `,\`rem\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
@@ -511,17 +511,17 @@ export async function updateById(
   }
   if (model.menu_id !== undefined) {
     if (model.menu_id != oldModel?.menu_id) {
-      sql += `,menu_id = ${ args.push(model.menu_id) }`;
+      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ${ args.push(model.lbl) }`;
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ${ args.push(model.rem) }`;
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
     }
   }
   sql += ` where id = ${ args.push(id) } limit 1`;

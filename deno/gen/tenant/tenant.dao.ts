@@ -484,25 +484,25 @@ export async function create(
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,lbl`;
+    sql += `,\`lbl\``;
   }
   if (model.host !== undefined) {
-    sql += `,host`;
+    sql += `,\`host\``;
   }
   if (model.expiration !== undefined) {
-    sql += `,expiration`;
+    sql += `,\`expiration\``;
   }
   if (model.max_usr_num !== undefined) {
-    sql += `,max_usr_num`;
+    sql += `,\`max_usr_num\``;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,is_enabled`;
+    sql += `,\`is_enabled\``;
   }
   if (model.order_by !== undefined) {
-    sql += `,order_by`;
+    sql += `,\`order_by\``;
   }
   if (model.rem !== undefined) {
-    sql += `,rem`;
+    sql += `,\`rem\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
@@ -651,37 +651,37 @@ export async function updateById(
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ${ args.push(model.lbl) }`;
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
     }
   }
   if (model.host !== undefined) {
     if (model.host != oldModel?.host) {
-      sql += `,host = ${ args.push(model.host) }`;
+      sql += `,\`host\` = ${ args.push(model.host) }`;
     }
   }
   if (model.expiration !== undefined) {
     if (model.expiration != oldModel?.expiration) {
-      sql += `,expiration = ${ args.push(model.expiration) }`;
+      sql += `,\`expiration\` = ${ args.push(model.expiration) }`;
     }
   }
   if (model.max_usr_num !== undefined) {
     if (model.max_usr_num != oldModel?.max_usr_num) {
-      sql += `,max_usr_num = ${ args.push(model.max_usr_num) }`;
+      sql += `,\`max_usr_num\` = ${ args.push(model.max_usr_num) }`;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,is_enabled = ${ args.push(model.is_enabled) }`;
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `,order_by = ${ args.push(model.order_by) }`;
+      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ${ args.push(model.rem) }`;
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
     }
   }
   sql += ` where id = ${ args.push(id) } limit 1`;

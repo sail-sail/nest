@@ -477,19 +477,19 @@ export async function create(
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,lbl`;
+    sql += `,\`lbl\``;
   }
   if (model.username !== undefined) {
-    sql += `,username`;
+    sql += `,\`username\``;
   }
   if (isNotEmpty(model.password)) {
-    sql += `,password`;
+    sql += `,\`password\``;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,is_enabled`;
+    sql += `,\`is_enabled\``;
   }
   if (model.rem !== undefined) {
-    sql += `,rem`;
+    sql += `,\`rem\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
@@ -639,12 +639,12 @@ export async function updateById(
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ${ args.push(model.lbl) }`;
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
     }
   }
   if (model.username !== undefined) {
     if (model.username != oldModel?.username) {
-      sql += `,username = ${ args.push(model.username) }`;
+      sql += `,\`username\` = ${ args.push(model.username) }`;
     }
   }
   if (isNotEmpty(model.password)) {
@@ -653,12 +653,12 @@ export async function updateById(
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,is_enabled = ${ args.push(model.is_enabled) }`;
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ${ args.push(model.rem) }`;
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
     }
   }
   sql += ` where id = ${ args.push(id) } limit 1`;

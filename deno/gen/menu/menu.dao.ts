@@ -464,28 +464,28 @@ export async function create(
     }
   }
   if (model.type !== undefined) {
-    sql += `,type`;
+    sql += `,\`type\``;
   }
   if (model.menu_id !== undefined) {
-    sql += `,menu_id`;
+    sql += `,\`menu_id\``;
   }
   if (model.lbl !== undefined) {
-    sql += `,lbl`;
+    sql += `,\`lbl\``;
   }
   if (model.route_path !== undefined) {
-    sql += `,route_path`;
+    sql += `,\`route_path\``;
   }
   if (model.route_query !== undefined) {
-    sql += `,route_query`;
+    sql += `,\`route_query\``;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,is_enabled`;
+    sql += `,\`is_enabled\``;
   }
   if (model.order_by !== undefined) {
-    sql += `,order_by`;
+    sql += `,\`order_by\``;
   }
   if (model.rem !== undefined) {
-    sql += `,rem`;
+    sql += `,\`rem\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
@@ -631,42 +631,42 @@ export async function updateById(
   }
   if (model.type !== undefined) {
     if (model.type != oldModel?.type) {
-      sql += `,type = ${ args.push(model.type) }`;
+      sql += `,\`type\` = ${ args.push(model.type) }`;
     }
   }
   if (model.menu_id !== undefined) {
     if (model.menu_id != oldModel?.menu_id) {
-      sql += `,menu_id = ${ args.push(model.menu_id) }`;
+      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ${ args.push(model.lbl) }`;
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
     }
   }
   if (model.route_path !== undefined) {
     if (model.route_path != oldModel?.route_path) {
-      sql += `,route_path = ${ args.push(model.route_path) }`;
+      sql += `,\`route_path\` = ${ args.push(model.route_path) }`;
     }
   }
   if (model.route_query !== undefined) {
     if (model.route_query != oldModel?.route_query) {
-      sql += `,route_query = ${ args.push(model.route_query) }`;
+      sql += `,\`route_query\` = ${ args.push(model.route_query) }`;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,is_enabled = ${ args.push(model.is_enabled) }`;
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `,order_by = ${ args.push(model.order_by) }`;
+      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ${ args.push(model.rem) }`;
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
     }
   }
   sql += ` where id = ${ args.push(id) } limit 1`;

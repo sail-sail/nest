@@ -480,28 +480,28 @@ export async function create(
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,lbl`;
+    sql += `,\`lbl\``;
   }
   if (model.state !== undefined) {
-    sql += `,state`;
+    sql += `,\`state\``;
   }
   if (model.type !== undefined) {
-    sql += `,type`;
+    sql += `,\`type\``;
   }
   if (model.result !== undefined) {
-    sql += `,result`;
+    sql += `,\`result\``;
   }
   if (model.err_msg !== undefined) {
-    sql += `,err_msg`;
+    sql += `,\`err_msg\``;
   }
   if (model.begin_time !== undefined) {
-    sql += `,begin_time`;
+    sql += `,\`begin_time\``;
   }
   if (model.end_time !== undefined) {
-    sql += `,end_time`;
+    sql += `,\`end_time\``;
   }
   if (model.rem !== undefined) {
-    sql += `,rem`;
+    sql += `,\`rem\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
@@ -630,42 +630,42 @@ export async function updateById(
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,lbl = ${ args.push(model.lbl) }`;
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
     }
   }
   if (model.state !== undefined) {
     if (model.state != oldModel?.state) {
-      sql += `,state = ${ args.push(model.state) }`;
+      sql += `,\`state\` = ${ args.push(model.state) }`;
     }
   }
   if (model.type !== undefined) {
     if (model.type != oldModel?.type) {
-      sql += `,type = ${ args.push(model.type) }`;
+      sql += `,\`type\` = ${ args.push(model.type) }`;
     }
   }
   if (model.result !== undefined) {
     if (model.result != oldModel?.result) {
-      sql += `,result = ${ args.push(model.result) }`;
+      sql += `,\`result\` = ${ args.push(model.result) }`;
     }
   }
   if (model.err_msg !== undefined) {
     if (model.err_msg != oldModel?.err_msg) {
-      sql += `,err_msg = ${ args.push(model.err_msg) }`;
+      sql += `,\`err_msg\` = ${ args.push(model.err_msg) }`;
     }
   }
   if (model.begin_time !== undefined) {
     if (model.begin_time != oldModel?.begin_time) {
-      sql += `,begin_time = ${ args.push(model.begin_time) }`;
+      sql += `,\`begin_time\` = ${ args.push(model.begin_time) }`;
     }
   }
   if (model.end_time !== undefined) {
     if (model.end_time != oldModel?.end_time) {
-      sql += `,end_time = ${ args.push(model.end_time) }`;
+      sql += `,\`end_time\` = ${ args.push(model.end_time) }`;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,rem = ${ args.push(model.rem) }`;
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
     }
   }
   sql += ` where id = ${ args.push(id) } limit 1`;
