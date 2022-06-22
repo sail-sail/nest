@@ -607,7 +607,7 @@ let idsChecked = $ref<0|1>(0);
 // 表格数据
 let tableData: MenuModel[] = $ref([ ]);
 
-let tableColumns = $ref<ColumnType[]>([
+let tableColumns: ColumnType[] = $ref([
   {
     label: "类型",
     prop: "_type",

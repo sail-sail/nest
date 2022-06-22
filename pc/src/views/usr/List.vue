@@ -584,7 +584,7 @@ let idsChecked = $ref<0|1>(0);
 // 表格数据
 let tableData: UsrModel[] = $ref([ ]);
 
-let tableColumns = $ref<ColumnType[]>([
+let tableColumns: ColumnType[] = $ref([
   {
     label: "名称",
     prop: "lbl",
