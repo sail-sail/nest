@@ -19,7 +19,7 @@
     </div>
   </template>
   <div class="wrap_div">
-    <div class="toolbox_div" v-if="!fullscreen">
+    <div class="toolbox_div">
       <el-button
         v-if="!dialogModel.readonly && urlList.length > 0"
         type="primary"
@@ -364,6 +364,9 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
   styleEl.appendChild(iframeDocument.createTextNode(cssText));
   iframeDocument.getElementsByTagName("head")[0]?.appendChild(styleEl);
   const body = <HTMLBodyElement>iframeDocument.body;
+  body.style.display = "flex";
+  body.style.justifyContent = "center";
+  body.style.alignItems = "center";
   const imgs = iframeDocument.getElementsByTagName("img");
   if (imgs.length > 0) {
     const clientWidth = body.clientWidth;
