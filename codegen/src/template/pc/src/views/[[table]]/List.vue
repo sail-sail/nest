@@ -1100,7 +1100,7 @@ let idsChecked = $ref<0|1>(0);
 // 表格数据
 let tableData: <#=tableUp#>Model[] = $ref([ ]);
 
-let tableColumns = $ref<ColumnType[]>([<#
+let tableColumns: ColumnType[] = $ref([<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1396,7 +1396,7 @@ if (hasAtt) {
 async function linkAttChg(row: <#=tableUp#>Model, key: string) {<#
     if (opts.noEdit !== true) {
 #>
-  await updateById(row.id, { [key]: row[key] });<#
+  await updateById(row.id!, { [key]: row[key] });<#
     }
   #>
 }<#

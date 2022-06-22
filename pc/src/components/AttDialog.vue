@@ -398,9 +398,7 @@ let fileRef: HTMLInputElement|undefined = $ref(undefined);
 
 async function inputChg() {
   if (!fileRef) return;
-  if (!modelValue) {
-    return;
-  }
+  modelValue = modelValue || "";
   const ids = modelValue.split(",").filter((x) => x);
   if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
     fileRef.value = "";

@@ -29,4 +29,5 @@ export async function getStatsOss(
     }
     statInfos.push({ id, lbl });
   }
+  return statInfos;
 }
