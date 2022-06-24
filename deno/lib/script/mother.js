@@ -29,7 +29,6 @@ function watchFn() {
         `${ pjPath }/**/*.test.ts`,
         `${ pjPath }/**/*_test.ts`,
         `${ pjPath }/lib/script/**`,
-        `${ pjPath }/src/**/*.dao.ts`,
         `${ pjPath }/src/types.ts`,
         `${ pjPath }/.eslintrc.js`,
         `${ pjPath }/.gitignore`,
@@ -50,6 +49,35 @@ function watchFn() {
     clearTimeout(changeTime);
     changeTime = setTimeout(function() {
       stopWatch = true;
+      const filenames2 = [ ];
+      const filenamesDao = [ ];
+      for (let i = 0; i < filenames.length; i++) {
+        const filename = filenames[i];
+        if (filename.endsWith(".dao.ts") && filename.replaceAll("\\", "/").includes("/src/")) {
+          filenamesDao.push(filename);
+        } else {
+          filenames2.push(filename);
+        }
+      }
+      filenames = filenames2;
+      if (filenamesDao.length > 0) {
+        const arr = [
+          "run",
+          "-A",
+          "--import-map",
+          "./import_map.json",
+          "--no-check",
+          "./lib/script/hmr.ts",
+        ];
+        child_process.spawn("deno", arr, {
+          cwd: pjPath,
+          env: {
+            ...process.env,
+            "hmr_filenames": filenamesDao.join(","),
+          },
+          stdio: [ process.stdin, process.stdout, process.stderr ],
+        });
+      }
       console.log(filenames.slice(0, 4).join("\n"));
       filenames = [ ];
       if (ls) {
@@ -77,7 +105,7 @@ function start() {
     "--import-map",
     "./import_map.json",
     "--no-check",
-    "./mod_dev.ts",
+    "./mod.ts",
   ];
   console.log("deno " + arr.join(" "));
   const startTime = Date.now();

@@ -1,6 +1,7 @@
 import "/lib/env.ts";
-import { Context } from "/lib/context.ts";
-import { QueryArgs } from "/lib/query_args.ts";
+import { Context } from "../context.ts";
+import { QueryArgs } from "../query_args.ts";
+
 let watchTimeout: number|undefined = undefined;
 
 function getMethods(str: string) {
@@ -176,7 +177,11 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           return [];
         }
         try {
-          await dao[methodName](context);
+          const method = dao[methodName];
+          if (!method) {
+            continue;
+          }
+          await method(context);
           context.query = oldQuery;
         } catch (err) {
           context.query = oldQuery;
@@ -238,7 +243,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
             try {
               result = await conn?.query(sql, args);
             } catch (errTmp) {
-              console.log(`sql错误 ${ methodName }: ${ sql }`);
+              // console.log(`sql错误 ${ methodName }: ${ sql }`);
               throw errTmp;
             } finally {
               await context?.rollback(conn, { debug: false });
@@ -247,13 +252,17 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           }
         }
         try {
-          await dao[methodName](context);
+          const method = dao[methodName];
+          if (!method) {
+            continue;
+          }
+          await method(context);
           context.query = oldQuery;
         } catch (err) {
           context.query = oldQuery;
           hasErr = true;
-          console.error(err);
-          console.error("methodName: " + methodName);
+          console.error("sql错误: " + methodName + ": " + err.message);
+          // console.error("methodName: " + methodName);
           continue;
         }
       }
@@ -267,7 +276,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
     if (!hasErr) {
       console.log("sql检查成功:", filenames.join("\n"));
     } else {
-      console.log("sql错误:", filenames.join("\n"));
+      // console.log("sql错误:", filenames.join("\n"));
     }
   }
 }
@@ -299,3 +308,22 @@ export async function hmr() {
   }
 }
 // await hmr();
+
+if (import.meta.main) {
+  let filenamesStr = Deno.env.get("hmr_filenames") || "";
+  if (!filenamesStr) {
+    for (let i = 0; i < Deno.args.length; i++) {
+      const item = Deno.args[i];
+      if (item.startsWith("--hmr_filenames=")) {
+        const value = item.replace(/^--hmr_filenames=/, "");
+        if (value) {
+          filenamesStr = value;
+        }
+      }
+    }
+  }
+  const filenames = filenamesStr.split(",");
+  if (filenames.length > 0) {
+    handelChg(await createContext(), filenames);
+  }
+}

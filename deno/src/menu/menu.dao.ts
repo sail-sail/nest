@@ -1,7 +1,6 @@
 import { Context } from "/lib/context.ts";
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
-import { MenuModel } from "/gen/menu/menu.model.ts";
 import { QueryArgs } from "/lib/query_args.ts";
 
 async function _getMenus(
@@ -70,11 +69,12 @@ async function _getMenus(
 
 export async function getMenus(
   context: Context,
-  type: string,
+  type = "pc",
 ) {
   const allModels = await _getMenus(context, type);
-  let menus: MenuModel[] = [ ];
-  async function tmpFn(parent?: MenuModel) {
+  let menus: typeof allModels = [ ];
+  // deno-lint-ignore no-explicit-any
+  async function tmpFn(parent?: any) {
     // let models = await t.menu2Dao.getMenus(parent && parent.id || "", type);
     let models = allModels.filter((item) => item.menu_id === (parent && parent.id || ""));
     if (!parent) {

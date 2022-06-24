@@ -14,7 +14,7 @@
     "mysql2/": "https://deno.land/x/mysql2@v1.0.5/",
     "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
     "comrak": "https://deno.land/x/comrak@0.1.1/mod.ts",
-    "dayjs": "https://raw.githubusercontent.com/sail-sail/dayjs/dev/mod.ts",
+    "dayjs": "https://deno.land/x/sail_dayjs@2.29.2/mod.ts",
     "csv": "https://deno.land/x/csv@v0.7.4/mod.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
     "ejsexcel": "https://deno.land/x/ejsexcel@v1.0.0/mod.ts",
