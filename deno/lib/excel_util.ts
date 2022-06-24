@@ -1,4 +1,4 @@
-import { MimeMapping } from "common_mime_types";
+import { extension } from "std/media_types/mod.ts";
 import { getXLSX } from "/deps.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
@@ -51,7 +51,7 @@ export async function getTemplate(
   if (!stats || !stats.contentType) {
     throw "Excel文件不存在!";
   }
-  const ext = MimeMapping[stats.contentType]?.[0];
+  const ext = extension(stats.contentType);
   if (ext !== ".xlsx" && ext !== ".xlsm" && ext !== ".xls") {
     throw "Excel文件格式不正确!";
   }

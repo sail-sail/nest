@@ -20,7 +20,6 @@
     "ejsexcel": "https://deno.land/x/ejsexcel@v1.0.0/mod.ts",
     "sheetjs": "https://cdn.sheetjs.com/xlsx-latest/package/xlsx.mjs",
     "sheetjs_cptable": "https://cdn.sheetjs.com/xlsx-latest/package/dist/cpexcel.full.mjs",
-    "common_mime_types": "https://deno.land/x/common_mime_types@0.1.1/mod.ts",
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts"
   }
 }
