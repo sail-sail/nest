@@ -1,25 +1,23 @@
-// deno-lint-ignore-file no-explicit-any
 
 export interface Background_taskModel {
-  [key: string]: any,
-  id?: string, //ID
-  lbl?: string, //名称
-  state?: string, //状态ID
-  _state?: string, //状态名称
-  type?: string, //类型ID
-  _type?: string, //类型名称
-  result?: string, //执行结果
-  err_msg?: string, //错误信息
-  begin_time?: Date, //开始时间
-  end_time?: Date, //结束时间
-  rem?: string, //备注
-  tenant_id?: string, // 租户ID
-  create_usr_id?: string, // 创建用户ID
-  create_time?: Date, // 创建时间
-  update_usr_id?: string, // 更新用户ID
-  update_time?: Date, // 更新时间
-  is_deleted?: 0|1, // 是否删除
-  delete_time?: Date, // 删除时间
+  id: string, //ID
+  lbl: string, //名称
+  state: string, //状态ID
+  _state: string, //状态名称
+  type: string, //类型ID
+  _type: string, //类型名称
+  result: string, //执行结果
+  err_msg: string, //错误信息
+  begin_time: string, //开始时间
+  end_time: string, //结束时间
+  rem: string, //备注
+  tenant_id: string, // 租户ID
+  create_usr_id: string, // 创建用户ID
+  create_time: string|null, // 创建时间
+  update_usr_id: string, // 更新用户ID
+  update_time: string|null, // 更新时间
+  is_deleted: 0|1, // 是否删除
+  delete_time: string|null, // 删除时间
 }
 
 export interface Background_taskSearch {

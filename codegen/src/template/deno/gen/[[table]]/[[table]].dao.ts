@@ -473,15 +473,15 @@ export async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: string[]; uniqueComments: { [key: string]: string }; }}
+ * @return {{ uniqueKeys: (keyof <#=tableUp#>Model)[]; uniqueComments: { [key: string]: string }; }}
  */
 export function getUniqueKeys(
   context: Context,
 ): {
-  uniqueKeys: string[];
+  uniqueKeys: (keyof <#=tableUp#>Model)[];
   uniqueComments: { [key: string]: string };
   } {
-  const uniqueKeys: string[] = [<#
+  const uniqueKeys: (keyof <#=tableUp#>Model)[] = [<#
   for (let i = 0; i < (opts.unique || []).length; i++) {
     const uniqueKey = opts.unique[i];
   #>
@@ -514,11 +514,11 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {<#=tableUp#>Search} search0
+ * @param {<#=tableUp#>Search | Partial<<#=tableUp#>Model>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: <#=tableUp#>Search | <#=tableUp#>Model,
+  search0: <#=tableUp#>Search | Partial<<#=tableUp#>Model>,
 ) {
   const { uniqueKeys } = getUniqueKeys(context);
   if (!uniqueKeys || uniqueKeys.length === 0) return;
@@ -538,13 +538,13 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {<#=tableUp#>Model} oldModel
- * @param {<#=tableUp#>Model} model
+ * @param {Partial<<#=tableUp#>Model>} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
   oldModel: <#=tableUp#>Model,
-  model: <#=tableUp#>Model,
+  model: Partial<<#=tableUp#>Model>,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -564,14 +564,14 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {<#=tableUp#>Model} model
+ * @param {Partial<<#=tableUp#>Model>} model
  * @param {<#=tableUp#>Model} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: <#=tableUp#>Model,
+  model: Partial<<#=tableUp#>Model>,
   oldModel: <#=tableUp#>Model,
   uniqueType: "ignore" | "throw" | "update" = "throw",
 ): Promise<string | undefined> {
@@ -579,11 +579,11 @@ export async function checkByUnique(
   if (isEquals) {
     if (uniqueType === "throw") {
       const { uniqueKeys, uniqueComments } = getUniqueKeys(context);
-      const lbl = uniqueKeys.map((key) => `${ uniqueComments[key] }: ${ model[`_${ key }`] ?? model[key] }`).join("; ");
+      const lbl = uniqueKeys.map((key) => `${ uniqueComments[key] }: ${ (model as any)[`_${ key }`] ?? model[key] }`).join("; ");
       throw new UniqueException(`${ lbl } 已存在!`);
     }
     if (uniqueType === "update") {
-      const result = await updateById(context, oldModel.id!, { ...model, id: undefined });
+      const result = await updateById(context, oldModel.id, { ...model, id: undefined });
       return result;
     }
     if (uniqueType === "ignore") {
@@ -726,7 +726,7 @@ export async function existById(
 
 /**
    * 创建数据
-   * @param {<#=tableUp#>Model} model
+   * @param {Partial<<#=tableUp#>Model>} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -737,7 +737,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: <#=tableUp#>Model,
+  model: Partial<<#=tableUp#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update",
   },
@@ -1070,7 +1070,7 @@ export async function delCache(
 /**
    * 根据id修改一行数据
    * @param {string} id
-   * @param {<#=tableUp#>Model} model
+   * @param {Partial<<#=tableUp#>Model>} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -1082,7 +1082,7 @@ export async function delCache(
 export async function updateById(
   context: Context,
   id: string,
-  model: <#=tableUp#>Model,
+  model: Partial<<#=tableUp#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create",
   },

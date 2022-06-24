@@ -1,9 +1,7 @@
-// deno-lint-ignore-file no-explicit-any
 <#
 const hasSummary = columns.some((column) => column.showSummary);
 #>
-export interface <#=tableUp#>Model {
-  [key: string]: any,<#
+export interface <#=tableUp#>Model {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -27,10 +25,10 @@ export interface <#=tableUp#>Model {
       data_type = 'string';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'Date';
+      data_type = 'string';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'Date';
+      data_type = 'string';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'number';
@@ -69,11 +67,11 @@ export interface <#=tableUp#>Model {
   #><#
     if (!foreignKey && selectList.length === 0) {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#><#
+  <#=column_name#>: <#=data_type#>,<#=column_comment#><#
     } else {
   #>
-  <#=column_name#>?: <#=data_type#>,<#=column_comment#>ID
-  _<#=column_name#>?: <#
+  <#=column_name#>: <#=data_type#>,<#=column_comment#>ID
+  _<#=column_name#>: <#
     if (foreignKey && foreignKey.multiple) {
   #>string[],<#
     } else {
@@ -83,13 +81,13 @@ export interface <#=tableUp#>Model {
     }
   }
   #>
-  tenant_id?: string, // 租户ID
-  create_usr_id?: string, // 创建用户ID
-  create_time?: Date, // 创建时间
-  update_usr_id?: string, // 更新用户ID
-  update_time?: Date, // 更新时间
-  is_deleted?: 0|1, // 是否删除
-  delete_time?: Date, // 删除时间
+  tenant_id: string, // 租户ID
+  create_usr_id: string, // 创建用户ID
+  create_time: string|null, // 创建时间
+  update_usr_id: string, // 更新用户ID
+  update_time: string|null, // 更新时间
+  is_deleted: 0|1, // 是否删除
+  delete_time: string|null, // 删除时间
 }
 
 export interface <#=tableUp#>Search {
