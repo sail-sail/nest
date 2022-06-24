@@ -59,27 +59,27 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    role t
-    left join role_menu
-      on role_menu.role_id = t.id
-      and role_menu.is_deleted = 0
-    left join menu
-      on role_menu.menu_id = menu.id
+    \`role\` t
+    left join \`role_menu\`
+      on \`role_menu\`.role_id = t.id
+      and \`role_menu\`.is_deleted = 0
+    left join \`menu\`
+      on \`role_menu\`.menu_id = menu.id
       and menu.is_deleted = 0
     left join (
       select
         json_arrayagg(menu.id) menu_ids,
         json_arrayagg(menu.lbl) _menu_ids,
         role.id role_id
-      from role_menu
+      from \`role_menu\`
       inner join menu
-        on menu.id = role_menu.menu_id
+        on menu.id = \`role_menu\`.menu_id
         and menu.is_deleted = 0
       inner join role
-        on role.id = role_menu.role_id
+        on role.id = \`role_menu\`.role_id
         and role.is_deleted = 0
       where
-        role_menu.is_deleted = 0
+      \`role_menu\`.is_deleted = 0
       group by role_id
     ) _menu
       on _menu.role_id = t.id

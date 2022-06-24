@@ -50,7 +50,7 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    permit t
+    \`permit\` t
     left join menu _menu_id
       on _menu_id.id = t.menu_id
   `;

@@ -71,27 +71,27 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    usr t
-    left join usr_role
-      on usr_role.usr_id = t.id
-      and usr_role.is_deleted = 0
-    left join role
-      on usr_role.role_id = role.id
+    \`usr\` t
+    left join \`usr_role\`
+      on \`usr_role\`.usr_id = t.id
+      and \`usr_role\`.is_deleted = 0
+    left join \`role\`
+      on \`usr_role\`.role_id = role.id
       and role.is_deleted = 0
     left join (
       select
         json_arrayagg(role.id) role_ids,
         json_arrayagg(role.lbl) _role_ids,
         usr.id usr_id
-      from usr_role
+      from \`usr_role\`
       inner join role
-        on role.id = usr_role.role_id
+        on role.id = \`usr_role\`.role_id
         and role.is_deleted = 0
       inner join usr
-        on usr.id = usr_role.usr_id
+        on usr.id = \`usr_role\`.usr_id
         and usr.is_deleted = 0
       where
-        usr_role.is_deleted = 0
+      \`usr_role\`.is_deleted = 0
       group by usr_id
     ) _role
       on _role.usr_id = t.id

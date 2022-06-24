@@ -166,4 +166,29 @@ export default defineConfig({
       },
     ]
   },
+  // 选项
+  option: {
+    opts: {
+      cache: true,
+      unique: [ "key" ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "key",
+        require: true,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "value",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+    ],
+  },
 });

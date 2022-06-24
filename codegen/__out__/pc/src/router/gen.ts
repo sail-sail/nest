@@ -14,6 +14,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     props: (route) => route.query,
   },
   {
+    path: "/option",
+    name: "选项",
+    component: () => import("@/views/option/List.vue"),
+    props: (route) => route.query,
+  },
+  {
     path: "/permit",
     name: "权限",
     component: () => import("@/views/permit/List.vue"),

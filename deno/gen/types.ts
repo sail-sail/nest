@@ -118,6 +118,19 @@ export type FindAllMenu = {
   type?: Maybe<Scalars['String']>;
 };
 
+export type FindAllOption = {
+  __typename?: 'FindAllOption';
+  id?: Maybe<Scalars['ID']>;
+  /** 键 */
+  key?: Maybe<Scalars['String']>;
+  /** 名称 */
+  lbl?: Maybe<Scalars['String']>;
+  /** 备注 */
+  rem?: Maybe<Scalars['String']>;
+  /** 值 */
+  value?: Maybe<Scalars['String']>;
+};
+
 export type FindAllPermit = {
   __typename?: 'FindAllPermit';
   /** 菜单名称 */
@@ -274,6 +287,8 @@ export type Mutation = {
   /** 创建一条数据 */
   createMenu: Scalars['ID'];
   /** 创建一条数据 */
+  createOption: Scalars['ID'];
+  /** 创建一条数据 */
   createPermit: Scalars['ID'];
   /** 创建一条数据 */
   createRole: Scalars['ID'];
@@ -286,6 +301,8 @@ export type Mutation = {
   /** 根据ids删除数据 */
   deleteByIdsMenu: Scalars['Int'];
   /** 根据ids删除数据 */
+  deleteByIdsOption: Scalars['Int'];
+  /** 根据ids删除数据 */
   deleteByIdsPermit: Scalars['Int'];
   /** 根据ids删除数据 */
   deleteByIdsRole: Scalars['Int'];
@@ -297,6 +314,8 @@ export type Mutation = {
   importFileBackground_task?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileMenu?: Maybe<Scalars['String']>;
+  /** 导入文件 */
+  importFileOption?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFilePermit?: Maybe<Scalars['String']>;
   /** 导入文件 */
@@ -312,6 +331,8 @@ export type Mutation = {
   /** 根据ids还原数据 */
   revertByIdsMenu: Scalars['Int'];
   /** 根据ids还原数据 */
+  revertByIdsOption: Scalars['Int'];
+  /** 根据ids还原数据 */
   revertByIdsPermit: Scalars['Int'];
   /** 根据ids还原数据 */
   revertByIdsRole: Scalars['Int'];
@@ -323,6 +344,8 @@ export type Mutation = {
   updateByIdBackground_task: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdMenu: Scalars['ID'];
+  /** 根据id修改一条数据 */
+  updateByIdOption: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdPermit: Scalars['ID'];
   /** 根据id修改一条数据 */
@@ -341,6 +364,11 @@ export type MutationCreateBackground_TaskArgs = {
 
 export type MutationCreateMenuArgs = {
   model: MenuInput;
+};
+
+
+export type MutationCreateOptionArgs = {
+  model: OptionInput;
 };
 
 
@@ -374,6 +402,11 @@ export type MutationDeleteByIdsMenuArgs = {
 };
 
 
+export type MutationDeleteByIdsOptionArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
 export type MutationDeleteByIdsPermitArgs = {
   ids: Array<InputMaybe<Scalars['ID']>>;
 };
@@ -400,6 +433,11 @@ export type MutationImportFileBackground_TaskArgs = {
 
 
 export type MutationImportFileMenuArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationImportFileOptionArgs = {
   id: Scalars['ID'];
 };
 
@@ -441,6 +479,11 @@ export type MutationRevertByIdsMenuArgs = {
 };
 
 
+export type MutationRevertByIdsOptionArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
 export type MutationRevertByIdsPermitArgs = {
   ids: Array<InputMaybe<Scalars['ID']>>;
 };
@@ -473,6 +516,12 @@ export type MutationUpdateByIdMenuArgs = {
 };
 
 
+export type MutationUpdateByIdOptionArgs = {
+  id: Scalars['ID'];
+  model: OptionInput;
+};
+
+
 export type MutationUpdateByIdPermitArgs = {
   id: Scalars['ID'];
   model: PermitInput;
@@ -494,6 +543,39 @@ export type MutationUpdateByIdTenantArgs = {
 export type MutationUpdateByIdUsrArgs = {
   id: Scalars['ID'];
   model: UsrInput;
+};
+
+export type OptionInput = {
+  id?: InputMaybe<Scalars['ID']>;
+  /** 键 */
+  key?: InputMaybe<Scalars['String']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  value?: InputMaybe<Scalars['String']>;
+};
+
+export type OptionSearch = {
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 键 */
+  key?: InputMaybe<Scalars['String']>;
+  keyLike?: InputMaybe<Scalars['String']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  value?: InputMaybe<Scalars['String']>;
+  valueLike?: InputMaybe<Scalars['String']>;
 };
 
 export type PageInput = {
@@ -541,6 +623,8 @@ export type Query = {
   /** 根据搜索条件导出 */
   exportExcelMenu: Scalars['String'];
   /** 根据搜索条件导出 */
+  exportExcelOption: Scalars['String'];
+  /** 根据搜索条件导出 */
   exportExcelPermit: Scalars['String'];
   /** 根据搜索条件导出 */
   exportExcelRole: Scalars['String'];
@@ -552,6 +636,8 @@ export type Query = {
   findAllBackground_task: Array<Maybe<FindAllBackground_Task>>;
   /** 根据搜索条件和分页查找数据 */
   findAllMenu: Array<Maybe<FindAllMenu>>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllOption: Array<Maybe<FindAllOption>>;
   /** 根据搜索条件和分页查找数据 */
   findAllPermit: Array<Maybe<FindAllPermit>>;
   /** 根据搜索条件和分页查找数据 */
@@ -565,6 +651,8 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdMenu?: Maybe<FindAllMenu>;
   /** 根据id查找一条数据 */
+  findByIdOption?: Maybe<FindAllOption>;
+  /** 根据id查找一条数据 */
   findByIdPermit?: Maybe<FindAllPermit>;
   /** 根据id查找一条数据 */
   findByIdRole?: Maybe<FindAllRole>;
@@ -576,6 +664,8 @@ export type Query = {
   findCountBackground_task: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountMenu: Scalars['Int'];
+  /** 根据条件查找据数总数 */
+  findCountOption: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountPermit: Scalars['Int'];
   /** 根据条件查找据数总数 */
@@ -592,6 +682,8 @@ export type Query = {
   findOneBackground_task?: Maybe<FindAllBackground_Task>;
   /** 根据条件查找第一条数据 */
   findOneMenu?: Maybe<FindAllMenu>;
+  /** 根据条件查找第一条数据 */
+  findOneOption?: Maybe<FindAllOption>;
   /** 根据条件查找第一条数据 */
   findOnePermit?: Maybe<FindAllPermit>;
   /** 根据条件查找第一条数据 */
@@ -615,6 +707,12 @@ export type QueryExportExcelBackground_TaskArgs = {
 
 export type QueryExportExcelMenuArgs = {
   search?: InputMaybe<MenuSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelOptionArgs = {
+  search?: InputMaybe<OptionSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -657,6 +755,13 @@ export type QueryFindAllMenuArgs = {
 };
 
 
+export type QueryFindAllOptionArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<OptionSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
 export type QueryFindAllPermitArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<PermitSearch>;
@@ -695,6 +800,11 @@ export type QueryFindByIdMenuArgs = {
 };
 
 
+export type QueryFindByIdOptionArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type QueryFindByIdPermitArgs = {
   id: Scalars['ID'];
 };
@@ -725,6 +835,11 @@ export type QueryFindCountMenuArgs = {
 };
 
 
+export type QueryFindCountOptionArgs = {
+  search?: InputMaybe<OptionSearch>;
+};
+
+
 export type QueryFindCountPermitArgs = {
   search?: InputMaybe<PermitSearch>;
 };
@@ -752,6 +867,11 @@ export type QueryFindOneBackground_TaskArgs = {
 
 export type QueryFindOneMenuArgs = {
   search?: InputMaybe<MenuSearch>;
+};
+
+
+export type QueryFindOneOptionArgs = {
+  search?: InputMaybe<OptionSearch>;
 };
 
 

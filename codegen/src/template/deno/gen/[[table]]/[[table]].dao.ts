@@ -162,7 +162,7 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    <#=table#> t<#
+    \\`<#=table#>\\` t<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -177,11 +177,11 @@ function getFromQuery(
     #><#
       if (foreignKey && foreignKey.type === "many2many") {
     #>
-    left join <#=many2many.table#>
-      on <#=many2many.table#>.<#=many2many.column1#> = t.id
-      and <#=many2many.table#>.is_deleted = 0
-    left join <#=foreignTable#>
-      on <#=many2many.table#>.<#=many2many.column2#> = <#=foreignTable#>.<#=foreignKey.column#>
+    left join \\`<#=many2many.table#>\\`
+      on \\`<#=many2many.table#>\\`.<#=many2many.column1#> = t.id
+      and \\`<#=many2many.table#>\\`.is_deleted = 0
+    left join \\`<#=foreignTable#>\\`
+      on \\`<#=many2many.table#>\\`.<#=many2many.column2#> = <#=foreignTable#>.<#=foreignKey.column#>
       and <#=foreignTable#>.is_deleted = 0
     left join (
       select
@@ -192,15 +192,15 @@ function getFromQuery(
           }
         #>
         <#=table#>.id <#=many2many.column1#>
-      from <#=many2many.table#>
+      from \\`<#=many2many.table#>\\`
       inner join <#=foreignKey.table#>
-        on <#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.table#>.<#=many2many.column2#>
+        on <#=foreignKey.table#>.<#=foreignKey.column#> = \\`<#=many2many.table#>\\`.<#=many2many.column2#>
         and <#=foreignKey.table#>.is_deleted = 0
       inner join <#=table#>
-        on <#=table#>.id = <#=many2many.table#>.<#=many2many.column1#>
+        on <#=table#>.id = \\`<#=many2many.table#>\\`.<#=many2many.column1#>
         and <#=table#>.is_deleted = 0
       where
-        <#=many2many.table#>.is_deleted = 0
+      \\`<#=many2many.table#>\\`.is_deleted = 0
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#

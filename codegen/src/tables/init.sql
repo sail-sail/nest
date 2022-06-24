@@ -1,4 +1,5 @@
 ------------------------------------------------------------------------------------------------ 租户
+drop table if exists `tenant`;
 CREATE TABLE if not exists `tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
@@ -19,6 +20,7 @@ CREATE TABLE if not exists `tenant` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户';
 
 ------------------------------------------------------------------------------------------------ 租户菜单
+drop table if exists `tenant_menu`;
 CREATE TABLE if not exists `tenant_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `tenant_id` varchar(22) NOT NULL COMMENT '租户',
@@ -34,6 +36,7 @@ CREATE TABLE if not exists `tenant_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户菜单';
 
 ------------------------------------------------------------------------------------------------ 用户
+drop table if exists `usr`;
 CREATE TABLE if not exists `usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
@@ -53,6 +56,7 @@ CREATE TABLE if not exists `usr` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户';
 
 ------------------------------------------------------------------------------------------------ 角色
+drop table if exists `role`;
 CREATE TABLE if not exists `role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
@@ -69,6 +73,7 @@ CREATE TABLE if not exists `role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色';
 
 ------------------------------------------------------------------------------------------------ 用户角色
+drop table if exists `usr_role`;
 CREATE TABLE if not exists `usr_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
@@ -85,6 +90,7 @@ CREATE TABLE if not exists `usr_role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户角色';
 
 ------------------------------------------------------------------------------------------------ 菜单
+drop table if exists `menu`;
 CREATE TABLE if not exists `menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `type` varchar(10) NOT NULL DEFAULT 'pc' COMMENT '类型[ { value: "pc", label: "电脑端" }, { value: "mobile", label: "手机端" } ]',
@@ -105,6 +111,7 @@ CREATE TABLE if not exists `menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='菜单';
 
 ------------------------------------------------------------------------------------------------ 权限
+drop table if exists `permit`;
 CREATE TABLE if not exists `permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
@@ -121,6 +128,7 @@ CREATE TABLE if not exists `permit` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='权限';
 
 ------------------------------------------------------------------------------------------------ 角色菜单
+drop table if exists `role_menu`;
 CREATE TABLE if not exists `role_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
@@ -137,6 +145,7 @@ CREATE TABLE if not exists `role_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色菜单';
 
 ------------------------------------------------------------------------------------------------ 后台任务
+drop table if exists `background_task`;
 CREATE TABLE if not exists `background_task` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
@@ -158,4 +167,23 @@ CREATE TABLE if not exists `background_task` (
   INDEX (`end_time`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='后台任务';
+
+------------------------------------------------------------------------------------------------ 选项
+drop table if exists `option`;
+CREATE TABLE if not exists `option` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
+  `key` varchar(50) NOT NULL DEFAULT '' COMMENT '键',
+  `value` varchar(255) NOT NULL DEFAULT '' COMMENT '值',
+  `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '删除',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`key`, `tenant_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='选项';
 

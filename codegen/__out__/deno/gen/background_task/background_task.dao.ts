@@ -91,7 +91,7 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    background_task t
+    \`background_task\` t
     left join usr _create_usr_id
       on _create_usr_id.id = t.create_usr_id
   `;

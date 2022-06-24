@@ -82,27 +82,27 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    tenant t
-    left join tenant_menu
-      on tenant_menu.tenant_id = t.id
-      and tenant_menu.is_deleted = 0
-    left join menu
-      on tenant_menu.menu_id = menu.id
+    \`tenant\` t
+    left join \`tenant_menu\`
+      on \`tenant_menu\`.tenant_id = t.id
+      and \`tenant_menu\`.is_deleted = 0
+    left join \`menu\`
+      on \`tenant_menu\`.menu_id = menu.id
       and menu.is_deleted = 0
     left join (
       select
         json_arrayagg(menu.id) menu_ids,
         json_arrayagg(menu.lbl) _menu_ids,
         tenant.id tenant_id
-      from tenant_menu
+      from \`tenant_menu\`
       inner join menu
-        on menu.id = tenant_menu.menu_id
+        on menu.id = \`tenant_menu\`.menu_id
         and menu.is_deleted = 0
       inner join tenant
-        on tenant.id = tenant_menu.tenant_id
+        on tenant.id = \`tenant_menu\`.tenant_id
         and tenant.is_deleted = 0
       where
-        tenant_menu.is_deleted = 0
+      \`tenant_menu\`.is_deleted = 0
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id

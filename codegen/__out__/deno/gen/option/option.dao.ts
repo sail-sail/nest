@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars require-await
+// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars
 import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { Page, Sort } from "/lib/page.model.ts";
@@ -9,33 +9,45 @@ import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
-import { PermitModel, PermitSearch } from "./permit.model.ts";
-import * as menuDao from "/gen/menu/menu.dao.ts";
+import { OptionModel, OptionSearch } from "./option.model.ts";
 
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: PermitSearch,
+  search?: OptionSearch,
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  {
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
+    if (tenant_id) {
+      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+    }
+  }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
-  if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and _menu_id.id in (${ args.push(search.menu_id) })`;
-  }
-  if (search?._menu_id && search._menu_id?.length > 0) {
-    whereQuery += ` and _menu_id in (${ args.push(search._menu_id) })`;
-  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lblLike)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
+  }
+  if (search?.key !== undefined) {
+    whereQuery += ` and t.key = ${ args.push(search.key) }`;
+  }
+  if (isNotEmpty(search?.keyLike)) {
+    whereQuery += ` and t.key like ${ args.push(sqlLike(search?.keyLike) + "%") }`;
+  }
+  if (search?.value !== undefined) {
+    whereQuery += ` and t.value = ${ args.push(search.value) }`;
+  }
+  if (isNotEmpty(search?.valueLike)) {
+    whereQuery += ` and t.value like ${ args.push(sqlLike(search?.valueLike) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -50,23 +62,21 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = `
-    \`permit\` t
-    left join menu _menu_id
-      on _menu_id.id = t.menu_id
+    \`option\` t
   `;
   return fromQuery;
 }
 
 /**
  * 根据条件查找总数据数
- * @param {PermitSearch} search?
+ * @param {OptionSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: PermitSearch,
+  search?: OptionSearch,
 ): Promise<number> {
-  const table = "permit";
+  const table = "option";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -100,22 +110,21 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找数据
  * @param {Context} context
- * @param {PermitSearch} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  * @param {Sort|Sort[]} sort? 排序
  */
 export async function findAll(
   context: Context,
-  search?: PermitSearch,
+  search?: OptionSearch,
   page?: Page,
   sort?: Sort|Sort[],
 ) {
-  const table = "permit";
+  const table = "option";
   const method = "findAll";
   
   const args = new QueryArgs();
   let sql = `
     select t.*
-        ,_menu_id.lbl _menu_id
     from
       ${ getFromQuery(context) }
     where
@@ -149,7 +158,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await context.query<PermitModel>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await context.query<OptionModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -168,27 +177,25 @@ export function getUniqueKeys(
   uniqueComments: { [key: string]: string };
   } {
   const uniqueKeys: string[] = [
-    "menu_id",
-    "lbl",
+    "key",
   ];
   const uniqueComments = {
-    menu_id: "菜单",
-    lbl: "名称",
+    key: "键",
   };
   return { uniqueKeys, uniqueComments };
 }
 
 /**
  * 通过唯一约束获得一行数据
- * @param {PermitSearch} search0
+ * @param {OptionSearch} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: PermitSearch | PermitModel,
+  search0: OptionSearch | OptionModel,
 ) {
   const { uniqueKeys } = getUniqueKeys(context);
   if (!uniqueKeys || uniqueKeys.length === 0) return;
-  const search: PermitSearch = { };
+  const search: OptionSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -203,14 +210,14 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {PermitModel} oldModel
- * @param {PermitModel} model
+ * @param {OptionModel} oldModel
+ * @param {OptionModel} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
-  oldModel: PermitModel,
-  model: PermitModel,
+  oldModel: OptionModel,
+  model: OptionModel,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -230,15 +237,15 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PermitModel} model
- * @param {PermitModel} oldModel
+ * @param {OptionModel} model
+ * @param {OptionModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: PermitModel,
-  oldModel: PermitModel,
+  model: OptionModel,
+  oldModel: OptionModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
@@ -261,13 +268,13 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {PermitSearch} search?
- * @return {Promise<PermitModel>} 
+ * @param {OptionSearch} search?
+ * @return {Promise<OptionModel>} 
  */
 export async function findOne(
   context: Context,
-  search?: PermitSearch,
-): Promise<PermitModel> {
+  search?: OptionSearch,
+): Promise<OptionModel> {
   const page: Page = {
     pgOffset: 0,
     pgSize: 1,
@@ -279,12 +286,12 @@ export async function findOne(
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<PermitModel>}
+ * @return {Promise<OptionModel>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<PermitModel | undefined> {
+): Promise<OptionModel | undefined> {
   if (!id) return;
   const model = await findOne(context, { id });
   return model;
@@ -292,12 +299,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {PermitSearch} search?
+ * @param {OptionSearch} search?
  * @return {Promise<boolean>} 
  */
 export async function exist(
   context: Context,
-  search?: PermitSearch,
+  search?: OptionSearch,
 ): Promise<boolean> {
   const model = await findOne(context, search);
   const exist = !!model;
@@ -312,7 +319,7 @@ export async function existById(
   context: Context,
   id: string,
 ): Promise<boolean> {
-  const table = "permit";
+  const table = "option";
   const method = "existById";
   
   if (!id) {
@@ -321,7 +328,7 @@ export async function existById(
   
   const args = new QueryArgs();
   const sql = `
-    select 1 e from permit where id = ${ args.push(id) } limit 1
+    select 1 e from option where id = ${ args.push(id) } limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -338,7 +345,7 @@ export async function existById(
 
 /**
    * 创建数据
-   * @param {PermitModel} model
+   * @param {OptionModel} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -349,7 +356,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: PermitModel,
+  model: OptionModel,
   options?: {
     uniqueType?: "ignore" | "throw" | "update",
   },
@@ -357,20 +364,11 @@ export async function create(
   if (!model) {
     return;
   }
-  const table = "permit";
+  const table = "option";
   const method = "create";
   
   if (!model.id) {
     model.id = shortUuidV4();
-  }
-  
-  // 菜单
-  if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
-    model._menu_id = String(model._menu_id).trim();
-    const menuModel = await menuDao.findOne(context, { lbl: model._menu_id });
-    if (menuModel) {
-      model.menu_id = menuModel.id;
-    }
   }
   
   const oldModel = await findByUnique(context, model);
@@ -383,21 +381,31 @@ export async function create(
   
   const args = new QueryArgs();
   let sql = `
-    insert into permit(
+    insert into option(
       id
       ,create_time
   `;
+  {
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
+    if (tenant_id) {
+      sql += `,tenant_id`;
+    }
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
   }
-  if (model.menu_id !== undefined) {
-    sql += `,\`menu_id\``;
-  }
   if (model.lbl !== undefined) {
     sql += `,\`lbl\``;
+  }
+  if (model.key !== undefined) {
+    sql += `,\`key\``;
+  }
+  if (model.value !== undefined) {
+    sql += `,\`value\``;
   }
   if (model.rem !== undefined) {
     sql += `,\`rem\``;
@@ -405,15 +413,25 @@ export async function create(
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
     const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
+    if (tenant_id) {
+      sql += `,${ args.push(tenant_id) }`;
+    }
+  }
+  {
+    const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.menu_id !== undefined) {
-    sql += `,${ args.push(model.menu_id) }`;
-  }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
+  }
+  if (model.key !== undefined) {
+    sql += `,${ args.push(model.key) }`;
+  }
+  if (model.value !== undefined) {
+    sql += `,${ args.push(model.value) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -433,12 +451,11 @@ export async function create(
 export async function delCache(
   context: Context,
 ) {
-  const table = "permit";
+  const table = "option";
   const method = "delCache";
   const cacheKey1 = `dao.sql.${ table }`;
   await context.delCache(cacheKey1);
   const foreignTables: string[] = [
-    "menu",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -451,7 +468,7 @@ export async function delCache(
 /**
    * 根据id修改一行数据
    * @param {string} id
-   * @param {PermitModel} model
+   * @param {OptionModel} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -463,25 +480,16 @@ export async function delCache(
 export async function updateById(
   context: Context,
   id: string,
-  model: PermitModel,
+  model: OptionModel,
   options?: {
     uniqueType?: "ignore" | "throw" | "create",
   },
 ): Promise<string | undefined> {
-  const table = "permit";
+  const table = "option";
   const method = "updateById";
   
   if (!id || !model) {
     return id;
-  }
-  
-  // 菜单
-  if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
-    model._menu_id = String(model._menu_id).trim();
-    const menuModel = await menuDao.findOne(context, { lbl: model._menu_id });
-    if (menuModel) {
-      model.menu_id = menuModel.id;
-    }
   }
   
   const oldModel = await findByUnique(context, model);
@@ -501,7 +509,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = `
-    update permit set update_time = ${ args.push(context.getReqDate()) }
+    update option set update_time = ${ args.push(context.getReqDate()) }
   `;
   {
     const authModel = await getAuthModel(context);
@@ -509,14 +517,19 @@ export async function updateById(
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.menu_id !== undefined) {
-    if (model.menu_id != oldModel?.menu_id) {
-      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
-    }
-  }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
       sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+    }
+  }
+  if (model.key !== undefined) {
+    if (model.key != oldModel?.key) {
+      sql += `,\`key\` = ${ args.push(model.key) }`;
+    }
+  }
+  if (model.value !== undefined) {
+    if (model.value != oldModel?.value) {
+      sql += `,\`value\` = ${ args.push(model.value) }`;
     }
   }
   if (model.rem !== undefined) {
@@ -542,7 +555,7 @@ export async function deleteByIds(
   context: Context,
   ids: string[],
 ): Promise<number> {
-  const table = "permit";
+  const table = "option";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
@@ -555,7 +568,7 @@ export async function deleteByIds(
     const id = ids[i];
     const sql = `
       update
-        permit
+        option
       set
         is_deleted = 1,
         delete_time = ${ args.push(context.getReqDate()) }
@@ -580,7 +593,7 @@ export async function revertByIds(
   context: Context,
   ids: string[],
 ): Promise<number> {
-  const table = "permit";
+  const table = "option";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -593,7 +606,7 @@ export async function revertByIds(
     const args = new QueryArgs();
     const sql = `
       update
-        permit
+        option
       set
         is_deleted = 0
       where
