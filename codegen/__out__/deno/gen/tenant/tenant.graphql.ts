@@ -2,28 +2,28 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./tenant.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllTenant {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "名称"
-  lbl: String
+  lbl: String!
   "域名绑定"
-  host: String
+  host: String!
   "到期日"
   expiration: String
   "最大用户数"
-  max_usr_num: Int
+  max_usr_num: Int!
   "启用ID"
-  is_enabled: Int
+  is_enabled: Int!
   "启用名称"
   _is_enabled: String
   "菜单ID"
-  menu_ids: [ID]
+  menu_ids: [ID]!
   "菜单名称"
   _menu_ids: [String]
   "排序"
-  order_by: Int
+  order_by: Int!
   "备注"
-  rem: String
+  rem: String!
 }
 input TenantInput {
   ""

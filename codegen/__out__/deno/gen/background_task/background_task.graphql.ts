@@ -2,28 +2,28 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./background_task.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllBackground_task {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "名称"
-  lbl: String
+  lbl: String!
   "状态ID"
-  state: String
+  state: String!
   "状态名称"
   _state: String
   "类型ID"
-  type: String
+  type: String!
   "类型名称"
   _type: String
   "执行结果"
-  result: String
+  result: String!
   "错误信息"
-  err_msg: String
+  err_msg: String!
   "开始时间"
   begin_time: String
   "结束时间"
   end_time: String
   "备注"
-  rem: String
+  rem: String!
 }
 input Background_taskInput {
   ""

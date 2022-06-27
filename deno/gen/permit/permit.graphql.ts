@@ -2,16 +2,16 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./permit.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllPermit {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "菜单ID"
-  menu_id: ID
+  menu_id: ID!
   "菜单名称"
   _menu_id: String
   "名称"
-  lbl: String
+  lbl: String!
   "备注"
-  rem: String
+  rem: String!
 }
 input PermitInput {
   ""

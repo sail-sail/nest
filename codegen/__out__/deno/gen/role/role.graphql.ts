@@ -2,18 +2,18 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./role.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllRole {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "名称"
-  lbl: String
+  lbl: String!
   "备注"
-  rem: String
+  rem: String!
   "启用ID"
-  is_enabled: Int
+  is_enabled: Int!
   "启用名称"
   _is_enabled: String
   "菜单ID"
-  menu_ids: [ID]
+  menu_ids: [ID]!
   "菜单名称"
   _menu_ids: [String]
 }

@@ -11,6 +11,7 @@ const hasSummary = columns.some((column) => column.showSummary);
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenNest) continue;
     const column_name = column.COLUMN_NAME;
+    const is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     let _data_type = "String";
@@ -64,7 +65,10 @@ const hasSummary = columns.some((column) => column.showSummary);
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') column_comment = '';
+    if (column_name === 'id') column_comment = 'ID';
+    if (!is_nullable) {
+      data_type += "!";
+    }
   #><#
     if (!foreignKey && selectList.length === 0) {
   #>

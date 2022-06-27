@@ -2,24 +2,24 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./usr.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllUsr {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "名称"
-  lbl: String
+  lbl: String!
   "用户名"
-  username: String
+  username: String!
   "密码"
-  password: String
+  password: String!
   "启用ID"
-  is_enabled: Int
+  is_enabled: Int!
   "启用名称"
   _is_enabled: String
   "角色ID"
-  role_ids: [ID]
+  role_ids: [ID]!
   "角色名称"
   _role_ids: [String]
   "备注"
-  rem: String
+  rem: String!
 }
 input UsrInput {
   ""

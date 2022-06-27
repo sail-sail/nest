@@ -8,8 +8,8 @@ export interface Background_taskModel {
   _type: string, //类型名称
   result: string, //执行结果
   err_msg: string, //错误信息
-  begin_time: string, //开始时间
-  end_time: string, //结束时间
+  begin_time: string|null, //开始时间
+  end_time: string|null, //结束时间
   rem: string, //备注
   tenant_id: string, // 租户ID
   create_usr_id: string, // 创建用户ID

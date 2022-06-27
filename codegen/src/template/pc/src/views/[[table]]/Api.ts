@@ -2,7 +2,8 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import dayjs from "dayjs";
+#>import { Query } from "#/types.ts";
+import dayjs from "dayjs";
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
@@ -30,15 +31,14 @@ import { <#=foreignTableUp#>Model, <#=foreignTableUp#>Search } from "../<#=forei
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<<#=tableUp#>Model[]>}
  */
 export async function findAll(
   search?: <#=tableUp#>Search,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<<#=tableUp#>Model[]> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: <#=tableUp#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
@@ -78,9 +78,9 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const data = rvData?.findAll<#=tableUp#> || [ ];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];<#
+  const result: Query.findAllMenu = data?.findAll<#=tableUp#> || [ ];
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i];<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -103,7 +103,7 @@ export async function findAll(
   }
   #>
   }
-  return data;
+  return result;
 }
 
 /**
@@ -113,15 +113,14 @@ export async function findAll(
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<{ data: <#=tableUp#>Model[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: <#=tableUp#>Search,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: <#=tableUp#>Model[], count: number }> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: <#=tableUp#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
@@ -162,12 +161,12 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const data = {
-    data: rvData?.findAll<#=tableUp#> || [ ],
-    count: rvData?.findCount<#=tableUp#> || 0,
+  const result = {
+    data: data?.findAll<#=tableUp#> || [ ],
+    count: data?.findCount<#=tableUp#> || 0,
   };
-  for (let i = 0; i < data.data.length; i++) {
-    const item = data.data[i];<#
+  for (let i = 0; i < result.data.length; i++) {
+    const item = result.data[i];<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -189,7 +188,7 @@ export async function findAllAndCount(
   }
   #>
   }
-  return data;
+  return result;
 }<#
 if (hasSummary) {
 #>
@@ -203,7 +202,7 @@ export async function findSummary(
   search?: <#=tableUp#>Search,
   opt?: GqlOpt,
 ) {
-  const rvData = await gqlQuery({
+  const data = await gqlQuery({
     query: gql`
       query($search: <#=tableUp#>Search) {
         findSummary<#=tableUp#>(search: $search) {<#
@@ -228,7 +227,8 @@ export async function findSummary(
       search,
     },
   }, opt);
-  return rvData?.findSummary<#=tableUp#> || { };
+  const result: Query.findSummary = data?.findSummary<#=tableUp#> || { };
+  return result;
 }<#
 }
 #>
@@ -238,12 +238,11 @@ export async function findSummary(
  * @export create
  * @param {<#=tableUp#>Model} model
  * @param {GqlOpt} opt?
- * @return {Promise<string>} id
  */
 export async function create(
   model: <#=tableUp#>Model,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($model: <#=tableUp#>Input!) {
@@ -254,7 +253,8 @@ export async function create(
       model,
     },
   }, opt);
-  return data?.create<#=tableUp#>;
+  const result: Query.createMenu = data?.create<#=tableUp#>;
+  return result;
 }
 
 /**
@@ -262,13 +262,12 @@ export async function create(
  * @export updateById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
   model: <#=tableUp#>Model,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($id: ID!, $model: <#=tableUp#>Input!) {
@@ -280,7 +279,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  return data?.updateById<#=tableUp#>;
+  const result: Query.updateByIdMenu = data?.updateById<#=tableUp#>;
+  return result;
 }
 
 /**
@@ -288,13 +288,12 @@ export async function updateById(
  * @export findById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<<#=tableUp#>Model>}
  */
 export async function findById(
   id: string,
   opt?: GqlOpt,
-): Promise<<#=tableUp#>Model> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($id: ID!) {
         findById<#=tableUp#>(id: $id) {<#
@@ -332,7 +331,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const data = rvData?.findById<#=tableUp#>;<#
+  const result: Query.findById<#=tableUp#> = data?.findById<#=tableUp#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -341,13 +340,13 @@ export async function findById(
     let data_type = column.DATA_TYPE;
     if (data_type === "json") {
   #>
-  if (data?.<#=column_name#>) {
-    data.<#=column_name#> = JSON.stringify(data.<#=column_name#>);
+  if (result?.<#=column_name#>) {
+    result.<#=column_name#> = JSON.stringify(result.<#=column_name#>);
   }<#
     }
   }
   #>
-  return data;
+  return result;
 }
 
 /**
@@ -355,12 +354,11 @@ export async function findById(
  * @export deleteByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -371,7 +369,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  return data?.deleteByIds<#=tableUp#>;
+  const result: Query.deleteByIds<#=tableUp#> = data?.deleteByIds<#=tableUp#>;
+  return result;
 }
 
 /**
@@ -379,12 +378,11 @@ export async function deleteByIds(
  * @export revertByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -395,7 +393,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  return data?.revertByIds<#=tableUp#>;
+  const result: Query.revertByIds<#=tableUp#> = data?.revertByIds<#=tableUp#>;
+  return result;
 }<#
 const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
@@ -417,7 +416,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: <#=foreignTableUp#>Model[], count: number }> {
+) {
   const data = await gqlQuery({
     query: gql`
       query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: [SortInput]) {
@@ -434,10 +433,14 @@ export async function findAllAndCount<#=foreignTableUp#>(
       sort,
     },
   }, opt);
-  return {
+  const result: {
+    data: Query.findAll<#=foreignTableUp#>,
+    count: Query.findCount<#=foreignTableUp#>,
+  } = {
     data: data?.findAll<#=foreignTableUp#> || [ ],
     count: data?.findCount<#=foreignTableUp#> || 0,
   };
+  return result;
 }
 
 export async function findAll<#=foreignTableUp#>(
@@ -445,7 +448,7 @@ export async function findAll<#=foreignTableUp#>(
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<<#=foreignTableUp#>Model[]> {
+) {
   const data = await gqlQuery({
     query: gql`
       query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: [SortInput]) {
@@ -461,7 +464,8 @@ export async function findAll<#=foreignTableUp#>(
       sort,
     },
   }, opt);
-  return data?.findAll<#=foreignTableUp#> || [ ];
+  const result: Query.findAll<#=foreignTableUp#> = data?.findAll<#=foreignTableUp#> || [ ];
+  return result;
 }<#
 }
 #>
@@ -476,8 +480,8 @@ export async function exportExcel(
   search?: <#=tableUp#>Search,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<string> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: <#=tableUp#>Search, $sort: [SortInput]) {
         exportExcel<#=tableUp#>(search: $search, sort: $sort)
@@ -488,7 +492,8 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  return rvData?.exportExcel<#=tableUp#> || "";
+  const result: Query.exportExcel<#=tableUp#> = data?.exportExcel<#=tableUp#> || "";
+  return result;
 }
 
 /**
@@ -513,7 +518,8 @@ export async function importFile(
       id,
     },
   }, opt);
-  return rvData?.importFile<#=tableUp#> || "";
+  const result: Query.importFile<#=tableUp#> = rvData?.importFile<#=tableUp#> || "";
+  return result;
 }<#
 if (hasOrderBy) {
 #>
@@ -522,11 +528,10 @@ if (hasOrderBy) {
  * 查找order_by字段的最大值
  * @export findLastOrderBy
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       query {
@@ -534,7 +539,8 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  return data?.findLastOrderBy<#=tableUp#> || 1;
+  const result: Query.findLastOrderBy<#=tableUp#> = data?.findLastOrderBy<#=tableUp#> || 0;
+  return result;
 }<#
 }
 #>

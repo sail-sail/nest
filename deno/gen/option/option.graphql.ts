@@ -2,16 +2,16 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./option.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllOption {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "名称"
-  lbl: String
+  lbl: String!
   "键"
-  key: String
+  key: String!
   "值"
-  value: String
+  value: String!
   "备注"
-  rem: String
+  rem: String!
 }
 input OptionInput {
   ""

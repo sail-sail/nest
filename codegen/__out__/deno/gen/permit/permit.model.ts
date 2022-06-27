@@ -5,7 +5,6 @@ export interface PermitModel {
   _menu_id: string, //菜单名称
   lbl: string, //名称
   rem: string, //备注
-  tenant_id: string, // 租户ID
   create_usr_id: string, // 创建用户ID
   create_time: string|null, // 创建时间
   update_usr_id: string, // 更新用户ID

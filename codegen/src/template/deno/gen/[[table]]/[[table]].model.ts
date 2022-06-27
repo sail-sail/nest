@@ -8,6 +8,7 @@ export interface <#=tableUp#>Model {<#
     const column_name = column.COLUMN_NAME;
     if ([ "tenant_id", "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted", "delete_time" ].includes(column_name)) continue;
     let data_type = column.DATA_TYPE;
+    const is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -64,6 +65,9 @@ export interface <#=tableUp#>Model {<#
     else {
       column_comment = ' //' + column_comment;
     }
+    if (is_nullable) {
+      data_type += "|null";
+    }
   #><#
     if (!foreignKey && selectList.length === 0) {
   #>
@@ -80,8 +84,12 @@ export interface <#=tableUp#>Model {<#
   #><#=column_comment#>名称<#
     }
   }
+  #><#
+  if (hasTenant_id) {
   #>
-  tenant_id: string, // 租户ID
+  tenant_id: string, // 租户ID<#
+  }
+  #>
   create_usr_id: string, // 创建用户ID
   create_time: string|null, // 创建时间
   update_usr_id: string, // 更新用户ID

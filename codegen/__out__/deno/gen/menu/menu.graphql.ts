@@ -2,30 +2,30 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./menu.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `type FindAllMenu {
-  ""
-  id: ID
+  "ID"
+  id: ID!
   "类型ID"
-  type: String
+  type: String!
   "类型名称"
   _type: String
   "父菜单ID"
-  menu_id: ID
+  menu_id: ID!
   "父菜单名称"
   _menu_id: String
   "名称"
-  lbl: String
+  lbl: String!
   "路由"
-  route_path: String
+  route_path: String!
   "参数"
   route_query: JSON
   "启用ID"
-  is_enabled: Int
+  is_enabled: Int!
   "启用名称"
   _is_enabled: String
   "排序"
-  order_by: Int
+  order_by: Int!
   "备注"
-  rem: String
+  rem: String!
 }
 input MenuInput {
   ""
