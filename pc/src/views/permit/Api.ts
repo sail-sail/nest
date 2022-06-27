@@ -1,3 +1,4 @@
+import { Query } from "#/types.ts";
 import dayjs from "dayjs";
 import { PermitModel, PermitSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -12,15 +13,14 @@ import { MenuModel, MenuSearch } from "../menu/Model";
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<PermitModel[]>}
  */
 export async function findAll(
   search?: PermitSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<PermitModel[]> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
@@ -38,11 +38,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const data = rvData?.findAllPermit || [ ];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
+  const result: Query.findAllMenu = data?.findAllPermit || [ ];
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i];
   }
-  return data;
+  return result;
 }
 
 /**
@@ -52,15 +52,14 @@ export async function findAll(
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<{ data: PermitModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: PermitSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: PermitModel[], count: number }> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
@@ -79,14 +78,14 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const data = {
-    data: rvData?.findAllPermit || [ ],
-    count: rvData?.findCountPermit || 0,
+  const result = {
+    data: data?.findAllPermit || [ ],
+    count: data?.findCountPermit || 0,
   };
-  for (let i = 0; i < data.data.length; i++) {
-    const item = data.data[i];
+  for (let i = 0; i < result.data.length; i++) {
+    const item = result.data[i];
   }
-  return data;
+  return result;
 }
 
 /**
@@ -94,12 +93,11 @@ export async function findAllAndCount(
  * @export create
  * @param {PermitModel} model
  * @param {GqlOpt} opt?
- * @return {Promise<string>} id
  */
 export async function create(
   model: PermitModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($model: PermitInput!) {
@@ -110,7 +108,8 @@ export async function create(
       model,
     },
   }, opt);
-  return data?.createPermit;
+  const result: Query.createMenu = data?.createPermit;
+  return result;
 }
 
 /**
@@ -118,13 +117,12 @@ export async function create(
  * @export updateById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
   model: PermitModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($id: ID!, $model: PermitInput!) {
@@ -136,7 +134,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  return data?.updateByIdPermit;
+  const result: Query.updateByIdMenu = data?.updateByIdPermit;
+  return result;
 }
 
 /**
@@ -144,13 +143,12 @@ export async function updateById(
  * @export findById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<PermitModel>}
  */
 export async function findById(
   id: string,
   opt?: GqlOpt,
-): Promise<PermitModel> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($id: ID!) {
         findByIdPermit(id: $id) {
@@ -166,8 +164,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const data = rvData?.findByIdPermit;
-  return data;
+  const result: Query.findByIdPermit = data?.findByIdPermit;
+  return result;
 }
 
 /**
@@ -175,12 +173,11 @@ export async function findById(
  * @export deleteByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -191,7 +188,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  return data?.deleteByIdsPermit;
+  const result: Query.deleteByIdsPermit = data?.deleteByIdsPermit;
+  return result;
 }
 
 /**
@@ -199,12 +197,11 @@ export async function deleteByIds(
  * @export revertByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -215,7 +212,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  return data?.revertByIdsPermit;
+  const result: Query.revertByIdsPermit = data?.revertByIdsPermit;
+  return result;
 }
 
 export async function findAllAndCountMenu(
@@ -223,7 +221,7 @@ export async function findAllAndCountMenu(
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: MenuModel[], count: number }> {
+) {
   const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
@@ -240,10 +238,14 @@ export async function findAllAndCountMenu(
       sort,
     },
   }, opt);
-  return {
+  const result: {
+    data: Query.findAllMenu,
+    count: Query.findCountMenu,
+  } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
   };
+  return result;
 }
 
 export async function findAllMenu(
@@ -251,7 +253,7 @@ export async function findAllMenu(
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<MenuModel[]> {
+) {
   const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
@@ -267,7 +269,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  return data?.findAllMenu || [ ];
+  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  return result;
 }
 
 /**
@@ -280,8 +283,8 @@ export async function exportExcel(
   search?: PermitSearch,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<string> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: PermitSearch, $sort: [SortInput]) {
         exportExcelPermit(search: $search, sort: $sort)
@@ -292,7 +295,8 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  return rvData?.exportExcelPermit || "";
+  const result: Query.exportExcelPermit = data?.exportExcelPermit || "";
+  return result;
 }
 
 /**
@@ -317,5 +321,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  return rvData?.importFilePermit || "";
+  const result: Query.importFilePermit = rvData?.importFilePermit || "";
+  return result;
 }

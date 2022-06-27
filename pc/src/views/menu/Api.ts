@@ -1,3 +1,4 @@
+import { Query } from "#/types.ts";
 import dayjs from "dayjs";
 import { MenuModel, MenuSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -11,15 +12,14 @@ import { Page, Sort } from "@/utils/page.model";
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<MenuModel[]>}
  */
 export async function findAll(
   search?: MenuSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<MenuModel[]> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -44,12 +44,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const data = rvData?.findAllMenu || [ ];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
+  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i];
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
-  return data;
+  return result;
 }
 
 /**
@@ -59,15 +59,14 @@ export async function findAll(
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<{ data: MenuModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: MenuSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: MenuModel[], count: number }> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -93,15 +92,15 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const data = {
-    data: rvData?.findAllMenu || [ ],
-    count: rvData?.findCountMenu || 0,
+  const result = {
+    data: data?.findAllMenu || [ ],
+    count: data?.findCountMenu || 0,
   };
-  for (let i = 0; i < data.data.length; i++) {
-    const item = data.data[i];
+  for (let i = 0; i < result.data.length; i++) {
+    const item = result.data[i];
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
-  return data;
+  return result;
 }
 
 /**
@@ -109,12 +108,11 @@ export async function findAllAndCount(
  * @export create
  * @param {MenuModel} model
  * @param {GqlOpt} opt?
- * @return {Promise<string>} id
  */
 export async function create(
   model: MenuModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($model: MenuInput!) {
@@ -125,7 +123,8 @@ export async function create(
       model,
     },
   }, opt);
-  return data?.createMenu;
+  const result: Query.createMenu = data?.createMenu;
+  return result;
 }
 
 /**
@@ -133,13 +132,12 @@ export async function create(
  * @export updateById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
   model: MenuModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($id: ID!, $model: MenuInput!) {
@@ -151,7 +149,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  return data?.updateByIdMenu;
+  const result: Query.updateByIdMenu = data?.updateByIdMenu;
+  return result;
 }
 
 /**
@@ -159,13 +158,12 @@ export async function updateById(
  * @export findById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<MenuModel>}
  */
 export async function findById(
   id: string,
   opt?: GqlOpt,
-): Promise<MenuModel> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($id: ID!) {
         findByIdMenu(id: $id) {
@@ -188,11 +186,11 @@ export async function findById(
       id,
     },
   }, opt);
-  const data = rvData?.findByIdMenu;
-  if (data?.route_query) {
-    data.route_query = JSON.stringify(data.route_query);
+  const result: Query.findByIdMenu = data?.findByIdMenu;
+  if (result?.route_query) {
+    result.route_query = JSON.stringify(result.route_query);
   }
-  return data;
+  return result;
 }
 
 /**
@@ -200,12 +198,11 @@ export async function findById(
  * @export deleteByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -216,7 +213,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  return data?.deleteByIdsMenu;
+  const result: Query.deleteByIdsMenu = data?.deleteByIdsMenu;
+  return result;
 }
 
 /**
@@ -224,12 +222,11 @@ export async function deleteByIds(
  * @export revertByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -240,7 +237,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  return data?.revertByIdsMenu;
+  const result: Query.revertByIdsMenu = data?.revertByIdsMenu;
+  return result;
 }
 
 export async function findAllAndCountMenu(
@@ -248,7 +246,7 @@ export async function findAllAndCountMenu(
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: MenuModel[], count: number }> {
+) {
   const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
@@ -265,10 +263,14 @@ export async function findAllAndCountMenu(
       sort,
     },
   }, opt);
-  return {
+  const result: {
+    data: Query.findAllMenu,
+    count: Query.findCountMenu,
+  } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
   };
+  return result;
 }
 
 export async function findAllMenu(
@@ -276,7 +278,7 @@ export async function findAllMenu(
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<MenuModel[]> {
+) {
   const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
@@ -292,7 +294,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  return data?.findAllMenu || [ ];
+  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  return result;
 }
 
 /**
@@ -305,8 +308,8 @@ export async function exportExcel(
   search?: MenuSearch,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<string> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: MenuSearch, $sort: [SortInput]) {
         exportExcelMenu(search: $search, sort: $sort)
@@ -317,7 +320,8 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  return rvData?.exportExcelMenu || "";
+  const result: Query.exportExcelMenu = data?.exportExcelMenu || "";
+  return result;
 }
 
 /**
@@ -342,18 +346,18 @@ export async function importFile(
       id,
     },
   }, opt);
-  return rvData?.importFileMenu || "";
+  const result: Query.importFileMenu = rvData?.importFileMenu || "";
+  return result;
 }
 
 /**
  * 查找order_by字段的最大值
  * @export findLastOrderBy
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       query {
@@ -361,5 +365,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  return data?.findLastOrderByMenu || 1;
+  const result: Query.findLastOrderByMenu = data?.findLastOrderByMenu || 0;
+  return result;
 }

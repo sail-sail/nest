@@ -1,3 +1,4 @@
+import { Query } from "#/types.ts";
 import dayjs from "dayjs";
 import { OptionModel, OptionSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -11,15 +12,14 @@ import { Page, Sort } from "@/utils/page.model";
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<OptionModel[]>}
  */
 export async function findAll(
   search?: OptionSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<OptionModel[]> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: OptionSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOption(search: $search, page: $page, sort: $sort) {
@@ -37,11 +37,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const data = rvData?.findAllOption || [ ];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
+  const result: Query.findAllMenu = data?.findAllOption || [ ];
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i];
   }
-  return data;
+  return result;
 }
 
 /**
@@ -51,15 +51,14 @@ export async function findAll(
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<{ data: OptionModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: OptionSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: OptionModel[], count: number }> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: OptionSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOption(search: $search, page: $page, sort: $sort) {
@@ -78,14 +77,14 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const data = {
-    data: rvData?.findAllOption || [ ],
-    count: rvData?.findCountOption || 0,
+  const result = {
+    data: data?.findAllOption || [ ],
+    count: data?.findCountOption || 0,
   };
-  for (let i = 0; i < data.data.length; i++) {
-    const item = data.data[i];
+  for (let i = 0; i < result.data.length; i++) {
+    const item = result.data[i];
   }
-  return data;
+  return result;
 }
 
 /**
@@ -93,12 +92,11 @@ export async function findAllAndCount(
  * @export create
  * @param {OptionModel} model
  * @param {GqlOpt} opt?
- * @return {Promise<string>} id
  */
 export async function create(
   model: OptionModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($model: OptionInput!) {
@@ -109,7 +107,8 @@ export async function create(
       model,
     },
   }, opt);
-  return data?.createOption;
+  const result: Query.createMenu = data?.createOption;
+  return result;
 }
 
 /**
@@ -117,13 +116,12 @@ export async function create(
  * @export updateById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
   model: OptionModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($id: ID!, $model: OptionInput!) {
@@ -135,7 +133,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  return data?.updateByIdOption;
+  const result: Query.updateByIdMenu = data?.updateByIdOption;
+  return result;
 }
 
 /**
@@ -143,13 +142,12 @@ export async function updateById(
  * @export findById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<OptionModel>}
  */
 export async function findById(
   id: string,
   opt?: GqlOpt,
-): Promise<OptionModel> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($id: ID!) {
         findByIdOption(id: $id) {
@@ -165,8 +163,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const data = rvData?.findByIdOption;
-  return data;
+  const result: Query.findByIdOption = data?.findByIdOption;
+  return result;
 }
 
 /**
@@ -174,12 +172,11 @@ export async function findById(
  * @export deleteByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -190,7 +187,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  return data?.deleteByIdsOption;
+  const result: Query.deleteByIdsOption = data?.deleteByIdsOption;
+  return result;
 }
 
 /**
@@ -198,12 +196,11 @@ export async function deleteByIds(
  * @export revertByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -214,7 +211,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  return data?.revertByIdsOption;
+  const result: Query.revertByIdsOption = data?.revertByIdsOption;
+  return result;
 }
 
 /**
@@ -227,8 +225,8 @@ export async function exportExcel(
   search?: OptionSearch,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<string> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: OptionSearch, $sort: [SortInput]) {
         exportExcelOption(search: $search, sort: $sort)
@@ -239,7 +237,8 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  return rvData?.exportExcelOption || "";
+  const result: Query.exportExcelOption = data?.exportExcelOption || "";
+  return result;
 }
 
 /**
@@ -264,5 +263,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  return rvData?.importFileOption || "";
+  const result: Query.importFileOption = rvData?.importFileOption || "";
+  return result;
 }

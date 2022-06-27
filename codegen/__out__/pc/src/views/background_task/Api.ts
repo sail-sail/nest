@@ -1,3 +1,4 @@
+import { Query } from "#/types.ts";
 import dayjs from "dayjs";
 import { Background_taskModel, Background_taskSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -11,15 +12,14 @@ import { Page, Sort } from "@/utils/page.model";
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<Background_taskModel[]>}
  */
 export async function findAll(
   search?: Background_taskSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<Background_taskModel[]> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: Background_taskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
@@ -43,11 +43,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const data = rvData?.findAllBackground_task || [ ];
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
+  const result: Query.findAllMenu = data?.findAllBackground_task || [ ];
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i];
   }
-  return data;
+  return result;
 }
 
 /**
@@ -57,15 +57,14 @@ export async function findAll(
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
- * @return {Promise<{ data: Background_taskModel[], count: number }>} 
  */
 export async function findAllAndCount(
   search?: Background_taskSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<{ data: Background_taskModel[], count: number }> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: Background_taskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
@@ -90,14 +89,14 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const data = {
-    data: rvData?.findAllBackground_task || [ ],
-    count: rvData?.findCountBackground_task || 0,
+  const result = {
+    data: data?.findAllBackground_task || [ ],
+    count: data?.findCountBackground_task || 0,
   };
-  for (let i = 0; i < data.data.length; i++) {
-    const item = data.data[i];
+  for (let i = 0; i < result.data.length; i++) {
+    const item = result.data[i];
   }
-  return data;
+  return result;
 }
 
 /**
@@ -105,12 +104,11 @@ export async function findAllAndCount(
  * @export create
  * @param {Background_taskModel} model
  * @param {GqlOpt} opt?
- * @return {Promise<string>} id
  */
 export async function create(
   model: Background_taskModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($model: Background_taskInput!) {
@@ -121,7 +119,8 @@ export async function create(
       model,
     },
   }, opt);
-  return data?.createBackground_task;
+  const result: Query.createMenu = data?.createBackground_task;
+  return result;
 }
 
 /**
@@ -129,13 +128,12 @@ export async function create(
  * @export updateById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
   model: Background_taskModel,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($id: ID!, $model: Background_taskInput!) {
@@ -147,7 +145,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  return data?.updateByIdBackground_task;
+  const result: Query.updateByIdMenu = data?.updateByIdBackground_task;
+  return result;
 }
 
 /**
@@ -155,13 +154,12 @@ export async function updateById(
  * @export findById
  * @param {string} id
  * @param {GqlOpt} opt?
- * @return {Promise<Background_taskModel>}
  */
 export async function findById(
   id: string,
   opt?: GqlOpt,
-): Promise<Background_taskModel> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($id: ID!) {
         findByIdBackground_task(id: $id) {
@@ -183,8 +181,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const data = rvData?.findByIdBackground_task;
-  return data;
+  const result: Query.findByIdBackground_task = data?.findByIdBackground_task;
+  return result;
 }
 
 /**
@@ -192,12 +190,11 @@ export async function findById(
  * @export deleteByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -208,7 +205,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  return data?.deleteByIdsBackground_task;
+  const result: Query.deleteByIdsBackground_task = data?.deleteByIdsBackground_task;
+  return result;
 }
 
 /**
@@ -216,12 +214,11 @@ export async function deleteByIds(
  * @export revertByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
-): Promise<number> {
+) {
   const data = await gqlQuery({
     query: gql`
       mutation($ids: [ID]!) {
@@ -232,7 +229,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  return data?.revertByIdsBackground_task;
+  const result: Query.revertByIdsBackground_task = data?.revertByIdsBackground_task;
+  return result;
 }
 
 /**
@@ -245,8 +243,8 @@ export async function exportExcel(
   search?: Background_taskSearch,
   sort?: Sort[],
   opt?: GqlOpt,
-): Promise<string> {
-  const rvData = await gqlQuery({
+) {
+  const data = await gqlQuery({
     query: gql`
       query($search: Background_taskSearch, $sort: [SortInput]) {
         exportExcelBackground_task(search: $search, sort: $sort)
@@ -257,7 +255,8 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  return rvData?.exportExcelBackground_task || "";
+  const result: Query.exportExcelBackground_task = data?.exportExcelBackground_task || "";
+  return result;
 }
 
 /**
@@ -282,5 +281,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  return rvData?.importFileBackground_task || "";
+  const result: Query.importFileBackground_task = rvData?.importFileBackground_task || "";
+  return result;
 }
