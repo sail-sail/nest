@@ -2,7 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import { Query } from "#/types.ts";
+#>import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -78,7 +78,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAll<#=tableUp#> || [ ];
+  const result: Query["findAll<#=tableUp#>"] = data?.findAll<#=tableUp#> || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];<#
   for (let i = 0; i < columns.length; i++) {
@@ -162,8 +162,8 @@ export async function findAllAndCount(
     },
   }, opt);
   const result: {
-    data: Query.findAll<#=tableUp#>;
-    count: Query.findCount<#=tableUp#>;
+    data: Query["findAll<#=tableUp#>"];
+    count: Query["findCount<#=tableUp#>"];
   } = {
     data: data?.findAll<#=tableUp#> || [ ],
     count: data?.findCount<#=tableUp#> || 0,
@@ -230,7 +230,7 @@ export async function findSummary(
       search,
     },
   }, opt);
-  const result: Query.findSummary = data?.findSummary<#=tableUp#> || { };
+  const result: Query["findSummary<#=tableUp#>"] = data?.findSummary<#=tableUp#> || { };
   return result;
 }<#
 }
@@ -256,7 +256,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.create<#=tableUp#>;
+  const result: Mutation["create<#=tableUp#>"] = data?.create<#=tableUp#>;
   return result;
 }
 
@@ -282,7 +282,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateById<#=tableUp#>;
+  const result: Mutation["updateById<#=tableUp#>"] = data?.updateById<#=tableUp#>;
   return result;
 }
 
@@ -334,7 +334,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findById<#=tableUp#> = data?.findById<#=tableUp#>;<#
+  const result: Query["findById<#=tableUp#>"] = data?.findById<#=tableUp#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -372,7 +372,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIds<#=tableUp#> = data?.deleteByIds<#=tableUp#>;
+  const result: Mutation["deleteByIds<#=tableUp#>"] = data?.deleteByIds<#=tableUp#>;
   return result;
 }
 
@@ -396,7 +396,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIds<#=tableUp#> = data?.revertByIds<#=tableUp#>;
+  const result: Mutation["revertByIds<#=tableUp#>"] = data?.revertByIds<#=tableUp#>;
   return result;
 }<#
 const foreignTableArr = [];
@@ -437,8 +437,8 @@ export async function findAllAndCount<#=foreignTableUp#>(
     },
   }, opt);
   const result: {
-    data: Query.findAll<#=foreignTableUp#>,
-    count: Query.findCount<#=foreignTableUp#>,
+    data: Query["findAll<#=foreignTableUp#>"];
+    count: Query["findCount<#=foreignTableUp#>"];
   } = {
     data: data?.findAll<#=foreignTableUp#> || [ ],
     count: data?.findCount<#=foreignTableUp#> || 0,
@@ -467,7 +467,7 @@ export async function findAll<#=foreignTableUp#>(
       sort,
     },
   }, opt);
-  const result: Query.findAll<#=foreignTableUp#> = data?.findAll<#=foreignTableUp#> || [ ];
+  const result: Query["findAll<#=foreignTableUp#>"] = data?.findAll<#=foreignTableUp#> || [ ];
   return result;
 }<#
 }
@@ -495,7 +495,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcel<#=tableUp#> = data?.exportExcel<#=tableUp#> || "";
+  const result: Query["exportExcel<#=tableUp#>"] = data?.exportExcel<#=tableUp#> || "";
   return result;
 }
 
@@ -521,7 +521,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFile<#=tableUp#> = data?.importFile<#=tableUp#>;
+  const result: Mutation["importFile<#=tableUp#>"] = data?.importFile<#=tableUp#>;
   return result;
 }<#
 if (hasOrderBy) {
@@ -542,7 +542,7 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result: Query.findLastOrderBy<#=tableUp#> = data?.findLastOrderBy<#=tableUp#> || 0;
+  const result: Query["findLastOrderBy<#=tableUp#>"] = data?.findLastOrderBy<#=tableUp#> || 0;
   return result;
 }<#
 }

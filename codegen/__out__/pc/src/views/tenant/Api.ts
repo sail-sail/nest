@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { TenantModel, TenantSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -44,7 +44,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllTenant || [ ];
+  const result: Query["findAllTenant"] = data?.findAllTenant || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
     item.expiration = item.expiration && new Date(item.expiration).toLocaleDateString() || "";
@@ -91,7 +91,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllTenant"];
+    count: Query["findCountTenant"];
+  } = {
     data: data?.findAllTenant || [ ],
     count: data?.findCountTenant || 0,
   };
@@ -122,7 +125,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createTenant;
+  const result: Mutation["createTenant"] = data?.createTenant;
   return result;
 }
 
@@ -148,7 +151,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdTenant;
+  const result: Mutation["updateByIdTenant"] = data?.updateByIdTenant;
   return result;
 }
 
@@ -184,7 +187,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdTenant = data?.findByIdTenant;
+  const result: Query["findByIdTenant"] = data?.findByIdTenant;
   return result;
 }
 
@@ -208,7 +211,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsTenant = data?.deleteByIdsTenant;
+  const result: Mutation["deleteByIdsTenant"] = data?.deleteByIdsTenant;
   return result;
 }
 
@@ -232,7 +235,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsTenant = data?.revertByIdsTenant;
+  const result: Mutation["revertByIdsTenant"] = data?.revertByIdsTenant;
   return result;
 }
 
@@ -259,8 +262,8 @@ export async function findAllAndCountMenu(
     },
   }, opt);
   const result: {
-    data: Query.findAllMenu,
-    count: Query.findCountMenu,
+    data: Query["findAllMenu"];
+    count: Query["findCountMenu"];
   } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
@@ -289,7 +292,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
   return result;
 }
 
@@ -315,7 +318,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelTenant = data?.exportExcelTenant || "";
+  const result: Query["exportExcelTenant"] = data?.exportExcelTenant || "";
   return result;
 }
 
@@ -341,7 +344,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileTenant = data?.importFileTenant || "";
+  const result: Mutation["importFileTenant"] = data?.importFileTenant;
   return result;
 }
 
@@ -360,6 +363,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result: Query.findLastOrderByTenant = data?.findLastOrderByTenant || 0;
+  const result: Query["findLastOrderByTenant"] = data?.findLastOrderByTenant || 0;
   return result;
 }

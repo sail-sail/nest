@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { RoleModel, RoleSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -40,7 +40,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllRole || [ ];
+  const result: Query["findAllRole"] = data?.findAllRole || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -82,7 +82,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllRole"];
+    count: Query["findCountRole"];
+  } = {
     data: data?.findAllRole || [ ],
     count: data?.findCountRole || 0,
   };
@@ -112,7 +115,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createRole;
+  const result: Mutation["createRole"] = data?.createRole;
   return result;
 }
 
@@ -138,7 +141,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdRole;
+  const result: Mutation["updateByIdRole"] = data?.updateByIdRole;
   return result;
 }
 
@@ -170,7 +173,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdRole = data?.findByIdRole;
+  const result: Query["findByIdRole"] = data?.findByIdRole;
   return result;
 }
 
@@ -194,7 +197,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsRole = data?.deleteByIdsRole;
+  const result: Mutation["deleteByIdsRole"] = data?.deleteByIdsRole;
   return result;
 }
 
@@ -218,7 +221,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsRole = data?.revertByIdsRole;
+  const result: Mutation["revertByIdsRole"] = data?.revertByIdsRole;
   return result;
 }
 
@@ -245,8 +248,8 @@ export async function findAllAndCountMenu(
     },
   }, opt);
   const result: {
-    data: Query.findAllMenu,
-    count: Query.findCountMenu,
+    data: Query["findAllMenu"];
+    count: Query["findCountMenu"];
   } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
@@ -275,7 +278,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
   return result;
 }
 
@@ -301,7 +304,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelRole = data?.exportExcelRole || "";
+  const result: Query["exportExcelRole"] = data?.exportExcelRole || "";
   return result;
 }
 
@@ -327,6 +330,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileRole = data?.importFileRole || "";
+  const result: Mutation["importFileRole"] = data?.importFileRole;
   return result;
 }

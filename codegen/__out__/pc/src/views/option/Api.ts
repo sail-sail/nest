@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { OptionModel, OptionSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -37,7 +37,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllOption || [ ];
+  const result: Query["findAllOption"] = data?.findAllOption || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -77,7 +77,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllOption"];
+    count: Query["findCountOption"];
+  } = {
     data: data?.findAllOption || [ ],
     count: data?.findCountOption || 0,
   };
@@ -107,7 +110,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createOption;
+  const result: Mutation["createOption"] = data?.createOption;
   return result;
 }
 
@@ -133,7 +136,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdOption;
+  const result: Mutation["updateByIdOption"] = data?.updateByIdOption;
   return result;
 }
 
@@ -163,7 +166,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdOption = data?.findByIdOption;
+  const result: Query["findByIdOption"] = data?.findByIdOption;
   return result;
 }
 
@@ -187,7 +190,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsOption = data?.deleteByIdsOption;
+  const result: Mutation["deleteByIdsOption"] = data?.deleteByIdsOption;
   return result;
 }
 
@@ -211,7 +214,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsOption = data?.revertByIdsOption;
+  const result: Mutation["revertByIdsOption"] = data?.revertByIdsOption;
   return result;
 }
 
@@ -237,7 +240,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelOption = data?.exportExcelOption || "";
+  const result: Query["exportExcelOption"] = data?.exportExcelOption || "";
   return result;
 }
 
@@ -263,6 +266,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileOption = data?.importFileOption || "";
+  const result: Mutation["importFileOption"] = data?.importFileOption;
   return result;
 }

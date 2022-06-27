@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { Background_taskModel, Background_taskSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -43,7 +43,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllBackground_task || [ ];
+  const result: Query["findAllBackground_task"] = data?.findAllBackground_task || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -89,7 +89,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllBackground_task"];
+    count: Query["findCountBackground_task"];
+  } = {
     data: data?.findAllBackground_task || [ ],
     count: data?.findCountBackground_task || 0,
   };
@@ -119,7 +122,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createBackground_task;
+  const result: Mutation["createBackground_task"] = data?.createBackground_task;
   return result;
 }
 
@@ -145,7 +148,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdBackground_task;
+  const result: Mutation["updateByIdBackground_task"] = data?.updateByIdBackground_task;
   return result;
 }
 
@@ -181,7 +184,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdBackground_task = data?.findByIdBackground_task;
+  const result: Query["findByIdBackground_task"] = data?.findByIdBackground_task;
   return result;
 }
 
@@ -205,7 +208,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsBackground_task = data?.deleteByIdsBackground_task;
+  const result: Mutation["deleteByIdsBackground_task"] = data?.deleteByIdsBackground_task;
   return result;
 }
 
@@ -229,7 +232,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsBackground_task = data?.revertByIdsBackground_task;
+  const result: Mutation["revertByIdsBackground_task"] = data?.revertByIdsBackground_task;
   return result;
 }
 
@@ -255,7 +258,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelBackground_task = data?.exportExcelBackground_task || "";
+  const result: Query["exportExcelBackground_task"] = data?.exportExcelBackground_task || "";
   return result;
 }
 
@@ -281,6 +284,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileBackground_task = data?.importFileBackground_task || "";
+  const result: Mutation["importFileBackground_task"] = data?.importFileBackground_task;
   return result;
 }

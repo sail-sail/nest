@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { PermitModel, PermitSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -38,7 +38,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllPermit || [ ];
+  const result: Query["findAllPermit"] = data?.findAllPermit || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -78,7 +78,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllPermit"];
+    count: Query["findCountPermit"];
+  } = {
     data: data?.findAllPermit || [ ],
     count: data?.findCountPermit || 0,
   };
@@ -108,7 +111,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createPermit;
+  const result: Mutation["createPermit"] = data?.createPermit;
   return result;
 }
 
@@ -134,7 +137,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdPermit;
+  const result: Mutation["updateByIdPermit"] = data?.updateByIdPermit;
   return result;
 }
 
@@ -164,7 +167,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdPermit = data?.findByIdPermit;
+  const result: Query["findByIdPermit"] = data?.findByIdPermit;
   return result;
 }
 
@@ -188,7 +191,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsPermit = data?.deleteByIdsPermit;
+  const result: Mutation["deleteByIdsPermit"] = data?.deleteByIdsPermit;
   return result;
 }
 
@@ -212,7 +215,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsPermit = data?.revertByIdsPermit;
+  const result: Mutation["revertByIdsPermit"] = data?.revertByIdsPermit;
   return result;
 }
 
@@ -239,8 +242,8 @@ export async function findAllAndCountMenu(
     },
   }, opt);
   const result: {
-    data: Query.findAllMenu,
-    count: Query.findCountMenu,
+    data: Query["findAllMenu"];
+    count: Query["findCountMenu"];
   } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
@@ -269,7 +272,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
   return result;
 }
 
@@ -295,7 +298,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelPermit = data?.exportExcelPermit || "";
+  const result: Query["exportExcelPermit"] = data?.exportExcelPermit || "";
   return result;
 }
 
@@ -321,6 +324,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFilePermit = data?.importFilePermit || "";
+  const result: Mutation["importFilePermit"] = data?.importFilePermit;
   return result;
 }

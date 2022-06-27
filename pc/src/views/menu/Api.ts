@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { MenuModel, MenuSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -44,7 +44,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
@@ -92,7 +92,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllMenu"];
+    count: Query["findCountMenu"];
+  } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
   };
@@ -123,7 +126,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createMenu;
+  const result: Mutation["createMenu"] = data?.createMenu;
   return result;
 }
 
@@ -149,7 +152,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdMenu;
+  const result: Mutation["updateByIdMenu"] = data?.updateByIdMenu;
   return result;
 }
 
@@ -186,7 +189,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdMenu = data?.findByIdMenu;
+  const result: Query["findByIdMenu"] = data?.findByIdMenu;
   if (result?.route_query) {
     result.route_query = JSON.stringify(result.route_query);
   }
@@ -213,7 +216,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsMenu = data?.deleteByIdsMenu;
+  const result: Mutation["deleteByIdsMenu"] = data?.deleteByIdsMenu;
   return result;
 }
 
@@ -237,7 +240,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsMenu = data?.revertByIdsMenu;
+  const result: Mutation["revertByIdsMenu"] = data?.revertByIdsMenu;
   return result;
 }
 
@@ -264,8 +267,8 @@ export async function findAllAndCountMenu(
     },
   }, opt);
   const result: {
-    data: Query.findAllMenu,
-    count: Query.findCountMenu,
+    data: Query["findAllMenu"];
+    count: Query["findCountMenu"];
   } = {
     data: data?.findAllMenu || [ ],
     count: data?.findCountMenu || 0,
@@ -294,7 +297,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllMenu || [ ];
+  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
   return result;
 }
 
@@ -320,7 +323,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelMenu = data?.exportExcelMenu || "";
+  const result: Query["exportExcelMenu"] = data?.exportExcelMenu || "";
   return result;
 }
 
@@ -346,7 +349,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileMenu = data?.importFileMenu || "";
+  const result: Mutation["importFileMenu"] = data?.importFileMenu;
   return result;
 }
 
@@ -365,6 +368,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result: Query.findLastOrderByMenu = data?.findLastOrderByMenu || 0;
+  const result: Query["findLastOrderByMenu"] = data?.findLastOrderByMenu || 0;
   return result;
 }

@@ -1,4 +1,4 @@
-import { Query } from "#/types.ts";
+import { Query, Mutation } from "#/types";
 import dayjs from "dayjs";
 import { UsrModel, UsrSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
@@ -42,7 +42,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query.findAllMenu = data?.findAllUsr || [ ];
+  const result: Query["findAllUsr"] = data?.findAllUsr || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -86,7 +86,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query["findAllUsr"];
+    count: Query["findCountUsr"];
+  } = {
     data: data?.findAllUsr || [ ],
     count: data?.findCountUsr || 0,
   };
@@ -116,7 +119,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Query.createMenu = data?.createUsr;
+  const result: Mutation["createUsr"] = data?.createUsr;
   return result;
 }
 
@@ -142,7 +145,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Query.updateByIdMenu = data?.updateByIdUsr;
+  const result: Mutation["updateByIdUsr"] = data?.updateByIdUsr;
   return result;
 }
 
@@ -176,7 +179,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query.findByIdUsr = data?.findByIdUsr;
+  const result: Query["findByIdUsr"] = data?.findByIdUsr;
   return result;
 }
 
@@ -200,7 +203,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Query.deleteByIdsUsr = data?.deleteByIdsUsr;
+  const result: Mutation["deleteByIdsUsr"] = data?.deleteByIdsUsr;
   return result;
 }
 
@@ -224,7 +227,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Query.revertByIdsUsr = data?.revertByIdsUsr;
+  const result: Mutation["revertByIdsUsr"] = data?.revertByIdsUsr;
   return result;
 }
 
@@ -251,8 +254,8 @@ export async function findAllAndCountRole(
     },
   }, opt);
   const result: {
-    data: Query.findAllRole,
-    count: Query.findCountRole,
+    data: Query["findAllRole"];
+    count: Query["findCountRole"];
   } = {
     data: data?.findAllRole || [ ],
     count: data?.findCountRole || 0,
@@ -281,7 +284,7 @@ export async function findAllRole(
       sort,
     },
   }, opt);
-  const result: Query.findAllRole = data?.findAllRole || [ ];
+  const result: Query["findAllRole"] = data?.findAllRole || [ ];
   return result;
 }
 
@@ -307,7 +310,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query.exportExcelUsr = data?.exportExcelUsr || "";
+  const result: Query["exportExcelUsr"] = data?.exportExcelUsr || "";
   return result;
 }
 
@@ -333,6 +336,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileUsr = data?.importFileUsr || "";
+  const result: Mutation["importFileUsr"] = data?.importFileUsr;
   return result;
 }
