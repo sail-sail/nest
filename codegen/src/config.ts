@@ -16,7 +16,7 @@ export interface TableCloumn {
    * @type {boolean}
    * @memberof TableCloumn
    */
-  onlyCodegenNest?: boolean;
+  onlyCodegenDeno?: boolean;
   
   /**
    * 前端不允许修改
@@ -401,7 +401,7 @@ export interface TablesConfigItem {
      * @type {boolean}
      * @memberof TableCloumn
      */
-    onlyCodegenNest?: boolean;
+    onlyCodegenDeno?: boolean;
     
     /**
      * 表名

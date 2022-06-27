@@ -7,7 +7,7 @@ export interface <#=tableUp#>Model {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     const foreignKey = column.foreignKey;
@@ -83,7 +83,7 @@ export interface <#=tableUp#>Search {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -182,7 +182,7 @@ export interface <#=tableUp#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT;

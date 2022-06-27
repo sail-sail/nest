@@ -1,5 +1,5 @@
 <#
-const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenNest);
+const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 #><template>
 <div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col w-full h-full">
   <div class="search_div">
@@ -14,7 +14,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        if (column.onlyCodegenNest) continue;
+        if (column.onlyCodegenDeno) continue;
         const column_name = column.COLUMN_NAME;
         if (column_name === "id") continue;
         const data_type = column.DATA_TYPE;
@@ -379,7 +379,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenNest) continue;
+            if (column.onlyCodegenDeno) continue;
             if (column.noList) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
@@ -565,7 +565,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const data_type = column.DATA_TYPE;
@@ -678,7 +678,7 @@ import ListSelectDialog from "@/components/ListSelectDialog.vue";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
@@ -746,7 +746,7 @@ const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -768,7 +768,7 @@ const foreignKeyCommentArr = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   let data_type = column.DATA_TYPE;
@@ -857,7 +857,7 @@ const props = defineProps<{
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -943,7 +943,7 @@ const builtInSearchType: { [key: string]: string } = {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -1104,7 +1104,7 @@ let tableColumns: ColumnType[] = $ref([<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const foreignKey = column.foreignKey;
@@ -1215,7 +1215,7 @@ const foreignTableTmpArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
@@ -1609,7 +1609,7 @@ watch(
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;

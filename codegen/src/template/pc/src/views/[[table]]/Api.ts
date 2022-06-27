@@ -1,5 +1,5 @@
 <#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { Query } from "#/types.ts";
@@ -12,7 +12,7 @@ import { Page, Sort } from "@/utils/page.model";
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -45,7 +45,7 @@ export async function findAll(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenNest) continue;
+            if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
             let column_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -84,7 +84,7 @@ export async function findAll(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const data_type = column.DATA_TYPE;
     let formatter = column.formatter;
@@ -127,7 +127,7 @@ export async function findAllAndCount(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenNest) continue;
+            if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
             let column_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -161,7 +161,10 @@ export async function findAllAndCount(
       sort,
     },
   }, opt);
-  const result = {
+  const result: {
+    data: Query.findAll<#=tableUp#>;
+    count: Query.findCount<#=tableUp#>;
+  } = {
     data: data?.findAll<#=tableUp#> || [ ],
     count: data?.findCount<#=tableUp#> || 0,
   };
@@ -170,7 +173,7 @@ export async function findAllAndCount(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const data_type = column.DATA_TYPE;
     let formatter = column.formatter;
@@ -209,7 +212,7 @@ export async function findSummary(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenNest) continue;
+            if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
           #><#
@@ -300,7 +303,7 @@ export async function findById(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenNest) continue;
+            if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
             let column_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
@@ -335,7 +338,7 @@ export async function findById(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     if (data_type === "json") {
@@ -400,7 +403,7 @@ const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -518,7 +521,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFile<#=tableUp#> = data?.importFile<#=tableUp#> || "";
+  const result: Query.importFile<#=tableUp#> = data?.importFile<#=tableUp#>;
   return result;
 }<#
 if (hasOrderBy) {

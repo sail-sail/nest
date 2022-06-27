@@ -159,7 +159,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "create_usr_id",
         ignoreCodegen: false,
-        onlyCodegenNest: true,
+        onlyCodegenDeno: true,
         foreignKey: {
           table: "usr",
         },

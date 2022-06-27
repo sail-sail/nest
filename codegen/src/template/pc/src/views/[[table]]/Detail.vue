@@ -1,5 +1,5 @@
 <template><#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 #>
 <el-dialog
   :fullscreen="fullscreen"
@@ -37,7 +37,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
-          if (column.onlyCodegenNest) continue;
+          if (column.onlyCodegenDeno) continue;
           if (column.noAdd && column.noEdit) continue;
           if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
@@ -338,7 +338,7 @@ const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -358,7 +358,7 @@ import {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let data_type = column.DATA_TYPE;
@@ -399,7 +399,7 @@ let dialogModel: <#=tableUp#>Model = $ref({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let data_type = column.DATA_TYPE;
@@ -430,7 +430,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let data_type = column.DATA_TYPE;
@@ -477,7 +477,7 @@ const foreignTableArr3 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
@@ -511,7 +511,7 @@ async function getSelectListEfc() {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenNest) continue;
+      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       const data_type = column.DATA_TYPE;
@@ -535,7 +535,7 @@ async function getSelectListEfc() {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const data_type = column.DATA_TYPE;
@@ -579,7 +579,7 @@ const foreignTableArr4 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenNest) continue;
+  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   const data_type = column.DATA_TYPE;
@@ -639,7 +639,7 @@ async function getDefaultModel(): Promise<<#=tableUp#>Model> {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenNest) continue;
+      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       const data_type = column.DATA_TYPE;

@@ -2,14 +2,14 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `<#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenNest);
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>type FindAll<#=tableUp#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
@@ -88,7 +88,7 @@ input <#=tableUp#>Input {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
@@ -164,7 +164,7 @@ input <#=tableUp#>Search {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -269,7 +269,7 @@ type FindSummary<#=tableUp#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenNest) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT;
