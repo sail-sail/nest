@@ -267,11 +267,11 @@ export async function exportExcel(
 export async function importFile(
   file: File,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const rvData = await gqlQuery({
+  const data = await gqlQuery({
     query: gql`
       mutation($id: ID!) {
         importFileBackground_task(id: $id)
@@ -281,6 +281,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileBackground_task = rvData?.importFileBackground_task || "";
+  const result: Query.importFileBackground_task = data?.importFileBackground_task || "";
   return result;
 }

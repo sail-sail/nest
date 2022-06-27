@@ -249,11 +249,11 @@ export async function exportExcel(
 export async function importFile(
   file: File,
   opt?: GqlOpt,
-): Promise<string> {
+) {
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const rvData = await gqlQuery({
+  const data = await gqlQuery({
     query: gql`
       mutation($id: ID!) {
         importFileOption(id: $id)
@@ -263,6 +263,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Query.importFileOption = rvData?.importFileOption || "";
+  const result: Query.importFileOption = data?.importFileOption || "";
   return result;
 }
