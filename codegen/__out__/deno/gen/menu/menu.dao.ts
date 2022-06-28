@@ -9,7 +9,7 @@ import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
-import { MenuModel, MenuSearch } from "./menu.model.ts";
+import { MenuModel, MenuSearch } from "/gen/types.ts";
 
 async function getWhereQuery(
   context: Context,

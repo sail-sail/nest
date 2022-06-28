@@ -7,7 +7,7 @@ import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
-import { OptionModel, OptionSearch } from "./option.model.ts";
+import { OptionModel, OptionSearch } from "/gen/types.ts";
 import * as optionDao from "./option.dao.ts";
 
 /**

@@ -6,7 +6,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as <#=table#>Service from "./<#=table#>.service.ts";
-import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model.ts";
+import { <#=tableUp#>Model, <#=tableUp#>Search } from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数

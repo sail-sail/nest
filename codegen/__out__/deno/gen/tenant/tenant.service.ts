@@ -7,7 +7,7 @@ import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
-import { TenantModel, TenantSearch } from "./tenant.model.ts";
+import { TenantModel, TenantSearch } from "/gen/types.ts";
 import * as tenantDao from "./tenant.dao.ts";
 
 /**

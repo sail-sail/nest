@@ -18,10 +18,10 @@ import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
-import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model.ts";<#
+import { <#=tableUp#>Model, <#=tableUp#>Search } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
-import { <#=tableUp#>Summary } from "./<#=table#>.model.ts";<#
+import { <#=tableUp#>Summary } from "/gen/types.ts";<#
 }
 #><#
 const hasImportDaos = [ ];

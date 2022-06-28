@@ -2,7 +2,7 @@ import { Context } from "/lib/context.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as roleService from "./role.service.ts";
-import { RoleModel, RoleSearch } from "./role.model.ts";
+import { RoleModel, RoleSearch } from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数

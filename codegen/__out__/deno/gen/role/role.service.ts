@@ -7,7 +7,7 @@ import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
-import { RoleModel, RoleSearch } from "./role.model.ts";
+import { RoleModel, RoleSearch } from "/gen/types.ts";
 import * as roleDao from "./role.dao.ts";
 
 /**

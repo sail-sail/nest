@@ -11,7 +11,7 @@ import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
-import { <#=tableUp#>Model, <#=tableUp#>Search } from "./<#=table#>.model.ts";<#
+import { <#=tableUp#>Model, <#=tableUp#>Search } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
 import { <#=tableUp#>Summary } from "./<#=table#>.model.ts";<#

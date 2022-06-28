@@ -2,7 +2,7 @@ import { Context } from "/lib/context.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as menuService from "./menu.service.ts";
-import { MenuModel, MenuSearch } from "./menu.model.ts";
+import { MenuModel, MenuSearch } from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数

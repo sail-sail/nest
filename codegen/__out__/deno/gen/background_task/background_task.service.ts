@@ -7,7 +7,7 @@ import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
-import { Background_taskModel, Background_taskSearch } from "./background_task.model.ts";
+import { Background_taskModel, Background_taskSearch } from "/gen/types.ts";
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**

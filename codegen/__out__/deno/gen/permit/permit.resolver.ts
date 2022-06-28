@@ -2,7 +2,7 @@ import { Context } from "/lib/context.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as permitService from "./permit.service.ts";
-import { PermitModel, PermitSearch } from "./permit.model.ts";
+import { PermitModel, PermitSearch } from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数

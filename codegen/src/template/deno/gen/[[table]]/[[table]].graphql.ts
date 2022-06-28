@@ -268,7 +268,7 @@ input <#=tableUp#>Search {
 }<#
 if (hasSummary) {
 #>
-type FindSummary<#=tableUp#> {<#
+type <#=Table_Up#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -311,7 +311,7 @@ type Query {
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"
-  findSummary<#=tableUp#>(search: <#=tableUp#>Search): FindSummary<#=tableUp#>!<#
+  findSummary<#=tableUp#>(search: <#=tableUp#>Search): <#=Table_Up#>Summary!<#
   }
   #>
   "根据条件查找第一条数据"

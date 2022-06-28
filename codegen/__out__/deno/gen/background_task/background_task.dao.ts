@@ -9,7 +9,7 @@ import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
-import { Background_taskModel, Background_taskSearch } from "./background_task.model.ts";
+import { Background_taskModel, Background_taskSearch } from "/gen/types.ts";
 import * as usrDao from "/gen/usr/usr.dao.ts";
 
 async function getWhereQuery(

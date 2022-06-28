@@ -2,7 +2,7 @@ import { Context } from "/lib/context.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as usrService from "./usr.service.ts";
-import { UsrModel, UsrSearch } from "./usr.model.ts";
+import { UsrModel, UsrSearch } from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数
