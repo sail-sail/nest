@@ -10,7 +10,7 @@ onLaunch(<any>(async(options: any) => {
   const indexStore = useIndexStore();
   const usrStore = useUsrStore();
   indexStore.setLaunchOptions(options);
-  let _uid: string = undefined;
+  let _uid: string|undefined = undefined;
   try {
     _uid = (await uni.getStorage({
       key: "_uid"
@@ -25,7 +25,7 @@ onLaunch(<any>(async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
-  let access_token: string = undefined;
+  let access_token: string|undefined = undefined;
   try {
     access_token = (await uni.getStorage({
       key: "access_token"

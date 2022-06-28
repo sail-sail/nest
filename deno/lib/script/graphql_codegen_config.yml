@@ -11,3 +11,7 @@ generates:
     plugins:
       - typescript
       - typescript-operations
+  ../uni/src/typings/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
