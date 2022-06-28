@@ -1,5 +1,5 @@
 {
-  "typescript.tsdk": "${workspaceRoot}\\node_modules\\typescript\\lib",
+  "typescript.tsdk": "${workspaceRoot}\\pc\\node_modules\\typescript\\lib",
   "vsicons.presets.angular": true,
   "editor.trimAutoWhitespace": false,
   "files.trimTrailingWhitespace": false,
@@ -17,7 +17,6 @@
     "**/.gitkeep": true,
     "**/LICENSE": true,
     "**/package-lock.json": true,
-    "**/_uploadfile/**": true,
     "**/unpackage/**": true,
     "__test__.diff": true,
     "**/pnpm-lock.yaml": true,
@@ -25,10 +24,7 @@
     "**/node_modules/**": true,
     "uni/dist/**": true,
     "**/.rsw": true,
-    "**/@rsw": true,
-    "nest/src/Mother.js": true,
-    "nest/tsconfig.build.json": true,
-    "nest/tsconfig.swc.json": true
+    "**/@rsw": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -45,7 +41,6 @@
     "**/.gitkeep": true,
     "**/LICENSE": true,
     "**/package-lock.json": true,
-    "**/_uploadfile/**": true,
     "**/unpackage/**": true,
     "__test__.diff": true,
     "**/pnpm-lock.yaml": true,
@@ -54,10 +49,7 @@
     "**/node_modules/**": true,
     "uni/dist/**": true,
     "**/.rsw": true,
-    "**/@rsw": true,
-    "nest/src/Mother.js": true,
-    "nest/tsconfig.build.json": true,
-    "nest/tsconfig.swc.json": true
+    "**/@rsw": true
   }
   ,"npm.registry": "https://registry.npmmirror.com"
   ,"npm.updateStrategy": "LATEST"

@@ -1,7 +1,7 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./permit.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type FindAllPermit {
+defineGraphql(resolvers, /* GraphQL */ `type PermitModel {
   "ID"
   id: ID!
   "菜单ID"
@@ -46,13 +46,13 @@ type Query {
   "根据条件查找据数总数"
   findCountPermit(search: PermitSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllPermit(search: PermitSearch, page: PageInput, sort: [SortInput]): [FindAllPermit]!
+  findAllPermit(search: PermitSearch, page: PageInput, sort: [SortInput]): [PermitModel!]!
   "根据搜索条件导出"
   exportExcelPermit(search: PermitSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOnePermit(search: PermitSearch): FindAllPermit
+  findOnePermit(search: PermitSearch): PermitModel
   "根据id查找一条数据"
-  findByIdPermit(id: ID!): FindAllPermit
+  findByIdPermit(id: ID!): PermitModel
 }
 type Mutation {
   "创建一条数据"

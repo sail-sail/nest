@@ -164,8 +164,12 @@ import {
   updateById,
 } from "./Api";
 
-import { PermitModel } from "./Model";
-import { MenuModel } from "../menu/Model";
+import {
+  PermitModel,
+} from "#/types";
+import {
+  MenuModel,
+} from "#/types";
 
 import {
   findAllAndCountMenu,
@@ -185,8 +189,8 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: PermitModel = $ref({
-});
+let dialogModel: Partial<PermitModel> = $ref({
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -264,8 +268,8 @@ let onCloseResolve = function(value: {
 let builtInModel: PermitModel|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<PermitModel> {
-  const defaultModel: PermitModel = {
+async function getDefaultModel() {
+  const defaultModel: Partial<PermitModel> = {
   };
   return defaultModel;
 }

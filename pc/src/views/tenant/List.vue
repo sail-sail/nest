@@ -427,8 +427,8 @@ import {
 import {
   TenantModel,
   TenantSearch,
-} from "./Model";
-import { MenuModel } from "../menu/Model";
+} from "#/types";
+import { MenuModel } from "#/types";
 import {
   findAllAndCountMenu,
   findAllMenu,
@@ -512,7 +512,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: TenantSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -533,11 +533,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <TenantSearch> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as TenantSearch;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: TenantModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -563,7 +563,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <TenantModel> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as TenantModel;
 });
 
 // 分页功能
@@ -804,7 +804,9 @@ async function openUploadClk() {
   });
   if (file) {
     const msg = await importFile(file);
-    MessageBox.success(msg);
+    if (msg) {
+      MessageBox.success(msg);
+    }
     await dataGrid(true);
   }
 }
@@ -916,7 +918,7 @@ async function menu_idsClk(row: TenantModel) {
     selectedIds: selectedIds2,
     action
   } = await menu_idsListSelectDialogRef.showDialog({
-    selectedIds: row.menu_ids,
+    selectedIds: row.menu_ids as string[],
   });
   if (action === "select") {
     selectedIds2 = selectedIds2 || [ ];

@@ -1,10 +1,18 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import { Query, Mutation } from "#/types";
+#>import {
+  Query,
+  Mutation,
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Search,
+  <#=Table_Up#>Input,
+} from "#/types";
 import dayjs from "dayjs";
-import { <#=tableUp#>Model, <#=tableUp#>Search } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { Page, Sort } from "@/utils/page.model";
@@ -20,27 +28,31 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (foreignTableUp === tableUp) continue;
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("_");
 #>
-import { <#=foreignTableUp#>Model, <#=foreignTableUp#>Search } from "../<#=foreignTable#>/Model";<#
+import { <#=Foreign_Table_Up#>Model, <#=foreignTableUp#>Search } from "#/types";<#
 }
 #>
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {<#=tableUp#>Search} search?
+ * @param {<#=Table_Up#>Search} search?
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+      query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -109,13 +121,13 @@ export async function findAll(
 /**
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
- * @param {<#=tableUp#>Search} search?
+ * @param {<#=Table_Up#>Search} search?
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAllAndCount(
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -198,11 +210,11 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找合计
- * @param {<#=tableUp#>Search} search
+ * @param {<#=Table_Up#>Search} search
  * @param {GqlOpt} opt?
  */
 export async function findSummary(
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -239,11 +251,11 @@ export async function findSummary(
 /**
  * 创建一条数据
  * @export create
- * @param {<#=tableUp#>Model} model
+ * @param {<#=Table_Up#>Input} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: <#=tableUp#>Model,
+  model: <#=Table_Up#>Input,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -264,11 +276,12 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
+ * @param {<#=Table_Up#>Input} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: <#=tableUp#>Model,
+  model: <#=Table_Up#>Input,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -412,10 +425,13 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("_");
 #>
 
 export async function findAllAndCount<#=foreignTableUp#>(
-  search?: <#=foreignTableUp#>Search,
+  search?: <#=Foreign_Table_Up#>Search,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -447,7 +463,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
 }
 
 export async function findAll<#=foreignTableUp#>(
-  search?: <#=foreignTableUp#>Search,
+  search?: <#=Foreign_Table_Up#>Search,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -476,11 +492,11 @@ export async function findAll<#=foreignTableUp#>(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {<#=tableUp#>Search} search?
+ * @param {<#=Table_Up#>Search} search?
  * @param {Sort[]} sort?
  */
 export async function exportExcel(
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {

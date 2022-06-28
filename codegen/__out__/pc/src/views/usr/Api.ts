@@ -1,11 +1,17 @@
-import { Query, Mutation } from "#/types";
+import {
+  Query,
+  Mutation,
+  UsrModel,
+  UsrSearch,
+  UsrInput,
+} from "#/types";
 import dayjs from "dayjs";
-import { UsrModel, UsrSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { Page, Sort } from "@/utils/page.model";
 
-import { RoleModel, RoleSearch } from "../role/Model";
+import { RoleModel, RoleSearch } from "#/types";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -102,11 +108,11 @@ export async function findAllAndCount(
 /**
  * 创建一条数据
  * @export create
- * @param {UsrModel} model
+ * @param {UsrInput} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: UsrModel,
+  model: UsrInput,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -127,11 +133,12 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
+ * @param {UsrInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: UsrModel,
+  model: UsrInput,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({

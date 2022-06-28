@@ -1,7 +1,7 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./usr.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type FindAllUsr {
+defineGraphql(resolvers, /* GraphQL */ `type UsrModel {
   "ID"
   id: ID!
   "名称"
@@ -70,13 +70,13 @@ type Query {
   "根据条件查找据数总数"
   findCountUsr(search: UsrSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput]): [FindAllUsr]!
+  findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput]): [UsrModel!]!
   "根据搜索条件导出"
   exportExcelUsr(search: UsrSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOneUsr(search: UsrSearch): FindAllUsr
+  findOneUsr(search: UsrSearch): UsrModel
   "根据id查找一条数据"
-  findByIdUsr(id: ID!): FindAllUsr
+  findByIdUsr(id: ID!): UsrModel
 }
 type Mutation {
   "创建一条数据"

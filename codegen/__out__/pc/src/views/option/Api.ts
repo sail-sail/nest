@@ -1,9 +1,15 @@
-import { Query, Mutation } from "#/types";
+import {
+  Query,
+  Mutation,
+  OptionModel,
+  OptionSearch,
+  OptionInput,
+} from "#/types";
 import dayjs from "dayjs";
-import { OptionModel, OptionSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { Page, Sort } from "@/utils/page.model";
+
 
 /**
  * 根据搜索条件查找数据
@@ -93,11 +99,11 @@ export async function findAllAndCount(
 /**
  * 创建一条数据
  * @export create
- * @param {OptionModel} model
+ * @param {OptionInput} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: OptionModel,
+  model: OptionInput,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -118,11 +124,12 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
+ * @param {OptionInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: OptionModel,
+  model: OptionInput,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({

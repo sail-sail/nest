@@ -183,13 +183,13 @@ export async function importFile(
   
   let result = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\r\n`;
+    result = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\r\n`;
+    result += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\r\n");
+    result += failErrMsgs.join("\n");
   }
   
   return result;

@@ -1,27 +1,33 @@
-import { Query, Mutation } from "#/types";
+import {
+  Query,
+  Mutation,
+  Background_TaskModel,
+  Background_TaskSearch,
+  Background_TaskInput,
+} from "#/types";
 import dayjs from "dayjs";
-import { Background_taskModel, Background_taskSearch } from "./Model";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { Page, Sort } from "@/utils/page.model";
 
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {Background_taskSearch} search?
+ * @param {Background_TaskSearch} search?
  * @param {Page} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: Background_taskSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -53,13 +59,13 @@ export async function findAll(
 /**
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
- * @param {Background_taskSearch} search?
+ * @param {Background_TaskSearch} search?
  * @param {Page} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAllAndCount(
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
   page?: Page,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -105,11 +111,11 @@ export async function findAllAndCount(
 /**
  * 创建一条数据
  * @export create
- * @param {Background_taskModel} model
+ * @param {Background_TaskInput} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: Background_taskModel,
+  model: Background_TaskInput,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -130,11 +136,12 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
+ * @param {Background_TaskInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: Background_taskModel,
+  model: Background_TaskInput,
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
@@ -239,11 +246,11 @@ export async function revertByIds(
 /**
  * 导出Excel
  * @export exportExcel
- * @param {Background_taskSearch} search?
+ * @param {Background_TaskSearch} search?
  * @param {Sort[]} sort?
  */
 export async function exportExcel(
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {

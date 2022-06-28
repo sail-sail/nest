@@ -67,6 +67,7 @@
             <el-date-picker
               type="date"
               class="form_input"
+              :set="dialogModel.expiration = dialogModel.expiration || undefined"
               v-model="dialogModel.expiration"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD 00:00:00"
@@ -100,6 +101,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -258,8 +260,12 @@ import {
   updateById,
 } from "./Api";
 
-import { TenantModel } from "./Model";
-import { MenuModel } from "../menu/Model";
+import {
+  TenantModel,
+} from "#/types";
+import {
+  MenuModel,
+} from "#/types";
 
 import {
   findAllAndCountMenu,
@@ -279,9 +285,9 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: TenantModel = $ref({
+let dialogModel: Partial<TenantModel> = $ref({
   menu_ids: [ ],
-});
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -359,8 +365,8 @@ let onCloseResolve = function(value: {
 let builtInModel: TenantModel|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<TenantModel> {
-  const defaultModel: TenantModel = {
+async function getDefaultModel() {
+  const defaultModel: Partial<TenantModel> = {
     max_usr_num: 0,
     is_enabled: 1,
     order_by: 0,

@@ -1,7 +1,7 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./option.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type FindAllOption {
+defineGraphql(resolvers, /* GraphQL */ `type OptionModel {
   "ID"
   id: ID!
   "名称"
@@ -49,13 +49,13 @@ type Query {
   "根据条件查找据数总数"
   findCountOption(search: OptionSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllOption(search: OptionSearch, page: PageInput, sort: [SortInput]): [FindAllOption]!
+  findAllOption(search: OptionSearch, page: PageInput, sort: [SortInput]): [OptionModel!]!
   "根据搜索条件导出"
   exportExcelOption(search: OptionSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOneOption(search: OptionSearch): FindAllOption
+  findOneOption(search: OptionSearch): OptionModel
   "根据id查找一条数据"
-  findByIdOption(id: ID!): FindAllOption
+  findByIdOption(id: ID!): OptionModel
 }
 type Mutation {
   "创建一条数据"

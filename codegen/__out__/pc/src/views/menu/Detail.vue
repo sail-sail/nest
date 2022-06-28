@@ -40,6 +40,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"
               filterable
@@ -127,6 +128,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -260,7 +262,9 @@ import {
   updateById,
 } from "./Api";
 
-import { MenuModel } from "./Model";
+import {
+  MenuModel,
+} from "#/types";
 
 import {
   findAllAndCountMenu,
@@ -280,8 +284,8 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: MenuModel = $ref({
-});
+let dialogModel: Partial<MenuModel> = $ref({
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -359,8 +363,8 @@ let onCloseResolve = function(value: {
 let builtInModel: MenuModel|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<MenuModel> {
-  const defaultModel: MenuModel = {
+async function getDefaultModel() {
+  const defaultModel: Partial<MenuModel> = {
     type: "pc",
     is_enabled: 1,
     order_by: 0,

@@ -1,7 +1,7 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./tenant.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type FindAllTenant {
+defineGraphql(resolvers, /* GraphQL */ `type TenantModel {
   "ID"
   id: ID!
   "名称"
@@ -81,13 +81,13 @@ type Query {
   "根据条件查找据数总数"
   findCountTenant(search: TenantSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllTenant(search: TenantSearch, page: PageInput, sort: [SortInput]): [FindAllTenant]!
+  findAllTenant(search: TenantSearch, page: PageInput, sort: [SortInput]): [TenantModel!]!
   "根据搜索条件导出"
   exportExcelTenant(search: TenantSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOneTenant(search: TenantSearch): FindAllTenant
+  findOneTenant(search: TenantSearch): TenantModel
   "根据id查找一条数据"
-  findByIdTenant(id: ID!): FindAllTenant
+  findByIdTenant(id: ID!): TenantModel
   "查找order_by字段的最大值"
   findLastOrderByTenant: Int!
 }

@@ -1,7 +1,7 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./background_task.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type FindAllBackground_task {
+defineGraphql(resolvers, /* GraphQL */ `type Background_TaskModel {
   "ID"
   id: ID!
   "名称"
@@ -81,13 +81,13 @@ type Query {
   "根据条件查找据数总数"
   findCountBackground_task(search: Background_taskSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllBackground_task(search: Background_taskSearch, page: PageInput, sort: [SortInput]): [FindAllBackground_task]!
+  findAllBackground_task(search: Background_taskSearch, page: PageInput, sort: [SortInput]): [Background_TaskModel!]!
   "根据搜索条件导出"
   exportExcelBackground_task(search: Background_taskSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOneBackground_task(search: Background_taskSearch): FindAllBackground_task
+  findOneBackground_task(search: Background_taskSearch): Background_TaskModel
   "根据id查找一条数据"
-  findByIdBackground_task(id: ID!): FindAllBackground_task
+  findByIdBackground_task(id: ID!): Background_TaskModel
 }
 type Mutation {
   "创建一条数据"

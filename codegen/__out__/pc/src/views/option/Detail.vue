@@ -169,7 +169,9 @@ import {
   updateById,
 } from "./Api";
 
-import { OptionModel } from "./Model";
+import {
+  OptionModel,
+} from "#/types";
 
 import {
 } from "./Api";
@@ -187,8 +189,8 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: OptionModel = $ref({
-});
+let dialogModel: Partial<OptionModel> = $ref({
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -222,8 +224,8 @@ let onCloseResolve = function(value: {
 let builtInModel: OptionModel|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<OptionModel> {
-  const defaultModel: OptionModel = {
+async function getDefaultModel() {
+  const defaultModel: Partial<OptionModel> = {
   };
   return defaultModel;
 }

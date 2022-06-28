@@ -372,8 +372,8 @@ import {
 import {
   RoleModel,
   RoleSearch,
-} from "./Model";
-import { MenuModel } from "../menu/Model";
+} from "#/types";
+import { MenuModel } from "#/types";
 import {
   findAllAndCountMenu,
   findAllMenu,
@@ -448,7 +448,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: RoleSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -469,11 +469,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <RoleSearch> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as RoleSearch;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: RoleModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -499,7 +499,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <RoleModel> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as RoleModel;
 });
 
 // 分页功能
@@ -724,7 +724,9 @@ async function openUploadClk() {
   });
   if (file) {
     const msg = await importFile(file);
-    MessageBox.success(msg);
+    if (msg) {
+      MessageBox.success(msg);
+    }
     await dataGrid(true);
   }
 }
@@ -829,14 +831,14 @@ watch(
 );
 let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
-async function menu_idsClk(row: TenantModel) {
+async function menu_idsClk(row: RoleModel) {
   if (!menu_idsListSelectDialogRef) return;
   row.menu_ids = row.menu_ids || [ ];
   let {
     selectedIds: selectedIds2,
     action
   } = await menu_idsListSelectDialogRef.showDialog({
-    selectedIds: row.menu_ids,
+    selectedIds: row.menu_ids as string[],
   });
   if (action === "select") {
     selectedIds2 = selectedIds2 || [ ];

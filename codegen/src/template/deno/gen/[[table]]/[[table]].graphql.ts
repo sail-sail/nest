@@ -1,11 +1,14 @@
-import { defineGraphql } from "/lib/context.ts";
+<#
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
+#>import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `<#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
-#><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>type FindAll<#=tableUp#> {<#
+#>type <#=Table_Up#>Model {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -302,7 +305,7 @@ type Query {
   "根据条件查找据数总数"
   findCount<#=tableUp#>(search: <#=tableUp#>Search): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput, sort: [SortInput]): [FindAll<#=tableUp#>]!
+  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput, sort: [SortInput]): [<#=Table_Up#>Model!]!
   "根据搜索条件导出"
   exportExcel<#=tableUp#>(search: <#=tableUp#>Search, sort: [SortInput]): String!<#
   if (hasSummary) {
@@ -312,9 +315,9 @@ type Query {
   }
   #>
   "根据条件查找第一条数据"
-  findOne<#=tableUp#>(search: <#=tableUp#>Search): FindAll<#=tableUp#>
+  findOne<#=tableUp#>(search: <#=tableUp#>Search): <#=Table_Up#>Model
   "根据id查找一条数据"
-  findById<#=tableUp#>(id: ID!): FindAll<#=tableUp#><#
+  findById<#=tableUp#>(id: ID!): <#=Table_Up#>Model<#
   if (hasOrderBy) {
   #>
   "查找order_by字段的最大值"

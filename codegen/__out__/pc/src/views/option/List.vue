@@ -362,7 +362,7 @@ import {
 import {
   OptionModel,
   OptionSearch,
-} from "./Model";
+} from "#/types";
 
 const usrStore = useUsrStore();
 
@@ -430,7 +430,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: OptionSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -451,11 +451,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <OptionSearch> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as OptionSearch;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: OptionModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -481,7 +481,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <OptionModel> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as OptionModel;
 });
 
 // 分页功能
@@ -649,7 +649,9 @@ async function openUploadClk() {
   });
   if (file) {
     const msg = await importFile(file);
-    MessageBox.success(msg);
+    if (msg) {
+      MessageBox.success(msg);
+    }
     await dataGrid(true);
   }
 }

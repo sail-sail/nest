@@ -1,7 +1,7 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./role.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type FindAllRole {
+defineGraphql(resolvers, /* GraphQL */ `type RoleModel {
   "ID"
   id: ID!
   "名称"
@@ -56,13 +56,13 @@ type Query {
   "根据条件查找据数总数"
   findCountRole(search: RoleSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput]): [FindAllRole]!
+  findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput]): [RoleModel!]!
   "根据搜索条件导出"
   exportExcelRole(search: RoleSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOneRole(search: RoleSearch): FindAllRole
+  findOneRole(search: RoleSearch): RoleModel
   "根据id查找一条数据"
-  findByIdRole(id: ID!): FindAllRole
+  findByIdRole(id: ID!): RoleModel
 }
 type Mutation {
   "创建一条数据"

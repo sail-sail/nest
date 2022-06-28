@@ -55,6 +55,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.state = dialogModel.state || undefined"
               v-model="dialogModel.state"
               placeholder="请选择状态"
               filterable
@@ -90,6 +91,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"
               filterable
@@ -150,6 +152,7 @@
             <el-date-picker
               type="date"
               class="form_input"
+              :set="dialogModel.begin_time = dialogModel.begin_time || undefined"
               v-model="dialogModel.begin_time"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择开始时间"
@@ -165,6 +168,7 @@
             <el-date-picker
               type="date"
               class="form_input"
+              :set="dialogModel.end_time = dialogModel.end_time || undefined"
               v-model="dialogModel.end_time"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择结束时间"
@@ -269,7 +273,9 @@ import {
   updateById,
 } from "./Api";
 
-import { Background_taskModel } from "./Model";
+import {
+  Background_TaskModel,
+} from "#/types";
 
 import {
 } from "./Api";
@@ -287,8 +293,8 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Background_taskModel = $ref({
-});
+let dialogModel: Partial<Background_TaskModel> = $ref({
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -331,11 +337,11 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel: Background_taskModel|undefined = $ref();
+let builtInModel: Background_TaskModel|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<Background_taskModel> {
-  const defaultModel: Background_taskModel = {
+async function getDefaultModel() {
+  const defaultModel: Partial<Background_TaskModel> = {
   };
   return defaultModel;
 }
@@ -344,7 +350,7 @@ async function getDefaultModel(): Promise<Background_taskModel> {
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: Background_taskModel;
+    builtInModel?: Background_TaskModel;
     model?: {
       ids: string[];
     };

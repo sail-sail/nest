@@ -1,5 +1,8 @@
 <template><#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
 #>
 <el-dialog
   :fullscreen="fullscreen"
@@ -136,6 +139,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
               filterable
@@ -163,6 +167,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
             <el-date-picker
               type="date"
               class="form_input"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"<#
                 if (data_type === "datetime") {
               #>
@@ -333,7 +338,9 @@ import {
   updateById,
 } from "./Api";
 
-import { <#=tableUp#>Model } from "./Model";<#
+import {
+  <#=Table_Up#>Model,
+} from "#/types";<#
 const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -348,8 +355,13 @@ for (let i = 0; i < columns.length; i++) {
   if (table === foreignTable) continue;
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("_");
 #>
-import { <#=foreignTableUp#>Model } from "../<#=foreignTable#>/Model";<#
+import {
+  <#=Foreign_Table_Up#>Model,
+} from "#/types";<#
 }
 #>
 
@@ -395,7 +407,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: <#=tableUp#>Model = $ref({<#
+let dialogModel: Partial<<#=Table_Up#>Model> = $ref({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -418,7 +430,7 @@ let dialogModel: <#=tableUp#>Model = $ref({<#
     }
   }
   #>
-});
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -491,12 +503,15 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (foreignTableArr3.includes(foreignTable)) continue;
   foreignTableArr3.push(foreignTable);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("_");
 #><#
   if (foreignKey) {
 #>
 let <#=foreignTable#>Info: {
   count: number;
-  data: <#=foreignTableUp#>Model[];
+  data: <#=Foreign_Table_Up#>Model[];
 } = $ref({
   count: 0,
   data: [ ],
@@ -631,11 +646,11 @@ let onCloseResolve = function(value: {
 }) { };
 
 // 内置变量
-let builtInModel: <#=tableUp#>Model|undefined = $ref();
+let builtInModel: <#=Table_Up#>Model|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<<#=tableUp#>Model> {
-  const defaultModel: <#=tableUp#>Model = {<#
+async function getDefaultModel() {
+  const defaultModel: Partial<<#=Table_Up#>Model> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -678,7 +693,7 @@ async function getDefaultModel(): Promise<<#=tableUp#>Model> {
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: <#=tableUp#>Model;
+    builtInModel?: <#=Table_Up#>Model;
     model?: {
       ids: string[];
     };

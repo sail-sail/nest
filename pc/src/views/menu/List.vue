@@ -414,7 +414,7 @@ import {
 import {
   MenuModel,
   MenuSearch,
-} from "./Model";
+} from "#/types";
 import {
   findAllAndCountMenu,
   findAllMenu,
@@ -499,7 +499,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: MenuSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -520,11 +520,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <MenuSearch> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as MenuSearch;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: MenuModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -550,7 +550,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <MenuModel> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as MenuModel;
 });
 
 // 分页功能
@@ -791,7 +791,9 @@ async function openUploadClk() {
   });
   if (file) {
     const msg = await importFile(file);
-    MessageBox.success(msg);
+    if (msg) {
+      MessageBox.success(msg);
+    }
     await dataGrid(true);
   }
 }

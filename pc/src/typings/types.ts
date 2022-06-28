@@ -13,6 +13,32 @@ export type Scalars = {
   JSON: any;
 };
 
+export type Background_TaskModel = {
+  __typename?: 'Background_TaskModel';
+  /** 状态名称 */
+  _state?: Maybe<Scalars['String']>;
+  /** 类型名称 */
+  _type?: Maybe<Scalars['String']>;
+  /** 开始时间 */
+  begin_time?: Maybe<Scalars['String']>;
+  /** 结束时间 */
+  end_time?: Maybe<Scalars['String']>;
+  /** 错误信息 */
+  err_msg: Scalars['String'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 执行结果 */
+  result: Scalars['String'];
+  /** 状态ID */
+  state: Scalars['String'];
+  /** 类型ID */
+  type: Scalars['String'];
+};
+
 export type Background_TaskInput = {
   /** 状态名称 */
   _state?: InputMaybe<Scalars['String']>;
@@ -66,154 +92,6 @@ export type Background_TaskSearch = {
   type?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type FindAllBackground_Task = {
-  __typename?: 'FindAllBackground_task';
-  /** 状态名称 */
-  _state?: Maybe<Scalars['String']>;
-  /** 类型名称 */
-  _type?: Maybe<Scalars['String']>;
-  /** 开始时间 */
-  begin_time?: Maybe<Scalars['String']>;
-  /** 结束时间 */
-  end_time?: Maybe<Scalars['String']>;
-  /** 错误信息 */
-  err_msg: Scalars['String'];
-  /** ID */
-  id: Scalars['ID'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 备注 */
-  rem: Scalars['String'];
-  /** 执行结果 */
-  result: Scalars['String'];
-  /** 状态ID */
-  state: Scalars['String'];
-  /** 类型ID */
-  type: Scalars['String'];
-};
-
-export type FindAllMenu = {
-  __typename?: 'FindAllMenu';
-  /** 启用名称 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 父菜单名称 */
-  _menu_id?: Maybe<Scalars['String']>;
-  /** 类型名称 */
-  _type?: Maybe<Scalars['String']>;
-  /** ID */
-  id: Scalars['ID'];
-  /** 启用ID */
-  is_enabled: Scalars['Int'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 父菜单ID */
-  menu_id: Scalars['ID'];
-  /** 排序 */
-  order_by: Scalars['Int'];
-  /** 备注 */
-  rem: Scalars['String'];
-  /** 路由 */
-  route_path: Scalars['String'];
-  /** 参数 */
-  route_query?: Maybe<Scalars['JSON']>;
-  /** 类型ID */
-  type: Scalars['String'];
-};
-
-export type FindAllOption = {
-  __typename?: 'FindAllOption';
-  /** ID */
-  id: Scalars['ID'];
-  /** 键 */
-  key: Scalars['String'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 备注 */
-  rem: Scalars['String'];
-  /** 值 */
-  value: Scalars['String'];
-};
-
-export type FindAllPermit = {
-  __typename?: 'FindAllPermit';
-  /** 菜单名称 */
-  _menu_id?: Maybe<Scalars['String']>;
-  /** ID */
-  id: Scalars['ID'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 菜单ID */
-  menu_id: Scalars['ID'];
-  /** 备注 */
-  rem: Scalars['String'];
-};
-
-export type FindAllRole = {
-  __typename?: 'FindAllRole';
-  /** 启用名称 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 菜单名称 */
-  _menu_ids?: Maybe<Array<Maybe<Scalars['String']>>>;
-  /** ID */
-  id: Scalars['ID'];
-  /** 启用ID */
-  is_enabled: Scalars['Int'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 菜单ID */
-  menu_ids: Array<Maybe<Scalars['ID']>>;
-  /** 备注 */
-  rem: Scalars['String'];
-};
-
-export type FindAllTenant = {
-  __typename?: 'FindAllTenant';
-  /** 启用名称 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 菜单名称 */
-  _menu_ids?: Maybe<Array<Maybe<Scalars['String']>>>;
-  /** 到期日 */
-  expiration?: Maybe<Scalars['String']>;
-  /** 域名绑定 */
-  host: Scalars['String'];
-  /** ID */
-  id: Scalars['ID'];
-  /** 启用ID */
-  is_enabled: Scalars['Int'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 最大用户数 */
-  max_usr_num: Scalars['Int'];
-  /** 菜单ID */
-  menu_ids: Array<Maybe<Scalars['ID']>>;
-  /** 排序 */
-  order_by: Scalars['Int'];
-  /** 备注 */
-  rem: Scalars['String'];
-};
-
-export type FindAllUsr = {
-  __typename?: 'FindAllUsr';
-  /** 启用名称 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 角色名称 */
-  _role_ids?: Maybe<Array<Maybe<Scalars['String']>>>;
-  /** ID */
-  id: Scalars['ID'];
-  /** 启用ID */
-  is_enabled: Scalars['Int'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 密码 */
-  password: Scalars['String'];
-  /** 备注 */
-  rem: Scalars['String'];
-  /** 角色ID */
-  role_ids: Array<Maybe<Scalars['ID']>>;
-  /** 用户名 */
-  username: Scalars['String'];
-};
-
 export type GetLoginTenants = {
   __typename?: 'GetLoginTenants';
   /** ID */
@@ -255,6 +133,34 @@ export type MenuInput = {
   route_query?: InputMaybe<Scalars['JSON']>;
   /** 类型ID */
   type?: InputMaybe<Scalars['String']>;
+};
+
+export type MenuModel = {
+  __typename?: 'MenuModel';
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 父菜单名称 */
+  _menu_id?: Maybe<Scalars['String']>;
+  /** 类型名称 */
+  _type?: Maybe<Scalars['String']>;
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 父菜单ID */
+  menu_id: Scalars['ID'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 路由 */
+  route_path: Scalars['String'];
+  /** 参数 */
+  route_query?: Maybe<Scalars['JSON']>;
+  /** 类型ID */
+  type: Scalars['String'];
 };
 
 export type MenuSearch = {
@@ -564,6 +470,20 @@ export type OptionInput = {
   value?: InputMaybe<Scalars['String']>;
 };
 
+export type OptionModel = {
+  __typename?: 'OptionModel';
+  /** ID */
+  id: Scalars['ID'];
+  /** 键 */
+  key: Scalars['String'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 值 */
+  value: Scalars['String'];
+};
+
 export type OptionSearch = {
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -604,6 +524,20 @@ export type PermitInput = {
   rem?: InputMaybe<Scalars['String']>;
 };
 
+export type PermitModel = {
+  __typename?: 'PermitModel';
+  /** 菜单名称 */
+  _menu_id?: Maybe<Scalars['String']>;
+  /** ID */
+  id: Scalars['ID'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 菜单ID */
+  menu_id: Scalars['ID'];
+  /** 备注 */
+  rem: Scalars['String'];
+};
+
 export type PermitSearch = {
   _menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
@@ -640,33 +574,33 @@ export type Query = {
   /** 根据搜索条件导出 */
   exportExcelUsr: Scalars['String'];
   /** 根据搜索条件和分页查找数据 */
-  findAllBackground_task: Array<Maybe<FindAllBackground_Task>>;
+  findAllBackground_task: Array<Background_TaskModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllMenu: Array<Maybe<FindAllMenu>>;
+  findAllMenu: Array<MenuModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllOption: Array<Maybe<FindAllOption>>;
+  findAllOption: Array<OptionModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllPermit: Array<Maybe<FindAllPermit>>;
+  findAllPermit: Array<PermitModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllRole: Array<Maybe<FindAllRole>>;
+  findAllRole: Array<RoleModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllTenant: Array<Maybe<FindAllTenant>>;
+  findAllTenant: Array<TenantModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllUsr: Array<Maybe<FindAllUsr>>;
+  findAllUsr: Array<UsrModel>;
   /** 根据id查找一条数据 */
-  findByIdBackground_task?: Maybe<FindAllBackground_Task>;
+  findByIdBackground_task?: Maybe<Background_TaskModel>;
   /** 根据id查找一条数据 */
-  findByIdMenu?: Maybe<FindAllMenu>;
+  findByIdMenu?: Maybe<MenuModel>;
   /** 根据id查找一条数据 */
-  findByIdOption?: Maybe<FindAllOption>;
+  findByIdOption?: Maybe<OptionModel>;
   /** 根据id查找一条数据 */
-  findByIdPermit?: Maybe<FindAllPermit>;
+  findByIdPermit?: Maybe<PermitModel>;
   /** 根据id查找一条数据 */
-  findByIdRole?: Maybe<FindAllRole>;
+  findByIdRole?: Maybe<RoleModel>;
   /** 根据id查找一条数据 */
-  findByIdTenant?: Maybe<FindAllTenant>;
+  findByIdTenant?: Maybe<TenantModel>;
   /** 根据id查找一条数据 */
-  findByIdUsr?: Maybe<FindAllUsr>;
+  findByIdUsr?: Maybe<UsrModel>;
   /** 根据条件查找据数总数 */
   findCountBackground_task: Scalars['Int'];
   /** 根据条件查找据数总数 */
@@ -686,19 +620,19 @@ export type Query = {
   /** 查找order_by字段的最大值 */
   findLastOrderByTenant: Scalars['Int'];
   /** 根据条件查找第一条数据 */
-  findOneBackground_task?: Maybe<FindAllBackground_Task>;
+  findOneBackground_task?: Maybe<Background_TaskModel>;
   /** 根据条件查找第一条数据 */
-  findOneMenu?: Maybe<FindAllMenu>;
+  findOneMenu?: Maybe<MenuModel>;
   /** 根据条件查找第一条数据 */
-  findOneOption?: Maybe<FindAllOption>;
+  findOneOption?: Maybe<OptionModel>;
   /** 根据条件查找第一条数据 */
-  findOnePermit?: Maybe<FindAllPermit>;
+  findOnePermit?: Maybe<PermitModel>;
   /** 根据条件查找第一条数据 */
-  findOneRole?: Maybe<FindAllRole>;
+  findOneRole?: Maybe<RoleModel>;
   /** 根据条件查找第一条数据 */
-  findOneTenant?: Maybe<FindAllTenant>;
+  findOneTenant?: Maybe<TenantModel>;
   /** 根据条件查找第一条数据 */
-  findOneUsr?: Maybe<FindAllUsr>;
+  findOneUsr?: Maybe<UsrModel>;
   /** 根据 当前网址的域名+端口 获取 租户列表 */
   getLoginTenants: Array<Maybe<GetLoginTenants>>;
   /** 获取主页菜单 */
@@ -927,6 +861,24 @@ export type RoleInput = {
   rem?: InputMaybe<Scalars['String']>;
 };
 
+export type RoleModel = {
+  __typename?: 'RoleModel';
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 菜单名称 */
+  _menu_ids?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 菜单ID */
+  menu_ids: Array<Maybe<Scalars['ID']>>;
+  /** 备注 */
+  rem: Scalars['String'];
+};
+
 export type RoleSearch = {
   _menu_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
@@ -983,6 +935,32 @@ export type TenantInput = {
   rem?: InputMaybe<Scalars['String']>;
 };
 
+export type TenantModel = {
+  __typename?: 'TenantModel';
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 菜单名称 */
+  _menu_ids?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** 到期日 */
+  expiration?: Maybe<Scalars['String']>;
+  /** 域名绑定 */
+  host: Scalars['String'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 最大用户数 */
+  max_usr_num: Scalars['Int'];
+  /** 菜单ID */
+  menu_ids: Array<Maybe<Scalars['ID']>>;
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+};
+
 export type TenantSearch = {
   _menu_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 到期日 */
@@ -1030,6 +1008,28 @@ export type UsrInput = {
   role_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
   /** 用户名 */
   username?: InputMaybe<Scalars['String']>;
+};
+
+export type UsrModel = {
+  __typename?: 'UsrModel';
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 角色名称 */
+  _role_ids?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 密码 */
+  password: Scalars['String'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 角色ID */
+  role_ids: Array<Maybe<Scalars['ID']>>;
+  /** 用户名 */
+  username: Scalars['String'];
 };
 
 export type UsrSearch = {

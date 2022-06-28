@@ -280,20 +280,6 @@
               align="center"
               show-overflow-tooltip
             >
-              <template #default="{ row, column }">
-                <template v-if="row.type === 'text'">
-                  {{ row[column.property] }}
-                </template>
-                <template v-else-if="row.type === 'download'">
-                  <el-link
-                    v-if="row.state === 'success'"
-                    :type="row.downloaded ? 'info' : 'primary'"
-                    @click="downloadById(row[column.property]);row.downloaded = true;"
-                  >
-                    下载
-                  </el-link>
-                </template>
-              </template>
             </el-table-column>
           </template>
           
@@ -436,9 +422,9 @@ import {
 } from "./Api";
 
 import {
-  Background_taskModel,
-  Background_taskSearch,
-} from "./Model";
+  Background_TaskModel,
+  Background_TaskSearch,
+} from "#/types";
 
 const usrStore = useUsrStore();
 
@@ -451,7 +437,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 // 搜索
 function initSearch() {
-  return <Background_taskSearch>{
+  return <Background_TaskSearch>{
     is_deleted: 0,
   };
 }
@@ -508,7 +494,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: Background_TaskSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -529,11 +515,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <Background_taskSearch> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as Background_TaskSearch;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: Background_TaskModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -559,7 +545,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <Background_taskModel> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as Background_TaskModel;
 });
 
 // 分页功能
@@ -568,7 +554,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<Background_taskModel>(dataGrid));
+} = $(usePage<Background_TaskModel>(dataGrid));
 
 // 表格选择功能
 let {
@@ -578,7 +564,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<Background_taskModel>(<any>$$(tableRef)));
+} = $(useSelect<Background_TaskModel>(<any>$$(tableRef)));
 
 watch(
   () => selectedIds,
@@ -614,7 +600,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 // 表格数据
-let tableData: Background_taskModel[] = $ref([ ]);
+let tableData: Background_TaskModel[] = $ref([ ]);
 
 let tableColumns: ColumnType[] = $ref([
   {
@@ -656,7 +642,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<Background_taskModel>(
+} = $(useTableColumns<Background_TaskModel>(
   $$(tableColumns),
   {
     persistKey: "0",
@@ -673,7 +659,7 @@ async function getSelectListEfc() {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  let data: Background_taskModel[];
+  let data: Background_TaskModel[];
   let count: number|undefined = 0;
   let search2 = {
     ...search,
@@ -708,7 +694,7 @@ let sort: Sort = $ref({
 
 // 排序
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<Background_taskModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<Background_TaskModel> } & Sort,
 ) {
   sort.prop = prop;
   sort.order = order;

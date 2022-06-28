@@ -1,5 +1,8 @@
 <#
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
 #><template>
 <div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col w-full h-full">
   <div class="search_div">
@@ -738,9 +741,9 @@ import {
 } from "./Api";
 
 import {
-  <#=tableUp#>Model,
-  <#=tableUp#>Search,
-} from "./Model";<#
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Search,
+} from "#/types";<#
 {
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
@@ -756,8 +759,11 @@ for (let i = 0; i < columns.length; i++) {
   if (table === foreignTable) continue;
   if (foreignTableUpArr.includes(foreignTableUp)) continue;
   foreignTableUpArr.push(foreignTableUp);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("_");
 #>
-import { <#=foreignTableUp#>Model } from "../<#=foreignTable#>/Model";<#
+import { <#=Foreign_Table_Up#>Model } from "#/types";<#
 }
 }
 #><#
@@ -826,7 +832,7 @@ async function exportClk() {
 
 // 搜索
 function initSearch() {
-  return <<#=tableUp#>Search>{
+  return <<#=Table_Up#>Search>{
     is_deleted: 0,
   };
 }
@@ -992,7 +998,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: <#=Table_Up#>Search = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -1013,11 +1019,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <<#=tableUp#>Search> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as <#=Table_Up#>Search;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: <#=Table_Up#>Model = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -1043,7 +1049,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <<#=tableUp#>Model> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as <#=Table_Up#>Model;
 });
 
 // 分页功能
@@ -1052,7 +1058,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<<#=tableUp#>Model>(dataGrid));
+} = $(usePage<<#=Table_Up#>Model>(dataGrid));
 
 // 表格选择功能
 let {
@@ -1062,7 +1068,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<<#=tableUp#>Model>(<any>$$(tableRef)));
+} = $(useSelect<<#=Table_Up#>Model>(<any>$$(tableRef)));
 
 watch(
   () => selectedIds,
@@ -1098,7 +1104,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 // 表格数据
-let tableData: <#=tableUp#>Model[] = $ref([ ]);
+let tableData: <#=Table_Up#>Model[] = $ref([ ]);
 
 let tableColumns: ColumnType[] = $ref([<#
 for (let i = 0; i < columns.length; i++) {
@@ -1203,7 +1209,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<<#=tableUp#>Model>(
+} = $(useTableColumns<<#=Table_Up#>Model>(
   $$(tableColumns),
   {
     persistKey: "0",
@@ -1229,13 +1235,16 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (foreignTableTmpArr.includes(foreignTable)) continue;
   foreignTableTmpArr.push(foreignTable);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("_");
 #><#
   if (foreignKey) {
 #>
 
 let <#=foreignTable#>Info: {
   count: number;
-  data: <#=foreignTableUp#>Model[];
+  data: <#=Foreign_Table_Up#>Model[];
 } = $ref({
   count: 0,
   data: [ ],
@@ -1337,7 +1346,7 @@ async function <#=foreignTable#>FilterEfc(query: string) {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  let data: <#=tableUp#>Model[];
+  let data: <#=Table_Up#>Model[];
   let count: number|undefined = 0;
   let search2 = {
     ...search,
@@ -1384,7 +1393,7 @@ let sort: Sort = $ref({
 
 // 排序
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<<#=tableUp#>Model> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<<#=Table_Up#>Model> } & Sort,
 ) {
   sort.prop = prop;
   sort.order = order;
@@ -1393,7 +1402,7 @@ async function sortChange(
 if (hasAtt) {
 #>
 
-async function linkAttChg(row: <#=tableUp#>Model, key: string) {<#
+async function linkAttChg(row: <#=Table_Up#>Model, key: string) {<#
     if (opts.noEdit !== true) {
 #>
   await updateById(row.id!, { [key]: row[key] });<#
@@ -1415,7 +1424,7 @@ async function dataSummary() {
 function summaryMethod(
   summary: any,
 ) {
-  const columns: TableColumnCtx<MenuModel>[] = summary.columns;
+  const columns: TableColumnCtx<<#=Table_Up#>Model>[] = summary.columns;
   const sums: string[] = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1467,7 +1476,9 @@ async function openUploadClk() {
   });
   if (file) {
     const msg = await importFile(file);
-    MessageBox.success(msg);
+    if (msg) {
+      MessageBox.success(msg);
+    }
     await dataGrid(true);
   }
 }<#
@@ -1633,14 +1644,14 @@ for (let i = 0; i < columns.length; i++) {
 #>
 let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
-async function <#=column_name#>Clk(row: TenantModel) {
+async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
   if (!<#=column_name#>ListSelectDialogRef) return;
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   let {
     selectedIds: selectedIds2,
     action
   } = await <#=column_name#>ListSelectDialogRef.showDialog({
-    selectedIds: row.<#=column_name#>,
+    selectedIds: row.<#=column_name#> as string[],
   });
   if (action === "select") {
     selectedIds2 = selectedIds2 || [ ];

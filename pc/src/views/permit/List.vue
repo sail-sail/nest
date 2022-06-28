@@ -319,8 +319,8 @@ import {
 import {
   PermitModel,
   PermitSearch,
-} from "./Model";
-import { MenuModel } from "../menu/Model";
+} from "#/types";
+import { MenuModel } from "#/types";
 
 const usrStore = useUsrStore();
 
@@ -388,7 +388,7 @@ const propsNotInSearch: string[] = [
 ];
 
 // 内置搜索条件
-const builtInSearch = $computed(() => {
+const builtInSearch: PermitSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -409,11 +409,11 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return <PermitSearch> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as PermitSearch;
 });
 
 // 内置变量
-const builtInModel = $computed(() => {
+const builtInModel: PermitModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -439,7 +439,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return <PermitModel> Object.fromEntries(entries);
+  return Object.fromEntries(entries) as unknown as PermitModel;
 });
 
 // 分页功能
@@ -620,7 +620,9 @@ async function openUploadClk() {
   });
   if (file) {
     const msg = await importFile(file);
-    MessageBox.success(msg);
+    if (msg) {
+      MessageBox.success(msg);
+    }
     await dataGrid(true);
   }
 }

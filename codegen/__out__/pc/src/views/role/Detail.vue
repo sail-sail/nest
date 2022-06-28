@@ -67,6 +67,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -194,8 +195,12 @@ import {
   updateById,
 } from "./Api";
 
-import { RoleModel } from "./Model";
-import { MenuModel } from "../menu/Model";
+import {
+  RoleModel,
+} from "#/types";
+import {
+  MenuModel,
+} from "#/types";
 
 import {
   findAllAndCountMenu,
@@ -215,9 +220,9 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: RoleModel = $ref({
+let dialogModel: Partial<RoleModel> = $ref({
   menu_ids: [ ],
-});
+} as any);
 
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
@@ -295,8 +300,8 @@ let onCloseResolve = function(value: {
 let builtInModel: RoleModel|undefined = $ref();
 
 // 增加时的默认值
-async function getDefaultModel(): Promise<RoleModel> {
-  const defaultModel: RoleModel = {
+async function getDefaultModel() {
+  const defaultModel: Partial<RoleModel> = {
     is_enabled: 1,
   };
   return defaultModel;
