@@ -1,4 +1,9 @@
-import { getAllTables, getSchema, initContext } from "../lib/information_schema";
+import {
+  getAllTables,
+  getSchema,
+  initContext,
+  Context,
+} from "../lib/information_schema";
 import { Command } from "commander";
 import {
   codegen,
@@ -9,8 +14,7 @@ import {
 import tables from "../tables/tables";
 import { gitDiffOut } from "../lib/codegen";
 
-async function exec(table_names: string[]) {
-  const context = await initContext();
+async function exec(context: Context, table_names: string[]) {
   if (!table_names) {
     table_names = (await getAllTables(context)).map((item: any) => item.TABLE_NAME);
   }
@@ -23,7 +27,6 @@ async function exec(table_names: string[]) {
   }
   await genRouter(context);
   // await genMenu(context);
-  await denoGenTypes(context);
 }
 
 const envArgs = process.argv;
@@ -42,8 +45,10 @@ const options = program.opts();
       table = table.map((item: string) => item.trim());
     }
     console.log(`table:`, table);
-    await exec(table);
+    const context = await initContext();
+    await exec(context, table);
     await gitDiffOut();
+    await denoGenTypes(context);
   } catch(err) {
     console.error(err);
   } finally {
