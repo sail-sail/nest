@@ -10,15 +10,15 @@ import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
 import {
-  Background_taskModel,
-  Background_taskSearch,
+  Background_TaskModel,
+  Background_TaskSearch,
 } from "/gen/types.ts";
 import * as usrDao from "/gen/usr/usr.dao.ts";
 
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -103,12 +103,12 @@ function getFromQuery(
 
 /**
  * 根据条件查找总数据数
- * @param {Background_taskSearch} search?
+ * @param {Background_TaskSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
 ): Promise<number> {
   const table = "background_task";
   const method = "findCount";
@@ -141,12 +141,12 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找数据
  * @param {Context} context
- * @param {Background_taskSearch} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  * @param {Sort|Sort[]} sort? 排序
  */
 export async function findAll(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
   page?: Page,
   sort?: Sort|Sort[],
 ) {
@@ -191,7 +191,7 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  let result = await context.query<Background_taskModel>(sql, args);
+  let result = await context.query<Background_TaskModel>(sql, args);
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     // 状态
@@ -229,15 +229,15 @@ export async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: (keyof Background_taskModel)[]; uniqueComments: { [key: string]: string }; }}
+ * @return {{ uniqueKeys: (keyof Background_TaskModel)[]; uniqueComments: { [key: string]: string }; }}
  */
 export function getUniqueKeys(
   context: Context,
 ): {
-  uniqueKeys: (keyof Background_taskModel)[];
+  uniqueKeys: (keyof Background_TaskModel)[];
   uniqueComments: { [key: string]: string };
   } {
-  const uniqueKeys: (keyof Background_taskModel)[] = [
+  const uniqueKeys: (keyof Background_TaskModel)[] = [
   ];
   const uniqueComments = {
   };
@@ -246,15 +246,15 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Background_taskSearch | Partial<Background_taskModel>} search0
+ * @param {Background_TaskSearch | Partial<Background_TaskModel>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: Background_taskSearch | Partial<Background_taskModel>,
+  search0: Background_TaskSearch | Partial<Background_TaskModel>,
 ) {
   const { uniqueKeys } = getUniqueKeys(context);
   if (!uniqueKeys || uniqueKeys.length === 0) return;
-  const search: Background_taskSearch = { };
+  const search: Background_TaskSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -269,14 +269,14 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {Background_taskModel} oldModel
- * @param {Partial<Background_taskModel>} model
+ * @param {Background_TaskModel} oldModel
+ * @param {Partial<Background_TaskModel>} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
-  oldModel: Background_taskModel,
-  model: Partial<Background_taskModel>,
+  oldModel: Background_TaskModel,
+  model: Partial<Background_TaskModel>,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -296,15 +296,15 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {Partial<Background_taskModel>} model
- * @param {Background_taskModel} oldModel
+ * @param {Partial<Background_TaskModel>} model
+ * @param {Background_TaskModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: Partial<Background_taskModel>,
-  oldModel: Background_taskModel,
+  model: Partial<Background_TaskModel>,
+  oldModel: Background_TaskModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
@@ -327,13 +327,13 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Background_taskSearch} search?
- * @return {Promise<Background_taskModel>} 
+ * @param {Background_TaskSearch} search?
+ * @return {Promise<Background_TaskModel>} 
  */
 export async function findOne(
   context: Context,
-  search?: Background_taskSearch,
-): Promise<Background_taskModel> {
+  search?: Background_TaskSearch,
+): Promise<Background_TaskModel> {
   const page: Page = {
     pgOffset: 0,
     pgSize: 1,
@@ -345,12 +345,12 @@ export async function findOne(
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<Background_taskModel>}
+ * @return {Promise<Background_TaskModel>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<Background_taskModel | undefined> {
+): Promise<Background_TaskModel | undefined> {
   if (!id) return;
   const model = await findOne(context, { id });
   return model;
@@ -358,12 +358,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Background_taskSearch} search?
+ * @param {Background_TaskSearch} search?
  * @return {Promise<boolean>} 
  */
 export async function exist(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
 ): Promise<boolean> {
   const model = await findOne(context, search);
   const exist = !!model;
@@ -401,7 +401,7 @@ export async function existById(
 
 /**
    * 创建数据
-   * @param {Partial<Background_taskModel>} model
+   * @param {Partial<Background_TaskModel>} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -412,7 +412,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: Partial<Background_taskModel>,
+  model: Partial<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update",
   },
@@ -554,7 +554,7 @@ export async function create(
 /**
    * 根据id修改一行数据
    * @param {string} id
-   * @param {Partial<Background_taskModel>} model
+   * @param {Partial<Background_TaskModel>} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -566,7 +566,7 @@ export async function create(
 export async function updateById(
   context: Context,
   id: string,
-  model: Partial<Background_taskModel>,
+  model: Partial<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create",
   },

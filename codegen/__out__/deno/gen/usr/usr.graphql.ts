@@ -16,9 +16,9 @@ type UsrModel {
   "启用名称"
   _is_enabled: String
   "角色ID"
-  role_ids: [ID]!
+  role_ids: [ID!]!
   "角色名称"
-  _role_ids: [String]
+  _role_ids: [String!]
   "备注"
   rem: String!
 }
@@ -36,9 +36,9 @@ input UsrInput {
   "启用名称"
   _is_enabled: String
   "角色ID"
-  role_ids: [ID]
+  role_ids: [ID!]
   "角色名称"
-  _role_ids: [String]
+  _role_ids: [String!]
   "备注"
   rem: String
 }

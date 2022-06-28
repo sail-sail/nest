@@ -1,6 +1,9 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars<#
@@ -19,12 +22,12 @@ import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
 import {
-  <#=tableUp#>Model,
-  <#=tableUp#>Search,
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Search,
 } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
-import { <#=tableUp#>Summary } from "/gen/types.ts";<#
+import { <#=Table_Up#>Summary } from "/gen/types.ts";<#
 }
 #><#
 const hasImportDaos = [ ];
@@ -66,7 +69,7 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
@@ -221,12 +224,12 @@ function getFromQuery(
 
 /**
  * 根据条件查找总数据数
- * @param {<#=tableUp#>Search} search?
+ * @param {<#=Table_Up#>Search} search?
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findCount";
@@ -270,12 +273,12 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找数据
  * @param {Context} context
- * @param {<#=tableUp#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @param {Sort|Sort[]} sort? 排序
  */
 export async function findAll(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   page?: Page,
   sort?: Sort|Sort[],
 ) {
@@ -373,7 +376,7 @@ export async function findAll(
   }
   #>
   
-  let result = await context.query<<#=tableUp#>Model>(sql, args<#
+  let result = await context.query<<#=Table_Up#>Model>(sql, args<#
   if (cache) {
   #>, { cacheKey1, cacheKey2 }<#
   }
@@ -476,15 +479,15 @@ export async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: (keyof <#=tableUp#>Model)[]; uniqueComments: { [key: string]: string }; }}
+ * @return {{ uniqueKeys: (keyof <#=Table_Up#>Model)[]; uniqueComments: { [key: string]: string }; }}
  */
 export function getUniqueKeys(
   context: Context,
 ): {
-  uniqueKeys: (keyof <#=tableUp#>Model)[];
+  uniqueKeys: (keyof <#=Table_Up#>Model)[];
   uniqueComments: { [key: string]: string };
   } {
-  const uniqueKeys: (keyof <#=tableUp#>Model)[] = [<#
+  const uniqueKeys: (keyof <#=Table_Up#>Model)[] = [<#
   for (let i = 0; i < (opts.unique || []).length; i++) {
     const uniqueKey = opts.unique[i];
   #>
@@ -517,15 +520,15 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {<#=tableUp#>Search | Partial<<#=tableUp#>Model>} search0
+ * @param {<#=Table_Up#>Search | Partial<<#=Table_Up#>Model>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: <#=tableUp#>Search | Partial<<#=tableUp#>Model>,
+  search0: <#=Table_Up#>Search | Partial<<#=Table_Up#>Model>,
 ) {
   const { uniqueKeys } = getUniqueKeys(context);
   if (!uniqueKeys || uniqueKeys.length === 0) return;
-  const search: <#=tableUp#>Search = { };
+  const search: <#=Table_Up#>Search = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -540,14 +543,14 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {<#=tableUp#>Model} oldModel
- * @param {Partial<<#=tableUp#>Model>} model
+ * @param {<#=Table_Up#>Model} oldModel
+ * @param {Partial<<#=Table_Up#>Model>} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
-  oldModel: <#=tableUp#>Model,
-  model: Partial<<#=tableUp#>Model>,
+  oldModel: <#=Table_Up#>Model,
+  model: Partial<<#=Table_Up#>Model>,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -567,15 +570,15 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {Partial<<#=tableUp#>Model>} model
- * @param {<#=tableUp#>Model} oldModel
+ * @param {Partial<<#=Table_Up#>Model>} model
+ * @param {<#=Table_Up#>Model} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: Partial<<#=tableUp#>Model>,
-  oldModel: <#=tableUp#>Model,
+  model: Partial<<#=Table_Up#>Model>,
+  oldModel: <#=Table_Up#>Model,
   uniqueType: "ignore" | "throw" | "update" = "throw",
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
@@ -600,13 +603,13 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找合计
- * @param {<#=tableUp#>Search} search? 搜索条件
- * @return {Promise<<#=tableUp#>Summary>}
+ * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @return {Promise<<#=Table_Up#>Summary>}
  */
 export async function findSummary(
   context: Context,
-  search?: <#=tableUp#>Search,
-): Promise<<#=tableUp#>Summary> {
+  search?: <#=Table_Up#>Search,
+): Promise<<#=Table_Up#>Summary> {
   const table = "<#=table#>";
   const method = "findSummary";
   
@@ -644,13 +647,13 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=tableUp#>Search} search?
- * @return {Promise<<#=tableUp#>Model>} 
+ * @param {<#=Table_Up#>Search} search?
+ * @return {Promise<<#=Table_Up#>Model>} 
  */
 export async function findOne(
   context: Context,
-  search?: <#=tableUp#>Search,
-): Promise<<#=tableUp#>Model> {
+  search?: <#=Table_Up#>Search,
+): Promise<<#=Table_Up#>Model> {
   const page: Page = {
     pgOffset: 0,
     pgSize: 1,
@@ -662,12 +665,12 @@ export async function findOne(
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<<#=tableUp#>Model>}
+ * @return {Promise<<#=Table_Up#>Model>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<<#=tableUp#>Model | undefined> {
+): Promise<<#=Table_Up#>Model | undefined> {
   if (!id) return;
   const model = await findOne(context, { id });
   return model;
@@ -675,12 +678,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=tableUp#>Search} search?
+ * @param {<#=Table_Up#>Search} search?
  * @return {Promise<boolean>} 
  */
 export async function exist(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ): Promise<boolean> {
   const model = await findOne(context, search);
   const exist = !!model;
@@ -729,7 +732,7 @@ export async function existById(
 
 /**
    * 创建数据
-   * @param {Partial<<#=tableUp#>Model>} model
+   * @param {Partial<<#=Table_Up#>Model>} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -740,7 +743,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: Partial<<#=tableUp#>Model>,
+  model: Partial<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update",
   },
@@ -1073,7 +1076,7 @@ export async function delCache(
 /**
    * 根据id修改一行数据
    * @param {string} id
-   * @param {Partial<<#=tableUp#>Model>} model
+   * @param {Partial<<#=Table_Up#>Model>} model
    * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -1085,7 +1088,7 @@ export async function delCache(
 export async function updateById(
   context: Context,
   id: string,
-  model: Partial<<#=tableUp#>Model>,
+  model: Partial<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create",
   },

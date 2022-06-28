@@ -23,8 +23,8 @@ type <#=Table_Up#>Model {<#
       data_type = 'ID';
     }
     else if (foreignKey && foreignKey.multiple) {
-      data_type = '[ID]';
-      _data_type = "[String]";
+      data_type = '[ID!]';
+      _data_type = "[String!]";
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'ID';
@@ -88,7 +88,7 @@ type <#=Table_Up#>Model {<#
   }
   #>
 }
-input <#=tableUp#>Input {<#
+input <#=Table_Up#>Input {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -101,8 +101,8 @@ input <#=tableUp#>Input {<#
       data_type = 'ID';
     }
     else if (foreignKey && foreignKey.multiple) {
-      data_type = '[ID]';
-      _data_type = "[String]";
+      data_type = '[ID!]';
+      _data_type = "[String!]";
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'ID';
@@ -160,7 +160,7 @@ input <#=tableUp#>Input {<#
   }
   #>
 }
-input <#=tableUp#>Search {
+input <#=Table_Up#>Search {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -168,7 +168,7 @@ input <#=tableUp#>Search {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -273,6 +273,7 @@ type <#=Table_Up#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
@@ -304,19 +305,19 @@ type <#=Table_Up#>Summary {<#
 #>
 type Query {
   "根据条件查找据数总数"
-  findCount<#=tableUp#>(search: <#=tableUp#>Search): Int!
+  findCount<#=tableUp#>(search: <#=Table_Up#>Search): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=tableUp#>(search: <#=tableUp#>Search, page: PageInput, sort: [SortInput]): [<#=Table_Up#>Model!]!
+  findAll<#=tableUp#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput]): [<#=Table_Up#>Model!]!
   "根据搜索条件导出"
-  exportExcel<#=tableUp#>(search: <#=tableUp#>Search, sort: [SortInput]): String!<#
+  exportExcel<#=tableUp#>(search: <#=Table_Up#>Search, sort: [SortInput]): String!<#
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"
-  findSummary<#=tableUp#>(search: <#=tableUp#>Search): <#=Table_Up#>Summary!<#
+  findSummary<#=tableUp#>(search: <#=Table_Up#>Search): <#=Table_Up#>Summary!<#
   }
   #>
   "根据条件查找第一条数据"
-  findOne<#=tableUp#>(search: <#=tableUp#>Search): <#=Table_Up#>Model
+  findOne<#=tableUp#>(search: <#=Table_Up#>Search): <#=Table_Up#>Model
   "根据id查找一条数据"
   findById<#=tableUp#>(id: ID!): <#=Table_Up#>Model<#
   if (hasOrderBy) {
@@ -328,9 +329,9 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  create<#=tableUp#>(model: <#=tableUp#>Input!): ID!
+  create<#=tableUp#>(model: <#=Table_Up#>Input!): ID!
   "根据id修改一条数据"
-  updateById<#=tableUp#>(id: ID!, model: <#=tableUp#>Input!): ID!
+  updateById<#=tableUp#>(id: ID!, model: <#=Table_Up#>Input!): ID!
   "导入文件"
   importFile<#=tableUp#>(id: ID!): String
   "根据ids删除数据"

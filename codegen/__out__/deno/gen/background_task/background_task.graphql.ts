@@ -26,7 +26,7 @@ type Background_TaskModel {
   "备注"
   rem: String!
 }
-input Background_taskInput {
+input Background_TaskInput {
   ""
   id: ID
   "名称"
@@ -50,7 +50,7 @@ input Background_taskInput {
   "备注"
   rem: String
 }
-input Background_taskSearch {
+input Background_TaskSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -77,24 +77,27 @@ input Background_taskSearch {
   "备注"
   rem: String
   remLike: String
+  "创建人"
+  create_usr_id: [String]
+  _create_usr_id: [String]
 }
 type Query {
   "根据条件查找据数总数"
-  findCountBackground_task(search: Background_taskSearch): Int!
+  findCountBackground_task(search: Background_TaskSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllBackground_task(search: Background_taskSearch, page: PageInput, sort: [SortInput]): [Background_TaskModel!]!
+  findAllBackground_task(search: Background_TaskSearch, page: PageInput, sort: [SortInput]): [Background_TaskModel!]!
   "根据搜索条件导出"
-  exportExcelBackground_task(search: Background_taskSearch, sort: [SortInput]): String!
+  exportExcelBackground_task(search: Background_TaskSearch, sort: [SortInput]): String!
   "根据条件查找第一条数据"
-  findOneBackground_task(search: Background_taskSearch): Background_TaskModel
+  findOneBackground_task(search: Background_TaskSearch): Background_TaskModel
   "根据id查找一条数据"
   findByIdBackground_task(id: ID!): Background_TaskModel
 }
 type Mutation {
   "创建一条数据"
-  createBackground_task(model: Background_taskInput!): ID!
+  createBackground_task(model: Background_TaskInput!): ID!
   "根据id修改一条数据"
-  updateByIdBackground_task(id: ID!, model: Background_taskInput!): ID!
+  updateByIdBackground_task(id: ID!, model: Background_TaskInput!): ID!
   "导入文件"
   importFileBackground_task(id: ID!): String
   "根据ids删除数据"

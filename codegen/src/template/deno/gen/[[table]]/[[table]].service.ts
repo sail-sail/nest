@@ -1,5 +1,8 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { Context } from "/lib/context.ts";
@@ -12,24 +15,24 @@ import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import {
-  <#=tableUp#>Model,
-  <#=tableUp#>Search,
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Search,
 } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
-import { <#=tableUp#>Summary } from "/gen/types.ts";<#
+import { <#=Table_Up#>Summary } from "/gen/types.ts";<#
 }
 #>
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {<#=tableUp#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ): Promise<number> {
   const result = await <#=table#>Dao.findCount(context, search);
   return result;
@@ -37,17 +40,17 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=tableUp#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @param {Page} page? 分页条件
  * @param {Sort|Sort[]} sort? 排序
- * @return {Promise<<#=tableUp#>Model[]>} 
+ * @return {Promise<<#=Table_Up#>Model[]>} 
  */
 export async function findAll(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   page?: Page,
   sort?: Sort|Sort[],
-): Promise<<#=tableUp#>Model[]> {<#
+): Promise<<#=Table_Up#>Model[]> {<#
     if (opts.filterDataByCreateUsr) {
   #>
   
@@ -58,7 +61,7 @@ export async function findAll(
   }<#
     }
   #>
-  const result: <#=tableUp#>Model[] = await <#=table#>Dao.findAll(context, search, page, sort);
+  const result: <#=Table_Up#>Model[] = await <#=table#>Dao.findAll(context, search, page, sort);
   return result;
 }<#
 if (hasSummary) {
@@ -66,13 +69,13 @@ if (hasSummary) {
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=tableUp#>Search} search? 搜索条件
- * @return {Promise<<#=tableUp#>Summary>} 
+ * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @return {Promise<<#=Table_Up#>Summary>} 
  */
 export async function findSummary(
   context: Context,
-  search?: <#=tableUp#>Search,
-): Promise<<#=tableUp#>Summary> {
+  search?: <#=Table_Up#>Search,
+): Promise<<#=Table_Up#>Summary> {
   const result = await <#=table#>Dao.findSummary(context, search);
   return result;
 }<#
@@ -81,13 +84,13 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=tableUp#>Search} search? 搜索条件
- * @return {Promise<<#=tableUp#>Model>} 
+ * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @return {Promise<<#=Table_Up#>Model>} 
  */
 export async function findOne(
   context: Context,
-  search?: <#=tableUp#>Search,
-): Promise<<#=tableUp#>Model> {
+  search?: <#=Table_Up#>Search,
+): Promise<<#=Table_Up#>Model> {
   const result = await <#=table#>Dao.findOne(context, search);
   return result;
 }
@@ -95,24 +98,24 @@ export async function findOne(
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<<#=tableUp#>Model>}
+ * @return {Promise<<#=Table_Up#>Model>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<<#=tableUp#>Model | undefined> {
+): Promise<<#=Table_Up#>Model | undefined> {
   const result = await <#=table#>Dao.findById(context, id);
   return result;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=tableUp#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ): Promise<boolean> {
   const result = await <#=table#>Dao.exist(context, search);
   return result;
@@ -133,12 +136,12 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {<#=tableUp#>Model} model
+ * @param {<#=Table_Up#>Model} model
  * @return {Promise<string | undefined>} 
  */
 export async function create(
   context: Context,
-  model: <#=tableUp#>Model,
+  model: <#=Table_Up#>Model,
 ): Promise<string | undefined> {
   const result = await <#=table#>Dao.create(context, model);
   return result;
@@ -147,13 +150,13 @@ export async function create(
 /**
  * 根据id修改数据
  * @param {string} id
- * @param {<#=tableUp#>Model} model
+ * @param {<#=Table_Up#>Model} model
  * @return {Promise<string | undefined>}
  */
 export async function updateById(
   context: Context,
   id: string,
-  model: <#=tableUp#>Model,
+  model: <#=Table_Up#>Model,
 ): Promise<string | undefined> {
   await <#=table#>Dao.updateById(context, id, model);
   return id;
@@ -263,13 +266,13 @@ export async function importFile(
 
 /**
  * 导出Excel
- * @param {<#=tableUp#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @param {Sort|Sort[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   sort?: Sort|Sort[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);

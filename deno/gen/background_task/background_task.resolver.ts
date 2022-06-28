@@ -3,8 +3,8 @@ import { Page, Sort } from "/lib/page.model.ts";
 
 import * as background_taskService from "./background_task.service.ts";
 import {
-  Background_taskModel,
-  Background_taskSearch,
+  Background_TaskModel,
+  Background_TaskSearch,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +12,7 @@ import {
  */
 export async function findCountBackground_task(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
 ) {
   const result = await background_taskService.findCount(context, search);
   return result;
@@ -23,7 +23,7 @@ export async function findCountBackground_task(
  */
 export async function findAllBackground_task(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
   page?: Page,
   sort?: Sort[],
 ) {
@@ -36,7 +36,7 @@ export async function findAllBackground_task(
  */
 export async function exportExcelBackground_task(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
   sort?: Sort[],
 ) {
   const result = await background_taskService.exportExcel(context, search, sort);
@@ -48,7 +48,7 @@ export async function exportExcelBackground_task(
  */
 export async function findOneBackground_task(
   context: Context,
-  search?: Background_taskSearch,
+  search?: Background_TaskSearch,
 ) {
   const result = await background_taskService.findOne(context, search);
   return result;
@@ -70,7 +70,7 @@ export async function findByIdBackground_task(
  */
 export async function createBackground_task(
   context: Context,
-  model: Background_taskModel,
+  model: Background_TaskModel,
 ) {
   context.is_tran = true;
   const result = await background_taskService.create(context, model);
@@ -83,7 +83,7 @@ export async function createBackground_task(
 export async function updateByIdBackground_task(
   context: Context,
   id: string,
-  model: Background_taskModel,
+  model: Background_TaskModel,
 ) {
   context.is_tran = true;
   const result = await background_taskService.updateById(context, id, model);

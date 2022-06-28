@@ -18,9 +18,9 @@ type TenantModel {
   "启用名称"
   _is_enabled: String
   "菜单ID"
-  menu_ids: [ID]!
+  menu_ids: [ID!]!
   "菜单名称"
-  _menu_ids: [String]
+  _menu_ids: [String!]
   "排序"
   order_by: Int!
   "备注"
@@ -42,9 +42,9 @@ input TenantInput {
   "启用名称"
   _is_enabled: String
   "菜单ID"
-  menu_ids: [ID]
+  menu_ids: [ID!]
   "菜单名称"
-  _menu_ids: [String]
+  _menu_ids: [String!]
   "排序"
   order_by: Int
   "备注"

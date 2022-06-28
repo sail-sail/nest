@@ -1,5 +1,8 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const Table_Up = tableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { Context } from "/lib/context.ts";
@@ -7,8 +10,8 @@ import { Page, Sort } from "/lib/page.model.ts";
 
 import * as <#=table#>Service from "./<#=table#>.service.ts";
 import {
-  <#=tableUp#>Model,
-  <#=tableUp#>Search,
+  <#=Table_Up#>Model,
+  <#=Table_Up#>Search,
 } from "/gen/types.ts";
 
 /**
@@ -16,7 +19,7 @@ import {
  */
 export async function findCount<#=tableUp#>(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ) {
   const result = await <#=table#>Service.findCount(context, search);
   return result;
@@ -27,7 +30,7 @@ export async function findCount<#=tableUp#>(
  */
 export async function findAll<#=tableUp#>(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   page?: Page,
   sort?: Sort[],
 ) {
@@ -40,7 +43,7 @@ export async function findAll<#=tableUp#>(
  */
 export async function exportExcel<#=tableUp#>(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
   sort?: Sort[],
 ) {
   const result = await <#=table#>Service.exportExcel(context, search, sort);
@@ -54,7 +57,7 @@ if (hasSummary) {
  */
 export async function findSummary<#=tableUp#>(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ) {
   const result = await <#=table#>Service.findSummary(context, search);
   return result;
@@ -67,7 +70,7 @@ export async function findSummary<#=tableUp#>(
  */
 export async function findOne<#=tableUp#>(
   context: Context,
-  search?: <#=tableUp#>Search,
+  search?: <#=Table_Up#>Search,
 ) {
   const result = await <#=table#>Service.findOne(context, search);
   return result;
@@ -89,7 +92,7 @@ export async function findById<#=tableUp#>(
  */
 export async function create<#=tableUp#>(
   context: Context,
-  model: <#=tableUp#>Model,
+  model: <#=Table_Up#>Model,
 ) {
   context.is_tran = true;
   const result = await <#=table#>Service.create(context, model);
@@ -102,7 +105,7 @@ export async function create<#=tableUp#>(
 export async function updateById<#=tableUp#>(
   context: Context,
   id: string,
-  model: <#=tableUp#>Model,
+  model: <#=Table_Up#>Model,
 ) {
   context.is_tran = true;
   const result = await <#=table#>Service.updateById(context, id, model);
