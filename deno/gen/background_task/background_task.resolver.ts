@@ -2,7 +2,10 @@ import { Context } from "/lib/context.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as background_taskService from "./background_task.service.ts";
-import { Background_taskModel, Background_taskSearch } from "/gen/types.ts";
+import {
+  Background_taskModel,
+  Background_taskSearch,
+} from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数

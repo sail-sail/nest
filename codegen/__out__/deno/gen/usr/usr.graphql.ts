@@ -1,7 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./usr.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type UsrModel {
+defineGraphql(resolvers, /* GraphQL */ `
+type UsrModel {
   "ID"
   id: ID!
   "名称"

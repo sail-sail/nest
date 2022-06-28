@@ -1,7 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./permit.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type PermitModel {
+defineGraphql(resolvers, /* GraphQL */ `
+type PermitModel {
   "ID"
   id: ID!
   "菜单ID"

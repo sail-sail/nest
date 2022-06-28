@@ -2,7 +2,10 @@ import { Context } from "/lib/context.ts";
 import { Page, Sort } from "/lib/page.model.ts";
 
 import * as tenantService from "./tenant.service.ts";
-import { TenantModel, TenantSearch } from "/gen/types.ts";
+import {
+  TenantModel,
+  TenantSearch,
+} from "/gen/types.ts";
 
 /**
  * 根据条件查找据数总数

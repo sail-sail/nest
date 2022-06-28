@@ -9,7 +9,10 @@ import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
 
-import { RoleModel, RoleSearch } from "/gen/types.ts";
+import {
+  RoleModel,
+  RoleSearch,
+} from "/gen/types.ts";
 
 async function getWhereQuery(
   context: Context,

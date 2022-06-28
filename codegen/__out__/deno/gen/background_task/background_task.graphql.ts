@@ -1,7 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./background_task.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type Background_TaskModel {
+defineGraphql(resolvers, /* GraphQL */ `
+type Background_TaskModel {
   "ID"
   id: ID!
   "名称"

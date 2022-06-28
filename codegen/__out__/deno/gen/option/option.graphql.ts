@@ -1,7 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./option.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `type OptionModel {
+defineGraphql(resolvers, /* GraphQL */ `
+type OptionModel {
   "ID"
   id: ID!
   "名称"

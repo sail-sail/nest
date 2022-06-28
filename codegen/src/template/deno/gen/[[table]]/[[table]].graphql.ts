@@ -3,12 +3,13 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
+#><#
+const hasSummary = columns.some((column) => column.showSummary);
 #>import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./<#=table#>.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `<#
-const hasSummary = columns.some((column) => column.showSummary);
-#>type <#=Table_Up#>Model {<#
+defineGraphql(resolvers, /* GraphQL */ `
+type <#=Table_Up#>Model {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
