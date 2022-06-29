@@ -32,7 +32,7 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("_");
 #>
-import { <#=Foreign_Table_Up#>Model, <#=foreignTableUp#>Search } from "#/types";<#
+import { <#=Foreign_Table_Up#>Model, <#=Foreign_Table_Up#>Search } from "#/types";<#
 }
 #>
 
@@ -438,7 +438,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
@@ -470,7 +470,7 @@ export async function findAll<#=foreignTableUp#>(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=foreignTableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
