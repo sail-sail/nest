@@ -1,5 +1,5 @@
 import "/lib/env.ts";
-import { getEnv } from "/lib/env.ts";
+import { getEnv, getEnvs } from "/lib/env.ts";
 
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
@@ -26,6 +26,7 @@ async function copyEnv() {
 
 async function excel_template() {
   console.log("excel_template");
+  await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
   await Deno.mkdir(`${ buildDir }/excel_template`, { recursive: true });
   const tmpFn = async function(dir: string) {
     for await (const dirEntry of Deno.readDir(dir)) {
@@ -87,7 +88,99 @@ async function compile() {
         await Deno.remove(Deno.cwd()+"/../build/"+dirEntry.name);
       }
     }
-    let cmds = [ "deno", "compile", "-A", "--unstable", "--import-map", "./import_map.json" ];
+    const allowReads = [
+      ".",
+      "./excel_template",
+      "./tmp",
+    ];
+    const allowWrites = [
+      "./tmp",
+    ];
+    const allowEnvs = [
+      "NODE_DEBUG",
+      "NODE_ENV",
+    ];
+    const allowNets = [ ];
+    // 服务器端口
+    allowNets.push(`${ await getEnv("server_host") }:${ await getEnv("server_port") }`);
+    // 数据库
+    if (await getEnv("database_socketpath")) {
+      allowWrites.push(await getEnv("database_socketpath"));
+      allowReads.push(await getEnv("database_socketpath"));
+    } else if (await getEnv("database_host")) {
+      allowNets.push(`${ await getEnv("database_host") }:${ await getEnv("database_port") }`);
+    }
+    // 附件
+    if (await getEnv("oss_endpoint")) {
+      const url = new URL(await getEnv("oss_endpoint"));
+      allowNets.push(url.host);
+    }
+    // 缓存
+    if (await getEnv("cache_hostname")) {
+      allowNets.push(`${ await getEnv("cache_hostname") }:${ await getEnv("cache_port") }`);
+    }
+    // 临时文件
+    if (await getEnv("tmpfile_endpoint")) {
+      const url = new URL(await getEnv("tmpfile_endpoint"));
+      allowNets.push(url.host);
+    }
+    const conf = await getEnvs();
+    const keys = Object.keys(conf);
+    [
+      "log_path",
+      "server_port",
+      "server_host",
+      "server_tokentimeout",
+      "server_title",
+      
+      "database_type",
+      "database_host",
+      "database_port",
+      "database_socketpath",
+      "database_username",
+      "database_password",
+      "database_database",
+      "database_connectionlimit",
+      "database_waitForconnections",
+      
+      "oss_type",
+      "oss_endpoint",
+      "oss_accesskey",
+      "oss_secretkey",
+      "oss_bucket",
+      
+      "cache_type",
+      "cache_hostname",
+      "cache_port",
+      "cache_db",
+      
+      "tmpfile_type",
+      "tmpfile_endpoint",
+      "tmpfile_accesskey",
+      "tmpfile_secretkey",
+      "tmpfile_bucket",
+    ].forEach(function(key) {
+      if (!keys.includes(key)) {
+        keys.push(key);
+      }
+    });
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (!allowEnvs.includes(key)) {
+        allowEnvs.push(key);
+      }
+    }
+    let cmds = [
+      "deno",
+      "compile",
+      "--unstable",
+      `--allow-read=${ allowReads.join(",") }`,
+      `--allow-write=${ allowWrites.join(",") }`,
+      `--allow-env=${ allowEnvs.join(",") }`,
+      `--allow-net=${ allowNets.join(",") }`,
+      "--import-map",
+      "./import_map.json",
+    ];
     if (target) {
       cmds = cmds.concat([ "--target", target ]);
     }

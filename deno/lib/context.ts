@@ -20,9 +20,13 @@ declare global {
   }
 }
 
-// redis连接池
+/** 临时文件路径 */
+export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
+
+/** redis连接池 */
 let _redisClientPool: GenPool<Redis | undefined>|undefined = undefined;
 
+/** 从redis连接池中获取redis缓存连接 */
 function redisClientPool() {
   if (_redisClientPool) return _redisClientPool;
   let cache_ECONNREFUSED = false;

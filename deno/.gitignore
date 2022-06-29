@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+*.log
+*.diff
+package-lock.json
+yarn.lock
+
+/lib/script/publish_cnf.js
+/tmp/*

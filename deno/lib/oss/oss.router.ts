@@ -1,5 +1,5 @@
 import { FormDataFile, Router, RouterContext } from "oak";
-import { Context } from "/lib/context.ts";
+import { Context, TMP_PATH } from "/lib/context.ts";
 import * as ossServie from "./oss.service.ts";
 
 const router = new Router({
@@ -13,7 +13,10 @@ router.post("upload", async function(ctx) {
     return;
   }
   let file: FormDataFile|undefined = undefined;
-  for await (const [ name, value ] of body.value.stream()) {
+  for await (const [ name, value ] of body.value.stream({
+    outPath: TMP_PATH,
+    prefix: "oss_upload_",
+  })) {
     if (name === "file") {
       if (value instanceof String) {
         throw new Error("file must a form-data file!");
