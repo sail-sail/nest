@@ -72,7 +72,7 @@ export async function findAllAndCount(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: Background_taskSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -256,7 +256,7 @@ export async function exportExcel(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: Background_taskSearch, $sort: [SortInput]) {
+      query($search: Background_TaskSearch, $sort: [SortInput]) {
         exportExcelBackground_task(search: $search, sort: $sort)
       }
     `,
