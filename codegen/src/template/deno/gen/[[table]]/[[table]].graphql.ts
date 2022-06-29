@@ -205,7 +205,7 @@ input <#=Table_Up#>Search {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'Float';
+      data_type = '[Float]';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';

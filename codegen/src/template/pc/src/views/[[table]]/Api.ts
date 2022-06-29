@@ -134,7 +134,7 @@ export async function findAllAndCount(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search, $page: PageInput, $sort: [SortInput]) {
+      query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -219,7 +219,7 @@ export async function findSummary(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search) {
+      query($search: <#=Table_Up#>Search) {
         findSummary<#=tableUp#>(search: $search) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -502,7 +502,7 @@ export async function exportExcel(
 ) {
   const data = await gqlQuery({
     query: gql`
-      query($search: <#=tableUp#>Search, $sort: [SortInput]) {
+      query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
         exportExcel<#=tableUp#>(search: $search, sort: $sort)
       }
     `,
