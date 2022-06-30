@@ -195,31 +195,29 @@
       >
         保存
       </el-button>
-      <div class="page_div">
+      <div class="text-[12px] text-[gray]">
         <template v-if="ids && ids.length > 0">
           <el-button
             link
-            class="prev_but"
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
             @click="prevIdClk"
           >
             上一页
           </el-button>
-          <span class="detail_pg_span">
+          <span>
             <span>
               {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
             </span>
           </span>
           <el-button
             link
-            class="next_but"
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
             @click="nextIdClk"
           >
             下一页
           </el-button>
         </template>
-        <span class="chg_ids_span" v-if="changedIds.length > 0">
+        <span v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </span>
       </div>

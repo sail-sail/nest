@@ -120,7 +120,7 @@ export async function create(
 ) {
   const data = await gqlQuery({
     query: gql`
-      mutation($model: Background_taskInput!) {
+      mutation($model: Background_TaskInput!) {
         createBackground_task(model: $model)
       }
     `,
@@ -146,7 +146,7 @@ export async function updateById(
 ) {
   const data = await gqlQuery({
     query: gql`
-      mutation($id: ID!, $model: Background_taskInput!) {
+      mutation($id: ID!, $model: Background_TaskInput!) {
         updateByIdBackground_task(id: $id, model: $model)
       }
     `,
