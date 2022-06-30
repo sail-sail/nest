@@ -27,6 +27,7 @@ async function copyEnv() {
 async function excel_template() {
   console.log("excel_template");
   await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
+  await Deno.mkdir(`${ buildDir }/log`, { recursive: true });
   await Deno.mkdir(`${ buildDir }/excel_template`, { recursive: true });
   const tmpFn = async function(dir: string) {
     for await (const dirEntry of Deno.readDir(dir)) {
@@ -170,14 +171,22 @@ async function compile() {
         allowEnvs.push(key);
       }
     }
+    if (await getEnv("log_path")) {
+      allowWrites.push(await getEnv("log_path"));
+      allowReads.push(await getEnv("log_path"));
+    }
     let cmds = [
       "deno",
       "compile",
       "--unstable",
-      `--allow-read=${ allowReads.join(",") }`,
-      `--allow-write=${ allowWrites.join(",") }`,
-      `--allow-env=${ allowEnvs.join(",") }`,
-      `--allow-net=${ allowNets.join(",") }`,
+      // `--allow-read=${ allowReads.join(",") }`,
+      `--allow-read`,
+      // `--allow-write=${ allowWrites.join(",") }`,
+      `--allow-write`,
+      // `--allow-env=${ allowEnvs.join(",") }`,
+      `--allow-env`,
+      // `--allow-net=${ allowNets.join(",") }`,
+      `--allow-net`,
       "--import-map",
       "./import_map.json",
     ];

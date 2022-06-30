@@ -107,6 +107,8 @@ function start() {
   restartNum++;
   const allowReads = [
     ".",
+    "./.env.dev",
+    "./.env.prod",
     "./excel_template",
     "./tmp",
   ];
@@ -186,14 +188,22 @@ function start() {
       allowEnvs.push(key);
     }
   }
+  if (conf.log_path) {
+    allowWrites.push(conf.log_path);
+    allowReads.push(conf.log_path);
+  }
   const arr = [
     "run",
     "--inspect",
     "--unstable",
-    `--allow-read=${ allowReads.join(",") }`,
-    `--allow-write=${ allowWrites.join(",") }`,
-    `--allow-env=${ allowEnvs.join(",") }`,
-    `--allow-net=${ allowNets.join(",") }`,
+    // `--allow-read=${ allowReads.join(",") }`,
+    `--allow-read`,
+    // `--allow-write=${ allowWrites.join(",") }`,
+    `--allow-write`,
+    // `--allow-env=${ allowEnvs.join(",") }`,
+    `--allow-env`,
+    // `--allow-net=${ allowNets.join(",") }`,
+    `--allow-net`,
     "--import-map",
     "./import_map.json",
     "--no-check",

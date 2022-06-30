@@ -25,12 +25,6 @@ const publishPath = `${ publishBase }/${ projectName }/`;
   let data;
   
   try {
-    await fs.rename(`${ buildPath }/deno/${ projectName }`, `${ buildPath }/deno/${ projectName }2`);
-  } catch (err) {
-    console.error(err.message);
-  }
-  
-  try {
     data = await ssh.exec(`rm -rf ${ publishPath }/docs`);
     console.log(data);
   } catch (err) {
@@ -57,12 +51,6 @@ const publishPath = `${ publishBase }/${ projectName }/`;
     console.error(err.message);
   }
   
-  try {
-    data = await ssh.exec(`mkdir ${ publishPath }/log`);
-    console.log(data);
-  // deno-lint-ignore no-empty
-  } catch (_err) { }
-  
   const treeDir = async function(dir) {
     const files = await fs.readdir(`${ buildPath }/${ dir }`);
     for (let i = 0; i < files.length; i++) {
@@ -81,8 +69,6 @@ const publishPath = `${ publishBase }/${ projectName }/`;
     }
   };
   await treeDir("");
-  
-  await sftp.rename(`${ publishPath }/deno/${ projectName }2`, `${ publishPath }/deno/${ projectName }`);
   
   await ssh.exec(`chmod -R 755 ${ publishPath }/deno/${ projectName }`);
   
