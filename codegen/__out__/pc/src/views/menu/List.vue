@@ -1,6 +1,6 @@
 <template>
 <div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col w-full h-full">
-  <div class="search_div">
+  <div class="mx-1.5 overflow-auto">
     <el-form
       size="default"
       :model="search"
@@ -20,7 +20,8 @@
             class="form_input"
             @keyup.enter.native.stop
             :set="search.menu_id = search.menu_id || [ ]"
-            v-model="search.menu_id"
+            :model-value="(search.menu_id as any)"
+            @update:model-value="search.menu_id = $event"
             placeholder="请选择父菜单"
             :options="menu4SelectV2"
             filterable
@@ -97,7 +98,7 @@
       
       <div style="min-width: 20px;"></div>
       <el-form-item
-        class="form_btn_item"
+        class="flex flex-nowrap self-start min-w-[170px]"
       >
         <el-button
           type="primary"
@@ -117,7 +118,7 @@
       
     </el-form>
   </div>
-  <div class="toolbar_div">
+  <div class="mx-1.5 mt-1.5 flex">
     <template v-if="search.is_deleted !== 1">
       <el-button
         type="primary"
@@ -185,8 +186,8 @@
       列操作
     </TableShowColumns>
   </div>
-  <div class="table_div">
-    <div class="table_wrap">
+  <div class="flex-[1_0_0] overflow-hidden mt-1.5 flex flex-col">
+    <div class="flex-[1_0_0] overflow-hidden flex flex-col">
       <el-table
         :data="tableData"
         @select="selectChg"
@@ -327,7 +328,7 @@
         
       </el-table>
     </div>
-    <div class="pagination_row">
+    <div class="p-[2px_5px_2px_0px] flex justify-end">
       <el-pagination
         background
         :page-sizes="pageSizes"
@@ -899,11 +900,6 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-.search_div {
-  margin-top: 6px;
-  margin-left: 6px;
-  overflow-x: auto;
-}
 .search_form {
   display: grid;
   grid-template-columns: repeat(
@@ -927,35 +923,5 @@ watch(
 }
 .form_input {
   width: 100%;
-}
-.form_btn_item {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-self: flex-start;
-  min-width: 170px;
-}
-.toolbar_div {
-  margin-left: 6px;
-  margin-top: 6px;
-  margin-right: 6px;
-  display: flex;
-}
-.table_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-}
-.table_wrap {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.pagination_row {
-  padding: 2px 5px 2px 0;
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

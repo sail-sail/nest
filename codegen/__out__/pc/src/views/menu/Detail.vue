@@ -20,10 +20,11 @@
       </el-icon>
     </div>
   </template>
-  <div class="wrap_div">
-    <div class="content_div">
+  <div class="flex-[1_0_0] overflow-hidden flex flex-col basis-[inherit]">
+    <div class="flex-[1_0_0] overflow-auto flex justify-start items-center flex-col p-5 basis-[inherit]">
       <el-form
         size="default"
+        class="grid justify-end items-end gap-x-[15px] gap-y-[5px] grid-rows-[auto] place-content-center"
         :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
@@ -179,10 +180,9 @@
         
       </el-form>
     </div>
-    <div class="toolbox_div">
+    <div class="py-2.5 flex justify-center items-center">
       <el-button
         :icon="CircleClose"
-        class="cancel_but"
         @click="cancelClk"
       >
         取消
@@ -190,7 +190,6 @@
       <el-button
         type="primary"
         :icon="CircleCheck"
-        class="save_but"
         @click="saveClk"
       >
         保存
@@ -552,50 +551,12 @@ defineExpose({ showDialog });
 </script>
 
 <style lang="scss" scoped>
-.wrap_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  flex-basis: inherit;
-}
-.content_div {
-  flex: 1 0 0;
-  overflow: auto;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px;
-  flex-basis: inherit;
-}
-.toolbox_div {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 .dialog_form1 {
-  display: grid;
   grid-template-columns: repeat(1, minmax(min-content, max-content) 280px);
-  justify-items: end;
-  align-items: center;
-  grid-row-gap: 15px;
-  grid-column-gap: 5px;
-  grid-template-rows: auto;
-  place-content: center;
 }
 
 .dialog_form2 {
-  display: grid;
   grid-template-columns: repeat(2, minmax(min-content, max-content) 280px);
-  justify-items: end;
-  align-items: center;
-  grid-row-gap: 15px;
-  grid-column-gap: 5px;
-  grid-template-rows: auto;
-  place-content: center;
 }
 .form_label {
   margin-left: 3px;
