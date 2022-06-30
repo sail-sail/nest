@@ -206,7 +206,7 @@
       >
         保存
       </el-button>
-      <div class="text-[12px] text-[gray]">
+      <div class="text-[12px] text-[gray] absolute right-2">
         <template v-if="ids && ids.length > 0">
           <el-button
             link
