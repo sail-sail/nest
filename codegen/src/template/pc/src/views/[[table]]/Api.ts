@@ -260,7 +260,7 @@ export async function create(
 ) {
   const data = await gqlQuery({
     query: gql`
-      mutation($model: <#=tableUp#>Input!) {
+      mutation($model: <#=Table_Up#>Input!) {
         create<#=tableUp#>(model: $model)
       }
     `,
@@ -286,7 +286,7 @@ export async function updateById(
 ) {
   const data = await gqlQuery({
     query: gql`
-      mutation($id: ID!, $model: <#=tableUp#>Input!) {
+      mutation($id: ID!, $model: <#=Table_Up#>Input!) {
         updateById<#=tableUp#>(id: $id, model: $model)
       }
     `,
