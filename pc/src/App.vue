@@ -200,8 +200,8 @@ body .el-button {
     width: 100%;
   }
   .el-dialog.custom_dialog {
-    min-width: 410px;
-    min-height: 190px;
+    min-width: 460px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     .el-dialog__body {
