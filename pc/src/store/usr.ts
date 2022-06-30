@@ -24,12 +24,13 @@ export default defineStore("usr", function() {
     lang = "";
   }
   
-  return {
-    authorization: $$(authorization),
-    lang: $$(lang),
+  return $$({
+    authorization,
+    lang,
     setAuthorization,
     setLang,
     clear,
     reset,
-  };
+  });
+  
 }, { persist: true });

@@ -9,11 +9,11 @@
   </div>
   <div class="center_div">
     <div class="top_div center_top_div" ref="tabs_divRef">
-      <el-icon class="fold_icon" @click="(menuStore.isCollapse as any) = !menuStore.isCollapse">
+      <el-icon class="fold_icon" @click="menuStore.isCollapse = !menuStore.isCollapse">
         <Expand v-if="menuStore.isCollapse"/>
         <Fold v-else/>
       </el-icon>
-      <Tabs class="tabs_div" :tabs="(tabsStore.tabs as any)"></Tabs>
+      <Tabs class="tabs_div" :tabs="tabsStore.tabs"></Tabs>
       <div style="display: flex;align-items: center;">
         <div class="tab_dropdown">
           <el-dropdown>
@@ -132,7 +132,7 @@ function refreshTab_active_line() {
 watch(
   [
     () => tabsStore.actTab,
-    () => (tabsStore.tabs as unknown as typeof tabsStore.tabs.value).length,
+    () => tabsStore.tabs.length,
   ],
   () => {
     nextTick(refreshTab_active_line);    

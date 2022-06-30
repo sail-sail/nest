@@ -86,13 +86,13 @@ export default defineStore("menu", function() {
   
   let isCollapse = $ref(false);
   
-  return {
-    menus: $$(menus) as MenuModel[],
-    isCollapse: $$(isCollapse) as boolean,
+  return $$({
+    menus,
+    isCollapse,
     setMenus,
     getMenuByPath,
     getParentIds,
     clear,
     reset,
-  };
+  });
 }, { persist: true });

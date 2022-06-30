@@ -92,13 +92,14 @@ export default defineStore("tabs", function() {
     tabs = [ ];
   }
   
-  return {
-    tabs: $$(tabs),
-    actTab: $$(actTab),
+  return $$({
+    tabs,
+    actTab,
     activeTab,
     refreshTab,
     removeTab,
     closeOtherTabs,
     reset,
-  };
+  });
+  
 }, { persist: true });

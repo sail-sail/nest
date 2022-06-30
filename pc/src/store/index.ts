@@ -51,12 +51,13 @@ export default defineStore("index", function() {
     reset();
   }
   
-  return {
-    loading: $$(loading),
-    version: $$(version),
+  return $$({
+    loading,
+    version,
     addLoading,
     minusLoading,
     reset,
     logout,
-  };
+  });
+  
 }, { persist: false });

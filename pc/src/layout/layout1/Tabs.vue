@@ -45,7 +45,7 @@ async function activeTab(tab: TabInf) {
 }
 
 async function closeClk(tab: TabInf) {
-  const tabs = tabsStore.tabs as unknown as typeof tabsStore.tabs.value;
+  const tabs = tabsStore.tabs;
   let idx = tabs.findIndex((item) => item.path === tab.path);
   if (tab.active) {
     if (idx !== -1) {
