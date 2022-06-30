@@ -129,7 +129,7 @@
       >
         保存
       </el-button>
-      <div class="text-[12px] text-[gray]">
+      <div class="text-[12px] text-[gray] absolute right-2">
         <template v-if="ids && ids.length > 0">
           <el-button
             link
@@ -539,20 +539,5 @@ defineExpose({ showDialog });
 }
 .form_input {
   width: 100%;
-}
-.page_div {
-  position: absolute;
-  right: 10px;
-  color: gray;
-  font-size: 12px;
-}
-.chg_ids_span {
-  margin-left: 5px;
-}
-.prev_but {
-  margin-right: 5px;
-}
-.next_but {
-  margin-left: 3px;
 }
 </style>
