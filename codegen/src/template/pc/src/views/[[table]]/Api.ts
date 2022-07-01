@@ -5,6 +5,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
 }).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
+#><#
+const importForeignTables = [ ];
+importForeignTables.push(Table_Up);
 #>import {
   Query,
   Mutation,
@@ -15,8 +18,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { Page, Sort } from "@/utils/page.model";
-<#
+import { Page, Sort } from "@/utils/page.model";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -31,8 +33,12 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("_");
+  if (importForeignTables.includes(Foreign_Table_Up)) {
+    continue;
+  }
+  importForeignTables.push(Foreign_Table_Up);
 #>
-import { <#=Foreign_Table_Up#>Model, <#=Foreign_Table_Up#>Search } from "#/types";<#
+import { <#=Foreign_Table_Up#>Search } from "#/types";<#
 }
 #>
 

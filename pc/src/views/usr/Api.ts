@@ -9,8 +9,7 @@ import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import { Page, Sort } from "@/utils/page.model";
-
-import { RoleModel, RoleSearch } from "#/types";
+import { RoleSearch } from "#/types";
 
 /**
  * 根据搜索条件查找数据
