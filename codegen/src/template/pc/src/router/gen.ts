@@ -1,4 +1,5 @@
 import { RouteRecordRaw } from "vue-router";
+import Layout1 from "@/layout/layout1/index.vue";
 
 export const routesGen: Array<RouteRecordRaw> = [<#
   for (let i = 0; i < records.length; i++) {
@@ -13,9 +14,15 @@ export const routesGen: Array<RouteRecordRaw> = [<#
   #>
   {
     path: "/<#=table_name#>",
-    name: "<#=table_comment || table_name#>",
-    component: () => import("@/views/<#=table_name#>/List.vue"),
-    props: (route) => route.query,
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "<#=table_comment || table_name#>",
+        component: () => import("@/views/<#=table_name#>/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
   },<#
   }
   #>

@@ -67,7 +67,7 @@ import {
 } from "vue-router";
 import {
   nextTick,
-  onMounted,
+  // onMounted,
   watch,
 } from "vue";
 import useTabsStore from "@/store/tabs";
@@ -166,9 +166,9 @@ async function logoutClk() {
   usrStore.setAuthorization("");
 }
 
-onMounted(async () => {
-  await tabsStore.refreshTab();
-});
+// onMounted(async () => {
+//   await tabsStore.refreshTab();
+// });
 </script>
 
 <style lang="scss" scoped>

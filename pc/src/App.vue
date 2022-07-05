@@ -3,19 +3,29 @@
   :locale="locale"
   :button="{ autoInsertSpace: false }"
 >
-  <Layout1></Layout1>
+  <router-view></router-view>
   <Background_taskListDialog></Background_taskListDialog>
 </el-config-provider>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import {
   ElConfigProvider,
 } from "element-plus";
 import locale from "@/locales";
-import Layout1 from "./layout/layout1/index.vue";
 import Background_taskListDialog from "./views/background_task/ListDialog.vue";
+import {
+  RouterView,
+} from "vue-router";
 
+import useTabsStore from "@/store/tabs";
+
+const tabsStore = useTabsStore();
+
+onMounted(async () => {
+  await tabsStore.refreshTab();
+});
 </script>
 
 <style lang="scss">
