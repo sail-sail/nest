@@ -9,7 +9,7 @@ async function _getMenus(
   menu_id?: string,
 ) {
   const args = new QueryArgs();
-  let sql = /*sql*/`
+  let sql = /*sql*/ `
     select
       t.id,
       t.type,
@@ -55,14 +55,13 @@ async function _getMenus(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  interface Result {
+  const result = await context.query<{
     id: string,
     type: string,
     menu_id: string,
     lbl: string,
     route_path: string,
-  }
-  const result = await context.query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  }>(sql, args, { cacheKey1, cacheKey2 });
   
   return result;
 }

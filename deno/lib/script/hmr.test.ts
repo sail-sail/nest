@@ -4,7 +4,7 @@ import { createContext, handelChg } from "./hmr.ts";
 const context = await createContext();
 
 const filenames = [
-  "D:/hugjs/nest/deno/src/tenant/tenant.dao.ts",
+  "D:/hugjs/nest/deno/src/menu/menu.dao.ts",
 ];
 await handelChg(context, filenames);
 await context.closePool();
