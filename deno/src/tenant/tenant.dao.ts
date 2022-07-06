@@ -16,7 +16,7 @@ export async function getHostTenant(
   const { id: usr_id } = await getAuthModel(context) as AuthModel;
   const tenant_id = await getTenant_id(context, usr_id);
   const args = new QueryArgs();
-  const sql = `
+  const sql = /*sql*/ `
     select
       t.host
     from tenant t
@@ -37,7 +37,7 @@ export async function getLoginTenants(
   _host: string,
 ): Promise<typeof result> {
   const args = new QueryArgs();
-  const sql = /*sql*/`
+  const sql = /*sql*/ `
     select
       t.id,
       t.lbl
