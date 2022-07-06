@@ -25,6 +25,7 @@
     "bradlc.vscode-tailwindcss",
     "mattpocock.ts-error-translator",
     "usernamehw.errorlens",
-    "derefs.vscode-inline-sql-highlight"
+    "derefs.vscode-inline-sql-highlight",
+    "denoland.vscode-deno"
   ]
 }
