@@ -5,13 +5,13 @@ import useMenuStore from "./menu";
 import useTabsStore from "./tabs";
 import useUsrStore from "./usr";
 
-let elLoading: ReturnType<typeof ElLoading.service>;
+let elLoading: ReturnType<typeof ElLoading.service>|undefined;
 
 export default defineStore("index", function() {
   
   let loading = $ref(0);
   
-  let version = $ref<string>(localStorage.getItem("__version"));
+  let version: string|null = $ref(localStorage.getItem("__version"));
   
   function addLoading() {
     loading++;

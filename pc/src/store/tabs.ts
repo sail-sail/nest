@@ -17,14 +17,14 @@ export default defineStore("tabs", function() {
   
   function activeTab(tab?: TabInf) {
     if (tab && actTab && tab.path === actTab.path) {
-      const keys1 = Object.keys(tab.query);
+      const keys1 = tab.query ? Object.keys(tab.query) : [ ];
       const keys2 = Object.keys(actTab?.query || { });
       if (keys1.length === keys2.length) {
         let isEqual = true;
         for (let i = 0; i < keys1.length; i++) {
           const key1 = keys1[i];
-          const val1 = tab.query[key1];
-          const val2 = actTab.query[key1];
+          const val1 = tab.query![key1];
+          const val2 = actTab!.query![key1];
           if (val1 !== val2) {
             isEqual = false;
             break;
@@ -66,10 +66,10 @@ export default defineStore("tabs", function() {
     tabs = [ tab ];
   }
   
-  async function refreshTab(): Promise<NavigationFailure> {
+  async function refreshTab(): Promise<NavigationFailure|undefined> {
     const router = useRouter();
     if (!router) return;
-    let navFail: NavigationFailure;
+    let navFail: NavigationFailure|undefined = undefined;
     if (actTab) {
       navFail = <NavigationFailure> await router.replace({
         path: actTab.path,

@@ -1,5 +1,9 @@
-import { MenuModel } from "@/views/menu/Model";
+import { MenuModel as MenuModel0 } from "#/types";
 import { defineStore } from "pinia";
+
+type MenuModel = MenuModel0 & {
+  children: MenuModel[];
+}
 
 export default defineStore("menu", function() {
   
@@ -14,7 +18,7 @@ export default defineStore("menu", function() {
    * @param {string} path
    */
   function getMenuByPath(path: string) {
-    let menu2: MenuModel;
+    let menu2: MenuModel|undefined = undefined;
     for (let i = 0; i < menus.length; i++) {
       const menu = menus[i];
       if (menu.route_path === path) {

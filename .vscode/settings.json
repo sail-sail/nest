@@ -55,11 +55,10 @@
   ,"npm.updateStrategy": "LATEST"
   
   ,"deno.enable": true
+  ,"deno.enablePaths": [
+    "./deno"
+  ]
   ,"deno.lint": true
   ,"deno.unstable": true
-  ,"deno.enablePaths": [
-    "./deno/"
-  ]
   ,"deno.importMap": "./deno/import_map.json"
-  ,"deno.config": "./deno/tsconfig.json"
 }
