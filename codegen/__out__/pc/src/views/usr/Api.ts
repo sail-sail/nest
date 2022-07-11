@@ -1,6 +1,7 @@
 import {
   Query,
   Mutation,
+  PageInput,
   UsrModel,
   UsrSearch,
   UsrInput,
@@ -8,20 +9,22 @@ import {
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { Page, Sort } from "@/utils/page.model";
+import {
+  Sort,
+} from "element-plus/lib/components/table/src/table/defaults";
 import { RoleSearch } from "#/types";
 
 /**
  * 根据搜索条件查找数据
  * @export findAll
  * @param {UsrSearch} search?
- * @param {Page} page
+ * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: UsrSearch,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -58,13 +61,13 @@ export async function findAll(
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
  * @param {UsrSearch} search?
- * @param {Page} page?
+ * @param {PageInput} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAllAndCount(
   search?: UsrSearch,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -239,7 +242,7 @@ export async function revertByIds(
 
 export async function findAllAndCountRole(
   search?: RoleSearch,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -271,7 +274,7 @@ export async function findAllAndCountRole(
 
 export async function findAllRole(
   search?: RoleSearch,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {

@@ -20,6 +20,7 @@ axios.interceptors.request.use(
     const authorization: string = usrStore.authorization;
     if (authorization) {
       if (!authorization.startsWith("Bearer ")) {
+        config.headers = config.headers || { };
         config.headers.Authorization = `Bearer ${ authorization }`;
       }
     }
@@ -189,7 +190,11 @@ export function downloadById(
   } | string,
   type: "oss" | "tmpfile" = "tmpfile",
 ) {
-  let model = { id: undefined };
+  let model: {
+    id: string,
+  } = {
+    id: "",
+  };
   if (typeof id === "string") {
     model.id = id;
   } else {

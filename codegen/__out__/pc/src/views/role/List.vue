@@ -386,16 +386,16 @@ let inited = $ref(false);
 
 const emit = defineEmits([ "selectedIdsChg" ]);
 
-// 表格
+/** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
 
-// 导出Excel
+/** 导出Excel */
 async function exportClk() {
   const id = await exportExcel(search, [ sort ]);
   downloadById(id);
 }
 
-// 搜索
+/** 搜索 */
 function initSearch() {
   return <RoleSearch>{
     is_deleted: 0,
@@ -404,19 +404,19 @@ function initSearch() {
 
 let search = $ref(initSearch());
 
-// 搜索
+/** 搜索 */
 async function searchClk() {
   await dataGrid(true);
 }
 
-// 重置搜索
+/** 重置搜索 */
 async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   await searchClk();
 }
 
-// 清空搜索框事件
+/** 清空搜索框事件 */
 async function searchIptClr() {
   await searchClk();
 }
@@ -448,7 +448,7 @@ const propsNotInSearch: string[] = [
   "selectedIds",
 ];
 
-// 内置搜索条件
+/** 内置搜索条件 */
 const builtInSearch: RoleSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
@@ -473,7 +473,7 @@ const builtInSearch: RoleSearch = $computed(() => {
   return Object.fromEntries(entries) as unknown as RoleSearch;
 });
 
-// 内置变量
+/** 内置变量 */
 const builtInModel: RoleModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
@@ -503,7 +503,7 @@ const builtInModel: RoleModel = $computed(() => {
   return Object.fromEntries(entries) as unknown as RoleModel;
 });
 
-// 分页功能
+/** 分页功能 */
 let {
   page,
   pageSizes,
@@ -511,7 +511,7 @@ let {
   pgCurrentChg,
 } = $(usePage<RoleModel>(dataGrid));
 
-// 表格选择功能
+/** 表格选择功能 */
 let {
   selectedIds,
   selectChg,
@@ -528,14 +528,14 @@ watch(
   },
 );
 
-// 取消已选择筛选
+/** 取消已选择筛选 */
 async function clearSelect() {
   selectedIds = [ ];
   idsChecked = 0;
   await dataGrid(true);
 }
 
-// 若传进来的参数或者url有selectedIds，则使用传进来的选中行
+/** 若传进来的参数或者url有selectedIds，则使用传进来的选中行 */
 watch(
   () => props.selectedIds,
   (val) => {
@@ -554,7 +554,7 @@ watch(
 
 let idsChecked = $ref<0|1>(0);
 
-// 表格数据
+/** 表格数据 */
 let tableData: RoleModel[] = $ref([ ]);
 
 let tableColumns: ColumnType[] = $ref([
@@ -576,7 +576,7 @@ let tableColumns: ColumnType[] = $ref([
   },
 ]);
 
-// 表格列
+/** 表格列 */
 let {
   headerDragend,
   resetColumns,
@@ -607,7 +607,7 @@ let menu4SelectV2 = $computed(() => {
   });
 });
 
-// 获取下拉框列表
+/** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
     menuInfo,
@@ -630,7 +630,7 @@ async function getSelectListEfc() {
   ]);
 }
 
-// 菜单下拉框远程搜索
+/** 菜单下拉框远程搜索 */
 async function menuFilterEfc(query: string) {
   menuInfo.data = await findAllMenu(
     {
@@ -651,7 +651,7 @@ async function menuFilterEfc(query: string) {
   );
 }
 
-// 刷新表格
+/** 刷新表格 */
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
@@ -682,13 +682,13 @@ async function dataGrid(isCount = false) {
   }
 }
 
-// 排序
+/** 排序 */
 let sort: Sort = $ref({
   prop: "",
   order: "ascending",
 });
 
-// 排序
+/** 排序 */
 async function sortChange(
   { prop, order, column }: { column: TableColumnCtx<RoleModel> } & Sort,
 ) {
@@ -697,7 +697,7 @@ async function sortChange(
   await dataGrid();
 }
 
-// 打开增加页面
+/** 打开增加页面 */
 async function openAdd() {
   const dialogResult = await detailRef.showDialog({
     title: "增加",
@@ -732,7 +732,7 @@ async function openUploadClk() {
   }
 }
 
-// 打开修改页面
+/** 打开修改页面 */
 async function openEdit() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要编辑的数据!`);
@@ -754,7 +754,7 @@ async function openEdit() {
   }
 }
 
-// 点击删除
+/** 点击删除 */
 async function deleteByIdsEfc() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要删除的数据!`);
@@ -779,7 +779,7 @@ async function deleteByIdsEfc() {
   }
 }
 
-// 点击还原
+/** 点击还原 */
 async function revertByIdsEfc() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要还原的数据!`);

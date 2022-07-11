@@ -820,12 +820,12 @@ let inited = $ref(false);
 
 const emit = defineEmits([ "selectedIdsChg" ]);
 
-// 表格
+/** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();<#
   if (opts.noExport !== true) {
 #>
 
-// 导出Excel
+/** 导出Excel */
 async function exportClk() {
   const id = await exportExcel(search, [ sort ]);
   downloadById(id);
@@ -833,7 +833,7 @@ async function exportClk() {
   }
 #>
 
-// 搜索
+/** 搜索 */
 function initSearch() {
   return <<#=Table_Up#>Search>{
     is_deleted: 0,
@@ -842,19 +842,19 @@ function initSearch() {
 
 let search = $ref(initSearch());
 
-// 搜索
+/** 搜索 */
 async function searchClk() {
   await dataGrid(true);
 }
 
-// 重置搜索
+/** 重置搜索 */
 async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   await searchClk();
 }
 
-// 清空搜索框事件
+/** 清空搜索框事件 */
 async function searchIptClr() {
   await searchClk();
 }
@@ -1000,7 +1000,7 @@ const propsNotInSearch: string[] = [
   "selectedIds",
 ];
 
-// 内置搜索条件
+/** 内置搜索条件 */
 const builtInSearch: <#=Table_Up#>Search = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
@@ -1025,7 +1025,7 @@ const builtInSearch: <#=Table_Up#>Search = $computed(() => {
   return Object.fromEntries(entries) as unknown as <#=Table_Up#>Search;
 });
 
-// 内置变量
+/** 内置变量 */
 const builtInModel: <#=Table_Up#>Model = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
@@ -1055,7 +1055,7 @@ const builtInModel: <#=Table_Up#>Model = $computed(() => {
   return Object.fromEntries(entries) as unknown as <#=Table_Up#>Model;
 });
 
-// 分页功能
+/** 分页功能 */
 let {
   page,
   pageSizes,
@@ -1063,7 +1063,7 @@ let {
   pgCurrentChg,
 } = $(usePage<<#=Table_Up#>Model>(dataGrid));
 
-// 表格选择功能
+/** 表格选择功能 */
 let {
   selectedIds,
   selectChg,
@@ -1080,14 +1080,14 @@ watch(
   },
 );
 
-// 取消已选择筛选
+/** 取消已选择筛选 */
 async function clearSelect() {
   selectedIds = [ ];
   idsChecked = 0;
   await dataGrid(true);
 }
 
-// 若传进来的参数或者url有selectedIds，则使用传进来的选中行
+/** 若传进来的参数或者url有selectedIds，则使用传进来的选中行 */
 watch(
   () => props.selectedIds,
   (val) => {
@@ -1106,7 +1106,7 @@ watch(
 
 let idsChecked = $ref<0|1>(0);
 
-// 表格数据
+/** 表格数据 */
 let tableData: <#=Table_Up#>Model[] = $ref([ ]);
 
 let tableColumns: ColumnType[] = $ref([<#
@@ -1207,7 +1207,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 ]);
 
-// 表格列
+/** 表格列 */
 let {
   headerDragend,
   resetColumns,
@@ -1265,7 +1265,7 @@ let <#=foreignTable#>4SelectV2 = $computed(() => {
 }
 #>
 
-// 获取下拉框列表
+/** 获取下拉框列表 */
 async function getSelectListEfc() {<#
   if (foreignTableArr.length > 0) {
   #>
@@ -1291,13 +1291,9 @@ async function getSelectListEfc() {<#
         pgSize: SELECT_V2_SIZE,
       },
       [
-        {<#
-          if (defaultSort && defaultSort.prop) {
-        #>
-          prop: "<#=defaultSort.prop#>",
-          order: "<#=defaultSort.order#>",<#
-          }
-        #>
+        {
+          prop: "<#=defaultSort && defaultSort.prop || ""#>",
+          order: "<#=defaultSort && defaultSort.order || "ascending"#>",
         },
       ],
       {
@@ -1318,7 +1314,7 @@ for (let i = 0; i < foreignTableArr.length; i++) {
   const column_comment = foreignKeyCommentArr[i];
 #>
 
-// <#=column_comment#>下拉框远程搜索
+/** <#=column_comment#>下拉框远程搜索 */
 async function <#=foreignTable#>FilterEfc(query: string) {
   <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>(
     {
@@ -1328,13 +1324,9 @@ async function <#=foreignTable#>FilterEfc(query: string) {
       pgSize: SELECT_V2_SIZE,
     },
     [
-      {<#
-        if (defaultSort && defaultSort.prop) {
-      #>
-        prop: "<#=defaultSort.prop#>",
-        order: "<#=defaultSort.order#>",<#
-        }
-      #>
+      {
+        prop: "<#=defaultSort && defaultSort.prop || ""#>",
+        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
       },
     ],
     {
@@ -1345,7 +1337,7 @@ async function <#=foreignTable#>FilterEfc(query: string) {
 }
 #>
 
-// 刷新表格
+/** 刷新表格 */
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
@@ -1378,7 +1370,7 @@ async function dataGrid(isCount = false) {
 if (defaultSort && defaultSort.prop) {
 #>
 
-// 排序
+/** 排序 */
 let sort: Sort = $ref({
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
@@ -1386,7 +1378,7 @@ let sort: Sort = $ref({
 } else {
 #>
 
-// 排序
+/** 排序 */
 let sort: Sort = $ref({
   prop: "",
   order: "ascending",
@@ -1394,7 +1386,7 @@ let sort: Sort = $ref({
 }
 #>
 
-// 排序
+/** 排序 */
 async function sortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=Table_Up#>Model> } & Sort,
 ) {
@@ -1417,7 +1409,7 @@ async function linkAttChg(row: <#=Table_Up#>Model, key: string) {<#
 if (hasSummary) {
 #>
 
-// 合计
+/** 合计 */
 let summarys = $ref({ });
 
 async function dataSummary() {
@@ -1444,7 +1436,7 @@ function summaryMethod(
 if (opts.noAdd !== true) {
 #>
 
-// 打开增加页面
+/** 打开增加页面 */
 async function openAdd() {
   const dialogResult = await detailRef.showDialog({
     title: "增加",
@@ -1492,7 +1484,7 @@ async function openUploadClk() {
 if (opts.noEdit !== true) {
 #>
 
-// 打开修改页面
+/** 打开修改页面 */
 async function openEdit() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要编辑的数据!`);
@@ -1523,7 +1515,7 @@ async function openEdit() {
 if (opts.noDelete !== true) {
 #>
 
-// 点击删除
+/** 点击删除 */
 async function deleteByIdsEfc() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要删除的数据!`);
@@ -1557,7 +1549,7 @@ async function deleteByIdsEfc() {
 if (opts.noRevert !== true) {
 #>
 
-// 点击还原
+/** 点击还原 */
 async function revertByIdsEfc() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要还原的数据!`);

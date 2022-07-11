@@ -5,11 +5,12 @@ import {
 } from "element-plus";
 import { useRoute } from "vue-router";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
+import { PageInput } from "@/typings/types";
 
 export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
   // 分页
-  let page = $ref({
+  let page: PageInput & { size: number, current: number, total: number } = $ref({
     size: pageSizes[0],
     current: 1,
     total: 0,
@@ -218,7 +219,7 @@ export function useTableColumns<T>(
   
   let tableColumn0s = [ ...tableColumns.value ];
   
-  let tableColumn1s: ColumnType[] = undefined;
+  let tableColumn1s: ColumnType[]|undefined = undefined;
   
   const persistKey = `TableColumns-${ routePath }--${ opt?.persistKey }`;
   

@@ -40,7 +40,7 @@ export const useDraggable = (
     const maxTop = clientHeight - targetTop - 50 + offsetY;
 
     const onMousemove = (e: MouseEvent) => {
-      let target = e.target as HTMLElement;
+      let target: HTMLElement|null = e.target as HTMLElement;
       for (let i = 0; i < 5; i++) {
         if (!target) return;
         if (target.classList.contains("el-dialog")) {

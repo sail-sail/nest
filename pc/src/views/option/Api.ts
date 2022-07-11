@@ -1,6 +1,7 @@
 import {
   Query,
   Mutation,
+  PageInput,
   OptionModel,
   OptionSearch,
   OptionInput,
@@ -8,19 +9,21 @@ import {
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { Page, Sort } from "@/utils/page.model";
+import {
+  Sort,
+} from "element-plus/lib/components/table/src/table/defaults";
 
 /**
  * 根据搜索条件查找数据
  * @export findAll
  * @param {OptionSearch} search?
- * @param {Page} page
+ * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: OptionSearch,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -53,13 +56,13 @@ export async function findAll(
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
  * @param {OptionSearch} search?
- * @param {Page} page?
+ * @param {PageInput} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAllAndCount(
   search?: OptionSearch,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {

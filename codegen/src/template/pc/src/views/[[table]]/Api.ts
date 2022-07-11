@@ -11,6 +11,7 @@ importForeignTables.push(Table_Up);
 #>import {
   Query,
   Mutation,
+  PageInput,
   <#=Table_Up#>Model,
   <#=Table_Up#>Search,
   <#=Table_Up#>Input,
@@ -18,7 +19,9 @@ importForeignTables.push(Table_Up);
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
 import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
-import { Page, Sort } from "@/utils/page.model";<#
+import {
+  Sort,
+} from "element-plus/lib/components/table/src/table/defaults";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -46,13 +49,13 @@ import { <#=Foreign_Table_Up#>Search } from "#/types";<#
  * 根据搜索条件查找数据
  * @export findAll
  * @param {<#=Table_Up#>Search} search?
- * @param {Page} page
+ * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: <#=Table_Up#>Search,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -128,13 +131,13 @@ export async function findAll(
  * 根据搜索条件和分页查找数据和总数
  * @export findAllAndCount
  * @param {<#=Table_Up#>Search} search?
- * @param {Page} page?
+ * @param {PageInput} page?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAllAndCount(
   search?: <#=Table_Up#>Search,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -438,7 +441,7 @@ for (let i = 0; i < columns.length; i++) {
 
 export async function findAllAndCount<#=foreignTableUp#>(
   search?: <#=Foreign_Table_Up#>Search,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
@@ -470,7 +473,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
 
 export async function findAll<#=foreignTableUp#>(
   search?: <#=Foreign_Table_Up#>Search,
-  page?: Page,
+  page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {

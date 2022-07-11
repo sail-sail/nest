@@ -57,7 +57,7 @@ export async function getMenus(
 
 // 清空缓存
 export async function clearCache(
-  variables?: unknown,
+  variables?: { [key: string]: any; },
   opt?: GqlOpt,
 ): Promise<any> {
   const data = await gqlQuery({
