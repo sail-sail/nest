@@ -283,6 +283,20 @@
               align="center"
               show-overflow-tooltip
             >
+              <template #default="{ row, column }">
+                <template v-if="row.type === 'text'">
+                  {{ row[column.property] }}
+                </template>
+                <template v-else-if="row.type === 'download'">
+                  <el-link
+                    v-if="row.state === 'success'"
+                    :type="row.downloaded ? 'info' : 'primary'"
+                    @click="downloadById(row[column.property]);row.downloaded = true;"
+                  >
+                    下载
+                  </el-link>
+                </template>
+              </template>
             </el-table-column>
           </template>
           
