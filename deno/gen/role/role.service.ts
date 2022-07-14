@@ -1,6 +1,5 @@
-import { Context } from "/lib/context.ts";
+import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
-import { Page, Sort } from "/lib/page.model.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
@@ -8,19 +7,25 @@ import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import {
-  RoleModel,
-  RoleSearch,
+  type SearchExtra,
+} from "/lib/dao_util.ts";
+
+import {
+  type RoleModel,
+  type RoleSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 import * as roleDao from "./role.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {RoleSearch} search? 搜索条件
+ * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: RoleSearch,
+  search?: RoleSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const result = await roleDao.findCount(context, search);
   return result;
@@ -28,16 +33,16 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {RoleSearch} search? 搜索条件
- * @param {Page} page? 分页条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {PageInput} page? 分页条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<RoleModel[]>} 
  */
 export async function findAll(
   context: Context,
-  search?: RoleSearch,
-  page?: Page,
-  sort?: Sort|Sort[],
+  search?: RoleSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
 ): Promise<RoleModel[]> {
   const result: RoleModel[] = await roleDao.findAll(context, search, page, sort);
   return result;
@@ -45,12 +50,12 @@ export async function findAll(
 
 /**
  * 根据条件查找第一条数据
- * @param {RoleSearch} search? 搜索条件
+ * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<RoleModel>} 
  */
 export async function findOne(
   context: Context,
-  search?: RoleSearch,
+  search?: RoleSearch & { $extra?: SearchExtra[] },
 ): Promise<RoleModel> {
   const result = await roleDao.findOne(context, search);
   return result;
@@ -71,12 +76,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {RoleSearch} search? 搜索条件
+ * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
-  search?: RoleSearch,
+  search?: RoleSearch & { $extra?: SearchExtra[] },
 ): Promise<boolean> {
   const result = await roleDao.exist(context, search);
   return result;
@@ -196,14 +201,14 @@ export async function importFile(
 
 /**
  * 导出Excel
- * @param {RoleSearch} search? 搜索条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
   context: Context,
-  search?: RoleSearch,
-  sort?: Sort|Sort[],
+  search?: RoleSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
   const buffer0 = await getTemplate(`role.xlsx`);

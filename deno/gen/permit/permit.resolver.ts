@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as permitService from "./permit.service.ts";
+
 import {
-  PermitModel,
-  PermitSearch,
+  type PermitModel,
+  type PermitSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountPermit(
   context: Context,
-  search?: PermitSearch,
+  search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await permitService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountPermit(
  */
 export async function findAllPermit(
   context: Context,
-  search?: PermitSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: PermitSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await permitService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllPermit(
  */
 export async function exportExcelPermit(
   context: Context,
-  search?: PermitSearch,
-  sort?: Sort[],
+  search?: PermitSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await permitService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelPermit(
  */
 export async function findOnePermit(
   context: Context,
-  search?: PermitSearch,
+  search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await permitService.findOne(context, search);
   return result;

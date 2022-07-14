@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as background_taskService from "./background_task.service.ts";
+
 import {
-  Background_TaskModel,
-  Background_TaskSearch,
+  type Background_TaskModel,
+  type Background_TaskSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountBackground_task(
   context: Context,
-  search?: Background_TaskSearch,
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await background_taskService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountBackground_task(
  */
 export async function findAllBackground_task(
   context: Context,
-  search?: Background_TaskSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await background_taskService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllBackground_task(
  */
 export async function exportExcelBackground_task(
   context: Context,
-  search?: Background_TaskSearch,
-  sort?: Sort[],
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await background_taskService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelBackground_task(
  */
 export async function findOneBackground_task(
   context: Context,
-  search?: Background_TaskSearch,
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await background_taskService.findOne(context, search);
   return result;

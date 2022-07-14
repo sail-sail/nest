@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as menuService from "./menu.service.ts";
+
 import {
-  MenuModel,
-  MenuSearch,
+  type MenuModel,
+  type MenuSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountMenu(
   context: Context,
-  search?: MenuSearch,
+  search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await menuService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountMenu(
  */
 export async function findAllMenu(
   context: Context,
-  search?: MenuSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: MenuSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await menuService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllMenu(
  */
 export async function exportExcelMenu(
   context: Context,
-  search?: MenuSearch,
-  sort?: Sort[],
+  search?: MenuSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await menuService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelMenu(
  */
 export async function findOneMenu(
   context: Context,
-  search?: MenuSearch,
+  search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await menuService.findOne(context, search);
   return result;

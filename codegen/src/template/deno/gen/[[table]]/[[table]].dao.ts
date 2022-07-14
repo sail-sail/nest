@@ -11,19 +11,25 @@ if (!hasTenant_id) {
 #> require-await<#
 }
 #>
-import { Context } from "/lib/context.ts";
+import { type Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
-import { Page, Sort } from "/lib/page.model.ts";
 import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
 import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
-import { many2manyUpdate, setModelIds } from "/lib/dao_util.ts";
+import {
+  many2manyUpdate,
+  setModelIds,
+  type SearchExtra,
+} from "/lib/dao_util.ts";
 
 import {
-  <#=Table_Up#>Model,
-  <#=Table_Up#>Search,
+  SortOrderEnum,
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
@@ -69,7 +75,7 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
@@ -161,6 +167,16 @@ async function getWhereQuery(
   #><#
   }
   #>
+  if (search?.$extra) {
+    const extras = search.$extra;
+    for (let i = 0; i < extras.length; i++) {
+      const extra = extras[i];
+      const queryTmp = await extra(context, args);
+      if (queryTmp) {
+        whereQuery += ` ${ queryTmp }`;
+      }
+    }
+  }
   return whereQuery;
 }
 
@@ -224,12 +240,12 @@ function getFromQuery(
 
 /**
  * 根据条件查找总数据数
- * @param {<#=Table_Up#>Search} search?
+ * @param { & { $extra?: SearchExtra[] }} search?
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findCount";
@@ -273,14 +289,14 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找数据
  * @param {Context} context
- * @param {<#=Table_Up#>Search} search? 搜索条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
   context: Context,
-  search?: <#=Table_Up#>Search,
-  page?: Page,
-  sort?: Sort|Sort[],
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
 ) {
   const table = "<#=table#>";
   const method = "findAll";
@@ -325,13 +341,13 @@ export async function findAll(
     sort = [
       {
         prop: "<#=defaultSort.prop#>",
-        order: "<#=defaultSort.order#>",
+        order: <#=(defaultSort.order || "asc").startsWith("asc") ? "SortOrderEnum.Asc" : "SortOrderEnum.Desc"#>,
       },
     ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item: Sort) => item.prop);
+  sort = sort.filter((item) => item.prop);
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -350,7 +366,7 @@ export async function findAll(
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item: Sort) => item?.prop);
+  sort = sort.filter((item) => item?.prop);
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -520,15 +536,15 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {<#=Table_Up#>Search | Partial<<#=Table_Up#>Model>} search0
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] } | Partial<<#=Table_Up#>Model>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: <#=Table_Up#>Search | Partial<<#=Table_Up#>Model>,
+  search0: <#=Table_Up#>Search & { $extra?: SearchExtra[] } | Partial<<#=Table_Up#>Model>,
 ) {
   const { uniqueKeys } = getUniqueKeys(context);
   if (!uniqueKeys || uniqueKeys.length === 0) return;
-  const search: <#=Table_Up#>Search = { };
+  const search: <#=Table_Up#>Search & { $extra?: SearchExtra[] } = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -603,12 +619,12 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找合计
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>}
  */
 export async function findSummary(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=table#>";
   const method = "findSummary";
@@ -647,14 +663,14 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=Table_Up#>Search} search?
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
  * @return {Promise<<#=Table_Up#>Model>} 
  */
 export async function findOne(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Model> {
-  const page: Page = {
+  const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
@@ -678,12 +694,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=Table_Up#>Search} search?
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
  * @return {Promise<boolean>} 
  */
 export async function exist(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<boolean> {
   const model = await findOne(context, search);
   const exist = !!model;

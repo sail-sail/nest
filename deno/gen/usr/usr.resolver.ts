@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as usrService from "./usr.service.ts";
+
 import {
-  UsrModel,
-  UsrSearch,
+  type UsrModel,
+  type UsrSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountUsr(
   context: Context,
-  search?: UsrSearch,
+  search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await usrService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountUsr(
  */
 export async function findAllUsr(
   context: Context,
-  search?: UsrSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: UsrSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await usrService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllUsr(
  */
 export async function exportExcelUsr(
   context: Context,
-  search?: UsrSearch,
-  sort?: Sort[],
+  search?: UsrSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await usrService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelUsr(
  */
 export async function findOneUsr(
   context: Context,
-  search?: UsrSearch,
+  search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await usrService.findOne(context, search);
   return result;

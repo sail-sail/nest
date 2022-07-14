@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as tenantService from "./tenant.service.ts";
+
 import {
-  TenantModel,
-  TenantSearch,
+  type TenantModel,
+  type TenantSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountTenant(
   context: Context,
-  search?: TenantSearch,
+  search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await tenantService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountTenant(
  */
 export async function findAllTenant(
   context: Context,
-  search?: TenantSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: TenantSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await tenantService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllTenant(
  */
 export async function exportExcelTenant(
   context: Context,
-  search?: TenantSearch,
-  sort?: Sort[],
+  search?: TenantSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await tenantService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelTenant(
  */
 export async function findOneTenant(
   context: Context,
-  search?: TenantSearch,
+  search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await tenantService.findOne(context, search);
   return result;

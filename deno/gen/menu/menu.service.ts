@@ -1,6 +1,5 @@
-import { Context } from "/lib/context.ts";
+import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
-import { Page, Sort } from "/lib/page.model.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
@@ -8,19 +7,25 @@ import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import {
-  MenuModel,
-  MenuSearch,
+  type SearchExtra,
+} from "/lib/dao_util.ts";
+
+import {
+  type MenuModel,
+  type MenuSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 import * as menuDao from "./menu.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {MenuSearch} search? 搜索条件
+ * @param {MenuSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: MenuSearch,
+  search?: MenuSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const result = await menuDao.findCount(context, search);
   return result;
@@ -28,16 +33,16 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {MenuSearch} search? 搜索条件
- * @param {Page} page? 分页条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {MenuSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {PageInput} page? 分页条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<MenuModel[]>} 
  */
 export async function findAll(
   context: Context,
-  search?: MenuSearch,
-  page?: Page,
-  sort?: Sort|Sort[],
+  search?: MenuSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
 ): Promise<MenuModel[]> {
   const result: MenuModel[] = await menuDao.findAll(context, search, page, sort);
   return result;
@@ -45,12 +50,12 @@ export async function findAll(
 
 /**
  * 根据条件查找第一条数据
- * @param {MenuSearch} search? 搜索条件
+ * @param {MenuSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<MenuModel>} 
  */
 export async function findOne(
   context: Context,
-  search?: MenuSearch,
+  search?: MenuSearch & { $extra?: SearchExtra[] },
 ): Promise<MenuModel> {
   const result = await menuDao.findOne(context, search);
   return result;
@@ -71,12 +76,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {MenuSearch} search? 搜索条件
+ * @param {MenuSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
-  search?: MenuSearch,
+  search?: MenuSearch & { $extra?: SearchExtra[] },
 ): Promise<boolean> {
   const result = await menuDao.exist(context, search);
   return result;
@@ -200,14 +205,14 @@ export async function importFile(
 
 /**
  * 导出Excel
- * @param {MenuSearch} search? 搜索条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {MenuSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
   context: Context,
-  search?: MenuSearch,
-  sort?: Sort|Sort[],
+  search?: MenuSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
   const buffer0 = await getTemplate(`menu.xlsx`);

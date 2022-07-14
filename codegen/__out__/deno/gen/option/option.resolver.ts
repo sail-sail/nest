@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as optionService from "./option.service.ts";
+
 import {
-  OptionModel,
-  OptionSearch,
+  type OptionModel,
+  type OptionSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountOption(
   context: Context,
-  search?: OptionSearch,
+  search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await optionService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountOption(
  */
 export async function findAllOption(
   context: Context,
-  search?: OptionSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: OptionSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await optionService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllOption(
  */
 export async function exportExcelOption(
   context: Context,
-  search?: OptionSearch,
-  sort?: Sort[],
+  search?: OptionSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await optionService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelOption(
  */
 export async function findOneOption(
   context: Context,
-  search?: OptionSearch,
+  search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await optionService.findOne(context, search);
   return result;

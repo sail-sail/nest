@@ -5,9 +5,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
 }).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import { Context } from "/lib/context.ts";
+#>import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
-import { Page, Sort } from "/lib/page.model.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
@@ -15,8 +14,14 @@ import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import {
-  <#=Table_Up#>Model,
-  <#=Table_Up#>Search,
+  type SearchExtra,
+} from "/lib/dao_util.ts";
+
+import {
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
@@ -27,12 +32,12 @@ import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const result = await <#=table#>Dao.findCount(context, search);
   return result;
@@ -40,16 +45,16 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
- * @param {Page} page? 分页条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {PageInput} page? 分页条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<<#=Table_Up#>Model[]>} 
  */
 export async function findAll(
   context: Context,
-  search?: <#=Table_Up#>Search,
-  page?: Page,
-  sort?: Sort|Sort[],
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
 ): Promise<<#=Table_Up#>Model[]> {<#
     if (opts.filterDataByCreateUsr) {
   #>
@@ -69,12 +74,12 @@ if (hasSummary) {
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>} 
  */
 export async function findSummary(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Summary> {
   const result = await <#=table#>Dao.findSummary(context, search);
   return result;
@@ -84,12 +89,12 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Model>} 
  */
 export async function findOne(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Model> {
   const result = await <#=table#>Dao.findOne(context, search);
   return result;
@@ -110,12 +115,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<boolean> {
   const result = await <#=table#>Dao.exist(context, search);
   return result;
@@ -266,14 +271,14 @@ export async function importFile(
 
 /**
  * 导出Excel
- * @param {<#=Table_Up#>Search} search? 搜索条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
   context: Context,
-  search?: <#=Table_Up#>Search,
-  sort?: Sort|Sort[],
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
   const buffer0 = await getTemplate(`<#=table#>.xlsx`);

@@ -1,8 +1,11 @@
 import { shortUuidV4 } from "/lib/string_util.ts";
-import { Context } from "/lib/context.ts";
+import { type Context } from "/lib/context.ts";
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
-import { AuthModel } from "/lib/auth/auth.constants.ts";
+import { type AuthModel } from "/lib/auth/auth.constants.ts";
+import { type QueryArgs } from "./query_args.ts";
+
+export type SearchExtra = (context: Context, args?: QueryArgs) => Promise<string>;
 
 export async function setModelIds(
   context: Context,

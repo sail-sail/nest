@@ -1,6 +1,5 @@
-import { Context } from "/lib/context.ts";
+import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
-import { Page, Sort } from "/lib/page.model.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
@@ -8,19 +7,25 @@ import { getTemplate, getImportFileRows } from "/lib/excel_util.ts";
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import {
-  Background_TaskModel,
-  Background_TaskSearch,
+  type SearchExtra,
+} from "/lib/dao_util.ts";
+
+import {
+  type Background_TaskModel,
+  type Background_TaskSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: Background_TaskSearch,
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const result = await background_taskDao.findCount(context, search);
   return result;
@@ -28,16 +33,16 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {Background_TaskSearch} search? 搜索条件
- * @param {Page} page? 分页条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {PageInput} page? 分页条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<Background_TaskModel[]>} 
  */
 export async function findAll(
   context: Context,
-  search?: Background_TaskSearch,
-  page?: Page,
-  sort?: Sort|Sort[],
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
 ): Promise<Background_TaskModel[]> {
   
   search = search || { };
@@ -51,12 +56,12 @@ export async function findAll(
 
 /**
  * 根据条件查找第一条数据
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<Background_TaskModel>} 
  */
 export async function findOne(
   context: Context,
-  search?: Background_TaskSearch,
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ): Promise<Background_TaskModel> {
   const result = await background_taskDao.findOne(context, search);
   return result;
@@ -77,12 +82,12 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
-  search?: Background_TaskSearch,
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ): Promise<boolean> {
   const result = await background_taskDao.exist(context, search);
   return result;
@@ -206,14 +211,14 @@ export async function importFile(
 
 /**
  * 导出Excel
- * @param {Background_TaskSearch} search? 搜索条件
- * @param {Sort|Sort[]} sort? 排序
+ * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
   context: Context,
-  search?: Background_TaskSearch,
-  sort?: Sort|Sort[],
+  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
   const buffer0 = await getTemplate(`background_task.xlsx`);

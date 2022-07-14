@@ -9,6 +9,10 @@ import { createPool as genericCreatePool, Pool as GenPool } from "generic_pool";
 import { QueryArgs } from "/lib/query_args.ts";
 import { getEnv } from "/lib/env.ts";
 import { AUTHORIZATION } from "./auth/auth.constants.ts";
+import {
+  SortOrderEnum,
+  type InputMaybe,
+} from "../gen/types.ts";
 
 declare global {
   interface Window {
@@ -435,7 +439,7 @@ export class Context {
     return mysql2.escape(value, forbidQualified, timeZone);
   }
   
-  escapeDec(orderDec?: string) {
+  escapeDec(orderDec?: InputMaybe<SortOrderEnum>|"asc"|"desc") {
     if (!orderDec) return "asc";
     if (orderDec.startsWith("asc")) return "asc";
     if (orderDec.startsWith("desc")) return "desc";

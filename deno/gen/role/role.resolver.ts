@@ -1,10 +1,13 @@
-import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as roleService from "./role.service.ts";
+
 import {
-  RoleModel,
-  RoleSearch,
+  type RoleModel,
+  type RoleSearch,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -12,7 +15,7 @@ import {
  */
 export async function findCountRole(
   context: Context,
-  search?: RoleSearch,
+  search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await roleService.findCount(context, search);
   return result;
@@ -23,9 +26,9 @@ export async function findCountRole(
  */
 export async function findAllRole(
   context: Context,
-  search?: RoleSearch,
-  page?: Page,
-  sort?: Sort[],
+  search?: RoleSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await roleService.findAll(context, search, page, sort);
   return result;
@@ -36,8 +39,8 @@ export async function findAllRole(
  */
 export async function exportExcelRole(
   context: Context,
-  search?: RoleSearch,
-  sort?: Sort[],
+  search?: RoleSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await roleService.exportExcel(context, search, sort);
   return result;
@@ -48,7 +51,7 @@ export async function exportExcelRole(
  */
 export async function findOneRole(
   context: Context,
-  search?: RoleSearch,
+  search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await roleService.findOne(context, search);
   return result;

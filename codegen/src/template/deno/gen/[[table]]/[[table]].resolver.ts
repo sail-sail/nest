@@ -5,13 +5,16 @@ const Table_Up = tableUp.split("_").map(function(item) {
 }).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>import { Context } from "/lib/context.ts";
-import { Page, Sort } from "/lib/page.model.ts";
+#>import { type Context } from "/lib/context.ts";
+import { type SearchExtra } from "/lib/dao_util.ts";
 
 import * as <#=table#>Service from "./<#=table#>.service.ts";
+
 import {
-  <#=Table_Up#>Model,
-  <#=Table_Up#>Search,
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
+  type PageInput,
+  type SortInput,
 } from "/gen/types.ts";
 
 /**
@@ -19,7 +22,7 @@ import {
  */
 export async function findCount<#=tableUp#>(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const result = await <#=table#>Service.findCount(context, search);
   return result;
@@ -30,9 +33,9 @@ export async function findCount<#=tableUp#>(
  */
 export async function findAll<#=tableUp#>(
   context: Context,
-  search?: <#=Table_Up#>Search,
-  page?: Page,
-  sort?: Sort[],
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
 ) {
   const result = await <#=table#>Service.findAll(context, search, page, sort);
   return result;
@@ -43,8 +46,8 @@ export async function findAll<#=tableUp#>(
  */
 export async function exportExcel<#=tableUp#>(
   context: Context,
-  search?: <#=Table_Up#>Search,
-  sort?: Sort[],
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const result = await <#=table#>Service.exportExcel(context, search, sort);
   return result;
@@ -57,7 +60,7 @@ if (hasSummary) {
  */
 export async function findSummary<#=tableUp#>(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const result = await <#=table#>Service.findSummary(context, search);
   return result;
@@ -70,7 +73,7 @@ export async function findSummary<#=tableUp#>(
  */
 export async function findOne<#=tableUp#>(
   context: Context,
-  search?: <#=Table_Up#>Search,
+  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const result = await <#=table#>Service.findOne(context, search);
   return result;
