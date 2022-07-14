@@ -1,8 +1,4 @@
 {
-  "typescript.tsdk": "${workspaceRoot}\\pc\\node_modules\\typescript\\lib",
-  "vsicons.presets.angular": true,
-  "editor.trimAutoWhitespace": false,
-  "files.trimTrailingWhitespace": false,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -50,15 +46,14 @@
     "uni/dist/**": true,
     "**/.rsw": true,
     "**/@rsw": true
-  }
-  ,"npm.registry": "https://registry.npmmirror.com"
-  ,"npm.updateStrategy": "LATEST"
-  
-  ,"deno.enable": true
-  ,"deno.enablePaths": [
+  },
+  "npm.registry": "https://registry.npmmirror.com",
+  "npm.updateStrategy": "LATEST",
+  "deno.enable": true,
+  "deno.enablePaths": [
     "./deno"
-  ]
-  ,"deno.lint": true
-  ,"deno.unstable": true
-  ,"deno.importMap": "./deno/import_map.json"
+  ],
+  "deno.lint": true,
+  "deno.unstable": true,
+  "deno.importMap": "./deno/import_map.json"
 }
