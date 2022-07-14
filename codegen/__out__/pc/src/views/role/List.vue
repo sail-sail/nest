@@ -273,7 +273,7 @@
                   @click="menu_idsClk(row)"
                   class="min-w-[30px]"
                 >
-                  {{ row[column.property].length }}
+                  {{ row[column.property]?.length || 0 }}
                 </el-link>
               </template>
             </el-table-column>
@@ -296,7 +296,7 @@
     </div>
   </div>
   <ListSelectDialog ref="menu_idsListSelectDialogRef" v-slot="{ selectedIds }">
-    <MenuList :selectedIds="selectedIds" @selectedIdsChg="menu_idsListSelectDialogRef.selectedIdsChg($event)"></MenuList>
+    <MenuList :selectedIds="selectedIds" @selectedIdsChg="menu_idsListSelectDialogRef && menu_idsListSelectDialogRef.selectedIdsChg($event)"></MenuList>
   </ListSelectDialog>
   <Detail
     ref="detailRef"
@@ -387,7 +387,7 @@ let inited = $ref(false);
 const emit = defineEmits([ "selectedIdsChg" ]);
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef: InstanceType<typeof ElTable>|undefined = $ref();
 
 /** 导出Excel */
 async function exportClk() {
@@ -588,7 +588,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();
+let detailRef: InstanceType<typeof Detail>|undefined = $ref();
 
 let menuInfo: {
   count: number;
@@ -699,6 +699,9 @@ async function sortChange(
 
 /** 打开增加页面 */
 async function openAdd() {
+  if (!detailRef) {
+    return;
+  }
   const dialogResult = await detailRef.showDialog({
     title: "增加",
     action: "add",
@@ -713,7 +716,7 @@ async function openAdd() {
   }
 }
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+let uploadFileDialogRef: InstanceType<typeof UploadFileDialog>|undefined = $ref();
 
 /**
  * 弹出导入窗口
@@ -734,6 +737,9 @@ async function openUploadClk() {
 
 /** 打开修改页面 */
 async function openEdit() {
+  if (!detailRef) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要编辑的数据!`);
     return;
@@ -830,7 +836,8 @@ watch(
     immediate: true,
   },
 );
-let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+
+let menu_idsListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
 
 async function menu_idsClk(row: RoleModel) {
   if (!menu_idsListSelectDialogRef) return;

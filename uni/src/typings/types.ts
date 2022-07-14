@@ -877,7 +877,7 @@ export type RoleModel = {
   /** 名称 */
   lbl: Scalars['String'];
   /** 菜单ID */
-  menu_ids: Array<Scalars['ID']>;
+  menu_ids?: Maybe<Array<Scalars['ID']>>;
   /** 备注 */
   rem: Scalars['String'];
 };
@@ -957,7 +957,7 @@ export type TenantModel = {
   /** 最大用户数 */
   max_usr_num: Scalars['Int'];
   /** 菜单ID */
-  menu_ids: Array<Scalars['ID']>;
+  menu_ids?: Maybe<Array<Scalars['ID']>>;
   /** 排序 */
   order_by: Scalars['Int'];
   /** 备注 */
@@ -1030,7 +1030,7 @@ export type UsrModel = {
   /** 备注 */
   rem: Scalars['String'];
   /** 角色ID */
-  role_ids: Array<Scalars['ID']>;
+  role_ids?: Maybe<Array<Scalars['ID']>>;
   /** 用户名 */
   username: Scalars['String'];
 };

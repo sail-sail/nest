@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./option.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type OptionModel {
   "ID"
   id: ID!
@@ -70,4 +71,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsOption(ids: [ID]!): Int!
 }
+
 `);

@@ -450,7 +450,7 @@ let inited = $ref(false);
 const emit = defineEmits([ "selectedIdsChg" ]);
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef: InstanceType<typeof ElTable>|undefined = $ref();
 
 /** 搜索 */
 function initSearch() {
@@ -666,7 +666,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();
+let detailRef: InstanceType<typeof Detail>|undefined = $ref();
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {

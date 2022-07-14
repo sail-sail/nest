@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./usr.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type UsrModel {
   "ID"
   id: ID!
@@ -16,7 +17,7 @@ type UsrModel {
   "启用名称"
   _is_enabled: String
   "角色ID"
-  role_ids: [ID!]!
+  role_ids: [ID!]
   "角色名称"
   _role_ids: [String!]
   "备注"
@@ -91,4 +92,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsUsr(ids: [ID]!): Int!
 }
+
 `);

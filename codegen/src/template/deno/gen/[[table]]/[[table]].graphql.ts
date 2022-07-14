@@ -9,13 +9,14 @@ const hasSummary = columns.some((column) => column.showSummary);
 import * as resolvers from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type <#=Table_Up#>Model {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
-    const is_nullable = column.IS_NULLABLE === "YES";
+    let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     let _data_type = "String";
@@ -25,6 +26,7 @@ type <#=Table_Up#>Model {<#
     else if (foreignKey && foreignKey.multiple) {
       data_type = '[ID!]';
       _data_type = "[String!]";
+      is_nullable = true;
     }
     else if (foreignKey && !foreignKey.multiple) {
       data_type = 'ID';
@@ -339,4 +341,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIds<#=tableUp#>(ids: [ID]!): Int!
 }
+
 `);

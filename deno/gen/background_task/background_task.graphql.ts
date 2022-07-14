@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./background_task.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type Background_TaskModel {
   "ID"
   id: ID!
@@ -105,4 +106,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsBackground_task(ids: [ID]!): Int!
 }
+
 `);

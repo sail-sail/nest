@@ -140,7 +140,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
             <el-select
               class="form_input"
               @keyup.enter.native.stop
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
               filterable
@@ -432,9 +431,9 @@ let dialogModel: Partial<<#=Table_Up#>Model> = $ref({<#
 let ids: string[] = $ref([ ]);
 let changedIds: string[] = $ref([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+let formRef: InstanceType<typeof ElForm>|undefined = $ref();
 
-// 表单校验
+/** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -481,7 +480,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   #>
 });
 
-// 下拉框列表<#
+/** 下拉框列表 */<#
 const foreignTableArr3 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -517,7 +516,7 @@ let <#=foreignTable#>Info: {
 }
 #>
 
-// 获取下拉框列表
+/** 获取下拉框列表 */
 async function getSelectListEfc() {
   [<#
     for (let i = 0; i < columns.length; i++) {
@@ -610,7 +609,7 @@ for (let i = 0; i < columns.length; i++) {
   foreignTableArr4.push(foreignTable);
 #>
 
-// <#=column_comment#>下拉框远程搜索
+/** <#=column_comment#>下拉框远程搜索 */
 async function <#=foreignTable#>FilterEfc(query: string) {
   <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>(
     {
@@ -642,10 +641,10 @@ let onCloseResolve = function(value: {
   changedIds: string[];
 }) { };
 
-// 内置变量
+/** 内置变量 */
 let builtInModel: <#=Table_Up#>Model|undefined = $ref();
 
-// 增加时的默认值
+/** 增加时的默认值 */
 async function getDefaultModel() {
   const defaultModel: Partial<<#=Table_Up#>Model> = {<#
     for (let i = 0; i < columns.length; i++) {
@@ -686,7 +685,7 @@ async function getDefaultModel() {
   return defaultModel;
 }
 
-// 打开对话框
+/** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
@@ -749,7 +748,7 @@ async function showDialog(
   return reslut;
 }
 
-// 刷新
+/** 刷新 */
 async function refreshEfc() {
   if (formRef) {
     formRef.clearValidate();
@@ -763,17 +762,17 @@ async function refreshEfc() {
   }
 }
 
-// 点击上一页
+/** 点击上一页 */
 async function prevIdClk() {
   await prevId();
 }
 
-// 点击下一页
+/** 点击下一页 */
 async function nextIdClk() {
   await nextId();
 }
 
-// 下一页
+/** 下一页 */
 async function nextId() {
   if (!dialogModel.id) {
     if (ids && ids.length > 0) {
@@ -794,7 +793,7 @@ async function nextId() {
   return true;
 }
 
-// 上一页
+/** 上一页 */
 async function prevId() {
   if (!dialogModel.id) {
     if (ids && ids.length > 0) {
@@ -813,8 +812,11 @@ async function prevId() {
   return true;
 }
 
-// 确定
+/** 确定 */
 async function saveClk() {
+  if (!formRef) {
+    return;
+  }
   try {
     await formRef.validate();
   } catch (err) {
@@ -854,6 +856,7 @@ async function saveClk() {
   }
 }
 
+/** 点击取消关闭按钮 */
 function cancelClk() {
   dialogVisible = false;
   onCloseResolve({

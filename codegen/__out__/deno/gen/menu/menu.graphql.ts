@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./menu.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type MenuModel {
   "ID"
   id: ID!
@@ -109,4 +110,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsMenu(ids: [ID]!): Int!
 }
+
 `);

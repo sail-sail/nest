@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./role.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type RoleModel {
   "ID"
   id: ID!
@@ -14,7 +15,7 @@ type RoleModel {
   "启用名称"
   _is_enabled: String
   "菜单ID"
-  menu_ids: [ID!]!
+  menu_ids: [ID!]
   "菜单名称"
   _menu_ids: [String!]
 }
@@ -77,4 +78,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsRole(ids: [ID]!): Int!
 }
+
 `);

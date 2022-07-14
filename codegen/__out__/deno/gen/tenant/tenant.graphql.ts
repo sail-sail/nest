@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./tenant.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type TenantModel {
   "ID"
   id: ID!
@@ -18,7 +19,7 @@ type TenantModel {
   "启用名称"
   _is_enabled: String
   "菜单ID"
-  menu_ids: [ID!]!
+  menu_ids: [ID!]
   "菜单名称"
   _menu_ids: [String!]
   "排序"
@@ -104,4 +105,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsTenant(ids: [ID]!): Int!
 }
+
 `);

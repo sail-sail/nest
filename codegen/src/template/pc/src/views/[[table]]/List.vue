@@ -540,7 +540,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
                   @click="<#=column_name#>Clk(row)"
                   class="min-w-[30px]"
                 >
-                  {{ row[column.property].length }}
+                  {{ row[column.property]?.length || 0 }}
                 </el-link>
               </template><#
               }
@@ -594,7 +594,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
     if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
   #>
   <ListSelectDialog ref="<#=column_name#>ListSelectDialogRef" v-slot="{ selectedIds }">
-    <<#=foreignTableUp#>List :selectedIds="selectedIds" @selectedIdsChg="<#=column_name#>ListSelectDialogRef.selectedIdsChg($event)"></<#=foreignTableUp#>List>
+    <<#=foreignTableUp#>List :selectedIds="selectedIds" @selectedIdsChg="<#=column_name#>ListSelectDialogRef && <#=column_name#>ListSelectDialogRef.selectedIdsChg($event)"></<#=foreignTableUp#>List>
   </ListSelectDialog><#
     }
   #><#
@@ -821,7 +821,7 @@ let inited = $ref(false);
 const emit = defineEmits([ "selectedIdsChg" ]);
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+let tableRef: InstanceType<typeof ElTable>|undefined = $ref();<#
   if (opts.noExport !== true) {
 #>
 
@@ -1219,7 +1219,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();<#
+let detailRef: InstanceType<typeof Detail>|undefined = $ref();<#
 const foreignTableTmpArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1438,6 +1438,9 @@ if (opts.noAdd !== true) {
 
 /** 打开增加页面 */
 async function openAdd() {
+  if (!detailRef) {
+    return;
+  }
   const dialogResult = await detailRef.showDialog({
     title: "增加",
     action: "add",
@@ -1459,7 +1462,7 @@ async function openAdd() {
   if (opts.noImport !== true) {
 #>
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+let uploadFileDialogRef: InstanceType<typeof UploadFileDialog>|undefined = $ref();
 
 /**
  * 弹出导入窗口
@@ -1486,6 +1489,9 @@ if (opts.noEdit !== true) {
 
 /** 打开修改页面 */
 async function openEdit() {
+  if (!detailRef) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要编辑的数据!`);
     return;
@@ -1637,7 +1643,8 @@ for (let i = 0; i < columns.length; i++) {
 #><#
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
-let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+
+let <#=column_name#>ListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
 
 async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
   if (!<#=column_name#>ListSelectDialogRef) return;

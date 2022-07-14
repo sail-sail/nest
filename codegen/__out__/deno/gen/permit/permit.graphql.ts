@@ -2,6 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolvers from "./permit.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */ `
+
 type PermitModel {
   "ID"
   id: ID!
@@ -67,4 +68,5 @@ type Mutation {
   "根据ids还原数据"
   revertByIdsPermit(ids: [ID]!): Int!
 }
+
 `);

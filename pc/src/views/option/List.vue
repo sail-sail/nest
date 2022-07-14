@@ -371,7 +371,7 @@ let inited = $ref(false);
 const emit = defineEmits([ "selectedIdsChg" ]);
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+let tableRef: InstanceType<typeof ElTable>|undefined = $ref();
 
 /** 导出Excel */
 async function exportClk() {
@@ -569,7 +569,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();
+let detailRef: InstanceType<typeof Detail>|undefined = $ref();
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
@@ -623,6 +623,9 @@ async function sortChange(
 
 /** 打开增加页面 */
 async function openAdd() {
+  if (!detailRef) {
+    return;
+  }
   const dialogResult = await detailRef.showDialog({
     title: "增加",
     action: "add",
@@ -637,7 +640,7 @@ async function openAdd() {
   }
 }
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+let uploadFileDialogRef: InstanceType<typeof UploadFileDialog>|undefined = $ref();
 
 /**
  * 弹出导入窗口
@@ -658,6 +661,9 @@ async function openUploadClk() {
 
 /** 打开修改页面 */
 async function openEdit() {
+  if (!detailRef) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要编辑的数据!`);
     return;
