@@ -7,7 +7,7 @@
     :class="{ tab_active: item.active }"
     @click="activeTab(item)"
   >
-    <span class="tab_label">{{ item.lbl }}</span>
+    <span class="tab_label" :title="item.lbl">{{ item.lbl }}</span>
     <div class="tab_close_div" v-if="tabs.length > 1">
       <Close class="tab_close" @click.stop="closeClk(item)"/>
     </div>
@@ -69,7 +69,6 @@ async function closeClk(tab: TabInf) {
   display: flex;
 }
 .tab_div {
-  min-width: 80px;
   display: flex;
   position: relative;
   cursor: default;
@@ -96,11 +95,13 @@ async function closeClk(tab: TabInf) {
   background-color: rgba(0,0,0,.8);
 }
 .tab_label {
+  min-width: 80px;
   flex: 1 0 0;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  white-space: nowrap;
 }
 .tab_close_div {
   display: flex;

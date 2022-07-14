@@ -114,16 +114,20 @@ watch(
   }
 );
 
-let tabs_divRef = $ref<HTMLDivElement>();
-let tab_active_lineRef = $ref<HTMLDivElement>();
+let tabs_divRef: HTMLDivElement|undefined = $ref();
+let tab_active_lineRef: HTMLDivElement|undefined = $ref();
 
 function refreshTab_active_line() {
-  const oldTab_active = <HTMLDivElement> tabs_divRef?.getElementsByClassName("tab_active")[0];
-  if (!oldTab_active) {
+  if (!tab_active_lineRef) {
     return;
   }
-  const offsetLeft = oldTab_active.offsetLeft;
-  const offsetWidth = oldTab_active.offsetWidth;
+  const tab_activeEl = tabs_divRef?.getElementsByClassName("tab_active")[0] as HTMLDivElement|undefined;
+  if (!tab_activeEl) {
+    return;
+  }
+  tab_activeEl.scrollIntoView({ block: "center", inline: "center" });
+  const offsetLeft = tab_activeEl.offsetLeft - (tab_activeEl.parentElement?.scrollLeft || 0);
+  const offsetWidth = tab_activeEl.offsetWidth;
   tab_active_lineRef.style.display = "block";
   tab_active_lineRef.style.left = `${ offsetLeft }px`;
   tab_active_lineRef.style.width = `${ offsetWidth }px`;
