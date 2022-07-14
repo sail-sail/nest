@@ -568,13 +568,9 @@ async function getSelectListEfc() {
         pgSize: SELECT_V2_SIZE,
       },
       [
-        {<#
-          if (defaultSort && defaultSort.prop) {
-        #>
-          prop: "<#=defaultSort.prop#>",
-          order: "<#=defaultSort.order#>",<#
-          }
-        #>
+        {
+          prop: "<#=defaultSort && defaultSort.prop || ""#>",
+          order: "<#=defaultSort && defaultSort.order || "ascending"#>",
         },
       ],
       {
@@ -619,13 +615,9 @@ async function <#=foreignTable#>FilterEfc(query: string) {
       pgSize: SELECT_V2_SIZE,
     },
     [
-      {<#
-        if (defaultSort && defaultSort.prop) {
-      #>
-        prop: "<#=defaultSort.prop#>",
-        order: "<#=defaultSort.order#>",<#
-        }
-      #>
+      {
+        prop: "<#=defaultSort && defaultSort.prop || ""#>",
+        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
       },
     ],
     {

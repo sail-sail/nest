@@ -289,6 +289,8 @@ async function getSelectListEfc() {
       },
       [
         {
+          prop: "",
+          order: "ascending",
         },
       ],
       {
@@ -309,6 +311,8 @@ async function roleFilterEfc(query: string) {
     },
     [
       {
+        prop: "",
+        order: "ascending",
       },
     ],
     {
