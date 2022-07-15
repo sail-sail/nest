@@ -11,6 +11,7 @@ export class Context {
 
 function getPool(): Pool {
   const db = nestConfig.database;
+  console.log(db);
   const pool0 = mysql.createPool({
     host: db.host,
     user: db.username,
@@ -18,6 +19,7 @@ function getPool(): Pool {
     port: db.port,
     password: db.password,
     debug: db.debug,
+    connectTimeout: 20 * 1000,
   });
   const pool = pool0.promise();
   return pool;

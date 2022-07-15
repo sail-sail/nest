@@ -4,7 +4,7 @@
     "./": "./",
     "std/": "https://deno.land/std@0.148.0/",
     "oak": "https://deno.land/x/oak@v10.6.0/mod.ts",
-    "graphql": "./node_modules/graphql/index.mjs",
+    "graphql": "https://esm.sh/graphql@16.5.0",
     "dotenv": "https://deno.land/x/dotenv@v3.2.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.26.0/mod.ts",
     "generic_pool": "https://deno.land/x/generic_pool@v1.0.3/mod.ts",

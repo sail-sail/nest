@@ -27,7 +27,6 @@ async function copyEnv() {
 async function excel_template() {
   console.log("excel_template");
   await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
-  await Deno.mkdir(`${ buildDir }/log`, { recursive: true });
   await Deno.mkdir(`${ buildDir }/excel_template`, { recursive: true });
   const tmpFn = async function(dir: string) {
     for await (const dirEntry of Deno.readDir(dir)) {
@@ -295,6 +294,6 @@ if (commands.length === 0) {
   await gqlgen();
   await compile();
   await pc();
-  await docs();
+  // await docs();
   await publish();
 }

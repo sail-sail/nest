@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
-    name: "deno",
-    script: "./deno",
+    name: "nest",
+    script: "./nest",
     instances: 1,
     autorestart: true,
     watch: false,
