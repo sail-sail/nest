@@ -90,7 +90,7 @@ function watchFn() {
       }
       delete(ls);
       start();
-    }, 30);
+    }, 20);
   };
   watcher.on("change", callback).on("add", callback).on("unlink", callback);
 }

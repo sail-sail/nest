@@ -1,6 +1,5 @@
 import { Router } from "oak";
 import {
-  // graphql,
   buildSchema,
   GraphQLSchema,
   GraphQLError,
@@ -115,7 +114,6 @@ export function resetGqlSchema() {
 const queryCacheMap = new Map<string, {
   document: DocumentNode,
   validationErrors: readonly GraphQLError[],
-  timeout: number;
 }>();
 
 gqlRouter.post("/graphql", async function(ctx) {
@@ -134,11 +132,8 @@ gqlRouter.post("/graphql", async function(ctx) {
     if (gqlSchema === undefined) {
       resetGqlSchema();
     }
-    const query = gqlObj.query;
+    const query: string = gqlObj.query;
     const variables = gqlObj.variables;
-    const timeout = setTimeout(function() {
-      queryCacheMap.delete(query);
-    }, 86400000);
     // deno-lint-ignore no-explicit-any
     let result: any;
     try {
@@ -150,38 +145,37 @@ gqlRouter.post("/graphql", async function(ctx) {
           documentInfo = {
             document,
             validationErrors,
-            timeout,
           };
           queryCacheMap.set(query, documentInfo);
         } catch (syntaxError) {
           result = {
             errors: [ syntaxError ],
           };
+          documentInfo = undefined;
+          queryCacheMap.delete(query);
         }
       }
-      if (documentInfo) {
-        documentInfo.timeout = timeout;
-        const validationErrors = documentInfo.validationErrors;
-        if (validationErrors.length > 0) {
-          result = {
-            errors: validationErrors,
-          };
-        }
-        const document = documentInfo.document;
-        if (document && !result) {
-          result = await execute({
-            schema: gqlSchema!,
-            document,
-            rootValue: gqlRootValue,
-            contextValue: context,
-            variableValues: variables,
-            // operationName: undefined,
-            // fieldResolver: undefined,
-            // typeResolver: undefined,
-          });
-        }
+      const validationErrors = documentInfo?.validationErrors;
+      if (validationErrors && validationErrors.length > 0) {
+        result = {
+          errors: validationErrors,
+        };
+        documentInfo = undefined;
+        queryCacheMap.delete(query);
       }
-      // NonErrorThrown
+      const document = documentInfo?.document;
+      if (document && !result) {
+        result = await execute({
+          schema: gqlSchema!,
+          document,
+          rootValue: gqlRootValue,
+          contextValue: context,
+          variableValues: variables,
+          // operationName: undefined,
+          // fieldResolver: undefined,
+          // typeResolver: undefined,
+        });
+      }
       const errors = result.errors as GraphQLError[];
       if (errors && errors.length > 0) {
         if (errors.length === 1) {
@@ -255,11 +249,14 @@ function defineGraphql(
     keys.forEach((key) => {
       // deno-lint-ignore no-explicit-any
       gqlRootValue[key] = function(...args: any[]) {
+        const args0 = args[2].fieldNodes[0].arguments;
+        const len: number = args0.length;
         // deno-lint-ignore no-explicit-any
-        const cbArgs: any[] = [ args[1] ];
-        for (let i = 0; i < args[2].fieldNodes[0].arguments.length; i++) {
-          const ele = args[2].fieldNodes[0].arguments[i];
-          cbArgs.push(args[0][ele.name.value]);
+        const cbArgs: any[] = new Array(len + 1);
+        cbArgs[0] = args[1];
+        for (let i = 0; i < args0.length; i++) {
+          const ele = args0[i];
+          cbArgs[i+1] = args[0][ele.name.value];
         }
         return callback[key].apply(this, cbArgs);
       };
