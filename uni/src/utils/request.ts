@@ -72,6 +72,9 @@ export async function uploadFile(config: {
     });
     throw err;
   }
+  if (!res) {
+    return;
+  }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
     await usrStore.setAccessToken("");
@@ -211,6 +214,9 @@ export async function request(
   }
   if (config.reqType === "graphql") {
     return res;
+  }
+  if (!res) {
+    return;
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {

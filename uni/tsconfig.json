@@ -12,7 +12,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["esnext"],
+    "lib": [ "esnext", "dom" ],
     "types": [ "node" ],
     "paths": {
       "@/*": [ "./src/*" ],
