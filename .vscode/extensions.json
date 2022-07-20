@@ -26,6 +26,7 @@
     "mattpocock.ts-error-translator",
     "usernamehw.errorlens",
     "derefs.vscode-inline-sql-highlight",
-    "denoland.vscode-deno"
+    "denoland.vscode-deno",
+    "vue.vscode-typescript-vue-plugin"
   ]
 }
