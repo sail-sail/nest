@@ -151,6 +151,7 @@ async function compile() {
       
       "cache_type",
       "cache_hostname",
+      "cache_password",
       "cache_port",
       "cache_db",
       

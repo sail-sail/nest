@@ -169,6 +169,7 @@ function start() {
     
     "cache_type",
     "cache_hostname",
+    "cache_password",
     "cache_port",
     "cache_db",
     

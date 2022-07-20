@@ -1,7 +1,10 @@
 import { readdir, stat, readFile } from "fs-extra";
 import * as path from "path";
 import { parse } from "fast-csv";
-import { Context } from "../lib/information_schema";
+import {
+  initContext,
+  type Context,
+} from "../lib/information_schema";
 import { isEmpty } from "../lib/StringUitl";
 
 const root = `${ __dirname }/../tables/`;
@@ -91,7 +94,7 @@ async function execCsvFile(context: Context, item: string) {
 
 async function exec() {
   console.time("sql");
-  const context = new Context();
+  const context = await initContext();
   
   const sqlFiles = [];
   const csvFiles = [];

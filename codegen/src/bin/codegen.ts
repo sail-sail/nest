@@ -2,7 +2,7 @@ import {
   getAllTables,
   getSchema,
   initContext,
-  Context,
+  type Context,
 } from "../lib/information_schema";
 import { Command } from "commander";
 import {
@@ -48,7 +48,7 @@ const options = program.opts();
     const context = await initContext();
     await exec(context, table);
     await gitDiffOut();
-    await denoGenTypes(context);
+    await denoGenTypes();
   } catch(err) {
     console.error(err);
   } finally {

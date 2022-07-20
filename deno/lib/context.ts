@@ -1,5 +1,9 @@
 export { defineGraphql } from "/lib/oak/gql.ts";
-import { connect as redisConnect, Redis } from "redis";
+import {
+  connect as redisConnect,
+  type Redis,
+  type RedisConnectOptions,
+} from "redis";
 import dayjs from "dayjs";
 import * as mysql2 from "mysql2/mod.ts";
 import type { PoolOptions, ResultSetHeader } from "mysql2/typings/mysql/index.d.ts";
@@ -38,11 +42,15 @@ function redisClientPool() {
     async create() {
       if (cache_ECONNREFUSED) return;
       let client: Awaited<ReturnType<typeof redisConnect>> | undefined;
-      const option = {
+      const option: RedisConnectOptions = {
         hostname: await getEnv("cache_hostname") || "127.0.0.1",
         port: Number(await getEnv("cache_port")) || 6379,
         db: Number(await getEnv("cache_db")) || 0,
       };
+      const cache_password = await getEnv("cache_password");
+      if (cache_password) {
+        option.password = cache_password;
+      }
       try {
         client = await redisConnect(option);
       } catch (err) {

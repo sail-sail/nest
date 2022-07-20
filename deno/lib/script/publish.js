@@ -17,6 +17,8 @@ console.log({ ...sshConfig, password: "" });
 const buildPath = `${ __dirname }/../../../build/`;
 const publishPath = `${ publishBase }/${ projectName }/`;
 
+console.log(publishPath);
+
 (async function() {
   const ssh = new SSH2Promise(sshConfig);
   await ssh.connect();

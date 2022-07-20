@@ -16,9 +16,8 @@ function getPool(): Pool {
     host: db.host,
     user: db.username,
     database: db.database,
-    port: db.port,
+    port: Number(db.port) || 3306,
     password: db.password,
-    debug: db.debug,
     connectTimeout: 20 * 1000,
   });
   const pool = pool0.promise();
