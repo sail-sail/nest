@@ -9,8 +9,8 @@ export const TENANT_ID = "tenant_id";
 export const AUTHORIZATION = "Authorization";
 
 export interface AuthModel extends JWTPayload {
-  id: string,
-  wx_usr_id?: string,
+  id: string;
+  wx_usr_id?: string;
 }
 
 async function createHash(algorithm: DigestAlgorithm, buffer: Uint8Array): Promise<ArrayBuffer> {

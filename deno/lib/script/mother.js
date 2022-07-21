@@ -105,106 +105,103 @@ function start() {
     console.log(`第 ${ restartNum } 次重启!`);
   }
   restartNum++;
-  const allowReads = [
-    ".",
-    "./.env.dev",
-    "./.env.prod",
-    "./excel_template",
-    "./tmp",
-  ];
-  const allowWrites = [
-    "./tmp",
-  ];
-  const allowEnvs = [
-    "NODE_DEBUG",
-    "NODE_ENV",
-  ];
-  const allowNets = [ ];
-  // 服务器端口
-  allowNets.push(`${ conf.server_host }:${ conf.server_port }`);
-  // 数据库
-  if (conf.database_socketpath) {
-    allowWrites.push(conf.database_socketpath);
-    allowReads.push(conf.database_socketpath);
-  } else if (conf.database_host) {
-    allowNets.push(`${ conf.database_host }:${ conf.database_port }`);
-  }
-  // 附件
-  if (conf.oss_endpoint) {
-    const url = new URL(conf.oss_endpoint);
-    allowNets.push(url.host);
-  }
-  // 缓存
-  if (conf.cache_hostname) {
-    allowNets.push(`${ conf.cache_hostname }:${ conf.cache_port }`);
-  }
-  // 临时文件
-  if (conf.tmpfile_endpoint) {
-    const url = new URL(conf.tmpfile_endpoint);
-    allowNets.push(url.host);
-  }
-  const keys = Object.keys(conf);
-  [
-    "log_path",
-    "server_port",
-    "server_host",
-    "server_tokentimeout",
-    "server_title",
+  // const allowReads = [
+  //   ".",
+  //   "./.env.dev",
+  //   "./.env.prod",
+  //   "./excel_template",
+  //   "./tmp",
+  // ];
+  // const allowWrites = [
+  //   "./tmp",
+  // ];
+  // const allowEnvs = [
+  //   "NODE_DEBUG",
+  //   "NODE_ENV",
+  // ];
+  // const allowNets = [ ];
+  // // 服务器端口
+  // allowNets.push(`${ conf.server_host }:${ conf.server_port }`);
+  // // 数据库
+  // if (conf.database_socketpath) {
+  //   allowWrites.push(conf.database_socketpath);
+  //   allowReads.push(conf.database_socketpath);
+  // } else if (conf.database_host) {
+  //   allowNets.push(`${ conf.database_host }:${ conf.database_port }`);
+  // }
+  // // 附件
+  // if (conf.oss_endpoint) {
+  //   const url = new URL(conf.oss_endpoint);
+  //   allowNets.push(url.host);
+  // }
+  // // 缓存
+  // if (conf.cache_hostname) {
+  //   allowNets.push(`${ conf.cache_hostname }:${ conf.cache_port }`);
+  // }
+  // // 临时文件
+  // if (conf.tmpfile_endpoint) {
+  //   const url = new URL(conf.tmpfile_endpoint);
+  //   allowNets.push(url.host);
+  // }
+  // const keys = Object.keys(conf);
+  // [
+  //   "log_path",
+  //   "server_port",
+  //   "server_host",
+  //   "server_tokentimeout",
+  //   "server_title",
     
-    "database_type",
-    "database_host",
-    "database_port",
-    "database_socketpath",
-    "database_username",
-    "database_password",
-    "database_database",
-    "database_connectionlimit",
-    "database_waitForconnections",
+  //   "database_type",
+  //   "database_host",
+  //   "database_port",
+  //   "database_socketpath",
+  //   "database_username",
+  //   "database_password",
+  //   "database_database",
+  //   "database_connectionlimit",
+  //   "database_waitForconnections",
     
-    "oss_type",
-    "oss_endpoint",
-    "oss_accesskey",
-    "oss_secretkey",
-    "oss_bucket",
+  //   "oss_type",
+  //   "oss_endpoint",
+  //   "oss_accesskey",
+  //   "oss_secretkey",
+  //   "oss_bucket",
     
-    "cache_type",
-    "cache_hostname",
-    "cache_password",
-    "cache_port",
-    "cache_db",
+  //   "cache_type",
+  //   "cache_hostname",
+  //   "cache_password",
+  //   "cache_port",
+  //   "cache_db",
     
-    "tmpfile_type",
-    "tmpfile_endpoint",
-    "tmpfile_accesskey",
-    "tmpfile_secretkey",
-    "tmpfile_bucket",
-  ].forEach(function(key) {
-    if (!keys.includes(key)) {
-      keys.push(key);
-    }
-  });
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    if (!allowEnvs.includes(key)) {
-      allowEnvs.push(key);
-    }
-  }
-  if (conf.log_path) {
-    allowWrites.push(conf.log_path);
-    allowReads.push(conf.log_path);
-  }
+  //   "tmpfile_type",
+  //   "tmpfile_endpoint",
+  //   "tmpfile_accesskey",
+  //   "tmpfile_secretkey",
+  //   "tmpfile_bucket",
+  // ].forEach(function(key) {
+  //   if (!keys.includes(key)) {
+  //     keys.push(key);
+  //   }
+  // });
+  // for (let i = 0; i < keys.length; i++) {
+  //   const key = keys[i];
+  //   if (!allowEnvs.includes(key)) {
+  //     allowEnvs.push(key);
+  //   }
+  // }
+  // if (conf.log_path) {
+  //   allowWrites.push(conf.log_path);
+  //   allowReads.push(conf.log_path);
+  // }
   const arr = [
     "run",
     "--inspect",
     "--unstable",
+    "-A",
     // `--allow-read=${ allowReads.join(",") }`,
-    `--allow-read`,
     // `--allow-write=${ allowWrites.join(",") }`,
-    `--allow-write`,
     // `--allow-env=${ allowEnvs.join(",") }`,
-    `--allow-env`,
     // `--allow-net=${ allowNets.join(",") }`,
-    `--allow-net`,
     "--import-map",
     "./import_map.json",
     "--no-check",
