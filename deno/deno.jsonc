@@ -3,7 +3,6 @@
     "strict": true,
     "allowUnreachableCode": true,
     "allowUnusedLabels": true,
-    "experimentalDecorators": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false
   }

@@ -55,5 +55,9 @@
   ],
   "deno.lint": true,
   "deno.unstable": true,
-  "deno.importMap": "./deno/import_map.json"
+  "deno.importMap": "./deno/import_map.json",
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "unocss.root": "web"
 }
