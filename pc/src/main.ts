@@ -8,7 +8,7 @@ import "element-plus/dist/index.css";
 
 import router from "./router/index";
 import "./utils/DateUtil";
-import { errorHandler } from "./compositions/ErrorHandler";
+// import { errorHandler } from "./compositions/ErrorHandler";
 import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
 import { draggable } from "./components/draggable";
 
@@ -20,7 +20,7 @@ setActivePinia(pinia);
 
 app.use(router);
 
-app.config.errorHandler = errorHandler;
+// app.config.errorHandler = errorHandler;
 
 app.directive("header-order-drag", headerOrderDrag);
 app.directive("draggable", draggable);

@@ -18,6 +18,8 @@
     "ibm.output-colorizer",
     "deanhjjiang.split-line",
     "sysoev.language-stylus",
+    "stylelint.vscode-stylelint",
+    "antfu.unocss",
     "jock.svg",
     "vue.volar",
     "vscode-icons-team.vscode-icons",

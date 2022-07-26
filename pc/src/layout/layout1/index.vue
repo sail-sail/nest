@@ -1,6 +1,5 @@
 <template>
 <div class="wrap_div">
-  <Login v-if="!usrStore.authorization"></Login>
   <div class="menu_div" :class="{ menu_collapse: menuStore.isCollapse }">
     <div class="top_div">
       <Top></Top>
@@ -75,7 +74,6 @@ import useUsrStore from "@/store/usr";
 import useMenuStore from "@/store/menu";
 import useIndexStore from "@/store/index";
 import { useRoute, useRouter } from "vue-router";
-import Login from "./Login.vue";
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";

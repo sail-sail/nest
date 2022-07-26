@@ -3,6 +3,7 @@
   :locale="locale"
   :button="{ autoInsertSpace: false }"
 >
+  <Login v-if="!usrStore.authorization"></Login>
   <router-view></router-view>
   <Background_taskListDialog></Background_taskListDialog>
 </el-config-provider>
@@ -19,9 +20,13 @@ import {
   RouterView,
 } from "vue-router";
 
+import Login from "./layout/Login.vue";
+
 import useTabsStore from "@/store/tabs";
+import useUsrStore from "@/store/usr";
 
 const tabsStore = useTabsStore();
+const usrStore = useUsrStore();
 
 onMounted(async () => {
   await tabsStore.refreshTab();
