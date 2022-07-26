@@ -8,7 +8,7 @@ import {
 } from "#/types";
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -29,7 +29,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
           id
@@ -68,7 +68,7 @@ export async function findAllAndCount(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
           id
@@ -110,7 +110,7 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($model: PermitInput!) {
         createPermit(model: $model)
       }
@@ -136,7 +136,7 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!, $model: PermitInput!) {
         updateByIdPermit(id: $id, model: $model)
       }
@@ -161,7 +161,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($id: ID!) {
         findByIdPermit(id: $id) {
           id
@@ -191,7 +191,7 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         deleteByIdsPermit(ids: $ids)
       }
@@ -215,7 +215,7 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         revertByIdsPermit(ids: $ids)
       }
@@ -235,7 +235,7 @@ export async function findAllAndCountMenu(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
@@ -267,7 +267,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
@@ -297,7 +297,7 @@ export async function exportExcel(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: PermitSearch, $sort: [SortInput]) {
         exportExcelPermit(search: $search, sort: $sort)
       }
@@ -324,7 +324,7 @@ export async function importFile(
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!) {
         importFilePermit(id: $id)
       }

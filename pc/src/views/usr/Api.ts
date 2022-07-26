@@ -8,7 +8,7 @@ import {
 } from "#/types";
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -29,7 +29,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
@@ -72,7 +72,7 @@ export async function findAllAndCount(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
@@ -118,7 +118,7 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($model: UsrInput!) {
         createUsr(model: $model)
       }
@@ -144,7 +144,7 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!, $model: UsrInput!) {
         updateByIdUsr(id: $id, model: $model)
       }
@@ -169,7 +169,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($id: ID!) {
         findByIdUsr(id: $id) {
           id
@@ -203,7 +203,7 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         deleteByIdsUsr(ids: $ids)
       }
@@ -227,7 +227,7 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         revertByIdsUsr(ids: $ids)
       }
@@ -247,7 +247,7 @@ export async function findAllAndCountRole(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
@@ -279,7 +279,7 @@ export async function findAllRole(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
@@ -309,7 +309,7 @@ export async function exportExcel(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: UsrSearch, $sort: [SortInput]) {
         exportExcelUsr(search: $search, sort: $sort)
       }
@@ -336,7 +336,7 @@ export async function importFile(
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileUsr(id: $id)
       }

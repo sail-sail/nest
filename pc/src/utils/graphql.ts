@@ -17,15 +17,15 @@ export interface GqlOpt {
   notLoading?: boolean,
 }
 
-export function gql(strArr: TemplateStringsArray, ...args: any[]): string {
-  let str = strArr[0];
-  for (let i = 0; i < args.length; i++) {
-    const item = args[i];
-    str += `${ item }`;
-    str += strArr[i + 1];
-  }
-  return str;
-}
+// export function gql(strArr: TemplateStringsArray, ...args: any[]): string {
+//   let str = strArr[0];
+//   for (let i = 0; i < args.length; i++) {
+//     const item = args[i];
+//     str += `${ item }`;
+//     str += strArr[i + 1];
+//   }
+//   return str;
+// }
 
 /**
  * @description: 发送 GraphQL 请求

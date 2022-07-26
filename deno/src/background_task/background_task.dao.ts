@@ -1,6 +1,7 @@
 import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/string_util.ts";
 import { create, updateById } from "/gen/background_task/background_task.dao.ts";
+import dayjs from "dayjs";
 
 const timeoutObj = Symbol("timeoutObj");
 
@@ -12,12 +13,14 @@ async function handelResult(context: Context, data: any, id: string) {
   if (typeof data === "object" && !(data instanceof String)) {
     data = JSON.stringify(data);
   }
+  const dateNow = new Date();
+  const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
   await updateById(
     context,
     id,
     {
       state: "success",
-      end_time: new Date(),
+      end_time,
       result: data,
     },
   );
@@ -25,12 +28,14 @@ async function handelResult(context: Context, data: any, id: string) {
 
 async function handelErr(context: Context, err: Error, id: string) {
   const errMsg = err.message || err.toString();
+  const dateNow = new Date();
+  const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
   await updateById(
     context,
     id,
     {
       state: "fail",
-      end_time: new Date(),
+      end_time,
       err_msg: errMsg,
     },
   );
@@ -45,7 +50,8 @@ export function backgroundTaskWrap(
   // deno-lint-ignore no-explicit-any
   return async (...args: any[]) => {
     const context = args[0];
-    const begin_time = new Date();
+    const dateNow = new Date();
+    const begin_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
     const result = func(...args);
     const result2 = await Promise.race([ result, timeoutPrm ]);
     if (result2 === timeoutObj) {

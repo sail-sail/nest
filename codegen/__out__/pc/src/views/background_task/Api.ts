@@ -8,7 +8,7 @@ import {
 } from "#/types";
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -28,7 +28,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
@@ -73,7 +73,7 @@ export async function findAllAndCount(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
@@ -121,7 +121,7 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($model: Background_TaskInput!) {
         createBackground_task(model: $model)
       }
@@ -147,7 +147,7 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!, $model: Background_TaskInput!) {
         updateByIdBackground_task(id: $id, model: $model)
       }
@@ -172,7 +172,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($id: ID!) {
         findByIdBackground_task(id: $id) {
           id
@@ -208,7 +208,7 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         deleteByIdsBackground_task(ids: $ids)
       }
@@ -232,7 +232,7 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         revertByIdsBackground_task(ids: $ids)
       }
@@ -257,7 +257,7 @@ export async function exportExcel(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: Background_TaskSearch, $sort: [SortInput]) {
         exportExcelBackground_task(search: $search, sort: $sort)
       }
@@ -284,7 +284,7 @@ export async function importFile(
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileBackground_task(id: $id)
       }

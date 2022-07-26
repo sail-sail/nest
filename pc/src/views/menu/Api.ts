@@ -8,7 +8,7 @@ import {
 } from "#/types";
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -28,7 +28,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
@@ -75,7 +75,7 @@ export async function findAllAndCount(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
@@ -125,7 +125,7 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($model: MenuInput!) {
         createMenu(model: $model)
       }
@@ -151,7 +151,7 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!, $model: MenuInput!) {
         updateByIdMenu(id: $id, model: $model)
       }
@@ -176,7 +176,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($id: ID!) {
         findByIdMenu(id: $id) {
           id
@@ -216,7 +216,7 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         deleteByIdsMenu(ids: $ids)
       }
@@ -240,7 +240,7 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         revertByIdsMenu(ids: $ids)
       }
@@ -260,7 +260,7 @@ export async function findAllAndCountMenu(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
@@ -292,7 +292,7 @@ export async function findAllMenu(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
@@ -322,7 +322,7 @@ export async function exportExcel(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput]) {
         exportExcelMenu(search: $search, sort: $sort)
       }
@@ -349,7 +349,7 @@ export async function importFile(
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileMenu(id: $id)
       }
@@ -371,7 +371,7 @@ export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query {
         findLastOrderByMenu
       }

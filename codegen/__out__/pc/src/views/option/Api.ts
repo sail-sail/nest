@@ -8,7 +8,7 @@ import {
 } from "#/types";
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
@@ -28,7 +28,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: OptionSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOption(search: $search, page: $page, sort: $sort) {
           id
@@ -67,7 +67,7 @@ export async function findAllAndCount(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: OptionSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOption(search: $search, page: $page, sort: $sort) {
           id
@@ -109,7 +109,7 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($model: OptionInput!) {
         createOption(model: $model)
       }
@@ -135,7 +135,7 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!, $model: OptionInput!) {
         updateByIdOption(id: $id, model: $model)
       }
@@ -160,7 +160,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($id: ID!) {
         findByIdOption(id: $id) {
           id
@@ -190,7 +190,7 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         deleteByIdsOption(ids: $ids)
       }
@@ -214,7 +214,7 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         revertByIdsOption(ids: $ids)
       }
@@ -239,7 +239,7 @@ export async function exportExcel(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: OptionSearch, $sort: [SortInput]) {
         exportExcelOption(search: $search, sort: $sort)
       }
@@ -266,7 +266,7 @@ export async function importFile(
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileOption(id: $id)
       }

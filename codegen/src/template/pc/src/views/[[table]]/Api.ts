@@ -18,7 +18,7 @@ importForeignTables.push(Table_Up);
 } from "#/types";
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { gql, GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";<#
@@ -60,7 +60,7 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
@@ -142,7 +142,7 @@ export async function findAllAndCount(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
@@ -227,7 +227,7 @@ export async function findSummary(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
         findSummary<#=tableUp#>(search: $search) {<#
           for (let i = 0; i < columns.length; i++) {
@@ -268,7 +268,7 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($model: <#=Table_Up#>Input!) {
         create<#=tableUp#>(model: $model)
       }
@@ -294,7 +294,7 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!, $model: <#=Table_Up#>Input!) {
         updateById<#=tableUp#>(id: $id, model: $model)
       }
@@ -319,7 +319,7 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($id: ID!) {
         findById<#=tableUp#>(id: $id) {<#
           for (let i = 0; i < columns.length; i++) {
@@ -385,7 +385,7 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         deleteByIds<#=tableUp#>(ids: $ids)
       }
@@ -409,7 +409,7 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($ids: [ID]!) {
         revertByIds<#=tableUp#>(ids: $ids)
       }
@@ -446,7 +446,7 @@ export async function findAllAndCount<#=foreignTableUp#>(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
@@ -478,7 +478,7 @@ export async function findAll<#=foreignTableUp#>(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
@@ -510,7 +510,7 @@ export async function exportExcel(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
         exportExcel<#=tableUp#>(search: $search, sort: $sort)
       }
@@ -537,7 +537,7 @@ export async function importFile(
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       mutation($id: ID!) {
         importFile<#=tableUp#>(id: $id)
       }
@@ -561,7 +561,7 @@ export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
-    query: gql`
+    query: /* GraphQL */ `
       query {
         findLastOrderBy<#=tableUp#>
       }
