@@ -355,7 +355,10 @@ export async function hmr() {
   }
   const context = await createContext();
   let filenames: string[] = [ ];
-  watcher = Deno.watchFs(`${ Deno.cwd() }/src`, { recursive: true });
+  watcher = Deno.watchFs([
+    `${ Deno.cwd() }/src`,
+    `${ Deno.cwd() }/client`,
+  ], { recursive: true });
   for await (const event of watcher) {
     for (let i = 0; i < event.paths.length; i++) {
       const file = event.paths[i];

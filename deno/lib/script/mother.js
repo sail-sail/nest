@@ -57,8 +57,15 @@ function watchFn() {
       const filenames2 = [ ];
       const filenamesDao = [ ];
       for (let i = 0; i < filenames.length; i++) {
-        const filename = filenames[i];
-        if (filename.endsWith(".dao.ts") && filename.replaceAll("\\", "/").includes("/src/")) {
+        const filename = filenames[i].replaceAll("\\", "/");
+        if (
+          filename.endsWith(".dao.ts")
+          &&
+          (
+            filename.includes("/src/")
+            || filename.includes("/client/")
+          )
+        ) {
           filenamesDao.push(filename);
         } else {
           filenames2.push(filename);

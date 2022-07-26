@@ -227,8 +227,11 @@ gqlRouter.post("/graphql", async function(ctx) {
   } catch (err) {
     context.error(err);
     ctx.response.body = {
-      code: 1,
-      errMsg: err?.message || err?.toString() || "",
+      errors: [
+        {
+          message: err.message || err.toString(),
+        },
+      ],
     };
   }
 });
