@@ -45,7 +45,8 @@
     "**/node_modules/**": true,
     "uni/dist/**": true,
     "**/.rsw": true,
-    "**/@rsw": true
+    "**/@rsw": true,
+    "**/.nuxt/**": true
   },
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",

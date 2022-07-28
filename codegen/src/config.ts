@@ -356,7 +356,7 @@ export interface TableCloumn {
    * @type {number}
    * @memberof TableCloumn
    */
-  minWith?: number,
+  minWidth?: number,
   
   /**
    * 是否是密码字段

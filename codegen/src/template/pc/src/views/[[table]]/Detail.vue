@@ -128,12 +128,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
               @keyup.enter.native.stop
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
-              :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>!, label: item.<#=foreignKey.lbl#>! }))"
+              :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
               filterable
               clearable
               :loading="!inited"
-              :remote="<#=foreignTable#>Info.count > SELECT_V2_SIZE"
-              :remote-method="<#=foreignTable#>FilterEfc"
             ></el-select-v2><#
             } else if (selectList.length > 0) {
             #>
@@ -320,9 +318,6 @@ import UploadImage from "@/components/UploadImage.vue";<#
 }
 #>
 import { useFullscreenEffect } from "@/compositions/fullscreen";
-import {
-  SELECT_V2_SIZE,
-} from "@/views/common/App";
 import {
   create,
   findById<#
@@ -565,7 +560,6 @@ async function getSelectListEfc() {
     findAllAndCount<#=foreignTableUp#>(
       undefined,
       {
-        pgSize: SELECT_V2_SIZE,
       },
       [
         {
@@ -581,53 +575,7 @@ async function getSelectListEfc() {
   }
   #>
   ]);
-}<#
-const foreignTableArr4 = [];
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") continue;
-  const data_type = column.DATA_TYPE;
-  const column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  const defaultSort = foreignKey && foreignKey.defaultSort;
-#><#
-  if (foreignKey) {
-  if (foreignTableArr4.includes(foreignTable)) continue;
-  foreignTableArr4.push(foreignTable);
-#>
-
-/** <#=column_comment#>下拉框远程搜索 */
-async function <#=foreignTable#>FilterEfc(query: string) {
-  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>(
-    {
-      <#=foreignKey.lbl#>Like: query,
-    },
-    {
-      pgSize: SELECT_V2_SIZE,
-    },
-    [
-      {
-        prop: "<#=defaultSort && defaultSort.prop || ""#>",
-        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-}<#
-  }
 }
-#>
 
 let onCloseResolve = function(value: {
   changedIds: string[];

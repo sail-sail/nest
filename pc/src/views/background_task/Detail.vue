@@ -260,9 +260,6 @@ import {
 } from "@element-plus/icons-vue";
 import { useFullscreenEffect } from "@/compositions/fullscreen";
 import {
-  SELECT_V2_SIZE,
-} from "@/views/common/App";
-import {
   create,
   findById,
   updateById,

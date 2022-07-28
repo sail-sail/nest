@@ -70,12 +70,10 @@
               @keyup.enter.native.stop
               v-model="dialogModel.menu_id"
               placeholder="请选择父菜单"
-              :options="menuInfo.data.map((item) => ({ value: item.id!, label: item.lbl! }))"
+              :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
               filterable
               clearable
               :loading="!inited"
-              :remote="menuInfo.count > SELECT_V2_SIZE"
-              :remote-method="menuFilterEfc"
             ></el-select-v2>
           </el-form-item>
         </template>
@@ -248,9 +246,6 @@ import {
 } from "@element-plus/icons-vue";
 import { useFullscreenEffect } from "@/compositions/fullscreen";
 import {
-  SELECT_V2_SIZE,
-} from "@/views/common/App";
-import {
   create,
   findById,
   findLastOrderBy,
@@ -314,7 +309,6 @@ async function getSelectListEfc() {
     findAllAndCountMenu(
       undefined,
       {
-        pgSize: SELECT_V2_SIZE,
       },
       [
         {
@@ -327,27 +321,6 @@ async function getSelectListEfc() {
       },
     ),
   ]);
-}
-
-/** 父菜单下拉框远程搜索 */
-async function menuFilterEfc(query: string) {
-  menuInfo.data = await findAllMenu(
-    {
-      lblLike: query,
-    },
-    {
-      pgSize: SELECT_V2_SIZE,
-    },
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
 }
 
 let onCloseResolve = function(value: {

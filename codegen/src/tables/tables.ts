@@ -13,7 +13,7 @@ export default defineConfig({
         ORDINAL_POSITION: 5,
         require: false,
         search: true,
-        minWith: 50,
+        minWidth: 50,
         foreignKey: {
           showType: "dialog",
         },
@@ -32,7 +32,7 @@ export default defineConfig({
         ORDINAL_POSITION: 6,
         require: false,
         search: true,
-        minWith: 50,
+        minWidth: 50,
         foreignKey: {
           showType: "dialog",
         },
@@ -51,18 +51,18 @@ export default defineConfig({
         require: true,
         search: true,
         sortable: true,
-        minWith: 140,
+        minWidth: 140,
       },
       {
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
         sortable: true,
-        minWith: 140,
+        minWidth: 140,
       },
       {
         COLUMN_NAME: "password",
-        minWith: 140,
+        minWidth: 140,
         isPassword: true,
       },
       {
@@ -71,7 +71,7 @@ export default defineConfig({
         ORDINAL_POSITION: 5,
         require: false,
         search: true,
-        minWith: 140,
+        minWidth: 140,
       },
     ],
   },
@@ -90,7 +90,7 @@ export default defineConfig({
         require: false,
         search: true,
         sortable: true,
-        minWith: 140,
+        minWidth: 140,
         foreignKey: {
           table: "menu",
           column: "id",
@@ -127,34 +127,34 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
-        minWith: 120,
+        minWidth: 120,
       },
       {
         COLUMN_NAME: "state",
         require: true,
         search: true,
-        minWith: 55,
+        minWidth: 55,
       },
       {
         COLUMN_NAME: "type",
         require: true,
         search: true,
-        minWith: 55,
+        minWidth: 55,
       },
       {
         COLUMN_NAME: "result",
-        minWith: 140,
+        minWidth: 140,
       },
       {
         COLUMN_NAME: "begin_time",
         search: true,
         sortable: true,
-        minWith: 110,
+        minWidth: 110,
       },
       {
         COLUMN_NAME: "end_time",
         sortable: true,
-        minWith: 110,
+        minWidth: 110,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -178,12 +178,12 @@ export default defineConfig({
         search: true,
       },
       {
-        COLUMN_NAME: "key",
+        COLUMN_NAME: "ky",
         require: true,
         search: true,
       },
       {
-        COLUMN_NAME: "value",
+        COLUMN_NAME: "val",
         search: true,
       },
       {

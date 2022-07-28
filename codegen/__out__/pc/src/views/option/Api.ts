@@ -33,8 +33,8 @@ export async function findAll(
         findAllOption(search: $search, page: $page, sort: $sort) {
           id
           lbl
-          key
-          value
+          ky
+          val
           rem
         }
       }
@@ -72,8 +72,8 @@ export async function findAllAndCount(
         findAllOption(search: $search, page: $page, sort: $sort) {
           id
           lbl
-          key
-          value
+          ky
+          val
           rem
         }
         findCountOption(search: $search)
@@ -165,8 +165,8 @@ export async function findById(
         findByIdOption(id: $id) {
           id
           lbl
-          key
-          value
+          ky
+          val
           rem
         }
       }

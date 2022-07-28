@@ -115,6 +115,15 @@ export async function getSchema(
       }
     }
     if (record.foreignKey) {
+      if (!record.foreignKey.table) {
+        if (record.COLUMN_NAME.endsWith("_ids")) {
+          const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_ids".length);
+          record.foreignKey.table = table2;
+        } else if (record.COLUMN_NAME.endsWith("_id")) {
+          const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_id".length);
+          record.foreignKey.table = table2;
+        }
+      }
       if (!record.foreignKey.lbl) {
         const records = await getSchema0(context, record.foreignKey.table);
         if (records.some((item) => item.COLUMN_NAME === "lbl")) {

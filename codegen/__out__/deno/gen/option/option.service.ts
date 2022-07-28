@@ -164,8 +164,8 @@ export async function importFile(
 ) {
   const header: { [key: string]: string } = {
     "名称": "lbl",
-    "键": "key",
-    "值": "value",
+    "键": "ky",
+    "值": "val",
     "备注": "rem",
   };
   const models = await getImportFileRows(id, header);

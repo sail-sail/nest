@@ -46,17 +46,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lblLike)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
-  if (search?.key !== undefined) {
-    whereQuery += ` and t.key = ${ args.push(search.key) }`;
+  if (search?.ky !== undefined) {
+    whereQuery += ` and t.ky = ${ args.push(search.ky) }`;
   }
-  if (isNotEmpty(search?.keyLike)) {
-    whereQuery += ` and t.key like ${ args.push(sqlLike(search?.keyLike) + "%") }`;
+  if (isNotEmpty(search?.kyLike)) {
+    whereQuery += ` and t.ky like ${ args.push(sqlLike(search?.kyLike) + "%") }`;
   }
-  if (search?.value !== undefined) {
-    whereQuery += ` and t.value = ${ args.push(search.value) }`;
+  if (search?.val !== undefined) {
+    whereQuery += ` and t.val = ${ args.push(search.val) }`;
   }
-  if (isNotEmpty(search?.valueLike)) {
-    whereQuery += ` and t.value like ${ args.push(sqlLike(search?.valueLike) + "%") }`;
+  if (isNotEmpty(search?.valLike)) {
+    whereQuery += ` and t.val like ${ args.push(sqlLike(search?.valLike) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -199,7 +199,6 @@ export function getUniqueKeys(
     "key",
   ];
   const uniqueComments = {
-    key: "键",
   };
   return { uniqueKeys, uniqueComments };
 }
@@ -420,11 +419,11 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,\`lbl\``;
   }
-  if (model.key !== undefined) {
-    sql += `,\`key\``;
+  if (model.ky !== undefined) {
+    sql += `,\`ky\``;
   }
-  if (model.value !== undefined) {
-    sql += `,\`value\``;
+  if (model.val !== undefined) {
+    sql += `,\`val\``;
   }
   if (model.rem !== undefined) {
     sql += `,\`rem\``;
@@ -446,11 +445,11 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
-  if (model.key !== undefined) {
-    sql += `,${ args.push(model.key) }`;
+  if (model.ky !== undefined) {
+    sql += `,${ args.push(model.ky) }`;
   }
-  if (model.value !== undefined) {
-    sql += `,${ args.push(model.value) }`;
+  if (model.val !== undefined) {
+    sql += `,${ args.push(model.val) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -541,14 +540,14 @@ export async function updateById(
       sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
     }
   }
-  if (model.key !== undefined) {
-    if (model.key != oldModel?.key) {
-      sql += `,\`key\` = ${ args.push(model.key) }`;
+  if (model.ky !== undefined) {
+    if (model.ky != oldModel?.ky) {
+      sql += `,\`ky\` = ${ args.push(model.ky) }`;
     }
   }
-  if (model.value !== undefined) {
-    if (model.value != oldModel?.value) {
-      sql += `,\`value\` = ${ args.push(model.value) }`;
+  if (model.val !== undefined) {
+    if (model.val != oldModel?.val) {
+      sql += `,\`val\` = ${ args.push(model.val) }`;
     }
   }
   if (model.rem !== undefined) {

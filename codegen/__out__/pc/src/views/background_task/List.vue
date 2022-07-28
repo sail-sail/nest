@@ -405,7 +405,6 @@ import {
 import TableShowColumns from "@/components/TableShowColumns.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
-import { SELECT_V2_SIZE } from "../common/App";
 import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
@@ -440,12 +439,12 @@ let tableRef: InstanceType<typeof ElTable>|undefined = $ref();
 
 /** 搜索 */
 function initSearch() {
-  return <Background_TaskSearch>{
+  return {
     is_deleted: 0,
   };
 }
 
-let search = $ref(initSearch());
+let search: Background_TaskSearch = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {

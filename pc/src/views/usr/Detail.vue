@@ -115,12 +115,10 @@
               @keyup.enter.native.stop
               v-model="dialogModel.role_ids"
               placeholder="请选择角色"
-              :options="roleInfo.data.map((item) => ({ value: item.id!, label: item.lbl! }))"
+              :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
               filterable
               clearable
               :loading="!inited"
-              :remote="roleInfo.count > SELECT_V2_SIZE"
-              :remote-method="roleFilterEfc"
             ></el-select-v2>
           </el-form-item>
         </template>
@@ -210,9 +208,6 @@ import {
 } from "@element-plus/icons-vue";
 import { useFullscreenEffect } from "@/compositions/fullscreen";
 import {
-  SELECT_V2_SIZE,
-} from "@/views/common/App";
-import {
   create,
   findById,
   updateById,
@@ -285,7 +280,6 @@ async function getSelectListEfc() {
     findAllAndCountRole(
       undefined,
       {
-        pgSize: SELECT_V2_SIZE,
       },
       [
         {
@@ -298,27 +292,6 @@ async function getSelectListEfc() {
       },
     ),
   ]);
-}
-
-/** 角色下拉框远程搜索 */
-async function roleFilterEfc(query: string) {
-  roleInfo.data = await findAllRole(
-    {
-      lblLike: query,
-    },
-    {
-      pgSize: SELECT_V2_SIZE,
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
 }
 
 let onCloseResolve = function(value: {

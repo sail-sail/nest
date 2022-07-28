@@ -9,9 +9,9 @@ type OptionModel {
   "名称"
   lbl: String!
   "键"
-  key: String!
+  ky: String!
   "值"
-  value: String!
+  val: String!
   "备注"
   rem: String!
 }
@@ -21,9 +21,9 @@ input OptionInput {
   "名称"
   lbl: String
   "键"
-  key: String
+  ky: String
   "值"
-  value: String
+  val: String
   "备注"
   rem: String
 }
@@ -38,11 +38,11 @@ input OptionSearch {
   lbl: String
   lblLike: String
   "键"
-  key: String
-  keyLike: String
+  ky: String
+  kyLike: String
   "值"
-  value: String
-  valueLike: String
+  val: String
+  valLike: String
   "备注"
   rem: String
   remLike: String

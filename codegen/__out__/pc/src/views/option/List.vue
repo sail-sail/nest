@@ -25,14 +25,14 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.keyLike == null && builtInSearch?.key == null">
+      <template v-if="builtInSearch?.kyLike == null && builtInSearch?.ky == null">
         <label class="form_label">
           键
         </label>
-        <el-form-item prop="keyLike">
+        <el-form-item prop="kyLike">
           <el-input
             class="form_input"
-            v-model="search.keyLike"
+            v-model="search.kyLike"
             placeholder="请输入键"
             clearable
             @clear="searchIptClr"
@@ -40,14 +40,14 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.valueLike == null && builtInSearch?.value == null">
+      <template v-if="builtInSearch?.valLike == null && builtInSearch?.val == null">
         <label class="form_label">
           值
         </label>
-        <el-form-item prop="valueLike">
+        <el-form-item prop="valLike">
           <el-input
             class="form_input"
-            v-model="search.valueLike"
+            v-model="search.valLike"
             placeholder="请输入值"
             clearable
             @clear="searchIptClr"
@@ -234,7 +234,7 @@
           </template>
           
           <!-- 键 -->
-          <template v-if="'key' === col.prop">
+          <template v-if="'ky' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -247,7 +247,7 @@
           </template>
           
           <!-- 值 -->
-          <template v-if="'value' === col.prop">
+          <template v-if="'val' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -337,7 +337,6 @@ import TableShowColumns from "@/components/TableShowColumns.vue";
 import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
-import { SELECT_V2_SIZE } from "../common/App";
 import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
@@ -381,12 +380,12 @@ async function exportClk() {
 
 /** 搜索 */
 function initSearch() {
-  return <OptionSearch>{
+  return {
     is_deleted: 0,
   };
 }
 
-let search = $ref(initSearch());
+let search: OptionSearch = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
@@ -412,10 +411,10 @@ const props = defineProps<{
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称
-  key?: string; //键
-  keyLike?: string; //键
-  value?: string; //值
-  valueLike?: string; //值
+  ky?: string; //键
+  kyLike?: string; //键
+  val?: string; //值
+  valLike?: string; //值
   rem?: string; //备注
   remLike?: string; //备注
 }>();
@@ -545,11 +544,11 @@ let tableColumns: ColumnType[] = $ref([
   },
   {
     label: "键",
-    prop: "key",
+    prop: "ky",
   },
   {
     label: "值",
-    prop: "value",
+    prop: "val",
   },
   {
     label: "备注",

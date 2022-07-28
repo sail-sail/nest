@@ -60,8 +60,6 @@
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
-            :remote="roleInfo.count > SELECT_V2_SIZE"
-            :remote-method="roleFilterEfc"
             @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
@@ -372,7 +370,6 @@ import TableShowColumns from "@/components/TableShowColumns.vue";
 import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
-import { SELECT_V2_SIZE } from "../common/App";
 import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
@@ -421,12 +418,12 @@ async function exportClk() {
 
 /** 搜索 */
 function initSearch() {
-  return <UsrSearch>{
+  return {
     is_deleted: 0,
   };
 }
 
-let search = $ref(initSearch());
+let search: UsrSearch = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
@@ -633,8 +630,8 @@ let roleInfo: {
 let role4SelectV2 = $computed(() => {
   return roleInfo.data.map((item) => {
     return {
-      value: item.id!,
-      label: item.lbl!,
+      value: item.id,
+      label: item.lbl,
     };
   });
 });
@@ -647,7 +644,6 @@ async function getSelectListEfc() {
     findAllAndCountRole(
       undefined,
       {
-        pgSize: SELECT_V2_SIZE,
       },
       [
         {
@@ -660,27 +656,6 @@ async function getSelectListEfc() {
       },
     ),
   ]);
-}
-
-/** 角色下拉框远程搜索 */
-async function roleFilterEfc(query: string) {
-  roleInfo.data = await findAllRole(
-    {
-      lblLike: query,
-    },
-    {
-      pgSize: SELECT_V2_SIZE,
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
 }
 
 /** 刷新表格 */

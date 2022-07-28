@@ -45,8 +45,6 @@
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
-            :remote="menuInfo.count > SELECT_V2_SIZE"
-            :remote-method="menuFilterEfc"
             @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
@@ -402,7 +400,6 @@ import TableShowColumns from "@/components/TableShowColumns.vue";
 import UploadFileDialog from "@/components/UploadFileDialog.vue";
 import { downloadById } from "@/utils/axios";
 import LinkList from "@/components/LinkList.vue";
-import { SELECT_V2_SIZE } from "../common/App";
 import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
@@ -452,12 +449,12 @@ async function exportClk() {
 
 /** 搜索 */
 function initSearch() {
-  return <TenantSearch>{
+  return {
     is_deleted: 0,
   };
 }
 
-let search = $ref(initSearch());
+let search: TenantSearch = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
@@ -681,8 +678,8 @@ let menuInfo: {
 let menu4SelectV2 = $computed(() => {
   return menuInfo.data.map((item) => {
     return {
-      value: item.id!,
-      label: item.lbl!,
+      value: item.id,
+      label: item.lbl,
     };
   });
 });
@@ -695,7 +692,6 @@ async function getSelectListEfc() {
     findAllAndCountMenu(
       undefined,
       {
-        pgSize: SELECT_V2_SIZE,
       },
       [
         {
@@ -708,27 +704,6 @@ async function getSelectListEfc() {
       },
     ),
   ]);
-}
-
-/** 菜单下拉框远程搜索 */
-async function menuFilterEfc(query: string) {
-  menuInfo.data = await findAllMenu(
-    {
-      lblLike: query,
-    },
-    {
-      pgSize: SELECT_V2_SIZE,
-    },
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
 }
 
 /** 刷新表格 */

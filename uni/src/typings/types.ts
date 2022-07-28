@@ -464,13 +464,13 @@ export type MutationUpdateByIdUsrArgs = {
 export type OptionInput = {
   id?: InputMaybe<Scalars['ID']>;
   /** 键 */
-  key?: InputMaybe<Scalars['String']>;
+  ky?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   /** 值 */
-  value?: InputMaybe<Scalars['String']>;
+  val?: InputMaybe<Scalars['String']>;
 };
 
 export type OptionModel = {
@@ -478,13 +478,13 @@ export type OptionModel = {
   /** ID */
   id: Scalars['ID'];
   /** 键 */
-  key: Scalars['String'];
+  ky: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
   /** 值 */
-  value: Scalars['String'];
+  val: Scalars['String'];
 };
 
 export type OptionSearch = {
@@ -495,8 +495,8 @@ export type OptionSearch = {
   /** 是否已删除 */
   is_deleted?: InputMaybe<Scalars['Int']>;
   /** 键 */
-  key?: InputMaybe<Scalars['String']>;
-  keyLike?: InputMaybe<Scalars['String']>;
+  ky?: InputMaybe<Scalars['String']>;
+  kyLike?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   lblLike?: InputMaybe<Scalars['String']>;
@@ -504,8 +504,8 @@ export type OptionSearch = {
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;
   /** 值 */
-  value?: InputMaybe<Scalars['String']>;
-  valueLike?: InputMaybe<Scalars['String']>;
+  val?: InputMaybe<Scalars['String']>;
+  valLike?: InputMaybe<Scalars['String']>;
 };
 
 export type PageInput = {

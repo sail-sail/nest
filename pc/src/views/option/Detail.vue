@@ -46,28 +46,28 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.key == null">
+        <template v-if="builtInModel?.ky == null">
           <label class="form_label">
             <span style="color: red;">*</span>
             <span>键</span>
           </label>
-          <el-form-item prop="key">
+          <el-form-item prop="ky">
             <el-input
               class="form_input"
-              v-model="dialogModel.key"
+              v-model="dialogModel.ky"
               placeholder="请输入键"
             ></el-input>
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.value == null">
+        <template v-if="builtInModel?.val == null">
           <label class="form_label">
             <span>值</span>
           </label>
-          <el-form-item prop="value">
+          <el-form-item prop="val">
             <el-input
               class="form_input"
-              v-model="dialogModel.value"
+              v-model="dialogModel.val"
               placeholder="请输入值"
             ></el-input>
           </el-form-item>
@@ -158,9 +158,6 @@ import {
 } from "@element-plus/icons-vue";
 import { useFullscreenEffect } from "@/compositions/fullscreen";
 import {
-  SELECT_V2_SIZE,
-} from "@/views/common/App";
-import {
   create,
   findById,
   updateById,
@@ -196,7 +193,7 @@ let formRef: InstanceType<typeof ElForm>|undefined = $ref();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
-  key: [
+  ky: [
     {
       required: true,
       message: "请输入键",

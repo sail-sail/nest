@@ -64,8 +64,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
-            :remote="<#=foreignTable#>Info.count > SELECT_V2_SIZE"
-            :remote-method="<#=foreignTable#>FilterEfc"
             @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
@@ -401,9 +399,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
             if (column_comment.indexOf("[") !== -1) {
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
-            let minWith = "";
-            if (column.minWith != null) {
-              minWith = "\n              min-width=\""+column.minWith+"\"";
+            let minWidth = "";
+            if (column.minWidth != null) {
+              minWidth = "\n              min-width=\""+column.minWidth+"\"";
             }
             let width = "";
             if (column.width != null) {
@@ -439,7 +437,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               :prop="col.prop"
               :label="col.label"
-              :width="col.width"<#=minWith#><#=align#><#=headerAlign#>
+              :width="col.width"<#=minWidth#><#=align#><#=headerAlign#>
             >
               <template #default="{ row, column }">
                 <LinkImage v-model="row[column.property]"></LinkImage>
@@ -455,7 +453,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               :prop="col.prop"
               :label="col.label"
-              :width="col.width"<#=minWith#><#=align#><#=headerAlign#>
+              :width="col.width"<#=minWidth#><#=align#><#=headerAlign#>
             >
               <template #default="{ row, column }">
                 <LinkAtt
@@ -489,7 +487,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               :prop="col.prop"
               :label="col.label"
-              :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
+              :width="col.width"<#=minWidth#><#=sortable#><#=align#><#=headerAlign#>
               show-overflow-tooltip
             >
             </el-table-column>
@@ -503,7 +501,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               :prop="col.prop"
               :label="col.label"
-              :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
+              :width="col.width"<#=minWidth#><#=sortable#><#=align#><#=headerAlign#>
               show-overflow-tooltip
             >
             </el-table-column>
@@ -517,7 +515,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               :prop="col.prop"
               :label="col.label"
-              :width="col.width"<#=minWith#><#=sortable#><#=align#><#=headerAlign#>
+              :width="col.width"<#=minWidth#><#=sortable#><#=align#><#=headerAlign#>
               show-overflow-tooltip
             ><#
               if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType)) {
@@ -670,7 +668,6 @@ import LinkAtt from "@/components/LinkAtt.vue";<#
 }
 #>
 import LinkList from "@/components/LinkList.vue";
-import { SELECT_V2_SIZE } from "../common/App";
 import { deepCompare } from "@/utils/ObjectUtil";
 import {
   usePage,
@@ -835,12 +832,12 @@ async function exportClk() {
 
 /** 搜索 */
 function initSearch() {
-  return <<#=Table_Up#>Search>{
+  return {
     is_deleted: 0,
   };
 }
 
-let search = $ref(initSearch());
+let search: <#=Table_Up#>Search = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
@@ -1128,9 +1125,9 @@ for (let i = 0; i < columns.length; i++) {
   if (column_comment.indexOf("[") !== -1) {
     column_comment = column_comment.substring(0, column_comment.indexOf("["));
   }
-  let minWith = "";
-  if (column.minWith != null) {
-    minWith = "\n          min-width=\""+column.minWith+"\"";
+  let minWidth = "";
+  if (column.minWidth != null) {
+    minWidth = "\n          min-width=\""+column.minWidth+"\"";
   }
   let width = "";
   if (column.width != null) {
@@ -1256,8 +1253,8 @@ let <#=foreignTable#>Info: {
 let <#=foreignTable#>4SelectV2 = $computed(() => {
   return <#=foreignTable#>Info.data.map((item) => {
     return {
-      value: item.<#=foreignKey.column#>!,
-      label: item.<#=foreignKey.lbl#>!,
+      value: item.<#=foreignKey.column#>,
+      label: item.<#=foreignKey.lbl#>,
     };
   });
 });<#
@@ -1288,7 +1285,6 @@ async function getSelectListEfc() {<#
     findAllAndCount<#=foreignTableUp#>(
       undefined,
       {
-        pgSize: SELECT_V2_SIZE,
       },
       [
         {
@@ -1305,37 +1301,7 @@ async function getSelectListEfc() {<#
   ]);<#
   }
   #>
-}<#
-for (let i = 0; i < foreignTableArr.length; i++) {
-  const foreignTable = foreignTableArr[i];
-  const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
-  const defaultSort = foreignKey && foreignKey.defaultSort;
-  const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  const column_comment = foreignKeyCommentArr[i];
-#>
-
-/** <#=column_comment#>下拉框远程搜索 */
-async function <#=foreignTable#>FilterEfc(query: string) {
-  <#=foreignTable#>Info.data = await findAll<#=foreignTableUp#>(
-    {
-      <#=foreignKey.lbl#>Like: query,
-    },
-    {
-      pgSize: SELECT_V2_SIZE,
-    },
-    [
-      {
-        prop: "<#=defaultSort && defaultSort.prop || ""#>",
-        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-}<#
 }
-#>
 
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
@@ -1397,7 +1363,7 @@ async function sortChange(
 if (hasAtt) {
 #>
 
-async function linkAttChg(row: <#=Table_Up#>Model, key: string) {<#
+async function linkAttChg(row: any, key: any) {<#
     if (opts.noEdit !== true) {
 #>
   await updateById(row.id!, { [key]: row[key] });<#

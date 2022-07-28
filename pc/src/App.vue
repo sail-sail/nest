@@ -418,5 +418,6 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-form .el-form-item__error {
   padding: 0;
+  z-index: 2;
 }
 </style>
