@@ -170,7 +170,7 @@ export default defineConfig({
   option: {
     opts: {
       cache: true,
-      unique: [ "key" ],
+      unique: [ "ky" ],
     },
     columns: [
       {

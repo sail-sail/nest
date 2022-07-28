@@ -196,9 +196,10 @@ export function getUniqueKeys(
   uniqueComments: { [key: string]: string };
   } {
   const uniqueKeys: (keyof OptionModel)[] = [
-    "key",
+    "ky",
   ];
   const uniqueComments = {
+    ky: "键",
   };
   return { uniqueKeys, uniqueComments };
 }
