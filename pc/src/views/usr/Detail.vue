@@ -24,7 +24,7 @@
     <div class="flex-[1_0_0] overflow-auto flex justify-start items-center flex-col p-5 basis-[inherit]">
       <el-form
         size="default"
-        class="grid justify-end items-end gap-x-[15px] gap-y-[5px] grid-rows-[auto] place-content-center"
+        class="grid justify-end items-end gap-x-[16px] gap-y-[16px] grid-rows-[auto] place-content-center"
         :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
@@ -503,6 +503,7 @@ defineExpose({ showDialog });
 .form_label {
   margin-left: 3px;
   text-align: right;
+  align-self: center;
 }
 .form_label::after {
   content: ":";
