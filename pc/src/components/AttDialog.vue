@@ -76,12 +76,22 @@
       >
         后移
       </el-button>
+      <div class="flex-1 flex-shrink-0">
+      </div>
+      <div class="mr-3" v-if="urlList[nowIndex]">
+        <el-color-picker
+          v-model="backgroundColor"
+          show-alpha
+          :predefine="predefineColors"
+          @active-change="backgroundColor = $event"
+        />
+      </div>
     </div>
     <div class="content_div">
       <template v-for="(url, i) in urlList" :key="url">
         <iframe
           v-if="iframeShoweds[i]"
-          :style="{ display: i === nowIndex ? '' : 'none' }"
+          :style="{ display: i === nowIndex ? '' : 'none', backgroundColor }"
           class="iframe"
           :src="url"
           frameborder="0"
@@ -143,6 +153,7 @@ import {
   ElButton,
   ElMessage,
   ElMessageBox,
+  ElColorPicker,
 } from "element-plus";
 import {
   Upload,
@@ -203,6 +214,22 @@ let inited = $ref(false);
 let nowIndex = $ref(0);
 
 let iframeLoading = $ref(false);
+
+let backgroundColor = $ref("#000000");
+
+let predefineColors = $ref([
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  '#FFFFFF',
+  '#CCCCCC',
+  '#000000',
+  '#c7158577',
+]);
 
 let modelValue: string|undefined = $ref("");
 
@@ -518,7 +545,7 @@ defineExpose({ showDialog });
   flex-direction: column;
   flex-basis: inherit;
   padding-left: 5px;
-  // padding-right: 5px;
+  padding-right: 5px;
   padding-bottom: 5px;
   position: relative;
 }

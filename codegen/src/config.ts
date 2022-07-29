@@ -429,9 +429,9 @@ export interface TablesConfigItem {
     
     /**
      * 默认排序字段
-     * @type {{ prop: string, order: string }}
+     * @type {{ prop: string, order: "ascending"|"descending" }}
      */
-    defaultSort?: { prop: string, order: string };
+    defaultSort?: { prop: string, order: "ascending"|"descending" };
     
     /**
      * 不允许删除
