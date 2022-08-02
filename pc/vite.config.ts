@@ -5,7 +5,13 @@ import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
 // import Inspector from "vite-plugin-vue-inspector";
 import Unocss from "unocss/vite";
-import transformerDirective from "@unocss/transformer-directives";
+import {
+  presetAttributify,
+  presetIcons,
+  presetUno,
+  transformerDirectives,
+  transformerVariantGroup,
+} from "unocss";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -56,8 +62,16 @@ export default defineConfig({
     //   ],
     // }),
     Unocss({
+      presets: [
+        presetUno(),
+        presetAttributify(),
+        presetIcons({
+          warn: true,
+        }),
+      ],
       transformers: [
-        transformerDirective(),
+        transformerDirectives(),
+        transformerVariantGroup(),
       ],
     }),
   ],

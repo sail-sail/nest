@@ -146,6 +146,7 @@
         class="flex flex-nowrap self-start min-w-[170px]"
       >
         <el-button
+          plain
           type="primary"
           :icon="Search"
           @click="searchClk"
@@ -177,6 +178,7 @@
     <template v-else>
       <el-button
         type="primary"
+        plain
         :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
@@ -184,6 +186,7 @@
       </el-button>
     </template>
     <el-button
+      plain
       :icon="Refresh"
       @click="searchClk"
     >

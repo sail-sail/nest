@@ -140,6 +140,7 @@
     </div>
     <div class="py-2.5 flex justify-center items-center">
       <el-button
+        plain
         :icon="CircleClose"
         @click="cancelClk"
       >
@@ -147,6 +148,7 @@
       </el-button>
       <el-button
         type="primary"
+        plain
         :icon="CircleCheck"
         @click="saveClk"
       >

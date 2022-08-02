@@ -1,10 +1,13 @@
 import { createApp } from "vue";
 import { createPinia, setActivePinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+
+import "element-plus/theme-chalk/dark/css-vars.css";
+import "element-plus/dist/index.css";
+import "uno.css";
+
 import App from "./App.vue";
 
-import "uno.css";
-import "element-plus/dist/index.css";
 
 import router from "./router/index";
 import "./utils/DateUtil";

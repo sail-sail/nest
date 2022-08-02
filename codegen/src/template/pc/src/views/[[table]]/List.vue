@@ -231,6 +231,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         class="flex flex-nowrap self-start min-w-[170px]"
       >
         <el-button
+          plain
           type="primary"
           :icon="Search"
           @click="searchClk"
@@ -254,6 +255,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #>
       <el-button
         type="primary"
+        plain
         :icon="CirclePlus"
         @click="openAdd"
       >
@@ -265,6 +267,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #>
       <el-button
         type="primary"
+        plain
         :icon="Edit"
         @click="openEdit"
       >
@@ -287,6 +290,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         if (opts.noExport !== true) {
       #>
       <el-button
+        plain
         :icon="Download"
         @click="exportClk"
       >
@@ -297,6 +301,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         if (opts.noImport !== true) {
       #>
       <el-button
+        plain
         :icon="Upload"
         @click="openUploadClk"
       >
@@ -310,6 +315,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #>
       <el-button
         type="primary"
+        plain
         :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
@@ -320,6 +326,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         if (opts.noExport !== true) {
       #>
       <el-button
+        plain
         :icon="Download"
         @click="exportClk"
       >
@@ -329,6 +336,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #>
     </template>
     <el-button
+      plain
       :icon="Refresh"
       @click="searchClk"
     >

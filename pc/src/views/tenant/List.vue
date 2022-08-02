@@ -99,6 +99,7 @@
         class="flex flex-nowrap self-start min-w-[170px]"
       >
         <el-button
+          plain
           type="primary"
           :icon="Search"
           @click="searchClk"
@@ -120,6 +121,7 @@
     <template v-if="search.is_deleted !== 1">
       <el-button
         type="primary"
+        plain
         :icon="CirclePlus"
         @click="openAdd"
       >
@@ -127,6 +129,7 @@
       </el-button>
       <el-button
         type="primary"
+        plain
         :icon="Edit"
         @click="openEdit"
       >
@@ -141,12 +144,14 @@
         删除
       </el-button>
       <el-button
+        plain
         :icon="Download"
         @click="exportClk"
       >
         导出
       </el-button>
       <el-button
+        plain
         :icon="Upload"
         @click="openUploadClk"
       >
@@ -156,12 +161,14 @@
     <template v-else>
       <el-button
         type="primary"
+        plain
         :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
         还原
       </el-button>
       <el-button
+        plain
         :icon="Download"
         @click="exportClk"
       >
@@ -169,6 +176,7 @@
       </el-button>
     </template>
     <el-button
+      plain
       :icon="Refresh"
       @click="searchClk"
     >

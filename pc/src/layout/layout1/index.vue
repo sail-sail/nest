@@ -23,9 +23,33 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu style="white-space: nowrap;">
-                <el-dropdown-item @click="closeOtherTabs">关闭其它</el-dropdown-item>
-                <el-dropdown-item @click="clearCacheEfc">清空缓存</el-dropdown-item>
-                <el-dropdown-item divided @click="logoutClk">退出登录</el-dropdown-item>
+                
+                <el-dropdown-item @click="toggleDark(!isDark)">
+                  <template v-if="!isDark">
+                    <i i="tabler-moon"></i>
+                    <span>黑暗模式</span>
+                  </template>
+                  <template v-else>
+                    <i i="tabler-sun"></i>
+                    <span>明亮模式</span>
+                  </template>
+                </el-dropdown-item>
+                
+                <el-dropdown-item @click="closeOtherTabs">
+                  <i w="1em" h="1em"></i>
+                  <span>关闭其它</span>
+                </el-dropdown-item>
+                
+                <el-dropdown-item @click="clearCacheEfc">
+                  <i w="1em" h="1em"></i>
+                  <span>清空缓存</span>
+                </el-dropdown-item>
+                
+                <el-dropdown-item divided @click="logoutClk">
+                  <i w="1em" h="1em"></i>
+                  <span>退出登录</span>
+                </el-dropdown-item>
+                
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -80,6 +104,7 @@ import Tabs from "./Tabs.vue";
 import {
   clearCache,
 } from "./Api";
+import { useDark, useToggle } from "@vueuse/core";
 
 const route = useRoute();
 const router = useRouter();
@@ -88,6 +113,9 @@ const tabsStore = useTabsStore();
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
 const menuStore = useMenuStore();
+
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
 
 watch(
   [

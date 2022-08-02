@@ -244,6 +244,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
     </div>
     <div class="py-2.5 flex justify-center items-center">
       <el-button
+        plain
         :icon="CircleClose"
         @click="cancelClk"
       >
@@ -251,6 +252,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       </el-button>
       <el-button
         type="primary"
+        plain
         :icon="CircleCheck"
         @click="saveClk"
       >
