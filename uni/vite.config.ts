@@ -1,6 +1,16 @@
 import { defineConfig } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
 
+import uniTwuCssPlugin from "./src/utils/vite-plugin-uni-twucss.js";
+import Unocss from "unocss/vite";
+import {
+  presetAttributify,
+  presetIcons,
+  presetUno,
+  transformerDirectives,
+  transformerVariantGroup,
+} from "unocss";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -15,6 +25,22 @@ export default defineConfig({
       vueOptions:{
         reactivityTransform: /^((?!node_modules).)*$/,
       }
+    }),
+    Unocss({
+      presets: [
+        presetUno(),
+        presetAttributify(),
+        presetIcons({
+          warn: true,
+        }),
+      ],
+      transformers: [
+        transformerDirectives(),
+        transformerVariantGroup(),
+      ],
+    }),
+    uniTwuCssPlugin({
+      source: "unocss",
     }),
   ],
   resolve: {
