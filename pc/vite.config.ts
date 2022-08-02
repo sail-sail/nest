@@ -4,6 +4,8 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
 // import Inspector from "vite-plugin-vue-inspector";
+import Unocss from "unocss/vite";
+import transformerDirective from "@unocss/transformer-directives";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -53,6 +55,11 @@ export default defineConfig({
     //     "@rsw/excel-render"
     //   ],
     // }),
+    Unocss({
+      transformers: [
+        transformerDirective(),
+      ],
+    }),
   ],
   resolve: {
     alias: {

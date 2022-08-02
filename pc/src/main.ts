@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import App from "./App.vue";
 
-import "./assets/style/tailwind.css";
+import "uno.css";
 import "element-plus/dist/index.css";
 
 import router from "./router/index";

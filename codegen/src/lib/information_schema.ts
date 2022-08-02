@@ -11,7 +11,12 @@ export class Context {
 
 function getPool(): Pool {
   const db = nestConfig.database;
-  console.log(db);
+  console.log({
+    host: db.host,
+    user: db.username,
+    database: db.database,
+    port: Number(db.port) || 3306,
+  });
   const pool0 = mysql.createPool({
     host: db.host,
     user: db.username,
