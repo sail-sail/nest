@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "uni -p mp-weixin",
+    "typecheck": "vue-tsc --noEmit",
     "dev:app": "uni -p app",
     "dev:custom": "uni -p",
     "dev:h5": "uni",

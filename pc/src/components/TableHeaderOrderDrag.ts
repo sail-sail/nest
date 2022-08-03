@@ -11,6 +11,9 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
     return;
   }
   const headTr = el.querySelector(".el-table__header-wrapper>.el-table__header thead tr");
+  if (!headTr) {
+    return;
+  }
   const ths = headTr.querySelectorAll(".el-table__cell");
   for (let i = 0; i < ths.length; i++) {
     if (i < (bindVal().offset || 0)) continue;
@@ -24,22 +27,28 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
           if (targetEl.nodeName === "TH") {
             break;
           }
+          if (!targetEl.parentElement) {
+            break;
+          }
           targetEl = targetEl.parentElement;
         }
         if (targetEl.nodeName !== "TH") return;
         const ths = headTr.querySelectorAll(".el-table__cell");
         const targetIndex = Array.prototype.indexOf.call(ths, targetEl);
         const prop = bindVal().tableColumns.filter((column: any) => column.hide !== true)[targetIndex - (bindVal().offset || 0)].prop;
-        event.dataTransfer.setData("prop", prop);
+        event.dataTransfer?.setData("prop", prop);
       });
       th.addEventListener("dragover", dragoverFn);
       th.addEventListener("drop", function(event: DragEvent) {
         event.preventDefault();
-        const srcProp = event.dataTransfer.getData("prop");
+        const srcProp = event.dataTransfer?.getData("prop");
         if (!srcProp) return;
         let targetEl = <HTMLElement> event.target;
         for (let k = 0; k < 3; k++) {
           if (targetEl.nodeName === "TH") {
+            break;
+          }
+          if (!targetEl.parentElement) {
             break;
           }
           targetEl = targetEl.parentElement;
@@ -48,10 +57,10 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
         const ths = headTr.querySelectorAll(".el-table__cell");
         let targetIndex = Array.prototype.indexOf.call(ths, targetEl);
         if (targetIndex === -1) return;
-        const hiddenColumnsDivArr = el.querySelectorAll(".el-table__inner-wrapper>.hidden-columns>div");
-        const hiddenColumnsDiv = <any> hiddenColumnsDivArr[targetIndex];
+        const hiddenColumnsDivArr: NodeListOf<HTMLDivElement> = el.querySelectorAll(".el-table__inner-wrapper>.hidden-columns>div");
+        const hiddenColumnsDiv = hiddenColumnsDivArr[targetIndex];
         if (!hiddenColumnsDiv) return;
-        const prop = hiddenColumnsDiv.__vnode?.el?.__vueParentComponent?.columnConfig?._value?.property;
+        const prop = (hiddenColumnsDiv as any).__vnode?.el?.__vueParentComponent?.columnConfig?._value?.property;
         if (!prop) return;
         targetIndex = bindVal().tableColumns.findIndex((column: any) => column.prop === prop);
         const target0Idx = bindVal().tableColumns.findIndex((column: any) => column.prop === srcProp);

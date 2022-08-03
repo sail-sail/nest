@@ -6,7 +6,7 @@
     "start": "vite",
     "build": "vite build --emptyOutDir",
     "rsw:build": "rsw && npm run build",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {

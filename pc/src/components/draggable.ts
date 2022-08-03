@@ -13,7 +13,10 @@ function updatedFn(el: HTMLElement, binding: DirectiveBinding) {
   } else {
     isDraggable0 = true;
   }
-  const dialogEl: HTMLElement = el.parentElement.parentElement;
+  const dialogEl = el.parentElement?.parentElement;
+  if (!dialogEl) {
+    return;
+  }
   targetRef.value = dialogEl;
   isFullScreen0 = dialogEl.classList.contains("is-fullscreen");
   if (isDraggable0) {
@@ -35,7 +38,10 @@ export const draggable: Directive = {
     } else {
       isDraggable0 = true;
     }
-    const dialogEl: HTMLElement = el.parentElement.parentElement;
+    const dialogEl = el.parentElement?.parentElement;
+    if (!dialogEl) {
+      return;
+    }
     targetRef.value = dialogEl;
     isFullScreen0 = dialogEl.classList.contains("is-fullscreen");
     if (isDraggable0) {
