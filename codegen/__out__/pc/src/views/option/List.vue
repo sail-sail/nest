@@ -375,10 +375,12 @@ const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
-const emit = defineEmits([ "selectedIdsChg" ]);
+const emit = defineEmits([
+  "selectedIdsChg",
+]);
 
 /** 表格 */
-let tableRef: InstanceType<typeof ElTable>|undefined = $ref();
+let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 导出Excel */
 async function exportClk() {
@@ -507,7 +509,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<OptionModel>(<any>$$(tableRef)));
+} = $(useSelect<OptionModel>($$(tableRef)));
 
 watch(
   () => selectedIds,

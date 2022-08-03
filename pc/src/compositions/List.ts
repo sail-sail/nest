@@ -1,7 +1,9 @@
-import { Ref, watch } from "vue";
 import {
-  ElForm,
-  ElTable,
+  type Ref,
+  watch,
+} from "vue";
+import {
+  type ElTable,
 } from "element-plus";
 import { useRoute } from "vue-router";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";

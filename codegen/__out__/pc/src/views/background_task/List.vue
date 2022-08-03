@@ -435,10 +435,12 @@ const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
-const emit = defineEmits([ "selectedIdsChg" ]);
+const emit = defineEmits([
+  "selectedIdsChg",
+]);
 
 /** 表格 */
-let tableRef: InstanceType<typeof ElTable>|undefined = $ref();
+let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 搜索 */
 function initSearch() {
@@ -569,7 +571,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<Background_TaskModel>(<any>$$(tableRef)));
+} = $(useSelect<Background_TaskModel>($$(tableRef)));
 
 watch(
   () => selectedIds,

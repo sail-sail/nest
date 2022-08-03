@@ -823,10 +823,12 @@ const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
-const emit = defineEmits([ "selectedIdsChg" ]);
+const emit = defineEmits([
+  "selectedIdsChg",
+]);
 
 /** 表格 */
-let tableRef: InstanceType<typeof ElTable>|undefined = $ref();<#
+let tableRef = $ref<InstanceType<typeof ElTable>>();<#
   if (opts.noExport !== true) {
 #>
 
@@ -1076,7 +1078,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<<#=Table_Up#>Model>(<any>$$(tableRef)));
+} = $(useSelect<<#=Table_Up#>Model>($$(tableRef)));
 
 watch(
   () => selectedIds,
