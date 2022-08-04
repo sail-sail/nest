@@ -25,11 +25,28 @@ const Table_Up = tableUp.split("_").map(function(item) {
       </el-icon>
     </div>
   </template>
-  <div class="flex-[1_0_0] overflow-hidden flex flex-col basis-[inherit]">
-    <div class="flex-[1_0_0] overflow-auto flex justify-start items-center flex-col p-5 basis-[inherit]">
+  <div
+    overflow="hidden"
+    flex="~ [1_0_0] col"
+    basis="[inherit]"
+  >
+    <div
+      overflow="auto"
+      flex="~ [1_0_0] col"
+      basis="[inherit]"
+      p="5"
+      justify="start"
+      items="center"
+    >
       <el-form
         size="default"
-        class="grid justify-end items-end gap-x-[16px] gap-y-[16px] grid-rows-[auto] place-content-center"
+        
+        justify="end"
+        items="end"
+        grid="~ rows-[auto]"
+        gap="x-[16px] y-[16px]"
+        place="content-center"
+        
         :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
@@ -242,7 +259,12 @@ const Table_Up = tableUp.split("_").map(function(item) {
         
       </el-form>
     </div>
-    <div class="py-2.5 flex justify-center items-center">
+    <div
+      p="y-2.5"
+      flex
+      justify="center"
+      items="center"
+    >
       <el-button
         plain
         :icon="CircleClose"
@@ -258,7 +280,11 @@ const Table_Up = tableUp.split("_").map(function(item) {
       >
         保存
       </el-button>
-      <div class="text-[12px] text-[gray] absolute right-2">
+      <div
+        text="[12px] [gray]"
+        absolute
+        right-2
+      >
         <template v-if="ids && ids.length > 0">
           <el-button
             link

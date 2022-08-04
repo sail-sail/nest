@@ -70,7 +70,8 @@ export default defineStore("tabs", function() {
     const router = useRouter();
     const route = useRoute();
     if (!router) return;
-    if (actTab && router.hasRoute(actTab.path)) {
+    const routes = router.getRoutes();
+    if (actTab && routes.some((item) => item.path === actTab?.path)) {
       activeTab(actTab);
       const navFail = await router.replace({
         path: actTab.path,
@@ -79,7 +80,7 @@ export default defineStore("tabs", function() {
       return navFail;
     }
     const tab = tabs[0];
-    if (tab && router.hasRoute(tab.path)) {
+    if (tab && routes.some((item) => item.path === tab?.path)) {
       activeTab(tab);
       const navFail = await router.replace({
         path: tab.path,

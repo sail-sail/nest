@@ -1,6 +1,16 @@
 <template>
-<div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col w-full h-full">
-  <div class="mx-1.5 overflow-auto">
+<div
+  flex="~ [1_0_0] col"
+  overflow="hidden"
+  w="full"
+  h="full"
+  p="[6px]"
+  box-border
+>
+  <div
+    m="x-1.5"
+    overflow="auto"
+  >
     <el-form
       size="default"
       :model="search"
@@ -50,7 +60,7 @@
             class="form_input"
             @keyup.enter.native.stop
             :set="search.role_ids = search.role_ids || [ ]"
-            :model-value="(search.role_ids as any)"
+            :model-value="search.role_ids"
             @update:model-value="search.role_ids = $event"
             placeholder="请选择角色"
             :options="role4SelectV2"
@@ -92,7 +102,8 @@
           <span>已选择</span>
           <span>(</span>
           <span
-            class="mx-1 text-[green]"
+            m="x-1"
+            text="green"
             :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
           >
             {{ selectedIds.length }}
@@ -103,7 +114,9 @@
           title="清空已选择"
           v-show="selectedIds.length > 0"
           @click="clearSelect"
-          class="cursor-pointer mx-3 hover:text-[red]"
+          cursor="pointer"
+          m="x-3"
+          text="hover:[red]"
         >
           <CircleClose />
         </el-icon>
@@ -111,7 +124,9 @@
       
       <div style="min-width: 20px;"></div>
       <el-form-item
-        class="flex flex-nowrap self-start min-w-[170px]"
+        self-start
+        flex="~ nowrap"
+        min="w-[170px]"
       >
         <el-button
           plain
@@ -132,7 +147,10 @@
       
     </el-form>
   </div>
-  <div class="mx-1.5 mt-1.5 flex">
+  <div
+    m="x-1.5 t-1.5"
+    flex
+  >
     <template v-if="search.is_deleted !== 1">
       <el-button
         type="primary"
@@ -197,7 +215,10 @@
     >
       刷新
     </el-button>
-    <div class="flex-[1_0_0]">
+    <div
+      overflow="hidden"
+      flex="[1_0_0]"
+    >
     </div>
     <TableShowColumns
       :tableColumns="tableColumns"
@@ -207,8 +228,15 @@
       列操作
     </TableShowColumns>
   </div>
-  <div class="flex-[1_0_0] overflow-hidden mt-1.5 flex flex-col">
-    <div class="flex-[1_0_0] overflow-hidden flex flex-col">
+  <div
+    overflow="hidden"
+    flex="~ [1_0_0] col"
+    m="t-1.5"
+  >
+    <div
+      overflow="hidden"
+      flex="~ [1_0_0] col"
+    >
       <el-table
         :data="tableData"
         @select="selectChg"
@@ -316,7 +344,11 @@
         
       </el-table>
     </div>
-    <div class="p-[2px_5px_2px_0px] flex justify-end">
+    <div
+      justify="end"
+      p="[2px_5px_2px_0px]"
+      flex
+    >
       <el-pagination
         background
         :page-sizes="pageSizes"

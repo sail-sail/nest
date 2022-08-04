@@ -60,5 +60,5 @@
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
-  "unocss.root": "web"
+  "unocss.root": "pc"
 }

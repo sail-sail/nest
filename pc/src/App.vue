@@ -284,6 +284,30 @@ body .el-menu {
     background-color: var(--el-color-primary);
   }
 }
+// .dark body {
+//   --el-menu-active-color: #4284b4;
+// }
+// .dark body .el-menu {
+//   --el-menu-bg-color: #04121e !important;
+// }
+// .dark body .el-sub-menu__title {
+//   background-color: #04121e !important;
+// }
+// .dark .top_div {
+//   background-color: #04121e !important;
+// }
+.dark body {
+  --el-menu-active-color: #4284b4;
+}
+.dark body .el-menu {
+  --el-menu-bg-color: black !important;
+}
+.dark body .el-sub-menu__title {
+  background-color: black !important;
+}
+.dark .top_div {
+  background-color: black !important;
+}
 .el-menu.el-menu--collapse>.el-menu-item>span, .el-menu--collapse>.el-sub-menu>.el-sub-menu__title>span {
   height: initial;
   width: initial;
@@ -303,6 +327,14 @@ body .el-input-number.is-without-controls .el-input__inner {
     background-color: rgba(210,210,210,.8);
   }
 }
+.dark .el-table {
+  .table_current_row {
+    background-color: rgba(81, 81, 81,.8);
+  }
+  .el-table__body tr.table_current_row:hover>td.el-table__cell {
+    background-color: rgba(81, 81, 81,.8);
+  }
+}
 .el-date-editor.el-input, .el-date-editor.el-input__inner {
   --el-date-editor-width: 100%;
 }
@@ -318,6 +350,5 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-form .el-form-item__error {
   padding: 0;
-  z-index: 2;
 }
 </style>
