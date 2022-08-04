@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { NavigationFailure, useRouter } from "vue-router";
+import { NavigationFailure, useRoute, useRouter } from "vue-router";
 
 export interface TabInf {
   lbl?: string,
@@ -66,25 +66,29 @@ export default defineStore("tabs", function() {
     tabs = [ tab ];
   }
   
-  async function refreshTab(): Promise<NavigationFailure|undefined> {
+  async function refreshTab() {
     const router = useRouter();
+    const route = useRoute();
     if (!router) return;
-    let navFail: NavigationFailure|undefined = undefined;
-    if (actTab) {
-      navFail = <NavigationFailure> await router.replace({
+    if (actTab && router.hasRoute(actTab.path)) {
+      activeTab(actTab);
+      const navFail = await router.replace({
         path: actTab.path,
         query: actTab.query,
       });
-      return;
+      return navFail;
     }
     const tab = tabs[0];
-    if (tab) {
+    if (tab && router.hasRoute(tab.path)) {
       activeTab(tab);
-      navFail = <NavigationFailure> await router.replace({
+      const navFail = await router.replace({
         path: tab.path,
         query: tab.query,
       });
+      return navFail;
     }
+    const navFail = await router.replace("/");
+    activeTab({ path: route.path });
     return navFail;
   }
   

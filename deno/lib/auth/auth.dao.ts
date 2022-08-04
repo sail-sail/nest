@@ -3,7 +3,7 @@ import { ServiceException } from "/lib/exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
 import { SignJWT, jwtVerify, JWTPayload, decodeJwt } from "jose/index.ts";
-import { JWTExpired } from "jose/util/errors.ts";
+import { JWSSignatureVerificationFailed, JWTExpired } from "jose/util/errors.ts";
 import { Context } from "/lib/context.ts";
 import { getEnv } from "/lib/env.ts";
 
@@ -31,7 +31,7 @@ export async function getAuthModel<T extends AuthModel>(
   try {
     authModel = await verifyToken<T>(authorization);
   } catch (err: unknown) {
-    if (err instanceof JWTExpired) {
+    if (err instanceof JWTExpired || err instanceof JWSSignatureVerificationFailed) {
       authModel = undefined;
     } else {
       throw err;

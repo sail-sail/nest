@@ -9,10 +9,10 @@ import { routesGen } from "./gen";
 
 const routes: Array<RouteRecordRaw> = [
   ...routesGen,
-  // {
-  //   path: "",
-  //   redirect: "/index",
-  // },
+  {
+    path: "",
+    redirect: "/usr",
+  },
   // {
   //   path: "/index",
   //   name: "主页",
