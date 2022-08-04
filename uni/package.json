@@ -57,6 +57,7 @@
     "@dcloudio/uni-automator": "3.0.0-alpha-3040820220424001",
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-3040820220424001",
     "@dcloudio/vite-plugin-uni": "3.0.0-alpha-3040820220424001",
+    "@unocss/preset-attributify": "0.45.3",
     "@vue/runtime-dom": "3.2.37",
     "eslint": "8.20.0",
     "eslint-config-google": "0.14.0",
