@@ -64,23 +64,23 @@ async function gqlgen() {
   }
 }
 
-function escapeRegExp(str: string) {
-  return str.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
-}
+// function escapeRegExp(str: string) {
+//   return str.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
+// }
 
 async function compile() {
   console.log("compile");
-  const depsStr = await Deno.readTextFile(Deno.cwd()+"/deps.ts");
-  const reg = new RegExp(escapeRegExp(`/**prod`)+"([\\s\\S]*?)"+escapeRegExp(`*/`), "gm");
-  const depsStr2 = depsStr.replace(reg, function(str) {
-    str = str.trim();
-    const len = str.length;
-    const openLen = `/**prod`.length;
-    const closeLen = `*/`.length;
-    str = str.substring(openLen, len-closeLen).trim();
-    return str;
-  }).replace("declare const XLSX: any;", "");
-  await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr2);
+  // const depsStr = await Deno.readTextFile(Deno.cwd()+"/deps.ts");
+  // const reg = new RegExp(escapeRegExp(`/**prod`)+"([\\s\\S]*?)"+escapeRegExp(`*/`), "gm");
+  // const depsStr2 = depsStr.replace(reg, function(str) {
+  //   str = str.trim();
+  //   const len = str.length;
+  //   const openLen = `/**prod`.length;
+  //   const closeLen = `*/`.length;
+  //   str = str.substring(openLen, len-closeLen).trim();
+  //   return str;
+  // }).replace("declare const XLSX: any;", "");
+  // await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr2);
   
   try {
     for await (const dirEntry of Deno.readDir(Deno.cwd()+"/../build/")) {
@@ -210,7 +210,7 @@ async function compile() {
       console.error(stderrStr);
     }
   } finally {
-    await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr);
+    // await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr);
   }
 }
 
