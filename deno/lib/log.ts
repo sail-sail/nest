@@ -1,20 +1,8 @@
 // deno-lint-ignore-file no-empty
-import {
-  appendFile,
-  readdir,
-  unlink,
-  stat,
-  access,
-} from "std/node/fs/promises.ts";
-
-import {
-  mkdirSync,
-} from "std/node/fs.ts"
-
 import dayjs from "dayjs";
 
 export interface LogConfig {
-  path?: string;
+  path: string;
   lever?: "log"|"error"|"info";
   separate?: string;
   expire_day?: number;
@@ -24,7 +12,7 @@ export function logInit(conf: LogConfig) {
   // const consoleError = console.error;
   if(conf && conf.path) {
     try {
-      mkdirSync(conf.path);
+      Deno.mkdirSync(conf.path, { recursive: true });
     } catch (_err) {
     }
     let arr: ("log"|"error"|"info")[] = ["log","error","info"];
@@ -49,33 +37,32 @@ export function logInit(conf: LogConfig) {
         const lgFlNm = dateMom.format(separate)+".log";
         const lgPh = conf.path+"/"+lgFlNm;
         if(!expire_day || expire_day <= 0) {
-          await appendFile(lgPh,pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\n");
+          await Deno.writeTextFile(lgPh, pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\n", { append: true })
           return;
         }
         let exists = true;
         try {
-          await access(lgPh);
+          await Deno.stat(lgPh);
         } catch (_err) {
           exists = false;
         }
         if(!exists) {
-          const files = await readdir(conf.path);
           const date = new Date();
-          for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const dateTmp = dayjs(file,separate+".log");
-            if(dateTmp.isValid()) continue;
-            let stats = undefined;
-            try {
-              stats = await stat(conf.path+"/"+file);
-            } catch (_err) { }
-            if(!stats || !stats.isFile()) continue;
+          for await (const fileEntry of Deno.readDir(conf.path)) {
+            if (!fileEntry.isFile) {
+              continue;
+            }
+            const file = fileEntry.name;
+            const dateTmp = dayjs(file, separate+".log");
+            if(dateTmp.isValid()) {
+              continue;
+            }
             if(date.getTime() - dateTmp.toDate().getTime() >= expire_time) {
-              await unlink(conf.path+"/"+file);
+              await Deno.remove(conf.path + "/" + file);
             }
           }
         }
-        await appendFile(lgPh,pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\n");
+        await Deno.writeTextFile(lgPh, pixStr+" "+keyUp.padEnd(5," ")+" "+str+"\n", { append: true });
       };
     });
   }
