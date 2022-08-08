@@ -5,11 +5,30 @@ import {
   type RedisConnectOptions,
 } from "redis";
 import dayjs from "dayjs";
-import * as mysql2 from "mysql2/mod.ts";
-import type { PoolOptions, ResultSetHeader } from "mysql2/typings/mysql/index.d.ts";
+
+import {
+  Client,
+  configLogger,
+  type ClientConfig,
+} from "./mysql/mod.ts";
+import {
+  type PoolConnection,
+} from "./mysql/src/pool.ts";
+import {
+  type FieldInfo,
+} from "./mysql/src/packets/parsers/result.ts";
+import {
+  escapeId,
+  escape,
+} from "sqlstring";
+
 import { Context as OakContext } from "oak";
 
-import { createPool as genericCreatePool, Pool as GenPool } from "generic_pool";
+import {
+  createPool as genericCreatePool,
+  type Pool as GenPool,
+} from "generic_pool";
+
 import { QueryArgs } from "/lib/query_args.ts";
 import { getEnv } from "/lib/env.ts";
 import { AUTHORIZATION } from "./auth/auth.constants.ts";
@@ -17,6 +36,7 @@ import {
   SortOrderEnum,
   type InputMaybe,
 } from "../gen/types.ts";
+import { ServiceException } from "./exceptions/service.exception.ts";
 
 declare global {
   interface Window {
@@ -27,6 +47,18 @@ declare global {
     };
   }
 }
+
+export type ExecuteResult = {
+  affectedRows: number;
+  lastInsertId: number;
+  fields?: FieldInfo[];
+  // deno-lint-ignore no-explicit-any
+  rows?: any[];
+  // deno-lint-ignore no-explicit-any
+  iterator?: any;
+}
+
+configLogger({ enable: false });
 
 /** 临时文件路径 */
 export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
@@ -70,52 +102,52 @@ function redisClientPool() {
   return _redisClientPool;
 }
 
-let pool: mysql2.Pool;
+let client: Client;
 
-export async function getPool(): Promise<mysql2.Pool> {
-  if (!pool) {
-    const opt: PoolOptions = {
-      user: await getEnv("database_username"),
-      database: await getEnv("database_database"),
+export async function getClient(): Promise<Client> {
+  if (!client) {
+    const opt: ClientConfig = {
+      username: await getEnv("database_username"),
       password: await getEnv("database_password"),
+      db: await getEnv("database_database"),
     };
     const socketPath = await getEnv("database_socketpath");
     if (socketPath) {
       opt.socketPath = socketPath;
     } else {
-      opt.host = await getEnv("database_host");
-      opt.port = Number(await getEnv("database_port"));
-    }
-    const waitForConnections = await getEnv("database_waitForconnections");
-    if (waitForConnections != null) {
-      opt.waitForConnections = waitForConnections === "true";
-    }
-    const connectionLimit = await getEnv("database_connectionlimit");
-    if (connectionLimit != null) {
-      opt.connectionLimit = Number(connectionLimit);
+      opt.hostname = await getEnv("database_hostname");
+      const portStr = await getEnv("database_port");
+      if (portStr) {
+        const port = Number(portStr);
+        if (port > 0) {
+          opt.port = port;
+        }
+      }
     }
     const debug = await getEnv("database_debug");
-    if (debug != null) {
-      opt.debug = debug === "true";
+    if (debug === "true") {
+      configLogger({ enable: true });
     }
-    // const stream = await getEnv("database_stream");
-    // if (stream != null) {
-    //   opt.stream = stream === "true";
-    // }
     opt.dateStrings = true;
-    opt.supportBigNumbers = true;
     opt.bigNumberStrings = true;
-    opt.stringifyObjects = true;
+    // opt.stringifyObjects = true;
     // console.log(opt);
-    pool = mysql2.createPool(opt);
+    const poolSizeStr = await getEnv("database_pool_size");
+    if (poolSizeStr) {
+      const poolSize = Number(poolSizeStr);
+      if (poolSize > 0) {
+        opt.poolSize = poolSize;
+      }
+    }
+    client = await new Client().connect(opt);
   }
-  return pool;
+  return client;
 }
 
 export class Context {
   
   #is_tran = false;
-  #conn: mysql2.PoolConnection|undefined;
+  #conn: PoolConnection|undefined;
   #req_id = 0;
   
   notVerifyToken = false;
@@ -375,17 +407,23 @@ export class Context {
    * 开启事务, 如果事务已经开启则直接返回数据库链接
    * @memberof Context
    */
-  async beginTran(opt?: { debug?: boolean }): Promise<mysql2.PoolConnection> {
+  async beginTran(opt?: { debug?: boolean }): Promise<PoolConnection> {
     let conn = this.#conn;
     if (conn) return conn;
-    const pool = await getPool();
-    conn = await pool.getConnection();
+    const client = await getClient();
+    if (!client.pool) {
+      throw new ServiceException("client pool is empty!");
+    }
+    conn = await client.poolConn?.pop();
     this.#conn = conn;
+    if (!conn) {
+      throw new ServiceException("client pool conn is empty!");
+    }
     if (!opt || opt.debug !== false) {
-      this.log("beginTran;" + " /* "+ conn.threadId +" */");
+      this.log("beginTran;" + " /* "+ await conn.threadId() +" */");
     }
     if (conn) {
-      await conn.beginTransaction();
+      await conn.execute("BEGIN");
     }
     return conn;
   }
@@ -395,17 +433,17 @@ export class Context {
    * @return {Promise<void>} 
    * @memberof Context
    */
-  async rollback(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+  async rollback(conn?: PoolConnection, opt?: { debug?: boolean }): Promise<void> {
     if (!conn) conn = this.#conn;
     if (!conn) return;
     this.#conn = undefined;
     if (!opt || opt.debug !== false) {
-      this.log("rollback;" + " /* "+ conn.threadId +" */");
+      this.log("rollback;" + " /* "+ await conn.threadId() +" */");
     }
     try {
-      await conn.rollback();
+      await conn.execute("rollback");
     } finally {
-      conn.release();
+      conn.returnToPool();
     }
   }
   
@@ -414,37 +452,38 @@ export class Context {
    * @return {Promise<void>} 
    * @memberof Context
    */
-  async commit(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+  async commit(conn?: PoolConnection, opt?: { debug?: boolean }): Promise<void> {
     if (!conn) conn = this.#conn;
     if (!conn) return;
     this.#conn = undefined;
     if (!opt || opt.debug !== false) {
-      this.log("commit;" + " /* "+ conn.threadId +" */");
+      this.log("commit;" + " /* "+ await conn.threadId() +" */");
     }
     try {
-      await conn.commit();
+      await conn.execute("commit");
     } finally {
-      conn.release();
+      conn.returnToPool();
     }
   }
   
+  // deno-lint-ignore require-await
   async closePool() {
     if (this.#conn) {
       const conn = this.#conn;
       this.#conn = undefined;
-      conn.release();
+      conn.close();
     }
-    await pool.end();
+    client.poolConn?.close();
   }
   
   // deno-lint-ignore no-explicit-any
   escapeId(value: any, forbidQualified?: boolean) {
-    return mysql2.escapeId(value, forbidQualified);
+    return escapeId(value, forbidQualified);
   }
   
   // deno-lint-ignore no-explicit-any
   escape(value: any, forbidQualified?: boolean, timeZone?: string) {
-    return mysql2.escape(value, forbidQualified, timeZone);
+    return escape(value, forbidQualified, timeZone);
   }
   
   escapeDec(orderDec?: InputMaybe<SortOrderEnum>|"asc"|"desc") {
@@ -580,21 +619,19 @@ export class Context {
     if (result != null) {
       return result;
     }
-    // deno-lint-ignore no-explicit-any
-    let result0: any;
     try {
       if (this.#is_tran) {
         const conn = await this.beginTran();
         if (!opt || opt.debug !== false) {
-          this.log(this.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
+          this.log(this.getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */");
         }
-        result0 = await conn.query(sql, args);
+        result = (await conn.query(sql, args) as T[]);
       } else {
         if (!opt || opt.debug !== false) {
           this.log(this.getDebugQuery(sql, args));
         }
-        const pool = await getPool();
-        result0 = await pool.query(sql, args);
+        const pool = await getClient();
+        result = await pool.query(sql, args);
       }
     } catch (err) {
       if (err.code === "EHOSTUNREACH") {
@@ -602,7 +639,6 @@ export class Context {
       }
       throw err;
     }
-    result = result0[0];
     await this.setCache(opt?.cacheKey1, opt?.cacheKey2, result);
     // if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
     //   t.log(result);
@@ -616,7 +652,7 @@ export class Context {
    * @param {string} sql SQL语句
    * @param {any[]|QueryArgs} args? 参数
    * @param {{ debug?: boolean, logResult?: boolean }} opt?
-   * @return {Promise<ResultSetHeader>}
+   * @return {Promise<ExecuteResult>}
    * @memberof Context
    */
   async execute(
@@ -627,7 +663,7 @@ export class Context {
       debug?: boolean,
       // logResult?: boolean,
     },
-  ): Promise<ResultSetHeader> {
+  ): Promise<ExecuteResult> {
     if (args instanceof QueryArgs) {
       args = args.value;
     }
@@ -637,14 +673,14 @@ export class Context {
       if (this.#is_tran) {
         const conn = await this.beginTran();
         if (!opt || opt.debug !== false) {
-          this.log(this.getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
+          this.log(this.getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */");
         }
         result = await conn.execute(sql, args);
       } else {
         if (!opt || opt.debug !== false) {
           this.log(this.getDebugQuery(sql, args));
         }
-        const pool = await getPool();
+        const pool = await getClient();
         result = await pool.execute(sql, args);
       }
     } catch (err) {

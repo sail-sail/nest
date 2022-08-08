@@ -130,11 +130,8 @@ function start() {
   // // 服务器端口
   // allowNets.push(`${ conf.server_host }:${ conf.server_port }`);
   // // 数据库
-  // if (conf.database_socketpath) {
-  //   allowWrites.push(conf.database_socketpath);
-  //   allowReads.push(conf.database_socketpath);
-  // } else if (conf.database_host) {
-  //   allowNets.push(`${ conf.database_host }:${ conf.database_port }`);
+  // if (conf.database_hostname) {
+  //   allowNets.push(`${ conf.database_hostname }:${ conf.database_port }`);
   // }
   // // 附件
   // if (conf.oss_endpoint) {
@@ -165,8 +162,7 @@ function start() {
   //   "database_username",
   //   "database_password",
   //   "database_database",
-  //   "database_connectionlimit",
-  //   "database_waitForconnections",
+  //   "database_pool_size",
     
   //   "oss_type",
   //   "oss_endpoint",

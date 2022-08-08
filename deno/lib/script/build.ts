@@ -104,11 +104,8 @@ async function compile() {
     // 服务器端口
     allowNets.push(`${ await getEnv("server_host") }:${ await getEnv("server_port") }`);
     // 数据库
-    if (await getEnv("database_socketpath")) {
-      allowWrites.push(await getEnv("database_socketpath"));
-      allowReads.push(await getEnv("database_socketpath"));
-    } else if (await getEnv("database_host")) {
-      allowNets.push(`${ await getEnv("database_host") }:${ await getEnv("database_port") }`);
+    if (await getEnv("database_hostname")) {
+      allowNets.push(`${ await getEnv("database_hostname") }:${ await getEnv("database_port") }`);
     }
     // 附件
     if (await getEnv("oss_endpoint")) {
@@ -134,14 +131,13 @@ async function compile() {
       "server_title",
       
       "database_type",
-      "database_host",
+      "database_hostname",
       "database_port",
       "database_socketpath",
       "database_username",
       "database_password",
       "database_database",
-      "database_connectionlimit",
-      "database_waitForconnections",
+      "database_pool_size",
       
       "oss_type",
       "oss_endpoint",
