@@ -1,7 +1,9 @@
 import { crypto } from "std/crypto/mod.ts";
 import { encode } from "std/encoding/base64.ts";
 import { DigestAlgorithm } from "std/_wasm_crypto/mod.ts";
-import { JWTPayload } from "jose/index.ts";
+import {
+  type JWTPayload,
+} from "jose/index.ts";
 
 export const SECRET_KEY = "38e52379-9e94-467c-8e63-17ad318fc845";
 export const NOT_VERIFY_TOKEN = "not_verify_token";

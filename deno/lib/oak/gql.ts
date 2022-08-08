@@ -1,15 +1,19 @@
 import { Router } from "oak";
 import {
+  type Context,
+} from "/lib/context.ts";
+
+import {
   buildSchema,
-  GraphQLSchema,
-  GraphQLError,
   parse,
   execute,
+  validateSchema,
+  validate,
+  type GraphQLSchema,
+  type GraphQLError,
   type DocumentNode,
-validateSchema,
-validate,
 } from "graphql";
-import { Context } from "/lib/context.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 const gqlRouter = new Router();
