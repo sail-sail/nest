@@ -1,12 +1,12 @@
-const fs = require("fs");
+// const fs = require("fs");
 const path = require("path");
 const chokidar = require("chokidar");
 const pjPath = path.resolve(`${ __dirname }/../../`).replace(/\\/gm, "/");
 const child_process = require("child_process");
-const dotenv = require("dotenv");
+// const dotenv = require("dotenv");
 
-const buf = fs.readFileSync(`${ __dirname }/../../.env.dev`);
-const conf = dotenv.parse(buf);
+// const buf = fs.readFileSync(`${ __dirname }/../../.env.dev`);
+// const conf = dotenv.parse(buf);
 
 {
   const arr = [
