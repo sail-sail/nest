@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { watch } from "vue";
-import { useFullscreenEffect } from "@/compositions/fullscreen";
+import { useFullscreenEfc } from "@/compositions/fullscreen";
 import {
   ElDialog,
   ElIcon,
@@ -43,7 +43,7 @@ import {
 import useBackground_taskStore from "@/store/background_task";
 import List from "./List.vue";
 
-let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("后台任务列表");
 let dialogVisible = $ref(false);

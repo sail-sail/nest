@@ -62,10 +62,10 @@ import {
   CircleClose,
   Refresh,
 } from "@element-plus/icons-vue";
-import { useFullscreenEffect } from "@/compositions/fullscreen";
+import { useFullscreenEfc } from "@/compositions/fullscreen";
 import { inject, provide } from "vue";
 
-let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let inited = $ref(false);
 

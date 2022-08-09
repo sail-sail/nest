@@ -10,7 +10,7 @@ function getParentEl(el: HTMLElement, clazz: string): HTMLElement|null {
   return parent;
 }
 
-export function useFullscreenEffect() {
+export function useFullscreenEfc() {
   const fullscreen = ref(false);
   function setFullscreen(e: any) {
     const dialogEl = getParentEl(e.target, "el-dialog");

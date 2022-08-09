@@ -20,7 +20,8 @@
     "**/node_modules/**": true,
     "uni/dist/**": true,
     "**/.rsw": true,
-    "**/@rsw": true
+    "**/@rsw": true,
+    "web": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -46,7 +47,8 @@
     "uni/dist/**": true,
     "**/.rsw": true,
     "**/@rsw": true,
-    "**/.nuxt/**": true
+    "**/.nuxt/**": true,
+    "web": true
   },
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",

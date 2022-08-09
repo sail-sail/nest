@@ -177,7 +177,7 @@ import {
   CircleClose,
   FullScreen,
 } from "@element-plus/icons-vue";
-import { useFullscreenEffect } from "@/compositions/fullscreen";
+import { useFullscreenEfc } from "@/compositions/fullscreen";
 import {
   create,
   findById,
@@ -203,7 +203,7 @@ const emit = defineEmits([
 let inited = $ref(false);
 let columnNum = $ref(3);
 
-let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);

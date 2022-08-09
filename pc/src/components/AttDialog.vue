@@ -164,14 +164,14 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "@element-plus/icons-vue";
-import { useFullscreenEffect } from "@/compositions/fullscreen";
+import { useFullscreenEfc } from "@/compositions/fullscreen";
 import { baseURL, uploadFile } from '@/utils/axios';
 import {
   getStatsOss,
 } from "./Api";
 // import usrTenantStore from "@/store/tenant";
 
-let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 const emit = defineEmits([
   "change",

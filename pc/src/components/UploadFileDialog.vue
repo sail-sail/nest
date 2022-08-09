@@ -103,9 +103,9 @@ import {
   CircleCheck,
   CircleClose,
 } from "@element-plus/icons-vue";
-import { useFullscreenEffect } from "@/compositions/fullscreen";
+import { useFullscreenEfc } from "@/compositions/fullscreen";
 
-let { fullscreen, setFullscreen } = $(useFullscreenEffect());
+let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("导入");
 let dialogVisible = $ref(false);
