@@ -192,7 +192,7 @@ import {
 } from "./Api";
 
 import {
-  OptionModel,
+  type OptionInput,
 } from "#/types";
 
 import {
@@ -211,7 +211,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Partial<OptionModel> = $ref({
+let dialogModel: OptionInput = $ref({
 } as any);
 
 let ids: string[] = $ref([ ]);
@@ -243,20 +243,20 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: OptionModel|undefined = $ref();
+let builtInModel: OptionInput|undefined = $ref();
 
 /** 增加时的默认值 */
-async function getDefaultModel() {
-  const defaultModel: Partial<OptionModel> = {
+async function getDefaultInput() {
+  const defaultInput: OptionInput = {
   };
-  return defaultModel;
+  return defaultInput;
 }
 
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: OptionModel;
+    builtInModel?: OptionInput;
     model?: {
       ids: string[];
     };
@@ -281,7 +281,7 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
-    const defaultModel = await getDefaultModel();
+    const defaultModel = await getDefaultInput();
     dialogModel = {
       ...defaultModel,
       ...model,

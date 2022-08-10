@@ -155,6 +155,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
               filterable
@@ -210,6 +211,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             #>
             <el-input-number
               class="form_input"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               :precision="0"
               :step="1"
@@ -358,7 +360,7 @@ import {
 } from "./Api";
 
 import {
-  <#=Table_Up#>Model,
+  type <#=Table_Up#>Input,
 } from "#/types";<#
 const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
@@ -371,7 +373,7 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignKey) continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  if (table === foreignTable) continue;
+  // if (table === foreignTable) continue;
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -379,7 +381,7 @@ for (let i = 0; i < columns.length; i++) {
   }).join("_");
 #>
 import {
-  <#=Foreign_Table_Up#>Model,
+  type <#=Foreign_Table_Up#>Model,
 } from "#/types";<#
 }
 #>
@@ -426,7 +428,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Partial<<#=Table_Up#>Model> = $ref({<#
+let dialogModel: <#=Table_Up#>Input = $ref({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -610,11 +612,11 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: <#=Table_Up#>Model|undefined = $ref();
+let builtInModel: <#=Table_Up#>Input|undefined = $ref();
 
 /** 增加时的默认值 */
-async function getDefaultModel() {
-  const defaultModel: Partial<<#=Table_Up#>Model> = {<#
+async function getDefaultInput() {
+  const defaultInput: <#=Table_Up#>Input = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -650,14 +652,14 @@ async function getDefaultModel() {
     }
     #>
   };
-  return defaultModel;
+  return defaultInput;
 }
 
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: <#=Table_Up#>Model;
+    builtInModel?: <#=Table_Up#>Input;
     model?: {
       ids: string[];
     };
@@ -682,7 +684,7 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
-    const defaultModel = await getDefaultModel();
+    const defaultModel = await getDefaultInput();
     dialogModel = {
       ...defaultModel,
       ...model,

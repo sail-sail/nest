@@ -101,6 +101,7 @@
           <el-form-item prop="max_usr_num">
             <el-input-number
               class="form_input"
+              :set="dialogModel.max_usr_num = dialogModel.max_usr_num || undefined"
               v-model="dialogModel.max_usr_num"
               :precision="0"
               :step="1"
@@ -119,6 +120,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -167,6 +169,7 @@
           <el-form-item prop="order_by">
             <el-input-number
               class="form_input"
+              :set="dialogModel.order_by = dialogModel.order_by || undefined"
               v-model="dialogModel.order_by"
               :precision="0"
               :step="1"
@@ -280,10 +283,10 @@ import {
 } from "./Api";
 
 import {
-  TenantModel,
+  type TenantInput,
 } from "#/types";
 import {
-  MenuModel,
+  type MenuModel,
 } from "#/types";
 
 import {
@@ -304,7 +307,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Partial<TenantModel> = $ref({
+let dialogModel: TenantInput = $ref({
   menu_ids: [ ],
 } as any);
 
@@ -359,23 +362,23 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: TenantModel|undefined = $ref();
+let builtInModel: TenantInput|undefined = $ref();
 
 /** 增加时的默认值 */
-async function getDefaultModel() {
-  const defaultModel: Partial<TenantModel> = {
+async function getDefaultInput() {
+  const defaultInput: TenantInput = {
     max_usr_num: 0,
     is_enabled: 1,
     order_by: 0,
   };
-  return defaultModel;
+  return defaultInput;
 }
 
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: TenantModel;
+    builtInModel?: TenantInput;
     model?: {
       ids: string[];
     };
@@ -400,7 +403,7 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
-    const defaultModel = await getDefaultModel();
+    const defaultModel = await getDefaultInput();
     dialogModel = {
       ...defaultModel,
       ...model,

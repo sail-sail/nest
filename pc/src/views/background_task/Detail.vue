@@ -73,6 +73,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.state = dialogModel.state || undefined"
               v-model="dialogModel.state"
               placeholder="请选择状态"
               filterable
@@ -108,6 +109,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"
               filterable
@@ -294,7 +296,7 @@ import {
 } from "./Api";
 
 import {
-  Background_TaskModel,
+  type Background_TaskInput,
 } from "#/types";
 
 import {
@@ -313,7 +315,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Partial<Background_TaskModel> = $ref({
+let dialogModel: Background_TaskInput = $ref({
 } as any);
 
 let ids: string[] = $ref([ ]);
@@ -357,20 +359,20 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: Background_TaskModel|undefined = $ref();
+let builtInModel: Background_TaskInput|undefined = $ref();
 
 /** 增加时的默认值 */
-async function getDefaultModel() {
-  const defaultModel: Partial<Background_TaskModel> = {
+async function getDefaultInput() {
+  const defaultInput: Background_TaskInput = {
   };
-  return defaultModel;
+  return defaultInput;
 }
 
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: Background_TaskModel;
+    builtInModel?: Background_TaskInput;
     model?: {
       ids: string[];
     };
@@ -395,7 +397,7 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
-    const defaultModel = await getDefaultModel();
+    const defaultModel = await getDefaultInput();
     dialogModel = {
       ...defaultModel,
       ...model,

@@ -99,6 +99,7 @@
             <el-select
               class="form_input"
               @keyup.enter.native.stop
+              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -242,10 +243,10 @@ import {
 } from "./Api";
 
 import {
-  UsrModel,
+  type UsrInput,
 } from "#/types";
 import {
-  RoleModel,
+  type RoleModel,
 } from "#/types";
 
 import {
@@ -266,7 +267,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Partial<UsrModel> = $ref({
+let dialogModel: UsrInput = $ref({
   role_ids: [ ],
 } as any);
 
@@ -327,21 +328,21 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: UsrModel|undefined = $ref();
+let builtInModel: UsrInput|undefined = $ref();
 
 /** 增加时的默认值 */
-async function getDefaultModel() {
-  const defaultModel: Partial<UsrModel> = {
+async function getDefaultInput() {
+  const defaultInput: UsrInput = {
     is_enabled: 1,
   };
-  return defaultModel;
+  return defaultInput;
 }
 
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: UsrModel;
+    builtInModel?: UsrInput;
     model?: {
       ids: string[];
     };
@@ -366,7 +367,7 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
-    const defaultModel = await getDefaultModel();
+    const defaultModel = await getDefaultInput();
     dialogModel = {
       ...defaultModel,
       ...model,

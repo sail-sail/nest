@@ -185,10 +185,10 @@ import {
 } from "./Api";
 
 import {
-  PermitModel,
+  type PermitInput,
 } from "#/types";
 import {
-  MenuModel,
+  type MenuModel,
 } from "#/types";
 
 import {
@@ -209,7 +209,7 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: Partial<PermitModel> = $ref({
+let dialogModel: PermitInput = $ref({
 } as any);
 
 let ids: string[] = $ref([ ]);
@@ -263,20 +263,20 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: PermitModel|undefined = $ref();
+let builtInModel: PermitInput|undefined = $ref();
 
 /** 增加时的默认值 */
-async function getDefaultModel() {
-  const defaultModel: Partial<PermitModel> = {
+async function getDefaultInput() {
+  const defaultInput: PermitInput = {
   };
-  return defaultModel;
+  return defaultInput;
 }
 
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: PermitModel;
+    builtInModel?: PermitInput;
     model?: {
       ids: string[];
     };
@@ -301,7 +301,7 @@ async function showDialog(
   };
   await getSelectListEfc();
   if (action === "add") {
-    const defaultModel = await getDefaultModel();
+    const defaultModel = await getDefaultInput();
     dialogModel = {
       ...defaultModel,
       ...model,
