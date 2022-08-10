@@ -5,13 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Chrome",
-      "port": 9222,
-      "request": "attach",
-      "type": "chrome",
-      "webRoot": "${workspaceFolder}/pc"
-    },
-    {
       "address": "127.0.0.1",
       "localRoot": "${workspaceFolder}/deno",
       "name": "Debug deno",
@@ -20,37 +13,11 @@
       "type": "node"
     },
     {
-      "type": "node",
-      "request": "launch",
-      "name": "debug",
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
-      "cwd": "${workspaceRoot}/nest",
-      "program": "src/main.ts",
-      "env": {
-        "NODE_ENV": "hmr"
-      },
-      "skipFiles": [
-        "${workspaceFolder}/nest/node_modules/**",
-        "<node_internals>/**"
-      ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "release",
-      "cwd": "${workspaceRoot}/nest",
-      "program": "src/Mother.js",
-      "env": {
-        "NODE_ENV": "hmr"
-      },
-      "skipFiles": [
-        "${workspaceFolder}/nest/node_modules/**",
-        "${workspaceFolder}/nest/src/**",
-        "<node_internals>/**"
-      ]
+      "name": "Debug Chrome",
+      "port": 9222,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}/pc"
     }
   ]
 }

@@ -60,11 +60,41 @@
       <div class="tab_active_line" ref="tab_active_lineRef"></div>
     </div>
     <div class="content_div">
-      <router-view v-slot="{ Component, route }">
-        <keep-alive :max="20" v-if="!route.meta.notKeepAlive">
-          <component :is="Component"/>
-        </keep-alive>
-        <component :is="Component" v-else/>
+      <router-view v-slot="{ Component }">
+        <template v-if="Component">
+          <Transition mode="out-in">
+            <KeepAlive>
+              <Suspense>
+                <!-- 主要内容 -->
+                <component :is="Component"></component>
+
+                <!-- 加载中状态 -->
+                <template #fallback>
+                  <div
+                    v-if="errorMessage"
+                    flex="~ [1_0_0]"
+                    items="center"
+                    justify="center"
+                    overflow="hidden"
+                    text="[red] [28px]"
+                  >
+                    {{ errorMessage }}
+                  </div>
+                  <div
+                    v-else
+                    flex="~ [1_0_0]"
+                    items="center"
+                    justify="center"
+                    overflow="hidden"
+                    text="[18px]"
+                  >
+                    正在加载...
+                  </div>
+                </template>
+              </Suspense>
+            </KeepAlive>
+          </Transition>
+        </template>
       </router-view>
     </div>
   </div>
@@ -72,6 +102,8 @@
 </template>
 
 <script setup lang="ts">
+import { onErrorCaptured } from "vue";
+
 import {
   ElMessage,
   ElMessageBox,
@@ -101,10 +133,15 @@ import { useRoute, useRouter } from "vue-router";
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
+
 import {
   clearCache,
 } from "./Api";
-import { useDark, useToggle } from "@vueuse/core";
+
+import {
+  useDark,
+  useToggle,
+} from "@vueuse/core";
 
 const route = useRoute();
 const router = useRouter();
@@ -123,21 +160,19 @@ watch(
     () => route.query,
   ],
   async () => {
-    const menu = menuStore.getMenuByPath(route.path);
-    if (!menu && route.path !== "/" && usrStore.authorization) {
-      ElMessage.warning("无权限打开此菜单!");
+    if (route.path === "/" || route.path === "") {
       return;
     }
-    // if (route.query) {
-    //   menu.route_query = route.query;
-    // }
     tabsStore.activeTab({
       lbl: String(route.name || ""),
       active: true,
       path: route.path,
       query: route.query,
     });
-  }
+  },
+  {
+    immediate: true,
+  },
 );
 
 let tabs_divRef: HTMLDivElement|undefined = $ref();
@@ -159,13 +194,19 @@ function refreshTab_active_line() {
   tab_active_lineRef.style.width = `${ offsetWidth }px`;
 }
 
+let errorMessage = $ref("");
+
+onErrorCaptured(function(err) {
+  errorMessage = err instanceof Error ? err.message : (err || "系统错误");
+});
+
 watch(
   [
     () => tabsStore.actTab,
     () => tabsStore.tabs.length,
   ],
   () => {
-    nextTick(refreshTab_active_line);    
+    nextTick(refreshTab_active_line);
   },
   {
     immediate: true,

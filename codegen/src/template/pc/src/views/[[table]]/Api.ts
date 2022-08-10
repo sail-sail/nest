@@ -112,8 +112,6 @@ export async function findAll(
     if (!formatter) {
       if (data_type === "json") {
         formatter = `item.${ column_name } = item.${ column_name } && JSON.stringify(item.${ column_name }) || "";`;
-      } else if (data_type === "date") {
-        formatter = `item.${ column_name } = item.${ column_name } && new Date(item.${ column_name }).toLocaleDateString() || "";`;
       }
     }
     if (formatter) {

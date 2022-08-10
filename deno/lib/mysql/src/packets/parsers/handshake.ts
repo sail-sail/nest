@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-inferrable-types
 import { BufferReader, BufferWriter } from "../../buffer.ts";
 import ServerCapabilities from "../../constant/capabilities.ts";
 import { PacketType } from "../../constant/packet.ts";

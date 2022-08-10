@@ -1623,10 +1623,9 @@ watch(
       await initFrame();
     }
   },
-  {
-    immediate: true,
-  },
-);<#
+);
+
+await initFrame();<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

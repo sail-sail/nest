@@ -828,10 +828,9 @@ watch(
       await initFrame();
     }
   },
-  {
-    immediate: true,
-  },
 );
+
+await initFrame();
 </script>
 
 <style lang="scss" scoped>

@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-inferrable-types no-cond-assign
 import { DeferredStack } from "./deferred.ts";
 import { Connection } from "./connection.ts";
 import { log } from "./logger.ts";

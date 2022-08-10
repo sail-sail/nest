@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any prefer-const
 import { xor } from "../util.ts";
 import { ReceivePacket } from "../packets/packet.ts";
 import { encryptWithPublicKey } from "./crypt.ts";

@@ -929,10 +929,9 @@ watch(
       await initFrame();
     }
   },
-  {
-    immediate: true,
-  },
 );
+
+await initFrame();
 
 let menu_idsListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
 

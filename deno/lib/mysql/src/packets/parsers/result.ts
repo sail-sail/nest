@@ -130,6 +130,12 @@ function convertType(field: FieldInfo, val: string, config: ClientConfig): any {
       const date = new Date(val);
       return date;
     }
+    case 245: {
+      if (val) {
+        return JSON.parse(val);
+      }
+      return null;
+    }
     default:
       return val;
   }

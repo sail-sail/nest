@@ -1,3 +1,4 @@
+// deno-lint-ignore-file ban-types
 import { log } from "../deps.ts";
 
 let logger = log.getLogger();

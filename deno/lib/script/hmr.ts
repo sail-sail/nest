@@ -1,7 +1,8 @@
 import "/lib/env.ts";
 import { Context } from "../context.ts";
 import { QueryArgs } from "../query_args.ts";
-import type { PoolConnection } from "mysql2/mod.ts";
+import { ExecuteResult } from "../mysql/mod.ts";
+import { PoolConnection } from "../mysql/src/pool.ts";
 
 let watchTimeout: number|undefined = undefined;
 
@@ -81,7 +82,7 @@ async function getSchemaColumn(
     COLUMN_NAME: string;
     IS_NULLABLE: "NO"|"YES";
   // deno-lint-ignore no-explicit-any
-  }[] = (await conn.query(sql))[0] as any;
+  }[] = (await conn.query(sql)) as any;
   _schemaColumns[schema] = result;
   return _schemaColumns[schema].filter((item) => item.TABLE_SCHEMA === schema && item.TABLE_NAME === orgTable && item.COLUMN_NAME === orgName)[0];
 }
@@ -186,16 +187,14 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
             }
             // console.log(`类型 ${ methodName }: ${ sql }`);
             const conn = await context?.beginTran({ debug: false });
-            // deno-lint-ignore no-explicit-any
-            let result: any;
+            let result: ExecuteResult|undefined = undefined;
             try {
-              result = await conn?.query(sql, args);
-              // deno-lint-ignore no-explicit-any
-              const fileds: any[] = result[1];
+              result = await conn?.execute(sql, args);
+              const fileds = result?.fields || [ ];
               for (let i = 0; i < fileds.length; i++) {
                 const field = fileds[i];
                 let type = "string";
-                const columnType = field.columnType;
+                const columnType = field.fieldType;
                 if (columnType === 0x01 || columnType === 0x02 || columnType === 0x03 || columnType === 0x04 || columnType === 0x05 || columnType === 0x08 || columnType === 0x09 || columnType === 0x10 || columnType === 0xf6) {
                   type = "number";
                 } else if (columnType === 0x06) {
@@ -215,7 +214,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
                 if (field.name.startsWith("is_")) {
                   type = "0|1";
                 }
-                const colInfo = await getSchemaColumn(conn!, field.schema, field.orgTable, field.orgName);
+                const colInfo = await getSchemaColumn(conn!, field.schema, field.originTable, field.originName);
                 let IS_NULLABLE: "NO"|"YES" = "NO";
                 if (colInfo && colInfo.IS_NULLABLE) {
                   IS_NULLABLE = colInfo.IS_NULLABLE;
@@ -224,15 +223,15 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
                   name: field.name,
                   type,
                   schema: field.schema,
-                  orgName: field.orgName,
-                  orgTable: field.orgTable,
+                  orgName: field.originName,
+                  orgTable: field.originTable,
                   IS_NULLABLE,
                 });
               }
             } finally {
               await context?.rollback(conn, { debug: false });
             }
-            return result[0];
+            return result?.rows || [ ];
           }
           return [ ];
         }
@@ -303,18 +302,17 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
                 sql += " limit 0";
               }
             }
-            // deno-lint-ignore no-explicit-any
-            let result: any[]|undefined = [ [ ], [ ] ];
+            let result: ExecuteResult|undefined = undefined;
             const conn = await context?.beginTran({ debug: false });
             try {
-              result = await conn?.query(sql, args);
+              result = await conn?.execute(sql, args);
             } catch (errTmp) {
               // console.log(`sql错误 ${ methodName }: ${ sql }`);
               throw errTmp;
             } finally {
               await context?.rollback(conn, { debug: false });
             }
-            return result?.[0];
+            return result?.rows || [ ];
           }
         }
         try {

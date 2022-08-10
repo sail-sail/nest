@@ -55,7 +55,6 @@ export async function findAll(
   const result: Query["findAllTenant"] = data?.findAllTenant || [ ];
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
-    item.expiration = item.expiration && new Date(item.expiration).toLocaleDateString() || "";
   }
   return result;
 }
