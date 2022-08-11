@@ -56,7 +56,6 @@
             <el-select-v2
               :height="300"
               class="form_input"
-              @keyup.enter.native.stop
               v-model="dialogModel.menu_id"
               placeholder="请选择菜单"
               :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"

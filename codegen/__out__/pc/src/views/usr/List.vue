@@ -58,7 +58,6 @@
           <el-select-v2
             :height="300"
             class="form_input"
-            @keyup.enter.native.stop
             :set="search.role_ids = search.role_ids || [ ]"
             :model-value="search.role_ids"
             @update:model-value="search.role_ids = $event"
@@ -248,7 +247,7 @@
         height="100%"
         row-key="id"
         ref="tableRef"
-        :empty-text="inited ? undefined : '加载中...'"
+        :empty-text="inited ? '加载中...' : undefined"
         @sort-change="sortChange"
         :default-sort="sort"
         @click.ctrl="rowClkCtrl"

@@ -70,7 +70,6 @@
           <el-form-item prop="state">
             <el-select
               class="form_input"
-              @keyup.enter.native.stop
               :set="dialogModel.state = dialogModel.state || undefined"
               v-model="dialogModel.state"
               placeholder="请选择状态"
@@ -106,7 +105,6 @@
           <el-form-item prop="type">
             <el-select
               class="form_input"
-              @keyup.enter.native.stop
               :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"

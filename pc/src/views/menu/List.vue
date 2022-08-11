@@ -28,7 +28,6 @@
           <el-select-v2
             :height="300"
             class="form_input"
-            @keyup.enter.native.stop
             :set="search.menu_id = search.menu_id || [ ]"
             :model-value="search.menu_id"
             @update:model-value="search.menu_id = $event"
@@ -233,7 +232,7 @@
         height="100%"
         row-key="id"
         ref="tableRef"
-        :empty-text="inited ? undefined : '加载中...'"
+        :empty-text="inited ? '加载中...' : undefined"
         @sort-change="sortChange"
         :default-sort="sort"
         @click.ctrl="rowClkCtrl"

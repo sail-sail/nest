@@ -96,7 +96,6 @@
           <el-form-item prop="is_enabled">
             <el-select
               class="form_input"
-              @keyup.enter.native.stop
               :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
@@ -128,7 +127,6 @@
               collapse-tags-tooltip
               :set="dialogModel.role_ids = dialogModel.role_ids || [ ]"
               class="form_input"
-              @keyup.enter.native.stop
               v-model="dialogModel.role_ids"
               placeholder="请选择角色"
               :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"

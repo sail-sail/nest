@@ -42,7 +42,6 @@
         <el-form-item prop="state">
           <el-select
             class="form_input"
-            @keyup.enter.native.stop
             :set="search.state = search.state || [ ]"
             :model-value="search.state"
             @update:model-value="search.state = $event"
@@ -68,7 +67,6 @@
         <el-form-item prop="type">
           <el-select
             class="form_input"
-            @keyup.enter.native.stop
             :set="search.type = search.type || [ ]"
             :model-value="search.type"
             @update:model-value="search.type = $event"
@@ -245,7 +243,7 @@
         height="100%"
         row-key="id"
         ref="tableRef"
-        :empty-text="inited ? undefined : '加载中...'"
+        :empty-text="inited ? '加载中...' : undefined"
         @sort-change="sortChange"
         :default-sort="sort"
         @click.ctrl="rowClkCtrl"

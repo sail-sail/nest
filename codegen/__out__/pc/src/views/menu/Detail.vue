@@ -55,7 +55,6 @@
           <el-form-item prop="type">
             <el-select
               class="form_input"
-              @keyup.enter.native.stop
               :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"
@@ -83,7 +82,6 @@
             <el-select-v2
               :height="300"
               class="form_input"
-              @keyup.enter.native.stop
               v-model="dialogModel.menu_id"
               placeholder="请选择父菜单"
               :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
@@ -141,7 +139,6 @@
           <el-form-item prop="is_enabled">
             <el-select
               class="form_input"
-              @keyup.enter.native.stop
               :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
