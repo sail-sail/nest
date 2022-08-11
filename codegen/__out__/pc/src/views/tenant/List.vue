@@ -5,7 +5,7 @@
   w="full"
   h="full"
   p="[6px]"
-  box-border
+  box="border"
 >
   <div
     m="x-1.5"
@@ -109,7 +109,7 @@
       
       <div style="min-width: 20px;"></div>
       <el-form-item
-        self-start
+        self="start"
         flex="~ nowrap"
         min="w-[170px]"
       >
@@ -587,11 +587,11 @@ const builtInModel: TenantModel = $computed(() => {
     if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
       if (Array.isArray(item[1]) && item[1].length === 1) {
         if (!isNaN(Number(item[1][0]))) {
-          item[1] = <any> Number(item[1][0]);
+          item[1] = Number(item[1][0]) as any;
         }
       } else {
         if (!isNaN(Number(item[1]))) {
-          item[1] = <any> Number(item[1]);
+          item[1] = Number(item[1]) as any;
         }
       }
       continue;
