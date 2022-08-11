@@ -62,7 +62,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <el-select-v2
             :height="300"
             class="form_input"
-            @keyup.enter.native.stop
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
             @update:model-value="search.<#=column_name#> = $event"
@@ -87,7 +86,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
         <el-form-item prop="<#=column_name#>">
           <el-select
             class="form_input"
-            @keyup.enter.native.stop
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
             @update:model-value="search.<#=column_name#> = $event"
@@ -394,7 +392,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         height="100%"
         row-key="id"
         ref="tableRef"
-        :empty-text="inited ? undefined : '加载中...'"
+        :empty-text="inited ? '加载中...' : undefined"
         @sort-change="sortChange"
         :default-sort="sort"<#
         if (hasSummary) {

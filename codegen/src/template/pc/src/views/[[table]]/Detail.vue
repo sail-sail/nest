@@ -140,7 +140,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
               }
               #>
               class="form_input"
-              @keyup.enter.native.stop
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
               :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
@@ -152,7 +151,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
             #>
             <el-select
               class="form_input"
-              @keyup.enter.native.stop
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
