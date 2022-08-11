@@ -22,13 +22,11 @@
   </template>
   <div
     overflow="hidden"
-    flex="~ [1_0_0] col"
-    basis="[inherit]"
+    flex="~ [1_0_0] col basis-[inherit]"
   >
     <div
       overflow="auto"
-      flex="~ [1_0_0] col"
-      basis="[inherit]"
+      flex="~ [1_0_0] col basis-[inherit]"
       p="5"
       justify="start"
       items="center"
@@ -219,8 +217,7 @@
       </el-button>
       <div
         text="[12px] [gray]"
-        absolute
-        right-2
+        pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
           <el-button
@@ -270,12 +267,15 @@ import {
   ElDatePicker,
   ElButton,
 } from "element-plus";
+
 import {
   CircleCheck,
   CircleClose,
   FullScreen,
 } from "@element-plus/icons-vue";
+
 import { useFullscreenEfc } from "@/compositions/fullscreen";
+
 import {
   create,
   findById,

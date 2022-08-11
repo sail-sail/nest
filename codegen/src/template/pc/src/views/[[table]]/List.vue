@@ -653,6 +653,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
 <script setup lang="ts">
 import { watch } from "vue";
 import useUsrStore from "@/store/usr";
+
 import {
   ElMessage,
   ElMessageBox,
@@ -672,11 +673,13 @@ import {
   ElPagination,
   ElLink,
 } from "element-plus";
+
 import { MessageBox } from "@/components/MessageBox";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import {
   Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
+
 import {
   Search,
   Refresh,
@@ -688,6 +691,7 @@ import {
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
+
 import TableShowColumns from "@/components/TableShowColumns.vue";<#
   if (opts.noImport !== true) {
 #>
@@ -710,12 +714,14 @@ import LinkAtt from "@/components/LinkAtt.vue";<#
 #>
 import LinkList from "@/components/LinkList.vue";
 import { deepCompare } from "@/utils/ObjectUtil";
+
 import {
   usePage,
   useSelect,
   useTableColumns,
   ColumnType,
 } from "@/compositions/List";
+
 import Detail from "./Detail.vue";
 
 import ListSelectDialog from "@/components/ListSelectDialog.vue";<#
