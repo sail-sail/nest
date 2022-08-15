@@ -305,14 +305,14 @@ let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
-let dialogModel: TenantInput = $ref({
+let dialogModel = $ref({
   menu_ids: [ ],
-} as any);
+} as TenantInput);
 
-let ids: string[] = $ref([ ]);
-let changedIds: string[] = $ref([ ]);
+let ids = $ref<string[]>([ ]);
+let changedIds = $ref<string[]>([ ]);
 
-let formRef: InstanceType<typeof ElForm>|undefined = $ref();
+let formRef = $ref<InstanceType<typeof ElForm> | undefined>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
@@ -325,10 +325,10 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 });
 
 /** 下拉框列表 */
-let menuInfo: {
+let menuInfo = $ref<{
   count: number;
   data: MenuModel[];
-} = $ref({
+}>({
   count: 0,
   data: [ ],
 });
@@ -360,7 +360,7 @@ let onCloseResolve = function(value: {
 }) { };
 
 /** 内置变量 */
-let builtInModel: TenantInput|undefined = $ref();
+let builtInModel = $ref<TenantInput | undefined>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -384,6 +384,7 @@ async function showDialog(
   },
 ) {
   inited = false;
+  dialogVisible = true;
   if (formRef) {
     formRef.resetFields();
   }
@@ -422,7 +423,6 @@ async function showDialog(
     formRef.clearValidate();
   }
   inited = true;
-  dialogVisible = true;
   const reslut = await new Promise<{
     changedIds: string[];
   }>((resolve) => {
@@ -505,7 +505,7 @@ async function saveClk() {
   } catch (err) {
     return;
   }
-  let id: string|undefined = undefined;
+  let id: string | undefined = undefined;
   let msg = "";
   if (dialogAction === "add") {
     id = await create({ ...dialogModel, ...builtInModel });
@@ -566,9 +566,7 @@ defineExpose({ showDialog });
   grid-template-columns: repeat(2, minmax(min-content, max-content) 280px);
 }
 .form_label {
-  margin-left: 3px;
-  text-align: right;
-  align-self: center;
+  @apply ml-[3px] text-right self-center;
 }
 .form_label::after {
   content: ":";

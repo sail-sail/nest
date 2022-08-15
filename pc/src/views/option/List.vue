@@ -430,10 +430,10 @@ async function exportClk() {
 function initSearch() {
   return {
     is_deleted: 0,
-  };
+  } as OptionSearch;
 }
 
-let search: OptionSearch = $ref(initSearch());
+let search = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
@@ -477,7 +477,7 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置搜索条件 */
-const builtInSearch: OptionSearch = $computed(() => {
+const builtInSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -502,7 +502,7 @@ const builtInSearch: OptionSearch = $computed(() => {
 });
 
 /** 内置变量 */
-const builtInModel: OptionModel = $computed(() => {
+const builtInModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -583,9 +583,9 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData: OptionModel[] = $ref([ ]);
+let tableData = $ref<OptionModel[]>([ ]);
 
-let tableColumns: ColumnType[] = $ref([
+let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
@@ -616,7 +616,7 @@ let {
   },
 ));
 
-let detailRef: InstanceType<typeof Detail>|undefined = $ref();
+let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
@@ -687,13 +687,15 @@ async function openAdd() {
   }
 }
 
-let uploadFileDialogRef: InstanceType<typeof UploadFileDialog>|undefined = $ref();
+let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog> | undefined>();
 
 /**
  * 弹出导入窗口
 */
 async function openUploadClk() {
-  if (!uploadFileDialogRef) return;
+  if (!uploadFileDialogRef) {
+    return;
+  }
   const file = await uploadFileDialogRef.showDialog({
     title: "导入选项",
   });
@@ -810,27 +812,20 @@ await initFrame();
 
 <style lang="scss" scoped>
 .search_form {
-  display: grid;
   grid-template-columns: repeat(
     4,
     minmax(min-content, max-content)
     210px
   );
-  justify-items: end;
-  align-items: center;
-  grid-row-gap: 6px;
+  @apply grid justify-items-end items-center gap-y-[6px];
 }
 .form_label {
-  margin-right: 3px;
-  color: gray;
-  margin-left: 6px;
-  white-space: nowrap;
-  overflow: hidden;
+  @apply mr-[3px] text-gray ml-[6px] whitespace-nowrap overflow-hidden;
 }
 .form_label::after {
   content: ":";
 }
 .form_input {
-  width: 100%;
+  @apply w-full;
 }
 </style>

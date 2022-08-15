@@ -30,6 +30,8 @@
     "usernamehw.errorlens",
     "derefs.vscode-inline-sql-highlight",
     "denoland.vscode-deno",
-    "vue.vscode-typescript-vue-plugin"
+    "antfu.smart-clicks",
+    "antfu.browse-lite",
+    "antfu.where-am-i"
   ]
 }
