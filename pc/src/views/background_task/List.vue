@@ -839,11 +839,6 @@ async function initFrame() {
 }
 
 watch(
-  () => usrStore.authorization,
-  initFrame,
-);
-
-watch(
   () => builtInSearch,
   async (newVal, oldVal) => {
     if (!deepCompare(oldVal, newVal)) {
@@ -852,7 +847,9 @@ watch(
   },
 );
 
-await initFrame();
+usrStore.onLogin(initFrame);
+
+initFrame();
 </script>
 
 <style lang="scss" scoped>

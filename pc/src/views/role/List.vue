@@ -864,11 +864,6 @@ async function initFrame() {
 }
 
 watch(
-  () => usrStore.authorization,
-  initFrame,
-);
-
-watch(
   () => builtInSearch,
   async (newVal, oldVal) => {
     if (!deepCompare(oldVal, newVal)) {
@@ -877,7 +872,9 @@ watch(
   },
 );
 
-await initFrame();
+usrStore.onLogin(initFrame);
+
+initFrame();
 
 let menu_idsListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
 
