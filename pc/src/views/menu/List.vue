@@ -26,6 +26,7 @@
         </label>
         <el-form-item prop="menu_id">
           <el-select-v2
+            @keyup.enter.native.stop
             :height="300"
             class="form_input"
             :set="search.menu_id = search.menu_id || [ ]"
@@ -39,6 +40,7 @@
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
+            @change="searchClk"
             @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
@@ -264,7 +266,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-if="'_menu_id' === col.prop">
+          <template v-else-if="'_menu_id' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -276,10 +278,11 @@
               show-overflow-tooltip
             >
             </el-table-column>
+            
           </template>
           
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -292,7 +295,7 @@
           </template>
           
           <!-- 路由 -->
-          <template v-if="'route_path' === col.prop">
+          <template v-else-if="'route_path' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -305,7 +308,7 @@
           </template>
           
           <!-- 参数 -->
-          <template v-if="'route_query' === col.prop">
+          <template v-else-if="'route_query' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -318,7 +321,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-if="'_is_enabled' === col.prop">
+          <template v-else-if="'_is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -331,7 +334,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-if="'order_by' === col.prop">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -346,7 +349,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -357,6 +360,20 @@
             >
             </el-table-column>
           </template>
+          
+          <template v-else>
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              header-align="center"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
         </template>
         
       </el-table>
@@ -455,8 +472,8 @@ import {
 } from "./Api";
 
 import {
-  MenuModel,
-  MenuSearch,
+  type MenuModel,
+  type MenuSearch,
 } from "#/types";
 import {
   findAllAndCountMenu,

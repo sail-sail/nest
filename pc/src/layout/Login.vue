@@ -137,7 +137,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 
 async function loginClk() {
   const authorization = await login(model);
-  usrStore.setAuthorization(authorization);
+  await usrStore.login(authorization);
   // if (authorization) {
   //   await router.replace("/");
   //   await tabsStore.refreshTab();

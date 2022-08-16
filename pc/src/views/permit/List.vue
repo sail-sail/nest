@@ -237,10 +237,11 @@
               show-overflow-tooltip
             >
             </el-table-column>
+            
           </template>
           
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -253,7 +254,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -264,6 +265,20 @@
             >
             </el-table-column>
           </template>
+          
+          <template v-else>
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              header-align="center"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
         </template>
         
       </el-table>
@@ -362,10 +377,12 @@ import {
 } from "./Api";
 
 import {
-  PermitModel,
-  PermitSearch,
+  type PermitModel,
+  type PermitSearch,
 } from "#/types";
-import { MenuModel } from "#/types";
+import {
+  type MenuModel,
+} from "#/types";
 
 const usrStore = useUsrStore();
 

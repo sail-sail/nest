@@ -51,7 +51,7 @@ axios.interceptors.response.use(
       if (authorization.startsWith("Bearer ")) {
         authorization = authorization.substring(7);
       }
-      usrStore.setAuthorization(authorization);
+      usrStore.refreshToken(authorization);
     }
     if ((<any>config).reqType === "graphql") {
       return response;

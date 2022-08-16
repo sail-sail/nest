@@ -69,6 +69,7 @@
           </label>
           <el-form-item prop="state">
             <el-select
+              @keyup.enter.native.stop
               class="form_input"
               :set="dialogModel.state = dialogModel.state || undefined"
               v-model="dialogModel.state"
@@ -104,6 +105,7 @@
           </label>
           <el-form-item prop="type">
             <el-select
+              @keyup.enter.native.stop
               class="form_input"
               :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"

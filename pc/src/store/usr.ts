@@ -4,8 +4,20 @@ export default defineStore("usr", function() {
   
   let authorization = $ref("");
   
-  function setAuthorization(authorization0: typeof authorization) {
+  function refreshToken(authorization0: typeof authorization) {
     authorization = authorization0;
+  }
+  
+  async function login(authorization0: typeof authorization) {
+    authorization = authorization0;
+    for (let i = 0; i < onLoginCallbacks.length; i++) {
+      const onLoginCallback = onLoginCallbacks[i];
+      await onLoginCallback();
+    }
+  }
+  
+  function logout() {
+    authorization = "";
   }
   
   let lang = $ref("");
@@ -24,10 +36,19 @@ export default defineStore("usr", function() {
     lang = "";
   }
   
+  const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
+  
+  function onLogin(callback: () => void | PromiseLike<void>) {
+    onLoginCallbacks.push(callback);
+  }
+  
   return $$({
     authorization,
     lang,
-    setAuthorization,
+    refreshToken,
+    login,
+    logout,
+    onLogin,
     setLang,
     clear,
     reset,

@@ -155,6 +155,7 @@ import {
   ElMessageBox,
   ElColorPicker,
 } from "element-plus";
+
 import {
   Upload,
   Delete,
@@ -164,8 +165,10 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "@element-plus/icons-vue";
+
 import { useFullscreenEfc } from "@/compositions/fullscreen";
 import { baseURL, uploadFile } from '@/utils/axios';
+
 import {
   getStatsOss,
 } from "./Api";
@@ -195,13 +198,15 @@ let dialogTitle = $computed(() => {
 
 let dialogVisible = $ref(false);
 
-let dialogModel: {
+type DialogModel = {
   modelValue?: string,
   maxSize?: number,
   maxFileSize?: number,
   readonly?: boolean,
   accept?: string,
-} = $ref({
+}
+
+let dialogModel = $ref<DialogModel>({
   modelValue: "",
   maxSize: 1,
   maxFileSize: 1024 * 1024 * 50,
@@ -231,7 +236,7 @@ let predefineColors = $ref([
   '#c7158577',
 ]);
 
-let modelValue: string|undefined = $ref("");
+let modelValue = $ref<string | undefined>("");
 
 // let tenantHost = $ref("");
 
@@ -390,7 +395,7 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
   const styleEl = iframeDocument.createElement("style");
   styleEl.appendChild(iframeDocument.createTextNode(cssText));
   iframeDocument.getElementsByTagName("head")[0]?.appendChild(styleEl);
-  const body = <HTMLBodyElement>iframeDocument.body;
+  const body = iframeDocument.body as HTMLBodyElement;
   body.style.display = "flex";
   body.style.justifyContent = "center";
   body.style.alignItems = "center";

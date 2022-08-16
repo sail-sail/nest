@@ -60,6 +60,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select-v2
+            @keyup.enter.native.stop
             :height="300"
             class="form_input"
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
@@ -73,6 +74,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
+            @change="searchClk"
             @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
@@ -85,6 +87,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select
+            @keyup.enter.native.stop
             class="form_input"
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
@@ -94,6 +97,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             default-first-option
             clearable
             multiple
+            @change="searchClk"
             @clear="searchIptClr"
           ><#
             for (let item of selectList) {
@@ -415,6 +419,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         ></el-table-column>
         
         <template v-for="(col, i) in tableColumns" :key="i + col"><#
+          let colIdx = 0;
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -467,7 +472,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -483,7 +488,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -517,7 +522,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -531,7 +536,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v-if="'_<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'_<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -545,7 +550,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v-if="'_<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'_<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -579,11 +584,27 @@ const Table_Up = tableUp.split("_").map(function(item) {
               }
             #>
             </el-table-column>
+            
           </template><#
             }
           #><#
+            colIdx++;
           }
           #>
+          
+          <template v-else>
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              header-align="center"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
         </template>
         
       </el-table>
@@ -786,8 +807,8 @@ import {
 } from "./Api";
 
 import {
-  <#=Table_Up#>Model,
-  <#=Table_Up#>Search,
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
 } from "#/types";<#
 {
 const foreignTableUpArr = [ ];
@@ -808,7 +829,9 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("_");
 #>
-import { <#=Foreign_Table_Up#>Model } from "#/types";<#
+import {
+  type <#=Foreign_Table_Up#>Model,
+} from "#/types";<#
 }
 }
 #><#
@@ -1618,11 +1641,6 @@ async function initFrame() {
 }
 
 watch(
-  () => usrStore.authorization,
-  initFrame,
-);
-
-watch(
   () => builtInSearch,
   async (newVal, oldVal) => {
     if (!deepCompare(oldVal, newVal)) {
@@ -1631,7 +1649,9 @@ watch(
   },
 );
 
-await initFrame();<#
+usrStore.onLogin(initFrame);
+
+initFrame();<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

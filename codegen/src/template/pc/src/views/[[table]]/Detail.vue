@@ -130,6 +130,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             } else if (foreignKey) {
             #>
             <el-select-v2
+              @keyup.enter.native.stop
               :height="300"<#
               if (foreignKey.multiple) {
               #>
@@ -150,6 +151,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             } else if (selectList.length > 0) {
             #>
             <el-select
+              @keyup.enter.native.stop
               class="form_input"
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"

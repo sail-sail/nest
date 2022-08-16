@@ -81,6 +81,7 @@
           </label>
           <el-form-item prop="is_enabled">
             <el-select
+              @keyup.enter.native.stop
               class="form_input"
               :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
@@ -107,6 +108,7 @@
           </label>
           <el-form-item prop="menu_ids">
             <el-select-v2
+              @keyup.enter.native.stop
               :height="300"
               multiple
               collapse-tags

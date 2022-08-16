@@ -270,7 +270,7 @@
           </template>
           
           <!-- 键 -->
-          <template v-if="'ky' === col.prop">
+          <template v-else-if="'ky' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -283,7 +283,7 @@
           </template>
           
           <!-- 值 -->
-          <template v-if="'val' === col.prop">
+          <template v-else-if="'val' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -296,7 +296,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -307,6 +307,20 @@
             >
             </el-table-column>
           </template>
+          
+          <template v-else>
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              header-align="center"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
         </template>
         
       </el-table>
@@ -405,8 +419,8 @@ import {
 } from "./Api";
 
 import {
-  OptionModel,
-  OptionSearch,
+  type OptionModel,
+  type OptionSearch,
 } from "#/types";
 
 const usrStore = useUsrStore();

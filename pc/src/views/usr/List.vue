@@ -56,6 +56,7 @@
         </label>
         <el-form-item prop="role_ids">
           <el-select-v2
+            @keyup.enter.native.stop
             :height="300"
             class="form_input"
             :set="search.role_ids = search.role_ids || [ ]"
@@ -69,6 +70,7 @@
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
+            @change="searchClk"
             @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
@@ -281,7 +283,7 @@
           </template>
           
           <!-- 用户名 -->
-          <template v-if="'username' === col.prop">
+          <template v-else-if="'username' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -296,7 +298,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-if="'_is_enabled' === col.prop">
+          <template v-else-if="'_is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -309,7 +311,7 @@
           </template>
           
           <!-- 角色 -->
-          <template v-if="'_role_ids' === col.prop">
+          <template v-else-if="'_role_ids' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -325,10 +327,11 @@
                 ></LinkList>
               </template>
             </el-table-column>
+            
           </template>
           
           <!-- 备注 -->
-          <template v-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -339,6 +342,20 @@
             >
             </el-table-column>
           </template>
+          
+          <template v-else>
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              header-align="center"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
         </template>
         
       </el-table>
@@ -437,10 +454,12 @@ import {
 } from "./Api";
 
 import {
-  UsrModel,
-  UsrSearch,
+  type UsrModel,
+  type UsrSearch,
 } from "#/types";
-import { RoleModel } from "#/types";
+import {
+  type RoleModel,
+} from "#/types";
 import {
   findAllAndCountRole,
   findAllRole,

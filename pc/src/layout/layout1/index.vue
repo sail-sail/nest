@@ -234,7 +234,7 @@ async function logoutClk() {
   } catch (err) {
     return;
   }
-  usrStore.setAuthorization("");
+  usrStore.logout();
 }
 
 // onMounted(async () => {

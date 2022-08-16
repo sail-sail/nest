@@ -54,6 +54,7 @@
           </label>
           <el-form-item prop="menu_id">
             <el-select-v2
+              @keyup.enter.native.stop
               :height="300"
               class="form_input"
               v-model="dialogModel.menu_id"

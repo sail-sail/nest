@@ -77,11 +77,11 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     const code = exception.code;
     const usrStore = useUsrStore();
     if (code === "refresh_token_expired") {
-      usrStore.setAuthorization("");
+      usrStore.logout();
       return data;
     }
     if (code === "token_empty") {
-      usrStore.setAuthorization("");
+      usrStore.logout();
       return data;
     }
     if (code === "background_task") {

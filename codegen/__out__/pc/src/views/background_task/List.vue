@@ -41,6 +41,7 @@
         </label>
         <el-form-item prop="state">
           <el-select
+            @keyup.enter.native.stop
             class="form_input"
             :set="search.state = search.state || [ ]"
             :model-value="search.state"
@@ -50,6 +51,7 @@
             default-first-option
             clearable
             multiple
+            @change="searchClk"
             @clear="searchIptClr"
           >
             <el-option :value="'running'" label="运行中"></el-option>
@@ -66,6 +68,7 @@
         </label>
         <el-form-item prop="type">
           <el-select
+            @keyup.enter.native.stop
             class="form_input"
             :set="search.type = search.type || [ ]"
             :model-value="search.type"
@@ -75,6 +78,7 @@
             default-first-option
             clearable
             multiple
+            @change="searchClk"
             @clear="searchIptClr"
           >
             <el-option :value="'text'" label="文本"></el-option>
@@ -276,7 +280,7 @@
           </template>
           
           <!-- 状态 -->
-          <template v-if="'_state' === col.prop">
+          <template v-else-if="'_state' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -290,7 +294,7 @@
           </template>
           
           <!-- 类型 -->
-          <template v-if="'_type' === col.prop">
+          <template v-else-if="'_type' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -304,7 +308,7 @@
           </template>
           
           <!-- 执行结果 -->
-          <template v-if="'result' === col.prop">
+          <template v-else-if="'result' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -318,7 +322,7 @@
           </template>
           
           <!-- 错误信息 -->
-          <template v-if="'err_msg' === col.prop">
+          <template v-else-if="'err_msg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -331,7 +335,7 @@
           </template>
           
           <!-- 开始时间 -->
-          <template v-if="'begin_time' === col.prop">
+          <template v-else-if="'begin_time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -346,7 +350,7 @@
           </template>
           
           <!-- 结束时间 -->
-          <template v-if="'end_time' === col.prop">
+          <template v-else-if="'end_time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -361,7 +365,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               :prop="col.prop"
@@ -372,6 +376,20 @@
             >
             </el-table-column>
           </template>
+          
+          <template v-else>
+            <el-table-column
+              v-if="col.hide !== true"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              header-align="center"
+              align="center"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+          </template>
+          
         </template>
         
       </el-table>
@@ -465,8 +483,8 @@ import {
 } from "./Api";
 
 import {
-  Background_TaskModel,
-  Background_TaskSearch,
+  type Background_TaskModel,
+  type Background_TaskSearch,
 } from "#/types";
 
 const usrStore = useUsrStore();
