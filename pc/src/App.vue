@@ -4,20 +4,53 @@
   :button="{ autoInsertSpace: false }"
 >
   <Login v-if="!usrStore.authorization"></Login>
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <template v-if="Component">
+      <component :is="Component"></component>
+    </template>
+    <template v-else-if="$route.fullPath === '/'">
+    </template>
+    <template v-else>
+      <div
+        flex="~ [1_0_0] col"
+        overflow="hidden"
+        justify="center"
+      >
+        <el-empty description="页面不存在!">
+          <el-button
+            w="[200px]"
+            size="large"
+            type="danger"
+            @click="goBack"
+          >
+            <span text="[18px]">
+              返 回
+            </span>
+          </el-button>
+        </el-empty>
+      </div>
+    </template>
+  </router-view>
   <Background_taskListDialog></Background_taskListDialog>
 </el-config-provider>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+
 import {
   ElConfigProvider,
+  ElEmpty,
+  ElButton,
 } from "element-plus";
+
 import locale from "@/locales";
 import Background_taskListDialog from "./views/background_task/ListDialog.vue";
+
 import {
   RouterView,
+  useRouter,
+  useRoute,
 } from "vue-router";
 
 import Login from "./layout/Login.vue";
@@ -27,6 +60,16 @@ import useUsrStore from "@/store/usr";
 
 const tabsStore = useTabsStore();
 const usrStore = useUsrStore();
+
+const router = useRouter();
+const route = useRoute();
+
+function goBack() {
+  router.back();
+  if (route.matched.length === 0) {
+    window.location.reload();
+  }
+}
 
 onMounted(async () => {
   await tabsStore.refreshTab();
@@ -63,12 +106,6 @@ html,body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-body .el-button {
-  height: 32px;
-  line-height: normal;
-  padding-top: initial;
-  padding-bottom: initial;
 }
 .el-form {
   .el-form-item {
@@ -350,5 +387,26 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-form .el-form-item__error {
   padding: 0;
+}
+
+body .el-tree {
+  .el-tree-node.is-current .el-tree-node__content {
+    background-color: rgba(210,210,210,.8);
+  }
+  .el-tree-node {
+    .el-tree-node__content:hover {
+      background-color: rgba(210,210,210,.8);
+    }
+  }
+}
+.dark .el-tree {
+  .el-tree-node.is-current .el-tree-node__content {
+    background-color: rgba(81, 81, 81,.8);
+  }
+  .el-tree-node {
+    .el-tree-node__content:hover {
+      background-color: rgba(81, 81, 81,.8);
+    }
+  }
 }
 </style>

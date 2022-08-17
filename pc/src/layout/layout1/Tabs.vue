@@ -45,22 +45,7 @@ async function activeTab(tab: TabInf) {
 }
 
 async function closeClk(tab: TabInf) {
-  const tabs = tabsStore.tabs;
-  let idx = tabs.findIndex((item) => item.path === tab.path);
-  if (tab.active) {
-    if (idx !== -1) {
-      if (tabs[idx + 1]) {
-        await activeTab(tabs[idx + 1]);
-      } else if (tabs[idx - 1]) {
-        await activeTab(tabs[idx - 1]);
-      } else {
-        await router.replace({ path: "/", query: { } });
-      }
-    }
-  }
-  if (idx !== -1) {
-    tabsStore.removeTab(tab.path);
-  }
+  await tabsStore.removeTab(tab.path);
 }
 </script>
 

@@ -50,11 +50,26 @@ export default defineStore("tabs", function() {
     }
   }
   
-  function removeTab(path: string) {
-    if (!path) return;
-    const idx = tabs.findIndex((item: TabInf) => item.path === path);
-    if (idx === -1) return;
-    tabs.splice(idx, 1);
+  async function removeTab(path: string) {
+    if (!path) {
+      return false;
+    }
+    let idx = tabs.findIndex((item) => item.path === path);
+    const tab = tabs[idx];
+    if (tab.active) {
+      if (idx !== -1) {
+        if (tabs[idx + 1]) {
+          activeTab(tabs[idx + 1]);
+        } else if (tabs[idx - 1]) {
+          activeTab(tabs[idx - 1]);
+        } else {
+          await useRouter().replace({ path: "/", query: { } });
+        }
+      }
+    }
+    if (idx !== -1) {
+      tabs.splice(idx, 1);
+    }
   }
   
   function closeOtherTabs(path: string) {
