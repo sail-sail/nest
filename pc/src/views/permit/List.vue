@@ -1,7 +1,7 @@
 <template>
 <div
   flex="~ [1_0_0] col"
-  overflow="hidden"
+  overflow-hidden
   w="full"
   h="full"
   p="[6px]"
@@ -9,7 +9,7 @@
 >
   <div
     m="x-1.5"
-    overflow="auto"
+    overflow-auto
   >
     <el-form
       size="default"
@@ -176,8 +176,8 @@
       刷新
     </el-button>
     <div
-      overflow="hidden"
       flex="[1_0_0]"
+      overflow-hidden
     >
     </div>
     <TableShowColumns
@@ -189,13 +189,13 @@
     </TableShowColumns>
   </div>
   <div
-    overflow="hidden"
     flex="~ [1_0_0] col"
+    overflow-hidden
     m="t-1.5"
   >
     <div
-      overflow="hidden"
       flex="~ [1_0_0] col"
+      overflow-hidden
     >
       <el-table
         :data="tableData"

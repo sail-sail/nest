@@ -21,24 +21,24 @@
     </div>
   </template>
   <div
-    overflow="hidden"
     flex="~ [1_0_0] col basis-[inherit]"
+    overflow-hidden
   >
     <div
-      overflow="auto"
       flex="~ [1_0_0] col basis-[inherit]"
+      overflow-auto
       p="5"
-      justify="start"
-      items="center"
+      justify-start
+      items-center
     >
       <el-form
         size="default"
         
-        justify="end"
-        items="end"
+        justify-end
+        items-end
         grid="~ rows-[auto]"
         gap="x-[16px] y-[16px]"
-        place="content-center"
+        place-content-center
         
         :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
