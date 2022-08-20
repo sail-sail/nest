@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import { NavigationFailure, useRoute, useRouter } from "vue-router";
+
+import {
+  useRoute,
+  useRouter,
+} from "vue-router";
 
 export interface TabInf {
   lbl?: string,

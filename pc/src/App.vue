@@ -330,9 +330,6 @@ body .el-menu {
 // .dark body .el-sub-menu__title {
 //   background-color: #04121e !important;
 // }
-// .dark .top_div {
-//   background-color: #04121e !important;
-// }
 .dark body {
   --el-menu-active-color: #4284b4;
 }
@@ -340,9 +337,6 @@ body .el-menu {
   --el-menu-bg-color: black !important;
 }
 .dark body .el-sub-menu__title {
-  background-color: black !important;
-}
-.dark .top_div {
   background-color: black !important;
 }
 .el-menu.el-menu--collapse>.el-menu-item>span, .el-menu--collapse>.el-sub-menu>.el-sub-menu__title>span {

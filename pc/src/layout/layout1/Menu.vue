@@ -9,14 +9,14 @@
   @open="menuOpen"
   @close="menuClose"
   @select="menuSelect"
-  router
+  :router="false"
 >
   <template
     v-for="item in menuStore.menus"
     :key="item.id"
   >
     <el-sub-menu
-      v-if="item.children && item.children.length > 0 && !item.route_path"
+      v-if="item.children"
       :index="item.id || ''"
     >
       <template #title>
@@ -31,7 +31,7 @@
         :key="item2.id"
       >
         <el-sub-menu
-          v-if="item2.children && item2.children.length > 0 && !item2.route_path"
+          v-if="item2.children"
           :index="item2.id"
         >
           <template #title>
@@ -46,9 +46,9 @@
             :key="item3.id"
           >
             <el-menu-item
-              v-if="!item3.children || item3.children.length == 0"
+              v-if="!item3.children"
               :index="item3.id"
-              :route="{ path: item3.route_path, query: item3.route_query }"
+              :route="{ path: item3.route_path }"
             >
               <el-icon>
                 <Document/>
@@ -61,9 +61,9 @@
           </template>
         </el-sub-menu>
         <el-menu-item
-          v-if="!item2.children || item2.children.length == 0"
+          v-if="!item2.children"
           :index="item2.id"
-          :route="{ path: item2.route_path, query: item2.route_query }"
+          :route="{ path: item2.route_path }"
         >
           <el-icon>
             <Document/>
@@ -76,9 +76,9 @@
       </template>
     </el-sub-menu>
     <el-menu-item
-      v-else-if="item.route_path"
+      v-else
       :index="item.id"
-      :route="{ path: item.route_path, query: item.route_query }"
+      :route="{ path: item.route_path }"
       class="top_menu_item"
     >
       <span>
@@ -92,18 +92,25 @@
 
 <script setup lang="ts">
 import { watch } from "vue";
-import { useRoute } from "vue-router";
+
+import {
+  useRoute,
+  useRouter,
+} from "vue-router";
+
 import {
   ElMenu,
   ElMenuItem,
   ElSubMenu,
   ElIcon,
 } from "element-plus";
+
 import {
   Folder,
   FolderOpened,
   Document,
 } from "@element-plus/icons-vue";
+
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
 import { getMenus } from "./Api";
@@ -111,21 +118,25 @@ import { getMenus } from "./Api";
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
 
-let openedIndex: string[] = $ref([ ]);
+let openedIndex = $ref<string[]>([ ]);
 let selectedRouteNext = $ref(false);
 
 const route = useRoute();
+const router = useRouter();
 
 watch(
-  () => route.path,
+  [
+    () => route.path,
+    () => route.query,
+  ],
   () => {
     if (selectedRouteNext) return;
-    setDefaultActiveByRouter(route.path);
+    setDefaultActiveByRouter(route.path, route.query);
   },
 );
 
-function setDefaultActiveByRouter(path: string) {
-  const menu = menuStore.getMenuByPath(path);
+function setDefaultActiveByRouter(path: string, query: typeof route.query) {
+  const menu = menuStore.getMenuByPath(path, query);
   defaultActive = menu ? menu.id : undefined;
 }
 
@@ -137,34 +148,39 @@ function menuClose(index: string, _indexPath: string[]) {
   openedIndex = openedIndex.filter((item) => item !== index);
 }
 
-function menuSelect(index: string) {
+async function menuSelect(id: string) {
   selectedRouteNext = true;
+  const model = menuStore.getMenuById(id);
+  if (model) {
+    await router.push({
+      path: model.route_path,
+      query: model.route_query,
+    });
+  }
   setTimeout(() => {
     selectedRouteNext = false;
   }, 0);
 }
 
-let defaultActive: string|undefined = $ref();
+let defaultActive = $ref<string | undefined>();
 
 async function getMenusEfc() {
-  const data = await getMenus({ type: "pc" });
-  menuStore.setMenus(data);
-  setDefaultActiveByRouter(route.path);
+  const result = await getMenus({ type: "pc" });
+  menuStore.setMenus(result);
+  setDefaultActiveByRouter(route.path, route.query);
 }
 
-watch(
-  () => usrStore.authorization,
-  async () => {
-    if (usrStore.authorization) {
-      await getMenusEfc();
-    } else {
-      menuStore.setMenus([ ]);
-    }
-  },
-  {
-    immediate: true,
-  },
-);
+async function initFrame() {
+  if (usrStore.authorization) {
+    await getMenusEfc();
+  } else {
+    menuStore.setMenus([ ]);
+  }
+}
+
+usrStore.onLogin(initFrame);
+
+initFrame();
 </script>
 
 <style scoped>

@@ -1,0 +1,119 @@
+<template>
+<div
+  flex="~ [1_0_0] col"
+  overflow-hidden
+>
+  <iframe
+    v-if="src"
+    
+    flex="~ [1_0_0] col"
+    overflow-hidden
+    w="full"
+    h="full"
+    box-border
+    
+    @load="iframeLoad"
+    :src="src"
+    frameborder="0"
+    ref="iframeRef"
+    seamless
+  ></iframe>
+  <template v-else>
+    <div
+      flex="~ [1_0_0] col"
+      overflow-hidden
+      justify-center
+    >
+      <el-empty description="页面不存在!">
+      </el-empty>
+    </div>
+  </template>
+</div>
+</template>
+
+<script lang="ts" setup>
+import {
+  onActivated,
+  onDeactivated,
+  watch,
+  type WatchStopHandle,
+} from "vue";
+
+import {
+  ElEmpty,
+} from "element-plus";
+
+import {
+  useRoute,
+} from "vue-router";
+
+import useTabs from "@/store/tabs";
+
+const route = useRoute();
+const tabs = useTabs();
+
+let stopWatch: WatchStopHandle;
+
+onActivated(function() {
+  stopWatch = watch(
+    () => route.query.name,
+    () => {
+      if (tabs.actTab && route.query.name) {
+        tabs.actTab.lbl = route.query.name as string;
+      }
+    },
+    {
+      immediate: true,
+    },
+  );
+});
+
+onDeactivated(function() {
+  if (stopWatch) {
+    stopWatch();
+  }
+});
+
+let urlPath = $ref("");
+let iframeRef = $ref<HTMLIFrameElement>();
+
+function iframeLoad() {
+  try {
+    initIframeEl();
+  } catch (err) {
+    // console.error(err);
+  }
+}
+
+// iframe加载完毕之后的后续处理, 固定表头
+function initIframeEl() {
+  const iframeWindow = iframeRef.contentWindow;
+  if (!iframeWindow) {
+    return;
+  }
+  const iframeDocument = iframeWindow.document;
+  // 处理滚动条样式
+  iframeDocument.styleSheets[0].insertRule(`
+    ::-webkit-scrollbar-track-piece {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+      background-color: transparent;
+      cursor: pointer;
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background-color: rgba(144, 146, 152, 0.3);
+    }
+    html {
+      overflow: auto;
+    }
+  `);
+}
+
+let src = $computed(() => {
+  return route.query.src ? (route.query.src as string).replace("$", "#") : urlPath;
+});
+</script>

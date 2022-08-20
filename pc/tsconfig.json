@@ -5,6 +5,7 @@
     "noFallthroughCasesInSwitch": true,
     "importHelpers": false,
     "removeComments": false,
+    "isolatedModules": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",

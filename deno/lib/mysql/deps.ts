@@ -1,10 +1,13 @@
-export type { Deferred } from "std/async/mod.ts";
-export { deferred, delay } from "std/async/mod.ts";
+export {
+  deferred,
+  delay,
+  type Deferred,
+} from "std/async/mod.ts";
 export { format as byteFormat } from "https://deno.land/x/bytes_formater@v1.4.0/mod.ts";
-// export { createHash } from "https://deno.land/std@0.104.0/hash/mod.ts";
+// export { createHash } from "/std/hash/mod.ts";
 // export type {
 //   SupportedAlgorithm,
-// } from "https://deno.land/std@0.104.0/hash/mod.ts";
+// } from "std/hash/mod.ts";
 export {
   type DigestAlgorithm,
 } from "std/_wasm_crypto/mod.ts";

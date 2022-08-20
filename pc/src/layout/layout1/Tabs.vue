@@ -46,6 +46,9 @@ async function activeTab(tab: TabInf) {
 
 async function closeClk(tab: TabInf) {
   await tabsStore.removeTab(tab.path);
+  if (tabsStore.actTab) {
+    await activeTab(tabsStore.actTab);
+  }
 }
 </script>
 

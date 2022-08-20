@@ -1,20 +1,78 @@
 <template>
-<div class="wrap_div">
-  <div class="menu_div" :class="{ menu_collapse: menuStore.isCollapse }">
-    <div class="top_div">
+<div
+  w="full"
+  h="full"
+  overflow-hidden
+  flex
+  pos-relative
+>
+  <div
+    text="[#FFF]"
+    flex="~ col"
+    overflow-hidden
+    transition="width"
+    :style="{ width: menuStore.isCollapse ? '60px': '250px' }"
+  >
+    <div
+      h="[40px]"
+      bg="[#072540] dark:[black]"
+      text="[#FFF]"
+      flex="~ col"
+      pos-relative
+    >
       <Top></Top>
     </div>
-    <LeftMenu class="left_menu"></LeftMenu>
+    <LeftMenu
+      flex="[1_0_0]"
+      overflow-y-auto
+    ></LeftMenu>
   </div>
-  <div class="center_div">
-    <div class="top_div center_top_div" ref="tabs_divRef">
-      <el-icon class="fold_icon" @click="menuStore.isCollapse = !menuStore.isCollapse">
+  <div
+    flex="~ [1_0_0] col"
+    overflow-hidden
+  >
+    <div
+      h="[40px]"
+      bg="[#072540] dark:[black]"
+      text="[#FFF]"
+      flex="~ row"
+      pos-relative
+      
+      ref="tabs_divRef"
+    >
+      <el-icon
+        text="[18px] hover:[var(--el-color-primary)]"
+        self-center
+        cursor-pointer
+        @click="menuStore.isCollapse = !menuStore.isCollapse"
+      >
         <Expand v-if="menuStore.isCollapse"/>
         <Fold v-else/>
       </el-icon>
-      <Tabs class="tabs_div" :tabs="tabsStore.tabs"></Tabs>
-      <div style="display: flex;align-items: center;">
-        <div class="tab_dropdown">
+      <Tabs
+        flex="[1_0_0]"
+        overflow="x-auto y-hidden"
+        m="l-[5px]"
+        
+        :tabs="tabsStore.tabs"
+      ></Tabs>
+      <div
+        flex
+        items-center
+      >
+        <div
+          m="r-[10px]"
+          pos-relative
+          top="[1px]"
+          border-1px
+          border-transparent
+          cursor-pointer
+          h="[15px]"
+          w="[15px]"
+          flex="~ col"
+          items-center
+          justify-center
+        >
           <el-dropdown>
             <span class="el-dropdown-link">
               <el-icon size="18" color="#FFF">
@@ -22,7 +80,9 @@
               </el-icon>
             </span>
             <template #dropdown>
-              <el-dropdown-menu style="white-space: nowrap;">
+              <el-dropdown-menu
+                whitespace-nowrap
+              >
                 
                 <el-dropdown-item @click="toggleDark(!isDark)">
                   <template v-if="!isDark">
@@ -56,10 +116,31 @@
         </div>
       </div>
     </div>
-    <div class="tab_active_line_div">
-      <div class="tab_active_line" ref="tab_active_lineRef"></div>
+    <div
+      h="[3px]"
+      w="[full]"
+      pos-relative
+      bg="[rgba(0,0,0,20%)]"
+    >
+      <div
+        display-none
+        pos-absolute
+        bottom-0
+        left="[23px]"
+        bg="[var(--el-menu-active-color)]"
+        h="[3px]"
+        border-rounded
+        transition="property-[width,left] duration-[300ms]"
+        ease-in
+        
+        ref="tab_active_lineRef"
+      ></div>
     </div>
-    <div class="content_div">
+    <div
+      flex="~ [1_0_0] col"
+      overflow-hidden
+      box-border
+    >
       <router-view v-slot="{ Component }">
         <template v-if="Component">
           <Transition mode="out-in">
@@ -73,9 +154,9 @@
                   <div
                     v-if="errorMessage"
                     flex="~ [1_0_0]"
-                    items="center"
-                    justify="center"
-                    overflow="hidden"
+                    items-center
+                    justify-center
+                    overflow-hidden
                     text="[red] [28px]"
                   >
                     {{ errorMessage }}
@@ -83,9 +164,9 @@
                   <div
                     v-else
                     flex="~ [1_0_0]"
-                    items="center"
-                    justify="center"
-                    overflow="hidden"
+                    items-center
+                    justify-center
+                    overflow-hidden
                     text="[18px]"
                   >
                     正在加载...
@@ -241,105 +322,3 @@ async function logoutClk() {
 //   await tabsStore.refreshTab();
 // });
 </script>
-
-<style lang="scss" scoped>
-.wrap_div {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  position: relative;
-}
-.top_div {
-  height: $menu_top_height;
-  background-color: #072540;
-  color: #FFF;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-.center_top_div {
-  display: flex;
-  flex-direction: row;
-}
-.center_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.menu_div {
-  // overflow-x: hidden;
-  // overflow-y: auto;
-  width: $menu_left_width;
-  background-color: #072540;
-  color: #FFF;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.left_menu {
-  flex: 1 0 0;
-  overflow-y: auto;
-}
-.menu_collapse {
-  width: 60px;
-  transition: width 300ms;
-}
-.content_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  margin-top: 2px;
-  box-sizing: border-box;
-}
-.tabs_div {
-  flex: 1 0 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  margin-left: 5px;
-}
-.fold_icon {
-  font-size: 18px;
-  align-self: center;
-  cursor: pointer;
-}
-.fold_icon:hover {
-  color: var(--el-color-primary);
-}
-.tab_dropdown:hover {
-  border-color: #FFF;
-}
-.tab_dropdown {
-  margin-right: 10px;
-  position: relative;
-  top: 1px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  height: 15px;
-  width: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.tab_active_line_div {
-  height: 3px;
-  width: 100%;
-  position: relative;
-  background-color: rgba(0,0,0, 20%);
-}
-.tab_active_line {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  left: 23px;
-  background-color: var(--el-menu-active-color);
-  height: 3px;
-  border-radius: 3px;
-  transition-property: width, left;
-  transition-duration: 300ms;
-  transition-timing-function: ease-out;
-}
-</style>

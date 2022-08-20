@@ -1,8 +1,13 @@
 import { MenuModel as MenuModel0 } from "#/types";
 import { defineStore } from "pinia";
 
+import {
+  type LocationQuery,
+} from "vue-router";
+
 type MenuModel = MenuModel0 & {
-  children: MenuModel[];
+  children?: MenuModel[];
+  oldRoute_path: string;
 }
 
 export default defineStore("menu", function() {
@@ -13,44 +18,64 @@ export default defineStore("menu", function() {
     menus = menus0 || [ ];
   }
   
+  function treeMenu(children: MenuModel[], callback: (item: MenuModel) => boolean) {
+    for (let i = 0; i < children.length; i++) {
+      const item = children[i];
+      const isNotReturn = callback(item);
+      if (!isNotReturn) {
+        return;
+      }
+      if (item.children && item.children.length > 0) {
+        treeMenu(item.children, callback);
+      }
+    }
+  }
+  
   /**
    * 通过路由获取菜单
    * @param {string} path
    */
-  function getMenuByPath(path: string) {
-    let menu2: MenuModel|undefined = undefined;
-    for (let i = 0; i < menus.length; i++) {
-      const menu = menus[i];
-      if (menu.route_path === path) {
-        menu2 = menu;
-        return menu2;
-      }
-      for (let k = 0; k < menu.children.length; k++) {
-        const item = menu.children[k];
-        if (item.route_path === path) {
+  function getMenuByPath(path: string, query: LocationQuery): MenuModel | undefined {
+    if (path === "/myiframe") {
+      const name = query["name"];
+      const src = query["src"];
+      let menu2: MenuModel | undefined = undefined;
+      treeMenu(menus, (item) => {
+        if (item.oldRoute_path === src && item.lbl === name) {
           menu2 = item;
-          return menu2;
+          return false;
         }
-        if (item.children && item.children.length > 0) {
-          for (let j = 0; j < item.children.length; j++) {
-            const item2 = item.children[j];
-            if (item2.route_path === path) {
-              menu2 = item2;
-              return menu2;
-            }
-            if (item2.children && item2.children.length > 0) {
-              for (let l = 0; l < item2.children.length; l++) {
-                const item3 = item2.children[l];
-                if (item3.route_path === path) {
-                  menu2 = item3;
-                  return menu2;
-                }
-              }
-            }
-          }
-        }
-      }
+        return true;
+      });
+      return menu2;
     }
+    let menu2: MenuModel | undefined = undefined;
+    treeMenu(menus, (item) => {
+      if (item.route_path === path) {
+        menu2 = item;
+        return false;
+      }
+      return true;
+    });
+    return menu2;
+  }
+  
+  /**
+   * 通过路由获取菜单
+   * @param {string} id
+   */
+  function getMenuById(id: string): MenuModel | undefined {
+    if (!id) {
+      return;
+    }
+    let menu2: MenuModel | undefined = undefined;
+    treeMenu(menus, (item) => {
+      if (item.id === id) {
+        menu2 = item;
+        return false;
+      }
+      return true;
+    });
     return menu2;
   }
   
@@ -95,6 +120,7 @@ export default defineStore("menu", function() {
     isCollapse,
     setMenus,
     getMenuByPath,
+    getMenuById,
     getParentIds,
     clear,
     reset,

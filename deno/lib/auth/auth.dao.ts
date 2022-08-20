@@ -1,4 +1,9 @@
-import { AUTHORIZATION, AuthModel, SECRET_KEY } from "./auth.constants.ts";
+import {
+  AUTHORIZATION,
+  SECRET_KEY,
+  type AuthModel,
+} from "./auth.constants.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
@@ -8,13 +13,16 @@ import {
   decodeJwt,
   type JWTPayload,
 } from "jose/index.ts";
+
 import {
   JWSSignatureVerificationFailed,
   JWTExpired,
 } from "jose/util/errors.ts";
+
 import {
   type Context,
 } from "/lib/context.ts";
+
 import { getEnv } from "/lib/env.ts";
 
 export async function getAuthModel<T extends AuthModel>(
