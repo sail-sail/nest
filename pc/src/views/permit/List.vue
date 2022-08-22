@@ -36,7 +36,9 @@
       </template>
       
       <template v-if="builtInSearch?.is_deleted == null">
-        <div style="min-width: 20px;"></div>
+        <div
+          min="w-[20px]"
+        ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
             :set="search.is_deleted = search.is_deleted || 0"
@@ -50,7 +52,9 @@
         </el-form-item>
       </template>
       
-      <div style="min-width: 20px;"></div>
+      <div
+        min="w-[20px]"
+      ></div>
       <el-form-item prop="idsChecked">
         <el-checkbox
           v-model="idsChecked"
@@ -82,7 +86,9 @@
         </el-icon>
       </el-form-item>
       
-      <div style="min-width: 20px;"></div>
+      <div
+        min="w-[20px]"
+      ></div>
       <el-form-item
         self-start
         flex="~ nowrap"

@@ -194,7 +194,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
       if (opts.noRevert !== true) {
       #>
       <template v-if="builtInSearch?.is_deleted == null">
-        <div style="min-width: 20px;"></div>
+        <div
+          min="w-[20px]"
+        ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
             :set="search.is_deleted = search.is_deleted || 0"
@@ -210,7 +212,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
       }
       #>
       
-      <div style="min-width: 20px;"></div>
+      <div
+        min="w-[20px]"
+      ></div>
       <el-form-item prop="idsChecked">
         <el-checkbox
           v-model="idsChecked"
@@ -242,7 +246,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </el-icon>
       </el-form-item>
       
-      <div style="min-width: 20px;"></div>
+      <div
+        min="w-[20px]"
+      ></div>
       <el-form-item
         self-start
         flex="~ nowrap"
@@ -576,7 +582,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
                 <el-link
                   type="primary"
                   @click="<#=column_name#>Clk(row)"
-                  class="min-w-[30px]"
+                  min="w-[30px]"
                 >
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
