@@ -8,7 +8,7 @@
     "std/log/mod.ts": "https://deno.land/std@0.152.0/log/mod.ts",
     "std/media_types/mod.ts": "https://deno.land/std@0.152.0/media_types/mod.ts",
     "std/encoding/base64.ts": "https://deno.land/std@0.152.0/encoding/base64.ts",
-    "oak": "https://deno.land/x/oak@v10.6.0/mod.ts",
+    "oak": "https://deno.land/x/oak@v11.0.0/mod.ts",
     "graphql": "https://esm.sh/graphql@16.6.0",
     "dotenv": "https://deno.land/x/dotenv@v3.2.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.26.0/mod.ts",
