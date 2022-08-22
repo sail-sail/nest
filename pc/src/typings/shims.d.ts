@@ -35,7 +35,6 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   bottom0?: boolean;
   borderRounded?: boolean;
   easeIn?: boolean;
-  selfStart?: boolean;
   set?: any;
 }
 
