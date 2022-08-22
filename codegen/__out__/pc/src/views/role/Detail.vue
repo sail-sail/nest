@@ -130,8 +130,8 @@
     <div
       p="y-2.5"
       flex
-      justify="center"
-      items="center"
+      justify-center
+      items-center
     >
       <el-button
         plain

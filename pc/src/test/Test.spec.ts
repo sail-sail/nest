@@ -8,3 +8,5 @@
 //   await wrapper.find("button").trigger("click");
 //   expect(wrapper.html()).toContain("count is: 1");
 // });
+
+export { };

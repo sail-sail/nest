@@ -262,8 +262,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
     <div
       p="y-2.5"
       flex
-      justify="center"
-      items="center"
+      justify-center
+      items-center
     >
       <el-button
         plain

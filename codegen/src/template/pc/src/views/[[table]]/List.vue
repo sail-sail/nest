@@ -244,7 +244,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       
       <div style="min-width: 20px;"></div>
       <el-form-item
-        self="start"
+        self-start
         flex="~ nowrap"
         min="w-[170px]"
       >

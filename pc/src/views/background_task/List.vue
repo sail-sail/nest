@@ -160,7 +160,7 @@
       
       <div style="min-width: 20px;"></div>
       <el-form-item
-        self="start"
+        self-start
         flex="~ nowrap"
         min="w-[170px]"
       >
