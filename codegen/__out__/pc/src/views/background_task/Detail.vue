@@ -4,7 +4,7 @@
   v-model="dialogVisible"
   append-to-body
   :close-on-click-modal="false"
-  :custom-class="columnNum > 20 ? 'custom_dialog' : 'custom_dialog auto_dialog'"
+  custom-class="custom_dialog auto_dialog"
   top="0"
   :before-close="beforeClose"
 >
@@ -36,11 +36,10 @@
         
         justify-end
         items-end
-        grid="~ rows-[auto]"
+        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         gap="x-[16px] y-[16px]"
         place-content-center
         
-        :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
         :rules="form_rules"
@@ -49,13 +48,19 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
           <el-form-item prop="lbl">
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.lbl"
               placeholder="请输入名称"
             ></el-input>
@@ -63,14 +68,20 @@
         </template>
         
         <template v-if="builtInModel?.state == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span style="color: red;">*</span>
             <span>状态</span>
           </label>
           <el-form-item prop="state">
             <el-select
               @keyup.enter.native.stop
-              class="form_input"
+              w="full"
               :set="dialogModel.state = dialogModel.state || undefined"
               v-model="dialogModel.state"
               placeholder="请选择状态"
@@ -99,14 +110,20 @@
         </template>
         
         <template v-if="builtInModel?.type == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span style="color: red;">*</span>
             <span>类型</span>
           </label>
           <el-form-item prop="type">
             <el-select
               @keyup.enter.native.stop
-              class="form_input"
+              w="full"
               :set="dialogModel.type = dialogModel.type || undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"
@@ -135,12 +152,18 @@
         </template>
         
         <template v-if="builtInModel?.result == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>执行结果</span>
           </label>
           <el-form-item prop="result">
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.result"
               placeholder="请输入执行结果"
             ></el-input>
@@ -148,12 +171,18 @@
         </template>
         
         <template v-if="builtInModel?.err_msg == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>错误信息</span>
           </label>
           <el-form-item prop="err_msg">
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.err_msg"
               placeholder="请输入错误信息"
             ></el-input>
@@ -161,13 +190,19 @@
         </template>
         
         <template v-if="builtInModel?.begin_time == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>开始时间</span>
           </label>
           <el-form-item prop="begin_time">
             <el-date-picker
               type="date"
-              class="form_input"
+              w="full"
               :set="dialogModel.begin_time = dialogModel.begin_time || undefined"
               v-model="dialogModel.begin_time"
               value-format="YYYY-MM-DD HH:mm:ss"
@@ -177,13 +212,19 @@
         </template>
         
         <template v-if="builtInModel?.end_time == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>结束时间</span>
           </label>
           <el-form-item prop="end_time">
             <el-date-picker
               type="date"
-              class="form_input"
+              w="full"
               :set="dialogModel.end_time = dialogModel.end_time || undefined"
               v-model="dialogModel.end_time"
               value-format="YYYY-MM-DD HH:mm:ss"
@@ -193,12 +234,18 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>备注</span>
           </label>
           <el-form-item prop="rem">
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.rem"
               placeholder="请输入备注"
             ></el-input>
@@ -307,8 +354,6 @@ const emit = defineEmits([
 ]);
 
 let inited = $ref(false);
-let columnNum = $ref(8);
-
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("");
@@ -355,6 +400,7 @@ async function getSelectListEfc() {
 }
 
 let onCloseResolve = function(value: {
+  type: "ok" | "cancel";
   changedIds: string[];
 }) { };
 
@@ -418,6 +464,7 @@ async function showDialog(
   }
   inited = true;
   const reslut = await new Promise<{
+    type: "ok" | "cancel";
     changedIds: string[];
   }>((resolve) => {
     onCloseResolve = resolve;
@@ -525,6 +572,7 @@ async function saveClk() {
     if (!isNext) {
       dialogVisible = false;
       onCloseResolve({
+        type: "ok",
         changedIds,
       });
     } else {
@@ -537,6 +585,7 @@ async function saveClk() {
 function cancelClk() {
   dialogVisible = false;
   onCloseResolve({
+    type: "cancel",
     changedIds,
   });
 }
@@ -544,28 +593,10 @@ function cancelClk() {
 async function beforeClose(done: (cancel: boolean) => void) {
   done(false);
   onCloseResolve({
+    type: "cancel",
     changedIds,
   });
 }
 
 defineExpose({ showDialog });
 </script>
-
-<style lang="scss" scoped>
-.dialog_form1 {
-  grid-template-columns: repeat(1, minmax(min-content, max-content) 280px);
-}
-
-.dialog_form2 {
-  grid-template-columns: repeat(2, minmax(min-content, max-content) 280px);
-}
-.form_label {
-  @apply ml-[3px] text-right self-center;
-}
-.form_label::after {
-  content: ":";
-}
-.form_input {
-  width: 100%;
-}
-</style>

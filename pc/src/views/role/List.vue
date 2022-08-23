@@ -16,17 +16,28 @@
       :model="search"
       ref="searchFormRef"
       inline-message
-      class="search_form"
+      
+      grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
+      justify-items-end
+      items-center
+      gap="y-[6px]"
+      
       @keyup.enter.native="searchClk"
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           名称
         </label>
         <el-form-item prop="lblLike">
           <el-input
-            class="form_input"
+            w="full"
             v-model="search.lblLike"
             placeholder="请输入名称"
             clearable
@@ -36,14 +47,20 @@
       </template>
       
       <template v-if="builtInSearch?.menu_ids == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           菜单
         </label>
         <el-form-item prop="menu_ids">
           <el-select-v2
             @keyup.enter.native.stop
             :height="300"
-            class="form_input"
+            w="full"
             :set="search.menu_ids = search.menu_ids || [ ]"
             :model-value="search.menu_ids"
             @update:model-value="search.menu_ids = $event"
@@ -754,6 +771,9 @@ async function openAdd() {
     action: "add",
     builtInModel,
   });
+  if (!dialogResult || dialogResult.type === "cancel") {
+    return;
+  }
   const changedIds = dialogResult?.changedIds;
   if (changedIds && changedIds.length > 0) {
     selectedIds = [ ...changedIds ];
@@ -801,6 +821,9 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  if (!dialogResult || dialogResult.type === "cancel") {
+    return;
+  }
   const changedIds = dialogResult?.changedIds;
   if (changedIds && changedIds.length > 0) {
     await Promise.all([
@@ -915,23 +938,3 @@ async function menu_idsClk(row: RoleModel) {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.search_form {
-  grid-template-columns: repeat(
-    4,
-    minmax(min-content, max-content)
-    210px
-  );
-  @apply grid justify-items-end items-center gap-y-[6px];
-}
-.form_label {
-  @apply mr-[3px] text-gray ml-[6px] whitespace-nowrap overflow-hidden;
-}
-.form_label::after {
-  content: ":";
-}
-.form_input {
-  @apply w-full;
-}
-</style>

@@ -7,17 +7,20 @@
     {
       "address": "127.0.0.1",
       "localRoot": "${workspaceFolder}/deno",
-      "name": "Debug deno",
+      "name": "deno",
       "port": 9229,
       "request": "attach",
       "type": "node"
     },
     {
-      "name": "Debug Chrome",
-      "port": 9222,
-      "request": "attach",
-      "type": "chrome",
-      "webRoot": "${workspaceFolder}/pc"
+      "type": "msedge",
+      "name": "edge",
+      "request": "launch",
+      "runtimeArgs": [
+        "--headless",
+        "--remote-debugging-port=9222"
+      ],
+      "url": "http://localhost:4000"
     }
   ]
 }

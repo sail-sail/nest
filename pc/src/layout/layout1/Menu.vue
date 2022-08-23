@@ -1,7 +1,7 @@
 <template>
 <el-menu
   :default-active="defaultActive"
-  class="AppMenu"
+  w="full"
   :collapse="menuStore.isCollapse"
   background-color="#072540"
   text-color="#FFF"
@@ -11,13 +11,17 @@
   @select="menuSelect"
   :router="false"
 >
-  <template
+  <AppSubMenu
+    :children="(menuStore.menus as any[])"
+    :opened-index="openedIndex"
+  ></AppSubMenu>
+  <!-- <template
     v-for="item in menuStore.menus"
     :key="item.id"
   >
     <el-sub-menu
-      v-if="item.children"
-      :index="item.id || ''"
+      v-if="!item.route_path"
+      :index="item.id"
     >
       <template #title>
         <el-icon>
@@ -31,7 +35,7 @@
         :key="item2.id"
       >
         <el-sub-menu
-          v-if="item2.children"
+          v-if="!item2.route_path"
           :index="item2.id"
         >
           <template #title>
@@ -46,7 +50,7 @@
             :key="item3.id"
           >
             <el-menu-item
-              v-if="!item3.children"
+              v-if="!item3.children || item3.children.length == 0"
               :index="item3.id"
               :route="{ path: item3.route_path }"
             >
@@ -61,7 +65,6 @@
           </template>
         </el-sub-menu>
         <el-menu-item
-          v-if="!item2.children"
           :index="item2.id"
           :route="{ path: item2.route_path }"
         >
@@ -86,7 +89,7 @@
         {{ item.lbl }}
       </span>
     </el-menu-item>
-  </template>
+  </template> -->
 </el-menu>
 </template>
 
@@ -100,20 +103,12 @@ import {
 
 import {
   ElMenu,
-  ElMenuItem,
-  ElSubMenu,
-  ElIcon,
 } from "element-plus";
-
-import {
-  Folder,
-  FolderOpened,
-  Document,
-} from "@element-plus/icons-vue";
 
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
 import { getMenus } from "./Api";
+import AppSubMenu from "./AppSubMenu.vue";
 
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
@@ -182,19 +177,3 @@ usrStore.onLogin(initFrame);
 
 initFrame();
 </script>
-
-<style scoped>
-.AppMenu {
-  width: 100%;
-  box-sizing: unset;
-}
-.top_menu_item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 0;
-  padding-bottom: 0;
-  height: 40px;
-}
-</style>

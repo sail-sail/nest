@@ -4,7 +4,7 @@
   v-model="dialogVisible"
   append-to-body
   :close-on-click-modal="false"
-  :custom-class="columnNum > 20 ? 'custom_dialog' : 'custom_dialog auto_dialog'"
+  custom-class="custom_dialog auto_dialog"
   top="0"
   :before-close="beforeClose"
 >
@@ -36,11 +36,10 @@
         
         justify-end
         items-end
-        grid="~ rows-[auto]"
+        grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
         gap="x-[16px] y-[16px]"
         place-content-center
         
-        :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
         :rules="form_rules"
@@ -49,13 +48,19 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
           <el-form-item prop="lbl">
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.lbl"
               placeholder="请输入名称"
             ></el-input>
@@ -63,12 +68,18 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>备注</span>
           </label>
           <el-form-item prop="rem">
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.rem"
               placeholder="请输入备注"
             ></el-input>
@@ -76,13 +87,19 @@
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>启用</span>
           </label>
           <el-form-item prop="is_enabled">
             <el-select
               @keyup.enter.native.stop
-              class="form_input"
+              w="full"
               :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
@@ -103,7 +120,13 @@
         </template>
         
         <template v-if="builtInModel?.menu_ids == null">
-          <label class="form_label">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>菜单</span>
           </label>
           <el-form-item prop="menu_ids">
@@ -114,7 +137,7 @@
               collapse-tags
               collapse-tags-tooltip
               :set="dialogModel.menu_ids = dialogModel.menu_ids || [ ]"
-              class="form_input"
+              w="full"
               v-model="dialogModel.menu_ids"
               placeholder="请选择菜单"
               :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
@@ -232,8 +255,6 @@ const emit = defineEmits([
 ]);
 
 let inited = $ref(false);
-let columnNum = $ref(4);
-
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("");
@@ -291,6 +312,7 @@ async function getSelectListEfc() {
 }
 
 let onCloseResolve = function(value: {
+  type: "ok" | "cancel";
   changedIds: string[];
 }) { };
 
@@ -355,6 +377,7 @@ async function showDialog(
   }
   inited = true;
   const reslut = await new Promise<{
+    type: "ok" | "cancel";
     changedIds: string[];
   }>((resolve) => {
     onCloseResolve = resolve;
@@ -462,6 +485,7 @@ async function saveClk() {
     if (!isNext) {
       dialogVisible = false;
       onCloseResolve({
+        type: "ok",
         changedIds,
       });
     } else {
@@ -474,6 +498,7 @@ async function saveClk() {
 function cancelClk() {
   dialogVisible = false;
   onCloseResolve({
+    type: "cancel",
     changedIds,
   });
 }
@@ -481,28 +506,10 @@ function cancelClk() {
 async function beforeClose(done: (cancel: boolean) => void) {
   done(false);
   onCloseResolve({
+    type: "cancel",
     changedIds,
   });
 }
 
 defineExpose({ showDialog });
 </script>
-
-<style lang="scss" scoped>
-.dialog_form1 {
-  grid-template-columns: repeat(1, minmax(min-content, max-content) 280px);
-}
-
-.dialog_form2 {
-  grid-template-columns: repeat(2, minmax(min-content, max-content) 280px);
-}
-.form_label {
-  @apply ml-[3px] text-right self-center;
-}
-.form_label::after {
-  content: ":";
-}
-.form_input {
-  width: 100%;
-}
-</style>

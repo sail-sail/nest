@@ -3,13 +3,31 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
+let columnNum = 0;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noAdd && column.noEdit) continue;
+  if (column.isAtt) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  columnNum++;
+}
 #>
 <el-dialog
   :fullscreen="fullscreen"
   v-model="dialogVisible"
   append-to-body
-  :close-on-click-modal="false"
-  :custom-class="columnNum > 20 ? 'custom_dialog' : 'custom_dialog auto_dialog'"
+  :close-on-click-modal="false"<#
+    if (columnNum > 20) {
+  #>
+  custom-class="custom_dialog"<#
+    } else {
+  #>
+  custom-class="custom_dialog auto_dialog"<#
+    }
+  #>
   top="0"
   :before-close="beforeClose"
 >
@@ -39,20 +57,28 @@ const Table_Up = tableUp.split("_").map(function(item) {
       <el-form
         size="default"
         
-        justify-end
+        <#
+          if (columnNum > 4) {
+        #>justify-end
         items-end
-        grid="~ rows-[auto]"
+        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         gap="x-[16px] y-[16px]"
-        place-content-center
+        place-content-center<#
+          } else {
+        #>justify-end
+        items-end
+        grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
+        gap="x-[16px] y-[16px]"
+        place-content-center<#
+          }
+        #>
         
-        :class="columnNum <= 4 ? 'dialog_form1' : 'dialog_form2'"
         :model="dialogModel"
         ref="formRef"
         :rules="form_rules"
         :validate-on-rule-change="false"
         @keyup.enter.native="saveClk"
       ><#
-        let columnNum = 0;
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
@@ -84,7 +110,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
             vIf.push("dialogAction !== 'edit'");
           }
           const vIfStr = vIf.join(" && ");
-          columnNum++;
         #>
         
         <template v-if="builtInModel?.<#=column_name#> == null">
@@ -92,7 +117,13 @@ const Table_Up = tableUp.split("_").map(function(item) {
           if (vIfStr) {
           #> v-if="<#=vIfStr#>"<#
           }
-          #> class="form_label"><# if (require) { #>
+          #>
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          ><# if (require) { #>
             <span style="color: red;">*</span><#
             }
             #>
@@ -140,7 +171,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ]"<#
               }
               #>
-              class="form_input"
+              w="full"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
               :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
@@ -152,7 +183,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             #>
             <el-select
               @keyup.enter.native.stop
-              class="form_input"
+              w="full"
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
@@ -180,7 +211,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             #>
             <el-date-picker
               type="date"
-              class="form_input"
+              w="full"
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"<#
                 if (data_type === "datetime") {
@@ -197,7 +228,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
             <el-checkbox
-              class="form_input"
+              w="full"
               :set="0"
               v-model="dialogModel.<#=column_name#>"
               :false-label="0"
@@ -208,7 +239,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             } else if (column_type.startsWith("int")) {
             #>
             <el-input-number
-              class="form_input"
+              w="full"
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               :precision="0"
@@ -227,7 +258,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
               max = Number(max)+1-Math.pow(10, -precision);
             #>
             <el-input-number
-              class="form_input"
+              w="full"
               v-model="dialogModel.<#=column_name#>"
               :max="<#=max#>"
               :precision="<#=precision#>"
@@ -237,7 +268,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             } else {
             #>
             <el-input
-              class="form_input"
+              w="full"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请输入<#=column_comment#>"
             ></el-input><#
@@ -247,10 +278,14 @@ const Table_Up = tableUp.split("_").map(function(item) {
           if (column.isImg) {
           #>
           
-          <template v-if="<#=vIfStr?vIfStr+" && ":""#>columnNum > 4">
+          <#
+            if (columnNum > 4) {
+          #>
             <div></div>
             <div></div>
-          </template><#
+          <#
+            }
+          #><#
           }
           #>
         </template><#
@@ -420,8 +455,6 @@ const emit = defineEmits([
 ]);
 
 let inited = $ref(false);
-let columnNum = $ref(<#=columnNum#>);
-
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("");
@@ -608,6 +641,7 @@ async function getSelectListEfc() {
 }
 
 let onCloseResolve = function(value: {
+  type: "ok" | "cancel";
   changedIds: string[];
 }) { };
 
@@ -711,6 +745,7 @@ async function showDialog(
   }
   inited = true;
   const reslut = await new Promise<{
+    type: "ok" | "cancel";
     changedIds: string[];
   }>((resolve) => {
     onCloseResolve = resolve;
@@ -818,6 +853,7 @@ async function saveClk() {
     if (!isNext) {
       dialogVisible = false;
       onCloseResolve({
+        type: "ok",
         changedIds,
       });
     } else {
@@ -830,6 +866,7 @@ async function saveClk() {
 function cancelClk() {
   dialogVisible = false;
   onCloseResolve({
+    type: "cancel",
     changedIds,
   });
 }
@@ -837,28 +874,10 @@ function cancelClk() {
 async function beforeClose(done: (cancel: boolean) => void) {
   done(false);
   onCloseResolve({
+    type: "cancel",
     changedIds,
   });
 }
 
 defineExpose({ showDialog });
 </script>
-
-<style lang="scss" scoped>
-.dialog_form1 {
-  grid-template-columns: repeat(1, minmax(min-content, max-content) 280px);
-}
-
-.dialog_form2 {
-  grid-template-columns: repeat(2, minmax(min-content, max-content) 280px);
-}
-.form_label {
-  @apply ml-[3px] text-right self-center;
-}
-.form_label::after {
-  content: ":";
-}
-.form_input {
-  width: 100%;
-}
-</style>

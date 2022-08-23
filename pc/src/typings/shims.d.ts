@@ -23,6 +23,9 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   i?: string;
   autoComplete?: "off" | "on";
   overflowYAuto?: boolean;
+  overflowXAuto?: boolean;
+  overflowXHidden?: boolean;
+  overflowYHidden?: boolean;
   min?: string;
   top?: string;
   left?: string;
@@ -35,6 +38,7 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   bottom0?: boolean;
   borderRounded?: boolean;
   easeIn?: boolean;
+  textRight?: boolean;
   set?: any;
 }
 

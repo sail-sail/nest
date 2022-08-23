@@ -21,7 +21,12 @@ const Table_Up = tableUp.split("_").map(function(item) {
       :model="search"
       ref="searchFormRef"
       inline-message
-      class="search_form"
+      
+      grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
+      justify-items-end
+      items-center
+      gap="y-[6px]"
+      
       @keyup.enter.native="searchClk"
     ><#
       for (let i = 0; i < columns.length; i++) {
@@ -55,14 +60,20 @@ const Table_Up = tableUp.split("_").map(function(item) {
       } else if (foreignKey) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           <#=column_comment#>
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select-v2
             @keyup.enter.native.stop
             :height="300"
-            class="form_input"
+            w="full"
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
             @update:model-value="search.<#=column_name#> = $event"
@@ -82,13 +93,19 @@ const Table_Up = tableUp.split("_").map(function(item) {
       } else if (selectList.length > 0) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           <#=column_comment#>
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select
             @keyup.enter.native.stop
-            class="form_input"
+            w="full"
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
             @update:model-value="search.<#=column_name#> = $event"
@@ -118,13 +135,19 @@ const Table_Up = tableUp.split("_").map(function(item) {
       } else if (data_type === "datetime" || data_type === "date") {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           <#=column_comment#>
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-date-picker
             type="daterange"
-            class="form_input"
+            w="full"
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="(search.<#=column_name#> as any)"
             @update:model-value="search.<#=column_name#> = $event"
@@ -141,12 +164,18 @@ const Table_Up = tableUp.split("_").map(function(item) {
       } else if (column_type === "int(1)") {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           <#=column_comment#>
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-checkbox
-            class="form_input"
+            w="full"
             v-model="search.<#=column_name#>"
             :false-label="0"
             :true-label="1"
@@ -156,12 +185,18 @@ const Table_Up = tableUp.split("_").map(function(item) {
       } else if (column_type.startsWith("int")) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           <#=column_comment#>
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-input-number
-            class="form_input"
+            w="full"
             v-model="search.<#=column_name#>"
             :controls="false"
             clearable
@@ -172,12 +207,18 @@ const Table_Up = tableUp.split("_").map(function(item) {
       } else {
       #>
       <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
-        <label class="form_label">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
           <#=column_comment#>
         </label>
         <el-form-item prop="<#=column_name#>Like">
           <el-input
-            class="form_input"
+            w="full"
             v-model="search.<#=column_name#>Like"
             placeholder="请输入<#=column_comment#>"
             clearable
@@ -1488,6 +1529,9 @@ async function openAdd() {
     action: "add",
     builtInModel,
   });
+  if (!dialogResult || dialogResult.type === "cancel") {
+    return;
+  }
   const changedIds = dialogResult?.changedIds;
   if (changedIds && changedIds.length > 0) {
     selectedIds = [ ...changedIds ];
@@ -1548,6 +1592,9 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  if (!dialogResult || dialogResult.type === "cancel") {
+    return;
+  }
   const changedIds = dialogResult?.changedIds;
   if (changedIds && changedIds.length > 0) {
     await Promise.all([
@@ -1721,23 +1768,3 @@ async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
 }
 #>
 </script>
-
-<style lang="scss" scoped>
-.search_form {
-  grid-template-columns: repeat(
-    4,
-    minmax(min-content, max-content)
-    210px
-  );
-  @apply grid justify-items-end items-center gap-y-[6px];
-}
-.form_label {
-  @apply mr-[3px] text-gray ml-[6px] whitespace-nowrap overflow-hidden;
-}
-.form_label::after {
-  content: ":";
-}
-.form_input {
-  @apply w-full;
-}
-</style>
