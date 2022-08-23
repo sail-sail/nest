@@ -1,9 +1,11 @@
 export { defineGraphql } from "/lib/oak/gql.ts";
+
 import {
   connect as redisConnect,
   type Redis,
   type RedisConnectOptions,
 } from "redis";
+
 import dayjs from "dayjs";
 
 import {
@@ -11,12 +13,15 @@ import {
   configLogger,
   type ClientConfig,
 } from "./mysql/mod.ts";
+
 import {
   type PoolConnection,
 } from "./mysql/src/pool.ts";
+
 import {
   type FieldInfo,
 } from "./mysql/src/packets/parsers/result.ts";
+
 import {
   escapeId,
   escape,
@@ -24,18 +29,15 @@ import {
 
 import { Context as OakContext } from "oak";
 
-import {
-  createPool as genericCreatePool,
-  type Pool as GenPool,
-} from "generic_pool";
-
 import { QueryArgs } from "/lib/query_args.ts";
 import { getEnv } from "/lib/env.ts";
 import { AUTHORIZATION } from "./auth/auth.constants.ts";
+
 import {
   SortOrderEnum,
   type InputMaybe,
 } from "../gen/types.ts";
+
 import { ServiceException } from "./exceptions/service.exception.ts";
 
 declare global {
@@ -64,42 +66,36 @@ configLogger({ enable: false });
 export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
 
 /** redis连接池 */
-let _redisClientPool: GenPool<Redis | undefined>|undefined = undefined;
+let _redisClient: Redis | undefined = undefined;
+let cache_ECONNREFUSED = false;
 
-/** 从redis连接池中获取redis缓存连接 */
-function redisClientPool() {
-  if (_redisClientPool) return _redisClientPool;
-  let cache_ECONNREFUSED = false;
-  _redisClientPool = genericCreatePool({
-    async create() {
-      if (cache_ECONNREFUSED) return;
-      let client: Awaited<ReturnType<typeof redisConnect>> | undefined;
-      const option: RedisConnectOptions = {
-        hostname: await getEnv("cache_hostname") || "127.0.0.1",
-        port: Number(await getEnv("cache_port")) || 6379,
-        db: Number(await getEnv("cache_db")) || 0,
-      };
-      const cache_password = await getEnv("cache_password");
-      if (cache_password) {
-        option.password = cache_password;
-      }
-      try {
-        client = await redisConnect(option);
-      } catch (err) {
-        if (err.code === "ECONNREFUSED") {
-          cache_ECONNREFUSED = true;
-          console.error(`redis连接失败`, option);
-        } else {
-          console.error(err);
-        }
-      }
-      return client;
-    },
-    async destroy(client: Awaited<ReturnType<typeof redisConnect>>) {
-      await client.close();
-    },
-  }, { max: 10, min: 0 });
-  return _redisClientPool;
+/** 获取redis缓存连接 */
+async function redisClient() {
+  if (cache_ECONNREFUSED) {
+    return;
+  }
+  if (_redisClient) return _redisClient;
+  const option: RedisConnectOptions = {
+    hostname: await getEnv("cache_hostname") || "127.0.0.1",
+    port: Number(await getEnv("cache_port")) || 6379,
+    db: Number(await getEnv("cache_db")) || 0,
+  };
+  const cache_password = await getEnv("cache_password");
+  if (cache_password) {
+    option.password = cache_password;
+  }
+  try {
+    _redisClient = await redisConnect(option);
+  } catch (err) {
+    if (err.code === "ECONNREFUSED") {
+      cache_ECONNREFUSED = true;
+      _redisClient = undefined;
+      console.error(`redis连接失败`, option);
+    } else {
+      console.error(err);
+    }
+  }
+  return _redisClient;
 }
 
 let client: Client;
@@ -181,22 +177,15 @@ export class Context {
   }
   
   async getCache(
-    cacheKey1: string|undefined,
-    cacheKey2: string|undefined,
+    cacheKey1: string | undefined,
+    cacheKey2: string | undefined,
   // deno-lint-ignore no-explicit-any
   ): Promise<any> {
     if (!this.cacheEnabled) return;
     if (!cacheKey1 || !cacheKey2) return;
-    const client = await redisClientPool().acquire();
+    const client = await redisClient();
     if (!client) return;
-    let str: string|undefined;
-    try {
-      str = await client.hget(cacheKey1, cacheKey2);
-      await redisClientPool().release(client);
-    } catch (err) {
-      await redisClientPool().destroy(client);
-      throw err;
-    }
+    const str = await client.hget(cacheKey1, cacheKey2);
     if (str) {
       const data = JSON.parse(str);
       // t.log(`getCache: ${ cacheKey1 }: `, data);
@@ -225,15 +214,9 @@ export class Context {
     if (!this.cacheEnabled) return;
     if (data === undefined || !cacheKey1 || !cacheKey2) return;
     const str = JSON.stringify(data);
-    const client = await redisClientPool().acquire();
+    const client = await redisClient();
     if (!client) return;
-    try {
-      await client.hset(cacheKey1, cacheKey2, str);
-      await redisClientPool().release(client);
-    } catch (err) {
-      await redisClientPool().destroy(client);
-      throw err;
-    }
+    await client.hset(cacheKey1, cacheKey2, str);
   }
   
   /**
@@ -252,15 +235,9 @@ export class Context {
     }
     this.#cacheKey1s.push(cacheKey1);
     this.log(`delCache: ${ cacheKey1 }`);
-    const client = await redisClientPool().acquire();
+    const client = await redisClient();
     if (!client) return;
-    try {
-      await client.del(cacheKey1);
-      await redisClientPool().release(client);
-    } catch (err) {
-      await redisClientPool().destroy(client);
-      throw err;
-    }
+    await client.del(cacheKey1);
     this.#cacheKey1s = this.#cacheKey1s.filter((item) => item !== cacheKey1);
   }
   
@@ -274,15 +251,9 @@ export class Context {
   async clearCache(): Promise<void> {
     if (!this.cacheEnabled) return;
     this.log(`clearCache`);
-    const client = await redisClientPool().acquire();
+    const client = await redisClient();
     if (!client) return;
-    try {
-      await client.flushdb();
-      await redisClientPool().release(client);
-    } catch (err) {
-      await redisClientPool().destroy(client);
-      throw err;
-    }
+    await client.flushdb();
   }
   
   /**
