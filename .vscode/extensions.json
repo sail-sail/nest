@@ -32,6 +32,7 @@
     "denoland.vscode-deno",
     "antfu.smart-clicks",
     "antfu.browse-lite",
-    "antfu.where-am-i"
+    "antfu.where-am-i",
+    "ms-edgedevtools.vscode-edge-devtools"
   ]
 }

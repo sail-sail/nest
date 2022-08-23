@@ -39,6 +39,7 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   borderRounded?: boolean;
   easeIn?: boolean;
   textRight?: boolean;
+  justifyItemsEnd?: boolean;
   set?: any;
 }
 
