@@ -34,6 +34,7 @@
     "antfu.browse-lite",
     "antfu.where-am-i",
     "ms-edgedevtools.vscode-edge-devtools",
+    "rapidapi.vscode-rapidapi-client",
     "zixuanchen.vitest-explorer"
   ]
 }
