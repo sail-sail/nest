@@ -1,16 +1,22 @@
 import {
-  Query,
-  Mutation,
-  PageInput,
-  Background_TaskModel,
-  Background_TaskSearch,
-  Background_TaskInput,
+  type Query,
+  type Mutation,
+  type PageInput,
+  type Background_TaskModel,
+  type Background_TaskSearch,
+  type Background_TaskInput,
 } from "#/types";
+
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+
 import {
-  Sort,
+  gqlQuery,
+  type GqlOpt,
+} from "@/utils/graphql";
+
+import {
+  type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
 
 /**

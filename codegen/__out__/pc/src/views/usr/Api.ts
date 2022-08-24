@@ -1,18 +1,27 @@
 import {
-  Query,
-  Mutation,
-  PageInput,
-  UsrModel,
-  UsrSearch,
-  UsrInput,
+  type Query,
+  type Mutation,
+  type PageInput,
+  type UsrModel,
+  type UsrSearch,
+  type UsrInput,
 } from "#/types";
+
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+
 import {
-  Sort,
+  gqlQuery,
+  type GqlOpt,
+} from "@/utils/graphql";
+
+import {
+  type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
-import { RoleSearch } from "#/types";
+
+import {
+  type RoleSearch,
+} from "#/types";
 
 /**
  * 根据搜索条件查找数据

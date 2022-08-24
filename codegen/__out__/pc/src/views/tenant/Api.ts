@@ -1,18 +1,27 @@
 import {
-  Query,
-  Mutation,
-  PageInput,
-  TenantModel,
-  TenantSearch,
-  TenantInput,
+  type Query,
+  type Mutation,
+  type PageInput,
+  type TenantModel,
+  type TenantSearch,
+  type TenantInput,
 } from "#/types";
+
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+
 import {
-  Sort,
+  gqlQuery,
+  type GqlOpt,
+} from "@/utils/graphql";
+
+import {
+  type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
-import { MenuSearch } from "#/types";
+
+import {
+  type MenuSearch,
+} from "#/types";
 
 /**
  * 根据搜索条件查找数据

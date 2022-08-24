@@ -9,18 +9,24 @@ const hasSummary = columns.some((column) => column.showSummary);
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
 #>import {
-  Query,
-  Mutation,
-  PageInput,
-  <#=Table_Up#>Model,
-  <#=Table_Up#>Search,
-  <#=Table_Up#>Input,
+  type Query,
+  type Mutation,
+  type PageInput,
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
+  type <#=Table_Up#>Input,
 } from "#/types";
+
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+
 import {
-  Sort,
+  gqlQuery,
+  type GqlOpt,
+} from "@/utils/graphql";
+
+import {
+  type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -41,7 +47,10 @@ for (let i = 0; i < columns.length; i++) {
   }
   importForeignTables.push(Foreign_Table_Up);
 #>
-import { <#=Foreign_Table_Up#>Search } from "#/types";<#
+
+import {
+  type <#=Foreign_Table_Up#>Search,
+} from "#/types";<#
 }
 #>
 

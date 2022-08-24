@@ -1,16 +1,22 @@
 import {
-  Query,
-  Mutation,
-  PageInput,
-  OptionModel,
-  OptionSearch,
-  OptionInput,
+  type Query,
+  type Mutation,
+  type PageInput,
+  type OptionModel,
+  type OptionSearch,
+  type OptionInput,
 } from "#/types";
+
 import dayjs from "dayjs";
 import { uploadFile } from "@/utils/axios";
-import { GqlOpt, gqlQuery, baseURL } from "@/utils/graphql";
+
 import {
-  Sort,
+  gqlQuery,
+  type GqlOpt,
+} from "@/utils/graphql";
+
+import {
+  type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
 
 /**
