@@ -10,7 +10,7 @@ const child_process = require("child_process");
 
 {
   const arr = [
-    "node_modules/@graphql-codegen/cli/bin.js",
+    "node_modules/@graphql-codegen/cli/cjs/bin.js",
     "--config",
     "./lib/script/graphql_codegen_config.yml",
     "--watch",

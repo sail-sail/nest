@@ -4,6 +4,8 @@
   "scripts": {
     "s": "vite",
     "start": "vite",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "build": "vite build --emptyOutDir",
     "rsw:build": "rsw && npm run build",
     "typecheck": "vue-tsc --noEmit --skipLibCheck",
@@ -19,6 +21,7 @@
     "driver.js": "0.9.8",
     "element-plus": "2.2.14",
     "file-saver": "2.0.5",
+    "filesize": "9.0.11",
     "jszip": "3.10.1",
     "pinia": "2.0.20",
     "pinia-plugin-persistedstate": "2.1.1",
@@ -46,6 +49,7 @@
     "vite": "3.0.9",
     "vite-plugin-pwa": "0.12.3",
     "vite-plugin-vue-inspector": "1.1.1",
+    "vitest": "0.22.1",
     "vue-tsc": "0.40.1"
   }
 }

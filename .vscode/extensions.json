@@ -33,6 +33,7 @@
     "antfu.smart-clicks",
     "antfu.browse-lite",
     "antfu.where-am-i",
-    "ms-edgedevtools.vscode-edge-devtools"
+    "ms-edgedevtools.vscode-edge-devtools",
+    "zixuanchen.vitest-explorer"
   ]
 }

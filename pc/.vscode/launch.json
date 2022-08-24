@@ -5,15 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "address": "127.0.0.1",
-      "localRoot": "${workspaceFolder}/deno",
-      "name": "deno",
-      "port": 9229,
-      "request": "attach",
-      "smartStep": true,
-      "type": "node"
-    },
-    {
       "type": "msedge",
       "name": "edge",
       "request": "launch",
@@ -33,8 +24,7 @@
         "<node_internals>/**",
         "**/node_modules/**",
       ],
-      "cwd": "${workspaceFolder}/pc",
-      "program": "${workspaceRoot}/pc/node_modules/vitest/vitest.mjs",
+      "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
       "args": [
         "run",
         "${relativeFile}",
