@@ -54,6 +54,31 @@ const _gqlRootValue = {
 // deno-lint-ignore ban-types
 const gqlRootValue: { [key: string]: Function | undefined; } = Object.assign({ }, _gqlRootValue);
 
+const gqlRootValueProxy = new Proxy(
+  gqlRootValue,
+  {
+    get(target: typeof gqlRootValue, prop: string) {
+      // deno-lint-ignore no-explicit-any
+      return function(...args: any[]) {
+        const callback = target[prop];
+        if (!callback) {
+          throw new Error(`方法 ${ prop } 不存在!`);
+        }
+        const args0 = args[2].fieldNodes[0].arguments;
+        const len: number = args0.length;
+        // deno-lint-ignore no-explicit-any
+        const cbArgs: any[] = new Array(len + 1);
+        cbArgs[0] = args[1];
+        for (let i = 0; i < args0.length; i++) {
+          const ele = args0[i];
+          cbArgs[i+1] = args[0][ele.name.value];
+        }
+        return callback.apply(null, cbArgs);
+      };
+    },
+  },
+);
+
 function mergeSchema(gqlSchemaStr: string): string {
   let gqlSchemaStr2 = "";
   let queryStr = "";
@@ -140,6 +165,7 @@ gqlRouter.post("/graphql", async function(ctx) {
     const variables = gqlObj.variables;
     // deno-lint-ignore no-explicit-any
     let result: any;
+    let isValidationError = false;
     try {
       let documentInfo = queryCacheMap.get(query);
       if (!documentInfo) {
@@ -164,6 +190,7 @@ gqlRouter.post("/graphql", async function(ctx) {
         result = {
           errors: validationErrors,
         };
+        isValidationError = true;
         documentInfo = undefined;
         queryCacheMap.delete(query);
       }
@@ -172,7 +199,7 @@ gqlRouter.post("/graphql", async function(ctx) {
         result = await execute({
           schema: gqlSchema!,
           document,
-          rootValue: gqlRootValue,
+          rootValue: gqlRootValueProxy,
           contextValue: context,
           variableValues: variables,
           // operationName: undefined,
@@ -197,6 +224,14 @@ gqlRouter.post("/graphql", async function(ctx) {
             } else {
               await context.commit();
             }
+          } else if (isValidationError) {
+            const message = errors[0].message;
+            result.errors = [
+              {
+                message,
+              }
+            ];
+            context.log(`GraphQL Query Error: ${ message }`);
           } else if (error.originalError?.name === "NonErrorThrown") {
             // deno-lint-ignore no-explicit-any
             const message = (error.originalError as any).thrownValue;
@@ -263,21 +298,13 @@ function defineGraphql(
   }
   if (callback) {
     const keys = Object.keys(callback);
-    keys.forEach((key) => {
-      // deno-lint-ignore no-explicit-any
-      gqlRootValue[key] = function(...args: any[]) {
-        const args0 = args[2].fieldNodes[0].arguments;
-        const len: number = args0.length;
-        // deno-lint-ignore no-explicit-any
-        const cbArgs: any[] = new Array(len + 1);
-        cbArgs[0] = args[1];
-        for (let i = 0; i < args0.length; i++) {
-          const ele = args0[i];
-          cbArgs[i+1] = args[0][ele.name.value];
-        }
-        return callback[key].apply(this, cbArgs);
-      };
-    });
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (gqlRootValue[key]) {
+        throw new ServiceException(`方法 ${ key } 重复: ${ gqlRootValue[key] }, ${ callback[key] }`);
+      }
+      gqlRootValue[key] = callback[key];
+    }
   }
 }
 
