@@ -156,7 +156,7 @@ function start() {
   //   "server_title",
     
   //   "database_type",
-  //   "database_host",
+  //   "database_hostname",
   //   "database_port",
   //   "database_socketpath",
   //   "database_username",
