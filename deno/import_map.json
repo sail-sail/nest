@@ -2,9 +2,9 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.152.0/",
-    "oak": "https://deno.land/x/oak@v11.0.0/mod.ts",
-    "graphql": "https://esm.sh/graphql@16.6.0",
+    "std/": "https://deno.land/std@0.153.0/",
+    "oak": "https://deno.land/x/oak@v11.1.0/mod.ts",
+    "graphql": "./lib/graphql/index.ts",
     "dotenv": "https://deno.land/x/dotenv@v3.2.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.26.0/mod.ts",
     "generic_pool": "https://deno.land/x/generic_pool@v1.0.4/mod.ts",
