@@ -20,12 +20,14 @@ const gqlRouter = new Router();
 
 const _gqlSchemaStr = /* GraphQL */`
 scalar JSON
+"分页输入"
 input PageInput {
   pgOffset: Int
   pgSize: Int
   orderBy: String
   orderDec: Boolean
 }
+"排序输入"
 input SortInput {
   prop: String
   order: SortOrderEnum
