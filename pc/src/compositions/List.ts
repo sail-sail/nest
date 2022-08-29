@@ -198,10 +198,18 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
 }
 
 export interface ColumnType {
-  prop: string,
-  label: string,
-  hide?: boolean,
-  width?: string | number,
+  prop: string;
+  label: string;
+  hide?: boolean;
+  width?: string | number;
+  minWidth?: string | number;
+  align?: "left" | "center" | "right";
+  headerAlign?: "left" | "center" | "right";
+  className?: string;
+  labelClassName?: string;
+  columnKey?: string;
+  sortable?: "custom" | boolean;
+  showOverflowTooltip?: boolean;
 }
 
 export function useTableColumns<T>(

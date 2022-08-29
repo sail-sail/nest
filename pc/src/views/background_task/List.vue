@@ -304,12 +304,7 @@
           <template v-if="'lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="120"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -318,12 +313,7 @@
           <template v-else-if="'_state' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="55"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -332,12 +322,7 @@
           <template v-else-if="'_type' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="55"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -346,27 +331,8 @@
           <template v-else-if="'result' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="140"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
-              <template #default="{ row, column }">
-                <template v-if="row.type === 'text'">
-                  {{ row[column.property] }}
-                </template>
-                <template v-else-if="row.type === 'download'">
-                  <el-link
-                    v-if="row.state === 'success'"
-                    :type="row.downloaded ? 'info' : 'primary'"
-                    @click="downloadById(row[column.property]);row.downloaded = true;"
-                  >
-                    下载
-                  </el-link>
-                </template>
-              </template>
             </el-table-column>
           </template>
           
@@ -374,11 +340,7 @@
           <template v-else-if="'err_msg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -387,13 +349,7 @@
           <template v-else-if="'begin_time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="110"
-              sortable="custom"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -402,13 +358,7 @@
           <template v-else-if="'end_time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="110"
-              sortable="custom"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -417,11 +367,7 @@
           <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -429,12 +375,7 @@
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              header-align="center"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -718,34 +659,66 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
+    minWidth: 120,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "状态",
     prop: "_state",
+    minWidth: 55,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "类型",
     prop: "_type",
+    minWidth: 55,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "执行结果",
     prop: "result",
+    minWidth: 140,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "错误信息",
     prop: "err_msg",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "开始时间",
     prop: "begin_time",
+    minWidth: 110,
+    sortable: "custom",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "结束时间",
     prop: "end_time",
+    minWidth: 110,
+    sortable: "custom",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "备注",
     prop: "rem",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
 ]);
 

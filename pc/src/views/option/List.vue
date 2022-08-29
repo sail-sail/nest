@@ -289,11 +289,7 @@
           <template v-if="'lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -302,11 +298,7 @@
           <template v-else-if="'ky' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -315,11 +307,7 @@
           <template v-else-if="'val' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -328,11 +316,7 @@
           <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -340,12 +324,7 @@
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              header-align="center"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -632,18 +611,30 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "键",
     prop: "ky",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "值",
     prop: "val",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "备注",
     prop: "rem",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
 ]);
 

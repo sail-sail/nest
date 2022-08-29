@@ -279,11 +279,7 @@
           <template v-if="'_type' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -292,13 +288,7 @@
           <template v-else-if="'_menu_id' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              min-width="140"
-              sortable="custom"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
             
@@ -308,11 +298,7 @@
           <template v-else-if="'lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -321,11 +307,7 @@
           <template v-else-if="'route_path' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -334,11 +316,7 @@
           <template v-else-if="'route_query' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -347,11 +325,7 @@
           <template v-else-if="'_is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -360,13 +334,7 @@
           <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              sortable="custom"
-              align="right"
-              header-align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -375,11 +343,7 @@
           <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -387,12 +351,7 @@
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              header-align="center"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -696,34 +655,61 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "类型",
     prop: "_type",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "父菜单",
     prop: "_menu_id",
+    minWidth: 140,
+    sortable: "custom",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "名称",
     prop: "lbl",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "路由",
     prop: "route_path",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "参数",
     prop: "route_query",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "启用",
     prop: "_is_enabled",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "排序",
     prop: "order_by",
+    sortable: "custom",
+    align: "right",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
   {
     label: "备注",
     prop: "rem",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
   },
 ]);
 

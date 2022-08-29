@@ -486,34 +486,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
             if (column_comment.indexOf("[") !== -1) {
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
-            let minWidth = "";
-            if (column.minWidth != null) {
-              minWidth = "\n              min-width=\""+column.minWidth+"\"";
-            }
-            let width = "";
-            if (column.width != null) {
-              width = "\n              width=\""+column.width+"\"";
-            }
-            let sortable = "";
-            if (column.sortable) {
-              sortable = "\n              sortable=\"custom\"";
-            }
             const isPassword = column.isPassword;
             if (isPassword) continue;
-            let align = "";
-            if (column.align) {
-              align = "\n              align=\""+column.align+"\"";
-            } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-              align = "\n              align=\"right\"";
-            } else {
-              align = "\n              align=\"center\"";
-            }
-            let headerAlign = "";
-            if (column.align) {
-              align = "\n              header-align=\""+column.headerAlign+"\"";
-            } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-              headerAlign = "\n              header-align=\"center\"";
-            }
           #><#
           if (column.isImg) {
           #>
@@ -522,9 +496,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"<#=minWidth#><#=align#><#=headerAlign#>
+              v-bind="col"
             >
               <template #default="{ row, column }">
                 <LinkImage v-model="row[column.property]"></LinkImage>
@@ -538,9 +510,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"<#=minWidth#><#=align#><#=headerAlign#>
+              v-bind="col"
             >
               <template #default="{ row, column }">
                 <LinkAtt
@@ -572,10 +542,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"<#=minWidth#><#=sortable#><#=align#><#=headerAlign#>
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template><#
@@ -586,10 +553,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'_<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"<#=minWidth#><#=sortable#><#=align#><#=headerAlign#>
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template><#
@@ -600,10 +564,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'_<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"<#=minWidth#><#=sortable#><#=align#><#=headerAlign#>
-              show-overflow-tooltip
+              v-bind="col"
             ><#
               if (foreignKey.multiple && (foreignKey.showType === "tag" || !foreignKey.showType)) {
             #>
@@ -642,12 +603,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              header-align="center"
-              align="center"
-              show-overflow-tooltip
+              v-bind="col"
             >
             </el-table-column>
           </template>
@@ -1242,33 +1198,24 @@ for (let i = 0; i < columns.length; i++) {
   if (column_comment.indexOf("[") !== -1) {
     column_comment = column_comment.substring(0, column_comment.indexOf("["));
   }
-  let minWidth = "";
-  if (column.minWidth != null) {
-    minWidth = "\n          min-width=\""+column.minWidth+"\"";
-  }
-  let width = "";
-  if (column.width != null) {
-    width = "\n          width=\""+column.width+"\"";
-  }
-  let sortable = "";
-  if (column.sortable) {
-    sortable = "\n          sortable=\"custom\"";
-  }
   const isPassword = column.isPassword;
   if (isPassword) continue;
-  let align = "";
   if (column.align) {
-    align = "\n          align=\""+column.align+"\"";
+    column.align = column.align;
   } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-    align = "\n          align=\"right\"";
+    column.align = "right";
   } else {
-    align = "\n          align=\"center\"";
+    column.align = "center";
   }
-  let headerAlign = "";
-  if (column.align) {
-    align = "\n          header-align=\""+column.headerAlign+"\"";
+  if (column.headerAlign) {
+    column.headerAlign = column.headerAlign;
   } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-    headerAlign = "\n          header-align=\"center\"";
+    column.headerAlign = "center";
+  } else {
+    column.headerAlign = "center";
+  }
+  if (column.showOverflowTooltip == null) {
+    column.showOverflowTooltip = true;
   }
 #><#
   if (column.isImg) {
@@ -1279,6 +1226,26 @@ for (let i = 0; i < columns.length; i++) {
     if (column.width) {
     #>
     width: <#=column.width#>,<#
+    }
+    #><#
+    if (column.minWidth) {
+    #>
+    minWidth: <#=column.minWidth#>,<#
+    }
+    #><#
+    if (column.sortable) {
+    #>
+    sortable: "custom",<#
+    }
+    #><#
+    if (column.align) {
+    #>
+    align: "<#=column.align#>",<#
+    }
+    #><#
+    if (column.headerAlign) {
+    #>
+    headerAlign: "<#=column.headerAlign#>",<#
     }
     #>
   },<#
@@ -1291,6 +1258,26 @@ for (let i = 0; i < columns.length; i++) {
     #>
     width: <#=column.width#>,<#
     }
+    #><#
+    if (column.minWidth) {
+    #>
+    minWidth: <#=column.minWidth#>,<#
+    }
+    #><#
+    if (column.sortable) {
+    #>
+    sortable: "custom",<#
+    }
+    #><#
+    if (column.align) {
+    #>
+    align: "<#=column.align#>",<#
+    }
+    #><#
+    if (column.headerAlign) {
+    #>
+    headerAlign: "<#=column.headerAlign#>",<#
+    }
     #>
   },<#
   } else if (!foreignKey && selectList.length === 0) {
@@ -1302,6 +1289,31 @@ for (let i = 0; i < columns.length; i++) {
     #>
     width: <#=column.width#>,<#
     }
+    #><#
+    if (column.minWidth) {
+    #>
+    minWidth: <#=column.minWidth#>,<#
+    }
+    #><#
+    if (column.sortable) {
+    #>
+    sortable: "custom",<#
+    }
+    #><#
+    if (column.align) {
+    #>
+    align: "<#=column.align#>",<#
+    }
+    #><#
+    if (column.headerAlign) {
+    #>
+    headerAlign: "<#=column.headerAlign#>",<#
+    }
+    #><#
+    if (column.showOverflowTooltip != null) {
+    #>
+    showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
+    }
     #>
   },<#
   } else if (selectList.length > 0 || foreignKey) {
@@ -1312,6 +1324,31 @@ for (let i = 0; i < columns.length; i++) {
     if (column.width) {
     #>
     width: <#=column.width#>,<#
+    }
+    #><#
+    if (column.minWidth) {
+    #>
+    minWidth: <#=column.minWidth#>,<#
+    }
+    #><#
+    if (column.sortable) {
+    #>
+    sortable: "custom",<#
+    }
+    #><#
+    if (column.align) {
+    #>
+    align: "<#=column.align#>",<#
+    }
+    #><#
+    if (column.headerAlign) {
+    #>
+    headerAlign: "<#=column.headerAlign#>",<#
+    }
+    #><#
+    if (column.showOverflowTooltip != null) {
+    #>
+    showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
     }
     #>
   },<#
