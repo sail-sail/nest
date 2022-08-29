@@ -508,6 +508,7 @@ export type OptionSearch = {
   valLike?: InputMaybe<Scalars['String']>;
 };
 
+/** 分页输入 */
 export type PageInput = {
   orderBy?: InputMaybe<Scalars['String']>;
   orderDec?: InputMaybe<Scalars['Boolean']>;
@@ -902,6 +903,7 @@ export type RoleSearch = {
   remLike?: InputMaybe<Scalars['String']>;
 };
 
+/** 排序输入 */
 export type SortInput = {
   order?: InputMaybe<SortOrderEnum>;
   prop?: InputMaybe<Scalars['String']>;
