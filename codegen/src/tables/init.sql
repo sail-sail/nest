@@ -173,8 +173,8 @@ drop table if exists `option`;
 CREATE TABLE if not exists `option` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
-  `key` varchar(50) NOT NULL DEFAULT '' COMMENT '键',
-  `value` varchar(255) NOT NULL DEFAULT '' COMMENT '值',
+  `ky` varchar(50) NOT NULL DEFAULT '' COMMENT '键',
+  `val` varchar(255) NOT NULL DEFAULT '' COMMENT '值',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -183,7 +183,7 @@ CREATE TABLE if not exists `option` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '删除',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`key`, `tenant_id`),
+  INDEX (`ky`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='选项';
 
