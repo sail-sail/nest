@@ -76,9 +76,8 @@ lvl++;
 <style lang="scss" scoped>
 .top_menu_item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
   padding-top: 0;
   padding-bottom: 0;
   height: 40px;

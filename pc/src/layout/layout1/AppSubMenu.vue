@@ -25,7 +25,7 @@
     v-else
     :index="item.id"
     :route="{ path: item.route_path }"
-    :class="{ top_menu_item: lvl === 0 }"
+    :class="{ top_menu_item: lvl === 1 }"
   >
     <el-icon v-if="lvl > 0">
       <Document/>
@@ -84,9 +84,8 @@ lvl++;
 <style lang="scss" scoped>
 .top_menu_item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
   padding-top: 0;
   padding-bottom: 0;
   height: 40px;
