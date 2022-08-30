@@ -9,25 +9,42 @@
   @mouseleave="imgMouseleave"
 >
   <el-image
-  v-bind="$attrs"
+    v-bind="$attrs"
     :src="urlList[nowIndex]"
   >
     <template #placeholder>
-      <el-icon style="font-size: inherit;" color="gray">
+      <el-icon color="gray">
         <Loading></Loading>
       </el-icon>
     </template>
     <template #error>
-      <el-icon style="font-size: inherit;" color="gray">
-        <Loading v-if="indexStore.loading > 0"></Loading>
-        <Picture v-else></Picture>
-      </el-icon>
+      <div
+        w="full"
+        h="full"
+        flex="~ [1_0_0] col"
+        overflow-hidden
+        justify-center
+        items-center
+      >
+        <el-icon v-if="indexStore.loading > 0" color="gray">
+          <Loading></Loading>
+        </el-icon>
+        <el-icon v-else color="red" :size="35">
+          <Picture></Picture>
+        </el-icon>
+      </div>
     </template>
   </el-image>
   <transition name="fade">
     <div v-if="showUpload" class="upload_div">
       <div class="upload_toolbar">
-        <el-button @click="uploadClk">上传</el-button>
+        <el-button
+          type="primary"
+          plain
+          @click="uploadClk"
+        >
+          上传
+        </el-button>
         <el-button v-if="urlList.length > 0" plain type="danger" @click="deleteClk">删除</el-button>
       </div>
       <div class="upload_padding" v-if="urlList.length > 0">

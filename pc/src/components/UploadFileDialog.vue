@@ -38,7 +38,7 @@
               </span>
             </template>
             <template v-else>
-              <el-icon :size="33">
+              <el-icon>
                 <Plus />
               </el-icon>
             </template>
