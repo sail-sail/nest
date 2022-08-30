@@ -443,7 +443,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         height="100%"
         row-key="id"
         ref="tableRef"
-        :empty-text="inited ? '加载中...' : undefined"
+        :empty-text="inited ? undefined : '加载中...'"
         @sort-change="sortChange"
         :default-sort="sort"<#
         if (hasSummary) {
