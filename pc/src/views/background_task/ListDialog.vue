@@ -4,7 +4,7 @@
   v-model="dialogVisible"
   append-to-body
   :close-on-click-modal="false"
-  custom-class="custom_dialog background_task_ListDialog"
+  class="custom_dialog background_task_ListDialog"
   top="0"
   :before-close="beforeClose"
 >

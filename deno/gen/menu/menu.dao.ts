@@ -1,16 +1,23 @@
 // deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars require-await
 import { type Context } from "/lib/context.ts";
-import { shortUuidV4 } from "/lib/string_util.ts";
-import { isNotEmpty, isEmpty, sqlLike } from "/lib/string_util.ts";
+
+import {
+  isNotEmpty,
+  isEmpty,
+  sqlLike,
+  shortUuidV4,
+} from "/lib/util/string_util.ts";
+
 import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
+
 import {
   many2manyUpdate,
   setModelIds,
   type SearchExtra,
-} from "/lib/dao_util.ts";
+} from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,

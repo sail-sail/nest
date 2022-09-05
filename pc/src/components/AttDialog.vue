@@ -4,7 +4,7 @@
   v-model="dialogVisible"
   append-to-body
   :close-on-click-modal="false"
-  :custom-class="'custom_dialog AttDialog'"
+  :class="'custom_dialog AttDialog'"
   top="0"
   :before-close="beforeClose"
 >

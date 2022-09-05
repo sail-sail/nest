@@ -1,5 +1,5 @@
 import { Context } from "/lib/context.ts";
-import { shortUuidV4 } from "/lib/string_util.ts";
+import { shortUuidV4 } from "/lib/util/string_util.ts";
 import { create, updateById } from "/gen/background_task/background_task.dao.ts";
 import dayjs from "dayjs";
 

@@ -1,7 +1,7 @@
 import { FormDataFile } from "oak";
 import { S3 } from "S3";
 import { getEnv } from "/lib/env.ts";
-import { shortUuidV4 } from "/lib/string_util.ts";
+import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 async function getBucket() {
   const s3 = new S3({

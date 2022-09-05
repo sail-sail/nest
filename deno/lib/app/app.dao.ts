@@ -1,4 +1,4 @@
-import { shortUuidV4 } from "/lib/string_util.ts";
+import { shortUuidV4 } from "/lib/util/string_util.ts";
 import { Context } from "/lib/context.ts";
 
 export function generateId(

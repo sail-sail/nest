@@ -1,8 +1,8 @@
 import "/lib/env.ts";
-import "/lib/date_util.ts";
+import "/lib/util/date_util.ts";
 import { getEnv } from "/lib/env.ts";
 import { initApp } from "/lib/oak/mod.ts";
-import { logInit } from "/lib/log.ts";
+import { logInit } from "/lib/util/log.ts";
 
 import "/lib/graphql.ts";
 

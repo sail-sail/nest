@@ -1580,6 +1580,11 @@ async function openAdd() {
       }
       #>
     ]);
+    selectedIds = tableData.filter(
+      (item) => changedIds.includes(item.id)
+    ).map(
+      (item) => item.id
+    );
   }
 }<#
   if (opts.noImport !== true) {
@@ -1642,6 +1647,11 @@ async function openEdit() {
       }
       #>
     ]);
+    selectedIds = tableData.filter(
+      (item) => changedIds.includes(item.id)
+    ).map(
+      (item) => item.id
+    );
   }
 }<#
 }

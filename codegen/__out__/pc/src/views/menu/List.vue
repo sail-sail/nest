@@ -831,6 +831,11 @@ async function openAdd() {
     await Promise.all([
       dataGrid(true),
     ]);
+    selectedIds = tableData.filter(
+      (item) => changedIds.includes(item.id)
+    ).map(
+      (item) => item.id
+    );
   }
 }
 
@@ -880,6 +885,11 @@ async function openEdit() {
     await Promise.all([
       dataGrid(),
     ]);
+    selectedIds = tableData.filter(
+      (item) => changedIds.includes(item.id)
+    ).map(
+      (item) => item.id
+    );
   }
 }
 

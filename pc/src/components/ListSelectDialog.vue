@@ -4,7 +4,7 @@
   v-model="dialogVisible"
   append-to-body
   :close-on-click-modal="false"
-  :custom-class="'custom_dialog ListSelectDialog'"
+  :class="'custom_dialog ListSelectDialog'"
   top="0"
   :before-close="beforeClose"
 >

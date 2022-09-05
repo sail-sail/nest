@@ -1,5 +1,7 @@
 import { type Context } from "/lib/context.ts";
-import { type SearchExtra } from "/lib/dao_util.ts";
+import {
+  type SearchExtra,
+} from "/lib/util/dao_util.ts";
 
 import * as menuService from "./menu.service.ts";
 

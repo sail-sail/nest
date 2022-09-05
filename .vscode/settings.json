@@ -21,7 +21,8 @@
     "uni/dist/**": true,
     "**/.rsw": true,
     "**/@rsw": true,
-    "web": true
+    "web": true,
+    "**/__unconfig_vite.config.ts": true
   },
   "search.exclude": {
     "**/.git": true,

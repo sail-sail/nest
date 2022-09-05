@@ -6,7 +6,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { type Context } from "/lib/context.ts";
-import { type SearchExtra } from "/lib/dao_util.ts";
+import {
+  type SearchExtra,
+} from "/lib/util/dao_util.ts";
 
 import * as <#=table#>Service from "./<#=table#>.service.ts";
 
