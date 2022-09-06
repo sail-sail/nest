@@ -1,6 +1,7 @@
 import {
   type Ref,
   watch,
+  nextTick,
 } from "vue";
 import {
   type ElTable,
@@ -57,14 +58,18 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
       }
     }
     if (newSelectList.length > 0) {
-      for (let i = 0; i < newSelectList.length; i++) {
-        const item = newSelectList[i];
-        tableRef.value.toggleRowSelection(item, true);
-      }
-      for (let i = 0; i < select2falseList.length; i++) {
-        const item = select2falseList[i];
-        tableRef.value.toggleRowSelection(item, false);
-      }
+      const selectFn = function() {
+        for (let i = 0; i < newSelectList.length; i++) {
+          const item = newSelectList[i];
+          tableRef.value.toggleRowSelection(item, true);
+        }
+        for (let i = 0; i < select2falseList.length; i++) {
+          const item = select2falseList[i];
+          tableRef.value.toggleRowSelection(item, false);
+        }
+      };
+      selectFn();
+      nextTick(selectFn);
     } else {
       tableRef.value.clearSelection();
     }

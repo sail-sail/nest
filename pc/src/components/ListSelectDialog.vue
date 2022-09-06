@@ -20,11 +20,25 @@
       </el-icon>
     </div>
   </template>
-  <div class="flex-1 flex-shrink-0 overflow-hidden flex flex-col">
-    <div class="flex-1 flex-shrink-0 overflow-auto justify-start items-center flex flex-col p-0">
+  <div
+    flex="~ [1_0_0] col basis-[inherit]"
+    overflow-hidden
+  >
+    <div
+      flex="~ [1_0_0] col basis-[inherit]"
+      overflow-auto
+      p="0"
+      justify-start
+      items-center
+    >
       <slot :selectedIds="selectedIds"></slot>
     </div>
-    <div class="py-2 flex justify-center items-center">
+    <div
+      p="y-2.5"
+      flex
+      justify-center
+      items-center
+    >
       <el-button
         :icon="CircleClose"
         @click="cancelClk"
@@ -90,6 +104,7 @@ async function showDialog(
   },
 ) {
   inited = false;
+  dialogVisible = true;
   const title = arg?.title;
   const action = arg?.action;
   dialogAction = action || "select";
@@ -97,17 +112,20 @@ async function showDialog(
     dialogTitle = title;
   }
   if (arg?.selectedIds) {
-    selectedIds = [ ...arg.selectedIds ];
-    oldSelectedIds = [ ...arg.selectedIds ];
+    selectedIds = [
+      ...arg.selectedIds,
+    ];
+    oldSelectedIds = [
+      ...arg.selectedIds,
+    ];
   } else {
     selectedIds = [ ];
     oldSelectedIds = [ ];
   }
-  dialogVisible = true;
   inited = true;
   const reslut = await new Promise<{
     action: "select" | "close" | "cancel";
-    selectedIds: string[]|undefined;
+    selectedIds: string[] | undefined;
   }>(function(resolve) {
     onCloseResolve = resolve;
   });
@@ -148,33 +166,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
 
 defineExpose({ showDialog, selectedIdsChg });
 </script>
-
-<style lang="scss" scoped>
-.wrap_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  flex-basis: inherit;
-}
-.content_div {
-  flex: 1 0 0;
-  overflow: auto;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px;
-  flex-basis: inherit;
-}
-.toolbox_div {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>
 
 <style>
 .el-dialog.ListSelectDialog {

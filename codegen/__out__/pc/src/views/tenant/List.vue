@@ -386,8 +386,14 @@
       ></el-pagination>
     </div>
   </div>
-  <ListSelectDialog ref="menu_idsListSelectDialogRef" v-slot="{ selectedIds }">
-    <MenuList :selectedIds="selectedIds" @selectedIdsChg="menu_idsListSelectDialogRef && menu_idsListSelectDialogRef.selectedIdsChg($event)"></MenuList>
+  <ListSelectDialog
+    ref="menu_idsListSelectDialogRef"
+    v-slot="{ selectedIds }"
+  >
+    <MenuList
+      :selectedIds="selectedIds"
+      @selectedIdsChg="menu_idsListSelectDialogRef?.selectedIdsChg($event)"
+    ></MenuList>
   </ListSelectDialog>
   <Detail
     ref="detailRef"

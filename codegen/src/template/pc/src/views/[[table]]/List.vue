@@ -654,8 +654,14 @@ const Table_Up = tableUp.split("_").map(function(item) {
   #><#
     if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
   #>
-  <ListSelectDialog ref="<#=column_name#>ListSelectDialogRef" v-slot="{ selectedIds }">
-    <<#=foreignTableUp#>List :selectedIds="selectedIds" @selectedIdsChg="<#=column_name#>ListSelectDialogRef && <#=column_name#>ListSelectDialogRef.selectedIdsChg($event)"></<#=foreignTableUp#>List>
+  <ListSelectDialog
+    ref="<#=column_name#>ListSelectDialogRef"
+    v-slot="{ selectedIds }"
+  >
+    <<#=foreignTableUp#>List
+      :selectedIds="selectedIds"
+      @selectedIdsChg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
+    ></<#=foreignTableUp#>List>
   </ListSelectDialog><#
     }
   #><#
