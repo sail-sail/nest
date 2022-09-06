@@ -632,7 +632,7 @@ export class Context {
     args?: any[]|QueryArgs,
     opt?: {
       debug?: boolean,
-      // logResult?: boolean,
+      logResult?: boolean,
     },
   ): Promise<ExecuteResult> {
     if (args instanceof QueryArgs) {
@@ -656,15 +656,15 @@ export class Context {
       }
     } catch (err) {
       if (err.code === "EHOSTUNREACH") {
-        err.message = "连接数据库失败!";
+        this.error(err);
+        throw "连接数据库失败!";
       }
       throw err;
     }
-    const result2 = result[0];
-    // if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
-    //   t.log(result2);
-    // }
-    return result2;
+    if (!opt || opt.logResult !== false) {
+      this.log(result);
+    }
+    return result;
   }
   
 }
