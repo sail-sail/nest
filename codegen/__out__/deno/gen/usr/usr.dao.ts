@@ -181,7 +181,7 @@ export async function findAll(
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select t.*
         ,max(role_ids) role_ids
         ,max(_role_ids) _role_ids
@@ -341,29 +341,28 @@ export async function checkByUnique(
 /**
  * 根据条件查找第一条数据
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
- * @return {Promise<UsrModel>} 
  */
 export async function findOne(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
-): Promise<UsrModel> {
+) {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const [ model ] = await findAll(context, search, page);
+  const result = await findAll(context, search, page);
+  const model: UsrModel | undefined = result[0];
   return model;
 }
 
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<UsrModel>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<UsrModel | undefined> {
+) {
   if (!id) return;
   const model = await findOne(context, { id });
   return model;
@@ -372,12 +371,11 @@ export async function findById(
 /**
  * 根据搜索条件判断数据是否存在
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
- * @return {Promise<boolean>} 
  */
 export async function exist(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
-): Promise<boolean> {
+) {
   const model = await findOne(context, search);
   const exist = !!model;
   return exist;
@@ -390,7 +388,7 @@ export async function exist(
 export async function existById(
   context: Context,
   id: string,
-): Promise<boolean> {
+) {
   const table = "usr";
   const method = "existById";
   

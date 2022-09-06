@@ -309,7 +309,7 @@ export async function findAll(
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -671,29 +671,28 @@ export async function findSummary(
 /**
  * 根据条件查找第一条数据
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
- * @return {Promise<<#=Table_Up#>Model>} 
  */
 export async function findOne(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
-): Promise<<#=Table_Up#>Model> {
+) {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const [ model ] = await findAll(context, search, page);
+  const result = await findAll(context, search, page);
+  const model: <#=Table_Up#>Model | undefined = result[0];
   return model;
 }
 
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<<#=Table_Up#>Model>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<<#=Table_Up#>Model | undefined> {
+) {
   if (!id) return;
   const model = await findOne(context, { id });
   return model;
@@ -702,12 +701,11 @@ export async function findById(
 /**
  * 根据搜索条件判断数据是否存在
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
- * @return {Promise<boolean>} 
  */
 export async function exist(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
-): Promise<boolean> {
+) {
   const model = await findOne(context, search);
   const exist = !!model;
   return exist;
@@ -720,7 +718,7 @@ export async function exist(
 export async function existById(
   context: Context,
   id: string,
-): Promise<boolean> {
+) {
   const table = "<#=table#>";
   const method = "existById";
   

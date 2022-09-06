@@ -55,25 +55,23 @@ export async function findAll(
 /**
  * 根据条件查找第一条数据
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
- * @return {Promise<UsrModel>} 
  */
 export async function findOne(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
-): Promise<UsrModel> {
-  const result = await usrDao.findOne(context, search);
+) {
+  const result: UsrModel | undefined = await usrDao.findOne(context, search);
   return result;
 }
 
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<UsrModel>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<UsrModel | undefined> {
+) {
   const result = await usrDao.findById(context, id);
   return result;
 }
@@ -81,12 +79,11 @@ export async function findById(
 /**
  * 根据搜索条件判断数据是否存在
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
- * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
-): Promise<boolean> {
+) {
   const result = await usrDao.exist(context, search);
   return result;
 }
@@ -94,12 +91,11 @@ export async function exist(
 /**
  * 根据id查找数据是否存在
  * @param {string} id
- * @return {Promise<boolean>}
  */
 export async function existById(
   context: Context,
   id: string,
-): Promise<boolean> {
+) {
   const result = await usrDao.existById(context, id);
   return result;
 }

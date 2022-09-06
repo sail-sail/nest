@@ -94,25 +94,23 @@ export async function findSummary(
 /**
  * 根据条件查找第一条数据
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
- * @return {Promise<<#=Table_Up#>Model>} 
  */
 export async function findOne(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
-): Promise<<#=Table_Up#>Model> {
-  const result = await <#=table#>Dao.findOne(context, search);
+) {
+  const result: <#=Table_Up#>Model | undefined = await <#=table#>Dao.findOne(context, search);
   return result;
 }
 
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<<#=Table_Up#>Model>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<<#=Table_Up#>Model | undefined> {
+) {
   const result = await <#=table#>Dao.findById(context, id);
   return result;
 }
@@ -120,12 +118,11 @@ export async function findById(
 /**
  * 根据搜索条件判断数据是否存在
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
- * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
-): Promise<boolean> {
+) {
   const result = await <#=table#>Dao.exist(context, search);
   return result;
 }
@@ -133,12 +130,11 @@ export async function exist(
 /**
  * 根据id查找数据是否存在
  * @param {string} id
- * @return {Promise<boolean>}
  */
 export async function existById(
   context: Context,
   id: string,
-): Promise<boolean> {
+) {
   const result = await <#=table#>Dao.existById(context, id);
   return result;
 }

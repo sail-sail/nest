@@ -61,25 +61,23 @@ export async function findAll(
 /**
  * 根据条件查找第一条数据
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
- * @return {Promise<Background_TaskModel>} 
  */
 export async function findOne(
   context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
-): Promise<Background_TaskModel> {
-  const result = await background_taskDao.findOne(context, search);
+) {
+  const result: Background_TaskModel | undefined = await background_taskDao.findOne(context, search);
   return result;
 }
 
 /**
  * 根据id查找数据
  * @param {string} id
- * @return {Promise<Background_TaskModel>}
  */
 export async function findById(
   context: Context,
   id?: string,
-): Promise<Background_TaskModel | undefined> {
+) {
   const result = await background_taskDao.findById(context, id);
   return result;
 }
@@ -87,12 +85,11 @@ export async function findById(
 /**
  * 根据搜索条件判断数据是否存在
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
- * @return {Promise<boolean>}
  */
 export async function exist(
   context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
-): Promise<boolean> {
+) {
   const result = await background_taskDao.exist(context, search);
   return result;
 }
@@ -100,12 +97,11 @@ export async function exist(
 /**
  * 根据id查找数据是否存在
  * @param {string} id
- * @return {Promise<boolean>}
  */
 export async function existById(
   context: Context,
   id: string,
-): Promise<boolean> {
+) {
   const result = await background_taskDao.existById(context, id);
   return result;
 }
