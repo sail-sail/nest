@@ -718,7 +718,7 @@ export async function deleteByIds(
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
     const id = ids[i];
-    const sql = `
+    const sql = /*sql*/ `
       update
         usr
       set
@@ -756,7 +756,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       update
         usr
       set
