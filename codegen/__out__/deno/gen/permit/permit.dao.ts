@@ -212,8 +212,14 @@ export async function findByUnique(
   context: Context,
   search0: PermitSearch & { $extra?: SearchExtra[] } | Partial<PermitModel>,
 ) {
+  if (search0.id) {
+    const model = await findOne(context, { id: search0.id });
+    return model;
+  }
   const { uniqueKeys } = getUniqueKeys(context);
-  if (!uniqueKeys || uniqueKeys.length === 0) return;
+  if (!uniqueKeys || uniqueKeys.length === 0) {
+    return;
+  }
   const search: PermitSearch & { $extra?: SearchExtra[] } = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
