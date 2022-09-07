@@ -1,7 +1,7 @@
 <template>
 <view class="content">
   <view class="text-area">
-    <text class="title text-blue-400">{{ title }}</text>
+    <text class="title text-#0FF">{{ title }}</text>
   </view>
   <AppLoading></AppLoading>
 </view>

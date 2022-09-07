@@ -3,7 +3,7 @@ import uni from "@dcloudio/vite-plugin-uni";
 
 import Unocss from "unocss/vite";
 import {
-  presetAttributify,
+  // presetAttributify,
   presetIcons,
   presetUno,
   transformerDirectives,
@@ -30,7 +30,7 @@ export default defineConfig({
     Unocss({
       presets: [
         presetUno(),
-        presetAttributify(),
+        // presetAttributify(),
         presetIcons({
           warn: true,
         }),
