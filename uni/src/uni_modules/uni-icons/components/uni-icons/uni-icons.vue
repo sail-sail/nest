@@ -4,7 +4,7 @@
 	<!-- #endif -->
 	<!-- #ifndef APP-NVUE -->
 	<text :style="{ color: color, 'font-size': iconSize }" class="uni-icons" :class="['uniui-'+type,customPrefix,customPrefix?type:'']" @click="_onClick"></text>
-  <!-- #endif -->
+	<!-- #endif -->
 </template>
 
 <script>
