@@ -24,32 +24,41 @@
         v-if="!dialogModel.readonly && urlList.length > 0"
         type="primary"
         @click="uploadClk"
-        :icon="Upload"
       >
-        上传
+        <template #icon>
+          <Upload/>
+        </template>
+        <span>上传</span>
       </el-button>
       <el-button
         v-if="urlList[nowIndex] && !dialogModel.readonly"
-        type="danger"
         plain
+        type="danger"
         @click="deleteClk"
-        :icon="Delete"
       >
-        删除
+        <template #icon>
+          <Delete/>
+        </template>
+        <span>删除</span>
       </el-button>
       <el-button
         v-if="urlList[nowIndex]"
+        plain
         @click="downloadClk"
-        :icon="Download"
       >
-        下载
+        <template #icon>
+          <Download/>
+        </template>
+        <span>下载</span>
       </el-button>
       <el-button
         v-if="urlList[nowIndex]"
         @click="printClk"
-        :icon="Printer"
       >
-        打印
+        <template #icon>
+          <Printer/>
+        </template>
+        <span>打印</span>
       </el-button>
       <a
         v-if="urlList[nowIndex]"
@@ -64,21 +73,30 @@
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === 0"
         @click="moveLeftClk"
-        :icon="ArrowLeft"
       >
-        前移
+        <template #icon>
+          <ArrowLeft/>
+        </template>
+        <span>前移</span>
       </el-button>
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === urlList.length - 1"
         @click="moveRightClk"
-        :icon="ArrowRight"
       >
-        后移
+        <template #icon>
+          <ArrowRight/>
+        </template>
+        <span>后移</span>
       </el-button>
-      <div class="flex-1 flex-shrink-0">
+      <div
+        flex="[1_0_0]"
+      >
       </div>
-      <div class="mr-3" v-if="urlList[nowIndex]">
+      <div
+        m="r-3"
+        v-if="urlList[nowIndex]"
+      >
         <el-color-picker
           v-model="backgroundColor"
           show-alpha
@@ -104,9 +122,11 @@
           v-if="!dialogModel.readonly && urlList.length === 0"
           type="primary"
           @click="uploadClk"
-          :icon="Upload"
         >
-          上传
+          <template #icon>
+            <Upload/>
+          </template>
+          <span>上传</span>
         </el-button>
         <div v-else-if="!dialogModel.readonly" class="empty">
           <span>(暂无附件)</span>
@@ -121,18 +141,24 @@
         <el-button
           :disabled="nowIndex <= 0"
           size="small"
-          :icon="ArrowLeft"
           @click="previousClk"
-        ></el-button>
+        >
+          <template #icon>
+            <ArrowLeft/>
+          </template>
+        </el-button>
         <span class="pagination_span">
           {{ nowIndex + 1 }} / {{ urlList.length }}
         </span>
         <el-button
           :disabled="nowIndex >= urlList.length - 1"
           size="small"
-          :icon="ArrowRight"
           @click="nextClk"
-        ></el-button>
+        >
+          <template #icon>
+            <ArrowRight/>
+          </template>
+        </el-button>
       </div>
     </div>
   </div>

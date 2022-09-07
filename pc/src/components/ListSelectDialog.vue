@@ -15,7 +15,10 @@
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
         <FullScreen/>
       </el-icon>
     </div>
@@ -40,24 +43,30 @@
       items-center
     >
       <el-button
-        :icon="CircleClose"
         @click="cancelClk"
       >
-        取消
+        <template #icon>
+          <CircleClose/>
+        </template>
+        <span>取消</span>
       </el-button>
       <el-button
-        :icon="Refresh"
         class="mx-1"
         @click="revertClk"
       >
-        还原
+        <template #icon>
+          <Refresh/>
+        </template>
+        <span>还原</span>
       </el-button>
       <el-button
         type="primary"
-        :icon="CircleCheck"
         @click="saveClk"
       >
-        确定
+        <template #icon>
+          <CircleCheck/>
+        </template>
+        <span>确定</span>
       </el-button>
     </div>
   </div>

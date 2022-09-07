@@ -51,18 +51,24 @@
         <el-button
           :disabled="nowIndex <= 0"
           size="small"
-          :icon="ArrowLeft"
           @click="previousClk"
-        ></el-button>
+        >
+          <template #icon>
+            <ArrowLeft/>
+          </template>
+        </el-button>
         <span style="color: yellowgreen;margin-left: 10px;margin-right: 10px;">
           {{ nowIndex + 1 }} / {{ urlList.length }}
         </span>
         <el-button
           :disabled="nowIndex >= urlList.length - 1"
           size="small"
-          :icon="ArrowRight"
           @click="nextClk"
-        ></el-button>
+        >
+          <template #icon>
+            <ArrowRight/>
+          </template>
+        </el-button>
       </div>
     </div>
   </transition>

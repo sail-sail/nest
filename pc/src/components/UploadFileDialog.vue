@@ -51,8 +51,8 @@
           </label>
           <div class="form_input">
             <el-button
-              type="primary"
               plain
+              type="primary"
             >
               导入模板下载
             </el-button>
@@ -63,18 +63,22 @@
     </div>
     <div class="toolbox_div">
       <el-button
-        :icon="CircleClose"
         @click="cancelClk"
       >
-        取消
+        <template #icon>
+          <CircleClose/>
+        </template>
+        <span>取消</span>
       </el-button>
       <el-button
-        :icon="CircleCheck"
         type="primary"
         @click="confirmClk"
         :disabled="!fileInfo.name"
       >
-        确定导入
+        <template #icon>
+          <CircleCheck/>
+        </template>
+        <span>确定导入</span>
       </el-button>
     </div>
   </div>

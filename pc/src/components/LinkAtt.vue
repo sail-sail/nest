@@ -4,7 +4,10 @@
     {{ attLen }}
   </slot>
 </el-link>
-<AttDialog ref="attDialogRef" @change="attDialogChg"></AttDialog>
+<AttDialog
+  ref="attDialogRef"
+  @change="attDialogChg"
+></AttDialog>
 </template>
 
 <script lang="ts" setup>
