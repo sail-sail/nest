@@ -6,11 +6,11 @@ import { uniLogin } from "@/utils/request";
 import useIndexStore from "@/store/index";
 import useUsrStore from "@/store/usr";
 
-onLaunch(<any>(async(options: any) => {
+onLaunch((async(options: any) => {
   const indexStore = useIndexStore();
   const usrStore = useUsrStore();
   indexStore.setLaunchOptions(options);
-  let _uid: string|undefined = undefined;
+  let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({
       key: "_uid"
