@@ -27,13 +27,13 @@ export default defineStore("index", function() {
     uid = uid0;
   }
   
-  return {
-    loading: $$(loading),
-    launchOptions: $$(launchOptions),
-    uid: $$(uid),
+  return $$({
+    loading,
+    launchOptions,
+    uid,
     addLoading,
     minusLoading,
     setLaunchOptions,
     setUid,
-  };
+  });
 });

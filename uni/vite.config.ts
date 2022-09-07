@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
 
-import uniTwuCssPlugin from "./src/utils/vite-plugin-uni-twucss.js";
 import Unocss from "unocss/vite";
 import {
   presetAttributify,
@@ -10,6 +9,8 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from "unocss";
+
+import uniTwuCssPlugin from "./src/utils/vite-plugin-uni-twucss.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({

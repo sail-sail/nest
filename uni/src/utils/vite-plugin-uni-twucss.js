@@ -202,7 +202,8 @@ function updateWXCode(match) {
 			!match1.includes("user-") &&
 			!match1.includes("loop") &&
 			!match1.includes("preview") &&
-			!match1.includes("selectable")
+			!match1.includes("selectable") &&
+			!match1.includes("maxlength")
 		) {
 			match1 = match1.replace(/\s/, "");
 			return " data-css-" + match1;
@@ -230,7 +231,8 @@ function updateWXCode(match) {
 				!match2.includes("mode=") &&
 				!match2.includes("module=") &&
 				!match2.includes("muted=") &&
-				!match2.includes("preview=")
+				!match2.includes("preview=") &&
+				!match1.includes("maxlength")
 			) {
 				return `data-css-${match2}='${match2}'`;
 			}
@@ -300,7 +302,6 @@ function rewriteStyleCss(styleCss) {
 			// 匹配--un-bg-opacity:1;中的1
 			let matchCss = repCss.match(cssReg1);
 			if (matchCss) {
-				//console.log(matchCss)
 				if (
 					// opacity默认是1，不是1的基本是另写覆盖的
 					!matchCss.every((item) => {
@@ -423,8 +424,30 @@ function rewriteStyleCss(styleCss) {
 	styleCss = styleCss.replace(cssReg1, "");
 
 
-
+	//nvue环境下，将tailwindcss的rgb转成rgba
+	if (sourcePreFix === "--tw") {
+		styleCss.replace(/(?<=color:).*\)/gm, (match) => {
+			styleCss = styleCss.replace(match, rgbToRgba(match));
+		});
+	}
 	return styleCss;
+}
+
+// rgb转rgba
+function rgbToRgba(color) {
+	let r, g, b, a = 1;
+	let rgbaAttr = color.match(/[\d.]+/g);
+
+	if (rgbaAttr.length >= 3) {
+		let r, g, b;
+		r = rgbaAttr[0];
+		g = rgbaAttr[1];
+		b = rgbaAttr[2];
+		if (rgbaAttr[3]) {
+			a = rgbaAttr[3];
+		}
+		return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+	}
 }
 
 module.exports = uniTwuCssPlugin;
