@@ -75,7 +75,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`permit\` t
     left join menu _menu_id
       on _menu_id.id = t.menu_id
@@ -96,7 +96,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -344,8 +344,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from permit where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      permit
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -406,7 +412,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into permit(
       id
       ,create_time
@@ -524,31 +530,38 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update permit set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.menu_id !== undefined) {
+    if (model.menu_id != oldModel?.menu_id) {
+      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.menu_id !== undefined) {
-    if (model.menu_id != oldModel?.menu_id) {
-      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
-    }
-  }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   

@@ -116,7 +116,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`background_task\` t
     left join usr _create_usr_id
       on _create_usr_id.id = t.create_usr_id
@@ -137,7 +137,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -407,8 +407,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from background_task where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      background_task
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   interface Result {
@@ -485,7 +491,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into background_task(
       id
       ,create_time
@@ -643,56 +649,68 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update background_task set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.state !== undefined) {
+    if (model.state != oldModel?.state) {
+      sql += `,\`state\` = ${ args.push(model.state) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.type !== undefined) {
+    if (model.type != oldModel?.type) {
+      sql += `,\`type\` = ${ args.push(model.type) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.result !== undefined) {
+    if (model.result != oldModel?.result) {
+      sql += `,\`result\` = ${ args.push(model.result) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.err_msg !== undefined) {
+    if (model.err_msg != oldModel?.err_msg) {
+      sql += `,\`err_msg\` = ${ args.push(model.err_msg) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.begin_time !== undefined) {
+    if (model.begin_time != oldModel?.begin_time) {
+      sql += `,\`begin_time\` = ${ args.push(model.begin_time) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.end_time !== undefined) {
+    if (model.end_time != oldModel?.end_time) {
+      sql += `,\`end_time\` = ${ args.push(model.end_time) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.state !== undefined) {
-    if (model.state != oldModel?.state) {
-      sql += `,\`state\` = ${ args.push(model.state) }`;
-    }
-  }
-  if (model.type !== undefined) {
-    if (model.type != oldModel?.type) {
-      sql += `,\`type\` = ${ args.push(model.type) }`;
-    }
-  }
-  if (model.result !== undefined) {
-    if (model.result != oldModel?.result) {
-      sql += `,\`result\` = ${ args.push(model.result) }`;
-    }
-  }
-  if (model.err_msg !== undefined) {
-    if (model.err_msg != oldModel?.err_msg) {
-      sql += `,\`err_msg\` = ${ args.push(model.err_msg) }`;
-    }
-  }
-  if (model.begin_time !== undefined) {
-    if (model.begin_time != oldModel?.begin_time) {
-      sql += `,\`begin_time\` = ${ args.push(model.begin_time) }`;
-    }
-  }
-  if (model.end_time !== undefined) {
-    if (model.end_time != oldModel?.end_time) {
-      sql += `,\`end_time\` = ${ args.push(model.end_time) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   

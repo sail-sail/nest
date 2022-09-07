@@ -134,18 +134,22 @@
     >
       <el-button
         plain
-        :icon="CircleClose"
         @click="cancelClk"
       >
-        取消
+        <template #icon>
+          <CircleClose/>
+        </template>
+        <span>取消</span>
       </el-button>
       <el-button
-        type="primary"
         plain
-        :icon="CircleCheck"
+        type="primary"
         @click="saveClk"
       >
-        保存
+        <template #icon>
+          <CircleCheck/>
+        </template>
+        <span>保存</span>
       </el-button>
       <div
         text="[12px] [gray]"

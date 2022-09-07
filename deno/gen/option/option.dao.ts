@@ -87,7 +87,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`option\` t
   `;
   return fromQuery;
@@ -106,7 +106,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -351,8 +351,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from option where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      option
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -404,7 +410,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into option(
       id
       ,create_time
@@ -532,36 +538,44 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update option set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.ky !== undefined) {
+    if (model.ky != oldModel?.ky) {
+      sql += `,\`ky\` = ${ args.push(model.ky) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.val !== undefined) {
+    if (model.val != oldModel?.val) {
+      sql += `,\`val\` = ${ args.push(model.val) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.ky !== undefined) {
-    if (model.ky != oldModel?.ky) {
-      sql += `,\`ky\` = ${ args.push(model.ky) }`;
-    }
-  }
-  if (model.val !== undefined) {
-    if (model.val != oldModel?.val) {
-      sql += `,\`val\` = ${ args.push(model.val) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   

@@ -100,7 +100,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`menu\` t
     left join menu _menu_id
       on _menu_id.id = t.menu_id
@@ -121,7 +121,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -394,8 +394,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from menu where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      menu
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -476,7 +482,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into menu(
       id
       ,create_time
@@ -644,56 +650,68 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update menu set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.type !== undefined) {
+    if (model.type != oldModel?.type) {
+      sql += `,\`type\` = ${ args.push(model.type) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.menu_id !== undefined) {
+    if (model.menu_id != oldModel?.menu_id) {
+      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.route_path !== undefined) {
+    if (model.route_path != oldModel?.route_path) {
+      sql += `,\`route_path\` = ${ args.push(model.route_path) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.route_query !== undefined) {
+    if (model.route_query != oldModel?.route_query) {
+      sql += `,\`route_query\` = ${ args.push(model.route_query) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel?.is_enabled) {
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.order_by !== undefined) {
+    if (model.order_by != oldModel?.order_by) {
+      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.type !== undefined) {
-    if (model.type != oldModel?.type) {
-      sql += `,\`type\` = ${ args.push(model.type) }`;
-    }
-  }
-  if (model.menu_id !== undefined) {
-    if (model.menu_id != oldModel?.menu_id) {
-      sql += `,\`menu_id\` = ${ args.push(model.menu_id) }`;
-    }
-  }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.route_path !== undefined) {
-    if (model.route_path != oldModel?.route_path) {
-      sql += `,\`route_path\` = ${ args.push(model.route_path) }`;
-    }
-  }
-  if (model.route_query !== undefined) {
-    if (model.route_query != oldModel?.route_query) {
-      sql += `,\`route_query\` = ${ args.push(model.route_query) }`;
-    }
-  }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
-    }
-  }
-  if (model.order_by !== undefined) {
-    if (model.order_by != oldModel?.order_by) {
-      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   

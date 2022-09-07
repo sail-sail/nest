@@ -108,17 +108,21 @@
         <el-button
           plain
           type="primary"
-          :icon="Search"
           @click="searchClk"
         >
-          查询
+          <template #icon>
+            <Search/>
+          </template>
+          <span>查询</span>
         </el-button>
         <el-button
           plain
-          :icon="Delete"
           @click="searchReset"
         >
-          重置
+          <template #icon>
+            <Delete/>
+          </template>
+          <span>重置</span>
         </el-button>
       </el-form-item>
       
@@ -130,67 +134,83 @@
   >
     <template v-if="search.is_deleted !== 1">
       <el-button
-        type="primary"
         plain
-        :icon="CirclePlus"
+        type="primary"
         @click="openAdd"
       >
-        新增
+        <template #icon>
+          <CirclePlus/>
+        </template>
+        <span>新增</span>
       </el-button>
       <el-button
-        type="primary"
         plain
-        :icon="Edit"
+        type="primary"
         @click="openEdit"
       >
-        编辑
+        <template #icon>
+          <Edit/>
+        </template>
+        <span>编辑</span>
       </el-button>
       <el-button
-        type="danger"
         plain
-        :icon="CircleClose"
+        type="danger"
         @click="deleteByIdsEfc"
       >
-        删除
+        <template #icon>
+          <CircleClose/>
+        </template>
+        <span>删除</span>
       </el-button>
       <el-button
         plain
-        :icon="Download"
         @click="exportClk"
       >
-        导出
+        <template #icon>
+          <Download/>
+        </template>
+        <span>导出</span>
       </el-button>
       <el-button
         plain
-        :icon="Upload"
         @click="openUploadClk"
       >
-        导入
+        <template #icon>
+          <Upload/>
+        </template>
+        <span>导入</span>
       </el-button>
     </template>
     <template v-else>
       <el-button
-        type="primary"
         plain
-        :icon="CircleCheck"
+        type="primary"
         @click="revertByIdsEfc"
       >
-        还原
+        <template #icon>
+          <CircleCheck/>
+        </template>
+        <span>还原</span>
       </el-button>
       <el-button
         plain
-        :icon="Download"
         @click="exportClk"
       >
-        导出
+        <template #icon>
+          <Download/>
+        </template>
+        <span>导出</span>
       </el-button>
     </template>
     <el-button
       plain
-      :icon="Refresh"
       @click="searchClk"
     >
-      刷新
+      <template #icon>
+        <Refresh/>
+      </template>
+      <span>刷新</span>
     </el-button>
     <div
       flex="[1_0_0]"

@@ -107,7 +107,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`tenant\` t
     left join \`tenant_menu\`
       on \`tenant_menu\`.tenant_id = t.id
@@ -149,7 +149,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -411,8 +411,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from tenant where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      tenant
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -472,7 +478,7 @@ export async function create(
     }
     model._menu_ids = model._menu_ids.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -496,7 +502,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into tenant(
       id
       ,create_time
@@ -633,7 +639,7 @@ export async function updateById(
     }
     model._menu_ids = model._menu_ids.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -664,51 +670,62 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update tenant set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.host !== undefined) {
+    if (model.host != oldModel?.host) {
+      sql += `,\`host\` = ${ args.push(model.host) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.expiration !== undefined) {
+    if (model.expiration != oldModel?.expiration) {
+      sql += `,\`expiration\` = ${ args.push(model.expiration) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.max_usr_num !== undefined) {
+    if (model.max_usr_num != oldModel?.max_usr_num) {
+      sql += `,\`max_usr_num\` = ${ args.push(model.max_usr_num) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel?.is_enabled) {
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.order_by !== undefined) {
+    if (model.order_by != oldModel?.order_by) {
+      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.host !== undefined) {
-    if (model.host != oldModel?.host) {
-      sql += `,\`host\` = ${ args.push(model.host) }`;
-    }
-  }
-  if (model.expiration !== undefined) {
-    if (model.expiration != oldModel?.expiration) {
-      sql += `,\`expiration\` = ${ args.push(model.expiration) }`;
-    }
-  }
-  if (model.max_usr_num !== undefined) {
-    if (model.max_usr_num != oldModel?.max_usr_num) {
-      sql += `,\`max_usr_num\` = ${ args.push(model.max_usr_num) }`;
-    }
-  }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
-    }
-  }
-  if (model.order_by !== undefined) {
-    if (model.order_by != oldModel?.order_by) {
-      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   // 菜单

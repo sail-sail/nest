@@ -96,7 +96,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`usr\` t
     left join \`usr_role\`
       on \`usr_role\`.usr_id = t.id
@@ -138,7 +138,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -397,8 +397,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from usr where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      usr
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -458,7 +464,7 @@ export async function create(
     }
     model._role_ids = model._role_ids.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -482,7 +488,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into usr(
       id
       ,create_time
@@ -621,7 +627,7 @@ export async function updateById(
     }
     model._role_ids = model._role_ids.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -652,40 +658,49 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update usr set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.username !== undefined) {
+    if (model.username != oldModel?.username) {
+      sql += `,\`username\` = ${ args.push(model.username) }`;
+      updateFldNum++;
+    }
+  }
+  if (isNotEmpty(model.password)) {
+    sql += `,password = ?`;
+    args.push(getPassword(model.password));
+    updateFldNum++;
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel?.is_enabled) {
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.username !== undefined) {
-    if (model.username != oldModel?.username) {
-      sql += `,\`username\` = ${ args.push(model.username) }`;
-    }
-  }
-  if (isNotEmpty(model.password)) {
-    sql += `,password = ?`;
-    args.push(getPassword(model.password));
-  }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   // 角色

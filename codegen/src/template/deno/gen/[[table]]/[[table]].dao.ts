@@ -190,7 +190,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \\`<#=table#>\\` t<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -258,7 +258,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -727,8 +727,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from <#=table#> where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      <#=table#>
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;<#
   if (cache) {
   #>
@@ -846,7 +852,7 @@ export async function create(
     }
     model._<#=column_name#> = model._<#=column_name#>.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -874,7 +880,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into <#=table#>(
       id
       ,create_time
@@ -1188,7 +1194,7 @@ export async function updateById(
     }
     model._<#=column_name#> = model._<#=column_name#>.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -1223,15 +1229,10 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update <#=table#> set update_time = ${ args.push(context.getReqDate()) }
   `;
-  {
-    const authModel = await getAuthModel(context);
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
-    }
-  }<#
+  let updateFldNum = 0;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1253,6 +1254,7 @@ export async function updateById(
   if (isNotEmpty(model.<#=column_name#>)) {
     sql += `,<#=column_name#> = ?`;
     args.push(getPassword(model.<#=column_name#>));
+    updateFldNum++;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
@@ -1262,6 +1264,7 @@ export async function updateById(
     }
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
       sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
+      updateFldNum++;
     }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -1271,6 +1274,7 @@ export async function updateById(
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
       sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
+      updateFldNum++;
     }
   }<#
     } else {
@@ -1278,13 +1282,23 @@ export async function updateById(
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
       sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
+      updateFldNum++;
     }
   }<#
     }
   #><#
   }
   #>
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  if (updateFldNum === 0) {
+    return id;
+  }
+  {
+    const authModel = await getAuthModel(context);
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);<#
   for (let i = 0; i < columns.length; i++) {

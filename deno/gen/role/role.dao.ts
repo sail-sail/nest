@@ -84,7 +84,7 @@ async function getWhereQuery(
 function getFromQuery(
   context: Context,
 ) {
-  const fromQuery = `
+  const fromQuery = /*sql*/ `
     \`role\` t
     left join \`role_menu\`
       on \`role_menu\`.role_id = t.id
@@ -126,7 +126,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     select
       count(1) total
     from
@@ -383,8 +383,14 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `
-    select 1 e from role where id = ${ args.push(id) } limit 1
+  const sql = /*sql*/ `
+    select
+      1 e
+    from
+      role
+    where
+      id = ${ args.push(id) }
+    limit 1
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -444,7 +450,7 @@ export async function create(
     }
     model._menu_ids = model._menu_ids.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -468,7 +474,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     insert into role(
       id
       ,create_time
@@ -595,7 +601,7 @@ export async function updateById(
     }
     model._menu_ids = model._menu_ids.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = `
+    const sql = /*sql*/ `
       select
         t.id
       from
@@ -626,31 +632,38 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
+  let sql = /*sql*/ `
     update role set update_time = ${ args.push(context.getReqDate()) }
   `;
+  let updateFldNum = 0;
+  if (model.lbl !== undefined) {
+    if (model.lbl != oldModel?.lbl) {
+      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel?.rem) {
+      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel?.is_enabled) {
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum === 0) {
+    return id;
+  }
   {
     const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
-    }
-  }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
-    }
-  }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
-    }
-  }
-  sql += ` where id = ${ args.push(id) } limit 1`;
+  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
   
   const result = await context.execute(sql, args);
   // 菜单
