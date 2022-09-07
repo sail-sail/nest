@@ -259,6 +259,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <el-input-number
               w="full"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
               v-model="dialogModel.<#=column_name#>"
               :max="<#=max#>"
               :precision="<#=precision#>"
@@ -680,7 +681,7 @@ async function getDefaultInput() {
         } else {
           defaultValue = defaultValue;
         }
-      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
+      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint") || column_type.startsWith("decimal")) {
         defaultValue = defaultValue;
       } else {
         defaultValue = `"${ defaultValue }"`;
