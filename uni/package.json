@@ -58,6 +58,7 @@
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-3050320220729001",
     "@dcloudio/uni-stacktracey": "3.0.0-alpha-3050320220729001",
     "@dcloudio/vite-plugin-uni": "3.0.0-alpha-3050320220729001",
+    "@types/node": "18.7.15",
     "@unocss/preset-attributify": "0.45.18",
     "@vue/runtime-dom": "3.2.38",
     "eslint": "8.23.0",
