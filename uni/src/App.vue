@@ -25,17 +25,17 @@ onLaunch((async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
-  let access_token: string|undefined = undefined;
+  let authorization: string | undefined = undefined;
   try {
-    access_token = (await uni.getStorage({
-      key: "access_token"
+    authorization = (await uni.getStorage({
+      key: "authorization"
     })).data;
   } catch (err) {
   }
-  if (!access_token) {
+  if (!authorization) {
     await uniLogin();
   } else {
-    await usrStore.setAccessToken(access_token);
+    await usrStore.setAccessToken(authorization);
   }
 }));
 </script>

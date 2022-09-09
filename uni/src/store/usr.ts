@@ -1,17 +1,17 @@
 import { defineStore } from "pinia";
 
-const access_token0: string = uni.getStorageSync("access_token") || "";
+const authorization0: string = uni.getStorageSync("authorization") || "";
 
 export default defineStore("usr", function() {
   
-  let access_token = $ref(access_token0);
+  let authorization = $ref(authorization0);
   
-  async function setAccessToken(access_token1: typeof access_token) {
-    if (access_token !== access_token1) {
-      access_token = access_token1;
+  async function setAccessToken(authorization1: typeof authorization) {
+    if (authorization !== authorization1) {
+      authorization = authorization1;
       await uni.setStorage({
-        key: "access_token",
-        data: access_token1,
+        key: "authorization",
+        data: authorization1,
       });
     }
   }
@@ -23,7 +23,7 @@ export default defineStore("usr", function() {
   }
   
   return $$({
-    access_token,
+    authorization,
     showAuth,
     setAccessToken,
     setShowAuth,

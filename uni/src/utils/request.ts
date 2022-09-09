@@ -28,10 +28,10 @@ export async function uploadFile(config: {
       config.name = "file";
     }
     config.url = `${ cfg.url }/${ config.url }`;
-    const access_token = usrStore.access_token;
-    if (access_token) {
+    const authorization = usrStore.authorization;
+    if (authorization) {
       config.header = config.header || { };
-      config.header.access_token = access_token;
+      config.header.authorization = authorization;
     }
     res = <any>await uni.uploadFile(<any>config);
     if (res.data) {
@@ -55,8 +55,8 @@ export async function uploadFile(config: {
     }
   }
   const header = res.header || { };
-  if (header["access_token"]) {
-    await usrStore.setAccessToken(header["access_token"]);
+  if (header["authorization"]) {
+    await usrStore.setAccessToken(header["authorization"]);
   }
   if (config.reqType === "graphql") {
     return res;
@@ -119,10 +119,10 @@ export async function downloadFile(
       config.url = `minio/download?id=${ encodeURIComponent(config.id) }`;
     }
     config.url = `${ cfg.url }/${ config.url }`;
-    const access_token = usrStore.access_token;
-    if (access_token) {
+    const authorization = usrStore.authorization;
+    if (authorization) {
       config.header = config.header || { };
-      config.header.access_token = access_token;
+      config.header.authorization = authorization;
     }
     // #ifndef H5
     res = <any>await uni.downloadFile(<any>config);
@@ -151,9 +151,9 @@ export function getAttUrl(id: string, action?: string) {
   action = action || "minio/download";
   let url = `${ action }?id=${ encodeURIComponent(id) }`;
   url = `${ cfg.url }/${ url }`;
-  const access_token = usrStore.access_token;
-  if (access_token) {
-    url += `&access_token=${ access_token }`;
+  const authorization = usrStore.authorization;
+  if (authorization) {
+    url += `&authorization=${ authorization }`;
   }
   return url;
 }
@@ -184,10 +184,10 @@ export async function request(
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    const access_token = usrStore.access_token;
-    if (access_token) {
+    const authorization = usrStore.authorization;
+    if (authorization) {
       config.header = config.header || { };
-      config.header.access_token = access_token;
+      config.header.authorization = authorization;
     }
     res = <any>await uni.request(<any>config);
   } catch(errTmp) {
@@ -198,8 +198,8 @@ export async function request(
     }
   }
   const header = res?.header;
-  if (header && header["access_token"]) {
-    await usrStore.setAccessToken(header["access_token"]);
+  if (header && header["authorization"]) {
+    await usrStore.setAccessToken(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
     let errMsg = err.errMsg || err.toString();
