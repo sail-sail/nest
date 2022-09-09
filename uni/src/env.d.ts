@@ -392,6 +392,12 @@ declare namespace UniApp {
        */
       getSystemInfoSync(): GetSystemInfoResult;
       /**
+       * 同步获取设备基础信息
+       *
+       * 文档: [http://uniapp.dcloud.io/api/system/info?id=getappbaseinfo](http://uniapp.dcloud.io/api/system/info?id=getappbaseinfo)
+       */
+      getAppBaseInfo(): GetAppBaseInfoResult;
+      /**
        * 判断uni-app的API，回调，参数，组件等是否在当前版本可用
        *
        * 文档: [http://uniapp.dcloud.io/api/system/info?id=caniuse](http://uniapp.dcloud.io/api/system/info?id=caniuse)
@@ -5317,6 +5323,85 @@ declare namespace UniApp {
        * 设备 ID
        */
       deviceId: string;
+  }
+  
+  interface GetAppBaseInfoResult {
+      /**
+       * `manifest.json` 中应用appid。
+       */
+      appId: string;
+      /**
+       * `manifest.json` 中应用名称。和`字节跳动小程序、飞书小程序`字段冲突，原字端与`hostName`一致
+       */
+      appName: string;
+      /**
+       * `manifest.json` 中应用版本名称。
+       */
+      appVersion: string;
+      /**
+       * `manifest.json` 中应用版本名号
+       */
+      appVersionCode: string;
+      /**
+       * 程序设置的语言
+       */
+      language: string;
+      /**
+       * 引擎版本号
+       */
+      version: string;
+      /**
+       * App、小程序宿主名称，如：`WeChat`、`FeiShu`、`alipay`、`DINGTALK`。H5 端为浏览器名称
+       */
+      hostName?: string;
+      /**
+       * App、小程序宿主版本。如：微信版本号。H5 端为浏览器版本
+       */
+      hostVersion?: string;
+      /**
+       * 浏览器语言、小程序宿主语言、app 语言
+       */
+      hostLanguage?: string;
+      /**
+       * App 主题 `light`、`dark`。H5 端为空，小程序端为系统当前主题
+       */
+      hostTheme?: string;
+      /**
+       * 小程序宿主包名。仅 App 支持，其他平台为空
+       */
+      hostPackageName?: string;
+      /**
+       * 系统当前主题，取值为light或dark。仅微信小程序支持
+       */
+      theme?: string;
+      /**
+       * 客户端基础库版本。仅支付宝小程序不支持
+       */
+      SDKVersion: string;
+      /**
+       * 是否已打开调试本。仅微信小程序支持
+       */
+      enableDebug: boolean;
+      /**
+       * 当前小程序运行的宿主环境。仅微信小程序支持
+       */
+      host?: {
+        appId: string;
+        env: string;
+        version: string;
+      };
+      /**
+       * 应用设置的语言。仅 App、H5 支持
+       */
+      appLanguage?: string;
+      /**
+       * 用户字体大小设置
+       */
+      hostFontSizeSetting?: number;
+      /**
+       * 客户端基础库版本
+       */
+      hostSDKVersion?: string;
   }
 
   interface SafeArea {

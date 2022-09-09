@@ -244,10 +244,13 @@ export async function request(
 }
 
 async function code2Session(code: string) {
+  const appbaseInfo = uni.getAppBaseInfo();
+  let appid = appbaseInfo.host?.appId;
   await request({
-    url: `wxapp/code2Session`,
+    url: `wx_usr/code2Session`,
     method: "POST",
     data: {
+      appid,
       code,
     },
     showErrMsg: false,
