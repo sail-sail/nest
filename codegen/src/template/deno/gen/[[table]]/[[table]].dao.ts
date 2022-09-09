@@ -1337,18 +1337,17 @@ export async function updateById(
   #><#
   }
   #>
-  if (updateFldNum === 0) {
-    return id;
-  }
-  {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
-    if (authModel?.id !== undefined) {
-      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+  if (updateFldNum > 0) {
+    {
+      const authModel = await getAuthModel(context, options?.notVerifyToken);
+      if (authModel?.id !== undefined) {
+        sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+      }
     }
+    sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
+    const result = await context.execute(sql, args);
   }
-  sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
-  
-  const result = await context.execute(sql, args);<#
+  <#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
