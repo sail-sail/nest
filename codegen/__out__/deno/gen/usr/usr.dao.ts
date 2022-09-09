@@ -30,16 +30,24 @@ import {
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch & {
+    $extra?: SearchExtra[];
+    tenant_id?: string;
+  },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+  if (search?.tenant_id === undefined) {
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
+  } else if(search?.tenant_id !== null) {
+    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
@@ -133,6 +141,9 @@ function getFromQuery(
 export async function findCount(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "usr";
   const method = "findCount";
@@ -148,7 +159,7 @@ export async function findCount(
         from
           ${ getFromQuery(context) }
         where
-          ${ await getWhereQuery(context, args, search) }
+          ${ await getWhereQuery(context, args, search, options) }
         group by t.id
       ) t
   `;
@@ -175,7 +186,10 @@ export async function findAll(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput | SortInput[],
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   const table = "usr";
   const method = "findAll";
@@ -188,7 +202,7 @@ export async function findAll(
     from
       ${ getFromQuery(context) }
     where
-      ${ await getWhereQuery(context, args, search) }
+      ${ await getWhereQuery(context, args, search, options) }
     group by t.id
   `;
   
@@ -264,9 +278,12 @@ export function getUniqueKeys(
 export async function findByUnique(
   context: Context,
   search0: UsrSearch & { $extra?: SearchExtra[] } | Partial<UsrModel>,
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   if (search0.id) {
-    const model = await findOne(context, { id: search0.id });
+    const model = await findOne(context, { id: search0.id }, options);
     return model;
   }
   const { uniqueKeys } = getUniqueKeys(context);
@@ -282,7 +299,7 @@ export async function findByUnique(
     }
     (search as any)[key] = val;
   }
-  const model = await findOne(context, search);
+  const model = await findOne(context, search, options);
   return model;
 }
 
@@ -325,6 +342,9 @@ export async function checkByUnique(
   model: Partial<UsrModel>,
   oldModel: UsrModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
   if (isEquals) {
@@ -334,7 +354,15 @@ export async function checkByUnique(
       throw new UniqueException(`${ lbl } 已存在!`);
     }
     if (uniqueType === "update") {
-      const result = await updateById(context, oldModel.id, { ...model, id: undefined });
+      const result = await updateById(
+        context,
+        oldModel.id,
+        {
+          ...model,
+          id: undefined,
+        },
+        options
+      );
       return result;
     }
     if (uniqueType === "ignore") {
@@ -351,12 +379,15 @@ export async function checkByUnique(
 export async function findOne(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(context, search, page);
+  const result = await findAll(context, search, page, undefined, options);
   const model: UsrModel | undefined = result[0];
   return model;
 }
@@ -368,9 +399,12 @@ export async function findOne(
 export async function findById(
   context: Context,
   id?: string,
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   if (!id) return;
-  const model = await findOne(context, { id });
+  const model = await findOne(context, { id }, options);
   return model;
 }
 
@@ -381,8 +415,11 @@ export async function findById(
 export async function exist(
   context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
-  const model = await findOne(context, search);
+  const model = await findOne(context, search, options);
   const exist = !!model;
   return exist;
 }
@@ -440,7 +477,8 @@ export async function create(
   context: Context,
   model: Partial<UsrModel>,
   options?: {
-    uniqueType?: "ignore" | "throw" | "update",
+    uniqueType?: "ignore" | "throw" | "update";
+    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   if (!model) {
@@ -485,9 +523,9 @@ export async function create(
     model.role_ids = models.map((item: { id: string }) => item.id);
   }
   
-  const oldModel = await findByUnique(context, model);
+  const oldModel = await findByUnique(context, model, options);
   if (oldModel) {
-    const result = await checkByUnique(context, model, oldModel, options?.uniqueType);
+    const result = await checkByUnique(context, model, oldModel, options?.uniqueType, options);
     if (result) {
       return result;
     }
@@ -500,14 +538,14 @@ export async function create(
       ,create_time
   `;
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
   }
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -529,14 +567,14 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -606,7 +644,8 @@ export async function updateById(
   id: string,
   model: Partial<UsrModel>,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create",
+    uniqueType?: "ignore" | "throw" | "create";
+    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   const table = "usr";
@@ -701,7 +740,7 @@ export async function updateById(
     return id;
   }
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -725,6 +764,9 @@ export async function updateById(
 export async function deleteByIds(
   context: Context,
   ids: string[],
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "usr";
   const method = "deleteByIds";
@@ -763,6 +805,9 @@ export async function deleteByIds(
 export async function revertByIds(
   context: Context,
   ids: string[],
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "usr";
   const method = "create";

@@ -82,18 +82,26 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search & {
+    $extra?: SearchExtra[];
+    tenant_id?: string;
+  },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
   if (hasTenant_id) {
   #>
-  {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+  if (search?.tenant_id === undefined) {
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
+  } else if(search?.tenant_id !== null) {
+    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }<#
   }
   #><#
@@ -253,6 +261,9 @@ function getFromQuery(
 export async function findCount(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findCount";
@@ -268,7 +279,7 @@ export async function findCount(
         from
           ${ getFromQuery(context) }
         where
-          ${ await getWhereQuery(context, args, search) }
+          ${ await getWhereQuery(context, args, search, options) }
         group by t.id
       ) t
   `;<#
@@ -303,7 +314,10 @@ export async function findAll(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput | SortInput[],
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   const table = "<#=table#>";
   const method = "findAll";
@@ -337,7 +351,7 @@ export async function findAll(
     from
       ${ getFromQuery(context) }
     where
-      ${ await getWhereQuery(context, args, search) }
+      ${ await getWhereQuery(context, args, search, options) }
     group by t.id
   `;<#
   if (defaultSort) {
@@ -548,9 +562,12 @@ export function getUniqueKeys(
 export async function findByUnique(
   context: Context,
   search0: <#=Table_Up#>Search & { $extra?: SearchExtra[] } | Partial<<#=Table_Up#>Model>,
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   if (search0.id) {
-    const model = await findOne(context, { id: search0.id });
+    const model = await findOne(context, { id: search0.id }, options);
     return model;
   }
   const { uniqueKeys } = getUniqueKeys(context);
@@ -566,7 +583,7 @@ export async function findByUnique(
     }
     (search as any)[key] = val;
   }
-  const model = await findOne(context, search);
+  const model = await findOne(context, search, options);
   return model;
 }
 
@@ -609,6 +626,9 @@ export async function checkByUnique(
   model: Partial<<#=Table_Up#>Model>,
   oldModel: <#=Table_Up#>Model,
   uniqueType: "ignore" | "throw" | "update" = "throw",
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
   if (isEquals) {
@@ -618,7 +638,15 @@ export async function checkByUnique(
       throw new UniqueException(`${ lbl } 已存在!`);
     }
     if (uniqueType === "update") {
-      const result = await updateById(context, oldModel.id, { ...model, id: undefined });
+      const result = await updateById(
+        context,
+        oldModel.id,
+        {
+          ...model,
+          id: undefined,
+        },
+        options
+      );
       return result;
     }
     if (uniqueType === "ignore") {
@@ -638,6 +666,9 @@ if (hasSummary) {
 export async function findSummary(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=table#>";
   const method = "findSummary";
@@ -661,7 +692,7 @@ export async function findSummary(
     from
       ${ getFromQuery(context) }
     where
-      ${ await getWhereQuery(context, args, search) }
+      ${ await getWhereQuery(context, args, search, options) }
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -681,12 +712,15 @@ export async function findSummary(
 export async function findOne(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(context, search, page);
+  const result = await findAll(context, search, page, undefined, options);
   const model: <#=Table_Up#>Model | undefined = result[0];
   return model;
 }
@@ -698,9 +732,12 @@ export async function findOne(
 export async function findById(
   context: Context,
   id?: string,
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
   if (!id) return;
-  const model = await findOne(context, { id });
+  const model = await findOne(context, { id }, options);
   return model;
 }
 
@@ -711,8 +748,11 @@ export async function findById(
 export async function exist(
   context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ) {
-  const model = await findOne(context, search);
+  const model = await findOne(context, search, options);
   const exist = !!model;
   return exist;
 }
@@ -778,7 +818,8 @@ export async function create(
   context: Context,
   model: Partial<<#=Table_Up#>Model>,
   options?: {
-    uniqueType?: "ignore" | "throw" | "update",
+    uniqueType?: "ignore" | "throw" | "update";
+    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   if (!model) {
@@ -877,9 +918,9 @@ export async function create(
   }
   #>
   
-  const oldModel = await findByUnique(context, model);
+  const oldModel = await findByUnique(context, model, options);
   if (oldModel) {
-    const result = await checkByUnique(context, model, oldModel, options?.uniqueType);
+    const result = await checkByUnique(context, model, oldModel, options?.uniqueType, options);
     if (result) {
       return result;
     }
@@ -894,8 +935,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -903,7 +944,7 @@ export async function create(
   }
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -957,8 +998,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -966,7 +1007,7 @@ export async function create(
   }
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1123,7 +1164,8 @@ export async function updateById(
   id: string,
   model: Partial<<#=Table_Up#>Model>,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create",
+    uniqueType?: "ignore" | "throw" | "create";
+    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   const table = "<#=table#>";
@@ -1299,7 +1341,7 @@ export async function updateById(
     return id;
   }
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1356,6 +1398,9 @@ export async function updateById(
 export async function deleteByIds(
   context: Context,
   ids: string[],
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "deleteByIds";
@@ -1398,6 +1443,9 @@ export async function deleteByIds(
 export async function revertByIds(
   context: Context,
   ids: string[],
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "create";
@@ -1439,11 +1487,14 @@ if (hasOrderBy) {
  */
 export async function findLastOrderBy(
   context: Context,
+  options?: {
+    notVerifyToken?: boolean;
+  },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findLastOrderBy";
   
-  let sql = `
+  let sql = /*sql*/ `
     select
       t.order_by order_by
     from
@@ -1454,8 +1505,8 @@ export async function findLastOrderBy(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const tenant_id = await getTenant_id(context, authModel?.id, options);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }
@@ -1463,7 +1514,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += `
+  sql += /*sql*/ `
     order by
       t.order_by desc
     limit 1

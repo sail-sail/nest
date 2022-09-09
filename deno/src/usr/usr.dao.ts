@@ -48,14 +48,14 @@ export async function getTenant_id(
   if (context.notVerifyToken) {
     notVerifyToken = true;
   }
-  if (notVerifyToken) {
-    const authModel = await getAuthModel(context, true);
-    if (!authModel) {
-      return;
-    }
-    usr_id = authModel.id;
-  } else {
-    if (!usr_id) {
+  if (!usr_id) {
+    if (notVerifyToken) {
+      const authModel = await getAuthModel(context, true);
+      if (!authModel) {
+        return;
+      }
+      usr_id = authModel.id;
+    } else {
       const authModel = await getAuthModel(context);
       if (!authModel) {
         return;
@@ -63,7 +63,7 @@ export async function getTenant_id(
       usr_id = authModel.id;
     }
   }
-  let tenant_id: string|undefined = context.cacheMap.get("usr_tenant_id_" + usr_id);
+  let tenant_id: string | undefined = context.cacheMap.get("usr_tenant_id_" + usr_id);
   if (tenant_id) {
     return tenant_id;
   }
