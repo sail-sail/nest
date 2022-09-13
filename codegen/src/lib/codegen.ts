@@ -296,7 +296,9 @@ export async function gitDiffOut() {
   // 覆盖xlsx文件
   await copyXlsx(out);
   const diffFile = "__test__.diff";
-  shelljs.exec(`git diff --full-index ./* > ${projectPh}/${ diffFile }`);
+  const diffStr = `git diff --full-index ./* > ${projectPh}/${ diffFile }`;
+  console.log(diffStr);
+  shelljs.exec(diffStr);
   let str = await readFile(`${ projectPh }/${ diffFile }`, "utf8");
   if (!isEmpty0(str)) {
     str = str.replace(/\/codegen\/__out__\//gm, "/");
