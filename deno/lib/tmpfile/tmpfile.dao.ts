@@ -1,4 +1,6 @@
-import { FormDataFile } from "oak";
+import {
+  type FormDataFile,
+} from "oak";
 import { S3 } from "S3";
 import { getEnv } from "/lib/env.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";

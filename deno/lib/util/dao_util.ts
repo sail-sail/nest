@@ -80,7 +80,7 @@ export async function many2manyUpdate(
       column1Id: string,
       column2Id: string,
       is_deleted: 0|1,
-    }>(`
+    }>(/*sql*/ `
       select
         t.id,
         t.${ context.escapeId(many.column1) } column1Id,
@@ -93,7 +93,7 @@ export async function many2manyUpdate(
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       if (column2Ids.includes(model.column2Id) && model.is_deleted === 1) {
-        const sql = `
+        const sql = /*sql*/ `
           update
             ${ context.escapeId(many.table) }
           set
@@ -104,7 +104,7 @@ export async function many2manyUpdate(
         `;
         await context.execute(sql, [ context.getReqDate(), model.id ]);
       } else if (!column2Ids.includes(model.column2Id) && model.is_deleted === 0) {
-        const sql = `
+        const sql = /*sql*/ `
           update
             ${ context.escapeId(many.table) }
           set
@@ -123,7 +123,7 @@ export async function many2manyUpdate(
     const id = shortUuidV4();
     {
       const args = [ ];
-      let sql = `
+      let sql = /*sql*/ `
         insert into ${ many.table }(
           id
           ,create_time
