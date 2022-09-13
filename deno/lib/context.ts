@@ -146,8 +146,10 @@ export class Context {
   #conn: PoolConnection|undefined;
   #req_id = 0;
   
+  /** 不校验token是否过期, 默认校验 */
   notVerifyToken = false;
   
+  /** 请求开始时间 */
   reqDate: Date;
   
   oakCtx?: OakContext;

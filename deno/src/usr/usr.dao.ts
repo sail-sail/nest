@@ -40,28 +40,14 @@ export async function findLoginUsr(
 export async function getTenant_id(
   context: Context,
   usr_id?: string,
-  options?: {
-    notVerifyToken?: boolean,
-  },
 ): Promise<string | undefined> {
-  let notVerifyToken = options?.notVerifyToken;
-  if (context.notVerifyToken) {
-    notVerifyToken = true;
-  }
+  const notVerifyToken = context.notVerifyToken;
   if (!usr_id) {
-    if (notVerifyToken) {
-      const authModel = await getAuthModel(context, true);
-      if (!authModel) {
-        return;
-      }
-      usr_id = authModel.id;
-    } else {
-      const authModel = await getAuthModel(context);
-      if (!authModel) {
-        return;
-      }
-      usr_id = authModel.id;
+    const authModel = await getAuthModel(context, notVerifyToken);
+    if (!authModel) {
+      return;
     }
+    usr_id = authModel.id;
   }
   let tenant_id: string | undefined = context.cacheMap.get("usr_tenant_id_" + usr_id);
   if (tenant_id) {

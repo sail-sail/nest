@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars
+// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import { type Context } from "/lib/context.ts";
 
 import {
@@ -36,14 +36,13 @@ async function getWhereQuery(
     tenant_id?: string;
   },
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id === undefined) {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
-    const tenant_id = await getTenant_id(context, authModel?.id, options);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -141,7 +140,6 @@ export async function findCount(
   context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "background_task";
@@ -184,7 +182,6 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   const table = "background_task";
@@ -289,7 +286,6 @@ export async function findByUnique(
   context: Context,
   search0: Background_TaskSearch & { $extra?: SearchExtra[] } | Partial<Background_TaskModel>,
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   if (search0.id) {
@@ -353,7 +349,6 @@ export async function checkByUnique(
   oldModel: Background_TaskModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
@@ -390,7 +385,6 @@ export async function findOne(
   context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   const page: PageInput = {
@@ -410,7 +404,6 @@ export async function findById(
   context: Context,
   id?: string,
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   if (!id) return;
@@ -426,7 +419,6 @@ export async function exist(
   context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   const model = await findOne(context, search, options);
@@ -485,7 +477,6 @@ export async function create(
   model: Partial<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
-    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   if (!model) {
@@ -541,14 +532,14 @@ export async function create(
       ,create_time
   `;
   {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
-    const tenant_id = await getTenant_id(context, authModel?.id, options);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
   }
   {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -579,14 +570,14 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
-    const tenant_id = await getTenant_id(context, authModel?.id, options);
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -640,7 +631,6 @@ export async function updateById(
   model: Partial<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
-    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   const table = "background_task";
@@ -748,7 +738,7 @@ export async function updateById(
   }
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel(context, options?.notVerifyToken);
+      const authModel = await getAuthModel(context);
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -770,7 +760,6 @@ export async function deleteByIds(
   context: Context,
   ids: string[],
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "background_task";
@@ -810,7 +799,6 @@ export async function revertByIds(
   context: Context,
   ids: string[],
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "background_task";

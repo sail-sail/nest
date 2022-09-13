@@ -27,31 +27,41 @@ import { getEnv } from "/lib/env.ts";
 
 export async function getAuthModel<T extends AuthModel>(
   context: Context,
-  notVerifyToken = false,
+  notVerifyToken?: boolean,
 ): Promise<T | undefined> {
+  let authModel: T | undefined;
+  if (context.cacheMap.has("authModel")) {
+    authModel = context.cacheMap.get("authModel");
+    return authModel;
+  }
   const response = context.oakCtx?.response;
   const authorization = context.getAuthorization();
-  if (context.notVerifyToken) {
-    notVerifyToken = true;
+  if (notVerifyToken == null) {
+    notVerifyToken = context.notVerifyToken;
   }
   if (!authorization) {
+    authModel = undefined;
+    context.cacheMap.set("authModel", authModel);
     if (notVerifyToken) {
-      return undefined;
+      return;
     } else {
       throw new ServiceException("令牌不能为空!", "token_empty");
     }
   }
   if (notVerifyToken) {
-    const authModel = decodeToken<T>(authorization);
+    authModel = decodeToken<T>(authorization);
+    context.cacheMap.set("authModel", authModel);
     return authModel;
   }
-  let authModel: T|undefined;
   try {
     authModel = await verifyToken<T>(authorization);
+    context.cacheMap.set("authModel", authModel);
   } catch (err: unknown) {
     if (err instanceof JWTExpired || err instanceof JWSSignatureVerificationFailed) {
       authModel = undefined;
+      context.cacheMap.set("authModel", authModel);
     } else {
+      context.cacheMap.delete("authModel");
       throw err;
     }
   }
@@ -60,6 +70,7 @@ export async function getAuthModel<T extends AuthModel>(
     if (tokenInfo && tokenInfo.authorization) {
       response?.headers.set(AUTHORIZATION, "Bearer " + tokenInfo.authorization);
       authModel = await verifyToken<T>(tokenInfo.authorization);
+      context.cacheMap.set("authModel", authModel);
     }
   } else {
     response?.headers.set(AUTHORIZATION, "");

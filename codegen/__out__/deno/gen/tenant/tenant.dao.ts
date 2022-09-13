@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars require-await
+// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types require-await
 import { type Context } from "/lib/context.ts";
 
 import {
@@ -35,7 +35,6 @@ async function getWhereQuery(
     tenant_id?: string;
   },
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   let whereQuery = "";
@@ -151,7 +150,6 @@ export async function findCount(
   context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "tenant";
@@ -197,7 +195,6 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   const table = "tenant";
@@ -291,7 +288,6 @@ export async function findByUnique(
   context: Context,
   search0: TenantSearch & { $extra?: SearchExtra[] } | Partial<TenantModel>,
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   if (search0.id) {
@@ -355,7 +351,6 @@ export async function checkByUnique(
   oldModel: TenantModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(context, oldModel, model);
@@ -392,7 +387,6 @@ export async function findOne(
   context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   const page: PageInput = {
@@ -412,7 +406,6 @@ export async function findById(
   context: Context,
   id?: string,
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   if (!id) return;
@@ -428,7 +421,6 @@ export async function exist(
   context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
   options?: {
-    notVerifyToken?: boolean;
   },
 ) {
   const model = await findOne(context, search, options);
@@ -490,7 +482,6 @@ export async function create(
   model: Partial<TenantModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
-    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   if (!model) {
@@ -550,7 +541,7 @@ export async function create(
       ,create_time
   `;
   {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -578,7 +569,7 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
-    const authModel = await getAuthModel(context, options?.notVerifyToken);
+    const authModel = await getAuthModel(context);
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -655,7 +646,6 @@ export async function updateById(
   model: Partial<TenantModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
-    notVerifyToken?: boolean;
   },
 ): Promise<string | undefined> {
   const table = "tenant";
@@ -761,7 +751,7 @@ export async function updateById(
   }
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel(context, options?.notVerifyToken);
+      const authModel = await getAuthModel(context);
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -787,7 +777,6 @@ export async function deleteByIds(
   context: Context,
   ids: string[],
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "tenant";
@@ -828,7 +817,6 @@ export async function revertByIds(
   context: Context,
   ids: string[],
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "tenant";
@@ -866,7 +854,6 @@ export async function revertByIds(
 export async function findLastOrderBy(
   context: Context,
   options?: {
-    notVerifyToken?: boolean;
   },
 ): Promise<number> {
   const table = "tenant";
