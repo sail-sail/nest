@@ -256,14 +256,14 @@ watch(
   },
 );
 
-let tabs_divRef: HTMLDivElement|undefined = $ref();
-let tab_active_lineRef: HTMLDivElement|undefined = $ref();
+let tabs_divRef = $ref<HTMLDivElement | undefined>();
+let tab_active_lineRef = $ref<HTMLDivElement | undefined>();
 
 function refreshTab_active_line() {
   if (!tab_active_lineRef) {
     return;
   }
-  const tab_activeEl = tabs_divRef?.getElementsByClassName("tab_active")[0] as HTMLDivElement|undefined;
+  const tab_activeEl = tabs_divRef?.getElementsByClassName("tab_active")[0] as HTMLDivElement | undefined;
   if (!tab_activeEl) {
     return;
   }

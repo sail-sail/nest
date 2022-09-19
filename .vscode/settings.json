@@ -51,7 +51,7 @@
     "**/.nuxt/**": true,
     "web": true
   },
-  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "deno.enable": true,

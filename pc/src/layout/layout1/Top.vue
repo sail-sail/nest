@@ -1,5 +1,10 @@
 <template>
-<div class="top_wrap">
+<div
+  class="top_wrap"
+  flex="~ [1_0_0] row"
+  overflow-hidden
+  box-border
+>
 </div>
 </template>
 
@@ -9,11 +14,6 @@
 
 <style lang="scss" scoped>
 .top_wrap {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  box-sizing: border-box;
   border-bottom: 1px solid hsla(0,0%,50.2%,.2);
 }
 </style>
