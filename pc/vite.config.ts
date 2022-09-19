@@ -86,7 +86,7 @@ export default defineConfig({
     outDir: "../build/pc",
   },
   define: {
-    __VUE_OPTIONS_API__: process.env.NODE_ENV === "development",
+    __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
   },
   server: {
     port: 4000,
