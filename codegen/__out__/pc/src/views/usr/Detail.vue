@@ -525,7 +525,7 @@ async function saveClk() {
   }
   let id: string | undefined = undefined;
   let msg = "";
-  if (dialogAction === "add") {
+  if (dialogAction === "add" || dialogAction === "copy") {
     id = await create({ ...dialogModel, ...builtInModel });
     dialogModel.id = id;
     msg = `增加成功!`;
