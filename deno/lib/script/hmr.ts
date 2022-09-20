@@ -125,7 +125,16 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
     if (!filename.endsWith(".dao.ts")) {
       continue;
     }
-    const dao = await import("file:///" + filename);
+    // deno-lint-ignore no-explicit-any
+    let dao: any;
+    try {
+      dao = await import("file:///" + filename);
+    // deno-lint-ignore no-empty
+    } catch (_err) {
+    }
+    if (!dao) {
+      continue;
+    }
     const str = await Deno.readTextFile(filename);
     let str2 = str;
     const methods = getMethods(str);
