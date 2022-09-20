@@ -430,13 +430,20 @@ async function showDialog(
     title?: string;
     builtInModel?: MenuInput;
     model?: {
-      ids: string[];
+      id?: string;
+      ids?: string[];
     };
-    action: "add"|"edit";
+    action: "add" | "edit" | "copy";
   },
 ) {
   inited = false;
   dialogVisible = true;
+  const dialogPrm = new Promise<{
+    type: "ok" | "cancel";
+    changedIds: string[];
+  }>((resolve) => {
+    onCloseResolve = resolve;
+  });
   if (formRef) {
     formRef.resetFields();
   }
@@ -453,6 +460,9 @@ async function showDialog(
   dialogModel = {
   };
   await getSelectListEfc();
+  if (dialogAction === "copy" && !model?.id) {
+    dialogAction = "add";
+  }
   if (action === "add") {
     const defaultModel = await getDefaultInput();
     dialogModel = {
@@ -461,9 +471,20 @@ async function showDialog(
     };
     const order_by = await findLastOrderBy();
     dialogModel.order_by = order_by + 1;
+  } else if (dialogAction === "copy") {
+    if (!model?.id) {
+      return await dialogPrm;
+    }
+    const data = await findById(model.id);
+    if (data) {
+      dialogModel = {
+        ...data,
+        id: undefined,
+      };
+    }
   } else if (action === "edit") {
-    if (!model) {
-      return;
+    if (!model || !model.ids) {
+      return await dialogPrm;
     }
     ids = model.ids;
     if (ids && ids.length > 0) {
@@ -475,13 +496,7 @@ async function showDialog(
     formRef.clearValidate();
   }
   inited = true;
-  const reslut = await new Promise<{
-    type: "ok" | "cancel";
-    changedIds: string[];
-  }>((resolve) => {
-    onCloseResolve = resolve;
-  });
-  return reslut;
+  return await dialogPrm;
 }
 
 /** 刷新 */

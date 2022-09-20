@@ -475,6 +475,7 @@ import {
   Download,
   Upload,
   CirclePlus,
+  CopyDocument,
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";

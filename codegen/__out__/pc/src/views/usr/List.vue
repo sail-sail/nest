@@ -204,6 +204,17 @@
       <el-button
         plain
         type="primary"
+        @click="openCopy"
+      >
+        <template #icon>
+          <CopyDocument/>
+        </template>
+        <span>复制</span>
+      </el-button>
+      
+      <el-button
+        plain
+        type="primary"
         @click="openEdit"
       >
         <template #icon>
@@ -466,6 +477,7 @@ import {
   Download,
   Upload,
   CirclePlus,
+  CopyDocument,
   CircleClose,
   CircleCheck,
 } from "@element-plus/icons-vue";
@@ -844,6 +856,40 @@ async function openAdd() {
     title: "增加",
     action: "add",
     builtInModel,
+  });
+  if (!dialogResult || dialogResult.type === "cancel") {
+    return;
+  }
+  const changedIds = dialogResult?.changedIds;
+  if (changedIds && changedIds.length > 0) {
+    selectedIds = [ ...changedIds ];
+    await Promise.all([
+      dataGrid(true),
+    ]);
+    selectedIds = tableData.filter(
+      (item) => changedIds.includes(item.id)
+    ).map(
+      (item) => item.id
+    );
+  }
+}
+
+/** 打开复制页面 */
+async function openCopy() {
+  if (!detailRef) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(`请选择需要 复制 的数据!`);
+    return;
+  }
+  const dialogResult = await detailRef.showDialog({
+    title: "复制",
+    action: "copy",
+    builtInModel,
+    model: {
+      id: selectedIds[selectedIds.length - 1],
+    },
   });
   if (!dialogResult || dialogResult.type === "cancel") {
     return;
