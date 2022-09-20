@@ -60,7 +60,7 @@ export async function findOneOption(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdOption(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdOption(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsOption(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFileOption(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsOption(
   context: Context,
@@ -127,5 +127,17 @@ export async function revertByIdsOption(
 ) {
   context.is_tran = true;
   const result = await optionService.revertByIds(context, ids);
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsOption(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await optionService.forceDeleteByIds(context, ids);
   return result;
 }

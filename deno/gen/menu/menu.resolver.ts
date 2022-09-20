@@ -60,7 +60,7 @@ export async function findOneMenu(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdMenu(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdMenu(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsMenu(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFileMenu(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsMenu(
   context: Context,
@@ -131,7 +131,19 @@ export async function revertByIdsMenu(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsMenu(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await menuService.forceDeleteByIds(context, ids);
+  return result;
+}
+
+/**
+ * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByMenu(
   context: Context,

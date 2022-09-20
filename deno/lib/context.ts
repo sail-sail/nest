@@ -592,16 +592,19 @@ export class Context {
     if (result != null) {
       return result;
     }
+    let debugSql = "";
     try {
       if (this.#is_tran) {
         const conn = await this.beginTran();
         if (!opt || opt.debug !== false) {
-          this.log(this.getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */");
+          debugSql = this.getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
+          this.log(debugSql);
         }
         result = (await conn.query(sql, args) as T[]);
       } else {
         if (!opt || opt.debug !== false) {
-          this.log(this.getDebugQuery(sql, args));
+          debugSql = this.getDebugQuery(sql, args);
+          this.log(debugSql);
         }
         const pool = await getClient();
         result = await pool.query(sql, args);
@@ -609,6 +612,9 @@ export class Context {
     } catch (err) {
       if (err.code === "EHOSTUNREACH") {
         err.message = "连接数据库失败!";
+      }
+      if (debugSql) {
+        this.error(debugSql);
       }
       throw err;
     }

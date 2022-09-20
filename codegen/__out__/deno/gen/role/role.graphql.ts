@@ -73,10 +73,12 @@ type Mutation {
   updateByIdRole(id: ID!, model: RoleInput!): ID!
   "导入文件"
   importFileRole(id: ID!): String
-  "根据ids删除数据"
+  "根据 ids 删除数据"
   deleteByIdsRole(ids: [ID]!): Int!
-  "根据ids还原数据"
+  "根据 ids 还原数据"
   revertByIdsRole(ids: [ID]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsRole(ids: [ID]!): Int!
 }
 
 `);

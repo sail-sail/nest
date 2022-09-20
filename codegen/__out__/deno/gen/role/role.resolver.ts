@@ -60,7 +60,7 @@ export async function findOneRole(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdRole(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdRole(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsRole(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFileRole(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsRole(
   context: Context,
@@ -127,5 +127,17 @@ export async function revertByIdsRole(
 ) {
   context.is_tran = true;
   const result = await roleService.revertByIds(context, ids);
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsRole(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await roleService.forceDeleteByIds(context, ids);
   return result;
 }

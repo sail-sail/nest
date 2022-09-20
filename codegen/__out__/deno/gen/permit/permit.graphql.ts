@@ -63,10 +63,12 @@ type Mutation {
   updateByIdPermit(id: ID!, model: PermitInput!): ID!
   "导入文件"
   importFilePermit(id: ID!): String
-  "根据ids删除数据"
+  "根据 ids 删除数据"
   deleteByIdsPermit(ids: [ID]!): Int!
-  "根据ids还原数据"
+  "根据 ids 还原数据"
   revertByIdsPermit(ids: [ID]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsPermit(ids: [ID]!): Int!
 }
 
 `);

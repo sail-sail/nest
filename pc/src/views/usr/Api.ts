@@ -202,7 +202,7 @@ export async function findById(
 }
 
 /**
- * 根据ID列表删除数据
+ * 根据 ids 删除数据
  * @export deleteByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
@@ -226,7 +226,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据ID列表从回收站还原数据
+ * 根据 ids 从回收站还原数据
  * @export revertByIds
  * @param {string[]} ids
  * @param {GqlOpt} opt?
@@ -246,6 +246,30 @@ export async function revertByIds(
     },
   }, opt);
   const result: Mutation["revertByIdsUsr"] = data?.revertByIdsUsr;
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ * @export forceDeleteByIds
+ * @param {string[]} ids
+ * @param {GqlOpt} opt?
+ */
+export async function forceDeleteByIds(
+  ids: string[],
+  opt?: GqlOpt,
+) {
+  const data = await gqlQuery({
+    query: /* GraphQL */ `
+      mutation($ids: [ID]!) {
+        forceDeleteByIdsUsr(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const result: Mutation["forceDeleteByIdsUsr"] = data?.forceDeleteByIdsUsr;
   return result;
 }
 

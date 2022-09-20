@@ -212,20 +212,34 @@ export type Mutation = {
   createTenant: Scalars['ID'];
   /** 创建一条数据 */
   createUsr: Scalars['ID'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsBackground_task: Scalars['Int'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsMenu: Scalars['Int'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsOption: Scalars['Int'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsPermit: Scalars['Int'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsRole: Scalars['Int'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsTenant: Scalars['Int'];
-  /** 根据ids删除数据 */
+  /** 根据 ids 删除数据 */
   deleteByIdsUsr: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsBackground_task: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsMenu: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsOption: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsPermit: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsRole: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsTenant: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsUsr: Scalars['Int'];
   /** 导入文件 */
   importFileBackground_task?: Maybe<Scalars['String']>;
   /** 导入文件 */
@@ -242,19 +256,19 @@ export type Mutation = {
   importFileUsr?: Maybe<Scalars['String']>;
   /** 登录 */
   login: Scalars['String'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsBackground_task: Scalars['Int'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsMenu: Scalars['Int'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsOption: Scalars['Int'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsPermit: Scalars['Int'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsRole: Scalars['Int'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsTenant: Scalars['Int'];
-  /** 根据ids还原数据 */
+  /** 根据 ids 还原数据 */
   revertByIdsUsr: Scalars['Int'];
   /** 根据id修改一条数据 */
   updateByIdBackground_task: Scalars['ID'];
@@ -339,6 +353,41 @@ export type MutationDeleteByIdsTenantArgs = {
 
 
 export type MutationDeleteByIdsUsrArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsBackground_TaskArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsMenuArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsOptionArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsPermitArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsRoleArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsTenantArgs = {
+  ids: Array<InputMaybe<Scalars['ID']>>;
+};
+
+
+export type MutationForceDeleteByIdsUsrArgs = {
   ids: Array<InputMaybe<Scalars['ID']>>;
 };
 

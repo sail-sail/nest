@@ -60,7 +60,7 @@ export async function findOneBackground_task(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdBackground_task(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdBackground_task(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsBackground_task(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFileBackground_task(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsBackground_task(
   context: Context,
@@ -127,5 +127,17 @@ export async function revertByIdsBackground_task(
 ) {
   context.is_tran = true;
   const result = await background_taskService.revertByIds(context, ids);
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsBackground_task(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await background_taskService.forceDeleteByIds(context, ids);
   return result;
 }

@@ -101,10 +101,12 @@ type Mutation {
   updateByIdBackground_task(id: ID!, model: Background_TaskInput!): ID!
   "导入文件"
   importFileBackground_task(id: ID!): String
-  "根据ids删除数据"
+  "根据 ids 删除数据"
   deleteByIdsBackground_task(ids: [ID]!): Int!
-  "根据ids还原数据"
+  "根据 ids 还原数据"
   revertByIdsBackground_task(ids: [ID]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsBackground_task(ids: [ID]!): Int!
 }
 
 `);

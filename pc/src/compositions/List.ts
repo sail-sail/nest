@@ -47,8 +47,8 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   
   function useSelectedIds() {
     if (!tableRef.value || !tableRef.value.data) return;
-    const newSelectList = [ ];
-    const select2falseList = [ ];
+    const newSelectList: any[] = [ ];
+    const select2falseList: any[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
       if (selectedIds.includes(item.id)) {

@@ -105,6 +105,7 @@
         flex="~ nowrap"
         min="w-[170px]"
       >
+        
         <el-button
           plain
           type="primary"
@@ -115,6 +116,7 @@
           </template>
           <span>查询</span>
         </el-button>
+        
         <el-button
           plain
           @click="searchReset"
@@ -124,6 +126,7 @@
           </template>
           <span>重置</span>
         </el-button>
+        
       </el-form-item>
       
     </el-form>
@@ -133,6 +136,7 @@
     flex
   >
     <template v-if="search.is_deleted !== 1">
+      
       <el-button
         plain
         type="primary"
@@ -143,6 +147,7 @@
         </template>
         <span>新增</span>
       </el-button>
+      
       <el-button
         plain
         type="primary"
@@ -153,6 +158,7 @@
         </template>
         <span>编辑</span>
       </el-button>
+      
       <el-button
         plain
         type="danger"
@@ -163,6 +169,7 @@
         </template>
         <span>删除</span>
       </el-button>
+      
       <el-button
         plain
         @click="exportClk"
@@ -172,6 +179,7 @@
         </template>
         <span>导出</span>
       </el-button>
+      
       <el-button
         plain
         @click="openUploadClk"
@@ -181,6 +189,7 @@
         </template>
         <span>导入</span>
       </el-button>
+      
     </template>
     <template v-else>
       <el-button
@@ -193,6 +202,18 @@
         </template>
         <span>还原</span>
       </el-button>
+      
+      <el-button
+        plain
+        type="danger"
+        @click="forceDeleteByIdsEfc"
+      >
+        <template #icon>
+          <CircleClose/>
+        </template>
+        <span>彻底删除</span>
+      </el-button>
+      
       <el-button
         plain
         @click="exportClk"
@@ -203,6 +224,7 @@
         <span>导出</span>
       </el-button>
     </template>
+    
     <el-button
       plain
       @click="searchClk"
@@ -212,11 +234,13 @@
       </template>
       <span>刷新</span>
     </el-button>
+    
     <div
       flex="[1_0_0]"
       overflow-hidden
     >
     </div>
+    
     <TableShowColumns
       :tableColumns="tableColumns"
       @resetColumns="resetColumns"
@@ -224,6 +248,7 @@
     >
       列操作
     </TableShowColumns>
+    
   </div>
   <div
     flex="~ [1_0_0] col"
@@ -389,8 +414,9 @@ import ListSelectDialog from "@/components/ListSelectDialog.vue";
 import {
   findAll,
   findAllAndCount,
-  deleteByIds,
   revertByIds,
+  deleteByIds,
+  forceDeleteByIds,
   exportExcel,
   updateById,
   importFile,
@@ -788,6 +814,31 @@ async function deleteByIdsEfc() {
       dataGrid(true),
     ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
+  }
+}
+
+/** 点击彻底删除 */
+async function forceDeleteByIdsEfc() {
+  if (selectedIds.length === 0) {
+    ElMessage.warning(`请选择需要 彻底删除 的数据!`);
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(`确定 彻底删除 已选择的 ${ selectedIds.length } 条数据?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (err) {
+    return;
+  }
+  const num = await forceDeleteByIds(selectedIds);
+  if (num) {
+    selectedIds = [ ];
+    await Promise.all([
+      dataGrid(true),
+    ]);
+    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
   }
 }
 

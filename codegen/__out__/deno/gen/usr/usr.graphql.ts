@@ -87,10 +87,12 @@ type Mutation {
   updateByIdUsr(id: ID!, model: UsrInput!): ID!
   "导入文件"
   importFileUsr(id: ID!): String
-  "根据ids删除数据"
+  "根据 ids 删除数据"
   deleteByIdsUsr(ids: [ID]!): Int!
-  "根据ids还原数据"
+  "根据 ids 还原数据"
   revertByIdsUsr(ids: [ID]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIdsUsr(ids: [ID]!): Int!
 }
 
 `);

@@ -1,5 +1,7 @@
 // deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
-import { type Context } from "/lib/context.ts";
+import {
+  type Context,
+} from "/lib/context.ts";
 
 import {
   isNotEmpty,
@@ -53,7 +55,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
   if (search?.ids && search?.ids.length > 0) {
-    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
+    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -62,10 +64,10 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.state && search?.state?.length > 0) {
-    whereQuery += ` and t.state in (${ args.push(search.state) })`;
+    whereQuery += ` and t.state in ${ args.push(search.state) }`;
   }
   if (search?.type && search?.type?.length > 0) {
-    whereQuery += ` and t.type in (${ args.push(search.type) })`;
+    whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
   if (search?.result !== undefined) {
     whereQuery += ` and t.result = ${ args.push(search.result) }`;
@@ -102,10 +104,10 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
   if (search?.create_usr_id && search?.create_usr_id.length > 0) {
-    whereQuery += ` and _create_usr_id.id in (${ args.push(search.create_usr_id) })`;
+    whereQuery += ` and _create_usr_id.id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?._create_usr_id && search._create_usr_id?.length > 0) {
-    whereQuery += ` and _create_usr_id in (${ args.push(search._create_usr_id) })`;
+    whereQuery += ` and _create_usr_id in ${ args.push(search._create_usr_id) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -446,9 +448,10 @@ export async function existById(
     select
       1 e
     from
-      background_task
+      background_task t
     where
-      id = ${ args.push(id) }
+      t.id = ${ args.push(id) }
+      and t.is_deleted = 0
     limit 1
   `;
   
@@ -456,7 +459,7 @@ export async function existById(
     e: number,
   }
   let model = await context.queryOne<Result>(sql, args);
-  let result = model?.e === 1;
+  let result = !!model?.e;
   
   return result;
 }
@@ -773,6 +776,10 @@ export async function deleteByIds(
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
     const id = ids[i];
+    const isExist = await existById(context, id);
+    if (!isExist) {
+      continue;
+    }
     const sql = /*sql*/ `
       update
         background_task
@@ -819,6 +826,56 @@ export async function revertByIds(
         is_deleted = 0
       where
         id = ${ args.push(id) }
+      limit 1
+    `;
+    const result = await context.execute(sql, args);
+    num += result.affectedRows;
+  }
+  
+  return num;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+ export async function forceDeleteByIds(
+  context: Context,
+  ids: string[],
+  options?: {
+  },
+): Promise<number> {
+  const table = "background_task";
+  const method = "create";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  let num = 0;
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    {
+      const args = new QueryArgs();
+      const sql = /*sql*/ `
+        select
+          *
+        from
+          background_task
+        where
+          id = ${ args.push(id) }
+      `;
+      const model = await context.queryOne(sql, args);
+      context.log("forceDeleteByIds:", model);
+    }
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      delete from
+        background_task
+      where
+        id = ${ args.push(id) }
+        and is_deleted = 1
       limit 1
     `;
     const result = await context.execute(sql, args);

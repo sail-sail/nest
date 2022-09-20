@@ -60,7 +60,7 @@ export async function findOnePermit(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdPermit(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdPermit(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsPermit(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFilePermit(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsPermit(
   context: Context,
@@ -127,5 +127,17 @@ export async function revertByIdsPermit(
 ) {
   context.is_tran = true;
   const result = await permitService.revertByIds(context, ids);
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsPermit(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await permitService.forceDeleteByIds(context, ids);
   return result;
 }

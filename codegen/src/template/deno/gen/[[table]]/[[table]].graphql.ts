@@ -336,10 +336,12 @@ type Mutation {
   updateById<#=tableUp#>(id: ID!, model: <#=Table_Up#>Input!): ID!
   "导入文件"
   importFile<#=tableUp#>(id: ID!): String
-  "根据ids删除数据"
+  "根据 ids 删除数据"
   deleteByIds<#=tableUp#>(ids: [ID]!): Int!
-  "根据ids还原数据"
+  "根据 ids 还原数据"
   revertByIds<#=tableUp#>(ids: [ID]!): Int!
+  "根据 ids 彻底删除数据"
+  forceDeleteByIds<#=tableUp#>(ids: [ID]!): Int!
 }
 
 `);

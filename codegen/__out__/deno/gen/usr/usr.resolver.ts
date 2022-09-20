@@ -60,7 +60,7 @@ export async function findOneUsr(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdUsr(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdUsr(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsUsr(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFileUsr(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsUsr(
   context: Context,
@@ -127,5 +127,17 @@ export async function revertByIdsUsr(
 ) {
   context.is_tran = true;
   const result = await usrService.revertByIds(context, ids);
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsUsr(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await usrService.forceDeleteByIds(context, ids);
   return result;
 }

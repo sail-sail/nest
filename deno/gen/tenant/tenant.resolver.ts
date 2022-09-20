@@ -60,7 +60,7 @@ export async function findOneTenant(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findByIdTenant(
   context: Context,
@@ -96,7 +96,7 @@ export async function updateByIdTenant(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIdsTenant(
   context: Context,
@@ -119,7 +119,7 @@ export async function importFileTenant(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIdsTenant(
   context: Context,
@@ -131,7 +131,19 @@ export async function revertByIdsTenant(
 }
 
 /**
- * 查找order_by字段的最大值
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIdsTenant(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await tenantService.forceDeleteByIds(context, ids);
+  return result;
+}
+
+/**
+ * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(
   context: Context,

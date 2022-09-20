@@ -82,7 +82,7 @@ export async function findOne<#=tableUp#>(
 }
 
 /**
- * 根据id查找一条数据
+ * 根据 id 查找一条数据
  */
 export async function findById<#=tableUp#>(
   context: Context,
@@ -118,7 +118,7 @@ export async function updateById<#=tableUp#>(
 }
 
 /**
- * 根据ids删除数据
+ * 根据 ids 删除数据
  */
 export async function deleteByIds<#=tableUp#>(
   context: Context,
@@ -141,7 +141,7 @@ export async function importFile<#=tableUp#>(
 }
 
 /**
- * 根据ids还原数据
+ * 根据 ids 还原数据
  */
 export async function revertByIds<#=tableUp#>(
   context: Context,
@@ -150,12 +150,24 @@ export async function revertByIds<#=tableUp#>(
   context.is_tran = true;
   const result = await <#=table#>Service.revertByIds(context, ids);
   return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ */
+export async function forceDeleteByIds<#=tableUp#>(
+  context: Context,
+  ids: string[],
+) {
+  context.is_tran = true;
+  const result = await <#=table#>Service.forceDeleteByIds(context, ids);
+  return result;
 }<#
 if (hasOrderBy) {
 #>
 
 /**
- * 查找order_by字段的最大值
+ * 查找 order_by 字段的最大值
  */
 export async function findLastOrderBy<#=tableUp#>(
   context: Context,

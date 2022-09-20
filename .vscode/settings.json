@@ -68,5 +68,9 @@
   "terminal.integrated.confirmOnKill": "never",
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
-  }
+  },
+  "volar.vueserver.useSecondServer": true,
+  "volar.icon.preview": false,
+  "volar.icon.splitEditors": false,
+  "volar.codeLens.references": false
 }

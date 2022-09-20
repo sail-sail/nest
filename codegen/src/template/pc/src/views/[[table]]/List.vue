@@ -295,6 +295,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         flex="~ nowrap"
         min="w-[170px]"
       >
+        
         <el-button
           plain
           type="primary"
@@ -305,6 +306,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           </template>
           <span>查询</span>
         </el-button>
+        
         <el-button
           plain
           @click="searchReset"
@@ -314,6 +316,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           </template>
           <span>重置</span>
         </el-button>
+        
       </el-form-item>
       
     </el-form>
@@ -325,6 +328,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
     <template v-if="search.is_deleted !== 1"><#
       if (opts.noAdd !== true) {
       #>
+      
       <el-button
         plain
         type="primary"
@@ -339,6 +343,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #><#
       if (opts.noEdit !== true) {
       #>
+      
       <el-button
         plain
         type="primary"
@@ -353,6 +358,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #><#
         if (opts.noDelete !== true) {
       #>
+      
       <el-button
         plain
         type="danger"
@@ -367,6 +373,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #><#
         if (opts.noExport !== true) {
       #>
+      
       <el-button
         plain
         @click="exportClk"
@@ -380,6 +387,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       #><#
         if (opts.noImport !== true) {
       #>
+      
       <el-button
         plain
         @click="openUploadClk"
@@ -391,6 +399,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       </el-button><#
         }
       #>
+      
     </template>
     <template v-else><#
       if (opts.noRevert !== true) {
@@ -407,8 +416,24 @@ const Table_Up = tableUp.split("_").map(function(item) {
       </el-button><#
       }
       #><#
+        if (opts.noDelete !== true) {
+      #>
+      
+      <el-button
+        plain
+        type="danger"
+        @click="forceDeleteByIdsEfc"
+      >
+        <template #icon>
+          <CircleClose/>
+        </template>
+        <span>彻底删除</span>
+      </el-button><#
+        }
+      #><#
         if (opts.noExport !== true) {
       #>
+      
       <el-button
         plain
         @click="exportClk"
@@ -421,6 +446,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         }
       #>
     </template>
+    
     <el-button
       plain
       @click="searchClk"
@@ -430,11 +456,13 @@ const Table_Up = tableUp.split("_").map(function(item) {
       </template>
       <span>刷新</span>
     </el-button>
+    
     <div
       flex="[1_0_0]"
       overflow-hidden
     >
     </div>
+    
     <TableShowColumns
       :tableColumns="tableColumns"
       @resetColumns="resetColumns"
@@ -442,6 +470,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
     >
       列操作
     </TableShowColumns>
+    
   </div>
   <div
     flex="~ [1_0_0] col"
@@ -807,10 +836,15 @@ import <#=foreignTableUp#>List from "../<#=foreignTable#>/List.vue";<#
 import {
   findAll,
   findAllAndCount,<#
+    if (opts.noRevert !== true) {
+  #>
+  revertByIds,<#
+    }
+  #><#
     if (opts.noDelete !== true) {
   #>
   deleteByIds,
-  revertByIds,<#
+  forceDeleteByIds,<#
     }
   #><#
     if (opts.noExport !== true) {
@@ -1712,6 +1746,31 @@ async function deleteByIdsEfc() {
       #>
     ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
+  }
+}
+
+/** 点击彻底删除 */
+async function forceDeleteByIdsEfc() {
+  if (selectedIds.length === 0) {
+    ElMessage.warning(`请选择需要 彻底删除 的数据!`);
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(`确定 彻底删除 已选择的 ${ selectedIds.length } 条数据?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+  } catch (err) {
+    return;
+  }
+  const num = await forceDeleteByIds(selectedIds);
+  if (num) {
+    selectedIds = [ ];
+    await Promise.all([
+      dataGrid(true),
+    ]);
+    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
   }
 }<#
 }

@@ -114,7 +114,7 @@ export async function create(
 }
 
 /**
- * 根据id修改数据
+ * 根据 id 修改数据
  * @param {string} id
  * @param {TenantModel} model
  * @return {Promise<string | undefined>}
@@ -129,7 +129,7 @@ export async function updateById(
 }
 
 /**
- * 根据id列表删除数据
+ * 根据 ids 删除数据
  * @param {string[]} ids
  * @return {Promise<number>}
  */
@@ -142,7 +142,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据id列表还原数据
+ * 根据 ids 还原数据
  * @param {string[]} ids
  * @return {Promise<number>}
  */
@@ -151,6 +151,19 @@ export async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const result = await tenantDao.revertByIds(context, ids);
+  return result;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function forceDeleteByIds(
+  context: Context,
+  ids: string[],
+): Promise<number> {
+  const result = await tenantDao.forceDeleteByIds(context, ids);
   return result;
 }
 
