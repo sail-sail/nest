@@ -6,11 +6,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
 }).join("_");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types<#
-if (!hasTenant_id) {
-#> require-await<#
-}
-#>
+#>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
   type Context,
 } from "/lib/context.ts";

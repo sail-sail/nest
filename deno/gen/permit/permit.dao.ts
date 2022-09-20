@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types require-await
+// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
   type Context,
 } from "/lib/context.ts";
