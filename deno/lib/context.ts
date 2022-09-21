@@ -135,6 +135,7 @@ export async function getClient(): Promise<Client> {
         opt.poolSize = poolSize;
       }
     }
+    console.log(opt);
     client = await new Client().connect(opt);
   }
   return client;
@@ -439,14 +440,18 @@ export class Context {
     }
   }
   
-  // deno-lint-ignore require-await
-  async closePool() {
+  async close() {
     if (this.#conn) {
       const conn = this.#conn;
       this.#conn = undefined;
-      conn.close();
+      // conn.close();
+      conn.returnToPool();
     }
-    client.poolConn?.close();
+    const client = await getClient();
+    // client.poolConn?.close();
+    await client?.close();
+    const redisCln = await redisClient();
+    redisCln?.close();
   }
   
   // deno-lint-ignore no-explicit-any
