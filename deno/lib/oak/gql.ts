@@ -248,14 +248,18 @@ gqlRouter.post("/graphql", async function(ctx) {
             context.error(error);
             await context.rollback();
             let msg = "";
-            for (let i = 0; i < errors.length; i++) {
+            const errLen = errors.length;
+            for (let i = 0; i < errLen; i++) {
               const error: GraphQLError = errors[i];
-              msg += error.toString() + "\n";
+              msg += error.message || error.toString();
+              if (i < errLen - 1) {
+                msg += "\n";
+              }
             }
             result.errors = [
               {
                 message: msg,
-              }
+              },
             ];
           }
         } else {
