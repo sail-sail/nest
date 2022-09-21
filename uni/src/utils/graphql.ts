@@ -69,13 +69,17 @@ export async function gqlQuery(
     throw err;
   }
   const { data: { data, errors } } = rvData;
-  const exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
+  let exception = errors && errors[0] && errors[0].extensions && errors[0].extensions.exception;
+  if (!exception) {
+    exception = errors?.[0];
+  }
   if (exception) {
     if (exception.code === "token_empty" || exception.code === "refresh_token_expired") {
       const usrStore = useUsrStore();
       await usrStore.setAccessToken("");
       if (!config.notLogin) {
         if (await uniLogin()) {
+          config = config || { };
           config.notLogin = true;
           return await gqlQuery(gqlArg, config);
         }
