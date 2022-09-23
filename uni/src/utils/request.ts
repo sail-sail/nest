@@ -15,8 +15,8 @@ export async function uploadFile(config: {
 }): Promise<string> {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
-  let err = undefined;
-  let res = undefined;
+  let err: any = undefined;
+  let res: any = undefined;
   try {
     if (!config.notLoading) {
       indexStore.addLoading();
@@ -33,13 +33,13 @@ export async function uploadFile(config: {
       config.header = config.header || { };
       config.header.authorization = authorization;
     }
-    res = <any>await uni.uploadFile(<any>config);
+    res = (await uni.uploadFile(config as any)) as any;
     if (res.data) {
       res.data = JSON.parse(res.data);
     }
   } catch (err2) {
     if (config.showErrMsg) {
-      let errMsg = err2.toString();
+      let errMsg = (err2 as Error).toString();
       uni.showToast({
         title: errMsg,
         icon: "error",
@@ -71,9 +71,6 @@ export async function uploadFile(config: {
       position: "center",
     });
     throw err;
-  }
-  if (!res) {
-    return;
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
@@ -113,7 +110,7 @@ export async function downloadFile(
   let res: {
     tempFilePath: string;
     statusCode: number;
-  } = undefined;
+  };
   try {
     if (config.id) {
       config.url = `minio/download?id=${ encodeURIComponent(config.id) }`;
@@ -124,15 +121,10 @@ export async function downloadFile(
       config.header = config.header || { };
       config.header.authorization = authorization;
     }
-    // #ifndef H5
-    res = <any>await uni.downloadFile(<any>config);
-    // #endif
-    // #ifdef H5
-    window.location.href = config.url;
-    // #endif
+    res = await uni.downloadFile(config as any) as any;
   } catch (err2) {
     if (config.showErrMsg) {
-      let errMsg = err2.toString();
+      let errMsg = (err2 as Error).toString();
       uni.showToast({
         title: errMsg,
         icon: "error",
@@ -172,8 +164,8 @@ export async function request(
 ) {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
-  let err = undefined;
-  let res = undefined;
+  let err: Error | undefined;
+  let res: any;
   try {
     if (config.reqType !== "graphql") {
       if (isEmpty(config.url)) {
@@ -189,9 +181,9 @@ export async function request(
       config.header = config.header || { };
       config.header.authorization = authorization;
     }
-    res = <any>await uni.request(<any>config);
+    res = await uni.request(config as any) as any;
   } catch(errTmp) {
-    err = errTmp;
+    err = (errTmp as Error);
   } finally {
     if (!config.notLoading) {
       indexStore.minusLoading();
@@ -202,7 +194,7 @@ export async function request(
     await usrStore.setAccessToken(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
-    let errMsg = err.errMsg || err.toString();
+    let errMsg = (err as any).errMsg || err.toString();
     uni.showToast({
       title: errMsg,
       icon: "none",
@@ -259,7 +251,7 @@ async function code2Session(code: string) {
 }
 
 export async function uniLogin() {
-  let providers: string[] = undefined;
+  let providers: string[] = [ ];
   try {
     const providerInfo = await uni.getProvider({ service: "oauth" });
     providers = providerInfo.provider;
