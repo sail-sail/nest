@@ -22,6 +22,9 @@ export class QueryArgs {
   
   // deno-lint-ignore no-explicit-any
   push(val: any): "?" {
+    if (val instanceof Promise) {
+      throw new Error(`QueryArgs.push val can not be Promise: ${ val }`);
+    }
     this.value.push(val);
     return `?`;
   }

@@ -580,7 +580,7 @@ export async function create(
     sql += `,${ args.push(model.username) }`;
   }
   if (isNotEmpty(model.password)) {
-    sql += `,${ args.push(getPassword(model.password)) }`;
+    sql += `,${ args.push(await getPassword(model.password)) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
@@ -714,7 +714,7 @@ export async function updateById(
   }
   if (isNotEmpty(model.password)) {
     sql += `,password = ?`;
-    args.push(getPassword(model.password));
+    args.push(await getPassword(model.password));
     updateFldNum++;
   }
   if (model.is_enabled !== undefined) {

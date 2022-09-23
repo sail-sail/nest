@@ -1022,7 +1022,7 @@ export async function create(
     if (column.isPassword) {
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,${ args.push(getPassword(model.<#=column_name#>)) }`;
+    sql += `,${ args.push(await getPassword(model.<#=column_name#>)) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
@@ -1289,7 +1289,7 @@ export async function updateById(
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
     sql += `,<#=column_name#> = ?`;
-    args.push(getPassword(model.<#=column_name#>));
+    args.push(await getPassword(model.<#=column_name#>));
     updateFldNum++;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
