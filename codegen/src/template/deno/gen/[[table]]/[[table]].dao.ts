@@ -125,11 +125,17 @@ async function getWhereQuery(
     if (foreignKey) {
       if (foreignKey.type !== "many2many") {
   #>
+  if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
+    search.<#=column_name#> = [ search.<#=column_name#> ];
+  }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
     whereQuery += ` and _<#=column_name#>.id in ${ args.push(search.<#=column_name#>) }`;
   }<#
     if (foreignKey.lbl) {
   #>
+  if (search?._<#=column_name#> && !Array.isArray(search?._<#=column_name#>)) {
+    search._<#=column_name#> = [ search._<#=column_name#> ];
+  }
   if (search?._<#=column_name#> && search._<#=column_name#>?.length > 0) {
     whereQuery += ` and _<#=column_name#> in ${ args.push(search._<#=column_name#>) }`;
   }<#
@@ -137,6 +143,9 @@ async function getWhereQuery(
   #><#
       } else if (foreignKey.type === "many2many") {
   #>
+  if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
+    search.<#=column_name#> = [ search.<#=column_name#> ];
+  }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
     whereQuery += ` and <#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
   }<#
@@ -144,6 +153,9 @@ async function getWhereQuery(
   #><#
     } else if (selectList && selectList.length > 0) {
   #>
+  if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
+    search.<#=column_name#> = [ search.<#=column_name#> ];
+  }
   if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }<#
@@ -151,6 +163,9 @@ async function getWhereQuery(
   #>
   if (isNotEmpty(search?.<#=column_name#>)) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
+  }
+  if (search?.ids && !Array.isArray(search?.ids)) {
+    search.ids = [ search.ids ];
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
