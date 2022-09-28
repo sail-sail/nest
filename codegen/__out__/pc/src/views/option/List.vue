@@ -113,7 +113,7 @@
           v-model="idsChecked"
           :false-label="0"
           :true-label="1"
-          @change="searchClk"
+          @change="idsCheckedChg"
           :disabled="selectedIds.length === 0"
         >
           <span>已选择</span>
@@ -517,6 +517,7 @@ let search = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
+  selectedIds = [ ];
   await dataGrid(true);
 }
 
@@ -524,12 +525,19 @@ async function searchClk() {
 async function searchReset() {
   search = initSearch();
   idsChecked = 0;
+  selectedIds = [ ];
   await searchClk();
 }
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
+  selectedIds = [ ];
   await searchClk();
+}
+
+/** 点击已选择 */
+async function idsCheckedChg() {
+  await dataGrid(true);
 }
 
 const props = defineProps<{

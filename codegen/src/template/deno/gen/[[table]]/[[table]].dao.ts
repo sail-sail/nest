@@ -123,6 +123,7 @@ async function getWhereQuery(
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   #><#
     if (foreignKey) {
+      if (foreignKey.type !== "many2many") {
   #>
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
     whereQuery += ` and _<#=column_name#>.id in ${ args.push(search.<#=column_name#>) }`;
@@ -131,6 +132,13 @@ async function getWhereQuery(
   #>
   if (search?._<#=column_name#> && search._<#=column_name#>?.length > 0) {
     whereQuery += ` and _<#=column_name#> in ${ args.push(search._<#=column_name#>) }`;
+  }<#
+    }
+  #><#
+      } else if (foreignKey.type === "many2many") {
+  #>
+  if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
+    whereQuery += ` and <#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
   }<#
     }
   #><#

@@ -79,10 +79,7 @@ async function getWhereQuery(
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.menu_ids && search?.menu_ids.length > 0) {
-    whereQuery += ` and _menu_ids.id in ${ args.push(search.menu_ids) }`;
-  }
-  if (search?._menu_ids && search._menu_ids?.length > 0) {
-    whereQuery += ` and _menu_ids in ${ args.push(search._menu_ids) }`;
+    whereQuery += ` and menu.id in ${ args.push(search.menu_ids) }`;
   }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
