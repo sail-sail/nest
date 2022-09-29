@@ -168,7 +168,7 @@ for (let i = 0; i < columns.length; i++) {
               multiple
               collapse-tags
               collapse-tags-tooltip
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ]"<#
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
               w="full"
@@ -184,7 +184,7 @@ for (let i = 0; i < columns.length; i++) {
             <el-select
               @keyup.enter.native.stop
               w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
               filterable
@@ -212,7 +212,7 @@ for (let i = 0; i < columns.length; i++) {
             <el-date-picker
               type="date"
               w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"<#
                 if (data_type === "datetime") {
               #>
@@ -240,7 +240,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <el-input-number
               w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               :precision="0"
               :step="1"
@@ -259,7 +259,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <el-input-number
               w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || undefined"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               :max="<#=max#>"
               :precision="<#=precision#>"
@@ -645,10 +645,12 @@ async function getSelectListEfc() {
   ]);
 }
 
-let onCloseResolve = function(value: {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   changedIds: string[];
-}) { };
+};
+
+let onCloseResolve = function(value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<<#=Table_Up#>Input | undefined>();
@@ -708,11 +710,11 @@ async function showDialog(
 ) {
   inited = false;
   dialogVisible = true;
-  const dialogPrm = new Promise<{
-    type: "ok" | "cancel";
-    changedIds: string[];
-  }>((resolve) => {
-    onCloseResolve = resolve;
+  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
+    onCloseResolve = function(arg: OnCloseResolveType) {
+      dialogVisible = false;
+      resolve(arg);
+    };
   });
   if (formRef) {
     formRef.resetFields();
@@ -871,7 +873,6 @@ async function saveClk() {
       isNext = await prevId();
     }
     if (!isNext) {
-      dialogVisible = false;
       onCloseResolve({
         type: "ok",
         changedIds,
@@ -884,7 +885,6 @@ async function saveClk() {
 
 /** 点击取消关闭按钮 */
 function cancelClk() {
-  dialogVisible = false;
   onCloseResolve({
     type: "cancel",
     changedIds,

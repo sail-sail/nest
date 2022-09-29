@@ -53,6 +53,9 @@ async function getWhereQuery(
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
+  if (search?.ids && !Array.isArray(search?.ids)) {
+    search.ids = [ search.ids ];
+  }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }

@@ -244,9 +244,9 @@ export interface TableCloumn {
     
     /**
      * 外键关联的默认排序
-     * @type {{ prop: string, order: string }}
+     * @type {{ prop: string, order: "ascending" | "descending" }}
      */
-    defaultSort?: { prop: string, order: string },
+    defaultSort?: { prop: string, order: "ascending" | "descending" },
     
     /**
      * 页面上的显示方式

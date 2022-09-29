@@ -277,10 +277,12 @@ async function getSelectListEfc() {
   ]);
 }
 
-let onCloseResolve = function(value: {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   changedIds: string[];
-}) { };
+};
+
+let onCloseResolve = function(value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<PermitInput | undefined>();
@@ -306,11 +308,11 @@ async function showDialog(
 ) {
   inited = false;
   dialogVisible = true;
-  const dialogPrm = new Promise<{
-    type: "ok" | "cancel";
-    changedIds: string[];
-  }>((resolve) => {
-    onCloseResolve = resolve;
+  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
+    onCloseResolve = function(arg: OnCloseResolveType) {
+      dialogVisible = false;
+      resolve(arg);
+    };
   });
   if (formRef) {
     formRef.resetFields();
@@ -463,7 +465,6 @@ async function saveClk() {
       isNext = await prevId();
     }
     if (!isNext) {
-      dialogVisible = false;
       onCloseResolve({
         type: "ok",
         changedIds,
@@ -476,7 +477,6 @@ async function saveClk() {
 
 /** 点击取消关闭按钮 */
 function cancelClk() {
-  dialogVisible = false;
   onCloseResolve({
     type: "cancel",
     changedIds,

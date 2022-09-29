@@ -100,7 +100,7 @@
             <el-select
               @keyup.enter.native.stop
               w="full"
-              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -136,7 +136,7 @@
               multiple
               collapse-tags
               collapse-tags-tooltip
-              :set="dialogModel.menu_ids = dialogModel.menu_ids || [ ]"
+              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
               w="full"
               v-model="dialogModel.menu_ids"
               placeholder="请选择菜单"
@@ -315,10 +315,12 @@ async function getSelectListEfc() {
   ]);
 }
 
-let onCloseResolve = function(value: {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   changedIds: string[];
-}) { };
+};
+
+let onCloseResolve = function(value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<RoleInput | undefined>();
@@ -345,11 +347,11 @@ async function showDialog(
 ) {
   inited = false;
   dialogVisible = true;
-  const dialogPrm = new Promise<{
-    type: "ok" | "cancel";
-    changedIds: string[];
-  }>((resolve) => {
-    onCloseResolve = resolve;
+  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
+    onCloseResolve = function(arg: OnCloseResolveType) {
+      dialogVisible = false;
+      resolve(arg);
+    };
   });
   if (formRef) {
     formRef.resetFields();
@@ -502,7 +504,6 @@ async function saveClk() {
       isNext = await prevId();
     }
     if (!isNext) {
-      dialogVisible = false;
       onCloseResolve({
         type: "ok",
         changedIds,
@@ -515,7 +516,6 @@ async function saveClk() {
 
 /** 点击取消关闭按钮 */
 function cancelClk() {
-  dialogVisible = false;
   onCloseResolve({
     type: "cancel",
     changedIds,

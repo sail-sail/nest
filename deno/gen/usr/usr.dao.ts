@@ -53,6 +53,9 @@ async function getWhereQuery(
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
+  if (search?.ids && !Array.isArray(search?.ids)) {
+    search.ids = [ search.ids ];
+  }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
@@ -74,8 +77,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.passwordLike)) {
     whereQuery += ` and t.password like ${ args.push(sqlLike(search?.passwordLike) + "%") }`;
   }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
+  if (search?.role_ids && !Array.isArray(search?.role_ids)) {
+    search.role_ids = [ search.role_ids ];
   }
   if (search?.role_ids && search?.role_ids.length > 0) {
     whereQuery += ` and role.id in ${ args.push(search.role_ids) }`;

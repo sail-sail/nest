@@ -1660,11 +1660,6 @@ async function openAdd() {
       }
       #>
     ]);
-    selectedIds = tableData.filter(
-      (item) => changedIds.includes(item.id)
-    ).map(
-      (item) => item.id
-    );
   }
 }
 
@@ -1694,11 +1689,6 @@ async function openCopy() {
     await Promise.all([
       dataGrid(true),
     ]);
-    selectedIds = tableData.filter(
-      (item) => changedIds.includes(item.id)
-    ).map(
-      (item) => item.id
-    );
   }
 }<#
   if (opts.noImport !== true) {
@@ -1761,11 +1751,6 @@ async function openEdit() {
       }
       #>
     ]);
-    selectedIds = tableData.filter(
-      (item) => changedIds.includes(item.id)
-    ).map(
-      (item) => item.id
-    );
   }
 }<#
 }

@@ -44,14 +44,26 @@ async function getWhereQuery(
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
+  if (search?.ids && !Array.isArray(search?.ids)) {
+    search.ids = [ search.ids ];
+  }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.type && !Array.isArray(search?.type)) {
+    search.type = [ search.type ];
   }
   if (search?.type && search?.type?.length > 0) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
+  if (search?.menu_id && !Array.isArray(search?.menu_id)) {
+    search.menu_id = [ search.menu_id ];
+  }
   if (search?.menu_id && search?.menu_id.length > 0) {
     whereQuery += ` and _menu_id.id in ${ args.push(search.menu_id) }`;
+  }
+  if (search?._menu_id && !Array.isArray(search?._menu_id)) {
+    search._menu_id = [ search._menu_id ];
   }
   if (search?._menu_id && search._menu_id?.length > 0) {
     whereQuery += ` and _menu_id in ${ args.push(search._menu_id) }`;
@@ -73,6 +85,9 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.route_queryLike)) {
     whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_queryLike) + "%") }`;
+  }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;

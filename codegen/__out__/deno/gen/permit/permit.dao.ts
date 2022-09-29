@@ -45,11 +45,20 @@ async function getWhereQuery(
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
+  if (search?.ids && !Array.isArray(search?.ids)) {
+    search.ids = [ search.ids ];
+  }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.menu_id && !Array.isArray(search?.menu_id)) {
+    search.menu_id = [ search.menu_id ];
+  }
   if (search?.menu_id && search?.menu_id.length > 0) {
     whereQuery += ` and _menu_id.id in ${ args.push(search.menu_id) }`;
+  }
+  if (search?._menu_id && !Array.isArray(search?._menu_id)) {
+    search._menu_id = [ search._menu_id ];
   }
   if (search?._menu_id && search._menu_id?.length > 0) {
     whereQuery += ` and _menu_id in ${ args.push(search._menu_id) }`;

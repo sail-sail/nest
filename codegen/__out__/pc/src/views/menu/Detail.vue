@@ -61,7 +61,7 @@
             <el-select
               @keyup.enter.native.stop
               w="full"
-              :set="dialogModel.type = dialogModel.type || undefined"
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
               placeholder="请选择类型"
               filterable
@@ -177,7 +177,7 @@
             <el-select
               @keyup.enter.native.stop
               w="full"
-              :set="dialogModel.is_enabled = dialogModel.is_enabled || undefined"
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               placeholder="请选择启用"
               filterable
@@ -209,7 +209,7 @@
           <el-form-item prop="order_by">
             <el-input-number
               w="full"
-              :set="dialogModel.order_by = dialogModel.order_by || undefined"
+              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               v-model="dialogModel.order_by"
               :precision="0"
               :step="1"
@@ -406,10 +406,12 @@ async function getSelectListEfc() {
   ]);
 }
 
-let onCloseResolve = function(value: {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   changedIds: string[];
-}) { };
+};
+
+let onCloseResolve = function(value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<MenuInput | undefined>();
@@ -438,11 +440,11 @@ async function showDialog(
 ) {
   inited = false;
   dialogVisible = true;
-  const dialogPrm = new Promise<{
-    type: "ok" | "cancel";
-    changedIds: string[];
-  }>((resolve) => {
-    onCloseResolve = resolve;
+  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
+    onCloseResolve = function(arg: OnCloseResolveType) {
+      dialogVisible = false;
+      resolve(arg);
+    };
   });
   if (formRef) {
     formRef.resetFields();
@@ -597,7 +599,6 @@ async function saveClk() {
       isNext = await prevId();
     }
     if (!isNext) {
-      dialogVisible = false;
       onCloseResolve({
         type: "ok",
         changedIds,
@@ -610,7 +611,6 @@ async function saveClk() {
 
 /** 点击取消关闭按钮 */
 function cancelClk() {
-  dialogVisible = false;
   onCloseResolve({
     type: "cancel",
     changedIds,
