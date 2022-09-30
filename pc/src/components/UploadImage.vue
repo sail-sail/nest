@@ -90,12 +90,14 @@ import {
   ElIcon,
   ElButton,
 } from "element-plus";
+
 import {
   Picture,
   Loading,
   ArrowLeft,
   ArrowRight,
 } from "@element-plus/icons-vue";
+
 import { baseURL, uploadFile } from "@/utils/axios";
 import useIndexStore from "@/store/index";
 import { watch } from "vue";
@@ -106,7 +108,7 @@ const indexStore = useIndexStore();
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string;
+    modelValue: string | null;
     maxFileSize?: number;
     maxSize?: number;
     accept?: string;
@@ -119,11 +121,11 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref(props.modelValue);
+let modelValue = $ref(props.modelValue || "");
 
 watch(() => props.modelValue, (newVal) => {
   if (modelValue !== newVal) {
-    modelValue = newVal;
+    modelValue = newVal || "";
     nowIndex = 0;
   }
 });
