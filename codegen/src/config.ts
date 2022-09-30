@@ -359,6 +359,20 @@ export interface TableCloumn {
   minWidth?: number,
   
   /**
+   * el-input-number 的 max 属性
+   * @type {number}
+   * @memberof TableCloumn
+   */
+  max?: number,
+  
+  /**
+   * el-input-number 的 min 属性
+   * @type {number}
+   * @memberof TableCloumn
+   */
+  min?: number,
+  
+  /**
    * 是否是密码字段
    * @type {boolean}
    * @memberof TableCloumn

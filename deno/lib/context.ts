@@ -503,7 +503,7 @@ export class Context {
       } else if (type === "[object Null]" || type === "[object Undefined]") {
         val = `NULL`;
       } else if (type === "[object Array]") {
-        val = `'${ parameter.join("','") }'`;
+        val = `('${ parameter.join("','") }')`;
       } else {
         let tmpVal = parameter;
         if (tmpVal == null) {

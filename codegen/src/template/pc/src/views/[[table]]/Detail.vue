@@ -252,16 +252,26 @@ for (let i = 0; i < columns.length; i++) {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
               let precision = Number(arr[1]);
               let max = "";
-              for (let m = 0; m < Number(arr[0])-precision; m++) {
-                max += "9";
+              if (column.max != null) {
+                max = column.max;
+              } else {
+                for (let m = 0; m < Number(arr[0])-precision; m++) {
+                  max += "9";
+                }
+                max = Number(max)+1-Math.pow(10, -precision);
               }
-              max = Number(max)+1-Math.pow(10, -precision);
+              let min = column.min;
             #>
             <el-input-number
               w="full"
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
-              :max="<#=max#>"
+              :max="<#=max#>"<#
+                if (min) {
+              #>
+              :min="<#=min#>"<#
+                }
+              #>
               :precision="<#=precision#>"
               :controls="false"
               placeholder="请输入<#=column_comment#>"
