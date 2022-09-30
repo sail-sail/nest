@@ -39,8 +39,8 @@
     <div v-if="showUpload" class="upload_div">
       <div class="upload_toolbar">
         <el-button
-          type="primary"
           plain
+          type="primary"
           @click="uploadClk"
         >
           上传

@@ -444,18 +444,14 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  if (formRef) {
-    formRef.clearValidate();
-  }
+  formRef?.clearValidate();
   inited = true;
   return await dialogPrm;
 }
 
 /** 刷新 */
 async function refreshEfc() {
-  if (formRef) {
-    formRef.clearValidate();
-  }
+  formRef?.clearValidate();
   if (!dialogModel.id) {
     return;
   }
