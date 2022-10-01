@@ -415,9 +415,9 @@ export async function existById(
 }
 
 /**
-   * 创建数据
-   * @param {Partial<OptionModel>} model
-   * @param {({
+ * 创建数据
+ * @param {Partial<OptionModel>} model
+ * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
  *   ignore: 忽略冲突
