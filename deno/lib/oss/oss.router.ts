@@ -1,5 +1,14 @@
-import { FormDataFile, Router, RouterContext } from "oak";
-import { Context, TMP_PATH } from "/lib/context.ts";
+import {
+  FormDataFile,
+  Router,
+  RouterContext,
+} from "oak";
+
+import {
+  getContext,
+  TMP_PATH,
+} from "/lib/context.ts";
+
 import * as ossServie from "./oss.service.ts";
 
 const router = new Router({
@@ -99,8 +108,7 @@ async function download(ctx: RouterContext<any>) {
       response.body = errMsg;
       return;
     }
-    // deno-lint-ignore no-explicit-any
-    const context: Context = (ctx as any)._context;
+    const context = getContext(ctx);
     context.error(err);
     const errMsg = err?.message || err?.toString() || err || "";
     response.status = 500;

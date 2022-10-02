@@ -1,7 +1,14 @@
-import { Context, Middleware } from "oak";
+import {
+  type Middleware,
+  type Context as OakContext,
+} from "oak";
 
-export function factory<S>(): Middleware<S> {
-  return async function logger(ctx: Context<S>, next) {
+import {
+  getContext,
+} from "/lib/context.ts";
+
+export function timing(): Middleware {
+  return async function logger(ctx: OakContext, next) {
     // deno-lint-ignore no-explicit-any
     if ((window as any).process.env.NODE_ENV !== "production") {
       console.log();
@@ -10,12 +17,9 @@ export function factory<S>(): Middleware<S> {
     await next();
     const rt = Math.floor(performance.now() - start);
     ctx.response.headers.set("X-Response-Time", `${ rt }ms`);
-    // deno-lint-ignore no-explicit-any
-    const context = (ctx as any)._context;
+    const context = getContext(ctx);
     if (context) {
       context.log(`${ rt }ms`);
     }
   };
 }
-
-export default { factory };

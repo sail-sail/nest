@@ -681,3 +681,18 @@ export class Context {
   }
   
 }
+
+export function getContext(oakContext: OakContext) {
+  // deno-lint-ignore no-explicit-any
+  const context: Context = (oakContext as any)._context;
+  return context;
+}
+
+export function newContext(
+  oakContext: OakContext,
+) {
+  const context = new Context(oakContext);
+  // deno-lint-ignore no-explicit-any
+  (oakContext as any)._context = context;
+  return context;
+}

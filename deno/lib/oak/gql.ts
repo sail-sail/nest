@@ -1,6 +1,9 @@
-import { Router } from "oak";
 import {
-  type Context,
+  Router,
+} from "oak";
+
+import {
+  getContext,
 } from "/lib/context.ts";
 
 import {
@@ -156,8 +159,7 @@ gqlRouter.post("/graphql", async function(ctx) {
     };
     return;
   }
-  // deno-lint-ignore no-explicit-any
-  const context: Context = (ctx as any)._context;
+  const context = getContext(ctx);
   try {
     const gqlObj = await body.value;
     if (gqlSchema === undefined) {
