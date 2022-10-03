@@ -53,13 +53,16 @@ export async function statObject(id: string) {
 
 export async function getObject(id: string) {
   const bucket = await getBucket();
-  const obj = await bucket.getObject(id);
-  if (!obj) {
-    return;
+  const objInfo = await bucket.getObject(id);
+  if (!objInfo || !objInfo.body) {
+    const err = new Error("NotFound");
+    // deno-lint-ignore no-explicit-any
+    (err as any).code = "NotFound";
+    throw err;
   }
   return {
-    meta: obj.meta,
-    body: obj.body,
+    meta: objInfo.meta,
+    body: objInfo.body,
   };
 }
 

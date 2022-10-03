@@ -12,6 +12,7 @@ export async function uploadFile(config: {
   showErrMsg?: boolean;
   reqType?: string;
   notLogin?: boolean;
+  type?: "oss" | "tmpfile";
 }): Promise<string> {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
@@ -22,7 +23,7 @@ export async function uploadFile(config: {
       indexStore.addLoading();
     }
     if (!config.url) {
-      config.url = "minio/upload";
+      config.url = "oss/upload";
     }
     if (!config.name) {
       config.name = "file";

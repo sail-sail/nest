@@ -88,12 +88,6 @@ async function download(ctx: RouterContext<any>) {
     }
     response.headers.set("Content-Disposition", `${ attachment }; filename=${ filename || encodeURIComponent(id) }`);
     const objInfo = await tmpfileServie.getObject(id);
-    if (!objInfo || !objInfo.body) {
-      const err = new Error("NotFound");
-      // deno-lint-ignore no-explicit-any
-      (err as any).code = "NotFound";
-      throw err;
-    }
     if (stats?.meta?.once === "1") {
       if (remove === "1") {
         await tmpfileServie.deleteObject(id);
