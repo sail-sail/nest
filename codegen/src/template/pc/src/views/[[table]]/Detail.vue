@@ -726,9 +726,7 @@ async function showDialog(
       resolve(arg);
     };
   });
-  if (formRef) {
-    formRef.resetFields();
-  }
+  formRef?.resetFields();
   const title = arg?.title;
   const model = arg?.model;
   const action = arg?.action;
