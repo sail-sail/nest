@@ -2,10 +2,13 @@ import {
   type Ref,
   watch,
   nextTick,
+  onUnmounted,
 } from "vue";
+
 import {
   type ElTable,
 } from "element-plus";
+
 import { useRoute } from "vue-router";
 import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
 import { PageInput } from "@/typings/types";
@@ -75,7 +78,7 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     }
   }
   
-  watch(
+  const watch1Stop = watch(
     () => tableRef.value?.data,
     () => {
       if (!tableRef.value?.data) return;
@@ -86,7 +89,7 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     },
   );
   
-  watch(
+  const watch2Stop = watch(
     () => selectedIds,
     (newSelectIds: string[], oldSelectIds: string[]) => {
       if (!tableRef.value?.data) return;
@@ -191,6 +194,11 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
+  
+  onUnmounted(function() {
+    watch1Stop();
+    watch2Stop();
+  });
   
   return $$({
     selectedIds,

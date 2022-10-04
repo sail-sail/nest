@@ -42,6 +42,7 @@
       justify-center
       items-center
     >
+      
       <el-button
         @click="cancelClk"
       >
@@ -50,6 +51,7 @@
         </template>
         <span>取消</span>
       </el-button>
+      
       <el-button
         class="mx-1"
         @click="revertClk"
@@ -59,6 +61,7 @@
         </template>
         <span>还原</span>
       </el-button>
+      
       <el-button
         type="primary"
         @click="saveClk"
@@ -68,6 +71,7 @@
         </template>
         <span>确定</span>
       </el-button>
+      
     </div>
   </div>
 </el-dialog>
@@ -79,14 +83,15 @@ import {
   ElIcon,
   ElButton
 } from "element-plus";
+
 import {
   FullScreen,
   CircleCheck,
   CircleClose,
   Refresh,
 } from "@element-plus/icons-vue";
+
 import { useFullscreenEfc } from "@/compositions/fullscreen";
-import { inject, provide } from "vue";
 
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
@@ -114,6 +119,12 @@ async function showDialog(
 ) {
   inited = false;
   dialogVisible = true;
+  const dialogPrm = new Promise<{
+    action: "select" | "close" | "cancel";
+    selectedIds: string[] | undefined;
+  }>(function(resolve) {
+    onCloseResolve = resolve;
+  })
   const title = arg?.title;
   const action = arg?.action;
   dialogAction = action || "select";
@@ -132,13 +143,7 @@ async function showDialog(
     oldSelectedIds = [ ];
   }
   inited = true;
-  const reslut = await new Promise<{
-    action: "select" | "close" | "cancel";
-    selectedIds: string[] | undefined;
-  }>(function(resolve) {
-    onCloseResolve = resolve;
-  });
-  return reslut;
+  return await dialogPrm;
 }
 
 function selectedIdsChg(value: string[]) {

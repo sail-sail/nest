@@ -470,7 +470,7 @@ let search = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
-  selectedIds = [ ];
+  resetSelectedIds();
   await dataGrid(true);
 }
 
@@ -478,13 +478,13 @@ async function searchClk() {
 async function searchReset() {
   search = initSearch();
   idsChecked = 0;
-  selectedIds = [ ];
+  resetSelectedIds();
   await searchClk();
 }
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
-  selectedIds = [ ];
+  resetSelectedIds();
   await searchClk();
 }
 
@@ -593,13 +593,20 @@ let {
 watch(
   () => selectedIds,
   () => {
+    if (!inited) {
+      return;
+    }
     emit("selectedIdsChg", selectedIds);
   },
 );
 
+function resetSelectedIds() {
+  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+}
+
 /** 取消已选择筛选 */
 async function clearSelect() {
-  selectedIds = [ ];
+  resetSelectedIds();
   idsChecked = 0;
   await dataGrid(true);
 }
