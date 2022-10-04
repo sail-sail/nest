@@ -41,6 +41,7 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   textRight?: boolean;
   justifyItemsEnd?: boolean;
   set?: any;
+  type?: string;
 }
 
 declare module '@vue/runtime-dom' {
@@ -50,6 +51,9 @@ declare module '@vue/runtime-dom' {
 declare module 'vue' {
   interface ComponentCustomProps extends AttributifyAttributes2 { }
   interface CSSProperties {
-    [key: `--${string}`]: string
+    [key: `--${string}`]: string;
+  }
+  interface ButtonHTMLAttributes {  
+    type?: string;
   }
 }

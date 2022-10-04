@@ -20,9 +20,6 @@
       "#/*": [ "./src/typings/*" ]
     }
   },
-  "exclude": [
-    "node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts"
-  ],
   "include": [
     "node_modules/vue/ref-macros.d.ts",
     "src/**/*.ts",
