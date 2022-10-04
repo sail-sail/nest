@@ -260,6 +260,7 @@
       justify-center
       items-center
     >
+      
       <el-button
         plain
         @click="cancelClk"
@@ -269,6 +270,7 @@
         </template>
         <span>取消</span>
       </el-button>
+      
       <el-button
         plain
         type="primary"
@@ -279,6 +281,7 @@
         </template>
         <span>保存</span>
       </el-button>
+      
       <div
         text="[12px] [gray]"
         pos="absolute right-2"
@@ -308,6 +311,7 @@
           {{ changedIds.length }}
         </span>
       </div>
+      
     </div>
   </div>
 </el-dialog>

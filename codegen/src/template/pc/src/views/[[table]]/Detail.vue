@@ -311,6 +311,7 @@ for (let i = 0; i < columns.length; i++) {
       justify-center
       items-center
     >
+      
       <el-button
         plain
         @click="cancelClk"
@@ -320,6 +321,7 @@ for (let i = 0; i < columns.length; i++) {
         </template>
         <span>取消</span>
       </el-button>
+      
       <el-button
         plain
         type="primary"
@@ -330,6 +332,7 @@ for (let i = 0; i < columns.length; i++) {
         </template>
         <span>保存</span>
       </el-button>
+      
       <div
         text="[12px] [gray]"
         pos="absolute right-2"
@@ -359,6 +362,7 @@ for (let i = 0; i < columns.length; i++) {
           {{ changedIds.length }}
         </span>
       </div>
+      
     </div>
   </div>
 </el-dialog>
