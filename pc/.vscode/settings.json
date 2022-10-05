@@ -15,7 +15,8 @@
     "**/LICENSE": true,
     "**/package-lock.json": true,
     "**/pnpm-lock.yaml": true,
-    "**/node_modules/**": true
+    "**/node_modules/**": true,
+    "**/__unconfig_vite.config.ts": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -33,7 +34,8 @@
     "**/LICENSE": true,
     "**/package-lock.json": true,
     "**/pnpm-lock.yaml": true,
-    "**/node_modules/**": true
+    "**/node_modules/**": true,
+    "**/__unconfig_vite.config.ts": true
   },
   "deno.enable": false,
   "css.validate": false,
