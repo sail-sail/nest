@@ -16,6 +16,8 @@ type PermitModel {
   rem: String!
 }
 input PermitInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "菜单ID"

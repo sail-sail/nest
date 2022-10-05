@@ -28,6 +28,8 @@ type TenantModel {
   rem: String!
 }
 input TenantInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "名称"

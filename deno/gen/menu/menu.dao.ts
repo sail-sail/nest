@@ -16,6 +16,10 @@ import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 
 import {
+  existById as existByIdTenant,
+} from "/gen/tenant/tenant.dao.ts";
+
+import {
   many2manyUpdate,
   setModelIds,
   type SearchExtra,
@@ -630,10 +634,50 @@ export async function delCache(
 }
 
 /**
-   * 根据id修改一行数据
-   * @param {string} id
-   * @param {Partial<MenuModel>} model
-   * @param {({
+ * 根据id修改租户id
+ * @export
+ * @param {Context} context
+ * @param {string} id
+ * @param {string} tenant_id
+ * @param {{
+ *   }} [options]
+ * @return {Promise<number>}
+ */
+export async function updateTenantById(
+  context: Context,
+  id: string,
+  tenant_id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "menu";
+  const method = "updateTenantById";
+  
+  const tenantExist = await existByIdTenant(context, tenant_id);
+  if (!tenantExist) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  const sql = /*sql*/ `
+    update
+      menu
+    set
+      update_time = ${ args.push(context.getReqDate()) }
+      and tenant_id = ${ tenant_id }
+    where
+      id = ${ id }
+  `;
+  const result = await context.execute(sql, args);
+  const updateNum = result.affectedRows || 0;
+  return updateNum;
+}
+
+/**
+ * 根据id修改一行数据
+ * @param {string} id
+ * @param {Partial<MenuModel>} model
+ * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
  *   ignore: 忽略冲突
@@ -644,7 +688,9 @@ export async function delCache(
 export async function updateById(
   context: Context,
   id: string,
-  model: Partial<MenuModel>,
+  model: Partial<MenuModel> & {
+    tenant_id?: string;
+  },
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -655,6 +701,12 @@ export async function updateById(
   if (!id || !model) {
     return id;
   }
+  
+  // 修改租户id
+  if (isNotEmpty(model.tenant_id)) {
+    await updateTenantById(context, id, model.tenant_id);
+  }
+  
   
   // 类型
   if (isNotEmpty(model._type) && model.type === undefined) {

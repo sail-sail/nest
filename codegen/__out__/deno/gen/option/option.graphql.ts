@@ -16,6 +16,8 @@ type OptionModel {
   rem: String!
 }
 input OptionInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "名称"

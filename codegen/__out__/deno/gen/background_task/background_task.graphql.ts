@@ -28,6 +28,8 @@ type Background_TaskModel {
   rem: String!
 }
 input Background_TaskInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "名称"

@@ -30,6 +30,8 @@ type MenuModel {
   rem: String!
 }
 input MenuInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "类型ID"

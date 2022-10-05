@@ -20,6 +20,8 @@ type RoleModel {
   _menu_ids: [String!]
 }
 input RoleInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "名称"

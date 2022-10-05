@@ -33,6 +33,8 @@ export type Background_TaskInput = {
   result?: InputMaybe<Scalars['String']>;
   /** 状态ID */
   state?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
   /** 类型ID */
   type?: InputMaybe<Scalars['String']>;
 };
@@ -134,6 +136,8 @@ export type MenuInput = {
   route_path?: InputMaybe<Scalars['String']>;
   /** 参数 */
   route_query?: InputMaybe<Scalars['JSON']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
   /** 类型ID */
   type?: InputMaybe<Scalars['String']>;
 };
@@ -518,6 +522,8 @@ export type OptionInput = {
   lbl?: InputMaybe<Scalars['String']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
   /** 值 */
   val?: InputMaybe<Scalars['String']>;
 };
@@ -575,6 +581,8 @@ export type PermitInput = {
   menu_id?: InputMaybe<Scalars['ID']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
 };
 
 export type PermitModel = {
@@ -912,6 +920,8 @@ export type RoleInput = {
   menu_ids?: InputMaybe<Array<Scalars['ID']>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
 };
 
 export type RoleModel = {
@@ -987,6 +997,8 @@ export type TenantInput = {
   order_by?: InputMaybe<Scalars['Int']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
 };
 
 export type TenantModel = {
@@ -1060,6 +1072,8 @@ export type UsrInput = {
   rem?: InputMaybe<Scalars['String']>;
   /** 角色ID */
   role_ids?: InputMaybe<Array<Scalars['ID']>>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
   /** 用户名 */
   username?: InputMaybe<Scalars['String']>;
 };

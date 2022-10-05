@@ -149,6 +149,12 @@ input <#=Table_Up#>Input {<#
     if (column_name === 'id') column_comment = '';
   #><#
     if (!foreignKey && selectList.length === 0) {
+  #><#
+    if (column_name === 'id') {
+  #>
+  "租户ID"
+  tenant_id: String<#
+    }
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#

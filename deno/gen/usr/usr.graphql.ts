@@ -24,6 +24,8 @@ type UsrModel {
   rem: String!
 }
 input UsrInput {
+  "租户ID"
+  tenant_id: String
   ""
   id: ID
   "名称"
