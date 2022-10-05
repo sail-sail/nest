@@ -860,14 +860,23 @@ async function saveClk() {
   let id: string | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
-    id = await create({ ...dialogModel, ...builtInModel });
+    id = await create({
+      ...dialogModel,
+      ...builtInModel,
+    });
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
     if (!dialogModel.id) {
       return;
     }
-    id = await updateById(dialogModel.id, { ...dialogModel, ...builtInModel });
+    id = await updateById(
+      dialogModel.id,
+      {
+        ...dialogModel,
+        ...builtInModel,
+      },
+    );
     msg = `修改成功!`;
   }
   if (id) {
