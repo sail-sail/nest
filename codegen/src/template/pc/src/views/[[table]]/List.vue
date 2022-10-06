@@ -78,7 +78,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             :model-value="search.<#=column_name#>"
             @update:model-value="search.<#=column_name#> = $event"
             placeholder="请选择<#=column_comment#>"
-            :options="<#=foreignTable#>4SelectV2"
+            :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
             filterable
             clearable
             multiple
@@ -946,7 +946,6 @@ import {<#
     const foreignTable = foreignTableArr[i];
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   #>
-  findAllAndCount<#=foreignTableUp#>,
   findAll<#=foreignTableUp#>,<#
   }
   #>
@@ -1483,22 +1482,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey) {
 #>
 
-let <#=foreignTable#>Info = $ref<{
-  count: number;
-  data: <#=Foreign_Table_Up#>Model[];
-}>({
-  count: 0,
-  data: [ ],
-});
-
-let <#=foreignTable#>4SelectV2 = $computed(() => {
-  return <#=foreignTable#>Info.data.map((item) => {
-    return {
-      value: item.<#=foreignKey.column#>,
-      label: item.<#=foreignKey.lbl#>,
-    };
-  });
-});<#
+let <#=foreignTable#>s = $ref<<#=Foreign_Table_Up#>Model[]>([ ]);<#
   }
 }
 #>
@@ -1513,7 +1497,7 @@ async function getSelectListEfc() {<#
     const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
   #>
-    <#=foreignTable#>Info,<#
+    <#=foreignTable#>s,<#
   }
   #>
   ] = await Promise.all([<#
@@ -1523,7 +1507,7 @@ async function getSelectListEfc() {<#
     const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
     const defaultSort = foreignKey && foreignKey.defaultSort;
   #>
-    findAllAndCount<#=foreignTableUp#>(
+    findAll<#=foreignTableUp#>(
       undefined,
       {
       },

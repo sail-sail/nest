@@ -283,38 +283,6 @@ export async function forceDeleteByIds(
   return result;
 }
 
-export async function findAllAndCountMenu(
-  search?: MenuSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data = await gqlQuery({
-    query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllMenu(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-        findCountMenu(search: $search)
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const result: {
-    data: Query["findAllMenu"];
-    count: Query["findCountMenu"];
-  } = {
-    data: data?.findAllMenu || [ ],
-    count: data?.findCountMenu || 0,
-  };
-  return result;
-}
-
 export async function findAllMenu(
   search?: MenuSearch,
   page?: PageInput,

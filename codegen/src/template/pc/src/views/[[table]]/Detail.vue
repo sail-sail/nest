@@ -174,7 +174,7 @@ for (let i = 0; i < columns.length; i++) {
               w="full"
               v-model="dialogModel.<#=column_name#>"
               placeholder="请选择<#=column_comment#>"
-              :options="<#=foreignTable#>Info.data.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
+              :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
               filterable
               clearable
               :loading="!inited"
@@ -462,7 +462,6 @@ import {<#
   #><#
     if (foreignKey) {
   #>
-  findAllAndCount<#=foreignTableUp#>,
   findAll<#=foreignTableUp#>,<#
     }
   }
@@ -582,13 +581,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
   if (foreignKey) {
 #>
-let <#=foreignTable#>Info = $ref<{
-  count: number;
-  data: <#=Foreign_Table_Up#>Model[];
-}>({
-  count: 0,
-  data: [ ],
-});<#
+let <#=foreignTable#>s = $ref<<#=Foreign_Table_Up#>Model[]>([ ]);<#
   }
 }
 #>
@@ -615,7 +608,7 @@ async function getSelectListEfc() {
     #><#
       if (foreignKey) {
     #>
-    <#=foreignTable#>Info,<#
+    <#=foreignTable#>s,<#
       }
     }
     #>
@@ -639,7 +632,7 @@ async function getSelectListEfc() {
   #><#
     if (foreignKey) {
   #>
-    findAllAndCount<#=foreignTableUp#>(
+    findAll<#=foreignTableUp#>(
       undefined,
       {
       },

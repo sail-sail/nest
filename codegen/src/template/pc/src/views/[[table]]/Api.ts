@@ -470,38 +470,6 @@ for (let i = 0; i < columns.length; i++) {
   }).join("_");
 #>
 
-export async function findAllAndCount<#=foreignTableUp#>(
-  search?: <#=Foreign_Table_Up#>Search,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data = await gqlQuery({
-    query: /* GraphQL */ `
-      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
-        findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
-          <#=foreignKey.column#>
-          <#=foreignKey.lbl#>
-        }
-        findCount<#=foreignTableUp#>(search: $search)
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const result: {
-    data: Query["findAll<#=foreignTableUp#>"];
-    count: Query["findCount<#=foreignTableUp#>"];
-  } = {
-    data: data?.findAll<#=foreignTableUp#> || [ ],
-    count: data?.findCount<#=foreignTableUp#> || 0,
-  };
-  return result;
-}
-
 export async function findAll<#=foreignTableUp#>(
   search?: <#=Foreign_Table_Up#>Search,
   page?: PageInput,

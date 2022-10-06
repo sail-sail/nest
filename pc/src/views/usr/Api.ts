@@ -273,38 +273,6 @@ export async function forceDeleteByIds(
   return result;
 }
 
-export async function findAllAndCountRole(
-  search?: RoleSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data = await gqlQuery({
-    query: /* GraphQL */ `
-      query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllRole(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-        findCountRole(search: $search)
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const result: {
-    data: Query["findAllRole"];
-    count: Query["findCountRole"];
-  } = {
-    data: data?.findAllRole || [ ],
-    count: data?.findCountRole || 0,
-  };
-  return result;
-}
-
 export async function findAllRole(
   search?: RoleSearch,
   page?: PageInput,

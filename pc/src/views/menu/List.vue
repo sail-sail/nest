@@ -44,7 +44,7 @@
             :model-value="search.menu_id"
             @update:model-value="search.menu_id = $event"
             placeholder="请选择父菜单"
-            :options="menu4SelectV2"
+            :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"
             filterable
             clearable
             multiple
@@ -516,7 +516,6 @@ import {
   type MenuSearch,
 } from "#/types";
 import {
-  findAllAndCountMenu,
   findAllMenu,
 } from "./Api";
 
@@ -800,29 +799,14 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
-let menuInfo = $ref<{
-  count: number;
-  data: MenuModel[];
-}>({
-  count: 0,
-  data: [ ],
-});
-
-let menu4SelectV2 = $computed(() => {
-  return menuInfo.data.map((item) => {
-    return {
-      value: item.id,
-      label: item.lbl,
-    };
-  });
-});
+let menus = $ref<MenuModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
-    menuInfo,
+    menus,
   ] = await Promise.all([
-    findAllAndCountMenu(
+    findAllMenu(
       undefined,
       {
       },

@@ -671,22 +671,7 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
-let menuInfo = $ref<{
-  count: number;
-  data: MenuModel[];
-}>({
-  count: 0,
-  data: [ ],
-});
-
-let menu4SelectV2 = $computed(() => {
-  return menuInfo.data.map((item) => {
-    return {
-      value: item.id,
-      label: item.lbl,
-    };
-  });
-});
+let menus = $ref<MenuModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {

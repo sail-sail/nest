@@ -97,7 +97,7 @@
               w="full"
               v-model="dialogModel.menu_id"
               placeholder="请选择父菜单"
-              :options="menuInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+              :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"
               filterable
               clearable
               :loading="!inited"
@@ -346,7 +346,6 @@ import {
 } from "#/types";
 
 import {
-  findAllAndCountMenu,
   findAllMenu,
 } from "./Api";
 
@@ -380,20 +379,14 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 });
 
 /** 下拉框列表 */
-let menuInfo = $ref<{
-  count: number;
-  data: MenuModel[];
-}>({
-  count: 0,
-  data: [ ],
-});
+let menus = $ref<MenuModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
-    menuInfo,
+    menus,
   ] = await Promise.all([
-    findAllAndCountMenu(
+    findAllMenu(
       undefined,
       {
       },

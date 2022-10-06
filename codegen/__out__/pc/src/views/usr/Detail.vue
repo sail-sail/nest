@@ -160,7 +160,7 @@
               w="full"
               v-model="dialogModel.role_ids"
               placeholder="请选择角色"
-              :options="roleInfo.data.map((item) => ({ value: item.id, label: item.lbl }))"
+              :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
               filterable
               clearable
               :loading="!inited"
@@ -293,7 +293,6 @@ import {
 } from "#/types";
 
 import {
-  findAllAndCountRole,
   findAllRole,
 } from "./Api";
 
@@ -334,20 +333,14 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 });
 
 /** 下拉框列表 */
-let roleInfo = $ref<{
-  count: number;
-  data: RoleModel[];
-}>({
-  count: 0,
-  data: [ ],
-});
+let roles = $ref<RoleModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
-    roleInfo,
+    roles,
   ] = await Promise.all([
-    findAllAndCountRole(
+    findAllRole(
       undefined,
       {
       },

@@ -86,7 +86,7 @@
             :model-value="search.role_ids"
             @update:model-value="search.role_ids = $event"
             placeholder="请选择角色"
-            :options="role4SelectV2"
+            :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
             filterable
             clearable
             multiple
@@ -518,7 +518,6 @@ import {
   type RoleModel,
 } from "#/types";
 import {
-  findAllAndCountRole,
   findAllRole,
 } from "./Api";
 
@@ -777,29 +776,14 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
-let roleInfo = $ref<{
-  count: number;
-  data: RoleModel[];
-}>({
-  count: 0,
-  data: [ ],
-});
-
-let role4SelectV2 = $computed(() => {
-  return roleInfo.data.map((item) => {
-    return {
-      value: item.id,
-      label: item.lbl,
-    };
-  });
-});
+let roles = $ref<RoleModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
-    roleInfo,
+    roles,
   ] = await Promise.all([
-    findAllAndCountRole(
+    findAllRole(
       undefined,
       {
       },
