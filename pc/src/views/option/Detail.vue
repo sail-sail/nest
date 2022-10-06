@@ -317,7 +317,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  await getSelectListEfc();
+  getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
