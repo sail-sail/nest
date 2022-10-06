@@ -798,10 +798,13 @@ export async function updateById(
     const result = await context.execute(sql, args);
   }
   
+  updateFldNum++;
   // 角色
   await many2manyUpdate(context, { ...model, id }, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
   
-  await delCache(context);
+  if (updateFldNum > 0) {
+    await delCache(context);
+  }
   
   return id;
 }

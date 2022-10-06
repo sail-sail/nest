@@ -821,10 +821,13 @@ export async function updateById(
     const result = await context.execute(sql, args);
   }
   
+  updateFldNum++;
   // 菜单
   await many2manyUpdate(context, { ...model, id }, "menu_ids", { table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
   
-  await delCache(context);
+  if (updateFldNum > 0) {
+    await delCache(context);
+  }
   
   return id;
 }

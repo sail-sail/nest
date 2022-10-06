@@ -1409,8 +1409,7 @@ export async function updateById(
     }
     sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
     const result = await context.execute(sql, args);
-  }
-  <#
+  }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1432,6 +1431,8 @@ export async function updateById(
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
+  
+  updateFldNum++;
   // <#=column_comment#>
   await many2manyUpdate(context, { ...model, id }, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
     } else if (!foreignKey) {
@@ -1445,7 +1446,9 @@ export async function updateById(
   if (cache) {
   #>
   
-  await delCache(context);<#
+  if (updateFldNum > 0) {
+    await delCache(context);
+  }<#
   }
   #>
   

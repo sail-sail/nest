@@ -660,8 +660,9 @@ export async function updateById(
     const result = await context.execute(sql, args);
   }
   
-  
-  await delCache(context);
+  if (updateFldNum > 0) {
+    await delCache(context);
+  }
   
   return id;
 }

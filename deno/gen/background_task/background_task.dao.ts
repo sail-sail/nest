@@ -817,7 +817,6 @@ export async function updateById(
     const result = await context.execute(sql, args);
   }
   
-  
   return id;
 }
 
