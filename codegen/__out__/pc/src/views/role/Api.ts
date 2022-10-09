@@ -66,7 +66,7 @@ export async function findAll(
 
 /**
  * 根据搜索条件查找数据总数
- * @export findAllAndCount
+ * @export findCount
  * @param {RoleSearch} search?
  * @param {GqlOpt} opt?
  */
