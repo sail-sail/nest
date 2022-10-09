@@ -28,32 +28,32 @@ export default defineConfig({
     }),
     Inspector(),
     vueJsx(),
-    VitePWA({
-      manifest: {
-        name: "管理系统",
-        short_name: "管理系统",
-        description: "管理系统",
-        theme_color: "#ffffff",
-        icons: [
-          {
-            src: "favicon.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "favicon.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "favicon.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
-          },
-        ]
-      },
-    }),
+    // VitePWA({
+    //   manifest: {
+    //     name: "管理系统",
+    //     short_name: "管理系统",
+    //     description: "管理系统",
+    //     theme_color: "#ffffff",
+    //     icons: [
+    //       {
+    //         src: "favicon.png",
+    //         sizes: "192x192",
+    //         type: "image/png",
+    //       },
+    //       {
+    //         src: "favicon.png",
+    //         sizes: "512x512",
+    //         type: "image/png",
+    //       },
+    //       {
+    //         src: "favicon.png",
+    //         sizes: "512x512",
+    //         type: "image/png",
+    //         purpose: "any maskable",
+    //       },
+    //     ]
+    //   },
+    // }),
     // ViteRsw({
     //   cli: "pnpm",
     //   root: "./",

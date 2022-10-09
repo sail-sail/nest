@@ -558,9 +558,9 @@ export async function updateTenantById(
       permit
     set
       update_time = ${ args.push(context.getReqDate()) }
-      and tenant_id = ${ tenant_id }
+      and tenant_id = ${ args.push(tenant_id) }
     where
-      id = ${ id }
+      id = ${ args.push(id) }
   `;
   const result = await context.execute(sql, args);
   const updateNum = result.affectedRows || 0;

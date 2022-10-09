@@ -125,7 +125,7 @@ class QueryInfo {
       );
       const resluts: any[] = [ ];
       const hashs: string[] = [ ];
-      const keys = Object.keys(newResult);
+      const keys = Object.keys(newResult || { });
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
         const val = newResult[key];
