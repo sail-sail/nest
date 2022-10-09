@@ -84,7 +84,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         const variableDefinitions = operationDefinitionNode.variableDefinitions;
         if (variableDefinitions) {
           for (const variableDefinition of variableDefinitions) {
-            (variableDefinition.variable.name as any).value = `${ variableDefinition.variable.name.value }_${ i }`;
+            (variableDefinition.variable.name as any).value = `${ variableDefinition.variable.name.value }${ i }`;
           }
         }
         for (let kk = 0; kk < selections.length; kk++) {
@@ -100,7 +100,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
           (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
           if (selection.arguments) {
             for (const arg of selection.arguments) {
-              (arg.value as any).name.value = `${ (arg.value as any).name.value }_${ i }`;
+              (arg.value as any).name.value = `${ (arg.value as any).name.value }${ i }`;
             }
           }
         }
@@ -108,7 +108,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         if (variablesTmp) {
           newVariables = { };
           for (const key of Object.keys(variablesTmp)) {
-            newVariables[`${ key }_${ i }`] = variablesTmp[key];
+            newVariables[`${ key }${ i }`] = variablesTmp[key];
           }
         }
         if (queryBuilderAdd) {

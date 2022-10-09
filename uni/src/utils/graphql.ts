@@ -61,8 +61,7 @@ class QueryInfo {
   queryInfos = [ ];
   if (queryInfos2.length === 1) {
     return await _gqlQuery(gqlArg, opt);
-  }
-  if (queryInfos2.length > 1) {
+  } else if (queryInfos2.length > 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
       const queryInfo = queryInfos2[i];
       const hash = `l${ i }`;
@@ -82,7 +81,7 @@ class QueryInfo {
         const variableDefinitions = operationDefinitionNode.variableDefinitions;
         if (variableDefinitions) {
           for (const variableDefinition of variableDefinitions) {
-            (variableDefinition.variable.name as any).value = `${ variableDefinition.variable.name.value }_${ i }`;
+            (variableDefinition.variable.name as any).value = `${ variableDefinition.variable.name.value }${ i }`;
           }
         }
         for (let kk = 0; kk < selections.length; kk++) {
@@ -98,7 +97,7 @@ class QueryInfo {
           (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
           if (selection.arguments) {
             for (const arg of selection.arguments) {
-              (arg.value as any).name.value = `${ (arg.value as any).name.value }_${ i }`;
+              (arg.value as any).name.value = `${ (arg.value as any).name.value }${ i }`;
             }
           }
         }
@@ -106,7 +105,7 @@ class QueryInfo {
         if (variablesTmp) {
           newVariables = { };
           for (const key of Object.keys(variablesTmp)) {
-            newVariables[`${ key }_${ i }`] = variablesTmp[key];
+            newVariables[`${ key }${ i }`] = variablesTmp[key];
           }
         }
         if (queryBuilderAdd) {
