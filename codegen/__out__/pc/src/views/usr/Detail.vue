@@ -408,7 +408,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  getSelectListEfc();
+  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -439,6 +439,7 @@ async function showDialog(
       await refreshEfc();
     }
   }
+  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogPrm;
