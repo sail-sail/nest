@@ -495,7 +495,7 @@ export class Context {
       } else if (type === "[object String]") {
         val = `'${ parameter.replace(/'/gm, "''").replace(/\n/gm, "\\n").replace(/\r/gm, "\\r").replace(/\t/gm, "\\t") }'`;
       } else if (type === "[object Date]") {
-        val = `'${ dayjs(parameter).format("YYYY-MM-DD HH:mm:ss") }'`;
+        val = `'${ parameter }'`;
       } else if (type === "[object Object]") {
         val = `'${ JSON.stringify(parameter).replace(/'/gm, "''") }'`;
       } else if (type === "[object Boolean]") {

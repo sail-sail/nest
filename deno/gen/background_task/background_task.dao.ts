@@ -665,8 +665,8 @@ export async function updateTenantById(
     update
       background_task
     set
-      update_time = ${ args.push(context.getReqDate()) }
-      and tenant_id = ${ args.push(tenant_id) }
+      update_time = ${ args.push(context.getReqDate()) },
+      tenant_id = ${ args.push(tenant_id) }
     where
       id = ${ args.push(id) }
   `;
