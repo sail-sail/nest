@@ -65,54 +65,26 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件和分页查找数据和总数
+ * 根据搜索条件查找数据总数
  * @export findAllAndCount
  * @param {Background_TaskSearch} search?
- * @param {PageInput} page?
- * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllAndCount(
+export async function findCount(
   search?: Background_TaskSearch,
-  page?: PageInput,
-  sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllBackground_task(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          state
-          _state
-          type
-          _type
-          result
-          err_msg
-          begin_time
-          end_time
-          rem
-        }
+      query($search: Background_TaskSearch) {
         findCountBackground_task(search: $search)
       }
     `,
     variables: {
       search,
-      page,
-      sort,
     },
   }, opt);
-  const result: {
-    data: Query["findAllBackground_task"];
-    count: Query["findCountBackground_task"];
-  } = {
-    data: data?.findAllBackground_task || [ ],
-    count: data?.findCountBackground_task || 0,
-  };
-  for (let i = 0; i < result.data.length; i++) {
-    const item = result.data[i];
-  }
+  const result: Query["findCountBackground_task"] = data?.findCountBackground_task || 0;
   return result;
 }
 

@@ -67,52 +67,26 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件和分页查找数据和总数
+ * 根据搜索条件查找数据总数
  * @export findAllAndCount
  * @param {UsrSearch} search?
- * @param {PageInput} page?
- * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllAndCount(
+export async function findCount(
   search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          username
-          password
-          is_enabled
-          _is_enabled
-          role_ids
-          _role_ids
-          rem
-        }
+      query($search: UsrSearch) {
         findCountUsr(search: $search)
       }
     `,
     variables: {
       search,
-      page,
-      sort,
     },
   }, opt);
-  const result: {
-    data: Query["findAllUsr"];
-    count: Query["findCountUsr"];
-  } = {
-    data: data?.findAllUsr || [ ],
-    count: data?.findCountUsr || 0,
-  };
-  for (let i = 0; i < result.data.length; i++) {
-    const item = result.data[i];
-  }
+  const result: Query["findCountUsr"] = data?.findCountUsr || 0;
   return result;
 }
 

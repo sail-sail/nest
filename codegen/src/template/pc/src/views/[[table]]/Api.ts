@@ -135,90 +135,26 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件和分页查找数据和总数
+ * 根据搜索条件查找数据总数
  * @export findAllAndCount
  * @param {<#=Table_Up#>Search} search?
- * @param {PageInput} page?
- * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllAndCount(
+export async function findCount(
   search?: <#=Table_Up#>Search,
-  page?: PageInput,
-  sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
-        findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            const column_name = column.COLUMN_NAME;
-            let column_type = column.DATA_TYPE;
-            let column_comment = column.COLUMN_COMMENT;
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.includes("[")) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
-            const foreignKey = column.foreignKey;
-          #><#
-            if (!foreignKey && selectList.length === 0) {
-          #>
-          <#=column_name#><#
-            } else {
-          #>
-          <#=column_name#>
-          _<#=column_name#><#
-            }
-          }
-          #>
-        }
+      query($search: <#=Table_Up#>Search) {
         findCount<#=tableUp#>(search: $search)
       }
     `,
     variables: {
       search,
-      page,
-      sort,
     },
   }, opt);
-  const result: {
-    data: Query["findAll<#=tableUp#>"];
-    count: Query["findCount<#=tableUp#>"];
-  } = {
-    data: data?.findAll<#=tableUp#> || [ ],
-    count: data?.findCount<#=tableUp#> || 0,
-  };
-  for (let i = 0; i < result.data.length; i++) {
-    const item = result.data[i];<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const data_type = column.DATA_TYPE;
-    let formatter = column.formatter;
-    if (!formatter) {
-      if (data_type === "json") {
-        formatter = `item.${ column_name } = item.${ column_name } && JSON.stringify(item.${ column_name }) || "";`;
-      } else if (data_type === "date") {
-        formatter = `item.${ column_name } = item.${ column_name } && dayjs(item.${ column_name }).format("YYYY-MM-DD") || "";`;
-      }
-    }
-    if (formatter) {
-  #>
-    <#=formatter#><#
-    }
-  }
-  #>
-  }
+  const result: Query["findCount<#=tableUp#>"] = data?.findCount<#=tableUp#> || 0;
   return result;
 }<#
 if (hasSummary) {

@@ -67,56 +67,26 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件和分页查找数据和总数
+ * 根据搜索条件查找数据总数
  * @export findAllAndCount
  * @param {MenuSearch} search?
- * @param {PageInput} page?
- * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllAndCount(
+export async function findCount(
   search?: MenuSearch,
-  page?: PageInput,
-  sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllMenu(search: $search, page: $page, sort: $sort) {
-          id
-          type
-          _type
-          menu_id
-          _menu_id
-          lbl
-          route_path
-          route_query
-          is_enabled
-          _is_enabled
-          order_by
-          rem
-        }
+      query($search: MenuSearch) {
         findCountMenu(search: $search)
       }
     `,
     variables: {
       search,
-      page,
-      sort,
     },
   }, opt);
-  const result: {
-    data: Query["findAllMenu"];
-    count: Query["findCountMenu"];
-  } = {
-    data: data?.findAllMenu || [ ],
-    count: data?.findCountMenu || 0,
-  };
-  for (let i = 0; i < result.data.length; i++) {
-    const item = result.data[i];
-    item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
-  }
+  const result: Query["findCountMenu"] = data?.findCountMenu || 0;
   return result;
 }
 

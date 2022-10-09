@@ -69,55 +69,26 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件和分页查找数据和总数
+ * 根据搜索条件查找数据总数
  * @export findAllAndCount
  * @param {TenantSearch} search?
- * @param {PageInput} page?
- * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllAndCount(
+export async function findCount(
   search?: TenantSearch,
-  page?: PageInput,
-  sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      query($search: TenantSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllTenant(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-          host
-          expiration
-          max_usr_num
-          is_enabled
-          _is_enabled
-          menu_ids
-          _menu_ids
-          order_by
-          rem
-        }
+      query($search: TenantSearch) {
         findCountTenant(search: $search)
       }
     `,
     variables: {
       search,
-      page,
-      sort,
     },
   }, opt);
-  const result: {
-    data: Query["findAllTenant"];
-    count: Query["findCountTenant"];
-  } = {
-    data: data?.findAllTenant || [ ],
-    count: data?.findCountTenant || 0,
-  };
-  for (let i = 0; i < result.data.length; i++) {
-    const item = result.data[i];
-    item.expiration = item.expiration && dayjs(item.expiration).format("YYYY-MM-DD") || "";
-  }
+  const result: Query["findCountTenant"] = data?.findCountTenant || 0;
   return result;
 }
 

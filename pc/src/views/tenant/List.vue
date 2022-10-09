@@ -520,7 +520,7 @@ import MenuList from "../menu/List.vue";
 
 import {
   findAll,
-  findAllAndCount,
+  findCount,
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
@@ -846,8 +846,6 @@ async function getSelectListEfc() {
 async function dataGrid(isCount = false) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
-  let data: TenantModel[];
-  let count: number|undefined = 0;
   let search2 = {
     ...search,
     ...builtInSearch,
@@ -856,20 +854,16 @@ async function dataGrid(isCount = false) {
   if (idsChecked) {
     search2.ids = selectedIds;
   }
-  if (search2.ids && search2.ids.length === 0) {
-    search2.ids = undefined;
-  }
   if (isCount) {
-    const rvData = await findAllAndCount(search2, { pgSize, pgOffset }, [ sort ]);
-    data = rvData.data;
-    count = rvData.count || 0;
+    [
+      tableData,
+      page.total,
+    ] = await Promise.all([
+      findAll(search2, { pgSize, pgOffset }, [ sort ]),
+      findCount(search2),
+    ]);
   } else {
-    data = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
-    count = undefined;
-  }
-  tableData = data || [ ];
-  if (count != null) {
-    page.total = count;
+    tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
   }
 }
 

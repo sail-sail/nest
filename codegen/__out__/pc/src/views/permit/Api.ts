@@ -63,48 +63,26 @@ export async function findAll(
 }
 
 /**
- * 根据搜索条件和分页查找数据和总数
+ * 根据搜索条件查找数据总数
  * @export findAllAndCount
  * @param {PermitSearch} search?
- * @param {PageInput} page?
- * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
-export async function findAllAndCount(
+export async function findCount(
   search?: PermitSearch,
-  page?: PageInput,
-  sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      query($search: PermitSearch, $page: PageInput, $sort: [SortInput]) {
-        findAllPermit(search: $search, page: $page, sort: $sort) {
-          id
-          menu_id
-          _menu_id
-          lbl
-          rem
-        }
+      query($search: PermitSearch) {
         findCountPermit(search: $search)
       }
     `,
     variables: {
       search,
-      page,
-      sort,
     },
   }, opt);
-  const result: {
-    data: Query["findAllPermit"];
-    count: Query["findCountPermit"];
-  } = {
-    data: data?.findAllPermit || [ ],
-    count: data?.findCountPermit || 0,
-  };
-  for (let i = 0; i < result.data.length; i++) {
-    const item = result.data[i];
-  }
+  const result: Query["findCountPermit"] = data?.findCountPermit || 0;
   return result;
 }
 
