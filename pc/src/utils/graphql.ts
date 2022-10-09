@@ -62,10 +62,12 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   await Promise.resolve();
   const queryInfos2 = queryInfos;
   queryInfos = [ ];
-  if (queryInfos2.length > 0) {
+  if (queryInfos2.length === 1) {
+    return await _gqlQuery(gqlArg, opt);
+  } else if (queryInfos2.length > 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
       const queryInfo = queryInfos2[i];
-      const hash = "m" + md5(JSON.stringify(queryInfo.gqlArg));
+      const hash = `l${ i }`;
       queryInfo.hash = hash;
     }
     tasks.push(queryInfos2);
@@ -95,7 +97,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
             };
             (selection as any).alias = alias;
           }
-          (alias as any).value = `${ queryInfo.hash! }_${ i }_${ alias.value || selection.name.value }`;
+          (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
           if (selection.arguments) {
             for (const arg of selection.arguments) {
               (arg.value as any).name.value = `${ (arg.value as any).name.value }_${ i }`;
@@ -130,12 +132,10 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
         const val = newResult[key];
-        const idx0 = key.indexOf("_");
-        const hash = key.substring(0, idx0);
-        const str = key.substring(idx0 + 1);
-        const idx1 = str.indexOf("_");
-        const groupNum = Number(str.substring(0, idx1));
-        const name = str.substring(idx1 + 1);
+        const idx = key.indexOf("_");
+        const hash = key.substring(0, idx);
+        const name = key.substring(idx + 1);
+        const groupNum = Number(hash.substring(1));
         resluts[groupNum] = resluts[groupNum] || { };
         resluts[groupNum][name] = val;
         if (!hashs.includes(hash)) {
@@ -167,15 +167,6 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       }
       tasks = tasks.filter((_, i) => !willRemoves.includes(i));
     })();
-    // for (let i = 0; i < tasks.length; i++) {
-    //   const task = tasks[i];
-    //   for (let k = 0; k < task.length; k++) {
-    //     const item = task[k];
-    //     if (item.gqlArg === gqlArg) {
-    //       return await item.result;
-    //     }
-    //   }
-    // }
   }
   for (let i = 0; i < tasks.length; i++) {
     const task = tasks[i];

@@ -86,7 +86,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
             collapse-tags-tooltip
             :loading="!inited"
             @change="searchClk"
-            @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
       </template><#
@@ -115,7 +114,6 @@ const Table_Up = tableUp.split("_").map(function(item) {
             clearable
             multiple
             @change="searchClk"
-            @clear="searchIptClr"
           ><#
             for (let item of selectList) {
               let value = item.value;
