@@ -69,7 +69,6 @@
             clearable
             multiple
             @change="searchClk"
-            @clear="searchIptClr"
           >
             <el-option :value="'running'" label="运行中"></el-option>
             <el-option :value="'success'" label="成功"></el-option>
@@ -102,7 +101,6 @@
             clearable
             multiple
             @change="searchClk"
-            @clear="searchIptClr"
           >
             <el-option :value="'text'" label="文本"></el-option>
             <el-option :value="'download'" label="下载"></el-option>

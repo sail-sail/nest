@@ -73,7 +73,6 @@
             collapse-tags-tooltip
             :loading="!inited"
             @change="searchClk"
-            @clear="searchIptClr"
           ></el-select-v2>
         </el-form-item>
       </template>
