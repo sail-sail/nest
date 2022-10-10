@@ -43,7 +43,7 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: PermitSearch & {
     $extra?: SearchExtra[];
-    tenant_id?: string;
+    tenant_id?: string | null;
   },
   options?: {
   },
@@ -587,7 +587,7 @@ export async function updateById(
   context: Context,
   id: string,
   model: PartialNull<PermitModel> & {
-    tenant_id?: string;
+    tenant_id?: string | null;
   },
   options?: {
     uniqueType?: "ignore" | "throw" | "create";

@@ -43,7 +43,7 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: Background_TaskSearch & {
     $extra?: SearchExtra[];
-    tenant_id?: string;
+    tenant_id?: string | null;
   },
   options?: {
   },
@@ -695,7 +695,7 @@ export async function updateById(
   context: Context,
   id: string,
   model: PartialNull<Background_TaskModel> & {
-    tenant_id?: string;
+    tenant_id?: string | null;
   },
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
