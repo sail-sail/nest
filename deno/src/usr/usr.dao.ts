@@ -33,6 +33,42 @@ export async function findLoginUsr(
   return result;
 }
 
+async function getTenant_idByWx_usr(
+  context: Context,
+) {
+  const notVerifyToken = context.notVerifyToken;
+  const authModel = await getAuthModel(context, notVerifyToken);
+  if (!authModel) {
+    return;
+  }
+  const wx_usr_id = authModel.wx_usr_id;
+  if (!wx_usr_id) {
+    return;
+  }
+  const args = new QueryArgs();
+  const sql = /*sql*/`
+    select
+      t.tenant_id
+    from wx_usr t
+    where
+      t.id = ${ args.push(wx_usr_id) }
+    limit 1
+  `;
+  interface Result {
+    tenant_id?: string;
+  }
+  const model = await context.queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: false,
+      logResult: false,
+    },
+  );
+  const tenant_id = model?.tenant_id;
+  return tenant_id;
+}
+
 /**
  * 根据用户id获取租户id
  * @return {Promise<string>} 
@@ -49,40 +85,39 @@ export async function getTenant_id(
     }
     usr_id = authModel.id;
   }
-  let tenant_id: string | undefined = context.cacheMap.get("usr_tenant_id_" + usr_id);
-  if (tenant_id) {
-    return tenant_id;
+  let tenant_id: string | undefined;
+  if (usr_id) {
+    tenant_id = context.cacheMap.get("usr_tenant_id_" + usr_id);
+    if (tenant_id) {
+      return tenant_id;
+    }
+    const args = new QueryArgs();
+    const sql = /*sql*/`
+      select
+        t.tenant_id
+      from usr t
+      where
+        t.id = ${ args.push(usr_id) }
+      limit 1
+    `;
+    interface Result {
+      tenant_id?: string;
+    }
+    const model = await context.queryOne<Result>(
+      sql,
+      args,
+      {
+        debug: false,
+        logResult: false,
+      },
+    );
+    tenant_id = model?.tenant_id;
+    if (tenant_id) {
+      context.cacheMap.set("usr_tenant_id_" + usr_id, tenant_id);
+    }
   }
-  const args = new QueryArgs();
-  const sql = /*sql*/`
-    select
-      t.tenant_id
-    from usr t
-    where
-      t.id = ${ args.push(usr_id) }
-    limit 1
-  `;
-  const table = "usr";
-  
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
-  
-  interface Result {
-    tenant_id?: string;
-  }
-  const model = await context.queryOne<Result>(
-    sql,
-    args,
-    {
-      cacheKey1,
-      cacheKey2,
-      debug: false,
-      logResult: false,
-    },
-  );
-  tenant_id = model?.tenant_id;
-  if (tenant_id) {
-    context.cacheMap.set("usr_tenant_id_" + usr_id, tenant_id);
+  if (!tenant_id) {
+    tenant_id = await getTenant_idByWx_usr(context);
   }
   return tenant_id;
 }
