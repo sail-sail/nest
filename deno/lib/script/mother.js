@@ -34,6 +34,7 @@ function watchFn() {
         `${ pjPath }/**/*.test.ts`,
         `${ pjPath }/**/*_test.ts`,
         `${ pjPath }/lib/script/**`,
+        `${ pjPath }/tmp/**`,
         `${ pjPath }/src/types.ts`,
         `${ pjPath }/.eslintrc.js`,
         `${ pjPath }/.gitignore`,

@@ -22,13 +22,10 @@ export async function uploadFile(config: {
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    if (!config.url) {
-      config.url = "oss/upload";
-    }
     if (!config.name) {
       config.name = "file";
     }
-    config.url = `${ cfg.url }/${ config.url }`;
+    config.url = config.url || `${ cfg.url }/${ config.type }/upload`;
     const authorization = usrStore.authorization;
     if (authorization) {
       config.header = config.header || { };
@@ -105,23 +102,39 @@ export async function downloadFile(
     header?: { [key: string]: any };
     notLoading?: boolean;
     showErrMsg?: boolean;
+    type: "oss" | "tmpfile";
   },
 ) {
+  if (!config.type) {
+    config.type = "tmpfile";
+  }
   const usrStore = useUsrStore(cfg.pinia);
   let res: {
     tempFilePath: string;
     statusCode: number;
   };
   try {
-    if (config.id) {
-      config.url = `minio/download?id=${ encodeURIComponent(config.id) }`;
-    }
-    config.url = `${ cfg.url }/${ config.url }`;
-    const authorization = usrStore.authorization;
+    const authorization: string = usrStore.authorization;
+    const params = new URLSearchParams();
     if (authorization) {
-      config.header = config.header || { };
-      config.header.authorization = authorization;
+      params.set("authorization", authorization);
     }
+    params.set("id", model.id);
+    if (model.filename) {
+      params.set("filename", model.filename);
+    }
+    if (model.inline != null) {
+      params.set("inline", model.inline);
+    }
+    if (model.remove != null) {
+      params.set("remove", model.remove);
+    }
+    config.url = `${ cfg.url }/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
+    // const authorization = usrStore.authorization;
+    // if (authorization) {
+    //   config.header = config.header || { };
+    //   config.header.authorization = authorization;
+    // }
     res = await uni.downloadFile(config as any) as any;
   } catch (err2) {
     if (config.showErrMsg) {
@@ -149,6 +162,47 @@ export function getAttUrl(id: string, action?: string) {
     url += `&authorization=${ authorization }`;
   }
   return url;
+}
+
+/**
+ * 获得下载文件的url
+ * @export
+ * @param {({
+ *     id: string;
+ *     filename?: string;
+ *     inline?: "0"|"1";
+ *   })} model
+ * @return {string}
+ */
+export function getDownloadUrl(
+  model: {
+    id: string;
+    filename?: string;
+    remove?: "0"|"1";
+    inline?: "0"|"1";
+  },
+  type: "oss" | "tmpfile",
+): string {
+  if (!type) {
+    type = "tmpfile";
+  }
+  const usrStore = useUsrStore();
+  const authorization: string = usrStore.authorization;
+  const params = new URLSearchParams();
+  if (authorization) {
+    params.set("authorization", authorization);
+  }
+  params.set("id", model.id);
+  if (model.filename) {
+    params.set("filename", model.filename);
+  }
+  if (model.inline != null) {
+    params.set("inline", model.inline);
+  }
+  if (model.remove != null) {
+    params.set("remove", model.remove);
+  }
+  return `${ cfg.url }/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
 }
 
 export async function request(
