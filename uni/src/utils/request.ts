@@ -181,7 +181,7 @@ export function getDownloadUrl(
     remove?: "0"|"1";
     inline?: "0"|"1";
   },
-  type: "oss" | "tmpfile",
+  type?: "oss" | "tmpfile",
 ): string {
   if (!type) {
     type = "tmpfile";
