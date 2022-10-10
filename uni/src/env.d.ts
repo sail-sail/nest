@@ -738,7 +738,12 @@ declare namespace UniApp {
        *
        * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=showmodal](http://uniapp.dcloud.io/api/ui/prompt?id=showmodal)
        */
-      showModal(options: ShowModalOptions): void;
+      showModal(options: ShowModalOptions): Promise<{
+        cancel: boolean;
+        confirm: boolean;
+        content: null | string;
+        errMsg: string;
+      }>;
       /**
        * 显示操作菜单
        *

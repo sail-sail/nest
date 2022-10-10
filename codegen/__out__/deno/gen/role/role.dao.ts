@@ -4,6 +4,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  type PartialNull,
+} from "/typings/types.ts";
+
+import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -268,11 +272,11 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {RoleSearch & { $extra?: SearchExtra[] } | Partial<RoleModel>} search0
+ * @param {RoleSearch & { $extra?: SearchExtra[] } | PartialNull<RoleModel>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: RoleSearch & { $extra?: SearchExtra[] } | Partial<RoleModel>,
+  search0: RoleSearch & { $extra?: SearchExtra[] } | PartialNull<RoleModel>,
   options?: {
   },
 ) {
@@ -300,13 +304,13 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {RoleModel} oldModel
- * @param {Partial<RoleModel>} model
+ * @param {PartialNull<RoleModel>} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
   oldModel: RoleModel,
-  model: Partial<RoleModel>,
+  model: PartialNull<RoleModel>,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -326,14 +330,14 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {Partial<RoleModel>} model
+ * @param {PartialNull<RoleModel>} model
  * @param {RoleModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: Partial<RoleModel>,
+  model: PartialNull<RoleModel>,
   oldModel: RoleModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -455,7 +459,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {Partial<RoleModel>} model
+ * @param {PartialNull<RoleModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -466,7 +470,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: Partial<RoleModel>,
+  model: PartialNull<RoleModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -648,7 +652,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {Partial<RoleModel>} model
+ * @param {PartialNull<RoleModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -660,7 +664,7 @@ export async function updateTenantById(
 export async function updateById(
   context: Context,
   id: string,
-  model: Partial<RoleModel> & {
+  model: PartialNull<RoleModel> & {
     tenant_id?: string;
   },
   options?: {

@@ -4,6 +4,10 @@ import {
 } from "/lib/context.ts";
 
 import {
+  type PartialNull,
+} from "/typings/types.ts";
+
+import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -301,11 +305,11 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] } | Partial<Background_TaskModel>} search0
+ * @param {Background_TaskSearch & { $extra?: SearchExtra[] } | PartialNull<Background_TaskModel>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: Background_TaskSearch & { $extra?: SearchExtra[] } | Partial<Background_TaskModel>,
+  search0: Background_TaskSearch & { $extra?: SearchExtra[] } | PartialNull<Background_TaskModel>,
   options?: {
   },
 ) {
@@ -333,13 +337,13 @@ export async function findByUnique(
 /**
  * 根据唯一约束对比对象是否相等
  * @param {Background_TaskModel} oldModel
- * @param {Partial<Background_TaskModel>} model
+ * @param {PartialNull<Background_TaskModel>} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
   oldModel: Background_TaskModel,
-  model: Partial<Background_TaskModel>,
+  model: PartialNull<Background_TaskModel>,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -359,14 +363,14 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {Partial<Background_TaskModel>} model
+ * @param {PartialNull<Background_TaskModel>} model
  * @param {Background_TaskModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: Partial<Background_TaskModel>,
+  model: PartialNull<Background_TaskModel>,
   oldModel: Background_TaskModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -485,7 +489,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {Partial<Background_TaskModel>} model
+ * @param {PartialNull<Background_TaskModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -496,7 +500,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: Partial<Background_TaskModel>,
+  model: PartialNull<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -678,7 +682,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {Partial<Background_TaskModel>} model
+ * @param {PartialNull<Background_TaskModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -690,7 +694,7 @@ export async function updateTenantById(
 export async function updateById(
   context: Context,
   id: string,
-  model: Partial<Background_TaskModel> & {
+  model: PartialNull<Background_TaskModel> & {
     tenant_id?: string;
   },
   options?: {
