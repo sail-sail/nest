@@ -96,48 +96,54 @@ export async function uploadFile(config: {
 }
 
 export async function downloadFile(
-  config: {
+  model: {
+    id: string;
+    filename?: string;
+    remove?: "0"|"1";
+    inline?: "0"|"1";
+  },
+  type?: "oss" | "tmpfile",
+  config?: {
     id?: string;
     url?: string;
     header?: { [key: string]: any };
     notLoading?: boolean;
     showErrMsg?: boolean;
-    type: "oss" | "tmpfile";
   },
 ) {
-  if (!config.type) {
-    config.type = "tmpfile";
+  if (!type) {
+    type = "tmpfile";
   }
-  const usrStore = useUsrStore(cfg.pinia);
   let res: {
     tempFilePath: string;
     statusCode: number;
   };
   try {
-    const authorization: string = usrStore.authorization;
-    const params = new URLSearchParams();
-    if (authorization) {
-      params.set("authorization", authorization);
+    let paramStr = "";
+    if (model.id) {
+      paramStr = `${ paramStr }&id=${ encodeURIComponent(model.id) }`;
     }
-    params.set("id", model.id);
     if (model.filename) {
-      params.set("filename", model.filename);
+      paramStr = `${ paramStr }&filename=${ encodeURIComponent(model.filename) }`;
     }
     if (model.inline != null) {
-      params.set("inline", model.inline);
+      paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.inline) }`;
     }
     if (model.remove != null) {
-      params.set("remove", model.remove);
+      paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
     }
-    config.url = `${ cfg.url }/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
-    // const authorization = usrStore.authorization;
-    // if (authorization) {
-    //   config.header = config.header || { };
-    //   config.header.authorization = authorization;
-    // }
+    if (paramStr.startsWith("&")) {
+      paramStr = paramStr.substring(1);
+    }
+    let url = `${ cfg.url }/${ type }/download/${ model.filename || "" }`;
+    if (paramStr) {
+      url += "?" + paramStr;
+    }
+    config = config || { };
+    config.url = url;
     res = await uni.downloadFile(config as any) as any;
   } catch (err2) {
-    if (config.showErrMsg) {
+    if (config?.showErrMsg) {
       let errMsg = (err2 as Error).toString();
       uni.showToast({
         title: errMsg,
@@ -186,23 +192,27 @@ export function getDownloadUrl(
   if (!type) {
     type = "tmpfile";
   }
-  const usrStore = useUsrStore();
-  const authorization: string = usrStore.authorization;
-  const params = new URLSearchParams();
-  if (authorization) {
-    params.set("authorization", authorization);
+  let paramStr = "";
+  if (model.id) {
+    paramStr = `${ paramStr }&id=${ encodeURIComponent(model.id) }`;
   }
-  params.set("id", model.id);
   if (model.filename) {
-    params.set("filename", model.filename);
+    paramStr = `${ paramStr }&filename=${ encodeURIComponent(model.filename) }`;
   }
   if (model.inline != null) {
-    params.set("inline", model.inline);
+    paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.inline) }`;
   }
   if (model.remove != null) {
-    params.set("remove", model.remove);
+    paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
   }
-  return `${ cfg.url }/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
+  if (paramStr.startsWith("&")) {
+    paramStr = paramStr.substring(1);
+  }
+  let url = `${ cfg.url }/${ type }/download/${ model.filename || "" }`;
+  if (paramStr) {
+    url += "?" + paramStr;
+  }
+  return url;
 }
 
 export async function request(
