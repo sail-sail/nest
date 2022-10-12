@@ -1,7 +1,7 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
   class="custom_dialog auto_dialog"
@@ -9,14 +9,20 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -32,6 +38,7 @@
       items-center
     >
       <el-form
+        ref="formRef"
         size="default"
         
         justify-end
@@ -41,10 +48,9 @@
         place-content-center
         
         :model="dialogModel"
-        ref="formRef"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter.native="saveClk"
+        @keyup.enter="saveClk"
       >
         
         <template v-if="builtInModel?.lbl == null">
@@ -59,8 +65,10 @@
           </label>
           <el-form-item prop="lbl">
             <el-input
-              w="full"
               v-model="dialogModel.lbl"
+              
+              w="full"
+              
               placeholder="请输入名称"
             ></el-input>
           </el-form-item>
@@ -79,8 +87,10 @@
           </label>
           <el-form-item prop="ky">
             <el-input
-              w="full"
               v-model="dialogModel.ky"
+              
+              w="full"
+              
               placeholder="请输入键"
             ></el-input>
           </el-form-item>
@@ -98,8 +108,10 @@
           </label>
           <el-form-item prop="val">
             <el-input
-              w="full"
               v-model="dialogModel.val"
+              
+              w="full"
+              
               placeholder="请输入值"
             ></el-input>
           </el-form-item>
@@ -117,8 +129,10 @@
           </label>
           <el-form-item prop="rem">
             <el-input
-              w="full"
               v-model="dialogModel.rem"
+              
+              w="full"
+              
               placeholder="请输入备注"
             ></el-input>
           </el-form-item>
@@ -138,7 +152,7 @@
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
@@ -149,7 +163,7 @@
         @click="saveClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>保存</span>
       </el-button>

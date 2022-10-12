@@ -1,7 +1,7 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
   :class="'custom_dialog ListSelectDialog'"
@@ -9,7 +9,10 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
@@ -19,7 +22,7 @@
         class="full_but"
         @click="setFullscreen"
       >
-        <FullScreen/>
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -34,7 +37,7 @@
       justify-start
       items-center
     >
-      <slot :selectedIds="selectedIds"></slot>
+      <slot :selected-ids="selectedIds"></slot>
     </div>
     <div
       p="y-2.5"
@@ -47,7 +50,7 @@
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
@@ -57,7 +60,7 @@
         @click="revertClk"
       >
         <template #icon>
-          <Refresh/>
+          <Refresh />
         </template>
         <span>还原</span>
       </el-button>
@@ -67,7 +70,7 @@
         @click="saveClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>确定</span>
       </el-button>

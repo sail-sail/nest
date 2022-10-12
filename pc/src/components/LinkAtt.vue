@@ -1,5 +1,8 @@
 <template>
-<el-link @click="linkClk" type="primary">
+<el-link
+  type="primary"
+  @click="linkClk"
+>
   <slot name="default">
     {{ attLen }}
   </slot>

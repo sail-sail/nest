@@ -1,22 +1,28 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
-  class="custom_dialog background_task_ListDialog"
   top="0"
   :before-close="beforeClose"
+  class="custom_dialog background_task_ListDialog"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -32,14 +38,20 @@
 
 <script setup lang="ts">
 import { watch } from "vue";
-import { useFullscreenEfc } from "@/compositions/fullscreen";
+
+import {
+  useFullscreenEfc,
+} from "@/compositions/fullscreen";
+
 import {
   ElDialog,
   ElIcon,
 } from "element-plus";
+
 import {
   FullScreen,
 } from "@element-plus/icons-vue";
+
 import useBackground_taskStore from "@/store/background_task";
 import List from "./List.vue";
 

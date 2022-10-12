@@ -11,4 +11,4 @@ let UID = Date.now();
 
 export function uniqueID() {
   return (UID++).toString(36);
-};
+}

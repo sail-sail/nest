@@ -32,13 +32,13 @@
     overflow-hidden
   >
     <div
+      ref="tabs_divRef"
+      
       h="[40px]"
       bg="[#072540] dark:[black]"
       text="[#FFF]"
       flex="~ row"
       pos-relative
-      
-      ref="tabs_divRef"
     >
       <el-icon
         text="[18px] hover:[var(--el-color-primary)]"
@@ -46,8 +46,8 @@
         cursor-pointer
         @click="menuStore.isCollapse = !menuStore.isCollapse"
       >
-        <Expand v-if="menuStore.isCollapse"/>
-        <Fold v-else/>
+        <Expand v-if="menuStore.isCollapse" />
+        <Fold v-else />
       </el-icon>
       <Tabs
         flex="[1_0_0]"
@@ -75,7 +75,10 @@
         >
           <el-dropdown>
             <span class="el-dropdown-link">
-              <el-icon size="18" color="#FFF">
+              <el-icon
+                size="18"
+                color="#FFF"
+              >
                 <ArrowDownBold />
               </el-icon>
             </span>
@@ -96,17 +99,29 @@
                 </el-dropdown-item>
                 
                 <el-dropdown-item @click="closeOtherTabs">
-                  <i w="1em" h="1em"></i>
+                  <i
+                    w="1em"
+                    h="1em"
+                  ></i>
                   <span>关闭其它</span>
                 </el-dropdown-item>
                 
                 <el-dropdown-item @click="clearCacheEfc">
-                  <i w="1em" h="1em"></i>
+                  <i
+                    w="1em"
+                    h="1em"
+                  ></i>
                   <span>清空缓存</span>
                 </el-dropdown-item>
                 
-                <el-dropdown-item divided @click="logoutClk">
-                  <i w="1em" h="1em"></i>
+                <el-dropdown-item
+                  divided
+                  @click="logoutClk"
+                >
+                  <i
+                    w="1em"
+                    h="1em"
+                  ></i>
                   <span>退出登录</span>
                 </el-dropdown-item>
                 
@@ -123,6 +138,8 @@
       bg="[rgba(0,0,0,20%)]"
     >
       <div
+        ref="tab_active_lineRef"
+        
         display-none
         pos-absolute
         bottom-0
@@ -132,8 +149,6 @@
         border-rounded
         transition="property-[width,left] duration-[300ms]"
         ease-in
-        
-        ref="tab_active_lineRef"
       ></div>
     </div>
     <div

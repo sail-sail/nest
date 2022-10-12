@@ -1,7 +1,7 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
   :class="'custom_dialog AttDialog'"
@@ -9,12 +9,18 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -26,7 +32,7 @@
         @click="uploadClk"
       >
         <template #icon>
-          <Upload/>
+          <Upload />
         </template>
         <span>上传</span>
       </el-button>
@@ -37,7 +43,7 @@
         @click="deleteClk"
       >
         <template #icon>
-          <Delete/>
+          <Delete />
         </template>
         <span>删除</span>
       </el-button>
@@ -47,7 +53,7 @@
         @click="downloadClk"
       >
         <template #icon>
-          <Download/>
+          <Download />
         </template>
         <span>下载</span>
       </el-button>
@@ -56,7 +62,7 @@
         @click="printClk"
       >
         <template #icon>
-          <Printer/>
+          <Printer />
         </template>
         <span>打印</span>
       </el-button>
@@ -75,7 +81,7 @@
         @click="moveLeftClk"
       >
         <template #icon>
-          <ArrowLeft/>
+          <ArrowLeft />
         </template>
         <span>前移</span>
       </el-button>
@@ -85,7 +91,7 @@
         @click="moveRightClk"
       >
         <template #icon>
-          <ArrowRight/>
+          <ArrowRight />
         </template>
         <span>后移</span>
       </el-button>
@@ -94,8 +100,8 @@
       >
       </div>
       <div
-        m="r-3"
         v-if="urlList[nowIndex]"
+        m="r-3"
       >
         <el-color-picker
           v-model="backgroundColor"
@@ -106,37 +112,52 @@
       </div>
     </div>
     <div class="content_div">
-      <template v-for="(url, i) in urlList" :key="url">
+      <template
+        v-for="(url, i) in urlList"
+        :key="url"
+      >
         <iframe
           v-if="iframeShoweds[i]"
+          :ref="(el) => { if (el) iframeRefs[i] = el }"
           :style="{ display: i === nowIndex ? '' : 'none', backgroundColor }"
           class="iframe"
           :src="url"
           frameborder="0"
-          @load="iframeLoad"
-          :ref="(el) => { if (el) iframeRefs[i] = el }"
+          @load="(iframeLoad as any)"
         ></iframe>
       </template>
-      <div v-if="urlList.length === 0" class="empty">
+      <div
+        v-if="urlList.length === 0"
+        class="empty"
+      >
         <el-button
           v-if="!dialogModel.readonly && urlList.length === 0"
           type="primary"
           @click="uploadClk"
         >
           <template #icon>
-            <Upload/>
+            <Upload />
           </template>
           <span>上传</span>
         </el-button>
-        <div v-else-if="!dialogModel.readonly" class="empty">
+        <div
+          v-else-if="!dialogModel.readonly"
+          class="empty"
+        >
           <span>(暂无附件)</span>
         </div>
       </div>
-      <div v-if="iframeLoading" class="loading_div">
+      <div
+        v-if="iframeLoading"
+        class="loading_div"
+      >
         加载中, 请稍后....
       </div>
     </div>
-    <div class="pagination_row" v-if="urlList.length > 1">
+    <div
+      v-if="urlList.length > 1"
+      class="pagination_row"
+    >
       <div class="pagination_div">
         <el-button
           :disabled="nowIndex <= 0"
@@ -144,7 +165,7 @@
           @click="previousClk"
         >
           <template #icon>
-            <ArrowLeft/>
+            <ArrowLeft />
           </template>
         </el-button>
         <span class="pagination_span">
@@ -156,18 +177,18 @@
           @click="nextClk"
         >
           <template #icon>
-            <ArrowRight/>
+            <ArrowRight />
           </template>
         </el-button>
       </div>
     </div>
   </div>
   <input
+    ref="fileRef"
     type="file"
     :accept="dialogModel.accept"
-    @change="inputChg"
     style="display: none;"
-    ref="fileRef"
+    @change="(inputChg as any)"
   />
 </el-dialog>
 </template>

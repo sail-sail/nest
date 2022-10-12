@@ -7,19 +7,19 @@
       登录
     </div>
     <el-form
-      :model="model"
       ref="formRef"
+      :model="model"
       :rules="form_rules"
       :validate-on-rule-change="false"
-      @keyup.enter.native="loginClk"
       class="login_form"
       size="large"
+      @keyup.enter="loginClk"
     >
       <el-form-item prop="tenant_id">
         <el-select
+          v-model="model.tenant_id"
           class="from_input"
           style="width: 100%;"
-          v-model="model.tenant_id"
           filterable
           default-first-option
         >
@@ -40,10 +40,10 @@
       
       <el-form-item prop="username">
         <el-input
+          v-model="model.username"
           class="from_input"
           placeholder="请输入用户名"
-          v-model="model.username"
-          :inputStyle="inputStyle"
+          :input-style="inputStyle"
           clearable
           :prefix-icon="User"
         >
@@ -52,12 +52,12 @@
       
       <el-form-item prop="password">
         <el-input
+          v-model="model.password" 
           class="from_input"
           size="large"
           placeholder="请输入密码"
           type="password"
-          v-model="model.password" 
-          :inputStyle="inputStyle"
+          :input-style="inputStyle"
           show-password
           clearable
           :prefix-icon="Lock"
@@ -90,18 +90,25 @@ import {
   FormItemRule,
   ElIcon,
 } from "element-plus";
+
 import {
   User,
   Lock,
 } from "@element-plus/icons-vue";
+
 import useUsrStore from "@/store/usr";
 import useIndexStore from "@/store/index";
 import useTabsStore from "@/store/tabs";
+
 import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
 } from "./Api";
-import { useRoute, useRouter } from "vue-router";
+
+import {
+  useRoute,
+  useRouter,
+} from "vue-router";
 
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();

@@ -4,6 +4,7 @@
   "scripts": {
     "start": "uni -p mp-weixin",
     "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint --ext .ts,.vue src",
     "dev:app": "uni -p app",
     "dev:custom": "uni -p",
     "dev:h5": "uni",
@@ -49,21 +50,24 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-alpha-3060320220919001",
     "graphql": "16.6.0",
     "graphql-combine-query": "1.2.4",
-    "pinia": "2.0.22",
-    "vue": "^3.2.39",
+    "pinia": "2.0.23",
+    "vue": "3.2.40",
     "vue-demi": "0.13.11",
-    "vue-i18n": "^9.1.9",
-    "vuex": "^4.0.2"
+    "vue-i18n": "9.1.9"
   },
   "devDependencies": {
-    "@dcloudio/types": "^3.0.14",
+    "@dcloudio/types": "3.0.14",
     "@dcloudio/uni-automator": "3.0.0-alpha-3060320220919001",
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-3060320220919001",
     "@dcloudio/uni-stacktracey": "3.0.0-alpha-3060320220919001",
     "@dcloudio/vite-plugin-uni": "3.0.0-alpha-3060320220919001",
-    "@types/node": "18.8.1",
+    "@types/node": "18.8.4",
+    "@typescript-eslint/eslint-plugin": "5.40.0",
+    "@typescript-eslint/parser": "5.40.0",
     "@unocss/preset-attributify": "0.45.26",
     "@vue/runtime-dom": "3.2.40",
+    "eslint": "8.25.0",
+    "eslint-plugin-vue": "9.6.0",
     "husky": "8.0.1",
     "less": "4.1.3",
     "postcss": "8.4.17",
@@ -71,8 +75,8 @@
     "stylus": "0.59.0",
     "terser": "5.15.1",
     "typescript": "4.8.4",
-    "unocss": "0.45.28",
-    "unocss-applet": "0.2.14",
-    "vite": "^2.9.14"
+    "unocss": "0.45.29",
+    "unocss-applet": "0.2.15",
+    "vite": "3.1.7"
   }
 }

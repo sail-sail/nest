@@ -12,9 +12,9 @@
     overflow-auto
   >
     <el-form
+      ref="searchFormRef"
       size="default"
       :model="search"
-      ref="searchFormRef"
       inline-message
       
       grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
@@ -22,7 +22,7 @@
       items-center
       gap="y-[6px]"
       
-      @keyup.enter.native="searchClk"
+      @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
@@ -37,8 +37,10 @@
         </label>
         <el-form-item prop="lblLike">
           <el-input
-            w="full"
             v-model="search.lblLike"
+            
+            w="full"
+            
             placeholder="请输入名称"
             clearable
             @clear="searchIptClr"
@@ -52,8 +54,8 @@
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
             v-model="search.is_deleted"
+            :set="search.is_deleted = search.is_deleted || 0"
             :false-label="0"
             :true-label="1"
             @change="searchClk"
@@ -71,8 +73,8 @@
           v-model="idsChecked"
           :false-label="0"
           :true-label="1"
-          @change="idsCheckedChg"
           :disabled="selectedIds.length === 0"
+          @change="idsCheckedChg"
         >
           <span>已选择</span>
           <span>(</span>
@@ -86,12 +88,14 @@
           <span>)</span>
         </el-checkbox>
         <el-icon
-          title="清空已选择"
           v-show="selectedIds.length > 0"
-          @click="clearSelect"
+          title="清空已选择"
           cursor="pointer"
+          
           m="x-3"
           text="hover:[red]"
+          
+          @click="clearSelect"
         >
           <CircleClose />
         </el-icon>
@@ -112,7 +116,7 @@
           @click="searchClk"
         >
           <template #icon>
-            <Search/>
+            <Search />
           </template>
           <span>查询</span>
         </el-button>
@@ -122,7 +126,7 @@
           @click="searchReset"
         >
           <template #icon>
-            <Delete/>
+            <Delete />
           </template>
           <span>重置</span>
         </el-button>
@@ -143,7 +147,7 @@
         @click="openAdd"
       >
         <template #icon>
-          <CirclePlus/>
+          <CirclePlus />
         </template>
         <span>新增</span>
       </el-button>
@@ -154,7 +158,7 @@
         @click="openCopy"
       >
         <template #icon>
-          <CopyDocument/>
+          <CopyDocument />
         </template>
         <span>复制</span>
       </el-button>
@@ -165,7 +169,7 @@
         @click="openEdit"
       >
         <template #icon>
-          <Edit/>
+          <Edit />
         </template>
         <span>编辑</span>
       </el-button>
@@ -176,7 +180,7 @@
         @click="deleteByIdsEfc"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>删除</span>
       </el-button>
@@ -186,7 +190,7 @@
         @click="exportClk"
       >
         <template #icon>
-          <Download/>
+          <Download />
         </template>
         <span>导出</span>
       </el-button>
@@ -196,7 +200,7 @@
         @click="openUploadClk"
       >
         <template #icon>
-          <Upload/>
+          <Upload />
         </template>
         <span>导入</span>
       </el-button>
@@ -209,7 +213,7 @@
         @click="revertByIdsEfc"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>还原</span>
       </el-button>
@@ -220,7 +224,7 @@
         @click="forceDeleteByIdsEfc"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>彻底删除</span>
       </el-button>
@@ -230,7 +234,7 @@
         @click="exportClk"
       >
         <template #icon>
-          <Download/>
+          <Download />
         </template>
         <span>导出</span>
       </el-button>
@@ -241,7 +245,7 @@
       @click="searchClk"
     >
       <template #icon>
-        <Refresh/>
+        <Refresh />
       </template>
       <span>刷新</span>
     </el-button>
@@ -253,9 +257,9 @@
     </div>
     
     <TableShowColumns
-      :tableColumns="tableColumns"
-      @resetColumns="resetColumns"
-      @storeColumns="storeColumns"
+      :table-columns="tableColumns"
+      @reset-columns="resetColumns"
+      @store-columns="storeColumns"
     >
       列操作
     </TableShowColumns>
@@ -271,23 +275,23 @@
       overflow-hidden
     >
       <el-table
+        ref="tableRef"
+        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
         :data="tableData"
-        @select="selectChg"
-        @select-all="selectChg"
-        @row-click="rowClk"
         :row-class-name="rowClassName"
         border
         size="small"
         height="100%"
         row-key="id"
-        ref="tableRef"
         :empty-text="inited ? undefined : '加载中...'"
-        @sort-change="sortChange"
         :default-sort="sort"
+        @select="selectChg"
+        @select-all="selectChg"
+        @row-click="rowClk"
+        @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
       >
         
         <el-table-column
@@ -297,7 +301,10 @@
           width="50"
         ></el-table-column>
         
-        <template v-for="(col, i) in tableColumns" :key="i + col">
+        <template
+          v-for="(col, i) in tableColumns"
+          :key="i + col"
+        >
           
           <!-- 菜单 -->
           <template v-if="'_menu_id' === col.prop">
@@ -349,10 +356,10 @@
         :page-sizes="pageSizes"
         :page-size="page.size"
         layout="total, sizes, prev, pager, next, jumper"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
         :current-page="page.current"
         :total="page.total"
+        @size-change="pgSizeChg"
+        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div>

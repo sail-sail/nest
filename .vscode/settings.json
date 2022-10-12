@@ -73,6 +73,5 @@
   "volar.icon.splitEditors": false,
   "volar.codeLens.references": false,
   "volar.diagnostics.delay": 0,
-  "editor.quickSuggestionsDelay": 0,
-  "volar.vueserver.useSecondServer": true
+  "editor.quickSuggestionsDelay": 0
 }

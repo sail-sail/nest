@@ -1,6 +1,14 @@
 <template>
-<view v-if="loading > 0" class="app_loading">
-  <uni-icons color="gray" class="loop_icon" type="loop" size="30"></uni-icons>
+<view
+  v-if="loading > 0"
+  class="app_loading"
+>
+  <uni-icons
+    color="gray"
+    class="loop_icon"
+    type="loop"
+    size="30"
+  ></uni-icons>
 </view>
 </template>
 

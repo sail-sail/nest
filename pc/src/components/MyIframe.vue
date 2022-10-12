@@ -6,17 +6,17 @@
   <iframe
     v-if="src"
     
+    ref="iframeRef"
     flex="~ [1_0_0] col"
     overflow-hidden
     w="full"
     h="full"
     box-border
     
-    @load="iframeLoad"
     :src="src"
     frameborder="0"
-    ref="iframeRef"
     seamless
+    @load="(iframeLoad as any)"
   ></iframe>
   <template v-else>
     <div
@@ -33,10 +33,10 @@
 
 <script lang="ts" setup>
 import {
+  type WatchStopHandle,
   onActivated,
   onDeactivated,
   watch,
-  type WatchStopHandle,
 } from "vue";
 
 import {

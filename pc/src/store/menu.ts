@@ -85,8 +85,8 @@ export default defineStore("menu", function() {
    * @return {string[]}
    */
   function getParentIds(id: string): string[] {
-    let parentIds: string[] = [ ];
-    let menus0 = [ ...menus ];
+    const parentIds: string[] = [ ];
+    const menus0 = [ ...menus ];
     let parentId = id;
     const tmpFn = function(menus0: MenuModel[]) {
       for (let i = 0; i < menus0.length; i++) {

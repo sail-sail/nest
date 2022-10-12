@@ -1,7 +1,7 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
   class="custom_dialog auto_dialog"
@@ -9,14 +9,20 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -32,6 +38,7 @@
       items-center
     >
       <el-form
+        ref="formRef"
         size="default"
         
         justify-end
@@ -41,10 +48,9 @@
         place-content-center
         
         :model="dialogModel"
-        ref="formRef"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter.native="saveClk"
+        @keyup.enter="saveClk"
       >
         
         <template v-if="builtInModel?.lbl == null">
@@ -60,8 +66,10 @@
           </label>
           <el-form-item prop="lbl">
             <el-input
-              w="full"
               v-model="dialogModel.lbl"
+              
+              w="full"
+              
               placeholder="请输入名称"
             ></el-input>
           </el-form-item>
@@ -80,8 +88,10 @@
           </label>
           <el-form-item prop="username">
             <el-input
-              w="full"
               v-model="dialogModel.username"
+              
+              w="full"
+              
               placeholder="请输入用户名"
             ></el-input>
           </el-form-item>
@@ -99,8 +109,10 @@
           </label>
           <el-form-item prop="password">
             <el-input
-              w="full"
               v-model="dialogModel.password"
+              
+              w="full"
+              
               placeholder="请输入密码"
             ></el-input>
           </el-form-item>
@@ -118,14 +130,16 @@
           </label>
           <el-form-item prop="is_enabled">
             <el-select
-              @keyup.enter.native.stop
-              w="full"
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
+              
+              w="full"
+              
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               placeholder="请选择启用"
               filterable
               default-first-option
               clearable
+              @keyup.enter.stop
             >
               <el-option
                 :value="1"
@@ -151,19 +165,21 @@
           </label>
           <el-form-item prop="role_ids">
             <el-select-v2
-              @keyup.enter.native.stop
+              v-model="dialogModel.role_ids"
               :height="300"
               multiple
               collapse-tags
               collapse-tags-tooltip
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
+              
               w="full"
-              v-model="dialogModel.role_ids"
+              
               placeholder="请选择角色"
               :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
               filterable
               clearable
               :loading="!inited"
+              @keyup.enter.stop
             ></el-select-v2>
           </el-form-item>
         </template>
@@ -180,8 +196,10 @@
           </label>
           <el-form-item prop="rem">
             <el-input
-              w="full"
               v-model="dialogModel.rem"
+              
+              w="full"
+              
               placeholder="请输入备注"
             ></el-input>
           </el-form-item>
@@ -201,7 +219,7 @@
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
@@ -212,7 +230,7 @@
         @click="saveClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>保存</span>
       </el-button>

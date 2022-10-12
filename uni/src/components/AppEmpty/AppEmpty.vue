@@ -6,7 +6,9 @@
     :mode="mode"
     :style="customStyle"
   ></image>
-  <text style="color: gray;">{{ text }}</text>
+  <text style="color: gray;">
+    {{ text }}
+  </text>
 </view>
 </template>
 

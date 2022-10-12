@@ -1,15 +1,15 @@
 <template>
 <el-dropdown
+  ref="dropdownRef"
   trigger="click"
   :hide-on-click="false"
   style="margin-left: 12px;"
-  ref="dropdownRef"
   @command="handleCommand"
 >
   <el-button>
     <slot></slot>
     <el-icon class="el-icon--right">
-      <arrow-down/>
+      <arrow-down />
     </el-icon>
   </el-button>
   <template #dropdown>
@@ -51,6 +51,7 @@ import {
   ElDropdownMenu,
   ElDropdownItem,
 } from "element-plus";
+
 import {
   ArrowDown,
   Select,

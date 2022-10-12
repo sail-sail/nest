@@ -5,7 +5,10 @@
     :width="modelValue && modelValue.length > 5 ? 500 : 'auto'"
   >
     <template #reference>
-      <el-link :underline="false" type="primary">
+      <el-link
+        :underline="false"
+        type="primary"
+      >
         <el-tag
           v-for="item in labelValue"
           :key="item"
@@ -17,7 +20,10 @@
         ...
       </el-link>
     </template>
-    <template v-for="item in modelValue" :key="item">
+    <template
+      v-for="item in modelValue"
+      :key="item"
+    >
       <el-tag
         type="info"
         style="margin: 1px;"

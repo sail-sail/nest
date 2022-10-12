@@ -1,12 +1,8 @@
 <template>
 <div
-  style="
-    width: 100%;
-    height: 100%;
-    position: relative;
-  "
-  @mouseenter="imgMouseenter"
-  @mouseleave="imgMouseleave"
+  style="width: 100%;height: 100%;position: relative;"
+  @mouseenter="(imgMouseenter as any)"
+  @mouseleave="(imgMouseleave as any)"
 >
   <el-image
     v-bind="$attrs"
@@ -26,17 +22,27 @@
         justify-center
         items-center
       >
-        <el-icon v-if="indexStore.loading > 0" color="gray">
+        <el-icon
+          v-if="indexStore.loading > 0"
+          color="gray"
+        >
           <Loading></Loading>
         </el-icon>
-        <el-icon v-else color="red" :size="35">
+        <el-icon
+          v-else
+          color="red"
+          :size="35"
+        >
           <Picture></Picture>
         </el-icon>
       </div>
     </template>
   </el-image>
   <transition name="fade">
-    <div v-if="showUpload" class="upload_div">
+    <div
+      v-if="showUpload"
+      class="upload_div"
+    >
       <div class="upload_toolbar">
         <el-button
           plain
@@ -45,16 +51,26 @@
         >
           上传
         </el-button>
-        <el-button v-if="urlList.length > 0" plain type="danger" @click="deleteClk">删除</el-button>
+        <el-button
+          v-if="urlList.length > 0"
+          plain
+          type="danger"
+          @click="deleteClk"
+        >
+          删除
+        </el-button>
       </div>
-      <div class="upload_padding" v-if="urlList.length > 0">
+      <div
+        v-if="urlList.length > 0"
+        class="upload_padding"
+      >
         <el-button
           :disabled="nowIndex <= 0"
           size="small"
           @click="previousClk"
         >
           <template #icon>
-            <ArrowLeft/>
+            <ArrowLeft />
           </template>
         </el-button>
         <span style="color: yellowgreen;margin-left: 10px;margin-right: 10px;">
@@ -66,18 +82,18 @@
           @click="nextClk"
         >
           <template #icon>
-            <ArrowRight/>
+            <ArrowRight />
           </template>
         </el-button>
       </div>
     </div>
   </transition>
   <input
+    ref="fileRef"
     type="file"
     :accept="accept"
-    @change="inputChg"
     style="display: none;"
-    ref="fileRef"
+    @change="(inputChg as any)"
   />
 </div>
 </template>

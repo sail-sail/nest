@@ -1,8 +1,8 @@
 <template>
 <el-dialog
+  v-model="dialogVisible"
   draggable
   :fullscreen="fullscreen"
-  v-model="dialogVisible"
   append-to-body
   :close-on-click-modal="false"
   class="custom_dialog auto_dialog UploadFileDialog"
@@ -10,12 +10,18 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -30,7 +36,7 @@
         <div class="form_input">
           <div
             class="upload_div"
-            @click="fileRef?.click()"
+            @click="(fileRef?.click() as any)"
           >
             <template v-if="fileInfo.name">
               <span style="font-size: 16px;">
@@ -66,33 +72,34 @@
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
       <el-button
         type="primary"
-        @click="confirmClk"
         :disabled="!fileInfo.name"
+        @click="confirmClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>确定导入</span>
       </el-button>
     </div>
   </div>
   <input
-    type="file"
-    @change="inputChg"
-    style="display: none;"
     ref="fileRef"
+    type="file"
+    style="display: none;"
+    @change="(inputChg as any)"
   />
 </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { nextTick } from "vue";
+
 import {
   ElDialog,
   ElMessage,
@@ -101,12 +108,14 @@ import {
   ElIcon,
   ElButton,
 } from "element-plus";
+
 import {
   FullScreen,
   Plus,
   CircleCheck,
   CircleClose,
 } from "@element-plus/icons-vue";
+
 import { useFullscreenEfc } from "@/compositions/fullscreen";
 
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());

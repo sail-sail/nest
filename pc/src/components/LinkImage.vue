@@ -2,14 +2,17 @@
 <div>
   <el-link
     v-if="urlList.length > 0"
-    @click="linkClk"
     type="primary"
+    @click="linkClk"
   >
     <slot name="default">
       {{ urlList.length }}
     </slot>
   </el-link>
-  <div style="color: light-gray;" v-else>
+  <div
+    v-else
+    style="color: light-gray;"
+  >
     0
   </div>
   <teleport
@@ -17,9 +20,9 @@
     to="body"
   >
     <el-image-viewer
-      :urlList="urlList"
+       hide-on-click-modal
+      :url-list="urlList"
       @close="showImageViewer = false"
-      hideOnClickModal
     ></el-image-viewer>
   </teleport>
 </div>

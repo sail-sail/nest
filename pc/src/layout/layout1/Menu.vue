@@ -1,15 +1,17 @@
 <template>
 <el-menu
-  :default-active="defaultActive"
+  
   w="full"
+  
+  :default-active="defaultActive"
   :collapse="menuStore.isCollapse"
   background-color="#072540"
   text-color="#FFF"
   unique-opened
+  :router="false"
   @open="menuOpen"
   @close="menuClose"
   @select="menuSelect"
-  :router="false"
 >
   <AppSubMenu
     :children="(menuStore.menus as any[])"

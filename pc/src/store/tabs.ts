@@ -17,7 +17,7 @@ export default defineStore("tabs", function() {
   
   let tabs = $ref<TabInf[]>([ ]);
   
-  let actTab = $computed(() => tabs.find((item) => item.active));
+  const actTab = $computed(() => tabs.find((item) => item.active));
   
   function activeTab(tab?: TabInf) {
     if (tab && actTab && tab.path === actTab.path) {
@@ -58,7 +58,7 @@ export default defineStore("tabs", function() {
     if (!path) {
       return false;
     }
-    let idx = tabs.findIndex((item) => item.path === path);
+    const idx = tabs.findIndex((item) => item.path === path);
     const tab = tabs[idx];
     if (tab.active) {
       if (idx !== -1) {

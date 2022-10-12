@@ -17,9 +17,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
     overflow-auto
   >
     <el-form
+      ref="searchFormRef"
       size="default"
       :model="search"
-      ref="searchFormRef"
       inline-message
       
       grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
@@ -27,7 +27,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       items-center
       gap="y-[6px]"
       
-      @keyup.enter.native="searchClk"
+      @keyup.enter="searchClk"
     ><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -71,12 +71,12 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select-v2
-            @keyup.enter.native.stop
-            :height="300"
+            
             w="full"
+            
+            :height="300"
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
             placeholder="请选择<#=column_comment#>"
             :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
             filterable
@@ -85,6 +85,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
             collapse-tags
             collapse-tags-tooltip
             :loading="!inited"
+            @keyup.enter.stop
+            @update:model-value="search.<#=column_name#> = $event"
             @change="searchClk"
           ></el-select-v2>
         </el-form-item>
@@ -103,16 +105,18 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select
-            @keyup.enter.native.stop
+            
             w="full"
+            
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
             placeholder="请选择<#=column_comment#>"
             filterable
             default-first-option
             clearable
             multiple
+            @keyup.enter.stop
+            @update:model-value="search.<#=column_name#> = $event"
             @change="searchClk"
           ><#
             for (let item of selectList) {
@@ -124,7 +128,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
                 value = value.toString();
               }
           #>
-            <el-option :value="<#=value#>" label="<#=label#>"></el-option><#
+            <el-option
+              :value="<#=value#>"
+              label="<#=label#>"
+            ></el-option><#
             }
           #>
           </el-select>
@@ -145,16 +152,18 @@ const Table_Up = tableUp.split("_").map(function(item) {
         <el-form-item prop="<#=column_name#>">
           <el-date-picker
             type="daterange"
+            
             w="full"
+            
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="(search.<#=column_name#> as any)"
-            @update:model-value="search.<#=column_name#> = $event"
             start-placeholder="开始"
             end-placeholder="结束"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD HH:mm:ss"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
             clearable
+            @update:model-value="search.<#=column_name#> = $event"
             @clear="searchIptClr"
           ></el-date-picker>
         </el-form-item>
@@ -173,7 +182,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-checkbox
+            
             w="full"
+            
             v-model="search.<#=column_name#>"
             :false-label="0"
             :true-label="1"
@@ -194,8 +205,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-input-number
-            w="full"
             v-model="search.<#=column_name#>"
+            
+            w="full"
+            
             :controls="false"
             clearable
             @clear="searchIptClr"
@@ -216,8 +229,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>Like">
           <el-input
-            w="full"
             v-model="search.<#=column_name#>Like"
+            
+            w="full"
+            
             placeholder="请输入<#=column_comment#>"
             clearable
             @clear="searchIptClr"
@@ -238,8 +253,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
             v-model="search.is_deleted"
+            :set="search.is_deleted = search.is_deleted || 0"
             :false-label="0"
             :true-label="1"
             @change="searchClk"
@@ -259,8 +274,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
           v-model="idsChecked"
           :false-label="0"
           :true-label="1"
-          @change="idsCheckedChg"
           :disabled="selectedIds.length === 0"
+          @change="idsCheckedChg"
         >
           <span>已选择</span>
           <span>(</span>
@@ -274,12 +289,14 @@ const Table_Up = tableUp.split("_").map(function(item) {
           <span>)</span>
         </el-checkbox>
         <el-icon
-          title="清空已选择"
           v-show="selectedIds.length > 0"
-          @click="clearSelect"
+          title="清空已选择"
           cursor="pointer"
+          
           m="x-3"
           text="hover:[red]"
+          
+          @click="clearSelect"
         >
           <CircleClose />
         </el-icon>
@@ -300,7 +317,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           @click="searchClk"
         >
           <template #icon>
-            <Search/>
+            <Search />
           </template>
           <span>查询</span>
         </el-button>
@@ -310,7 +327,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
           @click="searchReset"
         >
           <template #icon>
-            <Delete/>
+            <Delete />
           </template>
           <span>重置</span>
         </el-button>
@@ -333,7 +350,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="openAdd"
       >
         <template #icon>
-          <CirclePlus/>
+          <CirclePlus />
         </template>
         <span>新增</span>
       </el-button>
@@ -344,7 +361,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="openCopy"
       >
         <template #icon>
-          <CopyDocument/>
+          <CopyDocument />
         </template>
         <span>复制</span>
       </el-button><#
@@ -359,7 +376,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="openEdit"
       >
         <template #icon>
-          <Edit/>
+          <Edit />
         </template>
         <span>编辑</span>
       </el-button><#
@@ -374,7 +391,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="deleteByIdsEfc"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>删除</span>
       </el-button><#
@@ -388,7 +405,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="exportClk"
       >
         <template #icon>
-          <Download/>
+          <Download />
         </template>
         <span>导出</span>
       </el-button><#
@@ -402,7 +419,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="openUploadClk"
       >
         <template #icon>
-          <Upload/>
+          <Upload />
         </template>
         <span>导入</span>
       </el-button><#
@@ -419,7 +436,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="revertByIdsEfc"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>还原</span>
       </el-button><#
@@ -434,7 +451,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="forceDeleteByIdsEfc"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>彻底删除</span>
       </el-button><#
@@ -448,7 +465,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
         @click="exportClk"
       >
         <template #icon>
-          <Download/>
+          <Download />
         </template>
         <span>导出</span>
       </el-button><#
@@ -461,7 +478,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       @click="searchClk"
     >
       <template #icon>
-        <Refresh/>
+        <Refresh />
       </template>
       <span>刷新</span>
     </el-button>
@@ -473,9 +490,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
     </div>
     
     <TableShowColumns
-      :tableColumns="tableColumns"
-      @resetColumns="resetColumns"
-      @storeColumns="storeColumns"
+      :table-columns="tableColumns"
+      @reset-columns="resetColumns"
+      @store-columns="storeColumns"
     >
       列操作
     </TableShowColumns>
@@ -491,18 +508,15 @@ const Table_Up = tableUp.split("_").map(function(item) {
       overflow-hidden
     >
       <el-table
+        ref="tableRef"
+        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
         :data="tableData"
-        @select="selectChg"
-        @select-all="selectChg"
-        @row-click="rowClk"
         :row-class-name="rowClassName"
         border
         size="small"
         height="100%"
         row-key="id"
-        ref="tableRef"
         :empty-text="inited ? undefined : '加载中...'"
-        @sort-change="sortChange"
         :default-sort="sort"<#
         if (hasSummary) {
         #>
@@ -510,10 +524,13 @@ const Table_Up = tableUp.split("_").map(function(item) {
         :summary-method="summaryMethod"<#
         }
         #>
+        @select="selectChg"
+        @select-all="selectChg"
+        @row-click="rowClk"
+        @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
-        v-header-order-drag="() => ({ tableColumns, storeColumns, offset: 1 })"
       >
         
         <el-table-column
@@ -523,7 +540,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
           width="50"
         ></el-table-column>
         
-        <template v-for="(col, i) in tableColumns" :key="i + col"><#
+        <template
+          v-for="(col, i) in tableColumns"
+          :key="i + col"
+        ><#
           let colIdx = 0;
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -641,8 +661,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="<#=column_name#>Clk(row)"
+                  
                   min="w-[30px]"
+                  
+                  @click="<#=column_name#>Clk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
@@ -680,10 +702,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
         :page-sizes="pageSizes"
         :page-size="page.size"
         layout="total, sizes, prev, pager, next, jumper"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
         :current-page="page.current"
         :total="page.total"
+        @size-change="pgSizeChg"
+        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div><#
@@ -717,8 +739,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
     v-slot="{ selectedIds }"
   >
     <<#=foreignTableUp#>List
-      :selectedIds="selectedIds"
-      @selectedIdsChg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
+      :selected-ids="selectedIds"
+      @selected-ids-chg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
     ></<#=foreignTableUp#>List>
   </ListSelectDialog><#
     }

@@ -9,15 +9,15 @@
   >
     <template #title>
       <el-icon>
-        <FolderOpened v-if="openedIndex.includes(item.id)"/>
-        <Folder v-else/>
+        <FolderOpened v-if="openedIndex.includes(item.id)" />
+        <Folder v-else />
       </el-icon>
       <span>{{ item.lbl }}</span>
     </template>
     <AppSubMenu
       v-if="item.children"
       :children="(item.children as MenuModel[])"
-      :openedIndex="openedIndex"
+      :opened-index="openedIndex"
       :lvl="lvl"
     ></AppSubMenu>
   </el-sub-menu>
@@ -28,7 +28,7 @@
     :class="{ top_menu_item: lvl === 1 }"
   >
     <el-icon v-if="lvl > 0">
-      <Document/>
+      <Document />
     </el-icon>
     <span>
       {{ item.route_path ? "" : "-" }}

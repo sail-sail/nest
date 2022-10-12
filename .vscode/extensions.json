@@ -33,6 +33,9 @@
     "antfu.where-am-i",
     "ms-edgedevtools.vscode-edge-devtools",
     "rapidapi.vscode-rapidapi-client",
-    "zixuanchen.vitest-explorer"
+    "zixuanchen.vitest-explorer",
+    "dbaeumer.vscode-eslint",
+    "rvest.vs-code-prettier-eslint",
+    "maggie.eslint-rules-zh-plugin"
   ]
 }

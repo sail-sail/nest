@@ -1,7 +1,7 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
   class="custom_dialog auto_dialog"
@@ -9,14 +9,20 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -32,6 +38,7 @@
       items-center
     >
       <el-form
+        ref="formRef"
         size="default"
         
         justify-end
@@ -41,10 +48,9 @@
         place-content-center
         
         :model="dialogModel"
-        ref="formRef"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter.native="saveClk"
+        @keyup.enter="saveClk"
       >
         
         <template v-if="builtInModel?.lbl == null">
@@ -60,8 +66,10 @@
           </label>
           <el-form-item prop="lbl">
             <el-input
-              w="full"
               v-model="dialogModel.lbl"
+              
+              w="full"
+              
               placeholder="请输入名称"
             ></el-input>
           </el-form-item>
@@ -80,14 +88,16 @@
           </label>
           <el-form-item prop="state">
             <el-select
-              @keyup.enter.native.stop
-              w="full"
-              :set="dialogModel.state = dialogModel.state ?? undefined"
               v-model="dialogModel.state"
+              
+              w="full"
+              
+              :set="dialogModel.state = dialogModel.state ?? undefined"
               placeholder="请选择状态"
               filterable
               default-first-option
               clearable
+              @keyup.enter.stop
             >
               <el-option
                 :value="'running'"
@@ -122,14 +132,16 @@
           </label>
           <el-form-item prop="type">
             <el-select
-              @keyup.enter.native.stop
-              w="full"
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
+              
+              w="full"
+              
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               placeholder="请选择类型"
               filterable
               default-first-option
               clearable
+              @keyup.enter.stop
             >
               <el-option
                 :value="'text'"
@@ -163,8 +175,10 @@
           </label>
           <el-form-item prop="result">
             <el-input
-              w="full"
               v-model="dialogModel.result"
+              
+              w="full"
+              
               placeholder="请输入执行结果"
             ></el-input>
           </el-form-item>
@@ -182,8 +196,10 @@
           </label>
           <el-form-item prop="err_msg">
             <el-input
-              w="full"
               v-model="dialogModel.err_msg"
+              
+              w="full"
+              
               placeholder="请输入错误信息"
             ></el-input>
           </el-form-item>
@@ -201,10 +217,12 @@
           </label>
           <el-form-item prop="begin_time">
             <el-date-picker
-              type="date"
-              w="full"
-              :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
               v-model="dialogModel.begin_time"
+              type="date"
+              
+              w="full"
+              
+              :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择开始时间"
             ></el-date-picker>
@@ -223,10 +241,12 @@
           </label>
           <el-form-item prop="end_time">
             <el-date-picker
-              type="date"
-              w="full"
-              :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
               v-model="dialogModel.end_time"
+              type="date"
+              
+              w="full"
+              
+              :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择结束时间"
             ></el-date-picker>
@@ -245,8 +265,10 @@
           </label>
           <el-form-item prop="rem">
             <el-input
-              w="full"
               v-model="dialogModel.rem"
+              
+              w="full"
+              
               placeholder="请输入备注"
             ></el-input>
           </el-form-item>
@@ -266,7 +288,7 @@
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
@@ -277,7 +299,7 @@
         @click="saveClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>保存</span>
       </el-button>

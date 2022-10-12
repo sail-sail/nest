@@ -16,8 +16,8 @@ for (let i = 0; i < columns.length; i++) {
 }
 #>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"<#
     if (columnNum > 20) {
@@ -32,14 +32,20 @@ for (let i = 0; i < columns.length; i++) {
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -55,6 +61,7 @@ for (let i = 0; i < columns.length; i++) {
       items-center
     >
       <el-form
+        ref="formRef"
         size="default"
         
         <#
@@ -74,10 +81,9 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         :model="dialogModel"
-        ref="formRef"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter.native="saveClk"
+        @keyup.enter="saveClk"
       ><#
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
@@ -161,7 +167,7 @@ for (let i = 0; i < columns.length; i++) {
             } else if (foreignKey) {
             #>
             <el-select-v2
-              @keyup.enter.native.stop
+              v-model="dialogModel.<#=column_name#>"
               :height="300"<#
               if (foreignKey.multiple) {
               #>
@@ -171,25 +177,29 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
+              
               w="full"
-              v-model="dialogModel.<#=column_name#>"
+              
               placeholder="请选择<#=column_comment#>"
               :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
               filterable
               clearable
               :loading="!inited"
+              @keyup.enter.stop
             ></el-select-v2><#
             } else if (selectList.length > 0) {
             #>
             <el-select
-              @keyup.enter.native.stop
-              w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
+              
+              w="full"
+              
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               placeholder="请选择<#=column_comment#>"
               filterable
               default-first-option
               clearable
+              @keyup.enter.stop
             ><#
               for (let item of selectList) {
                 let value = item.value;
@@ -210,10 +220,12 @@ for (let i = 0; i < columns.length; i++) {
             } else if (data_type === "datetime" || data_type === "date") {
             #>
             <el-date-picker
+              v-model="dialogModel.<#=column_name#>"
               type="date"
+              
               w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"<#
+              
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"<#
                 if (data_type === "datetime") {
               #>
               value-format="YYYY-MM-DD HH:mm:ss"<#
@@ -239,9 +251,11 @@ for (let i = 0; i < columns.length; i++) {
             } else if (column_type.startsWith("int")) {
             #>
             <el-input-number
-              w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
+              
+              w="full"
+              
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"
@@ -263,9 +277,11 @@ for (let i = 0; i < columns.length; i++) {
               let min = column.min;
             #>
             <el-input-number
-              w="full"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
+              
+              w="full"
+              
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               :max="<#=max#>"<#
                 if (min) {
               #>
@@ -279,8 +295,10 @@ for (let i = 0; i < columns.length; i++) {
             } else {
             #>
             <el-input
-              w="full"
               v-model="dialogModel.<#=column_name#>"
+              
+              w="full"
+              
               placeholder="请输入<#=column_comment#>"
             ></el-input><#
             }
@@ -317,7 +335,7 @@ for (let i = 0; i < columns.length; i++) {
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
@@ -328,7 +346,7 @@ for (let i = 0; i < columns.length; i++) {
         @click="saveClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>保存</span>
       </el-button>

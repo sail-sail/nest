@@ -5,11 +5,20 @@
     :key="item.path"
     class="tab_div"
     :class="{ tab_active: item.active }"
-    @click="activeTab(item)"
+    @click="(activeTab(item) as any)"
   >
-    <span class="tab_label" :title="item.lbl">{{ item.lbl }}</span>
-    <div class="tab_close_div" v-if="tabs.length > 1">
-      <Close class="tab_close" @click.stop="closeClk(item)"/>
+    <span
+      class="tab_label"
+      :title="item.lbl"
+    >{{ item.lbl }}</span>
+    <div
+      v-if="tabs.length > 1"
+      class="tab_close_div"
+    >
+      <Close
+        class="tab_close"
+        @click.stop="closeClk(item)"
+      />
     </div>
   </div>
 </div>
@@ -17,9 +26,11 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
+
 import {
   Close,
 } from "@element-plus/icons-vue";
+
 import { useRouter } from "vue-router";
 
 import useTabsStore from "@/store/tabs";

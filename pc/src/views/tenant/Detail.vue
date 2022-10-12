@@ -1,7 +1,7 @@
 <template>
 <el-dialog
-  :fullscreen="fullscreen"
   v-model="dialogVisible"
+  :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
   class="custom_dialog auto_dialog"
@@ -9,14 +9,20 @@
   :before-close="beforeClose"
 >
   <template #header>
-    <div class="dialog_title" v-draggable>
+    <div
+      v-draggable
+      class="dialog_title"
+    >
       <div class="title_lbl">
         <span class="dialogTitle_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon class="full_but" @click="setFullscreen">
-        <FullScreen/>
+      <el-icon
+        class="full_but"
+        @click="setFullscreen"
+      >
+        <FullScreen />
       </el-icon>
     </div>
   </template>
@@ -32,6 +38,7 @@
       items-center
     >
       <el-form
+        ref="formRef"
         size="default"
         
         justify-end
@@ -41,10 +48,9 @@
         place-content-center
         
         :model="dialogModel"
-        ref="formRef"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter.native="saveClk"
+        @keyup.enter="saveClk"
       >
         
         <template v-if="builtInModel?.lbl == null">
@@ -60,8 +66,10 @@
           </label>
           <el-form-item prop="lbl">
             <el-input
-              w="full"
               v-model="dialogModel.lbl"
+              
+              w="full"
+              
               placeholder="请输入名称"
             ></el-input>
           </el-form-item>
@@ -79,8 +87,10 @@
           </label>
           <el-form-item prop="host">
             <el-input
-              w="full"
               v-model="dialogModel.host"
+              
+              w="full"
+              
               placeholder="请输入域名绑定"
             ></el-input>
           </el-form-item>
@@ -98,10 +108,12 @@
           </label>
           <el-form-item prop="expiration">
             <el-date-picker
-              type="date"
-              w="full"
-              :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
               v-model="dialogModel.expiration"
+              type="date"
+              
+              w="full"
+              
+              :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD 00:00:00"
               placeholder="请选择到期日"
@@ -121,9 +133,11 @@
           </label>
           <el-form-item prop="max_usr_num">
             <el-input-number
-              w="full"
-              :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
               v-model="dialogModel.max_usr_num"
+              
+              w="full"
+              
+              :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"
@@ -145,14 +159,16 @@
           </label>
           <el-form-item prop="is_enabled">
             <el-select
-              @keyup.enter.native.stop
-              w="full"
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
+              
+              w="full"
+              
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               placeholder="请选择启用"
               filterable
               default-first-option
               clearable
+              @keyup.enter.stop
             >
               <el-option
                 :value="1"
@@ -178,19 +194,21 @@
           </label>
           <el-form-item prop="menu_ids">
             <el-select-v2
-              @keyup.enter.native.stop
+              v-model="dialogModel.menu_ids"
               :height="300"
               multiple
               collapse-tags
               collapse-tags-tooltip
               :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
+              
               w="full"
-              v-model="dialogModel.menu_ids"
+              
               placeholder="请选择菜单"
               :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"
               filterable
               clearable
               :loading="!inited"
+              @keyup.enter.stop
             ></el-select-v2>
           </el-form-item>
         </template>
@@ -207,9 +225,11 @@
           </label>
           <el-form-item prop="order_by">
             <el-input-number
-              w="full"
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               v-model="dialogModel.order_by"
+              
+              w="full"
+              
+              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"
@@ -231,8 +251,10 @@
           </label>
           <el-form-item prop="rem">
             <el-input
-              w="full"
               v-model="dialogModel.rem"
+              
+              w="full"
+              
               placeholder="请输入备注"
             ></el-input>
           </el-form-item>
@@ -252,7 +274,7 @@
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose/>
+          <CircleClose />
         </template>
         <span>取消</span>
       </el-button>
@@ -263,7 +285,7 @@
         @click="saveClk"
       >
         <template #icon>
-          <CircleCheck/>
+          <CircleCheck />
         </template>
         <span>保存</span>
       </el-button>
