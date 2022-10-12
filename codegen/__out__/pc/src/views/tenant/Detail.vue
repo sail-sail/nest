@@ -64,7 +64,9 @@
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
-          <el-form-item prop="lbl">
+          <el-form-item
+            prop="lbl"
+          >
             <el-input
               v-model="dialogModel.lbl"
               
@@ -85,7 +87,9 @@
           >
             <span>域名绑定</span>
           </label>
-          <el-form-item prop="host">
+          <el-form-item
+            prop="host"
+          >
             <el-input
               v-model="dialogModel.host"
               
@@ -106,7 +110,9 @@
           >
             <span>到期日</span>
           </label>
-          <el-form-item prop="expiration">
+          <el-form-item
+            prop="expiration"
+          >
             <el-date-picker
               v-model="dialogModel.expiration"
               type="date"
@@ -131,7 +137,9 @@
           >
             <span>最大用户数</span>
           </label>
-          <el-form-item prop="max_usr_num">
+          <el-form-item
+            prop="max_usr_num"
+          >
             <el-input-number
               v-model="dialogModel.max_usr_num"
               
@@ -157,7 +165,9 @@
           >
             <span>启用</span>
           </label>
-          <el-form-item prop="is_enabled">
+          <el-form-item
+            prop="is_enabled"
+          >
             <el-select
               v-model="dialogModel.is_enabled"
               
@@ -192,7 +202,9 @@
           >
             <span>菜单</span>
           </label>
-          <el-form-item prop="menu_ids">
+          <el-form-item
+            prop="menu_ids"
+          >
             <el-select-v2
               v-model="dialogModel.menu_ids"
               :height="300"
@@ -223,7 +235,9 @@
           >
             <span>排序</span>
           </label>
-          <el-form-item prop="order_by">
+          <el-form-item
+            prop="order_by"
+          >
             <el-input-number
               v-model="dialogModel.order_by"
               
@@ -249,7 +263,9 @@
           >
             <span>备注</span>
           </label>
-          <el-form-item prop="rem">
+          <el-form-item
+            prop="rem"
+          >
             <el-input
               v-model="dialogModel.rem"
               

@@ -63,7 +63,9 @@
           >
             <span>类型</span>
           </label>
-          <el-form-item prop="type">
+          <el-form-item
+            prop="type"
+          >
             <el-select
               v-model="dialogModel.type"
               
@@ -98,7 +100,9 @@
           >
             <span>父菜单</span>
           </label>
-          <el-form-item prop="menu_id">
+          <el-form-item
+            prop="menu_id"
+          >
             <el-select-v2
               v-model="dialogModel.menu_id"
               :height="300"
@@ -126,7 +130,9 @@
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
-          <el-form-item prop="lbl">
+          <el-form-item
+            prop="lbl"
+          >
             <el-input
               v-model="dialogModel.lbl"
               
@@ -147,7 +153,9 @@
           >
             <span>路由</span>
           </label>
-          <el-form-item prop="route_path">
+          <el-form-item
+            prop="route_path"
+          >
             <el-input
               v-model="dialogModel.route_path"
               
@@ -168,7 +176,9 @@
           >
             <span>参数</span>
           </label>
-          <el-form-item prop="route_query">
+          <el-form-item
+            prop="route_query"
+          >
             <el-input
               v-model="dialogModel.route_query"
               
@@ -189,7 +199,9 @@
           >
             <span>启用</span>
           </label>
-          <el-form-item prop="is_enabled">
+          <el-form-item
+            prop="is_enabled"
+          >
             <el-select
               v-model="dialogModel.is_enabled"
               
@@ -224,7 +236,9 @@
           >
             <span>排序</span>
           </label>
-          <el-form-item prop="order_by">
+          <el-form-item
+            prop="order_by"
+          >
             <el-input-number
               v-model="dialogModel.order_by"
               
@@ -250,7 +264,9 @@
           >
             <span>备注</span>
           </label>
-          <el-form-item prop="rem">
+          <el-form-item
+            prop="rem"
+          >
             <el-input
               v-model="dialogModel.rem"
               

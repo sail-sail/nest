@@ -64,7 +64,9 @@
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
-          <el-form-item prop="lbl">
+          <el-form-item
+            prop="lbl"
+          >
             <el-input
               v-model="dialogModel.lbl"
               
@@ -86,7 +88,9 @@
             <span style="color: red;">*</span>
             <span>状态</span>
           </label>
-          <el-form-item prop="state">
+          <el-form-item
+            prop="state"
+          >
             <el-select
               v-model="dialogModel.state"
               
@@ -130,7 +134,9 @@
             <span style="color: red;">*</span>
             <span>类型</span>
           </label>
-          <el-form-item prop="type">
+          <el-form-item
+            prop="type"
+          >
             <el-select
               v-model="dialogModel.type"
               
@@ -173,7 +179,9 @@
           >
             <span>执行结果</span>
           </label>
-          <el-form-item prop="result">
+          <el-form-item
+            prop="result"
+          >
             <el-input
               v-model="dialogModel.result"
               
@@ -194,7 +202,9 @@
           >
             <span>错误信息</span>
           </label>
-          <el-form-item prop="err_msg">
+          <el-form-item
+            prop="err_msg"
+          >
             <el-input
               v-model="dialogModel.err_msg"
               
@@ -215,7 +225,9 @@
           >
             <span>开始时间</span>
           </label>
-          <el-form-item prop="begin_time">
+          <el-form-item
+            prop="begin_time"
+          >
             <el-date-picker
               v-model="dialogModel.begin_time"
               type="date"
@@ -239,7 +251,9 @@
           >
             <span>结束时间</span>
           </label>
-          <el-form-item prop="end_time">
+          <el-form-item
+            prop="end_time"
+          >
             <el-date-picker
               v-model="dialogModel.end_time"
               type="date"
@@ -263,7 +277,9 @@
           >
             <span>备注</span>
           </label>
-          <el-form-item prop="rem">
+          <el-form-item
+            prop="rem"
+          >
             <el-input
               v-model="dialogModel.rem"
               

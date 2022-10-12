@@ -64,7 +64,9 @@
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
-          <el-form-item prop="lbl">
+          <el-form-item
+            prop="lbl"
+          >
             <el-input
               v-model="dialogModel.lbl"
               
@@ -86,7 +88,9 @@
             <span style="color: red;">*</span>
             <span>用户名</span>
           </label>
-          <el-form-item prop="username">
+          <el-form-item
+            prop="username"
+          >
             <el-input
               v-model="dialogModel.username"
               
@@ -107,7 +111,9 @@
           >
             <span>密码</span>
           </label>
-          <el-form-item prop="password">
+          <el-form-item
+            prop="password"
+          >
             <el-input
               v-model="dialogModel.password"
               
@@ -128,7 +134,9 @@
           >
             <span>启用</span>
           </label>
-          <el-form-item prop="is_enabled">
+          <el-form-item
+            prop="is_enabled"
+          >
             <el-select
               v-model="dialogModel.is_enabled"
               
@@ -163,7 +171,9 @@
           >
             <span>角色</span>
           </label>
-          <el-form-item prop="role_ids">
+          <el-form-item
+            prop="role_ids"
+          >
             <el-select-v2
               v-model="dialogModel.role_ids"
               :height="300"
@@ -194,7 +204,9 @@
           >
             <span>备注</span>
           </label>
-          <el-form-item prop="rem">
+          <el-form-item
+            prop="rem"
+          >
             <el-input
               v-model="dialogModel.rem"
               

@@ -64,7 +64,9 @@
             <span style="color: red;">*</span>
             <span>名称</span>
           </label>
-          <el-form-item prop="lbl">
+          <el-form-item
+            prop="lbl"
+          >
             <el-input
               v-model="dialogModel.lbl"
               
@@ -85,7 +87,9 @@
           >
             <span>备注</span>
           </label>
-          <el-form-item prop="rem">
+          <el-form-item
+            prop="rem"
+          >
             <el-input
               v-model="dialogModel.rem"
               
@@ -106,7 +110,9 @@
           >
             <span>启用</span>
           </label>
-          <el-form-item prop="is_enabled">
+          <el-form-item
+            prop="is_enabled"
+          >
             <el-select
               v-model="dialogModel.is_enabled"
               
@@ -141,7 +147,9 @@
           >
             <span>菜单</span>
           </label>
-          <el-form-item prop="menu_ids">
+          <el-form-item
+            prop="menu_ids"
+          >
             <el-select-v2
               v-model="dialogModel.menu_ids"
               :height="300"

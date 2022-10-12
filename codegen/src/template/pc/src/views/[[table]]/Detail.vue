@@ -137,20 +137,24 @@ for (let i = 0; i < columns.length; i++) {
           </label>
           <el-form-item<#
           if (vIfStr) {
-          #> v-if="<#=vIfStr#>"<#
+          #>
+            v-if="<#=vIfStr#>"<#
           }
-          #> prop="<#=column_name#>"<#
+          #>
+            prop="<#=column_name#>"<#
             if (column.isImg) {
-          #> class="img_form_item"<#
+          #>
+            class="img_form_item"<#
           }
-          #>><#
+          #>
+          ><#
             if (column.isImg) {
             #>
             <UploadImage
               v-model="dialogModel.<#=column_name#>"<#
               if (column.attMaxSize > 1) {
             #>
-              :maxSize="<#=column.attMaxSize#>"<#
+              :max-size="<#=column.attMaxSize#>"<#
               }
             #><#
             if (column.maxFileSize) {

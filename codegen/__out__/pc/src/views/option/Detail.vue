@@ -63,7 +63,9 @@
           >
             <span>名称</span>
           </label>
-          <el-form-item prop="lbl">
+          <el-form-item
+            prop="lbl"
+          >
             <el-input
               v-model="dialogModel.lbl"
               
@@ -85,7 +87,9 @@
             <span style="color: red;">*</span>
             <span>键</span>
           </label>
-          <el-form-item prop="ky">
+          <el-form-item
+            prop="ky"
+          >
             <el-input
               v-model="dialogModel.ky"
               
@@ -106,7 +110,9 @@
           >
             <span>值</span>
           </label>
-          <el-form-item prop="val">
+          <el-form-item
+            prop="val"
+          >
             <el-input
               v-model="dialogModel.val"
               
@@ -127,7 +133,9 @@
           >
             <span>备注</span>
           </label>
-          <el-form-item prop="rem">
+          <el-form-item
+            prop="rem"
+          >
             <el-input
               v-model="dialogModel.rem"
               
