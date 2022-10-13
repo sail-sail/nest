@@ -27,7 +27,6 @@
     "graphql": "16.6.0",
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.1",
-    "md5": "2.3.0",
     "pinia": "2.0.23",
     "pinia-plugin-persistedstate": "2.3.0",
     "vue": "3.2.40",
@@ -36,8 +35,7 @@
   "devDependencies": {
     "@iconify-json/tabler": "1.1.38",
     "@types/file-saver": "2.0.5",
-    "@types/md5": "2.3.2",
-    "@types/node": "18.8.5",
+    "@types/node": "18.8.0",
     "@typescript-eslint/eslint-plugin": "5.40.0",
     "@typescript-eslint/parser": "5.40.0",
     "@unocss/preset-attributify": "0.45.29",

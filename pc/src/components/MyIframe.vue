@@ -16,7 +16,7 @@
     :src="src"
     frameborder="0"
     seamless
-    @load="(iframeLoad as any)"
+    @load="iframeLoad"
   ></iframe>
   <template v-else>
     <div

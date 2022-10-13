@@ -10,7 +10,12 @@ async function getBucket() {
     region: "us-east-1",
     endpointURL: await getEnv("oss_endpoint"),
   });
-  const bucket = s3.getBucket(await getEnv("oss_bucket"));
+  const tmpfile_bucket = await getEnv("tmpfile_bucket");
+  try {
+    await s3.createBucket(tmpfile_bucket)
+  // deno-lint-ignore no-empty
+  } catch (_err) { }
+  const bucket = s3.getBucket(tmpfile_bucket);
   return bucket;
 }
 

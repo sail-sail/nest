@@ -16,7 +16,7 @@ export function createContext(): Middleware {
       context.error(err);
       ctx.response.body = {
         code: 1,
-        errMsg: err?.message || err?.toString() || "",
+        msg: err?.message || err?.toString() || "",
       };
     }
   };

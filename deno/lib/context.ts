@@ -6,8 +6,6 @@ import {
   type RedisConnectOptions,
 } from "redis";
 
-import dayjs from "dayjs";
-
 import {
   Client,
   configLogger,

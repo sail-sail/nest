@@ -10,7 +10,6 @@ import {
 } from "graphql";
 
 import combinedQuery from "graphql-combine-query";
-import md5 from "md5";
 
 import useUsrStore from "../store/usr";
 import useBackground_taskStore from "../store/background_task";
@@ -76,7 +75,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       let queryBuilderAdd: ReturnType<typeof queryBuilder.add> | undefined;
       for (let i = 0; i < queryInfos2.length; i++) {
         const queryInfo = queryInfos2[i];
-        const queryTmp = queryInfo.gqlArg.query!;
+        const queryTmp = queryInfo.gqlArg!.query!;
         const variablesTmp = queryInfo.gqlArg?.variables;
         const queryDoc = parse(queryTmp);
         const operationDefinitionNode = queryDoc.definitions[0] as OperationDefinitionNode;
@@ -117,7 +116,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
           queryBuilderAdd = queryBuilder.add(queryDoc, newVariables);
         }
       }
-      const newQuery = print(queryBuilderAdd.document!);
+      const newQuery = print(queryBuilderAdd!.document!);
       const newVariables = queryBuilderAdd?.variables as any;
       const newResult = await _gqlQuery(
         {

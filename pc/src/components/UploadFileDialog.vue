@@ -36,7 +36,7 @@
         <div class="form_input">
           <div
             class="upload_div"
-            @click="(fileRef?.click() as any)"
+            @click="fileRef?.click()"
           >
             <template v-if="fileInfo.name">
               <span style="font-size: 16px;">
@@ -92,7 +92,7 @@
     ref="fileRef"
     type="file"
     style="display: none;"
-    @change="(inputChg as any)"
+    @change="inputChg"
   />
 </el-dialog>
 </template>

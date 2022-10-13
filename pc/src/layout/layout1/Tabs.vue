@@ -5,7 +5,7 @@
     :key="item.path"
     class="tab_div"
     :class="{ tab_active: item.active }"
-    @click="(activeTab(item) as any)"
+    @click="activeTab(item)"
   >
     <span
       class="tab_label"

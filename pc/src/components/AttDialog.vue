@@ -123,7 +123,7 @@
           class="iframe"
           :src="url"
           frameborder="0"
-          @load="(iframeLoad as any)"
+          @load="iframeLoad"
         ></iframe>
       </template>
       <div
@@ -188,7 +188,7 @@
     type="file"
     :accept="dialogModel.accept"
     style="display: none;"
-    @change="(inputChg as any)"
+    @change="inputChg"
   />
 </el-dialog>
 </template>

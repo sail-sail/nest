@@ -1,8 +1,8 @@
 <template>
 <div
   style="width: 100%;height: 100%;position: relative;"
-  @mouseenter="(imgMouseenter as any)"
-  @mouseleave="(imgMouseleave as any)"
+  @mouseenter="imgMouseenter"
+  @mouseleave="imgMouseleave"
 >
   <el-image
     v-bind="$attrs"
@@ -93,7 +93,7 @@
     type="file"
     :accept="accept"
     style="display: none;"
-    @change="(inputChg as any)"
+    @change="inputChg"
   />
 </div>
 </template>
