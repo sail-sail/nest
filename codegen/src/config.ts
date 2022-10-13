@@ -356,6 +356,20 @@ export interface TableCloumn {
   width?: number,
   
   /**
+   * 表格列 headerAlign
+   * @type {string}
+   * @memberof TableCloumn
+   */
+   headerAlign?: string,
+  
+  /**
+   * 表格列 align
+   * @type {string}
+   * @memberof TableCloumn
+   */
+  align?: string,
+  
+  /**
    * 最小宽度
    * @type {number}
    * @memberof TableCloumn
