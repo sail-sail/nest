@@ -1,11 +1,21 @@
 import {
   type FormDataFile,
 } from "oak";
-import { S3 } from "S3";
+
+import {
+  S3,
+  type S3Bucket,
+} from "S3";
+
 import { getEnv } from "/lib/env.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
+let _bucket: S3Bucket | undefined;
+
 async function getBucket() {
+  if (_bucket) {
+    return _bucket;
+  }
   const s3 = new S3({
     accessKeyID: await getEnv("tmpfile_accesskey"),
     secretKey: await getEnv("tmpfile_secretkey"),
@@ -17,8 +27,8 @@ async function getBucket() {
     await s3.createBucket(tmpfile_bucket)
   // deno-lint-ignore no-empty
   } catch (_err) { }
-  const bucket = s3.getBucket(tmpfile_bucket);
-  return bucket;
+  _bucket = s3.getBucket(tmpfile_bucket);
+  return _bucket;
 }
 
 export async function upload(
