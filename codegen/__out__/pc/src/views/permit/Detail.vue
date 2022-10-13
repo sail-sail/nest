@@ -67,6 +67,7 @@
             prop="menu_id"
           >
             <el-select-v2
+              :set="dialogModel.menu_id = dialogModel.menu_id ?? [ ]"
               v-model="dialogModel.menu_id"
               :height="300"
               

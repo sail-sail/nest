@@ -114,11 +114,11 @@
             prop="is_enabled"
           >
             <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               
               w="full"
               
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               placeholder="请选择启用"
               filterable
               default-first-option
@@ -151,12 +151,12 @@
             prop="menu_ids"
           >
             <el-select-v2
+              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
               v-model="dialogModel.menu_ids"
               :height="300"
               multiple
               collapse-tags
               collapse-tags-tooltip
-              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
               
               w="full"
               

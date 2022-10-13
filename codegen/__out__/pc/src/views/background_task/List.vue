@@ -60,10 +60,10 @@
         </label>
         <el-form-item prop="state">
           <el-select
+            :set="search.state = search.state || [ ]"
             
             w="full"
             
-            :set="search.state = search.state || [ ]"
             :model-value="search.state"
             placeholder="请选择状态"
             filterable
@@ -106,10 +106,10 @@
         </label>
         <el-form-item prop="type">
           <el-select
+            :set="search.type = search.type || [ ]"
             
             w="full"
             
-            :set="search.type = search.type || [ ]"
             :model-value="search.type"
             placeholder="请选择类型"
             filterable
@@ -152,11 +152,11 @@
         </label>
         <el-form-item prop="begin_time">
           <el-date-picker
+            :set="search.begin_time = search.begin_time || [ ]"
             type="daterange"
             
             w="full"
             
-            :set="search.begin_time = search.begin_time || [ ]"
             :model-value="(search.begin_time as any)"
             start-placeholder="开始"
             end-placeholder="结束"
@@ -176,8 +176,8 @@
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
-            v-model="search.is_deleted"
             :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
             :false-label="0"
             :true-label="1"
             @change="searchClk"

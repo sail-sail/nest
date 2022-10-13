@@ -83,11 +83,11 @@
         </label>
         <el-form-item prop="role_ids">
           <el-select-v2
+            :set="search.role_ids = search.role_ids || [ ]"
             
             w="full"
             
             :height="300"
-            :set="search.role_ids = search.role_ids || [ ]"
             :model-value="search.role_ids"
             placeholder="请选择角色"
             :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
@@ -110,8 +110,8 @@
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
-            v-model="search.is_deleted"
             :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
             :false-label="0"
             :true-label="1"
             @change="searchClk"

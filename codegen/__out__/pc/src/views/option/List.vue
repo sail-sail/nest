@@ -100,8 +100,8 @@
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
-            v-model="search.is_deleted"
             :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
             :false-label="0"
             :true-label="1"
             @change="searchClk"

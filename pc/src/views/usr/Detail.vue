@@ -138,11 +138,11 @@
             prop="is_enabled"
           >
             <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               
               w="full"
               
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               placeholder="请选择启用"
               filterable
               default-first-option
@@ -175,12 +175,12 @@
             prop="role_ids"
           >
             <el-select-v2
+              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               v-model="dialogModel.role_ids"
               :height="300"
               multiple
               collapse-tags
               collapse-tags-tooltip
-              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               
               w="full"
               

@@ -171,14 +171,14 @@ for (let i = 0; i < columns.length; i++) {
             } else if (foreignKey) {
             #>
             <el-select-v2
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"
               v-model="dialogModel.<#=column_name#>"
               :height="300"<#
               if (foreignKey.multiple) {
               #>
               multiple
               collapse-tags
-              collapse-tags-tooltip
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
+              collapse-tags-tooltip<#
               }
               #>
               
@@ -194,11 +194,11 @@ for (let i = 0; i < columns.length; i++) {
             } else if (selectList.length > 0) {
             #>
             <el-select
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
               w="full"
               
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               placeholder="请选择<#=column_comment#>"
               filterable
               default-first-option
@@ -224,12 +224,12 @@ for (let i = 0; i < columns.length; i++) {
             } else if (data_type === "datetime" || data_type === "date") {
             #>
             <el-date-picker
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               type="date"
               
               w="full"
-              
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"<#
+              <#
                 if (data_type === "datetime") {
               #>
               value-format="YYYY-MM-DD HH:mm:ss"<#
@@ -244,8 +244,10 @@ for (let i = 0; i < columns.length; i++) {
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
             <el-checkbox
-              w="full"
               :set="0"
+              
+              w="full"
+              
               v-model="dialogModel.<#=column_name#>"
               :false-label="0"
               :true-label="1"
@@ -255,11 +257,11 @@ for (let i = 0; i < columns.length; i++) {
             } else if (column_type.startsWith("int")) {
             #>
             <el-input-number
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
               w="full"
               
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"
@@ -281,11 +283,11 @@ for (let i = 0; i < columns.length; i++) {
               let min = column.min;
             #>
             <el-input-number
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
               w="full"
               
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               :max="<#=max#>"<#
                 if (min) {
               #>

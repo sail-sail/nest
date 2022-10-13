@@ -114,12 +114,12 @@
             prop="expiration"
           >
             <el-date-picker
+              :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
               v-model="dialogModel.expiration"
               type="date"
               
               w="full"
               
-              :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD 00:00:00"
               placeholder="请选择到期日"
@@ -141,11 +141,11 @@
             prop="max_usr_num"
           >
             <el-input-number
+              :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
               v-model="dialogModel.max_usr_num"
               
               w="full"
               
-              :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"
@@ -169,11 +169,11 @@
             prop="is_enabled"
           >
             <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               
               w="full"
               
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               placeholder="请选择启用"
               filterable
               default-first-option
@@ -206,12 +206,12 @@
             prop="menu_ids"
           >
             <el-select-v2
+              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
               v-model="dialogModel.menu_ids"
               :height="300"
               multiple
               collapse-tags
               collapse-tags-tooltip
-              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
               
               w="full"
               
@@ -239,11 +239,11 @@
             prop="order_by"
           >
             <el-input-number
+              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               v-model="dialogModel.order_by"
               
               w="full"
               
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"

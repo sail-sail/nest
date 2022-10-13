@@ -71,11 +71,11 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select-v2
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             
             w="full"
             
             :height="300"
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
             placeholder="请选择<#=column_comment#>"
             :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
@@ -105,10 +105,10 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-select
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             
             w="full"
             
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
             placeholder="请选择<#=column_comment#>"
             filterable
@@ -151,11 +151,11 @@ const Table_Up = tableUp.split("_").map(function(item) {
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-date-picker
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             type="daterange"
             
             w="full"
             
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="(search.<#=column_name#> as any)"
             start-placeholder="开始"
             end-placeholder="结束"
@@ -253,8 +253,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
-            v-model="search.is_deleted"
             :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
             :false-label="0"
             :true-label="1"
             @change="searchClk"

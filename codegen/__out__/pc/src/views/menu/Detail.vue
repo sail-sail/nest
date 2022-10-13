@@ -67,11 +67,11 @@
             prop="type"
           >
             <el-select
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
               
               w="full"
               
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               placeholder="请选择类型"
               filterable
               default-first-option
@@ -104,6 +104,7 @@
             prop="menu_id"
           >
             <el-select-v2
+              :set="dialogModel.menu_id = dialogModel.menu_id ?? [ ]"
               v-model="dialogModel.menu_id"
               :height="300"
               
@@ -203,11 +204,11 @@
             prop="is_enabled"
           >
             <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               
               w="full"
               
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               placeholder="请选择启用"
               filterable
               default-first-option
@@ -240,11 +241,11 @@
             prop="order_by"
           >
             <el-input-number
+              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               v-model="dialogModel.order_by"
               
               w="full"
               
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               :precision="0"
               :step="1"
               :step-strictly="true"

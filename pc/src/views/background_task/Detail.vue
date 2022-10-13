@@ -92,11 +92,11 @@
             prop="state"
           >
             <el-select
+              :set="dialogModel.state = dialogModel.state ?? undefined"
               v-model="dialogModel.state"
               
               w="full"
               
-              :set="dialogModel.state = dialogModel.state ?? undefined"
               placeholder="请选择状态"
               filterable
               default-first-option
@@ -138,11 +138,11 @@
             prop="type"
           >
             <el-select
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
               
               w="full"
               
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               placeholder="请选择类型"
               filterable
               default-first-option
@@ -229,12 +229,12 @@
             prop="begin_time"
           >
             <el-date-picker
+              :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
               v-model="dialogModel.begin_time"
               type="date"
               
               w="full"
               
-              :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择开始时间"
             ></el-date-picker>
@@ -255,12 +255,12 @@
             prop="end_time"
           >
             <el-date-picker
+              :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
               v-model="dialogModel.end_time"
               type="date"
               
               w="full"
               
-              :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择结束时间"
             ></el-date-picker>
