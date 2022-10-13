@@ -72,6 +72,6 @@
   "volar.icon.preview": false,
   "volar.icon.splitEditors": false,
   "volar.codeLens.references": false,
-  "volar.diagnostics.delay": 0,
+  "volar.diagnostics.delay": 10,
   "editor.quickSuggestionsDelay": 0
 }
