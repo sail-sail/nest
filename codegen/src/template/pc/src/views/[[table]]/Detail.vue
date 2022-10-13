@@ -170,8 +170,12 @@ for (let i = 0; i < columns.length; i++) {
             ></UploadImage><#
             } else if (foreignKey) {
             #>
-            <el-select-v2
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"
+            <el-select-v2<#
+              if (foreignKey.multiple) {
+              #>
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
+              }
+              #>
               v-model="dialogModel.<#=column_name#>"
               :height="300"<#
               if (foreignKey.multiple) {
