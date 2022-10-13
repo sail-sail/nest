@@ -1,7 +1,8 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
-import { VitePWA } from "vite-plugin-pwa";
+// import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
 import Inspector from "vite-plugin-vue-inspector";
 import Unocss from "unocss/vite";
@@ -77,8 +78,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@/": "/src/",
-      "#/": "/src/typings/",
+      "@/": fileURLToPath(new URL("./src", import.meta.url)),
+      "#/": fileURLToPath(new URL("./src/typings", import.meta.url)),
     },
   },
   base: "/",
