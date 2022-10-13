@@ -207,7 +207,7 @@ export interface TableCloumn {
    * 外键关联表
    * 默认字段名为: [表名]_id
    * 如果列名以 _ids 结尾, 并且没有设置 many2many, 则默认为外键关联字段
-   * @type {({ table: string, column: string, multiple: boolean, lbl: string, type?: "json"|"many2many", defaultSort?: { prop: string, order: string } })}
+   * @type {({ table: string, column: string, multiple: boolean, lbl: string, type?: "json"|"many2many", defaultSort?: { prop: string, order: "ascending" | "descending" } })}
    * @memberof TableCloumn
    */
   foreignKey?: {
@@ -246,7 +246,11 @@ export interface TableCloumn {
      * 外键关联的默认排序
      * @type {{ prop: string, order: "ascending" | "descending" }}
      */
-    defaultSort?: { prop: string, order: "ascending" | "descending" },
+    defaultSort?: {
+      prop: string,
+      order: string,
+      // order: "ascending"|"descending",
+    },
     
     /**
      * 页面上的显示方式

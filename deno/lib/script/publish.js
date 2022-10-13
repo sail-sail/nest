@@ -53,6 +53,12 @@ console.log(publishPath);
     console.error(err.message);
   }
   
+  try {
+    await sftp.mkdir(`${ publishPath }`);
+  } catch (err) {
+    console.log(err);
+  }
+  
   const treeDir = async function(dir) {
     const files = await fs.readdir(`${ buildPath }/${ dir }`);
     for (let i = 0; i < files.length; i++) {
