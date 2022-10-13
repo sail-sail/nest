@@ -674,6 +674,9 @@ watch(
     }
     emit("selectedIdsChg", selectedIds);
   },
+  {
+    deep: true,
+  },
 );
 
 function resetSelectedIds() {
