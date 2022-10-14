@@ -74,5 +74,7 @@
   "volar.codeLens.references": false,
   "volar.diagnostics.delay": 200,
   "editor.quickSuggestionsDelay": 0,
-  "references.preferredLocation": "peek"
+  "references.preferredLocation": "peek",
+  "typescript.suggest.autoImports": false,
+  "typescript.updateImportsOnFileMove.enabled": "never"
 }
