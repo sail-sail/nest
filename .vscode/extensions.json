@@ -36,7 +36,6 @@
     "rapidapi.vscode-rapidapi-client",
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
-    "rvest.vs-code-prettier-eslint",
     "maggie.eslint-rules-zh-plugin"
   ]
 }
