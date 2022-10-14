@@ -73,5 +73,6 @@
   "volar.icon.splitEditors": false,
   "volar.codeLens.references": false,
   "volar.diagnostics.delay": 200,
-  "editor.quickSuggestionsDelay": 0
+  "editor.quickSuggestionsDelay": 0,
+  "references.preferredLocation": "peek"
 }
