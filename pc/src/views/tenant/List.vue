@@ -572,6 +572,7 @@ async function exportClk() {
 function initSearch() {
   return {
     is_deleted: 0,
+    menu_ids: [ ],
   } as TenantSearch;
 }
 

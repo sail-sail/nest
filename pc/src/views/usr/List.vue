@@ -552,6 +552,7 @@ async function exportClk() {
 function initSearch() {
   return {
     is_deleted: 0,
+    role_ids: [ ],
   } as UsrSearch;
 }
 
