@@ -88,7 +88,9 @@ let defaultActive = $ref<string | undefined>();
 
 async function getMenusEfc() {
   const result = await getMenus({ type: "pc" });
-  menuStore.setMenus(result);
+  if(result && result.length > 0) {
+    menuStore.setMenus(result);
+  }
   setDefaultActiveByRouter(route.path, route.query);
 }
 

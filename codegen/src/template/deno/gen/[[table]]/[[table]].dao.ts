@@ -1649,7 +1649,7 @@ export async function findLastOrderBy(
     order_by: number;
   }
   let model = await context.queryOne<Result>(sql, args);
-  let result = model?.order_by || 1;
+  let result = model?.order_by ?? 0;
   
   return result;
 }<#
