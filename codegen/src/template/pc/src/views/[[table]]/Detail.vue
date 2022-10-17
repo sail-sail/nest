@@ -230,15 +230,17 @@ for (let i = 0; i < columns.length; i++) {
             <el-date-picker
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
-              type="date"
               
               w="full"
               <#
                 if (data_type === "datetime") {
               #>
+              type="datetime"
+              format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"<#
                 } else if (data_type === "date") {
               #>
+              type="date"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD 00:00:00"<#
                 }
