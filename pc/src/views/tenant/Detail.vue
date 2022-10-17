@@ -116,10 +116,10 @@
             <el-date-picker
               :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
               v-model="dialogModel.expiration"
-              type="date"
               
               w="full"
               
+              type="date"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD 00:00:00"
               placeholder="请选择到期日"

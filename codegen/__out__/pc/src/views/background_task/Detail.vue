@@ -231,10 +231,11 @@
             <el-date-picker
               :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
               v-model="dialogModel.begin_time"
-              type="date"
               
               w="full"
               
+              type="datetime"
+              format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择开始时间"
             ></el-date-picker>
@@ -257,10 +258,11 @@
             <el-date-picker
               :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
               v-model="dialogModel.end_time"
-              type="date"
               
               w="full"
               
+              type="datetime"
+              format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择结束时间"
             ></el-date-picker>
