@@ -96,13 +96,14 @@ export default defineConfig({
       {
         COLUMN_NAME: "type",
         search: true,
+        width: 100,
       },
       {
         COLUMN_NAME: "menu_id",
         require: false,
         search: true,
         sortable: true,
-        minWidth: 140,
+        width: 140,
         foreignKey: {
           table: "menu",
           column: "id",
@@ -118,12 +119,15 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
+        width: 140,
       },
       {
         COLUMN_NAME: "route_path",
+        align: "left",
       },
       {
         COLUMN_NAME: "route_query",
+        align: "left",
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -131,7 +135,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "order_by",
-        width: 60,
+        width: 100,
       },
       {
         COLUMN_NAME: "rem",

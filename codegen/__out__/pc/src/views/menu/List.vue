@@ -779,6 +779,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "类型",
     prop: "_type",
+    width: 100,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -786,7 +787,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "父菜单",
     prop: "_menu_id",
-    minWidth: 140,
+    width: 140,
     sortable: "custom",
     align: "center",
     headerAlign: "center",
@@ -795,6 +796,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -802,14 +804,14 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "路由",
     prop: "route_path",
-    align: "center",
+    align: "left",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
   {
     label: "参数",
     prop: "route_query",
-    align: "center",
+    align: "left",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
@@ -824,7 +826,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "排序",
     prop: "order_by",
-    width: 60,
+    width: 100,
     sortable: "custom",
     align: "right",
     headerAlign: "center",
