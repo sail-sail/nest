@@ -501,7 +501,11 @@ export type MutationUpdateByIdUsrArgs = {
 };
 
 export type OptionInput = {
+  /** 启用名称 */
+  _is_enabled?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
+  /** 启用ID */
+  is_enabled?: InputMaybe<Scalars['Int']>;
   /** 键 */
   ky?: InputMaybe<Scalars['String']>;
   /** 名称 */
@@ -516,8 +520,12 @@ export type OptionInput = {
 
 export type OptionModel = {
   __typename?: 'OptionModel';
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
   /** 键 */
   ky: Scalars['String'];
   /** 名称 */
@@ -535,6 +543,8 @@ export type OptionSearch = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
   /** 是否已删除 */
   is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 键 */
   ky?: InputMaybe<Scalars['String']>;
   kyLike?: InputMaybe<Scalars['String']>;
