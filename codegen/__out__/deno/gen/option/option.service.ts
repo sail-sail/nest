@@ -179,6 +179,7 @@ export async function importFile(
     "名称": "lbl",
     "键": "ky",
     "值": "val",
+    "启用": "_is_enabled",
     "备注": "rem",
   };
   const models = await getImportFileRows(id, header);

@@ -12,6 +12,10 @@ type OptionModel {
   ky: String!
   "值"
   val: String!
+  "启用ID"
+  is_enabled: Int!
+  "启用名称"
+  _is_enabled: String
   "备注"
   rem: String!
 }
@@ -26,6 +30,10 @@ input OptionInput {
   ky: String
   "值"
   val: String
+  "启用ID"
+  is_enabled: Int
+  "启用名称"
+  _is_enabled: String
   "备注"
   rem: String
 }
@@ -45,6 +53,8 @@ input OptionSearch {
   "值"
   val: String
   valLike: String
+  "启用"
+  is_enabled: [Int]
   "备注"
   rem: String
   remLike: String

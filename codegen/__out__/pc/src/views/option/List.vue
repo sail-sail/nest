@@ -379,6 +379,15 @@
             </el-table-column>
           </template>
           
+          <!-- 启用 -->
+          <template v-else-if="'_is_enabled' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
             <el-table-column
@@ -564,6 +573,7 @@ const props = defineProps<{
   kyLike?: string; //键
   val?: string; //值
   valLike?: string; //值
+  is_enabled?: string|string[]; //启用
   rem?: string; //备注
   remLike?: string; //备注
 }>();
@@ -571,6 +581,8 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
+  is_enabled: "number[]",
+  _is_enabled: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -714,6 +726,14 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "值",
     prop: "val",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "启用",
+    prop: "_is_enabled",
+    width: 60,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

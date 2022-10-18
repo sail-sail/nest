@@ -43,7 +43,7 @@
         
         justify-end
         items-end
-        grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
+        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         gap="x-[16px] y-[16px]"
         place-content-center
         
@@ -120,6 +120,44 @@
               
               placeholder="请输入值"
             ></el-input>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.is_enabled == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span style="color: red;">*</span>
+            <span>启用</span>
+          </label>
+          <el-form-item
+            prop="is_enabled"
+          >
+            <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
+              v-model="dialogModel.is_enabled"
+              
+              w="full"
+              
+              placeholder="请选择启用"
+              filterable
+              default-first-option
+              clearable
+              @keyup.enter.stop
+            >
+              <el-option
+                :value="1"
+                label="是"
+              ></el-option>
+              <el-option
+                :value="0"
+                label="否"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </template>
         
@@ -278,6 +316,12 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
       message: "请输入键",
     },
   ],
+  is_enabled: [
+    {
+      required: true,
+      message: "请输入启用",
+    },
+  ],
 });
 
 /** 下拉框列表 */
@@ -302,6 +346,7 @@ let builtInModel = $ref<OptionInput | undefined>();
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: OptionInput = {
+    is_enabled: 1,
   };
   return defaultInput;
 }

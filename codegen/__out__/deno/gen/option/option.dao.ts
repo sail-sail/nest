@@ -85,6 +85,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.valLike)) {
     whereQuery += ` and t.val like ${ args.push(sqlLike(search?.valLike) + "%") }`;
   }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -211,6 +217,16 @@ export async function findAll(
   let result = await context.query<OptionModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    // 启用
+    let _is_enabled = "";
+    if (model.is_enabled === 1) {
+      _is_enabled = "是";
+    } else if (model.is_enabled === 0) {
+      _is_enabled = "否";
+    } else {
+      _is_enabled = String(model.is_enabled);
+    }
+    model._is_enabled = _is_enabled;
   }
   
   return result;
@@ -450,6 +466,16 @@ export async function create(
     model.id = shortUuidV4();
   }
   
+  // 启用
+  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
+    model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+      model.is_enabled = 1;
+    } else if (model._is_enabled === "否") {
+      model.is_enabled = 0;
+    }
+  }
+  
   const oldModel = await findByUnique(context, model, options);
   if (oldModel) {
     const result = await checkByUnique(context, model, oldModel, options?.uniqueType, options);
@@ -486,6 +512,9 @@ export async function create(
   if (model.val !== undefined) {
     sql += `,\`val\``;
   }
+  if (model.is_enabled !== undefined) {
+    sql += `,\`is_enabled\``;
+  }
   if (model.rem !== undefined) {
     sql += `,\`rem\``;
   }
@@ -511,6 +540,9 @@ export async function create(
   }
   if (model.val !== undefined) {
     sql += `,${ args.push(model.val) }`;
+  }
+  if (model.is_enabled !== undefined) {
+    sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -621,6 +653,16 @@ export async function updateById(
   }
   
   
+  // 启用
+  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
+    model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+      model.is_enabled = 1;
+    } else if (model._is_enabled === "否") {
+      model.is_enabled = 0;
+    }
+  }
+  
   const oldModel = await findByUnique(context, model);
   if (oldModel) {
     if (oldModel.id !== id && options?.uniqueType !== "create") {
@@ -656,6 +698,12 @@ export async function updateById(
   if (model.val !== undefined) {
     if (model.val != oldModel?.val) {
       sql += `,\`val\` = ${ args.push(model.val) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel?.is_enabled) {
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
       updateFldNum++;
     }
   }

@@ -25,6 +25,44 @@
       @keyup.enter="searchClk"
     >
       
+      <template v-if="builtInSearch?.type == null">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
+          类型
+        </label>
+        <el-form-item prop="type">
+          <el-select
+            :set="search.type = search.type || [ ]"
+            
+            w="full"
+            
+            :model-value="search.type"
+            placeholder="请选择类型"
+            filterable
+            default-first-option
+            clearable
+            multiple
+            @keyup.enter.stop
+            @update:model-value="search.type = $event"
+            @change="searchClk"
+          >
+            <el-option
+              :value="'pc'"
+              label="电脑端"
+            ></el-option>
+            <el-option
+              :value="'mobile'"
+              label="手机端"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </template>
+      
       <template v-if="builtInSearch?.menu_id == null">
         <label
           m="r-[3px] l-[6px]"
@@ -778,6 +816,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "启用",
     prop: "_is_enabled",
+    width: 60,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -785,6 +824,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "排序",
     prop: "order_by",
+    width: 60,
     sortable: "custom",
     align: "right",
     headerAlign: "center",

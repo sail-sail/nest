@@ -86,13 +86,17 @@ export default defineConfig({
   menu: {
     opts: {
       cache: true,
+      unique: [ "menu_id", "lbl" ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
       },
-      unique: [ "menu_id", "lbl" ],
     },
     columns: [
+      {
+        COLUMN_NAME: "type",
+        search: true,
+      },
       {
         COLUMN_NAME: "menu_id",
         require: false,
@@ -109,6 +113,28 @@ export default defineConfig({
             order: "ascending",
           },
         },
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "route_path",
+      },
+      {
+        COLUMN_NAME: "route_query",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
+      },
+      {
+        COLUMN_NAME: "order_by",
+        width: 60,
+      },
+      {
+        COLUMN_NAME: "rem",
       },
     ]
   },
@@ -193,6 +219,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "val",
         search: true,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        require: true,
+        width: 60,
       },
       {
         COLUMN_NAME: "rem",

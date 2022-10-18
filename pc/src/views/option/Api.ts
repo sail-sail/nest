@@ -41,6 +41,8 @@ export async function findAll(
           lbl
           ky
           val
+          is_enabled
+          _is_enabled
           rem
         }
       }
@@ -151,6 +153,8 @@ export async function findById(
           lbl
           ky
           val
+          is_enabled
+          _is_enabled
           rem
         }
       }
