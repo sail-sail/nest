@@ -1,4 +1,7 @@
-import { configAsync, DotenvConfig } from "dotenv";
+import {
+  configAsync,
+  type DotenvConfig,
+} from "dotenv";
 
 declare global {
   interface Window {
