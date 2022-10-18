@@ -71,31 +71,6 @@ export async function findByIdBackground_task(
 }
 
 /**
- * 创建一条数据
- */
-export async function createBackground_task(
-  context: Context,
-  model: Background_TaskModel,
-) {
-  context.is_tran = true;
-  const result = await background_taskService.create(context, model);
-  return result;
-}
-
-/**
- * 根据id修改一条数据
- */
-export async function updateByIdBackground_task(
-  context: Context,
-  id: string,
-  model: Background_TaskModel,
-) {
-  context.is_tran = true;
-  const result = await background_taskService.updateById(context, id, model);
-  return result;
-}
-
-/**
  * 根据 ids 删除数据
  */
 export async function deleteByIdsBackground_task(
@@ -104,17 +79,6 @@ export async function deleteByIdsBackground_task(
 ) {
   context.is_tran = true;
   const result = await background_taskService.deleteByIds(context, ids);
-  return result;
-}
-
-/**
- * 导入后台任务
- */
-export async function importFileBackground_task(
-  context: Context,
-  id: string,
-) {
-  const result = await background_taskService.importFile(context, id);
   return result;
 }
 

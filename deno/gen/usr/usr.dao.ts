@@ -85,17 +85,23 @@ async function getWhereQuery(
   if (isNotEmpty(search?.passwordLike)) {
     whereQuery += ` and t.password like ${ args.push(sqlLike(search?.passwordLike) + "%") }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
   }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
   if (search?.role_ids && !Array.isArray(search?.role_ids)) {
     search.role_ids = [ search.role_ids ];
   }
   if (search?.role_ids && search?.role_ids.length > 0) {
     whereQuery += ` and role.id in ${ args.push(search.role_ids) }`;
+  }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -250,6 +256,16 @@ export async function findAll(
     const model = result[i];
     // 密码
     model.password = "";
+    // 锁定
+    let _is_locked = "";
+    if (model.is_locked === 0) {
+      _is_locked = "否";
+    } else if (model.is_locked === 1) {
+      _is_locked = "是";
+    } else {
+      _is_locked = String(model.is_locked);
+    }
+    model._is_locked = _is_locked;
     // 启用
     let _is_enabled = "";
     if (model.is_enabled === 1) {
@@ -499,13 +515,13 @@ export async function create(
     model.id = shortUuidV4();
   }
   
-  // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+  // 锁定
+  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
+    model._is_locked = String(model._is_locked).trim();
+      if (model._is_locked === "否") {
+      model.is_locked = 0;
+    } else if (model._is_locked === "是") {
+      model.is_locked = 1;
     }
   }
   
@@ -529,6 +545,16 @@ export async function create(
     }
     const models = await context.query<Result>(sql, args);
     model.role_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 启用
+  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
+    model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+      model.is_enabled = 1;
+    } else if (model._is_enabled === "否") {
+      model.is_enabled = 0;
+    }
   }
   
   const oldModel = await findByUnique(context, model, options);
@@ -567,6 +593,9 @@ export async function create(
   if (isNotEmpty(model.password)) {
     sql += `,\`password\``;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,\`is_locked\``;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,\`is_enabled\``;
   }
@@ -595,6 +624,9 @@ export async function create(
   }
   if (isNotEmpty(model.password)) {
     sql += `,${ args.push(await getPassword(model.password)) }`;
+  }
+  if (model.is_locked !== undefined) {
+    sql += `,${ args.push(model.is_locked) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
@@ -671,8 +703,10 @@ export async function updateTenantById(
       id = ${ args.push(id) }
   `;
   const result = await context.execute(sql, args);
-  const updateNum = result.affectedRows || 0;
-  return updateNum;
+  const num = result.affectedRows;
+  
+  await delCache(context);
+  return num;
 }
 
 /**
@@ -704,19 +738,24 @@ export async function updateById(
     return id;
   }
   
+  const is_locked = await getIs_lockedById(context, id);
+  if (is_locked) {
+    throw "不能修改已经锁定的数据";
+  }
+  
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(context, id, model.tenant_id);
   }
   
   
-  // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+  // 锁定
+  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
+    model._is_locked = String(model._is_locked).trim();
+      if (model._is_locked === "否") {
+      model.is_locked = 0;
+    } else if (model._is_locked === "是") {
+      model.is_locked = 1;
     }
   }
 
@@ -740,6 +779,16 @@ export async function updateById(
     }
     const models = await context.query<Result>(sql, args);
     model.role_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 启用
+  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
+    model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+      model.is_enabled = 1;
+    } else if (model._is_enabled === "否") {
+      model.is_enabled = 0;
+    }
   }
   
   const oldModel = await findByUnique(context, model);
@@ -778,6 +827,12 @@ export async function updateById(
     sql += `,password = ?`;
     args.push(await getPassword(model.password));
     updateFldNum++;
+  }
+  if (model.is_locked !== undefined) {
+    if (model.is_locked != oldModel?.is_locked) {
+      sql += `,\`is_locked\` = ${ args.push(model.is_locked) }`;
+      updateFldNum++;
+    }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
@@ -839,6 +894,11 @@ export async function deleteByIds(
     if (!isExist) {
       continue;
     }
+    
+    const is_locked = await getIs_lockedById(context, id);
+    if (is_locked) {
+      continue;
+    }
     const sql = /*sql*/ `
       update
         usr
@@ -852,6 +912,79 @@ export async function deleteByIds(
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
+  
+  await delCache(context);
+  
+  return num;
+}
+
+/**
+ * 根据 ID 查找是否已锁定
+ * 已锁定的记录不能修改和删除
+ * 记录不存在则返回 undefined
+ * @export
+ * @param {Context} context
+ * @param {string} id
+ * @return {Promise<0 | 1 | undefined>}
+ */
+export async function getIs_lockedById(
+  context: Context,
+  id: string,
+  options?: {
+  },
+): Promise<0 | 1 | undefined> {
+  const model = await findById(
+    context,
+    id,
+    options,
+  );
+  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  return is_locked;
+}
+
+/**
+ * 根据 ids 锁定或者解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  context: Context,
+  ids: string[],
+  is_locked: 0 | 1,
+  options?: {
+  },
+): Promise<number> {
+  const table = "usr";
+  const method = "lockByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      usr
+    set
+      is_locked = ${ args.push(is_locked) },
+      update_time = ${ args.push(context.getReqDate()) }
+    
+  `;
+  {
+    const authModel = await getAuthModel(context);
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id in ${ args.push(ids) }
+  `;
+  const result = await context.execute(sql, args);
+  const num = result.affectedRows;
+  
   await delCache(context);
   
   return num;

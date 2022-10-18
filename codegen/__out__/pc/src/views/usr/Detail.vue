@@ -124,7 +124,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.is_enabled == null">
+        <template v-if="builtInModel?.is_locked == null">
           <label
             m="l-[3px]"
             text-right
@@ -132,30 +132,30 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span>启用</span>
+            <span>锁定</span>
           </label>
           <el-form-item
-            prop="is_enabled"
+            prop="is_locked"
           >
             <el-select
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
-              v-model="dialogModel.is_enabled"
+              :set="dialogModel.is_locked = dialogModel.is_locked ?? undefined"
+              v-model="dialogModel.is_locked"
               
               w="full"
               
-              placeholder="请选择启用"
+              placeholder="请选择锁定"
               filterable
               default-first-option
               clearable
               @keyup.enter.stop
             >
               <el-option
-                :value="1"
-                label="是"
-              ></el-option>
-              <el-option
                 :value="0"
                 label="否"
+              ></el-option>
+              <el-option
+                :value="1"
+                label="是"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -191,6 +191,43 @@
               :loading="!inited"
               @keyup.enter.stop
             ></el-select-v2>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.is_enabled == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span>启用</span>
+          </label>
+          <el-form-item
+            prop="is_enabled"
+          >
+            <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
+              v-model="dialogModel.is_enabled"
+              
+              w="full"
+              
+              placeholder="请选择启用"
+              filterable
+              default-first-option
+              clearable
+              @keyup.enter.stop
+            >
+              <el-option
+                :value="1"
+                label="是"
+              ></el-option>
+              <el-option
+                :value="0"
+                label="否"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </template>
         
@@ -317,8 +354,6 @@ import {
 
 import {
   type UsrInput,
-} from "#/types";
-import {
   type RoleModel,
 } from "#/types";
 
@@ -400,6 +435,7 @@ let builtInModel = $ref<UsrInput | undefined>();
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: UsrInput = {
+    is_locked: 0,
     is_enabled: 1,
   };
   return defaultInput;

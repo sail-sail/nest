@@ -103,11 +103,11 @@ type Mutation {
   "导入文件"
   importFileTenant(id: ID!): String
   "根据 ids 删除数据"
-  deleteByIdsTenant(ids: [ID]!): Int!
+  deleteByIdsTenant(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsTenant(ids: [ID]!): Int!
+  revertByIdsTenant(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsTenant(ids: [ID]!): Int!
+  forceDeleteByIdsTenant(ids: [ID!]!): Int!
 }
 
 `);

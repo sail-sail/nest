@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -1203,8 +1204,14 @@ export async function updateTenantById(
       id = ${ args.push(id) }
   `;
   const result = await context.execute(sql, args);
-  const updateNum = result.affectedRows || 0;
-  return updateNum;
+  const num = result.affectedRows;<#
+  if (cache) {
+  #>
+  
+  await delCache(context);<#
+  }
+  #>
+  return num;
 }
 
 /**
@@ -1234,7 +1241,16 @@ export async function updateById(
   
   if (!id || !model) {
     return id;
+  }<#
+  if (hasLocked) {
+  #>
+  
+  const is_locked = await getIs_lockedById(context, id);
+  if (is_locked) {
+    throw "不能修改已经锁定的数据";
+  }<#
   }
+  #>
   
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
@@ -1484,7 +1500,16 @@ export async function deleteByIds(
     const isExist = await existById(context, id);
     if (!isExist) {
       continue;
+    }<#
+    if (hasLocked) {
+    #>
+    
+    const is_locked = await getIs_lockedById(context, id);
+    if (is_locked) {
+      continue;
+    }<#
     }
+    #>
     const sql = /*sql*/ `
       update
         <#=table#>
@@ -1500,12 +1525,93 @@ export async function deleteByIds(
   }<#
   if (cache) {
   #>
+  
   await delCache(context);<#
   }
   #>
   
   return num;
+}<#
+if (hasLocked) {
+#>
+
+/**
+ * 根据 ID 查找是否已锁定
+ * 已锁定的记录不能修改和删除
+ * 记录不存在则返回 undefined
+ * @export
+ * @param {Context} context
+ * @param {string} id
+ * @return {Promise<0 | 1 | undefined>}
+ */
+export async function getIs_lockedById(
+  context: Context,
+  id: string,
+  options?: {
+  },
+): Promise<0 | 1 | undefined> {
+  const model = await findById(
+    context,
+    id,
+    options,
+  );
+  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  return is_locked;
 }
+
+/**
+ * 根据 ids 锁定或者解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  context: Context,
+  ids: string[],
+  is_locked: 0 | 1,
+  options?: {
+  },
+): Promise<number> {
+  const table = "<#=table#>";
+  const method = "lockByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      <#=table#>
+    set
+      is_locked = ${ args.push(is_locked) },
+      update_time = ${ args.push(context.getReqDate()) }
+    
+  `;
+  {
+    const authModel = await getAuthModel(context);
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id in ${ args.push(ids) }
+  `;
+  const result = await context.execute(sql, args);
+  const num = result.affectedRows;<#
+  if (cache) {
+  #>
+  
+  await delCache(context);<#
+  }
+  #>
+  
+  return num;
+}<#
+}
+#>
 
 /**
  * 根据 ids 还原数据

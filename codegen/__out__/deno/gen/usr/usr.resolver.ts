@@ -108,6 +108,22 @@ export async function deleteByIdsUsr(
 }
 
 /**
+ * 根据 ids 锁定或者解锁数据
+ */
+export async function lockByIdsUsr(
+  context: Context,
+  ids: string[],
+  is_locked: 0 | 1,
+) {
+  context.is_tran = true;
+  if (is_locked !== 0 && is_locked !== 1) {
+    throw new Error(`lockByIdsUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
+  }
+  const result = await usrService.lockByIds(context, ids, is_locked);
+  return result;
+}
+
+/**
  * 导入用户
  */
 export async function importFileUsr(

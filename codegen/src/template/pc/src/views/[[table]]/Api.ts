@@ -1,5 +1,6 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -198,6 +199,8 @@ export async function findSummary(
   return result;
 }<#
 }
+#><#
+if (opts.noAdd !== true) {
 #>
 
 /**
@@ -222,7 +225,11 @@ export async function create(
   }, opt);
   const result: Mutation["create<#=tableUp#>"] = data?.create<#=tableUp#>;
   return result;
+}<#
 }
+#><#
+if (opts.noEdit !== true) {
+#>
 
 /**
  * 根据id修改一条数据
@@ -249,7 +256,9 @@ export async function updateById(
   }, opt);
   const result: Mutation["updateById<#=tableUp#>"] = data?.updateById<#=tableUp#>;
   return result;
+}<#
 }
+#>
 
 /**
  * 通过ID查找一条数据
@@ -315,7 +324,9 @@ export async function findById(
   }
   #>
   return result;
-}
+}<#
+if (opts.noDelete !== true) {
+#>
 
 /**
  * 根据 ids 删除数据
@@ -329,7 +340,7 @@ export async function deleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         deleteByIds<#=tableUp#>(ids: $ids)
       }
     `,
@@ -339,7 +350,42 @@ export async function deleteByIds(
   }, opt);
   const result: Mutation["deleteByIds<#=tableUp#>"] = data?.deleteByIds<#=tableUp#>;
   return result;
+}<#
 }
+#><#
+if (hasLocked && opts.noEdit !== true) {
+#>
+
+/**
+ * 根据 ids 删除数据
+ * @export lockByIds
+ * @param {string[]} ids
+ * @param {0 | 1} lockByIds
+ * @param {GqlOpt} opt?
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data = await gqlQuery({
+    query: /* GraphQL */ `
+      mutation($ids: [ID!]!, $is_locked: Int!) {
+        lockByIds<#=tableUp#>(ids: $ids, is_locked: $is_locked)
+      }
+    `,
+    variables: {
+      ids,
+      is_locked,
+    },
+  }, opt);
+  const result: Mutation["lockByIds<#=tableUp#>"] = data?.lockByIds<#=tableUp#>;
+  return result;
+}<#
+}
+#><#
+if (opts.noDelete !== true) {
+#>
 
 /**
  * 根据 ids 从回收站还原数据
@@ -353,7 +399,7 @@ export async function revertByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         revertByIds<#=tableUp#>(ids: $ids)
       }
     `,
@@ -377,7 +423,7 @@ export async function forceDeleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         forceDeleteByIds<#=tableUp#>(ids: $ids)
       }
     `,
@@ -388,6 +434,8 @@ export async function forceDeleteByIds(
   const result: Mutation["forceDeleteByIds<#=tableUp#>"] = data?.forceDeleteByIds<#=tableUp#>;
   return result;
 }<#
+}
+#><#
 const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -457,7 +505,9 @@ export async function exportExcel(
   }, opt);
   const result: Query["exportExcel<#=tableUp#>"] = data?.exportExcel<#=tableUp#> || "";
   return result;
-}
+}<#
+if (opts.noAdd !== true && opts.noEdit !== true) {
+#>
 
 /**
  * 导入文件
@@ -484,6 +534,8 @@ export async function importFile(
   const result: Mutation["importFile<#=tableUp#>"] = data?.importFile<#=tableUp#>;
   return result;
 }<#
+}
+#><#
 if (hasOrderBy) {
 #>
 

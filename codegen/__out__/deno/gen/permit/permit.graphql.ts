@@ -66,11 +66,11 @@ type Mutation {
   "导入文件"
   importFilePermit(id: ID!): String
   "根据 ids 删除数据"
-  deleteByIdsPermit(ids: [ID]!): Int!
+  deleteByIdsPermit(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsPermit(ids: [ID]!): Int!
+  revertByIdsPermit(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsPermit(ids: [ID]!): Int!
+  forceDeleteByIdsPermit(ids: [ID!]!): Int!
 }
 
 `);

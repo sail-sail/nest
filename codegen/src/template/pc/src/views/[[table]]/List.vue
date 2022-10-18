@@ -1,5 +1,6 @@
 <#
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -397,6 +398,30 @@ const Table_Up = tableUp.split("_").map(function(item) {
       </el-button><#
         }
       #><#
+      if (hasLocked && opts.noEdit !== true) {
+      #>
+      
+      <el-button
+        plain
+        @click="lockByIdsClk(1)"
+      >
+        <template #icon>
+          <Lock />
+        </template>
+        <span>锁定</span>
+      </el-button>
+      
+      <el-button
+        plain
+        @click="lockByIdsClk(0)"
+      >
+        <template #icon>
+          <Unlock />
+        </template>
+        <span>解锁</span>
+      </el-button><#
+      }
+      #><#
         if (opts.noExport !== true) {
       #>
       
@@ -448,7 +473,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
       <el-button
         plain
         type="danger"
-        @click="forceDeleteByIdsEfc"
+        @click="forceDeleteByIdsClk"
       >
         <template #icon>
           <CircleClose />
@@ -793,6 +818,8 @@ import {
   Refresh,
   Delete,
   Edit,
+  Lock,
+  Unlock,
   Download,
   Upload,
   CirclePlus,
@@ -879,6 +906,11 @@ import {
   forceDeleteByIds,<#
     }
   #><#
+    if (hasLocked && opts.noEdit !== true) {
+  #>
+  lockByIds,<#
+    }
+  #><#
     if (opts.noExport !== true) {
   #>
   exportExcel,<#
@@ -903,8 +935,7 @@ import {
 
 import {
   type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
-} from "#/types";<#
+  type <#=Table_Up#>Search,<#
 {
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
@@ -924,12 +955,12 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("_");
 #>
-import {
-  type <#=Foreign_Table_Up#>Model,
-} from "#/types";<#
-}
+  type <#=Foreign_Table_Up#>Model,<#
 }
 #><#
+}
+#>
+} from "#/types";<#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
@@ -1828,7 +1859,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsEfc() {
+async function forceDeleteByIdsClk() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要 彻底删除 的数据!`);
     return;
@@ -1845,10 +1876,32 @@ async function forceDeleteByIdsEfc() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
     ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
+    await Promise.all([
+      dataGrid(true),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
+  }
+}<#
+}
+#><#
+  if (hasLocked && opts.noEdit !== true) {
+#>
+
+/** 点击锁定或者解锁 */
+async function lockByIdsClk(is_locked: 0 | 1) {
+  if (selectedIds.length === 0) {
+    ElMessage.warning(`请选择需要 ${ is_locked === 1 ? "锁定" : "解锁" } 的数据!`);
+    return;
+  }
+  const num = await lockByIds(selectedIds, is_locked);
+  if (num) {
+    ElMessage.success(`${ is_locked === 1 ? "锁定" : "解锁" } ${ num } 条数据成功!`);
+    await dataGrid(true);
   }
 }<#
 }

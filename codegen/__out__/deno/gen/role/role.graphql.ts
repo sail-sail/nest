@@ -76,11 +76,11 @@ type Mutation {
   "导入文件"
   importFileRole(id: ID!): String
   "根据 ids 删除数据"
-  deleteByIdsRole(ids: [ID]!): Int!
+  deleteByIdsRole(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsRole(ids: [ID]!): Int!
+  revertByIdsRole(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsRole(ids: [ID]!): Int!
+  forceDeleteByIdsRole(ids: [ID!]!): Int!
 }
 
 `);

@@ -45,10 +45,12 @@ export async function findAll(
           lbl
           username
           password
-          is_enabled
-          _is_enabled
+          is_locked
+          _is_locked
           role_ids
           _role_ids
+          is_enabled
+          _is_enabled
           rem
         }
       }
@@ -159,10 +161,12 @@ export async function findById(
           lbl
           username
           password
-          is_enabled
-          _is_enabled
+          is_locked
+          _is_locked
           role_ids
           _role_ids
+          is_enabled
+          _is_enabled
           rem
         }
       }
@@ -187,7 +191,7 @@ export async function deleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         deleteByIdsUsr(ids: $ids)
       }
     `,
@@ -196,6 +200,33 @@ export async function deleteByIds(
     },
   }, opt);
   const result: Mutation["deleteByIdsUsr"] = data?.deleteByIdsUsr;
+  return result;
+}
+
+/**
+ * 根据 ids 删除数据
+ * @export lockByIds
+ * @param {string[]} ids
+ * @param {0 | 1} lockByIds
+ * @param {GqlOpt} opt?
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data = await gqlQuery({
+    query: /* GraphQL */ `
+      mutation($ids: [ID!]!, $is_locked: Int!) {
+        lockByIdsUsr(ids: $ids, is_locked: $is_locked)
+      }
+    `,
+    variables: {
+      ids,
+      is_locked,
+    },
+  }, opt);
+  const result: Mutation["lockByIdsUsr"] = data?.lockByIdsUsr;
   return result;
 }
 
@@ -211,7 +242,7 @@ export async function revertByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         revertByIdsUsr(ids: $ids)
       }
     `,
@@ -235,7 +266,7 @@ export async function forceDeleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         forceDeleteByIdsUsr(ids: $ids)
       }
     `,

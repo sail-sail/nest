@@ -1,2 +1,2 @@
-id,lbl,username,password,is_enabled,rem,tenant_id
-9LmnqhLITzKskFO/lcXRqA,a,a,RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A,1,,ZDbZlC1OT8KaDg6soxMCBQ
+id,lbl,username,password,is_locked,is_enabled,rem,tenant_id
+9LmnqhLITzKskFO/lcXRqA,a,a,RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A,0,1,,ZDbZlC1OT8KaDg6soxMCBQ

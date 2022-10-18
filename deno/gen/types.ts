@@ -203,8 +203,6 @@ export type MenuSearch = {
 export type Mutation = {
   __typename?: 'Mutation';
   /** 创建一条数据 */
-  createBackground_task: Scalars['ID'];
-  /** 创建一条数据 */
   createMenu: Scalars['ID'];
   /** 创建一条数据 */
   createOption: Scalars['ID'];
@@ -245,8 +243,6 @@ export type Mutation = {
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsUsr: Scalars['Int'];
   /** 导入文件 */
-  importFileBackground_task?: Maybe<Scalars['String']>;
-  /** 导入文件 */
   importFileMenu?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileOption?: Maybe<Scalars['String']>;
@@ -258,6 +254,8 @@ export type Mutation = {
   importFileTenant?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileUsr?: Maybe<Scalars['String']>;
+  /** 根据 ids 锁定或者解锁数据 */
+  lockByIdsUsr: Scalars['Int'];
   /** 登录 */
   login: Scalars['String'];
   /** 根据 ids 还原数据 */
@@ -275,8 +273,6 @@ export type Mutation = {
   /** 根据 ids 还原数据 */
   revertByIdsUsr: Scalars['Int'];
   /** 根据id修改一条数据 */
-  updateByIdBackground_task: Scalars['ID'];
-  /** 根据id修改一条数据 */
   updateByIdMenu: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdOption: Scalars['ID'];
@@ -288,11 +284,6 @@ export type Mutation = {
   updateByIdTenant: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdUsr: Scalars['ID'];
-};
-
-
-export type MutationCreateBackground_TaskArgs = {
-  model: Background_TaskInput;
 };
 
 
@@ -327,77 +318,72 @@ export type MutationCreateUsrArgs = {
 
 
 export type MutationDeleteByIdsBackground_TaskArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationDeleteByIdsMenuArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationDeleteByIdsOptionArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationDeleteByIdsPermitArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationDeleteByIdsRoleArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationDeleteByIdsTenantArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationDeleteByIdsUsrArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsBackground_TaskArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsMenuArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsOptionArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsPermitArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsRoleArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsTenantArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationForceDeleteByIdsUsrArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
-};
-
-
-export type MutationImportFileBackground_TaskArgs = {
-  id: Scalars['ID'];
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -431,6 +417,12 @@ export type MutationImportFileUsrArgs = {
 };
 
 
+export type MutationLockByIdsUsrArgs = {
+  ids: Array<Scalars['ID']>;
+  is_locked: Scalars['Int'];
+};
+
+
 export type MutationLoginArgs = {
   password: Scalars['String'];
   tenant_id: Scalars['String'];
@@ -439,43 +431,37 @@ export type MutationLoginArgs = {
 
 
 export type MutationRevertByIdsBackground_TaskArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationRevertByIdsMenuArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationRevertByIdsOptionArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationRevertByIdsPermitArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationRevertByIdsRoleArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationRevertByIdsTenantArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
+  ids: Array<Scalars['ID']>;
 };
 
 
 export type MutationRevertByIdsUsrArgs = {
-  ids: Array<InputMaybe<Scalars['ID']>>;
-};
-
-
-export type MutationUpdateByIdBackground_TaskArgs = {
-  id: Scalars['ID'];
-  model: Background_TaskInput;
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -1059,11 +1045,15 @@ export type TenantSearch = {
 export type UsrInput = {
   /** 启用名称 */
   _is_enabled?: InputMaybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: InputMaybe<Scalars['String']>;
   /** 角色名称 */
   _role_ids?: InputMaybe<Array<Scalars['String']>>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用ID */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 锁定ID */
+  is_locked?: InputMaybe<Scalars['Int']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 密码 */
@@ -1082,12 +1072,16 @@ export type UsrModel = {
   __typename?: 'UsrModel';
   /** 启用名称 */
   _is_enabled?: Maybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: Maybe<Scalars['String']>;
   /** 角色名称 */
   _role_ids?: Maybe<Array<Scalars['String']>>;
   /** ID */
   id: Scalars['ID'];
   /** 启用ID */
   is_enabled: Scalars['Int'];
+  /** 锁定ID */
+  is_locked: Scalars['Int'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 密码 */
@@ -1110,6 +1104,8 @@ export type UsrSearch = {
   is_deleted?: InputMaybe<Scalars['Int']>;
   /** 启用 */
   is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   lblLike?: InputMaybe<Scalars['String']>;

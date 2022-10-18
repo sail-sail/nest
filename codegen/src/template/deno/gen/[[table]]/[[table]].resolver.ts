@@ -1,5 +1,6 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -90,7 +91,9 @@ export async function findById<#=tableUp#>(
 ) {
   const result = await <#=table#>Service.findById(context, id);
   return result;
-}
+}<#
+if (opts.noAdd !== true) {
+#>
 
 /**
  * 创建一条数据
@@ -102,7 +105,11 @@ export async function create<#=tableUp#>(
   context.is_tran = true;
   const result = await <#=table#>Service.create(context, model);
   return result;
+}<#
 }
+#><#
+if (opts.noEdit !== true) {
+#>
 
 /**
  * 根据id修改一条数据
@@ -115,7 +122,11 @@ export async function updateById<#=tableUp#>(
   context.is_tran = true;
   const result = await <#=table#>Service.updateById(context, id, model);
   return result;
+}<#
 }
+#><#
+if (opts.noDelete !== true) {
+#>
 
 /**
  * 根据 ids 删除数据
@@ -127,7 +138,31 @@ export async function deleteByIds<#=tableUp#>(
   context.is_tran = true;
   const result = await <#=table#>Service.deleteByIds(context, ids);
   return result;
+}<#
 }
+#><#
+  if (hasLocked && opts.noEdit !== true) {
+#>
+
+/**
+ * 根据 ids 锁定或者解锁数据
+ */
+export async function lockByIds<#=tableUp#>(
+  context: Context,
+  ids: string[],
+  is_locked: 0 | 1,
+) {
+  context.is_tran = true;
+  if (is_locked !== 0 && is_locked !== 1) {
+    throw new Error(`lockByIds<#=tableUp#>.is_locked expect 0 or 1 but got ${ is_locked }`);
+  }
+  const result = await <#=table#>Service.lockByIds(context, ids, is_locked);
+  return result;
+}<#
+  }
+#><#
+if (opts.noAdd !== true && opts.noEdit !== true) {
+#>
 
 /**
  * 导入<#=table_comment#>
@@ -138,7 +173,11 @@ export async function importFile<#=tableUp#>(
 ) {
   const result = await <#=table#>Service.importFile(context, id);
   return result;
+}<#
 }
+#><#
+if (opts.noDelete !== true) {
+#>
 
 /**
  * 根据 ids 还原数据
@@ -163,6 +202,8 @@ export async function forceDeleteByIds<#=tableUp#>(
   const result = await <#=table#>Service.forceDeleteByIds(context, ids);
   return result;
 }<#
+}
+#><#
 if (hasOrderBy) {
 #>
 

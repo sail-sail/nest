@@ -432,22 +432,29 @@ import UploadImage from "@/components/UploadImage.vue";<#
 
 import { useFullscreenEfc } from "@/compositions/fullscreen";
 
-import {
-  create,
-  findById<#
-  if(hasOrderBy) {
-  #>,
-  findLastOrderBy<#
+import {<#
+  if (opts.noAdd !== true) {
+  #>
+  create,<#
   }
-  #>,
-  updateById,
+  #>
+  findById,<#
+  if(hasOrderBy) {
+  #>
+  findLastOrderBy,<#
+  }
+  #><#
+  if (opts.noEdit !== true) {
+  #>
+  updateById,<#
+  }
+  #>
 } from "./Api";
 
 import {
-  type <#=Table_Up#>Input,
-} from "#/types";<#
-const foreignTableArr = [];
-for (let i = 0; i < columns.length; i++) {
+  type <#=Table_Up#>Input,<#
+  const foreignTableArr = [];
+  for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
@@ -464,11 +471,10 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("_");
 #>
-import {
-  type <#=Foreign_Table_Up#>Model,
-} from "#/types";<#
+  type <#=Foreign_Table_Up#>Model,<#
 }
 #>
+} from "#/types";
 
 import {<#
   const foreignTableArr2 = [];

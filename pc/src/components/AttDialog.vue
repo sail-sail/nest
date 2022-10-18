@@ -132,6 +132,7 @@
       >
         <el-button
           v-if="!dialogModel.readonly && urlList.length === 0"
+          plain
           type="primary"
           @click="uploadClk"
         >

@@ -193,7 +193,7 @@ export async function deleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         deleteByIdsMenu(ids: $ids)
       }
     `,
@@ -217,7 +217,7 @@ export async function revertByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         revertByIdsMenu(ids: $ids)
       }
     `,
@@ -241,7 +241,7 @@ export async function forceDeleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         forceDeleteByIdsMenu(ids: $ids)
       }
     `,

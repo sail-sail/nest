@@ -681,8 +681,10 @@ export async function updateTenantById(
       id = ${ args.push(id) }
   `;
   const result = await context.execute(sql, args);
-  const updateNum = result.affectedRows || 0;
-  return updateNum;
+  const num = result.affectedRows;
+  
+  await delCache(context);
+  return num;
 }
 
 /**
@@ -875,6 +877,7 @@ export async function deleteByIds(
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
+  
   await delCache(context);
   
   return num;

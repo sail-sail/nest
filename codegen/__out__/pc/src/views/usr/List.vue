@@ -243,6 +243,26 @@
       
       <el-button
         plain
+        @click="lockByIdsClk(1)"
+      >
+        <template #icon>
+          <Lock />
+        </template>
+        <span>锁定</span>
+      </el-button>
+      
+      <el-button
+        plain
+        @click="lockByIdsClk(0)"
+      >
+        <template #icon>
+          <Unlock />
+        </template>
+        <span>解锁</span>
+      </el-button>
+      
+      <el-button
+        plain
         @click="exportClk"
       >
         <template #icon>
@@ -277,7 +297,7 @@
       <el-button
         plain
         type="danger"
-        @click="forceDeleteByIdsEfc"
+        @click="forceDeleteByIdsClk"
       >
         <template #icon>
           <CircleClose />
@@ -380,8 +400,8 @@
             </el-table-column>
           </template>
           
-          <!-- 启用 -->
-          <template v-else-if="'_is_enabled' === col.prop">
+          <!-- 锁定 -->
+          <template v-else-if="'_is_locked' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -402,6 +422,15 @@
               </template>
             </el-table-column>
             
+          </template>
+          
+          <!-- 启用 -->
+          <template v-else-if="'_is_enabled' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
           </template>
           
           <!-- 备注 -->
@@ -484,6 +513,8 @@ import {
   Refresh,
   Delete,
   Edit,
+  Lock,
+  Unlock,
   Download,
   Upload,
   CirclePlus,
@@ -515,6 +546,7 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
+  lockByIds,
   exportExcel,
   updateById,
   importFile,
@@ -523,8 +555,6 @@ import {
 import {
   type UsrModel,
   type UsrSearch,
-} from "#/types";
-import {
   type RoleModel,
 } from "#/types";
 import {
@@ -594,9 +624,10 @@ const props = defineProps<{
   usernameLike?: string; //用户名
   password?: string; //密码
   passwordLike?: string; //密码
-  is_enabled?: string|string[]; //启用
+  is_locked?: string|string[]; //锁定
   role_ids?: string|string[]; //角色
   _role_ids?: string|string[]; //角色
+  is_enabled?: string|string[]; //启用
   rem?: string; //备注
   remLike?: string; //备注
 }>();
@@ -604,10 +635,12 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
-  is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_locked: "number[]",
+  _is_locked: "string[]",
   role_ids: "string[]",
   _role_ids: "string[]",
+  is_enabled: "number[]",
+  _is_enabled: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -753,8 +786,8 @@ let tableColumns = $ref<ColumnType[]>([
     showOverflowTooltip: true,
   },
   {
-    label: "启用",
-    prop: "_is_enabled",
+    label: "锁定",
+    prop: "_is_locked",
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -763,6 +796,13 @@ let tableColumns = $ref<ColumnType[]>([
     label: "角色",
     prop: "_role_ids",
     minWidth: 140,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "启用",
+    prop: "_is_enabled",
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -980,7 +1020,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsEfc() {
+async function forceDeleteByIdsClk() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要 彻底删除 的数据!`);
     return;
@@ -997,10 +1037,23 @@ async function forceDeleteByIdsEfc() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
+    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
+  }
+}
+
+/** 点击锁定或者解锁 */
+async function lockByIdsClk(is_locked: 0 | 1) {
+  if (selectedIds.length === 0) {
+    ElMessage.warning(`请选择需要 ${ is_locked === 1 ? "锁定" : "解锁" } 的数据!`);
+    return;
+  }
+  const num = await lockByIds(selectedIds, is_locked);
+  if (num) {
+    ElMessage.success(`${ is_locked === 1 ? "锁定" : "解锁" } ${ num } 条数据成功!`);
+    await dataGrid(true);
   }
 }
 

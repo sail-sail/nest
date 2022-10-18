@@ -1,5 +1,6 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -335,19 +336,45 @@ type Query {
   }
   #>
 }
-type Mutation {
+type Mutation {<#
+  if (opts.noAdd !== true) {
+  #>
   "创建一条数据"
-  create<#=tableUp#>(model: <#=Table_Up#>Input!): ID!
+  create<#=tableUp#>(model: <#=Table_Up#>Input!): ID!<#
+  }
+  #><#
+  if (opts.noEdit !== true) {
+  #>
   "根据id修改一条数据"
-  updateById<#=tableUp#>(id: ID!, model: <#=Table_Up#>Input!): ID!
+  updateById<#=tableUp#>(id: ID!, model: <#=Table_Up#>Input!): ID!<#
+  }
+  #><#
+  if (opts.noAdd !== true && opts.noEdit !== true) {
+  #>
   "导入文件"
-  importFile<#=tableUp#>(id: ID!): String
+  importFile<#=tableUp#>(id: ID!): String<#
+  }
+  #><#
+  if (opts.noDelete !== true) {
+  #>
   "根据 ids 删除数据"
-  deleteByIds<#=tableUp#>(ids: [ID]!): Int!
+  deleteByIds<#=tableUp#>(ids: [ID!]!): Int!<#
+  }
+  #><#
+  if (hasLocked && opts.noEdit !== true) {
+  #>
+  "根据 ids 锁定或者解锁数据"
+  lockByIds<#=tableUp#>(ids: [ID!]!, is_locked: Int!): Int!<#
+  }
+  #><#
+  if (opts.noDelete !== true) {
+  #>
   "根据 ids 还原数据"
-  revertByIds<#=tableUp#>(ids: [ID]!): Int!
+  revertByIds<#=tableUp#>(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIds<#=tableUp#>(ids: [ID]!): Int!
+  forceDeleteByIds<#=tableUp#>(ids: [ID!]!): Int!<#
+  }
+  #>
 }
 
 `);

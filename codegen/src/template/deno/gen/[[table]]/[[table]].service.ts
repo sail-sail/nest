@@ -1,5 +1,6 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -178,7 +179,26 @@ export async function deleteByIds(
 ): Promise<number> {
   const result = await <#=table#>Dao.deleteByIds(context, ids);
   return result;
-}
+}<#
+  if (hasLocked) {
+#>
+
+/**
+ * 根据 ids 锁定或解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  context: Context,
+  ids: string[],
+  is_locked: 0 | 1,
+): Promise<number> {
+  const result = await <#=table#>Dao.lockByIds(context, ids, is_locked);
+  return result;
+}<#
+  }
+#>
 
 /**
  * 根据 ids 还原数据

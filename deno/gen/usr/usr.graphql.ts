@@ -12,14 +12,18 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
-  "启用ID"
-  is_enabled: Int!
-  "启用名称"
-  _is_enabled: String
+  "锁定ID"
+  is_locked: Int!
+  "锁定名称"
+  _is_locked: String
   "角色ID"
   role_ids: [ID!]
   "角色名称"
   _role_ids: [String!]
+  "启用ID"
+  is_enabled: Int!
+  "启用名称"
+  _is_enabled: String
   "备注"
   rem: String!
 }
@@ -34,14 +38,18 @@ input UsrInput {
   username: String
   "密码"
   password: String
-  "启用ID"
-  is_enabled: Int
-  "启用名称"
-  _is_enabled: String
+  "锁定ID"
+  is_locked: Int
+  "锁定名称"
+  _is_locked: String
   "角色ID"
   role_ids: [ID!]
   "角色名称"
   _role_ids: [String!]
+  "启用ID"
+  is_enabled: Int
+  "启用名称"
+  _is_enabled: String
   "备注"
   rem: String
 }
@@ -61,11 +69,13 @@ input UsrSearch {
   "密码"
   password: String
   passwordLike: String
-  "启用"
-  is_enabled: [Int]
+  "锁定"
+  is_locked: [Int]
   "角色"
   role_ids: [String]
   _role_ids: [String]
+  "启用"
+  is_enabled: [Int]
   "备注"
   rem: String
   remLike: String
@@ -90,11 +100,13 @@ type Mutation {
   "导入文件"
   importFileUsr(id: ID!): String
   "根据 ids 删除数据"
-  deleteByIdsUsr(ids: [ID]!): Int!
+  deleteByIdsUsr(ids: [ID!]!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsUsr(ids: [ID!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsUsr(ids: [ID]!): Int!
+  revertByIdsUsr(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsUsr(ids: [ID]!): Int!
+  forceDeleteByIdsUsr(ids: [ID!]!): Int!
 }
 
 `);

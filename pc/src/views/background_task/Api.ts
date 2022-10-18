@@ -89,57 +89,6 @@ export async function findCount(
 }
 
 /**
- * 创建一条数据
- * @export create
- * @param {Background_TaskInput} model
- * @param {GqlOpt} opt?
- */
-export async function create(
-  model: Background_TaskInput,
-  opt?: GqlOpt,
-) {
-  const data = await gqlQuery({
-    query: /* GraphQL */ `
-      mutation($model: Background_TaskInput!) {
-        createBackground_task(model: $model)
-      }
-    `,
-    variables: {
-      model,
-    },
-  }, opt);
-  const result: Mutation["createBackground_task"] = data?.createBackground_task;
-  return result;
-}
-
-/**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
- * @param {Background_TaskInput} model
- * @param {GqlOpt} opt?
- */
-export async function updateById(
-  id: string,
-  model: Background_TaskInput,
-  opt?: GqlOpt,
-) {
-  const data = await gqlQuery({
-    query: /* GraphQL */ `
-      mutation($id: ID!, $model: Background_TaskInput!) {
-        updateByIdBackground_task(id: $id, model: $model)
-      }
-    `,
-    variables: {
-      id,
-      model,
-    },
-  }, opt);
-  const result: Mutation["updateByIdBackground_task"] = data?.updateByIdBackground_task;
-  return result;
-}
-
-/**
  * 通过ID查找一条数据
  * @export findById
  * @param {string} id
@@ -187,7 +136,7 @@ export async function deleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         deleteByIdsBackground_task(ids: $ids)
       }
     `,
@@ -211,7 +160,7 @@ export async function revertByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         revertByIdsBackground_task(ids: $ids)
       }
     `,
@@ -235,7 +184,7 @@ export async function forceDeleteByIds(
 ) {
   const data = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($ids: [ID]!) {
+      mutation($ids: [ID!]!) {
         forceDeleteByIdsBackground_task(ids: $ids)
       }
     `,
@@ -270,31 +219,5 @@ export async function exportExcel(
     },
   }, opt);
   const result: Query["exportExcelBackground_task"] = data?.exportExcelBackground_task || "";
-  return result;
-}
-
-/**
- * 导入文件
- * @param {File} file
- * @export importFile
- */
-export async function importFile(
-  file: File,
-  opt?: GqlOpt,
-) {
-  if (!file) return;
-  const id = await uploadFile(file, undefined, { type: "tmpfile" });
-  if (!id) return;
-  const data = await gqlQuery({
-    query: /* GraphQL */ `
-      mutation($id: ID!) {
-        importFileBackground_task(id: $id)
-      }
-    `,
-    variables: {
-      id,
-    },
-  }, opt);
-  const result: Mutation["importFileBackground_task"] = data?.importFileBackground_task;
   return result;
 }

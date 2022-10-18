@@ -254,7 +254,7 @@
       <el-button
         plain
         type="danger"
-        @click="forceDeleteByIdsEfc"
+        @click="forceDeleteByIdsClk"
       >
         <template #icon>
           <CircleClose />
@@ -483,6 +483,8 @@ import {
   Refresh,
   Delete,
   Edit,
+  Lock,
+  Unlock,
   Download,
   Upload,
   CirclePlus,
@@ -1001,7 +1003,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsEfc() {
+async function forceDeleteByIdsClk() {
   if (selectedIds.length === 0) {
     ElMessage.warning(`请选择需要 彻底删除 的数据!`);
     return;
@@ -1018,10 +1020,10 @@ async function forceDeleteByIdsEfc() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
+    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
   }
 }
 

@@ -97,18 +97,12 @@ type Query {
   findByIdBackground_task(id: ID!): Background_TaskModel
 }
 type Mutation {
-  "创建一条数据"
-  createBackground_task(model: Background_TaskInput!): ID!
-  "根据id修改一条数据"
-  updateByIdBackground_task(id: ID!, model: Background_TaskInput!): ID!
-  "导入文件"
-  importFileBackground_task(id: ID!): String
   "根据 ids 删除数据"
-  deleteByIdsBackground_task(ids: [ID]!): Int!
+  deleteByIdsBackground_task(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsBackground_task(ids: [ID]!): Int!
+  revertByIdsBackground_task(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsBackground_task(ids: [ID]!): Int!
+  forceDeleteByIdsBackground_task(ids: [ID!]!): Int!
 }
 
 `);

@@ -69,11 +69,11 @@ type Mutation {
   "导入文件"
   importFileOption(id: ID!): String
   "根据 ids 删除数据"
-  deleteByIdsOption(ids: [ID]!): Int!
+  deleteByIdsOption(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsOption(ids: [ID]!): Int!
+  revertByIdsOption(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsOption(ids: [ID]!): Int!
+  forceDeleteByIdsOption(ids: [ID!]!): Int!
 }
 
 `);

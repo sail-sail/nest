@@ -142,6 +142,21 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 ids 锁定或解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  context: Context,
+  ids: string[],
+  is_locked: 0 | 1,
+): Promise<number> {
+  const result = await usrDao.lockByIds(context, ids, is_locked);
+  return result;
+}
+
+/**
  * 根据 ids 还原数据
  * @param {string[]} ids
  * @return {Promise<number>}
@@ -179,8 +194,9 @@ export async function importFile(
     "名称": "lbl",
     "用户名": "username",
     "密码": "password",
-    "启用": "_is_enabled",
+    "锁定": "_is_locked",
     "角色": "_role_ids",
+    "启用": "_is_enabled",
     "备注": "rem",
   };
   const models = await getImportFileRows(id, header);

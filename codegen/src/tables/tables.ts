@@ -39,6 +39,7 @@ export default defineConfig({
       },
     ],
   },
+  // 用户
   usr: {
     opts: {
       cache: true,
@@ -66,6 +67,12 @@ export default defineConfig({
         isPassword: true,
       },
       {
+        COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "角色",
         ORDINAL_POSITION: 5,
@@ -75,6 +82,7 @@ export default defineConfig({
       },
     ],
   },
+  // 菜单
   menu: {
     opts: {
       cache: true,
