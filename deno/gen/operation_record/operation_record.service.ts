@@ -182,10 +182,6 @@ export async function importFile(
     "方法名称": "method_lbl",
     "操作": "lbl",
     "备注": "rem",
-    "创建人": "_create_usr_id",
-    "创建时间": "create_time",
-    "更新人": "_update_usr_id",
-    "更新时间": "update_time",
   };
   const models = await getImportFileRows(id, header);
   
