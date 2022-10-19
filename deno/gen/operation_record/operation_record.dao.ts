@@ -493,9 +493,6 @@ export async function create(
   const table = "operation_record";
   const method = "create";
   
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }
   
   const oldModel = await findByUnique(context, model, options);
   if (oldModel) {
@@ -503,6 +500,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();

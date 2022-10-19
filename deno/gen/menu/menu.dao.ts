@@ -499,9 +499,6 @@ export async function create(
   const table = "menu";
   const method = "create";
   
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }
   
   // 类型
   if (isNotEmpty(model._type) && model.type === undefined) {
@@ -538,6 +535,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();

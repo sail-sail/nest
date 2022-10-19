@@ -511,9 +511,6 @@ export async function create(
   const table = "usr";
   const method = "create";
   
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }
   
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
@@ -563,6 +560,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();

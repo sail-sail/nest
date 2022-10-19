@@ -511,9 +511,6 @@ export async function create(
   const table = "background_task";
   const method = "create";
   
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }
   
   // 状态
   if (isNotEmpty(model._state) && model.state === undefined) {
@@ -549,6 +546,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();

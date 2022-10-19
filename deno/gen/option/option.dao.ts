@@ -462,9 +462,6 @@ export async function create(
   const table = "option";
   const method = "create";
   
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
@@ -482,6 +479,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();

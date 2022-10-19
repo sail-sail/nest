@@ -52,7 +52,7 @@ export async function getTemplate(
     throw "Excel文件不存在!";
   }
   const ext = extension(stats.contentType);
-  if (ext !== ".xlsx" && ext !== ".xlsm" && ext !== ".xls") {
+  if (ext !== "xlsx" && ext !== "xlsm" && ext !== "xls") {
     throw "Excel文件格式不正确!";
   }
   const objInfo = await tmpfileDao.getObject(id);

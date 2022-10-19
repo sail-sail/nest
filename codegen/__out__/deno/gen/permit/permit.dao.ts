@@ -443,9 +443,6 @@ export async function create(
   const table = "permit";
   const method = "create";
   
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }
   
   // 菜单
   if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
@@ -462,6 +459,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();

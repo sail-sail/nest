@@ -848,10 +848,7 @@ export async function create(
   }
   const table = "<#=table#>";
   const method = "create";
-  
-  if (!model.id) {
-    model.id = shortUuidV4();
-  }<#
+  <#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -945,6 +942,10 @@ export async function create(
     if (result) {
       return result;
     }
+  }
+  
+  if (!model.id) {
+    model.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
