@@ -38,6 +38,16 @@ export async function getTemplate(
   return buffer;
 }
 
+// const unImportKeys = [
+//   "tenant_id",
+//   "create_usr_id",
+//   "create_time",
+//   "update_usr_id",
+//   "update_time",
+//   "is_deleted",
+//   "delete_time",
+// ];
+
 /**
  * 第一行作为表头, 获得文件数据
  * @param {string} id
