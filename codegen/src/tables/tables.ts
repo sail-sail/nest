@@ -249,7 +249,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "mod_lbl",
         search: true,
-        width: 140,
+        width: 180,
       },
       {
         COLUMN_NAME: "method",
@@ -258,7 +258,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "method_lbl",
         search: true,
-        width: 140,
+        width: 180,
       },
       {
         COLUMN_NAME: "lbl",
