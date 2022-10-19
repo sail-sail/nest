@@ -219,6 +219,8 @@ export type Mutation = {
   /** 根据 ids 删除数据 */
   deleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 删除数据 */
+  deleteByIdsOperation_record: Scalars['Int'];
+  /** 根据 ids 删除数据 */
   deleteByIdsOption: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsPermit: Scalars['Int'];
@@ -232,6 +234,8 @@ export type Mutation = {
   forceDeleteByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsMenu: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsOperation_record: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsOption: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
@@ -262,6 +266,8 @@ export type Mutation = {
   revertByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsMenu: Scalars['Int'];
+  /** 根据 ids 还原数据 */
+  revertByIdsOperation_record: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsOption: Scalars['Int'];
   /** 根据 ids 还原数据 */
@@ -327,6 +333,11 @@ export type MutationDeleteByIdsMenuArgs = {
 };
 
 
+export type MutationDeleteByIdsOperation_RecordArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteByIdsOptionArgs = {
   ids: Array<Scalars['ID']>;
 };
@@ -358,6 +369,11 @@ export type MutationForceDeleteByIdsBackground_TaskArgs = {
 
 
 export type MutationForceDeleteByIdsMenuArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationForceDeleteByIdsOperation_RecordArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -440,6 +456,11 @@ export type MutationRevertByIdsMenuArgs = {
 };
 
 
+export type MutationRevertByIdsOperation_RecordArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationRevertByIdsOptionArgs = {
   ids: Array<Scalars['ID']>;
 };
@@ -498,6 +519,103 @@ export type MutationUpdateByIdTenantArgs = {
 export type MutationUpdateByIdUsrArgs = {
   id: Scalars['ID'];
   model: UsrInput;
+};
+
+export type Operation_RecordInput = {
+  /** 创建人名称 */
+  _create_usr_id?: InputMaybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: InputMaybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 操作 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 方法 */
+  method?: InputMaybe<Scalars['String']>;
+  /** 方法名称 */
+  method_lbl?: InputMaybe<Scalars['String']>;
+  /** 模块 */
+  mod?: InputMaybe<Scalars['String']>;
+  /** 模块名称 */
+  mod_lbl?: InputMaybe<Scalars['String']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id?: InputMaybe<Scalars['ID']>;
+};
+
+export type Operation_RecordModel = {
+  __typename?: 'Operation_RecordModel';
+  /** 创建人名称 */
+  _create_usr_id?: Maybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: Maybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: Maybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id: Scalars['ID'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 操作 */
+  lbl: Scalars['String'];
+  /** 方法 */
+  method: Scalars['String'];
+  /** 方法名称 */
+  method_lbl: Scalars['String'];
+  /** 模块 */
+  mod: Scalars['String'];
+  /** 模块名称 */
+  mod_lbl: Scalars['String'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 更新时间 */
+  update_time?: Maybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id: Scalars['ID'];
+};
+
+export type Operation_RecordSearch = {
+  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 创建人 */
+  create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 操作 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 方法 */
+  method?: InputMaybe<Scalars['String']>;
+  methodLike?: InputMaybe<Scalars['String']>;
+  /** 方法名称 */
+  method_lbl?: InputMaybe<Scalars['String']>;
+  method_lblLike?: InputMaybe<Scalars['String']>;
+  /** 模块 */
+  mod?: InputMaybe<Scalars['String']>;
+  modLike?: InputMaybe<Scalars['String']>;
+  /** 模块名称 */
+  mod_lbl?: InputMaybe<Scalars['String']>;
+  mod_lblLike?: InputMaybe<Scalars['String']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 更新人 */
+  update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type OptionInput = {
@@ -621,6 +739,8 @@ export type Query = {
   /** 根据搜索条件导出 */
   exportExcelMenu: Scalars['String'];
   /** 根据搜索条件导出 */
+  exportExcelOperation_record: Scalars['String'];
+  /** 根据搜索条件导出 */
   exportExcelOption: Scalars['String'];
   /** 根据搜索条件导出 */
   exportExcelPermit: Scalars['String'];
@@ -634,6 +754,8 @@ export type Query = {
   findAllBackground_task: Array<Background_TaskModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllMenu: Array<MenuModel>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllOperation_record: Array<Operation_RecordModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllOption: Array<OptionModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -649,6 +771,8 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdMenu?: Maybe<MenuModel>;
   /** 根据id查找一条数据 */
+  findByIdOperation_record?: Maybe<Operation_RecordModel>;
+  /** 根据id查找一条数据 */
   findByIdOption?: Maybe<OptionModel>;
   /** 根据id查找一条数据 */
   findByIdPermit?: Maybe<PermitModel>;
@@ -662,6 +786,8 @@ export type Query = {
   findCountBackground_task: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountMenu: Scalars['Int'];
+  /** 根据条件查找据数总数 */
+  findCountOperation_record: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountOption: Scalars['Int'];
   /** 根据条件查找据数总数 */
@@ -680,6 +806,8 @@ export type Query = {
   findOneBackground_task?: Maybe<Background_TaskModel>;
   /** 根据条件查找第一条数据 */
   findOneMenu?: Maybe<MenuModel>;
+  /** 根据条件查找第一条数据 */
+  findOneOperation_record?: Maybe<Operation_RecordModel>;
   /** 根据条件查找第一条数据 */
   findOneOption?: Maybe<OptionModel>;
   /** 根据条件查找第一条数据 */
@@ -705,6 +833,12 @@ export type QueryExportExcelBackground_TaskArgs = {
 
 export type QueryExportExcelMenuArgs = {
   search?: InputMaybe<MenuSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelOperation_RecordArgs = {
+  search?: InputMaybe<Operation_RecordSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -749,6 +883,13 @@ export type QueryFindAllBackground_TaskArgs = {
 export type QueryFindAllMenuArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<MenuSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryFindAllOperation_RecordArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<Operation_RecordSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -798,6 +939,11 @@ export type QueryFindByIdMenuArgs = {
 };
 
 
+export type QueryFindByIdOperation_RecordArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type QueryFindByIdOptionArgs = {
   id: Scalars['ID'];
 };
@@ -833,6 +979,11 @@ export type QueryFindCountMenuArgs = {
 };
 
 
+export type QueryFindCountOperation_RecordArgs = {
+  search?: InputMaybe<Operation_RecordSearch>;
+};
+
+
 export type QueryFindCountOptionArgs = {
   search?: InputMaybe<OptionSearch>;
 };
@@ -865,6 +1016,11 @@ export type QueryFindOneBackground_TaskArgs = {
 
 export type QueryFindOneMenuArgs = {
   search?: InputMaybe<MenuSearch>;
+};
+
+
+export type QueryFindOneOperation_RecordArgs = {
+  search?: InputMaybe<Operation_RecordSearch>;
 };
 
 

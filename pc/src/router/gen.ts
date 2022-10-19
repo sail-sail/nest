@@ -27,6 +27,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/operation_record",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "操作记录",
+        component: () => import("@/views/operation_record/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/option",
     component: Layout1,
     children: [

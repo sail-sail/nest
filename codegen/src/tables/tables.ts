@@ -234,4 +234,77 @@ export default defineConfig({
       },
     ],
   },
+  // 操作记录
+  operation_record: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      noImport: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "mod",
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "mod_lbl",
+        search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "method",
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "method_lbl",
+        search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        foreignKey: {
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "create_time",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        foreignKey: {
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "update_time",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        width: 140,
+      },
+    ],
+  },
 });

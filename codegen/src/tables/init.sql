@@ -189,3 +189,23 @@ CREATE TABLE if not exists `option` (
   INDEX (`ky`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='选项';
+
+------------------------------------------------------------------------------------------------ 操作记录
+drop table if exists `operation_record`;
+CREATE TABLE if not exists `operation_record` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `mod` varchar(50) NOT NULL DEFAULT '' COMMENT '模块',
+  `mod_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '模块名称',
+  `method` varchar(50) NOT NULL DEFAULT '' COMMENT '方法',
+  `method_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '方法名称',
+  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '操作',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除[{value:0,label:"未删除"},{value:1,label:"已删除"}]',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='操作记录';
