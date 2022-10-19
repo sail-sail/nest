@@ -706,7 +706,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "模块名称",
     prop: "mod_lbl",
-    width: 140,
+    width: 180,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -714,7 +714,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "方法名称",
     prop: "method_lbl",
-    width: 140,
+    width: 180,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
