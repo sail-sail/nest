@@ -85,7 +85,7 @@ lvl++;
 .top_menu_item {
   display: flex;
   align-items: center;
-  justify-content: left;
+  justify-content: center;
   padding-top: 0;
   padding-bottom: 0;
   height: 40px;
