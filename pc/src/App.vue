@@ -403,4 +403,14 @@ body .el-tree {
     }
   }
 }
+.el-flex-card.el-card {
+  display: flex;
+  flex-direction: column;
+  .el-card__body {
+    flex: 1 0 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+}
 </style>
