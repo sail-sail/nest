@@ -85,6 +85,7 @@ export default defineConfig({
   base: "/",
   build: {
     outDir: "../build/pc",
+    chunkSizeWarningLimit: 1500,
   },
   define: {
     __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
