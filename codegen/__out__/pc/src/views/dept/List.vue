@@ -48,95 +48,6 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.usernameLike == null && builtInSearch?.username == null">
-        <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
-          class="after:content-[:]"
-        >
-          用户名
-        </label>
-        <el-form-item prop="usernameLike">
-          <el-input
-            v-model="search.usernameLike"
-            
-            w="full"
-            
-            placeholder="请输入用户名"
-            clearable
-            @clear="searchIptClr"
-          ></el-input>
-        </el-form-item>
-      </template>
-      
-      <template v-if="builtInSearch?.dept_ids == null">
-        <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
-          class="after:content-[:]"
-        >
-          拥有部门
-        </label>
-        <el-form-item prop="dept_ids">
-          <el-select-v2
-            :set="search.dept_ids = search.dept_ids || [ ]"
-            
-            w="full"
-            
-            :height="300"
-            :model-value="search.dept_ids"
-            placeholder="请选择拥有部门"
-            :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
-            @update:model-value="search.dept_ids = $event"
-            @change="searchClk"
-          ></el-select-v2>
-        </el-form-item>
-      </template>
-      
-      <template v-if="builtInSearch?.role_ids == null">
-        <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
-          class="after:content-[:]"
-        >
-          拥有角色
-        </label>
-        <el-form-item prop="role_ids">
-          <el-select-v2
-            :set="search.role_ids = search.role_ids || [ ]"
-            
-            w="full"
-            
-            :height="300"
-            :model-value="search.role_ids"
-            placeholder="请选择拥有角色"
-            :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
-            @update:model-value="search.role_ids = $event"
-            @change="searchClk"
-          ></el-select-v2>
-        </el-form-item>
-      </template>
-      
       <template v-if="builtInSearch?.is_deleted == null">
         <div
           min="w-[20px]"
@@ -424,17 +335,8 @@
             </el-table-column>
           </template>
           
-          <!-- 用户名 -->
-          <template v-else-if="'username' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 启用 -->
-          <template v-else-if="'_is_enabled' === col.prop">
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -451,21 +353,6 @@
             </el-table-column>
           </template>
           
-          <!-- 拥有部门 -->
-          <template v-else-if="'_dept_ids' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
-            </el-table-column>
-            
-          </template>
-          
           <!-- 锁定 -->
           <template v-else-if="'_is_locked' === col.prop">
             <el-table-column
@@ -475,19 +362,42 @@
             </el-table-column>
           </template>
           
-          <!-- 拥有角色 -->
-          <template v-else-if="'_role_ids' === col.prop">
+          <!-- 创建人 -->
+          <template v-else-if="'_create_usr_id' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
             </el-table-column>
             
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'_update_usr_id' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+            
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
           </template>
           
           <template v-else>
@@ -601,15 +511,10 @@ import {
 } from "./Api";
 
 import {
-  type UsrModel,
-  type UsrSearch,
   type DeptModel,
-  type RoleModel,
+  type DeptSearch,
+  type UsrModel,
 } from "#/types";
-import {
-  findAllDept,
-  findAllRole,
-} from "./Api";
 
 const usrStore = useUsrStore();
 
@@ -632,9 +537,7 @@ async function exportClk() {
 function initSearch() {
   return {
     is_deleted: 0,
-    dept_ids: [ ],
-    role_ids: [ ],
-  } as UsrSearch;
+  } as DeptSearch;
 }
 
 let search = $ref(initSearch());
@@ -671,31 +574,29 @@ const props = defineProps<{
   id?: string; //ID
   lbl?: string; //名称
   lblLike?: string; //名称
-  username?: string; //用户名
-  usernameLike?: string; //用户名
-  password?: string; //密码
-  passwordLike?: string; //密码
-  is_enabled?: string|string[]; //启用
+  order_by?: string; //排序
   rem?: string; //备注
   remLike?: string; //备注
-  dept_ids?: string|string[]; //拥有部门
-  _dept_ids?: string|string[]; //拥有部门
   is_locked?: string|string[]; //锁定
-  role_ids?: string|string[]; //拥有角色
-  _role_ids?: string|string[]; //拥有角色
+  create_usr_id?: string|string[]; //创建人
+  _create_usr_id?: string|string[]; //创建人
+  create_time?: string; //创建时间
+  update_usr_id?: string|string[]; //更新人
+  _update_usr_id?: string|string[]; //更新人
+  update_time?: string; //更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
-  is_enabled: "number[]",
-  _is_enabled: "string[]",
-  dept_ids: "string[]",
-  _dept_ids: "string[]",
+  order_by: "number[]",
+  _order_by: "string[]",
   is_locked: "number[]",
   _is_locked: "string[]",
-  role_ids: "string[]",
-  _role_ids: "string[]",
+  create_usr_id: "string[]",
+  _create_usr_id: "string[]",
+  update_usr_id: "string[]",
+  _update_usr_id: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -724,7 +625,7 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as UsrSearch;
+  return Object.fromEntries(entries) as unknown as DeptSearch;
 });
 
 /** 内置变量 */
@@ -754,7 +655,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as UsrModel;
+  return Object.fromEntries(entries) as unknown as DeptModel;
 });
 
 /** 分页功能 */
@@ -763,7 +664,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<UsrModel>(dataGrid));
+} = $(usePage<DeptModel>(dataGrid));
 
 /** 表格选择功能 */
 let {
@@ -773,7 +674,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<UsrModel>($$(tableRef)));
+} = $(useSelect<DeptModel>($$(tableRef)));
 
 watch(
   () => selectedIds,
@@ -819,32 +720,21 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<UsrModel[]>([ ]);
+let tableData = $ref<DeptModel[]>([ ]);
 
 let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
-    width: 140,
-    sortable: "custom",
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
   {
-    label: "用户名",
-    prop: "username",
-    width: 140,
+    label: "排序",
+    prop: "order_by",
     sortable: "custom",
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "启用",
-    prop: "_is_enabled",
-    width: 80,
-    align: "center",
+    align: "right",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
@@ -856,23 +746,40 @@ let tableColumns = $ref<ColumnType[]>([
     showOverflowTooltip: true,
   },
   {
-    label: "拥有部门",
-    prop: "_dept_ids",
+    label: "锁定",
+    prop: "_is_locked",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "创建人",
+    prop: "_create_usr_id",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "创建时间",
+    prop: "create_time",
     width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
   {
-    label: "锁定",
-    prop: "_is_locked",
+    label: "更新人",
+    prop: "_update_usr_id",
+    width: 100,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
   {
-    label: "拥有角色",
-    prop: "_role_ids",
+    label: "更新时间",
+    prop: "update_time",
     width: 140,
     align: "center",
     headerAlign: "center",
@@ -885,7 +792,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<UsrModel>(
+} = $(useTableColumns<DeptModel>(
   $$(tableColumns),
   {
     persistKey: "0",
@@ -894,45 +801,10 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
-let depts = $ref<DeptModel[]>([ ]);
-
-let roles = $ref<RoleModel[]>([ ]);
+let usrs = $ref<UsrModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
-  [
-    depts,
-    roles,
-  ] = await Promise.all([
-    findAllDept(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllRole(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
 }
 
 /** 刷新表格 */
@@ -962,13 +834,13 @@ async function dataGrid(isCount = false) {
 
 /** 排序 */
 let sort: Sort = $ref({
-  prop: "",
+  prop: "order_by",
   order: "ascending",
 });
 
 /** 排序 */
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<UsrModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<DeptModel> } & Sort,
 ) {
   sort.prop = prop;
   sort.order = order;
@@ -1036,7 +908,7 @@ async function openUploadClk() {
     return;
   }
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入用户",
+    title: "导入部门",
   });
   if (file) {
     const msg = await importFile(file);

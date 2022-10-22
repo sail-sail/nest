@@ -15,52 +15,52 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type UsrModel,
-  type UsrSearch,
+  type DeptModel,
+  type DeptSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
-import * as usrDao from "./usr.dao.ts";
+import * as deptDao from "./dept.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const result = await usrDao.findCount(context, search);
+  const result = await deptDao.findCount(context, search);
   return result;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<UsrModel[]>} 
+ * @return {Promise<DeptModel[]>} 
  */
 export async function findAll(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<UsrModel[]> {
-  const result: UsrModel[] = await usrDao.findAll(context, search, page, sort);
+): Promise<DeptModel[]> {
+  const result: DeptModel[] = await deptDao.findAll(context, search, page, sort);
   return result;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function findOne(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const result: UsrModel | undefined = await usrDao.findOne(context, search);
+  const result: DeptModel | undefined = await deptDao.findOne(context, search);
   return result;
 }
 
@@ -72,19 +72,19 @@ export async function findById(
   context: Context,
   id?: string,
 ) {
-  const result = await usrDao.findById(context, id);
+  const result = await deptDao.findById(context, id);
   return result;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function exist(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await usrDao.exist(context, search);
+  const result = await deptDao.exist(context, search);
   return result;
 }
 
@@ -96,35 +96,35 @@ export async function existById(
   context: Context,
   id: string,
 ) {
-  const result = await usrDao.existById(context, id);
+  const result = await deptDao.existById(context, id);
   return result;
 }
 
 /**
  * 创建数据
- * @param {UsrModel} model
+ * @param {DeptModel} model
  * @return {Promise<string | undefined>} 
  */
 export async function create(
   context: Context,
-  model: UsrModel,
+  model: DeptModel,
 ): Promise<string | undefined> {
-  const result = await usrDao.create(context, model);
+  const result = await deptDao.create(context, model);
   return result;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {UsrModel} model
+ * @param {DeptModel} model
  * @return {Promise<string | undefined>}
  */
 export async function updateById(
   context: Context,
   id: string,
-  model: UsrModel,
+  model: DeptModel,
 ): Promise<string | undefined> {
-  await usrDao.updateById(context, id, model);
+  await deptDao.updateById(context, id, model);
   return id;
 }
 
@@ -137,7 +137,7 @@ export async function deleteByIds(
   context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await usrDao.deleteByIds(context, ids);
+  const result = await deptDao.deleteByIds(context, ids);
   return result;
 }
 
@@ -152,7 +152,7 @@ export async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const result = await usrDao.lockByIds(context, ids, is_locked);
+  const result = await deptDao.lockByIds(context, ids, is_locked);
   return result;
 }
 
@@ -165,7 +165,7 @@ export async function revertByIds(
   context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await usrDao.revertByIds(context, ids);
+  const result = await deptDao.revertByIds(context, ids);
   return result;
 }
 
@@ -178,7 +178,7 @@ export async function forceDeleteByIds(
   context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await usrDao.forceDeleteByIds(context, ids);
+  const result = await deptDao.forceDeleteByIds(context, ids);
   return result;
 }
 
@@ -192,12 +192,8 @@ export async function importFile(
 ) {
   const header: { [key: string]: string } = {
     "名称": "lbl",
-    "用户名": "username",
-    "密码": "password",
-    "启用": "_is_enabled",
+    "排序": "order_by",
     "备注": "rem",
-    "拥有部门": "_dept_ids",
-    "拥有角色": "_role_ids",
   };
   const models = await getImportFileRows(id, header);
   
@@ -208,7 +204,7 @@ export async function importFile(
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     try {
-      await usrDao.create(context, model, { uniqueType: "update" });
+      await deptDao.create(context, model, { uniqueType: "update" });
       succNum++;
     } catch (err) {
       failNum++;
@@ -232,28 +228,39 @@ export async function importFile(
 
 /**
  * 导出Excel
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(context, search, undefined, sort);
-  const buffer0 = await getTemplate(`usr.xlsx`);
+  const buffer0 = await getTemplate(`dept.xlsx`);
   if (!buffer0) {
-    throw new ServiceException(`模板文件 usr.xlsx 不存在!`);
+    throw new ServiceException(`模板文件 dept.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
   const result = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
-      originalName: "用户.xlsx",
+      originalName: "部门.xlsx",
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
+  return result;
+}
+
+/**
+ * 查找 order_by 字段的最大值
+ * @return {Promise<number>}
+ */
+export async function findLastOrderBy(
+  context: Context,
+): Promise<number> {
+  const result = await deptDao.findLastOrderBy(context);
   return result;
 }

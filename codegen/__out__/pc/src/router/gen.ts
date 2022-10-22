@@ -15,6 +15,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/dept",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "部门",
+        component: () => import("@/views/dept/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/menu",
     component: Layout1,
     children: [

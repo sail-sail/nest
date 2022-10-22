@@ -124,76 +124,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.is_locked == null">
-          <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
-            class="after:content-[:]"
-          >
-            <span>锁定</span>
-          </label>
-          <el-form-item
-            prop="is_locked"
-          >
-            <el-select
-              :set="dialogModel.is_locked = dialogModel.is_locked ?? undefined"
-              v-model="dialogModel.is_locked"
-              
-              w="full"
-              
-              placeholder="请选择锁定"
-              filterable
-              default-first-option
-              clearable
-              @keyup.enter.stop
-            >
-              <el-option
-                :value="0"
-                label="否"
-              ></el-option>
-              <el-option
-                :value="1"
-                label="是"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.role_ids == null">
-          <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
-            class="after:content-[:]"
-          >
-            <span>角色</span>
-          </label>
-          <el-form-item
-            prop="role_ids"
-          >
-            <el-select-v2
-              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
-              v-model="dialogModel.role_ids"
-              :height="300"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              
-              w="full"
-              
-              placeholder="请选择角色"
-              :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
-          </el-form-item>
-        </template>
-        
         <template v-if="builtInModel?.is_enabled == null">
           <label
             m="l-[3px]"
@@ -202,6 +132,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
+            <span style="color: red;">*</span>
             <span>启用</span>
           </label>
           <el-form-item
@@ -251,6 +182,72 @@
               
               placeholder="请输入备注"
             ></el-input>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.dept_ids == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span>拥有部门</span>
+          </label>
+          <el-form-item
+            prop="dept_ids"
+          >
+            <el-select-v2
+              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
+              v-model="dialogModel.dept_ids"
+              :height="300"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              
+              w="full"
+              
+              placeholder="请选择拥有部门"
+              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
+              filterable
+              clearable
+              :loading="!inited"
+              @keyup.enter.stop
+            ></el-select-v2>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.role_ids == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span>拥有角色</span>
+          </label>
+          <el-form-item
+            prop="role_ids"
+          >
+            <el-select-v2
+              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
+              v-model="dialogModel.role_ids"
+              :height="300"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              
+              w="full"
+              
+              placeholder="请选择拥有角色"
+              :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
+              filterable
+              clearable
+              :loading="!inited"
+              @keyup.enter.stop
+            ></el-select-v2>
           </el-form-item>
         </template>
         
@@ -354,10 +351,12 @@ import {
 
 import {
   type UsrInput,
+  type DeptModel,
   type RoleModel,
 } from "#/types";
 
 import {
+  findAllDept,
   findAllRole,
 } from "./Api";
 
@@ -373,6 +372,7 @@ let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
 let dialogModel = $ref({
+  dept_ids: [ ],
   role_ids: [ ],
 } as UsrInput);
 
@@ -395,16 +395,38 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
       message: "请输入用户名",
     },
   ],
+  is_enabled: [
+    {
+      required: true,
+      message: "请输入启用",
+    },
+  ],
 });
 
 /** 下拉框列表 */
+let depts = $ref<DeptModel[]>([ ]);
 let roles = $ref<RoleModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
+    depts,
     roles,
   ] = await Promise.all([
+    findAllDept(
+      undefined,
+      {
+      },
+      [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),
     findAllRole(
       undefined,
       {
@@ -435,8 +457,8 @@ let builtInModel = $ref<UsrInput | undefined>();
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: UsrInput = {
-    is_locked: 0,
     is_enabled: 1,
+    is_locked: 0,
   };
   return defaultInput;
 }

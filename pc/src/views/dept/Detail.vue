@@ -43,7 +43,7 @@
         
         justify-end
         items-end
-        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
+        grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
         gap="x-[16px] y-[16px]"
         place-content-center
         
@@ -77,7 +77,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.username == null">
+        <template v-if="builtInModel?.order_by == null">
           <label
             m="l-[3px]"
             text-right
@@ -85,80 +85,23 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span style="color: red;">*</span>
-            <span>用户名</span>
+            <span>排序</span>
           </label>
           <el-form-item
-            prop="username"
+            prop="order_by"
           >
-            <el-input
-              v-model="dialogModel.username"
+            <el-input-number
+              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
+              v-model="dialogModel.order_by"
               
               w="full"
               
-              placeholder="请输入用户名"
-            ></el-input>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.password == null">
-          <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
-            class="after:content-[:]"
-          >
-            <span>密码</span>
-          </label>
-          <el-form-item
-            prop="password"
-          >
-            <el-input
-              v-model="dialogModel.password"
-              
-              w="full"
-              
-              placeholder="请输入密码"
-            ></el-input>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.is_enabled == null">
-          <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
-            class="after:content-[:]"
-          >
-            <span style="color: red;">*</span>
-            <span>启用</span>
-          </label>
-          <el-form-item
-            prop="is_enabled"
-          >
-            <el-select
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
-              v-model="dialogModel.is_enabled"
-              
-              w="full"
-              
-              placeholder="请选择启用"
-              filterable
-              default-first-option
-              clearable
-              @keyup.enter.stop
-            >
-              <el-option
-                :value="1"
-                label="是"
-              ></el-option>
-              <el-option
-                :value="0"
-                label="否"
-              ></el-option>
-            </el-select>
+              :precision="0"
+              :step="1"
+              :step-strictly="true"
+              :controls="false"
+              placeholder="请输入排序"
+            ></el-input-number>
           </el-form-item>
         </template>
         
@@ -182,72 +125,6 @@
               
               placeholder="请输入备注"
             ></el-input>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.dept_ids == null">
-          <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
-            class="after:content-[:]"
-          >
-            <span>拥有部门</span>
-          </label>
-          <el-form-item
-            prop="dept_ids"
-          >
-            <el-select-v2
-              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
-              v-model="dialogModel.dept_ids"
-              :height="300"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              
-              w="full"
-              
-              placeholder="请选择拥有部门"
-              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.role_ids == null">
-          <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
-            class="after:content-[:]"
-          >
-            <span>拥有角色</span>
-          </label>
-          <el-form-item
-            prop="role_ids"
-          >
-            <el-select-v2
-              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
-              v-model="dialogModel.role_ids"
-              :height="300"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
-              
-              w="full"
-              
-              placeholder="请选择拥有角色"
-              :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
           </el-form-item>
         </template>
         
@@ -346,18 +223,17 @@ import { useFullscreenEfc } from "@/compositions/fullscreen";
 import {
   create,
   findById,
+  findLastOrderBy,
   updateById,
 } from "./Api";
 
 import {
-  type UsrInput,
-  type DeptModel,
-  type RoleModel,
+  type DeptInput,
+  type UsrModel,
 } from "#/types";
 
 import {
-  findAllDept,
-  findAllRole,
+  findAllUsr,
 } from "./Api";
 
 const emit = defineEmits([
@@ -372,9 +248,7 @@ let dialogVisible = $ref(false);
 let dialogAction = $ref("add");
 
 let dialogModel = $ref({
-  dept_ids: [ ],
-  role_ids: [ ],
-} as UsrInput);
+} as DeptInput);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -389,37 +263,24 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
       message: "请输入名称",
     },
   ],
-  username: [
-    {
-      required: true,
-      message: "请输入用户名",
-    },
-  ],
-  is_enabled: [
-    {
-      required: true,
-      message: "请输入启用",
-    },
-  ],
 });
 
 /** 下拉框列表 */
-let depts = $ref<DeptModel[]>([ ]);
-let roles = $ref<RoleModel[]>([ ]);
+let usrs = $ref<UsrModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
-    depts,
-    roles,
+    usrs,
+    usrs,
   ] = await Promise.all([
-    findAllDept(
+    findAllUsr(
       undefined,
       {
       },
       [
         {
-          prop: "order_by",
+          prop: "",
           order: "ascending",
         },
       ],
@@ -427,7 +288,7 @@ async function getSelectListEfc() {
         notLoading: true,
       },
     ),
-    findAllRole(
+    findAllUsr(
       undefined,
       {
       },
@@ -452,12 +313,12 @@ type OnCloseResolveType = {
 let onCloseResolve = function(value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<UsrInput | undefined>();
+let builtInModel = $ref<DeptInput | undefined>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: UsrInput = {
-    is_enabled: 1,
+  const defaultInput: DeptInput = {
+    order_by: 0,
     is_locked: 0,
   };
   return defaultInput;
@@ -467,7 +328,7 @@ async function getDefaultInput() {
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: UsrInput;
+    builtInModel?: DeptInput;
     model?: {
       id?: string;
       ids?: string[];
@@ -506,6 +367,8 @@ async function showDialog(
       ...defaultModel,
       ...model,
     };
+    const order_by = await findLastOrderBy();
+    dialogModel.order_by = order_by + 1;
   } else if (dialogAction === "copy") {
     if (!model?.id) {
       return await dialogPrm;

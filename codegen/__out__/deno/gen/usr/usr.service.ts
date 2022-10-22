@@ -194,10 +194,10 @@ export async function importFile(
     "名称": "lbl",
     "用户名": "username",
     "密码": "password",
-    "锁定": "_is_locked",
-    "角色": "_role_ids",
     "启用": "_is_enabled",
     "备注": "rem",
+    "拥有部门": "_dept_ids",
+    "拥有角色": "_role_ids",
   };
   const models = await getImportFileRows(id, header);
   

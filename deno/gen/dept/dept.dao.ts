@@ -31,16 +31,17 @@ import {
 
 import {
   SortOrderEnum,
-  type UsrModel,
-  type UsrSearch,
+  type DeptModel,
+  type DeptSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+import * as usrDao from "/gen/usr/usr.dao.ts";
 
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
-  search?: UsrSearch & {
+  search?: DeptSearch & {
     $extra?: SearchExtra[];
     tenant_id?: string | null;
   },
@@ -73,23 +74,13 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lblLike)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
-  if (search?.username !== undefined) {
-    whereQuery += ` and t.username = ${ args.push(search.username) }`;
-  }
-  if (isNotEmpty(search?.usernameLike)) {
-    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.usernameLike) + "%") }`;
-  }
-  if (search?.password !== undefined) {
-    whereQuery += ` and t.password = ${ args.push(search.password) }`;
-  }
-  if (isNotEmpty(search?.passwordLike)) {
-    whereQuery += ` and t.password like ${ args.push(sqlLike(search?.passwordLike) + "%") }`;
-  }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
-  }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -97,23 +88,51 @@ async function getWhereQuery(
   if (isNotEmpty(search?.remLike)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
   }
-  if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
-    search.dept_ids = [ search.dept_ids ];
-  }
-  if (search?.dept_ids && search?.dept_ids.length > 0) {
-    whereQuery += ` and dept.id in ${ args.push(search.dept_ids) }`;
-  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.role_ids && !Array.isArray(search?.role_ids)) {
-    search.role_ids = [ search.role_ids ];
+  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.role_ids && search?.role_ids.length > 0) {
-    whereQuery += ` and role.id in ${ args.push(search.role_ids) }`;
+  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+    whereQuery += ` and _create_usr_id.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?._create_usr_id && !Array.isArray(search?._create_usr_id)) {
+    search._create_usr_id = [ search._create_usr_id ];
+  }
+  if (search?._create_usr_id && search._create_usr_id?.length > 0) {
+    whereQuery += ` and _create_usr_id in ${ args.push(search._create_usr_id) }`;
+  }
+  if (search?.create_time && search?.create_time?.length > 0) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+    whereQuery += ` and _update_usr_id.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?._update_usr_id && !Array.isArray(search?._update_usr_id)) {
+    search._update_usr_id = [ search._update_usr_id ];
+  }
+  if (search?._update_usr_id && search._update_usr_id?.length > 0) {
+    whereQuery += ` and _update_usr_id in ${ args.push(search._update_usr_id) }`;
+  }
+  if (search?.update_time && search?.update_time?.length > 0) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -132,53 +151,11 @@ function getFromQuery(
   context: Context,
 ) {
   const fromQuery = /*sql*/ `
-    \`usr\` t
-    left join \`usr_dept\`
-      on \`usr_dept\`.usr_id = t.id
-      and \`usr_dept\`.is_deleted = 0
-    left join \`dept\`
-      on \`usr_dept\`.dept_id = dept.id
-      and dept.is_deleted = 0
-    left join (
-      select
-        json_arrayagg(dept.id) dept_ids,
-        json_arrayagg(dept.lbl) _dept_ids,
-        usr.id usr_id
-      from \`usr_dept\`
-      inner join dept
-        on dept.id = \`usr_dept\`.dept_id
-        and dept.is_deleted = 0
-      inner join usr
-        on usr.id = \`usr_dept\`.usr_id
-        and usr.is_deleted = 0
-      where
-      \`usr_dept\`.is_deleted = 0
-      group by usr_id
-    ) _dept
-      on _dept.usr_id = t.id
-    left join \`usr_role\`
-      on \`usr_role\`.usr_id = t.id
-      and \`usr_role\`.is_deleted = 0
-    left join \`role\`
-      on \`usr_role\`.role_id = role.id
-      and role.is_deleted = 0
-    left join (
-      select
-        json_arrayagg(role.id) role_ids,
-        json_arrayagg(role.lbl) _role_ids,
-        usr.id usr_id
-      from \`usr_role\`
-      inner join role
-        on role.id = \`usr_role\`.role_id
-        and role.is_deleted = 0
-      inner join usr
-        on usr.id = \`usr_role\`.usr_id
-        and usr.is_deleted = 0
-      where
-      \`usr_role\`.is_deleted = 0
-      group by usr_id
-    ) _role
-      on _role.usr_id = t.id
+    \`dept\` t
+    left join usr _create_usr_id
+      on _create_usr_id.id = t.create_usr_id
+    left join usr _update_usr_id
+      on _update_usr_id.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -190,11 +167,11 @@ function getFromQuery(
  */
 export async function findCount(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
   options?: {
   },
 ): Promise<number> {
-  const table = "usr";
+  const table = "dept";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -228,27 +205,25 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找数据
  * @param {Context} context
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
   },
 ) {
-  const table = "usr";
+  const table = "dept";
   const method = "findAll";
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-        ,max(dept_ids) dept_ids
-        ,max(_dept_ids) _dept_ids
-        ,max(role_ids) role_ids
-        ,max(_role_ids) _role_ids
+        ,_create_usr_id.lbl _create_usr_id
+        ,_update_usr_id.lbl _update_usr_id
     from
       ${ getFromQuery(context) }
     where
@@ -258,11 +233,16 @@ export async function findAll(
   
   // 排序
   if (!sort) {
-    sort = [ ];
+    sort = [
+      {
+        prop: "order_by",
+        order: SortOrderEnum.Asc,
+      },
+    ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
+  sort = sort.filter((item) => item.prop);
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -282,21 +262,9 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await context.query<UsrModel>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await context.query<DeptModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    // 密码
-    model.password = "";
-    // 启用
-    let _is_enabled = "";
-    if (model.is_enabled === 1) {
-      _is_enabled = "是";
-    } else if (model.is_enabled === 0) {
-      _is_enabled = "否";
-    } else {
-      _is_enabled = String(model.is_enabled);
-    }
-    model._is_enabled = _is_enabled;
     // 锁定
     let _is_locked = "";
     if (model.is_locked === 0) {
@@ -314,15 +282,15 @@ export async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: (keyof UsrModel)[]; uniqueComments: { [key: string]: string }; }}
+ * @return {{ uniqueKeys: (keyof DeptModel)[]; uniqueComments: { [key: string]: string }; }}
  */
 export function getUniqueKeys(
   context: Context,
 ): {
-  uniqueKeys: (keyof UsrModel)[];
+  uniqueKeys: (keyof DeptModel)[];
   uniqueComments: { [key: string]: string };
   } {
-  const uniqueKeys: (keyof UsrModel)[] = [
+  const uniqueKeys: (keyof DeptModel)[] = [
     "lbl",
   ];
   const uniqueComments = {
@@ -333,11 +301,11 @@ export function getUniqueKeys(
 
 /**
  * 通过唯一约束获得一行数据
- * @param {UsrSearch & { $extra?: SearchExtra[] } | PartialNull<UsrModel>} search0
+ * @param {DeptSearch & { $extra?: SearchExtra[] } | PartialNull<DeptModel>} search0
  */
 export async function findByUnique(
   context: Context,
-  search0: UsrSearch & { $extra?: SearchExtra[] } | PartialNull<UsrModel>,
+  search0: DeptSearch & { $extra?: SearchExtra[] } | PartialNull<DeptModel>,
   options?: {
   },
 ) {
@@ -349,7 +317,7 @@ export async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: UsrSearch & { $extra?: SearchExtra[] } = { };
+  const search: DeptSearch & { $extra?: SearchExtra[] } = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -364,14 +332,14 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {UsrModel} oldModel
- * @param {PartialNull<UsrModel>} model
+ * @param {DeptModel} oldModel
+ * @param {PartialNull<DeptModel>} model
  * @return {boolean}
  */
 export function equalsByUnique(
   context: Context,
-  oldModel: UsrModel,
-  model: PartialNull<UsrModel>,
+  oldModel: DeptModel,
+  model: PartialNull<DeptModel>,
 ): boolean {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = getUniqueKeys(context);
@@ -391,15 +359,15 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<UsrModel>} model
- * @param {UsrModel} oldModel
+ * @param {PartialNull<DeptModel>} model
+ * @param {DeptModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   context: Context,
-  model: PartialNull<UsrModel>,
-  oldModel: UsrModel,
+  model: PartialNull<DeptModel>,
+  oldModel: DeptModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
@@ -432,11 +400,11 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search?
  */
 export async function findOne(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
   options?: {
   },
 ) {
@@ -445,7 +413,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: UsrModel | undefined = result[0];
+  const model: DeptModel | undefined = result[0];
   return model;
 }
 
@@ -466,11 +434,11 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
+ * @param {DeptSearch & { $extra?: SearchExtra[] }} search?
  */
 export async function exist(
   context: Context,
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch & { $extra?: SearchExtra[] },
   options?: {
   },
 ) {
@@ -487,7 +455,7 @@ export async function existById(
   context: Context,
   id: string,
 ) {
-  const table = "usr";
+  const table = "dept";
   const method = "existById";
   
   if (!id) {
@@ -499,7 +467,7 @@ export async function existById(
     select
       1 e
     from
-      usr t
+      dept t
     where
       t.id = ${ args.push(id) }
       and t.is_deleted = 0
@@ -520,7 +488,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<UsrModel>} model
+ * @param {PartialNull<DeptModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -531,7 +499,7 @@ export async function existById(
  */
 export async function create(
   context: Context,
-  model: PartialNull<UsrModel>,
+  model: PartialNull<DeptModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -539,41 +507,9 @@ export async function create(
   if (!model) {
     return;
   }
-  const table = "usr";
+  const table = "dept";
   const method = "create";
   
-  
-  // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
-    }
-  }
-  
-  // 拥有部门
-  if (!model.dept_ids && model._dept_ids) {
-    if (typeof model._dept_ids === "string" || model._dept_ids instanceof String) {
-      model._dept_ids = model._dept_ids.split(",");
-    }
-    model._dept_ids = model._dept_ids.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = /*sql*/ `
-      select
-        t.id
-      from
-        dept t
-      where
-        t.lbl in ${ args.push(model._dept_ids) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await context.query<Result>(sql, args);
-    model.dept_ids = models.map((item: { id: string }) => item.id);
-  }
   
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
@@ -583,28 +519,6 @@ export async function create(
     } else if (model._is_locked === "是") {
       model.is_locked = 1;
     }
-  }
-  
-  // 拥有角色
-  if (!model.role_ids && model._role_ids) {
-    if (typeof model._role_ids === "string" || model._role_ids instanceof String) {
-      model._role_ids = model._role_ids.split(",");
-    }
-    model._role_ids = model._role_ids.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = /*sql*/ `
-      select
-        t.id
-      from
-        role t
-      where
-        t.lbl in ${ args.push(model._role_ids) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await context.query<Result>(sql, args);
-    model.role_ids = models.map((item: { id: string }) => item.id);
   }
   
   const oldModel = await findByUnique(context, model, options);
@@ -621,7 +535,7 @@ export async function create(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    insert into usr(
+    insert into dept(
       id
       ,create_time
   `;
@@ -641,20 +555,20 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,\`lbl\``;
   }
-  if (model.username !== undefined) {
-    sql += `,\`username\``;
-  }
-  if (isNotEmpty(model.password)) {
-    sql += `,\`password\``;
-  }
-  if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+  if (model.order_by !== undefined) {
+    sql += `,\`order_by\``;
   }
   if (model.rem !== undefined) {
     sql += `,\`rem\``;
   }
   if (model.is_locked !== undefined) {
     sql += `,\`is_locked\``;
+  }
+  if (model.update_usr_id !== undefined) {
+    sql += `,\`update_usr_id\``;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,\`update_time\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
@@ -673,14 +587,8 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
-  if (model.username !== undefined) {
-    sql += `,${ args.push(model.username) }`;
-  }
-  if (isNotEmpty(model.password)) {
-    sql += `,${ args.push(await getPassword(model.password)) }`;
-  }
-  if (model.is_enabled !== undefined) {
-    sql += `,${ args.push(model.is_enabled) }`;
+  if (model.order_by !== undefined) {
+    sql += `,${ args.push(model.order_by) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -688,13 +596,15 @@ export async function create(
   if (model.is_locked !== undefined) {
     sql += `,${ args.push(model.is_locked) }`;
   }
+  if (model.update_usr_id !== undefined) {
+    sql += `,${ args.push(model.update_usr_id) }`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,${ args.push(model.update_time) }`;
+  }
   sql += `)`;
   
   const result = await context.execute(sql, args);
-  // 拥有部门
-  await many2manyUpdate(context, model, "dept_ids", { table: "usr_dept", column1: "usr_id", column2: "dept_id" });
-  // 拥有角色
-  await many2manyUpdate(context, model, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
   
   await delCache(context);
   
@@ -707,15 +617,13 @@ export async function create(
 export async function delCache(
   context: Context,
 ) {
-  const table = "usr";
+  const table = "dept";
   const method = "delCache";
   const cacheKey1 = `dao.sql.${ table }`;
   await context.delCache(cacheKey1);
   const foreignTables: string[] = [
-    "usr_dept",
-    "dept",
-    "usr_role",
-    "role",
+    "usr",
+    "usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -742,7 +650,7 @@ export async function updateTenantById(
   options?: {
   },
 ): Promise<number> {
-  const table = "usr";
+  const table = "dept";
   const method = "updateTenantById";
   
   const tenantExist = await existByIdTenant(context, tenant_id);
@@ -753,7 +661,7 @@ export async function updateTenantById(
   const args = new QueryArgs();
   const sql = /*sql*/ `
     update
-      usr
+      dept
     set
       update_time = ${ args.push(context.getReqDate()) },
       tenant_id = ${ args.push(tenant_id) }
@@ -770,7 +678,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<UsrModel>} model
+ * @param {PartialNull<DeptModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -782,14 +690,14 @@ export async function updateTenantById(
 export async function updateById(
   context: Context,
   id: string,
-  model: PartialNull<UsrModel> & {
+  model: PartialNull<DeptModel> & {
     tenant_id?: string | null;
   },
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
 ): Promise<string | undefined> {
-  const table = "usr";
+  const table = "dept";
   const method = "updateById";
   
   if (!id || !model) {
@@ -807,38 +715,6 @@ export async function updateById(
   }
   
   
-  // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
-    }
-  }
-
-  // 拥有部门
-  if (!model.dept_ids && model._dept_ids) {
-    if (typeof model._dept_ids === "string" || model._dept_ids instanceof String) {
-      model._dept_ids = model._dept_ids.split(",");
-    }
-    model._dept_ids = model._dept_ids.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = /*sql*/ `
-      select
-        t.id
-      from
-        dept t
-      where
-        t.lbl in ${ args.push(model._dept_ids) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await context.query<Result>(sql, args);
-    model.dept_ids = models.map((item: { id: string }) => item.id);
-  }
-  
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
     model._is_locked = String(model._is_locked).trim();
@@ -847,28 +723,6 @@ export async function updateById(
     } else if (model._is_locked === "是") {
       model.is_locked = 1;
     }
-  }
-
-  // 拥有角色
-  if (!model.role_ids && model._role_ids) {
-    if (typeof model._role_ids === "string" || model._role_ids instanceof String) {
-      model._role_ids = model._role_ids.split(",");
-    }
-    model._role_ids = model._role_ids.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = /*sql*/ `
-      select
-        t.id
-      from
-        role t
-      where
-        t.lbl in ${ args.push(model._role_ids) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await context.query<Result>(sql, args);
-    model.role_ids = models.map((item: { id: string }) => item.id);
   }
   
   const oldModel = await findByUnique(context, model);
@@ -888,7 +742,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update usr set update_time = ${ args.push(context.getReqDate()) }
+    update dept set update_time = ${ args.push(context.getReqDate()) }
   `;
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
@@ -897,20 +751,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.username !== undefined) {
-    if (model.username != oldModel?.username) {
-      sql += `,\`username\` = ${ args.push(model.username) }`;
-      updateFldNum++;
-    }
-  }
-  if (isNotEmpty(model.password)) {
-    sql += `,password = ?`;
-    args.push(await getPassword(model.password));
-    updateFldNum++;
-  }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
+  if (model.order_by !== undefined) {
+    if (model.order_by != oldModel?.order_by) {
+      sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
       updateFldNum++;
     }
   }
@@ -937,14 +780,6 @@ export async function updateById(
     const result = await context.execute(sql, args);
   }
   
-  updateFldNum++;
-  // 拥有部门
-  await many2manyUpdate(context, { ...model, id }, "dept_ids", { table: "usr_dept", column1: "usr_id", column2: "dept_id" });
-  
-  updateFldNum++;
-  // 拥有角色
-  await many2manyUpdate(context, { ...model, id }, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
-  
   if (updateFldNum > 0) {
     await delCache(context);
   }
@@ -963,7 +798,7 @@ export async function deleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "usr";
+  const table = "dept";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
@@ -985,7 +820,7 @@ export async function deleteByIds(
     }
     const sql = /*sql*/ `
       update
-        usr
+        dept
       set
         is_deleted = 1,
         delete_time = ${ args.push(context.getReqDate()) }
@@ -1039,7 +874,7 @@ export async function lockByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "usr";
+  const table = "dept";
   const method = "lockByIds";
   
   if (!ids || !ids.length) {
@@ -1049,7 +884,7 @@ export async function lockByIds(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     update
-      usr
+      dept
     set
       is_locked = ${ args.push(is_locked) },
       update_time = ${ args.push(context.getReqDate()) }
@@ -1085,7 +920,7 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "usr";
+  const table = "dept";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -1098,7 +933,7 @@ export async function revertByIds(
     const args = new QueryArgs();
     const sql = /*sql*/ `
       update
-        usr
+        dept
       set
         is_deleted = 0
       where
@@ -1124,7 +959,7 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "usr";
+  const table = "dept";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -1140,7 +975,7 @@ export async function revertByIds(
         select
           *
         from
-          usr
+          dept
         where
           id = ${ args.push(id) }
       `;
@@ -1150,7 +985,7 @@ export async function revertByIds(
     const args = new QueryArgs();
     const sql = /*sql*/ `
       delete from
-        usr
+        dept
       where
         id = ${ args.push(id) }
         and is_deleted = 1
@@ -1162,4 +997,47 @@ export async function revertByIds(
   await delCache(context);
   
   return num;
+}
+  
+/**
+ * 查找 order_by 字段的最大值
+ * @return {Promise<number>}
+ */
+export async function findLastOrderBy(
+  context: Context,
+  options?: {
+  },
+): Promise<number> {
+  const table = "dept";
+  const method = "findLastOrderBy";
+  
+  let sql = /*sql*/ `
+    select
+      t.order_by order_by
+    from
+      dept t
+  `;
+  const whereQuery: string[] = [ ];
+  const args = new QueryArgs();
+  {
+    const authModel = await getAuthModel(context);
+    const tenant_id = await getTenant_id(context, authModel?.id);
+    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+  }
+  if (whereQuery.length > 0) {
+    sql += " where " + whereQuery.join(" and ");
+  }
+  sql += /*sql*/ `
+    order by
+      t.order_by desc
+    limit 1
+  `;
+  
+  interface Result {
+    order_by: number;
+  }
+  let model = await context.queryOne<Result>(sql, args);
+  let result = model?.order_by ?? 0;
+  
+  return result;
 }

@@ -12,20 +12,24 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
-  "锁定ID"
-  is_locked: Int!
-  "锁定名称"
-  _is_locked: String
-  "角色ID"
-  role_ids: [ID!]
-  "角色名称"
-  _role_ids: [String!]
   "启用ID"
   is_enabled: Int!
   "启用名称"
   _is_enabled: String
   "备注"
   rem: String!
+  "拥有部门ID"
+  dept_ids: [ID!]
+  "拥有部门名称"
+  _dept_ids: [String!]
+  "锁定ID"
+  is_locked: Int!
+  "锁定名称"
+  _is_locked: String
+  "拥有角色ID"
+  role_ids: [ID!]
+  "拥有角色名称"
+  _role_ids: [String!]
 }
 input UsrInput {
   "租户ID"
@@ -38,20 +42,24 @@ input UsrInput {
   username: String
   "密码"
   password: String
-  "锁定ID"
-  is_locked: Int
-  "锁定名称"
-  _is_locked: String
-  "角色ID"
-  role_ids: [ID!]
-  "角色名称"
-  _role_ids: [String!]
   "启用ID"
   is_enabled: Int
   "启用名称"
   _is_enabled: String
   "备注"
   rem: String
+  "拥有部门ID"
+  dept_ids: [ID!]
+  "拥有部门名称"
+  _dept_ids: [String!]
+  "锁定ID"
+  is_locked: Int
+  "锁定名称"
+  _is_locked: String
+  "拥有角色ID"
+  role_ids: [ID!]
+  "拥有角色名称"
+  _role_ids: [String!]
 }
 input UsrSearch {
   "是否已删除"
@@ -69,16 +77,19 @@ input UsrSearch {
   "密码"
   password: String
   passwordLike: String
-  "锁定"
-  is_locked: [Int]
-  "角色"
-  role_ids: [String]
-  _role_ids: [String]
   "启用"
   is_enabled: [Int]
   "备注"
   rem: String
   remLike: String
+  "拥有部门"
+  dept_ids: [String]
+  _dept_ids: [String]
+  "锁定"
+  is_locked: [Int]
+  "拥有角色"
+  role_ids: [String]
+  _role_ids: [String]
 }
 type Query {
   "根据条件查找据数总数"

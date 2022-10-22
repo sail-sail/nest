@@ -1,5 +1,5 @@
 export default {
-  ignoreCodegen: [ "tenant_id", "create_usr_id", "create_time", "update_usr_id", "update_time", "delete_time", "is_deleted" ],
+  ignoreCodegen: [ "dept_id", "tenant_id", "create_usr_id", "create_time", "update_usr_id", "update_time", "delete_time", "is_deleted" ],
 };
 
 export interface TableCloumn {

@@ -71,6 +71,39 @@
         </el-form-item>
       </template>
       
+      <template v-if="builtInSearch?.dept_ids == null">
+        <label
+          m="r-[3px] l-[6px]"
+          text-gray
+          whitespace-nowrap
+          overflow-hidden
+          class="after:content-[:]"
+        >
+          拥有部门
+        </label>
+        <el-form-item prop="dept_ids">
+          <el-select-v2
+            :set="search.dept_ids = search.dept_ids || [ ]"
+            
+            w="full"
+            
+            :height="300"
+            :model-value="search.dept_ids"
+            placeholder="请选择拥有部门"
+            :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
+            filterable
+            clearable
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            :loading="!inited"
+            @keyup.enter.stop
+            @update:model-value="search.dept_ids = $event"
+            @change="searchClk"
+          ></el-select-v2>
+        </el-form-item>
+      </template>
+      
       <template v-if="builtInSearch?.role_ids == null">
         <label
           m="r-[3px] l-[6px]"
@@ -79,7 +112,7 @@
           overflow-hidden
           class="after:content-[:]"
         >
-          角色
+          拥有角色
         </label>
         <el-form-item prop="role_ids">
           <el-select-v2
@@ -89,7 +122,7 @@
             
             :height="300"
             :model-value="search.role_ids"
-            placeholder="请选择角色"
+            placeholder="请选择拥有角色"
             :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
             filterable
             clearable
@@ -400,30 +433,6 @@
             </el-table-column>
           </template>
           
-          <!-- 锁定 -->
-          <template v-else-if="'_is_locked' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 角色 -->
-          <template v-else-if="'_role_ids' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
-            </el-table-column>
-            
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'_is_enabled' === col.prop">
             <el-table-column
@@ -440,6 +449,45 @@
               v-bind="col"
             >
             </el-table-column>
+          </template>
+          
+          <!-- 拥有部门 -->
+          <template v-else-if="'_dept_ids' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+            
+          </template>
+          
+          <!-- 锁定 -->
+          <template v-else-if="'_is_locked' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 拥有角色 -->
+          <template v-else-if="'_role_ids' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+            
           </template>
           
           <template v-else>
@@ -555,9 +603,11 @@ import {
 import {
   type UsrModel,
   type UsrSearch,
+  type DeptModel,
   type RoleModel,
 } from "#/types";
 import {
+  findAllDept,
   findAllRole,
 } from "./Api";
 
@@ -582,6 +632,7 @@ async function exportClk() {
 function initSearch() {
   return {
     is_deleted: 0,
+    dept_ids: [ ],
     role_ids: [ ],
   } as UsrSearch;
 }
@@ -624,23 +675,27 @@ const props = defineProps<{
   usernameLike?: string; //用户名
   password?: string; //密码
   passwordLike?: string; //密码
-  is_locked?: string|string[]; //锁定
-  role_ids?: string|string[]; //角色
-  _role_ids?: string|string[]; //角色
   is_enabled?: string|string[]; //启用
   rem?: string; //备注
   remLike?: string; //备注
+  dept_ids?: string|string[]; //拥有部门
+  _dept_ids?: string|string[]; //拥有部门
+  is_locked?: string|string[]; //锁定
+  role_ids?: string|string[]; //拥有角色
+  _role_ids?: string|string[]; //拥有角色
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
+  is_enabled: "number[]",
+  _is_enabled: "string[]",
+  dept_ids: "string[]",
+  _dept_ids: "string[]",
   is_locked: "number[]",
   _is_locked: "string[]",
   role_ids: "string[]",
   _role_ids: "string[]",
-  is_enabled: "number[]",
-  _is_enabled: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -770,7 +825,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
-    minWidth: 140,
+    width: 140,
     sortable: "custom",
     align: "center",
     headerAlign: "center",
@@ -779,8 +834,31 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "用户名",
     prop: "username",
-    minWidth: 140,
+    width: 140,
     sortable: "custom",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "启用",
+    prop: "_is_enabled",
+    width: 80,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "备注",
+    prop: "rem",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "拥有部门",
+    prop: "_dept_ids",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -793,23 +871,9 @@ let tableColumns = $ref<ColumnType[]>([
     showOverflowTooltip: true,
   },
   {
-    label: "角色",
+    label: "拥有角色",
     prop: "_role_ids",
-    minWidth: 140,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "启用",
-    prop: "_is_enabled",
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "备注",
-    prop: "rem",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -830,13 +894,30 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
+let depts = $ref<DeptModel[]>([ ]);
+
 let roles = $ref<RoleModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
+    depts,
     roles,
   ] = await Promise.all([
+    findAllDept(
+      undefined,
+      {
+      },
+      [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),
     findAllRole(
       undefined,
       {

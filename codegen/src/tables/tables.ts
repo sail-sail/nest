@@ -1,6 +1,7 @@
 import { defineConfig } from "../config";
 
 export default defineConfig({
+  // 角色
   role: {
     opts: {
       cache: true,
@@ -20,6 +21,7 @@ export default defineConfig({
       },
     ],
   },
+  // 租户
   tenant: {
     opts: {
       cache: true,
@@ -48,37 +50,53 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "username",
-        require: true,
-        search: true,
-        sortable: true,
-        minWidth: 140,
-      },
-      {
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
         sortable: true,
-        minWidth: 140,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "username",
+        require: true,
+        search: true,
+        sortable: true,
+        width: 140,
       },
       {
         COLUMN_NAME: "password",
-        minWidth: 140,
+        noList: true,
         isPassword: true,
       },
       {
+        COLUMN_NAME: "dept_id",
+        width: 140,
+      },
+      {
         COLUMN_NAME: "is_locked",
+        noAdd: true,
+        noEdit: true,
       },
       {
         COLUMN_NAME: "is_enabled",
+        require: true,
+        width: 80,
+      },
+      {
+        COLUMN_NAME: "dept_ids",
+        COLUMN_COMMENT: "拥有部门",
+        ORDINAL_POSITION: 7,
+        require: false,
+        search: true,
+        width: 140,
       },
       {
         COLUMN_NAME: "role_ids",
-        COLUMN_COMMENT: "角色",
-        ORDINAL_POSITION: 5,
+        COLUMN_COMMENT: "拥有角色",
+        ORDINAL_POSITION: 8,
         require: false,
         search: true,
-        minWidth: 140,
+        width: 140,
       },
     ],
   },
@@ -266,6 +284,77 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        foreignKey: {
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "create_time",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        foreignKey: {
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "update_time",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        width: 140,
+      },
+    ],
+  },
+  // 部门
+  dept: {
+    opts: {
+      cache: true,
+      unique: [ "lbl" ],
+      defaultSort: {
+        prop: "order_by",
+        order: "ascending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "dept_id",
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "is_locked",
+        noAdd: true,
+        noEdit: true,
+        width: 100,
       },
       {
         COLUMN_NAME: "create_usr_id",

@@ -97,6 +97,91 @@ export type Background_TaskSearch = {
   type?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
+export type DeptInput = {
+  /** 创建人名称 */
+  _create_usr_id?: InputMaybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: InputMaybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: InputMaybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 锁定ID */
+  is_locked?: InputMaybe<Scalars['Int']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Scalars['Int']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id?: InputMaybe<Scalars['ID']>;
+};
+
+export type DeptModel = {
+  __typename?: 'DeptModel';
+  /** 创建人名称 */
+  _create_usr_id?: Maybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: Maybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: Maybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: Maybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id: Scalars['ID'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 锁定ID */
+  is_locked: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 更新时间 */
+  update_time?: Maybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id: Scalars['ID'];
+};
+
+export type DeptSearch = {
+  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 创建人 */
+  create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 更新人 */
+  update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
 export type GetLoginTenants = {
   __typename?: 'GetLoginTenants';
   /** ID */
@@ -203,6 +288,8 @@ export type MenuSearch = {
 export type Mutation = {
   __typename?: 'Mutation';
   /** 创建一条数据 */
+  createDept: Scalars['ID'];
+  /** 创建一条数据 */
   createMenu: Scalars['ID'];
   /** 创建一条数据 */
   createOption: Scalars['ID'];
@@ -216,6 +303,8 @@ export type Mutation = {
   createUsr: Scalars['ID'];
   /** 根据 ids 删除数据 */
   deleteByIdsBackground_task: Scalars['Int'];
+  /** 根据 ids 删除数据 */
+  deleteByIdsDept: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 删除数据 */
@@ -233,6 +322,8 @@ export type Mutation = {
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsDept: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsOperation_record: Scalars['Int'];
@@ -247,6 +338,8 @@ export type Mutation = {
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsUsr: Scalars['Int'];
   /** 导入文件 */
+  importFileDept?: Maybe<Scalars['String']>;
+  /** 导入文件 */
   importFileMenu?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileOption?: Maybe<Scalars['String']>;
@@ -259,11 +352,15 @@ export type Mutation = {
   /** 导入文件 */
   importFileUsr?: Maybe<Scalars['String']>;
   /** 根据 ids 锁定或者解锁数据 */
+  lockByIdsDept: Scalars['Int'];
+  /** 根据 ids 锁定或者解锁数据 */
   lockByIdsUsr: Scalars['Int'];
   /** 登录 */
   login: Scalars['String'];
   /** 根据 ids 还原数据 */
   revertByIdsBackground_task: Scalars['Int'];
+  /** 根据 ids 还原数据 */
+  revertByIdsDept: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsMenu: Scalars['Int'];
   /** 根据 ids 还原数据 */
@@ -279,6 +376,8 @@ export type Mutation = {
   /** 根据 ids 还原数据 */
   revertByIdsUsr: Scalars['Int'];
   /** 根据id修改一条数据 */
+  updateByIdDept: Scalars['ID'];
+  /** 根据id修改一条数据 */
   updateByIdMenu: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdOption: Scalars['ID'];
@@ -290,6 +389,11 @@ export type Mutation = {
   updateByIdTenant: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdUsr: Scalars['ID'];
+};
+
+
+export type MutationCreateDeptArgs = {
+  model: DeptInput;
 };
 
 
@@ -324,6 +428,11 @@ export type MutationCreateUsrArgs = {
 
 
 export type MutationDeleteByIdsBackground_TaskArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteByIdsDeptArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -368,6 +477,11 @@ export type MutationForceDeleteByIdsBackground_TaskArgs = {
 };
 
 
+export type MutationForceDeleteByIdsDeptArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationForceDeleteByIdsMenuArgs = {
   ids: Array<Scalars['ID']>;
 };
@@ -403,6 +517,11 @@ export type MutationForceDeleteByIdsUsrArgs = {
 };
 
 
+export type MutationImportFileDeptArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationImportFileMenuArgs = {
   id: Scalars['ID'];
 };
@@ -433,6 +552,12 @@ export type MutationImportFileUsrArgs = {
 };
 
 
+export type MutationLockByIdsDeptArgs = {
+  ids: Array<Scalars['ID']>;
+  is_locked: Scalars['Int'];
+};
+
+
 export type MutationLockByIdsUsrArgs = {
   ids: Array<Scalars['ID']>;
   is_locked: Scalars['Int'];
@@ -447,6 +572,11 @@ export type MutationLoginArgs = {
 
 
 export type MutationRevertByIdsBackground_TaskArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationRevertByIdsDeptArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -483,6 +613,12 @@ export type MutationRevertByIdsTenantArgs = {
 
 export type MutationRevertByIdsUsrArgs = {
   ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationUpdateByIdDeptArgs = {
+  id: Scalars['ID'];
+  model: DeptInput;
 };
 
 
@@ -737,6 +873,8 @@ export type Query = {
   /** 根据搜索条件导出 */
   exportExcelBackground_task: Scalars['String'];
   /** 根据搜索条件导出 */
+  exportExcelDept: Scalars['String'];
+  /** 根据搜索条件导出 */
   exportExcelMenu: Scalars['String'];
   /** 根据搜索条件导出 */
   exportExcelOperation_record: Scalars['String'];
@@ -752,6 +890,8 @@ export type Query = {
   exportExcelUsr: Scalars['String'];
   /** 根据搜索条件和分页查找数据 */
   findAllBackground_task: Array<Background_TaskModel>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllDept: Array<DeptModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllMenu: Array<MenuModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -769,6 +909,8 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdBackground_task?: Maybe<Background_TaskModel>;
   /** 根据id查找一条数据 */
+  findByIdDept?: Maybe<DeptModel>;
+  /** 根据id查找一条数据 */
   findByIdMenu?: Maybe<MenuModel>;
   /** 根据id查找一条数据 */
   findByIdOperation_record?: Maybe<Operation_RecordModel>;
@@ -785,6 +927,8 @@ export type Query = {
   /** 根据条件查找据数总数 */
   findCountBackground_task: Scalars['Int'];
   /** 根据条件查找据数总数 */
+  findCountDept: Scalars['Int'];
+  /** 根据条件查找据数总数 */
   findCountMenu: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountOperation_record: Scalars['Int'];
@@ -799,11 +943,15 @@ export type Query = {
   /** 根据条件查找据数总数 */
   findCountUsr: Scalars['Int'];
   /** 查找order_by字段的最大值 */
+  findLastOrderByDept: Scalars['Int'];
+  /** 查找order_by字段的最大值 */
   findLastOrderByMenu: Scalars['Int'];
   /** 查找order_by字段的最大值 */
   findLastOrderByTenant: Scalars['Int'];
   /** 根据条件查找第一条数据 */
   findOneBackground_task?: Maybe<Background_TaskModel>;
+  /** 根据条件查找第一条数据 */
+  findOneDept?: Maybe<DeptModel>;
   /** 根据条件查找第一条数据 */
   findOneMenu?: Maybe<MenuModel>;
   /** 根据条件查找第一条数据 */
@@ -827,6 +975,12 @@ export type Query = {
 
 export type QueryExportExcelBackground_TaskArgs = {
   search?: InputMaybe<Background_TaskSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelDeptArgs = {
+  search?: InputMaybe<DeptSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -876,6 +1030,13 @@ export type QueryExportExcelUsrArgs = {
 export type QueryFindAllBackground_TaskArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<Background_TaskSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryFindAllDeptArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<DeptSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -934,6 +1095,11 @@ export type QueryFindByIdBackground_TaskArgs = {
 };
 
 
+export type QueryFindByIdDeptArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type QueryFindByIdMenuArgs = {
   id: Scalars['ID'];
 };
@@ -974,6 +1140,11 @@ export type QueryFindCountBackground_TaskArgs = {
 };
 
 
+export type QueryFindCountDeptArgs = {
+  search?: InputMaybe<DeptSearch>;
+};
+
+
 export type QueryFindCountMenuArgs = {
   search?: InputMaybe<MenuSearch>;
 };
@@ -1011,6 +1182,11 @@ export type QueryFindCountUsrArgs = {
 
 export type QueryFindOneBackground_TaskArgs = {
   search?: InputMaybe<Background_TaskSearch>;
+};
+
+
+export type QueryFindOneDeptArgs = {
+  search?: InputMaybe<DeptSearch>;
 };
 
 
@@ -1209,12 +1385,16 @@ export type TenantSearch = {
 };
 
 export type UsrInput = {
+  /** 拥有部门名称 */
+  _dept_ids?: InputMaybe<Array<Scalars['String']>>;
   /** 启用名称 */
   _is_enabled?: InputMaybe<Scalars['String']>;
   /** 锁定名称 */
   _is_locked?: InputMaybe<Scalars['String']>;
-  /** 角色名称 */
+  /** 拥有角色名称 */
   _role_ids?: InputMaybe<Array<Scalars['String']>>;
+  /** 拥有部门ID */
+  dept_ids?: InputMaybe<Array<Scalars['ID']>>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用ID */
   is_enabled?: InputMaybe<Scalars['Int']>;
@@ -1226,7 +1406,7 @@ export type UsrInput = {
   password?: InputMaybe<Scalars['String']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
-  /** 角色ID */
+  /** 拥有角色ID */
   role_ids?: InputMaybe<Array<Scalars['ID']>>;
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
@@ -1236,12 +1416,16 @@ export type UsrInput = {
 
 export type UsrModel = {
   __typename?: 'UsrModel';
+  /** 拥有部门名称 */
+  _dept_ids?: Maybe<Array<Scalars['String']>>;
   /** 启用名称 */
   _is_enabled?: Maybe<Scalars['String']>;
   /** 锁定名称 */
   _is_locked?: Maybe<Scalars['String']>;
-  /** 角色名称 */
+  /** 拥有角色名称 */
   _role_ids?: Maybe<Array<Scalars['String']>>;
+  /** 拥有部门ID */
+  dept_ids?: Maybe<Array<Scalars['ID']>>;
   /** ID */
   id: Scalars['ID'];
   /** 启用ID */
@@ -1254,14 +1438,17 @@ export type UsrModel = {
   password: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
-  /** 角色ID */
+  /** 拥有角色ID */
   role_ids?: Maybe<Array<Scalars['ID']>>;
   /** 用户名 */
   username: Scalars['String'];
 };
 
 export type UsrSearch = {
+  _dept_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   _role_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 拥有部门 */
+  dept_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -1281,7 +1468,7 @@ export type UsrSearch = {
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;
-  /** 角色 */
+  /** 拥有角色 */
   role_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 用户名 */
   username?: InputMaybe<Scalars['String']>;
