@@ -621,7 +621,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
                   @change="linkAttChg(row, column.property)"<#
                   if (column.attMaxSize > 1) {
                   #>
-                  :maxSize="<#=column.attMaxSize#>"<#
+                  :max-size="<#=column.attMaxSize#>"<#
                   }
                   #><#
                   if (column.maxFileSize) {
@@ -669,7 +669,19 @@ const Table_Up = tableUp.split("_").map(function(item) {
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (opts?.foreignList?.length > 0 && opts?.foreignLable2Col === column_name) {
+              #>
+              <template #default="scope">
+                <el-link
+                  type="primary"
+                  @click="openForeignList(scope.row.id)"
+                >
+                  {{ col.label }}
+                </el-link>
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
             } else if (foreignKey) {
