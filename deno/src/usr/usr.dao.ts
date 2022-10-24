@@ -19,18 +19,41 @@ export async function findLoginUsr(
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
-      t.id
+      t.id,
+      t.default_dept_id
     from usr t
     where
-      t.username = ${ args.push(username) }
+      t.is_deleted = 0
+      and t.is_enabled = 1
+      and t.username = ${ args.push(username) }
       and t.password = ${ args.push(password) }
       and t.tenant_id = ${ args.push(tenant_id) }
   `;
-  type Result = {
+  const result = await context.queryOne<{
     id: string,
-  }
-  const result = await context.queryOne<Result>(sql, args);
+    default_dept_id: string,
+  }>(sql, args);
   return result;
+}
+
+export async function getDept_idsById(
+  context: Context,
+  id: string,
+) {
+  const args = new QueryArgs();
+  const sql = /*sql*/`
+    select
+      t.dept_id
+    from
+      usr_dept t
+    where
+      t.is_deleted = 0
+      and t.usr_id = ${ args.push(id) }
+  `;
+  const result = await context.query<{
+    dept_id: string,
+  }>(sql, args);
+  return (result || [ ]).map((item) => item.dept_id);
 }
 
 async function getTenant_idByWx_usr(

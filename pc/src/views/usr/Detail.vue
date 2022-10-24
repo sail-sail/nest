@@ -124,6 +124,35 @@
           </el-form-item>
         </template>
         
+        <template v-if="builtInModel?.default_dept_id == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span>默认部门</span>
+          </label>
+          <el-form-item
+            prop="default_dept_id"
+          >
+            <el-select-v2
+              v-model="dialogModel.default_dept_id"
+              :height="300"
+              
+              w="full"
+              
+              placeholder="请选择默认部门"
+              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
+              filterable
+              clearable
+              :loading="!inited"
+              @keyup.enter.stop
+            ></el-select-v2>
+          </el-form-item>
+        </template>
+        
         <template v-if="builtInModel?.is_enabled == null">
           <label
             m="l-[3px]"
@@ -411,8 +440,23 @@ let roles = $ref<RoleModel[]>([ ]);
 async function getSelectListEfc() {
   [
     depts,
+    depts,
     roles,
   ] = await Promise.all([
+    findAllDept(
+      undefined,
+      {
+      },
+      [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),
     findAllDept(
       undefined,
       {

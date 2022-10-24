@@ -36,12 +36,14 @@ import {
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+import * as deptDao from "/gen/dept/dept.dao.ts";
 
 async function getWhereQuery(
   context: Context,
   args: QueryArgs,
   search?: UsrSearch & {
     $extra?: SearchExtra[];
+    dept_id?: string | null;
     tenant_id?: string | null;
   },
   options?: {
@@ -49,13 +51,13 @@ async function getWhereQuery(
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (search?.tenant_id === undefined) {
+  if (search?.tenant_id == null) {
     const authModel = await getAuthModel(context);
     const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if(search?.tenant_id !== null) {
+  } else {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -84,6 +86,18 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.passwordLike)) {
     whereQuery += ` and t.password like ${ args.push(sqlLike(search?.passwordLike) + "%") }`;
+  }
+  if (search?.default_dept_id && !Array.isArray(search?.default_dept_id)) {
+    search.default_dept_id = [ search.default_dept_id ];
+  }
+  if (search?.default_dept_id && search?.default_dept_id.length > 0) {
+    whereQuery += ` and _default_dept_id.id in ${ args.push(search.default_dept_id) }`;
+  }
+  if (search?._default_dept_id && !Array.isArray(search?._default_dept_id)) {
+    search._default_dept_id = [ search._default_dept_id ];
+  }
+  if (search?._default_dept_id && search._default_dept_id?.length > 0) {
+    whereQuery += ` and _default_dept_id in ${ args.push(search._default_dept_id) }`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -133,6 +147,8 @@ function getFromQuery(
 ) {
   const fromQuery = /*sql*/ `
     \`usr\` t
+    left join dept _default_dept_id
+      on _default_dept_id.id = t.default_dept_id
     left join \`usr_dept\`
       on \`usr_dept\`.usr_id = t.id
       and \`usr_dept\`.is_deleted = 0
@@ -245,6 +261,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
+        ,_default_dept_id.lbl _default_dept_id
         ,max(dept_ids) dept_ids
         ,max(_dept_ids) _dept_ids
         ,max(role_ids) role_ids
@@ -543,6 +560,15 @@ export async function create(
   const method = "create";
   
   
+  // 默认部门
+  if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {
+    model._default_dept_id = String(model._default_dept_id).trim();
+    const deptModel = await deptDao.findOne(context, { lbl: model._default_dept_id });
+    if (deptModel) {
+      model.default_dept_id = deptModel.id;
+    }
+  }
+  
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
     model._is_enabled = String(model._is_enabled).trim();
@@ -647,6 +673,9 @@ export async function create(
   if (isNotEmpty(model.password)) {
     sql += `,\`password\``;
   }
+  if (model.default_dept_id !== undefined) {
+    sql += `,\`default_dept_id\``;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,\`is_enabled\``;
   }
@@ -678,6 +707,9 @@ export async function create(
   }
   if (isNotEmpty(model.password)) {
     sql += `,${ args.push(await getPassword(model.password)) }`;
+  }
+  if (model.default_dept_id !== undefined) {
+    sql += `,${ args.push(model.default_dept_id) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
@@ -712,6 +744,7 @@ export async function delCache(
   const cacheKey1 = `dao.sql.${ table }`;
   await context.delCache(cacheKey1);
   const foreignTables: string[] = [
+    "dept",
     "usr_dept",
     "dept",
     "usr_role",
@@ -806,6 +839,15 @@ export async function updateById(
     await updateTenantById(context, id, model.tenant_id);
   }
   
+  
+  // 默认部门
+  if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {
+    model._default_dept_id = String(model._default_dept_id).trim();
+    const deptModel = await deptDao.findOne(context, { lbl: model._default_dept_id });
+    if (deptModel) {
+      model.default_dept_id = deptModel.id;
+    }
+  }
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
@@ -907,6 +949,12 @@ export async function updateById(
     sql += `,password = ?`;
     args.push(await getPassword(model.password));
     updateFldNum++;
+  }
+  if (model.default_dept_id !== undefined) {
+    if (model.default_dept_id != oldModel?.default_dept_id) {
+      sql += `,\`default_dept_id\` = ${ args.push(model.default_dept_id) }`;
+      updateFldNum++;
+    }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {

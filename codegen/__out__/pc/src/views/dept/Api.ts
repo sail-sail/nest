@@ -42,8 +42,12 @@ export async function findAll(
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
           id
+          parent_id
+          _parent_id
           lbl
           order_by
+          is_enabled
+          _is_enabled
           rem
           is_locked
           _is_locked
@@ -159,8 +163,12 @@ export async function findById(
       query($id: ID!) {
         findByIdDept(id: $id) {
           id
+          parent_id
+          _parent_id
           lbl
           order_by
+          is_enabled
+          _is_enabled
           rem
           is_locked
           _is_locked
@@ -277,6 +285,31 @@ export async function forceDeleteByIds(
     },
   }, opt);
   const result: Mutation["forceDeleteByIdsDept"] = data?.forceDeleteByIdsDept;
+  return result;
+}
+
+export async function findAllDept(
+  search?: DeptSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data = await gqlQuery({
+    query: /* GraphQL */ `
+      query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
+        findAllDept(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const result: Query["findAllDept"] = data?.findAllDept || [ ];
   return result;
 }
 

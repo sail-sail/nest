@@ -43,6 +43,7 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: Operation_RecordSearch & {
     $extra?: SearchExtra[];
+    dept_id?: string | null;
     tenant_id?: string | null;
   },
   options?: {
@@ -50,13 +51,13 @@ async function getWhereQuery(
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (search?.tenant_id === undefined) {
+  if (search?.tenant_id == null) {
     const authModel = await getAuthModel(context);
     const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if(search?.tenant_id !== null) {
+  } else {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {

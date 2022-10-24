@@ -12,6 +12,10 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
+  "默认部门ID"
+  default_dept_id: ID!
+  "默认部门名称"
+  _default_dept_id: String
   "启用ID"
   is_enabled: Int!
   "启用名称"
@@ -42,6 +46,10 @@ input UsrInput {
   username: String
   "密码"
   password: String
+  "默认部门ID"
+  default_dept_id: ID
+  "默认部门名称"
+  _default_dept_id: String
   "启用ID"
   is_enabled: Int
   "启用名称"
@@ -77,6 +85,9 @@ input UsrSearch {
   "密码"
   password: String
   passwordLike: String
+  "默认部门"
+  default_dept_id: [String]
+  _default_dept_id: [String]
   "启用"
   is_enabled: [Int]
   "备注"

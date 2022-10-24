@@ -2,7 +2,8 @@ import { GqlOpt, gqlQuery } from "@/utils/graphql";
 
 import {
   type MenuModel as MenuModel0,
-} from "@/typings/types";
+  type GetLoginInfo,
+} from "#/types";
 
 type MenuModel = MenuModel0 & {
   children?: MenuModel[];
@@ -58,4 +59,26 @@ export async function clearCache(
     variables,
   }, opt);
   return data?.clearCache;
+}
+
+export async function getLoginInfo(
+  opt?: GqlOpt,
+) {
+  const data: {
+    getLoginInfo?: GetLoginInfo;
+  } = await gqlQuery({
+    query: /* GraphQL */ `
+      query {
+        getLoginInfo {
+          lbl
+          dept_id
+          dept_idModels {
+            id
+            lbl
+          }
+        }
+      }
+    `,
+  }, opt);
+  return data?.getLoginInfo;
 }

@@ -6,10 +6,18 @@ defineGraphql(resolvers, /* GraphQL */ `
 type DeptModel {
   "ID"
   id: ID!
+  "父部门ID"
+  parent_id: ID!
+  "父部门名称"
+  _parent_id: String
   "名称"
   lbl: String!
   "排序"
   order_by: Int!
+  "启用ID"
+  is_enabled: Int!
+  "启用名称"
+  _is_enabled: String
   "备注"
   rem: String!
   "锁定ID"
@@ -34,10 +42,18 @@ input DeptInput {
   tenant_id: String
   ""
   id: ID
+  "父部门ID"
+  parent_id: ID
+  "父部门名称"
+  _parent_id: String
   "名称"
   lbl: String
   "排序"
   order_by: Int
+  "启用ID"
+  is_enabled: Int
+  "启用名称"
+  _is_enabled: String
   "备注"
   rem: String
   "锁定ID"
@@ -64,11 +80,16 @@ input DeptSearch {
   ids: [ID]
   "ID"
   id: ID
+  "父部门"
+  parent_id: [String]
+  _parent_id: [String]
   "名称"
   lbl: String
   lblLike: String
   "排序"
   order_by: [Int]
+  "启用"
+  is_enabled: [Int]
   "备注"
   rem: String
   remLike: String

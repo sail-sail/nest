@@ -191,8 +191,10 @@ export async function importFile(
   id: string,
 ) {
   const header: { [key: string]: string } = {
+    "父部门": "_parent_id",
     "名称": "lbl",
     "排序": "order_by",
+    "启用": "_is_enabled",
     "备注": "rem",
   };
   const models = await getImportFileRows(id, header);

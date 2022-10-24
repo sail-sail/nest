@@ -1,9 +1,12 @@
-import { Context } from "/lib/context.ts";
+import {
+  type Context,
+} from "/lib/context.ts";
 
 import * as usrService from "./usr.service.ts";
 
 import {
-  MutationLoginArgs,
+  type MutationLoginArgs,
+  type Mutation,
 } from "/gen/types.ts"
 
 /**
@@ -12,13 +15,21 @@ import {
  * @param {MutationLoginArgs["username"]} username 用户名
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
  * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
+ * @param {MutationLoginArgs["dept_id"]} dept_id 部门id
  */
 export async function login(
   context: Context,
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
-): Promise<string> {
+  dept_id: MutationLoginArgs["dept_id"],
+): Promise<Mutation["login"]> {
   context.is_tran = true;
-  return await usrService.login(context, username, password, tenant_id);
+  return await usrService.login(context, username, password, tenant_id, dept_id);
+}
+
+export async function getLoginInfo(
+  context: Context,
+) {
+  return await usrService.getLoginInfo(context);
 }

@@ -433,6 +433,16 @@
             </el-table-column>
           </template>
           
+          <!-- 默认部门 -->
+          <template v-else-if="'_default_dept_id' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+            
+          </template>
+          
           <!-- 启用 -->
           <template v-else-if="'_is_enabled' === col.prop">
             <el-table-column
@@ -675,6 +685,8 @@ const props = defineProps<{
   usernameLike?: string; //用户名
   password?: string; //密码
   passwordLike?: string; //密码
+  default_dept_id?: string|string[]; //默认部门
+  _default_dept_id?: string|string[]; //默认部门
   is_enabled?: string|string[]; //启用
   rem?: string; //备注
   remLike?: string; //备注
@@ -688,6 +700,8 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
+  default_dept_id: "string[]",
+  _default_dept_id: "string[]",
   is_enabled: "number[]",
   _is_enabled: "string[]",
   dept_ids: "string[]",
@@ -836,6 +850,14 @@ let tableColumns = $ref<ColumnType[]>([
     prop: "username",
     width: 140,
     sortable: "custom",
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "默认部门",
+    prop: "_default_dept_id",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

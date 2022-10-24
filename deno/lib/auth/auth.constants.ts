@@ -17,6 +17,7 @@ export const AUTHORIZATION = "Authorization";
 export interface AuthModel extends JWTPayload {
   id: string;
   wx_usr_id?: string;
+  dept_id?: string;
 }
 
 async function createHash(algorithm: DigestAlgorithm, buffer: Uint8Array): Promise<ArrayBuffer> {

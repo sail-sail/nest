@@ -110,6 +110,10 @@ import {
   useRouter,
 } from "vue-router";
 
+import {
+  type MutationLoginArgs,
+} from "#/types";
+
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
@@ -124,10 +128,11 @@ const inputStyle = {
   borderRadius: 0,
 };
 
-let model = $ref({
+let model = $ref<MutationLoginArgs>({
   username: "",
   password: "",
   tenant_id: "",
+  dept_id: undefined,
 });
 
 let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
@@ -143,8 +148,10 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 });
 
 async function loginClk() {
-  const authorization = await login(model);
-  await usrStore.login(authorization);
+  model.dept_id = usrStore.dept_id;
+  const loginModel = await login(model);
+  usrStore.dept_id = loginModel.dept_id ?? undefined;
+  await usrStore.login(loginModel.authorization);
   // if (authorization) {
   //   await router.replace("/");
   //   await tabsStore.refreshTab();

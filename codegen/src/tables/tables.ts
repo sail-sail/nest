@@ -69,8 +69,18 @@ export default defineConfig({
         isPassword: true,
       },
       {
-        COLUMN_NAME: "dept_id",
+        COLUMN_NAME: "default_dept_id",
         width: 140,
+        foreignKey: {
+          table: "dept",
+          column: "id",
+          lbl: "lbl",
+          multiple: false,
+          defaultSort: {
+            prop: "order_by",
+            order: "ascending",
+          },
+        },
       },
       {
         COLUMN_NAME: "is_locked",
@@ -337,7 +347,13 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "dept_id",
+        COLUMN_NAME: "parent_id",
+        foreignKey: {
+          table: "dept",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 120,
       },
       {
         COLUMN_NAME: "lbl",

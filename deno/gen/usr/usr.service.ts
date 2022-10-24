@@ -194,6 +194,7 @@ export async function importFile(
     "名称": "lbl",
     "用户名": "username",
     "密码": "password",
+    "默认部门": "_default_dept_id",
     "启用": "_is_enabled",
     "备注": "rem",
     "拥有部门": "_dept_ids",

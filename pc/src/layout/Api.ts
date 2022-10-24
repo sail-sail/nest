@@ -1,5 +1,10 @@
 import { GqlOpt, gqlQuery } from "@/utils/graphql";
 
+import {
+  type Mutation,
+  type MutationLoginArgs,
+} from "#/types";
+
 /**
  * 根据 当前网址的域名+端口 获取 租户列表
  * @export
@@ -24,13 +29,18 @@ export async function getLoginTenants(
 }
 
 export async function login(
-  variables: { username: string, password: string, tenant_id: string },
+  variables: MutationLoginArgs,
   opt?: GqlOpt,
-): Promise<string> {
-  const data = await gqlQuery({
+) {
+  const data: {
+    login: Mutation["login"],
+  } = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($username: String!, $password: String!, $tenant_id: String!) {
-        login(username: $username, password: $password, tenant_id: $tenant_id)
+      mutation($username: String!, $password: String!, $tenant_id: String!, $dept_id: String) {
+        login(username: $username, password: $password, tenant_id: $tenant_id, dept_id: $dept_id) {
+          authorization
+          dept_id
+        }
       }
     `,
     variables,

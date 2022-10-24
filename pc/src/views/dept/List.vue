@@ -326,8 +326,18 @@
           :key="i + col"
         >
           
+          <!-- 父部门 -->
+          <template v-if="'_parent_id' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+            
+          </template>
+          
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -337,6 +347,15 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 启用 -->
+          <template v-else-if="'_is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -572,9 +591,12 @@ const props = defineProps<{
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   id?: string; //ID
+  parent_id?: string|string[]; //父部门
+  _parent_id?: string|string[]; //父部门
   lbl?: string; //名称
   lblLike?: string; //名称
   order_by?: string; //排序
+  is_enabled?: string|string[]; //启用
   rem?: string; //备注
   remLike?: string; //备注
   is_locked?: string|string[]; //锁定
@@ -589,8 +611,12 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
+  parent_id: "string[]",
+  _parent_id: "string[]",
   order_by: "number[]",
   _order_by: "string[]",
+  is_enabled: "number[]",
+  _is_enabled: "string[]",
   is_locked: "number[]",
   _is_locked: "string[]",
   create_usr_id: "string[]",
@@ -724,6 +750,14 @@ let tableData = $ref<DeptModel[]>([ ]);
 
 let tableColumns = $ref<ColumnType[]>([
   {
+    label: "父部门",
+    prop: "_parent_id",
+    width: 120,
+    align: "center",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
     label: "名称",
     prop: "lbl",
     align: "center",
@@ -735,6 +769,13 @@ let tableColumns = $ref<ColumnType[]>([
     prop: "order_by",
     sortable: "custom",
     align: "right",
+    headerAlign: "center",
+    showOverflowTooltip: true,
+  },
+  {
+    label: "启用",
+    prop: "_is_enabled",
+    align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
   },
@@ -800,6 +841,8 @@ let {
 ));
 
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
+
+let depts = $ref<DeptModel[]>([ ]);
 
 let usrs = $ref<UsrModel[]>([ ]);
 

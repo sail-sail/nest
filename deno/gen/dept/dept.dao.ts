@@ -43,6 +43,7 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: DeptSearch & {
     $extra?: SearchExtra[];
+    dept_id?: string | null;
     tenant_id?: string | null;
   },
   options?: {
@@ -50,13 +51,13 @@ async function getWhereQuery(
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (search?.tenant_id === undefined) {
+  if (search?.tenant_id == null) {
     const authModel = await getAuthModel(context);
     const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if(search?.tenant_id !== null) {
+  } else {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -67,6 +68,18 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.parent_id && !Array.isArray(search?.parent_id)) {
+    search.parent_id = [ search.parent_id ];
+  }
+  if (search?.parent_id && search?.parent_id.length > 0) {
+    whereQuery += ` and _parent_id.id in ${ args.push(search.parent_id) }`;
+  }
+  if (search?._parent_id && !Array.isArray(search?._parent_id)) {
+    search._parent_id = [ search._parent_id ];
+  }
+  if (search?._parent_id && search._parent_id?.length > 0) {
+    whereQuery += ` and _parent_id in ${ args.push(search._parent_id) }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -81,6 +94,12 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
+  }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -152,6 +171,8 @@ function getFromQuery(
 ) {
   const fromQuery = /*sql*/ `
     \`dept\` t
+    left join dept _parent_id
+      on _parent_id.id = t.parent_id
     left join usr _create_usr_id
       on _create_usr_id.id = t.create_usr_id
     left join usr _update_usr_id
@@ -222,6 +243,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
+        ,_parent_id.lbl _parent_id
         ,_create_usr_id.lbl _create_usr_id
         ,_update_usr_id.lbl _update_usr_id
     from
@@ -265,6 +287,16 @@ export async function findAll(
   let result = await context.query<DeptModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    // 启用
+    let _is_enabled = "";
+    if (model.is_enabled === 1) {
+      _is_enabled = "是";
+    } else if (model.is_enabled === 0) {
+      _is_enabled = "否";
+    } else {
+      _is_enabled = String(model.is_enabled);
+    }
+    model._is_enabled = _is_enabled;
     // 锁定
     let _is_locked = "";
     if (model.is_locked === 0) {
@@ -511,6 +543,25 @@ export async function create(
   const method = "create";
   
   
+  // 父部门
+  if (isNotEmpty(model._parent_id) && model.parent_id === undefined) {
+    model._parent_id = String(model._parent_id).trim();
+    const deptModel = await findOne(context, { lbl: model._parent_id });
+    if (deptModel) {
+      model.parent_id = deptModel.id;
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
+    model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+      model.is_enabled = 1;
+    } else if (model._is_enabled === "否") {
+      model.is_enabled = 0;
+    }
+  }
+  
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
     model._is_locked = String(model._is_locked).trim();
@@ -552,11 +603,17 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
+  if (model.parent_id !== undefined) {
+    sql += `,\`parent_id\``;
+  }
   if (model.lbl !== undefined) {
     sql += `,\`lbl\``;
   }
   if (model.order_by !== undefined) {
     sql += `,\`order_by\``;
+  }
+  if (model.is_enabled !== undefined) {
+    sql += `,\`is_enabled\``;
   }
   if (model.rem !== undefined) {
     sql += `,\`rem\``;
@@ -584,11 +641,17 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
+  if (model.parent_id !== undefined) {
+    sql += `,${ args.push(model.parent_id) }`;
+  }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
   if (model.order_by !== undefined) {
     sql += `,${ args.push(model.order_by) }`;
+  }
+  if (model.is_enabled !== undefined) {
+    sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -622,6 +685,7 @@ export async function delCache(
   const cacheKey1 = `dao.sql.${ table }`;
   await context.delCache(cacheKey1);
   const foreignTables: string[] = [
+    "dept",
     "usr",
     "usr",
   ];
@@ -715,6 +779,25 @@ export async function updateById(
   }
   
   
+  // 父部门
+  if (isNotEmpty(model._parent_id) && model.parent_id === undefined) {
+    model._parent_id = String(model._parent_id).trim();
+    const deptModel = await findOne(context, { lbl: model._parent_id });
+    if (deptModel) {
+      model.parent_id = deptModel.id;
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
+    model._is_enabled = String(model._is_enabled).trim();
+      if (model._is_enabled === "是") {
+      model.is_enabled = 1;
+    } else if (model._is_enabled === "否") {
+      model.is_enabled = 0;
+    }
+  }
+  
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
     model._is_locked = String(model._is_locked).trim();
@@ -745,6 +828,12 @@ export async function updateById(
     update dept set update_time = ${ args.push(context.getReqDate()) }
   `;
   let updateFldNum = 0;
+  if (model.parent_id !== undefined) {
+    if (model.parent_id != oldModel?.parent_id) {
+      sql += `,\`parent_id\` = ${ args.push(model.parent_id) }`;
+      updateFldNum++;
+    }
+  }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
       sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
@@ -754,6 +843,12 @@ export async function updateById(
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
       sql += `,\`order_by\` = ${ args.push(model.order_by) }`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel?.is_enabled) {
+      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
       updateFldNum++;
     }
   }

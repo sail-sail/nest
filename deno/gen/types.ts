@@ -100,8 +100,12 @@ export type Background_TaskSearch = {
 export type DeptInput = {
   /** 创建人名称 */
   _create_usr_id?: InputMaybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: InputMaybe<Scalars['String']>;
   /** 锁定名称 */
   _is_locked?: InputMaybe<Scalars['String']>;
+  /** 父部门名称 */
+  _parent_id?: InputMaybe<Scalars['String']>;
   /** 更新人名称 */
   _update_usr_id?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
@@ -109,12 +113,16 @@ export type DeptInput = {
   /** 创建人ID */
   create_usr_id?: InputMaybe<Scalars['ID']>;
   id?: InputMaybe<Scalars['ID']>;
+  /** 启用ID */
+  is_enabled?: InputMaybe<Scalars['Int']>;
   /** 锁定ID */
   is_locked?: InputMaybe<Scalars['Int']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
   order_by?: InputMaybe<Scalars['Int']>;
+  /** 父部门ID */
+  parent_id?: InputMaybe<Scalars['ID']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   /** 租户ID */
@@ -129,8 +137,12 @@ export type DeptModel = {
   __typename?: 'DeptModel';
   /** 创建人名称 */
   _create_usr_id?: Maybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
   /** 锁定名称 */
   _is_locked?: Maybe<Scalars['String']>;
+  /** 父部门名称 */
+  _parent_id?: Maybe<Scalars['String']>;
   /** 更新人名称 */
   _update_usr_id?: Maybe<Scalars['String']>;
   /** 创建时间 */
@@ -139,12 +151,16 @@ export type DeptModel = {
   create_usr_id: Scalars['ID'];
   /** ID */
   id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
   /** 锁定ID */
   is_locked: Scalars['Int'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
   order_by: Scalars['Int'];
+  /** 父部门ID */
+  parent_id: Scalars['ID'];
   /** 备注 */
   rem: Scalars['String'];
   /** 更新时间 */
@@ -155,6 +171,7 @@ export type DeptModel = {
 
 export type DeptSearch = {
   _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  _parent_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建时间 */
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
@@ -166,6 +183,8 @@ export type DeptSearch = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
   /** 是否已删除 */
   is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 锁定 */
   is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 名称 */
@@ -173,6 +192,8 @@ export type DeptSearch = {
   lblLike?: InputMaybe<Scalars['String']>;
   /** 排序 */
   order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 父部门 */
+  parent_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;
@@ -180,6 +201,25 @@ export type DeptSearch = {
   update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type FindDeptsByToken = {
+  __typename?: 'FindDeptsByToken';
+  id: Scalars['String'];
+  lbl: Scalars['String'];
+};
+
+export type GetLoginInfo = {
+  __typename?: 'GetLoginInfo';
+  dept_id?: Maybe<Scalars['String']>;
+  dept_idModels: Array<GetLoginInfoDept_IdModels>;
+  lbl: Scalars['String'];
+};
+
+export type GetLoginInfoDept_IdModels = {
+  __typename?: 'GetLoginInfoDept_idModels';
+  id: Scalars['String'];
+  lbl: Scalars['String'];
 };
 
 export type GetLoginTenants = {
@@ -197,6 +237,12 @@ export type GetMenus = {
   lbl: Scalars['String'];
   route_path?: Maybe<Scalars['String']>;
   route_query?: Maybe<Scalars['String']>;
+};
+
+export type LoginModel = {
+  __typename?: 'LoginModel';
+  authorization: Scalars['String'];
+  dept_id?: Maybe<Scalars['String']>;
 };
 
 export type MenuInput = {
@@ -356,7 +402,7 @@ export type Mutation = {
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsUsr: Scalars['Int'];
   /** 登录 */
-  login: Scalars['String'];
+  login: LoginModel;
   /** 根据 ids 还原数据 */
   revertByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 还原数据 */
@@ -565,6 +611,7 @@ export type MutationLockByIdsUsrArgs = {
 
 
 export type MutationLoginArgs = {
+  dept_id?: InputMaybe<Scalars['String']>;
   password: Scalars['String'];
   tenant_id: Scalars['String'];
   username: Scalars['String'];
@@ -942,6 +989,8 @@ export type Query = {
   findCountTenant: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountUsr: Scalars['Int'];
+  /** 查找当前登录用户下的部门列表 */
+  findDeptsByToken: Array<FindDeptsByToken>;
   /** 查找order_by字段的最大值 */
   findLastOrderByDept: Scalars['Int'];
   /** 查找order_by字段的最大值 */
@@ -966,6 +1015,8 @@ export type Query = {
   findOneTenant?: Maybe<TenantModel>;
   /** 根据条件查找第一条数据 */
   findOneUsr?: Maybe<UsrModel>;
+  /** 获取登录信息 */
+  getLoginInfo: GetLoginInfo;
   /** 根据 当前网址的域名+端口 获取 租户列表 */
   getLoginTenants: Array<Maybe<GetLoginTenants>>;
   /** 获取主页菜单 */
@@ -1385,6 +1436,8 @@ export type TenantSearch = {
 };
 
 export type UsrInput = {
+  /** 默认部门名称 */
+  _default_dept_id?: InputMaybe<Scalars['String']>;
   /** 拥有部门名称 */
   _dept_ids?: InputMaybe<Array<Scalars['String']>>;
   /** 启用名称 */
@@ -1393,6 +1446,8 @@ export type UsrInput = {
   _is_locked?: InputMaybe<Scalars['String']>;
   /** 拥有角色名称 */
   _role_ids?: InputMaybe<Array<Scalars['String']>>;
+  /** 默认部门ID */
+  default_dept_id?: InputMaybe<Scalars['ID']>;
   /** 拥有部门ID */
   dept_ids?: InputMaybe<Array<Scalars['ID']>>;
   id?: InputMaybe<Scalars['ID']>;
@@ -1416,6 +1471,8 @@ export type UsrInput = {
 
 export type UsrModel = {
   __typename?: 'UsrModel';
+  /** 默认部门名称 */
+  _default_dept_id?: Maybe<Scalars['String']>;
   /** 拥有部门名称 */
   _dept_ids?: Maybe<Array<Scalars['String']>>;
   /** 启用名称 */
@@ -1424,6 +1481,8 @@ export type UsrModel = {
   _is_locked?: Maybe<Scalars['String']>;
   /** 拥有角色名称 */
   _role_ids?: Maybe<Array<Scalars['String']>>;
+  /** 默认部门ID */
+  default_dept_id: Scalars['ID'];
   /** 拥有部门ID */
   dept_ids?: Maybe<Array<Scalars['ID']>>;
   /** ID */
@@ -1445,8 +1504,11 @@ export type UsrModel = {
 };
 
 export type UsrSearch = {
+  _default_dept_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   _dept_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   _role_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 默认部门 */
+  default_dept_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 拥有部门 */
   dept_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */

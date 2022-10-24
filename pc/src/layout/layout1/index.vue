@@ -208,19 +208,23 @@ import {
   ElDropdownItem,
   ElDropdownMenu,
 } from "element-plus";
+
 import {
   Fold,
   Expand,
   ArrowDownBold,
 } from "@element-plus/icons-vue";
+
 import {
   RouterView,
 } from "vue-router";
+
 import {
   nextTick,
   // onMounted,
   watch,
 } from "vue";
+
 import useTabsStore from "@/store/tabs";
 import useUsrStore from "@/store/usr";
 import useMenuStore from "@/store/menu";
@@ -231,6 +235,7 @@ import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
 
 import {
+  getLoginInfo,
   clearCache,
 } from "./Api";
 
@@ -238,6 +243,10 @@ import {
   useDark,
   useToggle,
 } from "@vueuse/core";
+
+import {
+  type GetLoginInfo,
+} from "#/types";
 
 const route = useRoute();
 const router = useRouter();
@@ -270,6 +279,8 @@ watch(
     immediate: true,
   },
 );
+
+let inited = $ref(false);
 
 let tabs_divRef = $ref<HTMLDivElement | undefined>();
 let tab_active_lineRef = $ref<HTMLDivElement | undefined>();
@@ -332,6 +343,24 @@ async function logoutClk() {
   }
   usrStore.logout();
 }
+
+let loginInfo = $ref<GetLoginInfo | undefined>();
+
+async function initFrame() {
+  if (usrStore.authorization) {
+    const [
+      loginInfoTmp,
+    ] = await Promise.all([
+      getLoginInfo(),
+    ]);
+    loginInfo = loginInfoTmp;
+  }
+  inited = true;
+}
+
+usrStore.onLogin(initFrame);
+
+initFrame();
 
 // onMounted(async () => {
 //   await tabsStore.refreshTab();

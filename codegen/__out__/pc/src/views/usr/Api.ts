@@ -49,6 +49,8 @@ export async function findAll(
           lbl
           username
           password
+          default_dept_id
+          _default_dept_id
           is_enabled
           _is_enabled
           rem
@@ -167,6 +169,8 @@ export async function findById(
           lbl
           username
           password
+          default_dept_id
+          _default_dept_id
           is_enabled
           _is_enabled
           rem

@@ -43,7 +43,7 @@
         
         justify-end
         items-end
-        grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
+        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         gap="x-[16px] y-[16px]"
         place-content-center
         
@@ -52,6 +52,35 @@
         :validate-on-rule-change="false"
         @keyup.enter="saveClk"
       >
+        
+        <template v-if="builtInModel?.parent_id == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span>父部门</span>
+          </label>
+          <el-form-item
+            prop="parent_id"
+          >
+            <el-select-v2
+              v-model="dialogModel.parent_id"
+              :height="300"
+              
+              w="full"
+              
+              placeholder="请选择父部门"
+              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
+              filterable
+              clearable
+              :loading="!inited"
+              @keyup.enter.stop
+            ></el-select-v2>
+          </el-form-item>
+        </template>
         
         <template v-if="builtInModel?.lbl == null">
           <label
@@ -102,6 +131,43 @@
               :controls="false"
               placeholder="请输入排序"
             ></el-input-number>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.is_enabled == null">
+          <label
+            m="l-[3px]"
+            text-right
+            self-center
+            whitespace-nowrap
+            class="after:content-[:]"
+          >
+            <span>启用</span>
+          </label>
+          <el-form-item
+            prop="is_enabled"
+          >
+            <el-select
+              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
+              v-model="dialogModel.is_enabled"
+              
+              w="full"
+              
+              placeholder="请选择启用"
+              filterable
+              default-first-option
+              clearable
+              @keyup.enter.stop
+            >
+              <el-option
+                :value="1"
+                label="是"
+              ></el-option>
+              <el-option
+                :value="0"
+                label="否"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </template>
         
@@ -229,10 +295,12 @@ import {
 
 import {
   type DeptInput,
+  type DeptModel,
   type UsrModel,
 } from "#/types";
 
 import {
+  findAllDept,
   findAllUsr,
 } from "./Api";
 
@@ -266,14 +334,30 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
 });
 
 /** 下拉框列表 */
+let depts = $ref<DeptModel[]>([ ]);
 let usrs = $ref<UsrModel[]>([ ]);
 
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
+    depts,
     usrs,
     usrs,
   ] = await Promise.all([
+    findAllDept(
+      undefined,
+      {
+      },
+      [
+        {
+          prop: "order_by",
+          order: "ascending",
+        },
+      ],
+      {
+        notLoading: true,
+      },
+    ),
     findAllUsr(
       undefined,
       {
@@ -319,6 +403,7 @@ let builtInModel = $ref<DeptInput | undefined>();
 async function getDefaultInput() {
   const defaultInput: DeptInput = {
     order_by: 0,
+    is_enabled: 1,
     is_locked: 0,
   };
   return defaultInput;

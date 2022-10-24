@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -91,6 +92,7 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: <#=Table_Up#>Search & {
     $extra?: SearchExtra[];
+    dept_id?: string | null;
     tenant_id?: string | null;
   },
   options?: {
@@ -100,14 +102,27 @@ async function getWhereQuery(
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
   if (hasTenant_id) {
   #>
-  if (search?.tenant_id === undefined) {
+  if (search?.tenant_id == null) {
     const authModel = await getAuthModel(context);
     const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if(search?.tenant_id !== null) {
+  } else {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+  }<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  if (search?.dept_id == null) {
+    const authModel = await getAuthModel(context);
+    const dept_id = authModel?.dept_id;
+    if (dept_id) {
+      whereQuery += ` and t.dept_id = ${ args.push(dept_id) }`;
+    }
+  } else {
+    whereQuery += ` and t.dept_id = ${ args.push(search.dept_id) }`;
   }<#
   }
   #><#
@@ -964,6 +979,16 @@ export async function create(
     }
   }<#
   }
+  #><#
+  if (hasDeptId) {
+  #>
+  {
+    const authModel = await getAuthModel(context);
+    if (authModel?.dept_id) {
+      sql += `,dept_id`;
+    }
+  }<#
+  }
   #>
   {
     const authModel = await getAuthModel(context);
@@ -1024,6 +1049,16 @@ export async function create(
     const tenant_id = await getTenant_id(context, authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
+    }
+  }<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  {
+    const authModel = await getAuthModel(context);
+    if (authModel?.dept_id) {
+      sql += `,${ args.push(authModel?.dept_id) }`;
     }
   }<#
   }
