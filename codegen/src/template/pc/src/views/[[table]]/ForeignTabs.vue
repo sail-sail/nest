@@ -1,5 +1,6 @@
 <#
-const foreignTabs = columns.find((item) => item.foreignTabs?.length > 0) || [ ];
+const column = columns.find((item) => item.foreignTabs?.length > 0);
+const foreignTabs = column?.foreignTabs || [ ];
 #><template>
 <el-dialog
   v-model="dialogVisible"
