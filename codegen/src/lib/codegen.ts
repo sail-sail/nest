@@ -136,7 +136,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
         return;
       }
       if (dir === "/pc/src/views/[[table]]/ForeignList.vue") {
-        if (hasForeignTabs) {
+        if (!hasForeignTabs) {
           return;
         }
       }
