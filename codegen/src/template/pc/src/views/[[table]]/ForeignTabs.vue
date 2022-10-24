@@ -42,7 +42,6 @@ const foreignTabs = column?.foreignTabs || [ ];
     >
       <el-tabs
         v-model="tabName"
-        lazy
         
         class="el-flex-tabs"
         flex="~ [1_0_0] col"
@@ -54,6 +53,7 @@ const foreignTabs = column?.foreignTabs || [ ];
       #>
         
         <el-tab-pane
+          lazy
           label="<#=item.label#>"
           name="<#=item.label#>"
         >
@@ -126,7 +126,7 @@ let dialogModel = $ref<{
   id: undefined,
 });
 
-let tabName = $ref("线索");
+let tabName = $ref("<#=foreignTabs[0]?.label || ""#>");
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
