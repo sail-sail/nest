@@ -4,7 +4,7 @@
   overflow-hidden
   w="full"
   h="full"
-  p="[6px]"
+  p="l-[6px] r-[6px] t-[6px]"
   box="border"
 >
   <div

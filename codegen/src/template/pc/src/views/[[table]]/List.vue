@@ -10,7 +10,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
   overflow-hidden
   w="full"
   h="full"
-  p="[6px]"
+  p="l-[6px] r-[6px] t-[6px]"
   box="border"
 >
   <div
