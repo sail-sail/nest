@@ -232,7 +232,7 @@ CREATE TABLE if not exists `operation_record` (
 drop table if exists `dept`;
 CREATE TABLE if not exists `dept` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父部门',
+  `parent_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父部门',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
   `order_by` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用[{value:1,label:"是"},{value:0,label:"否"}]',
@@ -245,6 +245,6 @@ CREATE TABLE if not exists `dept` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除[{value:0,label:"未删除"},{value:1,label:"已删除"}]',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dept_id`, `lbl`, `tenant_id`),
+  INDEX (`parent_id`, `lbl`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门';
