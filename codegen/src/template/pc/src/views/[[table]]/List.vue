@@ -652,9 +652,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
               <template #default="scope">
                 <el-link
                   type="primary"
-                  @click="openForeignList(scope.row.id)"
+                  @click="openForeignList(scope.row.id, scope.row[scope.column.property])"
                 >
-                  {{ col.label }}
+                  {{ scope.row[scope.column.property] }}
                 </el-link>
               </template><#
               }
@@ -675,9 +675,9 @@ const Table_Up = tableUp.split("_").map(function(item) {
               <template #default="scope">
                 <el-link
                   type="primary"
-                  @click="openForeignList(scope.row.id)"
+                  @click="openForeignList(scope.row.id, scope.row[scope.column.property])"
                 >
-                  {{ col.label }}
+                  {{ scope.row[scope.column.property] }}
                 </el-link>
               </template><#
               }
@@ -1984,9 +1984,9 @@ if (opts?.foreignList?.length > 0) {
 
 let foreignListRef = $ref<InstanceType<typeof ForeignList>>();
 
-async function openForeignList(id: string) {
+async function openForeignList(id: string, title: string) {
   await foreignListRef.showDialog({
-    action: "list",
+    title,
     model: {
       id,
     },
