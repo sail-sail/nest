@@ -134,6 +134,11 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
         return;
       }
+      if (dir === "/pc/src/views/[[table]]/ForeignList.vue") {
+        if (!(opts?.foreignList?.length > 0)) {
+          return;
+        }
+      }
       let htmlStr = includeFtl(await readFile(fileTng ,"utf8"), "<#", "#>");
       try {
         if(basename(dir2).startsWith("--")) {

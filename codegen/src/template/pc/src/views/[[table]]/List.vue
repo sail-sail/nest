@@ -646,7 +646,19 @@ const Table_Up = tableUp.split("_").map(function(item) {
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
-            >
+            ><#
+              if (opts?.foreignList?.length > 0 && opts?.foreignLable2Col === column_name) {
+              #>
+              <template #default="scope">
+                <el-link
+                  type="primary"
+                  @click="openForeignList(scope.row.id)"
+                >
+                  {{ col.label }}
+                </el-link>
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
             } else if (selectList.length > 0) {
@@ -779,6 +791,13 @@ const Table_Up = tableUp.split("_").map(function(item) {
   #>
   <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog><#
     }
+  #><#
+  if (opts?.foreignList?.length > 0) {
+  #>
+  <ForeignList
+    ref="foreignListRef"
+  ></ForeignList><#
+  }
   #>
 </div>
 </template>
@@ -992,6 +1011,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
 if (foreignTableArr.length > 0) {
 #>
+
 import {<#
   for (let i = 0; i < foreignTableArr.length; i++) {
     const foreignTable = foreignTableArr[i];
@@ -1001,6 +1021,12 @@ import {<#
   }
   #>
 } from "./Api";<#
+}
+#><#
+if (opts?.foreignList?.length > 0) {
+#>
+
+import ForeignList from "./ForeignList.vue";<#
 }
 #>
 
@@ -1938,6 +1964,21 @@ async function revertByIdsEfc() {
     ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
   }
+}<#
+}
+#><#
+if (opts?.foreignList?.length > 0) {
+#>
+
+let foreignListRef = $ref<InstanceType<typeof ForeignList>>();
+
+async function openForeignList(id: string) {
+  await foreignListRef.showDialog({
+    action: "list",
+    model: {
+      id,
+    },
+  });
 }<#
 }
 #>

@@ -513,6 +513,18 @@ export interface TablesConfigItem {
      */
     unique?: string[];
     
+    foreignList?: {
+      table: string;
+      label: string;
+      /**
+       * 外键关联表字段
+       * @type {string}
+       */
+      column: string;
+    }[];
+    
+    foreignLable2Col?: string;
+    
   },
   columns?: TableCloumn[];
 }

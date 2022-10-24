@@ -413,4 +413,17 @@ body .el-tree {
     flex-direction: column;
   }
 }
+.el-flex-tabs.el-tabs {
+  display: flex;
+  flex-direction: column;
+  .el-tabs__content, .el-tab-pane {
+    flex: 1 0 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+.el-dialog.large_dialog {
+  width: calc(100% - 100px);
+  height: calc(100% - 20px);
+}
 </style>
