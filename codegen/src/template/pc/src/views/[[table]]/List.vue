@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
+const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
 #><template>
 <div
   flex="~ [1_0_0] col"
@@ -591,6 +592,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
             }
             const isPassword = column.isPassword;
             if (isPassword) continue;
+            const foreignTabs = column.foreignTabs || [ ];
           #><#
           if (column.isImg) {
           #>
@@ -647,12 +649,12 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (opts?.foreignList?.length > 0 && opts?.foreignLable2Col === column_name) {
+              if (foreignTabs.length > 0) {
               #>
               <template #default="scope">
                 <el-link
                   type="primary"
-                  @click="openForeignList(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
                 >
                   {{ scope.row[scope.column.property] }}
                 </el-link>
@@ -670,12 +672,12 @@ const Table_Up = tableUp.split("_").map(function(item) {
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (opts?.foreignList?.length > 0 && opts?.foreignLable2Col === column_name) {
+              if (foreignTabs.length > 0) {
               #>
               <template #default="scope">
                 <el-link
                   type="primary"
-                  @click="openForeignList(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
                 >
                   {{ scope.row[scope.column.property] }}
                 </el-link>
@@ -804,11 +806,11 @@ const Table_Up = tableUp.split("_").map(function(item) {
   <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog><#
     }
   #><#
-  if (opts?.foreignList?.length > 0) {
+  if (hasForeignTabs > 0) {
   #>
-  <ForeignList
-    ref="foreignListRef"
-  ></ForeignList><#
+  <ForeignTabs
+    ref="foreignTabsRef"
+  ></ForeignTabs><#
   }
   #>
 </div>
@@ -1035,10 +1037,10 @@ import {<#
 } from "./Api";<#
 }
 #><#
-if (opts?.foreignList?.length > 0) {
+if (hasForeignTabs > 0) {
 #>
 
-import ForeignList from "./ForeignList.vue";<#
+import ForeignTabs from "./ForeignTabs.vue";<#
 }
 #>
 
@@ -1979,13 +1981,13 @@ async function revertByIdsEfc() {
 }<#
 }
 #><#
-if (opts?.foreignList?.length > 0) {
+if (hasForeignTabs > 0) {
 #>
 
-let foreignListRef = $ref<InstanceType<typeof ForeignList>>();
+let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
 
-async function openForeignList(id: string, title: string) {
-  await foreignListRef.showDialog({
+async function openForeignTabs(id: string, title: string) {
+  await foreignTabsRef.showDialog({
     title,
     model: {
       id,

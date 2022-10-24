@@ -1,4 +1,6 @@
-<template>
+<#
+const foreignTabs = columns.find((item) => item.foreignTabs?.length > 0) || [ ];
+#><template>
 <el-dialog
   v-model="dialogVisible"
   :fullscreen="fullscreen"
@@ -45,8 +47,8 @@
         flex="~ [1_0_0] col"
         w="full"
       ><#
-      for (let im = 0; im < opts?.foreignList?.length; im++) {
-        const item = opts.foreignList[im];
+      for (let im = 0; im < foreignTabs.length; im++) {
+        const item = foreignTabs[im];
         const itemTableUp = item.table.substring(0,1).toUpperCase() + item.table.substring(1);
       #>
         
@@ -101,8 +103,8 @@ import {
 
 import { useFullscreenEfc } from "@/compositions/fullscreen";
 <#
-for (let im = 0; im < opts?.foreignList?.length; im++) {
-  const item = opts.foreignList[im];
+for (let im = 0; im < foreignTabs.length; im++) {
+  const item = foreignTabs[im];
   const itemTable = item.table;
   const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
 #>

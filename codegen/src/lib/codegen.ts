@@ -59,6 +59,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
         //   console.log(`忽略: ${dir2}`);
         //   return;
         // }
+        const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
 				const buffer = await readFile(fileTng);
         const fields = [ ];
         const lbls = [ ];
@@ -135,7 +136,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
         return;
       }
       if (dir === "/pc/src/views/[[table]]/ForeignList.vue") {
-        if (!(opts?.foreignList?.length > 0)) {
+        if (hasForeignTabs) {
           return;
         }
       }

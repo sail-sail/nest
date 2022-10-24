@@ -260,6 +260,12 @@ export interface TableCloumn {
     
   },
   
+  foreignTabs?: {
+    table: string;
+    label: string;
+    column: string;
+  }[],
+  
   /**
    * 外键关联是否多对多
    * @type {{
@@ -512,18 +518,6 @@ export interface TablesConfigItem {
      * @type {string[]}
      */
     unique?: string[];
-    
-    foreignList?: {
-      table: string;
-      label: string;
-      /**
-       * 外键关联表字段
-       * @type {string}
-       */
-      column: string;
-    }[];
-    
-    foreignLable2Col?: string;
     
   },
   columns?: TableCloumn[];
