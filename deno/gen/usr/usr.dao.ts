@@ -425,8 +425,8 @@ export async function checkByUnique(
   if (isEquals) {
     if (uniqueType === "throw") {
       const { uniqueKeys, uniqueComments } = getUniqueKeys(context);
-      const lbl = uniqueKeys.map((key) => `${ uniqueComments[key] }: ${ (model as any)[`_${ key }`] ?? model[key] }`).join("; ");
-      throw new UniqueException(`${ lbl } 已存在!`);
+      const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
+      throw new UniqueException(`${ lbl } 的值已经存在!`);
     }
     if (uniqueType === "update") {
       const result = await updateById(
