@@ -720,10 +720,21 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
               </template><#
+              } else if (foreignKey.isLinkForeignTabs) {
+                const foreignTable = foreignKey.table;
+                const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            #>
+              <template #default="scope">
+                <el-link
+                  type="primary"
+                  @click="open<#=foreignTableUp#>ForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                >
+                  {{ scope.row[scope.column.property] }}
+                </el-link>
+              </template><#
               }
             #>
             </el-table-column>
-            
           </template><#
             }
           #><#
@@ -795,6 +806,13 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     ></<#=foreignTableUp#>List>
   </ListSelectDialog><#
     }
+  #><#
+    if (foreignKey && foreignKey.isLinkForeignTabs) {
+  #>
+  <<#=foreignTableUp#>ForeignTabs
+    ref="<#=foreignTable#>ForeignTabsRef"
+  ></<#=foreignTableUp#>ForeignTabs><#
+  }
   #><#
   }
   #>
@@ -920,6 +938,11 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
 import <#=foreignTableUp#>List from "../<#=foreignTable#>/List.vue";<#
+  }
+#><#
+  if (foreignKey && foreignKey.isLinkForeignTabs) {
+#>
+import <#=foreignTableUp#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.vue";<#
   }
 #><#
 }
@@ -2067,7 +2090,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
 
-let <#=column_name#>ListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
+let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog> | undefined>();
 
 async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
   if (!<#=column_name#>ListSelectDialogRef) return;
@@ -2098,6 +2121,21 @@ async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
       await dataGrid();
     }
   }
+}<#
+  }
+#><#
+  if (foreignKey && foreignKey.isLinkForeignTabs) {
+#>
+
+let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=foreignTableUp#>ForeignTabs> | undefined>();
+
+async function open<#=foreignTableUp#>ForeignTabs(id: string, title: string) {
+  await <#=foreignTable#>ForeignTabsRef?.showDialog({
+    title,
+    model: {
+      id,
+    },
+  });
 }<#
   }
 #><#

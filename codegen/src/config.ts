@@ -258,6 +258,12 @@ export interface TableCloumn {
      */
     showType?: string;
     
+    /**
+     * 是否显示这个表所在的外键选项卡列表
+     * @type {boolean}
+     */
+    isLinkForeignTabs?: boolean;
+    
   },
   
   foreignTabs?: {
