@@ -132,7 +132,6 @@ for (let im = 0; im < foreignTabs.length; im++) {
   const item = foreignTabs[im];
   const itemTable = item.table;
 #>
-
 let <#=itemTable#>Total = $ref<number>();<#
 }
 #>
