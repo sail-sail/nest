@@ -746,7 +746,7 @@ export async function findSummary(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  const model = (await context.queryOne<<#=tableUp#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
+  const model = (await context.queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
   
   return model;
 }<#
