@@ -824,13 +824,22 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
 
 /** 获取下拉框列表 */
-async function getSelectListEfc() {
+async function useSelectList() {
 }
 
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
+  if (isCount) {
+    await Promise.all([
+      useFindAll(),
+      useFindCount(),
+    ]);
+  } else {
+    await useFindAll();
+  }
+}
+
+function getDataSearch() {
   let search2 = {
     ...search,
     ...builtInSearch,
@@ -839,17 +848,19 @@ async function dataGrid(isCount = false) {
   if (idsChecked) {
     search2.ids = selectedIds;
   }
-  if (isCount) {
-    [
-      tableData,
-      page.total,
-    ] = await Promise.all([
-      findAll(search2, { pgSize, pgOffset }, [ sort ]),
-      findCount(search2),
-    ]);
-  } else {
-    tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
-  }
+  return search2;
+}
+
+async function useFindAll() {
+  const pgSize = page.size;
+  const pgOffset = (page.current - 1) * page.size;
+  const search2 = getDataSearch();
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+}
+
+async function useFindCount() {
+  const search2 = getDataSearch();
+  page.total = await findCount(search2);
 }
 
 /** 排序 */
@@ -946,7 +957,7 @@ async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
-      getSelectListEfc(),
+      useSelectList(),
     ]);
   }
   inited = true;
