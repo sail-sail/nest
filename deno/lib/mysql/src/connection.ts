@@ -324,7 +324,7 @@ export class Connection {
         iterator: this.buildIterator(fields),
       };
     } catch (error) {
-      this.close();
+      // this.close();
       throw error;
     }
   }

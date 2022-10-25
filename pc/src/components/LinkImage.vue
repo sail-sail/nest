@@ -13,7 +13,7 @@
     v-else
     style="color: light-gray;"
   >
-    0
+    (无)
   </div>
   <teleport
     v-if="urlList.length > 0 && showImageViewer"
