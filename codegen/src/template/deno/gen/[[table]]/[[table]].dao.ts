@@ -723,7 +723,7 @@ export async function findSummary(
   }
   #>
   
-  const args = [ ];
+  const args = new QueryArgs();
   let sql = `
     select<#
       for (let i = 0; i < findSummaryColumns.length; i++) {
@@ -746,7 +746,7 @@ export async function findSummary(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  const model = await context.queryOne<<#=tableUp#>Summary>(sql, args, { cacheKey1, cacheKey2 });
+  const model = (await context.queryOne<<#=tableUp#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
   
   return model;
 }<#
@@ -768,7 +768,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: <#=Table_Up#>Model | undefined = result[0];
+  const model = result[0] as <#=Table_Up#>Model | undefined;
   return model;
 }
 
