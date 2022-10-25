@@ -728,6 +728,7 @@ export async function findSummary(
     select<#
       for (let i = 0; i < findSummaryColumns.length; i++) {
         const column = findSummaryColumns[i];
+        const column_name = column.COLUMN_NAME;
       #>
       sum(t.<#=column_name#>) <#=column_name#><#
         if (i !== findSummaryColumns.length - 1) {
