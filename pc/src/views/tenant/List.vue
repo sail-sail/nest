@@ -828,7 +828,7 @@ let {
 } = $(useTableColumns<TenantModel>(
   $$(tableColumns),
   {
-    persistKey: "0",
+    persistKey: new URL(import.meta.url).pathname,
   },
 ));
 

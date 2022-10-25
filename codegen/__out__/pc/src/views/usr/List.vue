@@ -911,7 +911,7 @@ let {
 } = $(useTableColumns<UsrModel>(
   $$(tableColumns),
   {
-    persistKey: "0",
+    persistKey: new URL(import.meta.url).pathname,
   },
 ));
 

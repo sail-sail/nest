@@ -3,7 +3,6 @@
   ref="dropdownRef"
   trigger="click"
   :hide-on-click="false"
-  style="margin-left: 12px;"
   @command="handleCommand"
 >
   <el-button>

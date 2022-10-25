@@ -178,7 +178,7 @@ async function showDialog(
       id?: string;
       ids?: string[];
     };
-    action: "list";
+    action?: "list";
   },
 ) {
   inited = false;

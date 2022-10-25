@@ -1578,7 +1578,7 @@ let {
 } = $(useTableColumns<<#=Table_Up#>Model>(
   $$(tableColumns),
   {
-    persistKey: "0",
+    persistKey: new URL(import.meta.url).pathname,
   },
 ));
 

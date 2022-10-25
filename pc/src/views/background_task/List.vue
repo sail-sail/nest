@@ -817,7 +817,7 @@ let {
 } = $(useTableColumns<Background_TaskModel>(
   $$(tableColumns),
   {
-    persistKey: "0",
+    persistKey: new URL(import.meta.url).pathname,
   },
 ));
 
