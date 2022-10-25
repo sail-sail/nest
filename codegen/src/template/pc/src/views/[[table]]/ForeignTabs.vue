@@ -54,12 +54,12 @@ const foreignTabs = column?.foreignTabs || [ ];
       #>
         
         <el-tab-pane
+          lazy
           :label="'<#=item.label#>' + (<#=itemTable#>Total != null ? `(${ <#=itemTable#>Total })` : '')"
           name="<#=item.label#>"
         >
           <<#=itemTableUp#>List
             :<#=item.column#>="dialogModel.id"
-            @page-total="<#=itemTable#>Total = $event"
           ></<#=itemTableUp#>List>
         </el-tab-pane><#
         }
@@ -103,14 +103,18 @@ import {
   FullScreen,
 } from "@element-plus/icons-vue";
 
-import { useFullscreenEfc } from "@/compositions/fullscreen";
-<#
+import { useFullscreenEfc } from "@/compositions/fullscreen";<#
 for (let im = 0; im < foreignTabs.length; im++) {
   const item = foreignTabs[im];
   const itemTable = item.table;
   const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
 #>
-import <#=itemTableUp#>List from "@/views/<#=itemTable#>/List.vue";<#
+
+import <#=itemTableUp#>List from "@/views/<#=itemTable#>/List.vue";
+
+import {
+  findCount as findCount<#=itemTableUp#>,
+} from "@/views/<#=itemTable#>/Api";<#
 }
 #>
 
@@ -131,10 +135,34 @@ let tabName = $ref("<#=foreignTabs[0]?.label || ""#>");<#
 for (let im = 0; im < foreignTabs.length; im++) {
   const item = foreignTabs[im];
   const itemTable = item.table;
+  const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
 #>
-let <#=itemTable#>Total = $ref<number>();<#
+
+let <#=itemTable#>Total = $ref<number>();
+
+async function useFindCount<#=itemTableUp#>() {
+  const <#=item.column#> = [ dialogModel.id! ];
+  <#=itemTable#>Total = await findCount<#=itemTableUp#>(
+    {
+      <#=item.column#>,
+    },
+  );
+}<#
 }
 #>
+
+async function useAllFindCount() {
+  await Promise.all([<#
+    for (let im = 0; im < foreignTabs.length; im++) {
+      const item = foreignTabs[im];
+      const itemTable = item.table;
+      const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+    #>
+    useFindCount<#=itemTableUp#>(),<#
+    }
+    #>
+  ]);
+}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -170,6 +198,7 @@ async function showDialog(
   }
   if (dialogAction === "list") {
     dialogModel.id = model?.id;
+    await useAllFindCount();
   }
 }
 
