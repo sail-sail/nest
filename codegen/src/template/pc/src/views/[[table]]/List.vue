@@ -1075,6 +1075,10 @@ let inited = $ref(false);
 
 const emit = defineEmits([
   "selectedIdsChg",
+  "add",
+  "edit",
+  "remove",
+  "revert",
 ]);
 
 /** 表格 */
@@ -1813,6 +1817,7 @@ async function openAdd() {
       }
       #>
     ]);
+    emit("add", changedIds);
   }
 }
 
@@ -1842,6 +1847,7 @@ async function openCopy() {
     await Promise.all([
       dataGrid(true),
     ]);
+    emit("add", changedIds);
   }
 }<#
   if (opts.noImport !== true) {
@@ -1904,6 +1910,7 @@ async function openEdit() {
       }
       #>
     ]);
+    emit("edit", changedIds);
   }
 }<#
 }
@@ -1938,6 +1945,7 @@ async function deleteByIdsEfc() {
       #>
     ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
+    emit("remove", num);
   }
 }
 
@@ -2019,6 +2027,7 @@ async function revertByIdsEfc() {
       #>
     ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
+    emit("revert", num);
   }
 }<#
 }

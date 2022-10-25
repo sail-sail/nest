@@ -552,6 +552,10 @@ let inited = $ref(false);
 
 const emit = defineEmits([
   "selectedIdsChg",
+  "add",
+  "edit",
+  "remove",
+  "revert",
 ]);
 
 /** 表格 */
@@ -900,6 +904,7 @@ async function deleteByIdsEfc() {
       dataGrid(true),
     ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
+    emit("remove", num);
   }
 }
 
@@ -950,6 +955,7 @@ async function revertByIdsEfc() {
       dataGrid(true),
     ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
+    emit("revert", num);
   }
 }
 

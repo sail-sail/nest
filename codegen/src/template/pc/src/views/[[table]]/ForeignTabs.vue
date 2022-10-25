@@ -60,6 +60,9 @@ const foreignTabs = column?.foreignTabs || [ ];
         >
           <<#=itemTableUp#>List
             :<#=item.column#>="dialogModel.id"
+            @add="useAllFindDebounce"
+            @remove="useAllFindDebounce"
+            @revert="useAllFindDebounce"
           ></<#=itemTableUp#>List>
         </el-tab-pane><#
         }
@@ -162,6 +165,13 @@ async function useAllFindCount() {
     }
     #>
   ]);
+}
+
+let findTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+
+function useAllFindDebounce() {
+  clearTimeout(findTimeout);
+  findTimeout = setTimeout(useAllFindCount, 0);
 }
 
 type OnCloseResolveType = {

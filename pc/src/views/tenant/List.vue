@@ -557,6 +557,10 @@ let inited = $ref(false);
 
 const emit = defineEmits([
   "selectedIdsChg",
+  "add",
+  "edit",
+  "remove",
+  "revert",
 ]);
 
 /** 表格 */
@@ -927,6 +931,7 @@ async function openAdd() {
     await Promise.all([
       dataGrid(true),
     ]);
+    emit("add", changedIds);
   }
 }
 
@@ -956,6 +961,7 @@ async function openCopy() {
     await Promise.all([
       dataGrid(true),
     ]);
+    emit("add", changedIds);
   }
 }
 
@@ -1005,6 +1011,7 @@ async function openEdit() {
     await Promise.all([
       dataGrid(),
     ]);
+    emit("edit", changedIds);
   }
 }
 
@@ -1030,6 +1037,7 @@ async function deleteByIdsEfc() {
       dataGrid(true),
     ]);
     ElMessage.success(`删除 ${ num } 条数据成功!`);
+    emit("remove", num);
   }
 }
 
@@ -1080,6 +1088,7 @@ async function revertByIdsEfc() {
       dataGrid(true),
     ]);
     ElMessage.success(`还原 ${ num } 条数据成功!`);
+    emit("revert", num);
   }
 }
 

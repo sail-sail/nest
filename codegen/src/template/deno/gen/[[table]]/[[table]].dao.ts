@@ -710,20 +710,28 @@ export async function findSummary(
   },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=table#>";
-  const method = "findSummary";
+  const method = "findSummary";<#
+  const findSummaryColumns = [ ];
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column.showSummary) {
+      findSummaryColumns.push(column);
+    }
+  }
+  #>
   
   const args = [ ];
   let sql = `
     select<#
-      for (let i = 0; i < columns.length; i++) {
-        const column = columns[i];
-        if (column.ignoreCodegen) continue;
-        const column_name = column.COLUMN_NAME;
-        if (column_name === "id") continue;
-      #><#
-        if (column.showSummary) {
+      for (let i = 0; i < findSummaryColumns.length; i++) {
+        const column = findSummaryColumns[i];
       #>
       sum(t.<#=column_name#>) <#=column_name#><#
+        if (i !== findSummaryColumns.length - 1) {
+      #>,<#
         }
       #><#
       }
