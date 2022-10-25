@@ -604,7 +604,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
               v-bind="col"
             >
               <template #default="{ row, column }">
-                <LinkImage v-model="row[column.property]"></LinkImage>
+                <LinkImage
+                  v-model="row[column.property]"
+                ></LinkImage>
               </template>
             </el-table-column>
           </template><#
@@ -727,7 +729,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
               <template #default="scope">
                 <el-link
                   type="primary"
-                  @click="open<#=foreignTableUp#>ForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                  @click="open<#=foreignTableUp#>ForeignTabs(scope.row.<#=column_name#>, scope.row[scope.column.property])"
                 >
                   {{ scope.row[scope.column.property] }}
                 </el-link>
