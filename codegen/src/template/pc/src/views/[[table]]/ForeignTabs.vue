@@ -49,16 +49,17 @@ const foreignTabs = column?.foreignTabs || [ ];
       ><#
       for (let im = 0; im < foreignTabs.length; im++) {
         const item = foreignTabs[im];
-        const itemTableUp = item.table.substring(0,1).toUpperCase() + item.table.substring(1);
+        const itemTable = item.table;
+        const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
       #>
         
         <el-tab-pane
-          lazy
-          label="<#=item.label#>"
+          :label="'<#=item.label#>' + (<#=itemTable#>Total != null ? `(${ <#=itemTable#>Total })` : '')"
           name="<#=item.label#>"
         >
           <<#=itemTableUp#>List
             :<#=item.column#>="dialogModel.id"
+            @page-total="<#=itemTable#>Total = $event"
           ></<#=itemTableUp#>List>
         </el-tab-pane><#
         }
@@ -126,7 +127,15 @@ let dialogModel = $ref<{
   id: undefined,
 });
 
-let tabName = $ref("<#=foreignTabs[0]?.label || ""#>");
+let tabName = $ref("<#=foreignTabs[0]?.label || ""#>");<#
+for (let im = 0; im < foreignTabs.length; im++) {
+  const item = foreignTabs[im];
+  const itemTable = item.table;
+#>
+
+let <#=itemTable#>Total = $ref<number>();<#
+}
+#>
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
