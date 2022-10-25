@@ -402,7 +402,6 @@
                 </el-link>
               </template>
             </el-table-column>
-            
           </template>
           
           <!-- 排序 -->
@@ -1107,7 +1106,7 @@ usrStore.onLogin(initFrame);
 
 initFrame();
 
-let menu_idsListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
+let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog> | undefined>();
 
 async function menu_idsClk(row: TenantModel) {
   if (!menu_idsListSelectDialogRef) return;

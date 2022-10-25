@@ -393,7 +393,6 @@
               v-bind="col"
             >
             </el-table-column>
-            
           </template>
           
           <!-- 名称 -->

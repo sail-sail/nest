@@ -440,7 +440,6 @@
               v-bind="col"
             >
             </el-table-column>
-            
           </template>
           
           <!-- 启用 -->
@@ -473,7 +472,6 @@
                 ></LinkList>
               </template>
             </el-table-column>
-            
           </template>
           
           <!-- 锁定 -->
@@ -497,7 +495,6 @@
                 ></LinkList>
               </template>
             </el-table-column>
-            
           </template>
           
           <template v-else>

@@ -384,7 +384,6 @@
                 </el-link>
               </template>
             </el-table-column>
-            
           </template>
           
           <template v-else>
@@ -1033,7 +1032,7 @@ usrStore.onLogin(initFrame);
 
 initFrame();
 
-let menu_idsListSelectDialogRef: InstanceType<typeof ListSelectDialog>|undefined = $ref();
+let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog> | undefined>();
 
 async function menu_idsClk(row: RoleModel) {
   if (!menu_idsListSelectDialogRef) return;

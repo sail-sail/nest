@@ -352,7 +352,6 @@
               v-bind="col"
             >
             </el-table-column>
-            
           </template>
           
           <!-- 创建时间 -->
@@ -371,7 +370,6 @@
               v-bind="col"
             >
             </el-table-column>
-            
           </template>
           
           <!-- 更新时间 -->
