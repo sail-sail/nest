@@ -400,7 +400,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: Operation_RecordModel | undefined = result[0];
+  const model = result[0] as Operation_RecordModel | undefined;
   return model;
 }
 

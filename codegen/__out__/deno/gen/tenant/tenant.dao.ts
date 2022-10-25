@@ -411,7 +411,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: TenantModel | undefined = result[0];
+  const model = result[0] as TenantModel | undefined;
   return model;
 }
 

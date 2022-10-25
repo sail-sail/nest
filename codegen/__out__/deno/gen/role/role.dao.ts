@@ -385,7 +385,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: RoleModel | undefined = result[0];
+  const model = result[0] as RoleModel | undefined;
   return model;
 }
 

@@ -462,7 +462,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: UsrModel | undefined = result[0];
+  const model = result[0] as UsrModel | undefined;
   return model;
 }
 

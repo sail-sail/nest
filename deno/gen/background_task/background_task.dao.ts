@@ -418,7 +418,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: Background_TaskModel | undefined = result[0];
+  const model = result[0] as Background_TaskModel | undefined;
   return model;
 }
 

@@ -347,7 +347,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: PermitModel | undefined = result[0];
+  const model = result[0] as PermitModel | undefined;
   return model;
 }
 

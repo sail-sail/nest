@@ -403,7 +403,7 @@ export async function findOne(
     pgSize: 1,
   };
   const result = await findAll(context, search, page, undefined, options);
-  const model: MenuModel | undefined = result[0];
+  const model = result[0] as MenuModel | undefined;
   return model;
 }
 
