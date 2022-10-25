@@ -574,7 +574,6 @@ let inited = $ref(false);
 
 const emit = defineEmits([
   "selectedIdsChg",
-  "page-total",
 ]);
 
 /** 表格 */
@@ -915,7 +914,6 @@ async function useFindAll() {
 async function useFindCount() {
   const search2 = getDataSearch();
   page.total = await findCount(search2);
-  emit("page-total", page.total);
 }
 
 /** 排序 */
