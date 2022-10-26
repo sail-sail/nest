@@ -1777,13 +1777,25 @@ export async function findLastOrderBy(
       <#=table#> t
   `;
   const whereQuery: string[] = [ ];
-  const args = new QueryArgs();<#
+  const args = new QueryArgs();
+  whereQuery.push(`t.is_deleted = 0`);<#
   if (hasTenant_id) {
   #>
   {
     const authModel = await getAuthModel(context);
     const tenant_id = await getTenant_id(context, authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+  }<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  {
+    const authModel = await getAuthModel(context);
+    const dept_id = authModel?.dept_id;
+    if (dept_id) {
+      whereQuery.push(`t.dept_id = ${ args.push(dept_id) }`);
+    }
   }<#
   }
   #>
