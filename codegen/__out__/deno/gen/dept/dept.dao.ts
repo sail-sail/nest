@@ -46,7 +46,6 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: DeptSearch & {
     $extra?: SearchExtra[];
-    dept_id?: string | null;
     tenant_id?: string | null;
   },
   options?: {

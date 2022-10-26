@@ -37,8 +37,6 @@ async function getWhereQuery(
   args: QueryArgs,
   search?: MenuSearch & {
     $extra?: SearchExtra[];
-    dept_id?: string | null;
-    tenant_id?: string | null;
   },
   options?: {
   },
@@ -650,7 +648,6 @@ export async function updateById(
   context: Context,
   id: string,
   model: PartialNull<MenuModel> & {
-    tenant_id?: string | null;
   },
   options?: {
     uniqueType?: "ignore" | "throw" | "create";

@@ -106,9 +106,17 @@ async function getWhereQuery(
   context: Context,
   args: QueryArgs,
   search?: <#=Table_Up#>Search & {
-    $extra?: SearchExtra[];
-    dept_id?: string | null;
-    tenant_id?: string | null;
+    $extra?: SearchExtra[];<#
+    if (hasDeptId) {
+    #>
+    dept_id?: string | null;<#
+    }
+    #><#
+    if (hasTenant_id) {
+    #>
+    tenant_id?: string | null;<#
+    }
+    #>
   },
   options?: {
   },
@@ -1343,8 +1351,17 @@ export async function updateDeptById(
 export async function updateById(
   context: Context,
   id: string,
-  model: PartialNull<<#=Table_Up#>Model> & {
-    tenant_id?: string | null;
+  model: PartialNull<<#=Table_Up#>Model> & {<#
+    if (hasDeptId) {
+    #>
+    dept_id?: string | null;<#
+    }
+    #><#
+    if (hasTenant_id) {
+    #>
+    tenant_id?: string | null;<#
+    }
+    #>
   },
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
@@ -1377,7 +1394,7 @@ export async function updateById(
   if (hasDeptId) {
   #>
   
-  // 修改租户id
+  // 修改部门id
   if (isNotEmpty(model.dept_id)) {
     await updateDeptById(context, id, model.dept_id);
   }<#
