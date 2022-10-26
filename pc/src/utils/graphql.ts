@@ -261,6 +261,7 @@ export async function _gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
           duration,
         });
       }
+      throw errMsg;
     }
   }
   return data;

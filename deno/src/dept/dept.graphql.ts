@@ -3,14 +3,9 @@ import * as resolvers from "./dept.resolver.ts";
 
 defineGraphql(resolvers, /* GraphQL */`
   
-  type FindDeptsByToken {
-    id: String!
-    lbl: String!
-  }
-  
-  type Query {
-    "查找当前登录用户下的部门列表"
-    findDeptsByToken: [FindDeptsByToken!]!
+  type Mutation {
+    "切换登录状态下的部门, 更换token"
+    deptLoginSelect(dept_id: String!): String!
   }
   
 `);

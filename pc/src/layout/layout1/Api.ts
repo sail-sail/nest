@@ -3,6 +3,7 @@ import { GqlOpt, gqlQuery } from "@/utils/graphql";
 import {
   type MenuModel as MenuModel0,
   type GetLoginInfo,
+  type Mutation,
 } from "#/types";
 
 type MenuModel = MenuModel0 & {
@@ -81,4 +82,23 @@ export async function getLoginInfo(
     `,
   }, opt);
   return data?.getLoginInfo;
+}
+
+export async function deptLoginSelect(
+  variables: {
+    dept_id: string;
+  },
+  opt?: GqlOpt,
+) {
+  const data: {
+    deptLoginSelect: Mutation["deptLoginSelect"];
+  } = await gqlQuery({
+    query: /* GraphQL */ `
+      mutation($dept_id: String!) {
+        deptLoginSelect(dept_id: $dept_id)
+      }
+    `,
+    variables,
+  }, opt);
+  return data.deptLoginSelect;
 }

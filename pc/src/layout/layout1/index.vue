@@ -60,15 +60,31 @@
         flex
         items-center
       >
+        <template v-if="loginInfo">
+          <el-select
+            v-model="loginInfo.dept_id"
+            size="small"
+            suffix-icon
+            class="dept_select"
+            m="r-2"
+            
+            @change="deptSelectChg"
+          >
+            <el-option
+              v-for="item of loginInfo.dept_idModels"
+              :key="item.id"
+              :value="item.id"
+              :label="item.lbl"
+            ></el-option>
+          </el-select>
+        </template>
         <div
-          m="r-[10px]"
+          m="r-2"
           pos-relative
           top="[1px]"
           border-1px
           border-transparent
           cursor-pointer
-          h="[15px]"
-          w="[15px]"
           flex="~ col"
           items-center
           justify-center
@@ -76,10 +92,10 @@
           <el-dropdown>
             <span class="el-dropdown-link">
               <el-icon
-                size="18"
+                :size="16"
                 color="#FFF"
               >
-                <ArrowDownBold />
+                <Setting />
               </el-icon>
             </span>
             <template #dropdown>
@@ -207,12 +223,14 @@ import {
   ElDropdown,
   ElDropdownItem,
   ElDropdownMenu,
+  ElSelect,
+  ElOption,
 } from "element-plus";
 
 import {
   Fold,
   Expand,
-  ArrowDownBold,
+  Setting,
 } from "@element-plus/icons-vue";
 
 import {
@@ -236,6 +254,7 @@ import Tabs from "./Tabs.vue";
 
 import {
   getLoginInfo,
+  deptLoginSelect,
   clearCache,
 } from "./Api";
 
@@ -346,6 +365,20 @@ async function logoutClk() {
 
 let loginInfo = $ref<GetLoginInfo | undefined>();
 
+async function deptSelectChg() {
+  const dept_id = loginInfo?.dept_id;
+  if (!dept_id) {
+    return;
+  }
+  const token = await deptLoginSelect({
+    dept_id,
+  });
+  if (token) {
+    usrStore.dept_id = dept_id;
+    await usrStore.login(token);
+  }
+}
+
 async function initFrame() {
   if (usrStore.authorization) {
     const [
@@ -366,3 +399,20 @@ initFrame();
 //   await tabsStore.refreshTab();
 // });
 </script>
+
+<style lang="scss" scoped>
+.dept_select {
+  position: relative;
+  top: 2px;
+  width: 100px;
+  :deep(.el-input__inner) {
+    text-align: right;
+    background-color: transparent;
+  }
+  :deep(.el-input) {
+    --el-input-bg-color: transparent;
+    --el-input-text-color: #FFF;
+    --el-input-border-color: transparent;
+  }
+}
+</style>

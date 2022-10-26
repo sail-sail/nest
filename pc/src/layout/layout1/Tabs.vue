@@ -10,7 +10,9 @@
     <span
       class="tab_label"
       :title="item.lbl"
-    >{{ item.lbl }}</span>
+    >
+      {{ item.lbl }}
+    </span>
     <div
       v-if="tabs.length > 1"
       class="tab_close_div"
@@ -34,7 +36,9 @@ import {
 import { useRouter } from "vue-router";
 
 import useTabsStore from "@/store/tabs";
-import { TabInf } from "@/store/tabs";
+import {
+  type TabInf,
+} from "@/store/tabs";
 
 const router = useRouter();
 const tabsStore = useTabsStore();

@@ -19,6 +19,7 @@
     "ejsexcel": "https://deno.land/x/ejsexcel@v1.0.1/mod.ts",
     "sheetjs": "https://cdn.sheetjs.com/xlsx-latest/package/xlsx.mjs",
     "sheetjs_cptable": "https://cdn.sheetjs.com/xlsx-latest/package/dist/cpexcel.full.mjs",
-    "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts"
+    "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
+    "imagescript": "https://deno.land/x/imagescript@v1.2.14/mod.ts"
   }
 }

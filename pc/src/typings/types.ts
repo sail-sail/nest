@@ -203,12 +203,6 @@ export type DeptSearch = {
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type FindDeptsByToken = {
-  __typename?: 'FindDeptsByToken';
-  id: Scalars['String'];
-  lbl: Scalars['String'];
-};
-
 export type GetLoginInfo = {
   __typename?: 'GetLoginInfo';
   dept_id?: Maybe<Scalars['String']>;
@@ -365,6 +359,8 @@ export type Mutation = {
   deleteByIdsTenant: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsUsr: Scalars['Int'];
+  /** 切换登录状态下的部门, 更换token */
+  deptLoginSelect: Scalars['String'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
@@ -515,6 +511,11 @@ export type MutationDeleteByIdsTenantArgs = {
 
 export type MutationDeleteByIdsUsrArgs = {
   ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeptLoginSelectArgs = {
+  dept_id: Scalars['String'];
 };
 
 
@@ -989,8 +990,6 @@ export type Query = {
   findCountTenant: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountUsr: Scalars['Int'];
-  /** 查找当前登录用户下的部门列表 */
-  findDeptsByToken: Array<FindDeptsByToken>;
   /** 查找order_by字段的最大值 */
   findLastOrderByDept: Scalars['Int'];
   /** 查找order_by字段的最大值 */

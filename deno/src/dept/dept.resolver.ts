@@ -4,9 +4,10 @@ import {
 
 import * as deptService from "./dept.service.ts";
 
-export async function findDeptsByToken(
+export async function deptLoginSelect(
   context: Context,
+  dept_id: string,
 ) {
-  const models = await deptService.findDeptsByToken(context);
-  return models;
+  const token = await deptService.deptLoginSelect(context, dept_id);
+  return token;
 }
