@@ -17,11 +17,6 @@ import {
 import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
-import { getTenant_id } from "/src/usr/usr.dao.ts";
-
-import {
-  existById as existByIdTenant,
-} from "/gen/tenant/tenant.dao.ts";
 
 import {
   many2manyUpdate,
@@ -534,48 +529,6 @@ export async function delCache(
 }
 
 /**
- * 根据id修改租户id
- * @export
- * @param {Context} context
- * @param {string} id
- * @param {string} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateTenantById(
-  context: Context,
-  id: string,
-  tenant_id: string,
-  options?: {
-  },
-): Promise<number> {
-  const table = "permit";
-  const method = "updateTenantById";
-  
-  const tenantExist = await existByIdTenant(context, tenant_id);
-  if (!tenantExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = /*sql*/ `
-    update
-      permit
-    set
-      update_time = ${ args.push(context.getReqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
-  const result = await context.execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache(context);
-  return num;
-}
-
-/**
  * 根据id修改一行数据
  * @param {string} id
  * @param {PartialNull<PermitModel>} model
@@ -603,12 +556,6 @@ export async function updateById(
   if (!id || !model) {
     return id;
   }
-  
-  // 修改租户id
-  if (isNotEmpty(model.tenant_id)) {
-    await updateTenantById(context, id, model.tenant_id);
-  }
-  
   
   // 菜单
   if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {

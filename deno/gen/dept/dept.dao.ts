@@ -17,7 +17,10 @@ import {
 import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
-import { getTenant_id } from "/src/usr/usr.dao.ts";
+
+import {
+  getTenant_id,
+} from "/src/usr/usr.dao.ts";
 
 import {
   existById as existByIdTenant,
@@ -778,7 +781,6 @@ export async function updateById(
     await updateTenantById(context, id, model.tenant_id);
   }
   
-  
   // 父部门
   if (isNotEmpty(model._parent_id) && model.parent_id === undefined) {
     model._parent_id = String(model._parent_id).trim();
@@ -1114,6 +1116,7 @@ export async function findLastOrderBy(
   `;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
+  whereQuery.push(`t.is_deleted = 0`);
   {
     const authModel = await getAuthModel(context);
     const tenant_id = await getTenant_id(context, authModel?.id);

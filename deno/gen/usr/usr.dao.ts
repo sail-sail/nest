@@ -17,7 +17,10 @@ import {
 import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
-import { getTenant_id } from "/src/usr/usr.dao.ts";
+
+import {
+  getTenant_id,
+} from "/src/usr/usr.dao.ts";
 
 import {
   existById as existByIdTenant,
@@ -838,7 +841,6 @@ export async function updateById(
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(context, id, model.tenant_id);
   }
-  
   
   // 默认部门
   if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {

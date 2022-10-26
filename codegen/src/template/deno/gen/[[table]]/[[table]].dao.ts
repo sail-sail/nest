@@ -26,12 +26,27 @@ import {
 
 import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
-import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
-import { getTenant_id } from "/src/usr/usr.dao.ts";
+import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";<#
+if (hasTenant_id) {
+#>
+
+import {
+  getTenant_id,
+} from "/src/usr/usr.dao.ts";
 
 import {
   existById as existByIdTenant,
-} from "/gen/tenant/tenant.dao.ts";
+} from "/gen/tenant/tenant.dao.ts";<#
+}
+#><#
+if (hasDeptId) {
+#>
+
+import {
+  existById as existByIdDept,
+} from "/gen/dept/dept.dao.ts";<#
+}
+#>
 
 import {
   many2manyUpdate,
@@ -1211,6 +1226,8 @@ export async function delCache(
   }
 }<#
 }
+#><#
+if (hasTenant_id) {
 #>
 
 /**
@@ -1257,7 +1274,59 @@ export async function updateTenantById(
   }
   #>
   return num;
+}<#
 }
+#><#
+if (hasDeptId) {
+#>
+
+/**
+ * 根据id修改部门id
+ * @export
+ * @param {Context} context
+ * @param {string} id
+ * @param {string} dept_id
+ * @param {{
+ *   }} [options]
+ * @return {Promise<number>}
+ */
+export async function updateDeptById(
+  context: Context,
+  id: string,
+  dept_id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "<#=table#>";
+  const method = "updateDeptById";
+  
+  const deptExist = await existByIdDept(context, dept_id);
+  if (!deptExist) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  const sql = /*sql*/ `
+    update
+      <#=table#>
+    set
+      update_time = ${ args.push(context.getReqDate()) },
+      dept_id = ${ args.push(dept_id) }
+    where
+      id = ${ args.push(id) }
+  `;
+  const result = await context.execute(sql, args);
+  const num = result.affectedRows;<#
+  if (cache) {
+  #>
+  
+  await delCache(context);<#
+  }
+  #>
+  return num;
+}<#
+}
+#>
 
 /**
  * 根据id修改一行数据
@@ -1295,13 +1364,25 @@ export async function updateById(
     throw "不能修改已经锁定的数据";
   }<#
   }
+  #><#
+  if (hasTenant_id) {
   #>
   
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(context, id, model.tenant_id);
+  }<#
   }
-  <#
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  // 修改租户id
+  if (isNotEmpty(model.dept_id)) {
+    await updateDeptById(context, id, model.dept_id);
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
