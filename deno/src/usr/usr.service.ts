@@ -88,16 +88,14 @@ export async function getLoginInfo(
   const dept_ids = usrModel.dept_ids || [ ];
   const deptModels = await deptDaoGen.findAll(context);
   const dept_idModels: { id: string, lbl: string }[] = [ ];
-  for (let i = 0; i < dept_ids.length; i++) {
-    const dept_id = dept_ids[i];
-    const deptModel = deptModels.find((item) => item.id === dept_id);
-    if (!deptModel) {
-      continue;
+  for (let i = 0; i < deptModels.length; i++) {
+    const deptModel = deptModels[i];
+    if (dept_ids.includes(deptModel.id)) {
+      dept_idModels.push({
+        id: deptModel.id,
+        lbl: deptModel.lbl,
+      });
     }
-    dept_idModels.push({
-      id: dept_id,
-      lbl: deptModel.lbl,
-    });
   }
   return {
     lbl: usrModel.lbl,

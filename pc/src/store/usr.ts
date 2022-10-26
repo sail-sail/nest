@@ -1,3 +1,10 @@
+import {
+  onMounted,
+  onBeforeUnmount,
+  onActivated,
+  onDeactivated,
+} from "vue";
+
 import { defineStore } from "pinia";
 
 export default defineStore("usr", function() {
@@ -41,7 +48,17 @@ export default defineStore("usr", function() {
   const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
   
   function onLogin(callback: () => void | PromiseLike<void>) {
-    onLoginCallbacks.push(callback);
+    onBeforeUnmount(function() {
+      const idx = onLoginCallbacks.indexOf(callback);
+      if (idx !== -1) {
+        onLoginCallbacks.splice(idx, 1);
+      }
+    });
+    onMounted(function() {
+      if (!onLoginCallbacks.includes(callback)) {
+        onLoginCallbacks.push(callback);
+      }
+    });
   }
   
   return $$({
