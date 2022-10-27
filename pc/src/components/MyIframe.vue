@@ -1,17 +1,17 @@
 <template>
 <div
-  flex="~ [1_0_0] col"
-  overflow-hidden
+  un-flex="~ [1_0_0] col"
+  un-overflow-hidden
 >
   <iframe
     v-if="src"
-    
     ref="iframeRef"
-    flex="~ [1_0_0] col"
-    overflow-hidden
-    w="full"
-    h="full"
-    box-border
+    
+    un-flex="~ [1_0_0] col"
+    un-overflow-hidden
+    un-w="full"
+    un-h="full"
+    un-box-border
     
     :src="src"
     frameborder="0"
@@ -20,9 +20,9 @@
   ></iframe>
   <template v-else>
     <div
-      flex="~ [1_0_0] col"
-      overflow-hidden
-      justify-center
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
+      un-justify-center
     >
       <el-empty description="页面不存在!">
       </el-empty>
@@ -33,10 +33,10 @@
 
 <script lang="ts" setup>
 import {
-  type WatchStopHandle,
   onActivated,
   onDeactivated,
   watch,
+  type WatchStopHandle,
 } from "vue";
 
 import {

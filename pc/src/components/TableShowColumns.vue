@@ -14,7 +14,8 @@
   <template #dropdown>
     <el-dropdown-menu
       v-if="props.tableColumns && props.tableColumns.length > 0"
-      style="min-width: 100px;white-space: nowrap;"
+      un-min="w-[100px]"
+      un-space-nowrap
     >
       <el-dropdown-item
         :command="{ action: 'reset' }"

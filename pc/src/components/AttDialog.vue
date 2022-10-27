@@ -26,6 +26,7 @@
   </template>
   <div class="wrap_div">
     <div class="toolbox_div">
+      
       <el-button
         v-if="!dialogModel.readonly && urlList.length > 0"
         type="primary"
@@ -36,6 +37,7 @@
         </template>
         <span>上传</span>
       </el-button>
+      
       <el-button
         v-if="urlList[nowIndex] && !dialogModel.readonly"
         plain
@@ -47,6 +49,7 @@
         </template>
         <span>删除</span>
       </el-button>
+      
       <el-button
         v-if="urlList[nowIndex]"
         plain
@@ -57,6 +60,7 @@
         </template>
         <span>下载</span>
       </el-button>
+      
       <el-button
         v-if="urlList[nowIndex]"
         @click="printClk"
@@ -66,6 +70,7 @@
         </template>
         <span>打印</span>
       </el-button>
+      
       <a
         v-if="urlList[nowIndex]"
         class="el-button"
@@ -75,6 +80,7 @@
       >
         网页中打开
       </a>
+      
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === 0"
@@ -85,6 +91,7 @@
         </template>
         <span>前移</span>
       </el-button>
+      
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === urlList.length - 1"
@@ -95,13 +102,15 @@
         </template>
         <span>后移</span>
       </el-button>
+      
       <div
-        flex="[1_0_0]"
+        un-flex="[1_0_0]"
       >
       </div>
+      
       <div
         v-if="urlList[nowIndex]"
-        m="r-3"
+        un-m="r-3"
       >
         <el-color-picker
           v-model="backgroundColor"
@@ -110,6 +119,7 @@
           @active-change="backgroundColor = $event"
         />
       </div>
+      
     </div>
     <div class="content_div">
       <template
@@ -119,7 +129,7 @@
         <iframe
           v-if="iframeShoweds[i]"
           :ref="(el) => { if (el) iframeRefs[i] = el }"
-          :style="{ display: i === nowIndex ? '' : 'none', backgroundColor }"
+          :style="{ display: i === nowIndex ? (backgroundColor || 'none') : 'none' }"
           class="iframe"
           :src="url"
           frameborder="0"
@@ -130,6 +140,7 @@
         v-if="urlList.length === 0"
         class="empty"
       >
+        
         <el-button
           v-if="!dialogModel.readonly && urlList.length === 0"
           plain
@@ -141,12 +152,14 @@
           </template>
           <span>上传</span>
         </el-button>
+        
         <div
           v-else-if="!dialogModel.readonly"
           class="empty"
         >
           <span>(暂无附件)</span>
         </div>
+        
       </div>
       <div
         v-if="iframeLoading"
@@ -160,6 +173,7 @@
       class="pagination_row"
     >
       <div class="pagination_div">
+        
         <el-button
           :disabled="nowIndex <= 0"
           size="small"
@@ -169,9 +183,11 @@
             <ArrowLeft />
           </template>
         </el-button>
+        
         <span class="pagination_span">
           {{ nowIndex + 1 }} / {{ urlList.length }}
         </span>
+        
         <el-button
           :disabled="nowIndex >= urlList.length - 1"
           size="small"
@@ -181,6 +197,7 @@
             <ArrowRight />
           </template>
         </el-button>
+        
       </div>
     </div>
   </div>
@@ -268,7 +285,7 @@ let nowIndex = $ref(0);
 
 let iframeLoading = $ref(false);
 
-let backgroundColor = $ref("#000000");
+let backgroundColor = $ref<string | null>("#000000");
 
 let predefineColors = $ref([
   '#ff4500',

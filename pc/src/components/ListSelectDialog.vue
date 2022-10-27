@@ -27,23 +27,23 @@
     </div>
   </template>
   <div
-    flex="~ [1_0_0] col basis-[inherit]"
-    overflow-hidden
+    un-flex="~ [1_0_0] col basis-[inherit]"
+    un-overflow-hidden
   >
     <div
-      flex="~ [1_0_0] col basis-[inherit]"
-      overflow-auto
-      p="0"
-      justify-start
-      items-center
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-p="0"
+      un-justify-start
+      un-items-center
     >
       <slot :selected-ids="selectedIds"></slot>
     </div>
     <div
-      p="y-2.5"
-      flex
-      justify-center
-      items-center
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
     >
       
       <el-button
@@ -56,7 +56,7 @@
       </el-button>
       
       <el-button
-        class="mx-1"
+        un-m="x-1"
         @click="revertClk"
       >
         <template #icon>

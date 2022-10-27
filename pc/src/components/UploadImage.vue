@@ -9,28 +9,28 @@
     :src="urlList[nowIndex]"
   >
     <template #placeholder>
-      <el-icon color="gray">
+      <el-icon un-color="gray">
         <Loading></Loading>
       </el-icon>
     </template>
     <template #error>
       <div
-        w="full"
-        h="full"
-        flex="~ [1_0_0] col"
-        overflow-hidden
-        justify-center
-        items-center
+        un-w="full"
+        un-h="full"
+        un-flex="~ [1_0_0] col"
+        un-overflow-hidden
+        un-justify-center
+        un-items-center
       >
         <el-icon
           v-if="indexStore.loading > 0"
-          color="gray"
+          un-color="gray"
         >
           <Loading></Loading>
         </el-icon>
         <el-icon
           v-else
-          color="red"
+          un-color="red"
           :size="35"
         >
           <Picture></Picture>
@@ -92,7 +92,9 @@
     ref="fileRef"
     type="file"
     :accept="accept"
-    style="display: none;"
+    
+    un-display-none
+    
     @change="inputChg"
   />
 </div>
