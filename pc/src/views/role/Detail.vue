@@ -31,11 +31,11 @@
     overflow-hidden
   >
     <div
-      flex="~ [1_0_0] col basis-[inherit]"
-      overflow-auto
-      p="5"
-      justify-start
-      items-center
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-p="5"
+      un-justify-start
+      un-items-center
     >
       <el-form
         ref="formRef"
@@ -61,7 +61,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span text="red">*</span>
+            <span un-text="red">*</span>
             <span>名称</span>
           </label>
           <el-form-item
@@ -70,7 +70,7 @@
             <el-input
               v-model="dialogModel.lbl"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入名称"
             ></el-input>
@@ -93,7 +93,7 @@
             <el-input
               v-model="dialogModel.rem"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入备注"
             ></el-input>
@@ -117,7 +117,7 @@
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择启用"
               filterable
@@ -173,10 +173,10 @@
       </el-form>
     </div>
     <div
-      p="y-2.5"
-      flex
-      justify-center
-      items-center
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
     >
       
       <el-button
@@ -201,8 +201,8 @@
       </el-button>
       
       <div
-        text="[12px] [gray]"
-        pos="absolute right-2"
+        un-text="[12px] [gray]"
+        un-pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
           <el-button

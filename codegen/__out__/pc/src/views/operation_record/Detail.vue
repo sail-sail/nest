@@ -31,11 +31,11 @@
     overflow-hidden
   >
     <div
-      flex="~ [1_0_0] col basis-[inherit]"
-      overflow-auto
-      p="5"
-      justify-start
-      items-center
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-p="5"
+      un-justify-start
+      un-items-center
     >
       <el-form
         ref="formRef"
@@ -69,7 +69,7 @@
             <el-input
               v-model="dialogModel.mod"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入模块"
             ></el-input>
@@ -92,7 +92,7 @@
             <el-input
               v-model="dialogModel.mod_lbl"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入模块名称"
             ></el-input>
@@ -115,7 +115,7 @@
             <el-input
               v-model="dialogModel.method"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入方法"
             ></el-input>
@@ -138,7 +138,7 @@
             <el-input
               v-model="dialogModel.method_lbl"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入方法名称"
             ></el-input>
@@ -161,7 +161,7 @@
             <el-input
               v-model="dialogModel.lbl"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入操作"
             ></el-input>
@@ -184,7 +184,7 @@
             <el-input
               v-model="dialogModel.rem"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入备注"
             ></el-input>
@@ -194,10 +194,10 @@
       </el-form>
     </div>
     <div
-      p="y-2.5"
-      flex
-      justify-center
-      items-center
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
     >
       
       <el-button
@@ -222,8 +222,8 @@
       </el-button>
       
       <div
-        text="[12px] [gray]"
-        pos="absolute right-2"
+        un-text="[12px] [gray]"
+        un-pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
           <el-button

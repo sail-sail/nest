@@ -1,15 +1,15 @@
 <template>
 <div
-  flex="~ [1_0_0] col"
-  overflow-hidden
-  w="full"
-  h="full"
-  p="l-[6px] r-[6px] t-[6px]"
-  box="border"
+  un-flex="~ [1_0_0] col"
+  un-overflow-hidden
+  un-w="full"
+  un-h="full"
+  un-p="l-[6px] r-[6px] t-[6px]"
+  un-box="border"
 >
   <div
-    m="x-1.5"
-    overflow-auto
+    un-m="x-1.5"
+    un-overflow-auto
   >
     <el-form
       ref="searchFormRef"
@@ -17,20 +17,20 @@
       :model="search"
       inline-message
       
-      grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
-      justify-items-end
-      items-center
-      gap="y-[6px]"
+      un-grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
+      un-justify-items-end
+      un-items-center
+      un-gap="y-[6px]"
       
       @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.mod_lblLike == null && builtInSearch?.mod_lbl == null">
         <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
+          un-m="r-[3px] l-[6px]"
+          un-text-gray
+          un-whitespace-nowrap
+          un-overflow-hidden
           class="after:content-[:]"
         >
           模块名称
@@ -39,7 +39,7 @@
           <el-input
             v-model="search.mod_lblLike"
             
-            w="full"
+            un-w="full"
             
             placeholder="请输入模块名称"
             clearable
@@ -50,10 +50,10 @@
       
       <template v-if="builtInSearch?.method_lblLike == null && builtInSearch?.method_lbl == null">
         <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
+          un-m="r-[3px] l-[6px]"
+          un-text-gray
+          un-whitespace-nowrap
+          un-overflow-hidden
           class="after:content-[:]"
         >
           方法名称
@@ -62,7 +62,7 @@
           <el-input
             v-model="search.method_lblLike"
             
-            w="full"
+            un-w="full"
             
             placeholder="请输入方法名称"
             clearable
@@ -73,10 +73,10 @@
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
         <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
+          un-m="r-[3px] l-[6px]"
+          un-text-gray
+          un-whitespace-nowrap
+          un-overflow-hidden
           class="after:content-[:]"
         >
           操作
@@ -85,7 +85,7 @@
           <el-input
             v-model="search.lblLike"
             
-            w="full"
+            un-w="full"
             
             placeholder="请输入操作"
             clearable
@@ -96,7 +96,7 @@
       
       <template v-if="builtInSearch?.is_deleted == null">
         <div
-          min="w-[20px]"
+          un-min="w-[20px]"
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
@@ -125,8 +125,8 @@
           <span>已选择</span>
           <span>(</span>
           <span
-            m="x-1"
-            text="green"
+            un-m="x-1"
+            un-text="green"
             :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
           >
             {{ selectedIds.length }}
@@ -136,10 +136,10 @@
         <el-icon
           v-show="selectedIds.length > 0"
           title="清空已选择"
-          cursor="pointer"
           
-          m="x-3"
-          text="hover:[red]"
+          un-cursor="pointer"
+          un-m="x-3"
+          un-text="hover:[red]"
           
           @click="clearSelect"
         >
@@ -148,12 +148,12 @@
       </el-form-item>
       
       <div
-        min="w-[20px]"
+        un-min="w-[20px]"
       ></div>
       <el-form-item
-        self-start
-        flex="~ nowrap"
-        min="w-[170px]"
+        un-self-start
+        un-flex="~ nowrap"
+        un-min="w-[170px]"
       >
         
         <el-button
@@ -182,8 +182,8 @@
     </el-form>
   </div>
   <div
-    m="x-1.5 t-1.5"
-    flex
+    un-m="x-1.5 t-1.5"
+    un-flex
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -254,8 +254,8 @@
     </el-button>
     
     <div
-      flex="[1_0_0]"
-      overflow-hidden
+      un-flex="[1_0_0]"
+      un-overflow-hidden
     >
     </div>
     
@@ -269,9 +269,9 @@
     
   </div>
   <div
-    flex="~ [1_0_0] col"
-    overflow-hidden
-    m="t-1.5"
+    un-flex="~ [1_0_0] col"
+    un-overflow-hidden
+    un-m="t-1.5"
   >
     <div
       flex="~ [1_0_0] col"
@@ -394,9 +394,9 @@
       </el-table>
     </div>
     <div
-      justify="end"
-      p="[2px_5px_2px_0px]"
-      flex
+      un-justify="end"
+      un-p="[2px_5px_2px_0px]"
+      un-flex
     >
       <el-pagination
         background

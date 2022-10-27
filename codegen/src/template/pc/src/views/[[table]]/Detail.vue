@@ -54,11 +54,11 @@ for (let i = 0; i < columns.length; i++) {
     overflow-hidden
   >
     <div
-      flex="~ [1_0_0] col basis-[inherit]"
-      overflow-auto
-      p="5"
-      justify-start
-      items-center
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-p="5"
+      un-justify-start
+      un-items-center
     >
       <el-form
         ref="formRef"
@@ -130,7 +130,7 @@ for (let i = 0; i < columns.length; i++) {
             whitespace-nowrap
             class="after:content-[:]"
           ><# if (require) { #>
-            <span text="red">*</span><#
+            <span un-text="red">*</span><#
             }
             #>
             <span><#=column_comment#></span>
@@ -201,7 +201,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择<#=column_comment#>"
               filterable
@@ -231,7 +231,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
-              w="full"
+              un-w="full"
               <#
                 if (data_type === "datetime") {
               #>
@@ -252,7 +252,7 @@ for (let i = 0; i < columns.length; i++) {
             <el-checkbox
               :set="0"
               
-              w="full"
+              un-w="full"
               
               v-model="dialogModel.<#=column_name#>"
               :false-label="0"
@@ -266,7 +266,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
-              w="full"
+              un-w="full"
               
               :precision="0"
               :step="1"
@@ -292,7 +292,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               
-              w="full"
+              un-w="full"
               
               :max="<#=max#>"<#
                 if (min) {
@@ -309,7 +309,7 @@ for (let i = 0; i < columns.length; i++) {
             <el-input
               v-model="dialogModel.<#=column_name#>"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入<#=column_comment#>"
             ></el-input><#
@@ -336,10 +336,10 @@ for (let i = 0; i < columns.length; i++) {
       </el-form>
     </div>
     <div
-      p="y-2.5"
-      flex
-      justify-center
-      items-center
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
     >
       
       <el-button
@@ -364,8 +364,8 @@ for (let i = 0; i < columns.length; i++) {
       </el-button>
       
       <div
-        text="[12px] [gray]"
-        pos="absolute right-2"
+        un-text="[12px] [gray]"
+        un-pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
           <el-button

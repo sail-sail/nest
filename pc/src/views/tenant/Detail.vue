@@ -31,11 +31,11 @@
     overflow-hidden
   >
     <div
-      flex="~ [1_0_0] col basis-[inherit]"
-      overflow-auto
-      p="5"
-      justify-start
-      items-center
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-p="5"
+      un-justify-start
+      un-items-center
     >
       <el-form
         ref="formRef"
@@ -61,7 +61,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span text="red">*</span>
+            <span un-text="red">*</span>
             <span>名称</span>
           </label>
           <el-form-item
@@ -70,7 +70,7 @@
             <el-input
               v-model="dialogModel.lbl"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入名称"
             ></el-input>
@@ -93,7 +93,7 @@
             <el-input
               v-model="dialogModel.host"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入域名绑定"
             ></el-input>
@@ -117,7 +117,7 @@
               :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
               v-model="dialogModel.expiration"
               
-              w="full"
+              un-w="full"
               
               type="date"
               format="YYYY-MM-DD"
@@ -144,7 +144,7 @@
               :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
               v-model="dialogModel.max_usr_num"
               
-              w="full"
+              un-w="full"
               
               :precision="0"
               :step="1"
@@ -172,7 +172,7 @@
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择启用"
               filterable
@@ -242,7 +242,7 @@
               :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
               v-model="dialogModel.order_by"
               
-              w="full"
+              un-w="full"
               
               :precision="0"
               :step="1"
@@ -269,7 +269,7 @@
             <el-input
               v-model="dialogModel.rem"
               
-              w="full"
+              un-w="full"
               
               placeholder="请输入备注"
             ></el-input>
@@ -279,10 +279,10 @@
       </el-form>
     </div>
     <div
-      p="y-2.5"
-      flex
-      justify-center
-      items-center
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
     >
       
       <el-button
@@ -307,8 +307,8 @@
       </el-button>
       
       <div
-        text="[12px] [gray]"
-        pos="absolute right-2"
+        un-text="[12px] [gray]"
+        un-pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
           <el-button

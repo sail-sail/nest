@@ -30,22 +30,22 @@ const foreignTabs = column?.foreignTabs || [ ];
     </div>
   </template>
   <div
-    flex="~ [1_0_0] col basis-[inherit]"
-    overflow-hidden
+    un-flex="~ [1_0_0] col basis-[inherit]"
+    un-overflow-hidden
   >
     <div
-      flex="~ [1_0_0] col basis-[inherit]"
-      overflow-auto
-      p="5"
-      justify-start
-      items-center
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-p="5"
+      un-justify-start
+      un-items-center
     >
       <el-tabs
         v-model="tabName"
         
         class="el-flex-tabs"
-        flex="~ [1_0_0] col"
-        w="full"
+        un-flex="~ [1_0_0] col"
+        un-w="full"
       ><#
       for (let im = 0; im < foreignTabs.length; im++) {
         const item = foreignTabs[im];
@@ -71,10 +71,10 @@ const foreignTabs = column?.foreignTabs || [ ];
       </el-tabs>
     </div>
     <div
-      p="y-2.5"
-      flex
-      justify-center
-      items-center
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
     >
       
       <el-button
