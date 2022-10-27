@@ -130,7 +130,7 @@ for (let i = 0; i < columns.length; i++) {
             whitespace-nowrap
             class="after:content-[:]"
           ><# if (require) { #>
-            <span style="color: red;">*</span><#
+            <span text="red">*</span><#
             }
             #>
             <span><#=column_comment#></span>

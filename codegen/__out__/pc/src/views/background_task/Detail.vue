@@ -61,7 +61,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span style="color: red;">*</span>
+            <span text="red">*</span>
             <span>名称</span>
           </label>
           <el-form-item
@@ -85,7 +85,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span style="color: red;">*</span>
+            <span text="red">*</span>
             <span>状态</span>
           </label>
           <el-form-item
@@ -131,7 +131,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span style="color: red;">*</span>
+            <span text="red">*</span>
             <span>类型</span>
           </label>
           <el-form-item

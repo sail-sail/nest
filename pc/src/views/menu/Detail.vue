@@ -127,7 +127,7 @@
             whitespace-nowrap
             class="after:content-[:]"
           >
-            <span style="color: red;">*</span>
+            <span text="red">*</span>
             <span>名称</span>
           </label>
           <el-form-item
