@@ -129,7 +129,7 @@
         <iframe
           v-if="iframeShoweds[i]"
           :ref="(el) => { if (el) iframeRefs[i] = el }"
-          :style="{ display: i === nowIndex ? (backgroundColor || 'none') : 'none' }"
+          :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
           class="iframe"
           :src="url"
           frameborder="0"
@@ -205,7 +205,9 @@
     ref="fileRef"
     type="file"
     :accept="dialogModel.accept"
-    style="display: none;"
+    
+    un-display-none
+    
     @change="inputChg"
   />
 </el-dialog>
