@@ -55,7 +55,7 @@ const foreignTabs = column?.foreignTabs || [ ];
         
         <el-tab-pane
           lazy
-          :label="'<#=item.label#>' + (<#=itemTable#>Total != null ? ` (${ <#=itemTable#>Total })` : '')"
+          :label="'<#=item.label#>' + (<#=itemTable#>Total ? ` (${ <#=itemTable#>Total })` : '')"
           name="<#=item.label#>"
         >
           <<#=itemTableUp#>List
