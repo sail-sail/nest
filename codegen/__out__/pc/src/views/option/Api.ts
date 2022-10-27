@@ -19,6 +19,9 @@ import {
   type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
 
+import {
+} from "#/types";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -33,7 +36,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllOption: Query["findAllOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: OptionSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOption(search: $search, page: $page, sort: $sort) {
@@ -53,7 +58,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllOption"] = data?.findAllOption || [ ];
+  const result = data.findAllOption;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -70,7 +75,9 @@ export async function findCount(
   search?: OptionSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountOption: Query["findCountOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: OptionSearch) {
         findCountOption(search: $search)
@@ -80,7 +87,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountOption"] = data?.findCountOption || 0;
+  const result = data.findCountOption;
   return result;
 }
 
@@ -94,7 +101,9 @@ export async function create(
   model: OptionInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    createOption: Mutation["createOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($model: OptionInput!) {
         createOption(model: $model)
@@ -104,7 +113,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Mutation["createOption"] = data?.createOption;
+  const result = data.createOption;
   return result;
 }
 
@@ -120,7 +129,9 @@ export async function updateById(
   model: OptionInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    updateByIdOption: Mutation["updateByIdOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: OptionInput!) {
         updateByIdOption(id: $id, model: $model)
@@ -131,7 +142,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Mutation["updateByIdOption"] = data?.updateByIdOption;
+  const result = data.updateByIdOption;
   return result;
 }
 
@@ -145,7 +156,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdOption: Query["findByIdOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdOption(id: $id) {
@@ -163,7 +176,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdOption"] = data?.findByIdOption;
+  const result = data.findByIdOption;
   return result;
 }
 
@@ -177,7 +190,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsOption: Mutation["deleteByIdsOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsOption(ids: $ids)
@@ -187,7 +202,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsOption"] = data?.deleteByIdsOption;
+  const result = data.deleteByIdsOption;
   return result;
 }
 
@@ -201,7 +216,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsOption: Mutation["revertByIdsOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsOption(ids: $ids)
@@ -211,7 +228,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsOption"] = data?.revertByIdsOption;
+  const result = data.revertByIdsOption;
   return result;
 }
 
@@ -225,7 +242,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsOption: Mutation["forceDeleteByIdsOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsOption(ids: $ids)
@@ -235,7 +254,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsOption"] = data?.forceDeleteByIdsOption;
+  const result = data.forceDeleteByIdsOption;
   return result;
 }
 
@@ -250,7 +269,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelOption: Query["exportExcelOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: OptionSearch, $sort: [SortInput]) {
         exportExcelOption(search: $search, sort: $sort)
@@ -261,7 +282,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelOption"] = data?.exportExcelOption || "";
+  const result = data.exportExcelOption;
   return result;
 }
 
@@ -277,7 +298,9 @@ export async function importFile(
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const data = await gqlQuery({
+  const data: {
+    importFileOption: Mutation["importFileOption"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileOption(id: $id)
@@ -287,6 +310,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Mutation["importFileOption"] = data?.importFileOption;
+  const result = data.importFileOption;
   return result;
 }

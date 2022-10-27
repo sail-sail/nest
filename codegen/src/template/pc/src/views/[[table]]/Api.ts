@@ -28,7 +28,9 @@ import {
 
 import {
   type Sort,
-} from "element-plus/lib/components/table/src/table/defaults";<#
+} from "element-plus/lib/components/table/src/table/defaults";
+
+import {<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -48,12 +50,10 @@ for (let i = 0; i < columns.length; i++) {
   }
   importForeignTables.push(Foreign_Table_Up);
 #>
-
-import {
-  type <#=Foreign_Table_Up#>Search,
-} from "#/types";<#
+  type <#=Foreign_Table_Up#>Search,<#
 }
 #>
+} from "#/types";
 
 /**
  * 根据搜索条件查找数据
@@ -69,7 +69,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAll<#=tableUp#>: Query["findAll<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
@@ -109,7 +111,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAll<#=tableUp#>"] = data?.findAll<#=tableUp#> || [ ];
+  const result = data.findAll<#=tableUp#>;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];<#
   for (let i = 0; i < columns.length; i++) {
@@ -145,7 +147,9 @@ export async function findCount(
   search?: <#=Table_Up#>Search,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCount<#=tableUp#>: Query["findCount<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
         findCount<#=tableUp#>(search: $search)
@@ -155,7 +159,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCount<#=tableUp#>"] = data?.findCount<#=tableUp#> || 0;
+  const result = data.findCount<#=tableUp#>;
   return result;
 }<#
 if (hasSummary) {
@@ -170,7 +174,9 @@ export async function findSummary(
   search?: <#=Table_Up#>Search,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findSummary<#=tableUp#>: Query["findSummary<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
         findSummary<#=tableUp#>(search: $search) {<#
@@ -195,7 +201,7 @@ export async function findSummary(
       search,
     },
   }, opt);
-  const result: Query["findSummary<#=tableUp#>"] = data?.findSummary<#=tableUp#> || { };
+  const result = data.findSummary<#=tableUp#>;
   return result;
 }<#
 }
@@ -213,7 +219,9 @@ export async function create(
   model: <#=Table_Up#>Input,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    create<#=tableUp#>: Mutation["create<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($model: <#=Table_Up#>Input!) {
         create<#=tableUp#>(model: $model)
@@ -223,7 +231,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Mutation["create<#=tableUp#>"] = data?.create<#=tableUp#>;
+  const result = data.create<#=tableUp#>;
   return result;
 }<#
 }
@@ -243,7 +251,9 @@ export async function updateById(
   model: <#=Table_Up#>Input,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    updateById<#=tableUp#>: Mutation["updateById<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: <#=Table_Up#>Input!) {
         updateById<#=tableUp#>(id: $id, model: $model)
@@ -254,7 +264,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Mutation["updateById<#=tableUp#>"] = data?.updateById<#=tableUp#>;
+  const result = data.updateById<#=tableUp#>;
   return result;
 }<#
 }
@@ -270,7 +280,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findById<#=tableUp#>: Query["findById<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findById<#=tableUp#>(id: $id) {<#
@@ -308,7 +320,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findById<#=tableUp#>"] = data?.findById<#=tableUp#>;<#
+  const result = data.findById<#=tableUp#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -338,7 +350,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIds<#=tableUp#>: Mutation["deleteByIds<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIds<#=tableUp#>(ids: $ids)
@@ -348,7 +362,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIds<#=tableUp#>"] = data?.deleteByIds<#=tableUp#>;
+  const result = data.deleteByIds<#=tableUp#>;
   return result;
 }<#
 }
@@ -368,7 +382,9 @@ export async function lockByIds(
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    lockByIds<#=tableUp#>: Mutation["lockByIds<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIds<#=tableUp#>(ids: $ids, is_locked: $is_locked)
@@ -379,7 +395,7 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result: Mutation["lockByIds<#=tableUp#>"] = data?.lockByIds<#=tableUp#>;
+  const result = data.lockByIds<#=tableUp#>;
   return result;
 }<#
 }
@@ -397,7 +413,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIds<#=tableUp#>: Mutation["revertByIds<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIds<#=tableUp#>(ids: $ids)
@@ -407,7 +425,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIds<#=tableUp#>"] = data?.revertByIds<#=tableUp#>;
+  const result = data.revertByIds<#=tableUp#>;
   return result;
 }
 
@@ -421,7 +439,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIds<#=tableUp#>: Mutation["forceDeleteByIds<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIds<#=tableUp#>(ids: $ids)
@@ -431,7 +451,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIds<#=tableUp#>"] = data?.forceDeleteByIds<#=tableUp#>;
+  const result = data.forceDeleteByIds<#=tableUp#>;
   return result;
 }<#
 }
@@ -460,7 +480,9 @@ export async function findAll<#=foreignTableUp#>(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAll<#=foreignTableUp#>: Query["findAll<#=foreignTableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
@@ -475,7 +497,7 @@ export async function findAll<#=foreignTableUp#>(
       sort,
     },
   }, opt);
-  const result: Query["findAll<#=foreignTableUp#>"] = data?.findAll<#=foreignTableUp#> || [ ];
+  const result = data.findAll<#=foreignTableUp#>;
   return result;
 }<#
 }
@@ -492,7 +514,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcel<#=tableUp#>: Query["exportExcel<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
         exportExcel<#=tableUp#>(search: $search, sort: $sort)
@@ -503,7 +527,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcel<#=tableUp#>"] = data?.exportExcel<#=tableUp#> || "";
+  const result = data.exportExcel<#=tableUp#>;
   return result;
 }<#
 if (opts.noAdd !== true && opts.noEdit !== true) {
@@ -521,7 +545,9 @@ export async function importFile(
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const data = await gqlQuery({
+  const data: {
+    importFile<#=tableUp#>: Mutation["importFile<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFile<#=tableUp#>(id: $id)
@@ -531,7 +557,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Mutation["importFile<#=tableUp#>"] = data?.importFile<#=tableUp#>;
+  const result = data.importFile<#=tableUp#>;
   return result;
 }<#
 }
@@ -547,14 +573,16 @@ if (hasOrderBy) {
 export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findLastOrderBy<#=tableUp#>: Query["findLastOrderBy<#=tableUp#>"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query {
         findLastOrderBy<#=tableUp#>
       }
     `,
   }, opt);
-  const result: Query["findLastOrderBy<#=tableUp#>"] = data?.findLastOrderBy<#=tableUp#> || 0;
+  const result = data.findLastOrderBy<#=tableUp#>;
   return result;
 }<#
 }

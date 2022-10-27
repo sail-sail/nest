@@ -19,6 +19,9 @@ import {
   type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
 
+import {
+} from "#/types";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -33,7 +36,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllMenu: Query["findAllMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -58,7 +63,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
+  const result = data.findAllMenu;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
@@ -76,7 +81,9 @@ export async function findCount(
   search?: MenuSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountMenu: Query["findCountMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: MenuSearch) {
         findCountMenu(search: $search)
@@ -86,7 +93,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountMenu"] = data?.findCountMenu || 0;
+  const result = data.findCountMenu;
   return result;
 }
 
@@ -100,7 +107,9 @@ export async function create(
   model: MenuInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    createMenu: Mutation["createMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($model: MenuInput!) {
         createMenu(model: $model)
@@ -110,7 +119,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Mutation["createMenu"] = data?.createMenu;
+  const result = data.createMenu;
   return result;
 }
 
@@ -126,7 +135,9 @@ export async function updateById(
   model: MenuInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    updateByIdMenu: Mutation["updateByIdMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: MenuInput!) {
         updateByIdMenu(id: $id, model: $model)
@@ -137,7 +148,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Mutation["updateByIdMenu"] = data?.updateByIdMenu;
+  const result = data.updateByIdMenu;
   return result;
 }
 
@@ -151,7 +162,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdMenu: Query["findByIdMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdMenu(id: $id) {
@@ -174,7 +187,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdMenu"] = data?.findByIdMenu;
+  const result = data.findByIdMenu;
   if (result?.route_query) {
     result.route_query = JSON.stringify(result.route_query);
   }
@@ -191,7 +204,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsMenu: Mutation["deleteByIdsMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsMenu(ids: $ids)
@@ -201,7 +216,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsMenu"] = data?.deleteByIdsMenu;
+  const result = data.deleteByIdsMenu;
   return result;
 }
 
@@ -215,7 +230,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsMenu: Mutation["revertByIdsMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsMenu(ids: $ids)
@@ -225,7 +242,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsMenu"] = data?.revertByIdsMenu;
+  const result = data.revertByIdsMenu;
   return result;
 }
 
@@ -239,7 +256,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsMenu: Mutation["forceDeleteByIdsMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsMenu(ids: $ids)
@@ -249,7 +268,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsMenu"] = data?.forceDeleteByIdsMenu;
+  const result = data.forceDeleteByIdsMenu;
   return result;
 }
 
@@ -259,7 +278,9 @@ export async function findAllMenu(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllMenu: Query["findAllMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -274,7 +295,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
+  const result = data.findAllMenu;
   return result;
 }
 
@@ -289,7 +310,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelMenu: Query["exportExcelMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput]) {
         exportExcelMenu(search: $search, sort: $sort)
@@ -300,7 +323,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelMenu"] = data?.exportExcelMenu || "";
+  const result = data.exportExcelMenu;
   return result;
 }
 
@@ -316,7 +339,9 @@ export async function importFile(
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const data = await gqlQuery({
+  const data: {
+    importFileMenu: Mutation["importFileMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileMenu(id: $id)
@@ -326,7 +351,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Mutation["importFileMenu"] = data?.importFileMenu;
+  const result = data.importFileMenu;
   return result;
 }
 
@@ -338,13 +363,15 @@ export async function importFile(
 export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findLastOrderByMenu: Query["findLastOrderByMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query {
         findLastOrderByMenu
       }
     `,
   }, opt);
-  const result: Query["findLastOrderByMenu"] = data?.findLastOrderByMenu || 0;
+  const result = data.findLastOrderByMenu;
   return result;
 }

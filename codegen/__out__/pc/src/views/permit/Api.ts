@@ -37,7 +37,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllPermit: Query["findAllPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
@@ -55,7 +57,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllPermit"] = data?.findAllPermit || [ ];
+  const result = data.findAllPermit;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -72,7 +74,9 @@ export async function findCount(
   search?: PermitSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountPermit: Query["findCountPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: PermitSearch) {
         findCountPermit(search: $search)
@@ -82,7 +86,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountPermit"] = data?.findCountPermit || 0;
+  const result = data.findCountPermit;
   return result;
 }
 
@@ -96,7 +100,9 @@ export async function create(
   model: PermitInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    createPermit: Mutation["createPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($model: PermitInput!) {
         createPermit(model: $model)
@@ -106,7 +112,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Mutation["createPermit"] = data?.createPermit;
+  const result = data.createPermit;
   return result;
 }
 
@@ -122,7 +128,9 @@ export async function updateById(
   model: PermitInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    updateByIdPermit: Mutation["updateByIdPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: PermitInput!) {
         updateByIdPermit(id: $id, model: $model)
@@ -133,7 +141,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Mutation["updateByIdPermit"] = data?.updateByIdPermit;
+  const result = data.updateByIdPermit;
   return result;
 }
 
@@ -147,7 +155,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdPermit: Query["findByIdPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdPermit(id: $id) {
@@ -163,7 +173,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdPermit"] = data?.findByIdPermit;
+  const result = data.findByIdPermit;
   return result;
 }
 
@@ -177,7 +187,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsPermit: Mutation["deleteByIdsPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsPermit(ids: $ids)
@@ -187,7 +199,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsPermit"] = data?.deleteByIdsPermit;
+  const result = data.deleteByIdsPermit;
   return result;
 }
 
@@ -201,7 +213,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsPermit: Mutation["revertByIdsPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsPermit(ids: $ids)
@@ -211,7 +225,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsPermit"] = data?.revertByIdsPermit;
+  const result = data.revertByIdsPermit;
   return result;
 }
 
@@ -225,7 +239,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsPermit: Mutation["forceDeleteByIdsPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsPermit(ids: $ids)
@@ -235,7 +251,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsPermit"] = data?.forceDeleteByIdsPermit;
+  const result = data.forceDeleteByIdsPermit;
   return result;
 }
 
@@ -245,7 +261,9 @@ export async function findAllMenu(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllMenu: Query["findAllMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -260,7 +278,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
+  const result = data.findAllMenu;
   return result;
 }
 
@@ -275,7 +293,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelPermit: Query["exportExcelPermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: PermitSearch, $sort: [SortInput]) {
         exportExcelPermit(search: $search, sort: $sort)
@@ -286,7 +306,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelPermit"] = data?.exportExcelPermit || "";
+  const result = data.exportExcelPermit;
   return result;
 }
 
@@ -302,7 +322,9 @@ export async function importFile(
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const data = await gqlQuery({
+  const data: {
+    importFilePermit: Mutation["importFilePermit"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFilePermit(id: $id)
@@ -312,6 +334,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Mutation["importFilePermit"] = data?.importFilePermit;
+  const result = data.importFilePermit;
   return result;
 }

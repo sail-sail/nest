@@ -37,7 +37,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllOperation_record: Query["findAllOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOperation_record(search: $search, page: $page, sort: $sort) {
@@ -63,7 +65,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllOperation_record"] = data?.findAllOperation_record || [ ];
+  const result = data.findAllOperation_record;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -80,7 +82,9 @@ export async function findCount(
   search?: Operation_RecordSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountOperation_record: Query["findCountOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch) {
         findCountOperation_record(search: $search)
@@ -90,7 +94,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountOperation_record"] = data?.findCountOperation_record || 0;
+  const result = data.findCountOperation_record;
   return result;
 }
 
@@ -104,7 +108,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdOperation_record: Query["findByIdOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdOperation_record(id: $id) {
@@ -128,7 +134,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdOperation_record"] = data?.findByIdOperation_record;
+  const result = data.findByIdOperation_record;
   return result;
 }
 
@@ -142,7 +148,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsOperation_record: Mutation["deleteByIdsOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsOperation_record(ids: $ids)
@@ -152,7 +160,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsOperation_record"] = data?.deleteByIdsOperation_record;
+  const result = data.deleteByIdsOperation_record;
   return result;
 }
 
@@ -166,7 +174,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsOperation_record: Mutation["revertByIdsOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsOperation_record(ids: $ids)
@@ -176,7 +186,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsOperation_record"] = data?.revertByIdsOperation_record;
+  const result = data.revertByIdsOperation_record;
   return result;
 }
 
@@ -190,7 +200,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsOperation_record: Mutation["forceDeleteByIdsOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsOperation_record(ids: $ids)
@@ -200,7 +212,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsOperation_record"] = data?.forceDeleteByIdsOperation_record;
+  const result = data.forceDeleteByIdsOperation_record;
   return result;
 }
 
@@ -210,7 +222,9 @@ export async function findAllUsr(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
@@ -225,7 +239,7 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const result: Query["findAllUsr"] = data?.findAllUsr || [ ];
+  const result = data.findAllUsr;
   return result;
 }
 
@@ -240,7 +254,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelOperation_record: Query["exportExcelOperation_record"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch, $sort: [SortInput]) {
         exportExcelOperation_record(search: $search, sort: $sort)
@@ -251,6 +267,6 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelOperation_record"] = data?.exportExcelOperation_record || "";
+  const result = data.exportExcelOperation_record;
   return result;
 }

@@ -21,9 +21,6 @@ import {
 
 import {
   type DeptSearch,
-} from "#/types";
-
-import {
   type RoleSearch,
 } from "#/types";
 
@@ -41,7 +38,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
@@ -69,7 +68,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllUsr"] = data?.findAllUsr || [ ];
+  const result = data.findAllUsr;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -86,7 +85,9 @@ export async function findCount(
   search?: UsrSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountUsr: Query["findCountUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: UsrSearch) {
         findCountUsr(search: $search)
@@ -96,7 +97,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountUsr"] = data?.findCountUsr || 0;
+  const result = data.findCountUsr;
   return result;
 }
 
@@ -110,7 +111,9 @@ export async function create(
   model: UsrInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    createUsr: Mutation["createUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($model: UsrInput!) {
         createUsr(model: $model)
@@ -120,7 +123,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Mutation["createUsr"] = data?.createUsr;
+  const result = data.createUsr;
   return result;
 }
 
@@ -136,7 +139,9 @@ export async function updateById(
   model: UsrInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    updateByIdUsr: Mutation["updateByIdUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: UsrInput!) {
         updateByIdUsr(id: $id, model: $model)
@@ -147,7 +152,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Mutation["updateByIdUsr"] = data?.updateByIdUsr;
+  const result = data.updateByIdUsr;
   return result;
 }
 
@@ -161,7 +166,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdUsr: Query["findByIdUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdUsr(id: $id) {
@@ -187,7 +194,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdUsr"] = data?.findByIdUsr;
+  const result = data.findByIdUsr;
   return result;
 }
 
@@ -201,7 +208,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsUsr: Mutation["deleteByIdsUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsUsr(ids: $ids)
@@ -211,7 +220,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsUsr"] = data?.deleteByIdsUsr;
+  const result = data.deleteByIdsUsr;
   return result;
 }
 
@@ -227,7 +236,9 @@ export async function lockByIds(
   is_locked: 0 | 1,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    lockByIdsUsr: Mutation["lockByIdsUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIdsUsr(ids: $ids, is_locked: $is_locked)
@@ -238,7 +249,7 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result: Mutation["lockByIdsUsr"] = data?.lockByIdsUsr;
+  const result = data.lockByIdsUsr;
   return result;
 }
 
@@ -252,7 +263,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsUsr: Mutation["revertByIdsUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsUsr(ids: $ids)
@@ -262,7 +275,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsUsr"] = data?.revertByIdsUsr;
+  const result = data.revertByIdsUsr;
   return result;
 }
 
@@ -276,7 +289,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsUsr: Mutation["forceDeleteByIdsUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsUsr(ids: $ids)
@@ -286,7 +301,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsUsr"] = data?.forceDeleteByIdsUsr;
+  const result = data.forceDeleteByIdsUsr;
   return result;
 }
 
@@ -296,7 +311,9 @@ export async function findAllDept(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllDept: Query["findAllDept"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
@@ -311,7 +328,7 @@ export async function findAllDept(
       sort,
     },
   }, opt);
-  const result: Query["findAllDept"] = data?.findAllDept || [ ];
+  const result = data.findAllDept;
   return result;
 }
 
@@ -321,7 +338,9 @@ export async function findAllRole(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllRole: Query["findAllRole"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
@@ -336,7 +355,7 @@ export async function findAllRole(
       sort,
     },
   }, opt);
-  const result: Query["findAllRole"] = data?.findAllRole || [ ];
+  const result = data.findAllRole;
   return result;
 }
 
@@ -351,7 +370,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelUsr: Query["exportExcelUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: UsrSearch, $sort: [SortInput]) {
         exportExcelUsr(search: $search, sort: $sort)
@@ -362,7 +383,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelUsr"] = data?.exportExcelUsr || "";
+  const result = data.exportExcelUsr;
   return result;
 }
 
@@ -378,7 +399,9 @@ export async function importFile(
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const data = await gqlQuery({
+  const data: {
+    importFileUsr: Mutation["importFileUsr"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileUsr(id: $id)
@@ -388,6 +411,6 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Mutation["importFileUsr"] = data?.importFileUsr;
+  const result = data.importFileUsr;
   return result;
 }

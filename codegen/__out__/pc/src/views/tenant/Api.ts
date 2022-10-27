@@ -37,7 +37,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllTenant: Query["findAllTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: TenantSearch, $page: PageInput, $sort: [SortInput]) {
         findAllTenant(search: $search, page: $page, sort: $sort) {
@@ -61,7 +63,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllTenant"] = data?.findAllTenant || [ ];
+  const result = data.findAllTenant;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -78,7 +80,9 @@ export async function findCount(
   search?: TenantSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountTenant: Query["findCountTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: TenantSearch) {
         findCountTenant(search: $search)
@@ -88,7 +92,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountTenant"] = data?.findCountTenant || 0;
+  const result = data.findCountTenant;
   return result;
 }
 
@@ -102,7 +106,9 @@ export async function create(
   model: TenantInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    createTenant: Mutation["createTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($model: TenantInput!) {
         createTenant(model: $model)
@@ -112,7 +118,7 @@ export async function create(
       model,
     },
   }, opt);
-  const result: Mutation["createTenant"] = data?.createTenant;
+  const result = data.createTenant;
   return result;
 }
 
@@ -128,7 +134,9 @@ export async function updateById(
   model: TenantInput,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    updateByIdTenant: Mutation["updateByIdTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: TenantInput!) {
         updateByIdTenant(id: $id, model: $model)
@@ -139,7 +147,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result: Mutation["updateByIdTenant"] = data?.updateByIdTenant;
+  const result = data.updateByIdTenant;
   return result;
 }
 
@@ -153,7 +161,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdTenant: Query["findByIdTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdTenant(id: $id) {
@@ -175,7 +185,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdTenant"] = data?.findByIdTenant;
+  const result = data.findByIdTenant;
   return result;
 }
 
@@ -189,7 +199,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsTenant: Mutation["deleteByIdsTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsTenant(ids: $ids)
@@ -199,7 +211,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsTenant"] = data?.deleteByIdsTenant;
+  const result = data.deleteByIdsTenant;
   return result;
 }
 
@@ -213,7 +225,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsTenant: Mutation["revertByIdsTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsTenant(ids: $ids)
@@ -223,7 +237,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsTenant"] = data?.revertByIdsTenant;
+  const result = data.revertByIdsTenant;
   return result;
 }
 
@@ -237,7 +251,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsTenant: Mutation["forceDeleteByIdsTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsTenant(ids: $ids)
@@ -247,7 +263,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsTenant"] = data?.forceDeleteByIdsTenant;
+  const result = data.forceDeleteByIdsTenant;
   return result;
 }
 
@@ -257,7 +273,9 @@ export async function findAllMenu(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllMenu: Query["findAllMenu"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -272,7 +290,7 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result: Query["findAllMenu"] = data?.findAllMenu || [ ];
+  const result = data.findAllMenu;
   return result;
 }
 
@@ -287,7 +305,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelTenant: Query["exportExcelTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: TenantSearch, $sort: [SortInput]) {
         exportExcelTenant(search: $search, sort: $sort)
@@ -298,7 +318,7 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelTenant"] = data?.exportExcelTenant || "";
+  const result = data.exportExcelTenant;
   return result;
 }
 
@@ -314,7 +334,9 @@ export async function importFile(
   if (!file) return;
   const id = await uploadFile(file, undefined, { type: "tmpfile" });
   if (!id) return;
-  const data = await gqlQuery({
+  const data: {
+    importFileTenant: Mutation["importFileTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileTenant(id: $id)
@@ -324,7 +346,7 @@ export async function importFile(
       id,
     },
   }, opt);
-  const result: Mutation["importFileTenant"] = data?.importFileTenant;
+  const result = data.importFileTenant;
   return result;
 }
 
@@ -336,13 +358,15 @@ export async function importFile(
 export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findLastOrderByTenant: Query["findLastOrderByTenant"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query {
         findLastOrderByTenant
       }
     `,
   }, opt);
-  const result: Query["findLastOrderByTenant"] = data?.findLastOrderByTenant || 0;
+  const result = data.findLastOrderByTenant;
   return result;
 }

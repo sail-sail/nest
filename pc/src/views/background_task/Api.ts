@@ -19,6 +19,9 @@ import {
   type Sort,
 } from "element-plus/lib/components/table/src/table/defaults";
 
+import {
+} from "#/types";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -33,7 +36,9 @@ export async function findAll(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findAllBackground_task: Query["findAllBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
@@ -57,7 +62,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result: Query["findAllBackground_task"] = data?.findAllBackground_task || [ ];
+  const result = data.findAllBackground_task;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -74,7 +79,9 @@ export async function findCount(
   search?: Background_TaskSearch,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findCountBackground_task: Query["findCountBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: Background_TaskSearch) {
         findCountBackground_task(search: $search)
@@ -84,7 +91,7 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result: Query["findCountBackground_task"] = data?.findCountBackground_task || 0;
+  const result = data.findCountBackground_task;
   return result;
 }
 
@@ -98,7 +105,9 @@ export async function findById(
   id: string,
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    findByIdBackground_task: Query["findByIdBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdBackground_task(id: $id) {
@@ -120,7 +129,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result: Query["findByIdBackground_task"] = data?.findByIdBackground_task;
+  const result = data.findByIdBackground_task;
   return result;
 }
 
@@ -134,7 +143,9 @@ export async function deleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    deleteByIdsBackground_task: Mutation["deleteByIdsBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsBackground_task(ids: $ids)
@@ -144,7 +155,7 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["deleteByIdsBackground_task"] = data?.deleteByIdsBackground_task;
+  const result = data.deleteByIdsBackground_task;
   return result;
 }
 
@@ -158,7 +169,9 @@ export async function revertByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    revertByIdsBackground_task: Mutation["revertByIdsBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsBackground_task(ids: $ids)
@@ -168,7 +181,7 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["revertByIdsBackground_task"] = data?.revertByIdsBackground_task;
+  const result = data.revertByIdsBackground_task;
   return result;
 }
 
@@ -182,7 +195,9 @@ export async function forceDeleteByIds(
   ids: string[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    forceDeleteByIdsBackground_task: Mutation["forceDeleteByIdsBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsBackground_task(ids: $ids)
@@ -192,7 +207,7 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result: Mutation["forceDeleteByIdsBackground_task"] = data?.forceDeleteByIdsBackground_task;
+  const result = data.forceDeleteByIdsBackground_task;
   return result;
 }
 
@@ -207,7 +222,9 @@ export async function exportExcel(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data = await gqlQuery({
+  const data: {
+    exportExcelBackground_task: Query["exportExcelBackground_task"];
+  } = await gqlQuery({
     query: /* GraphQL */ `
       query($search: Background_TaskSearch, $sort: [SortInput]) {
         exportExcelBackground_task(search: $search, sort: $sort)
@@ -218,6 +235,6 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result: Query["exportExcelBackground_task"] = data?.exportExcelBackground_task || "";
+  const result = data.exportExcelBackground_task;
   return result;
 }
