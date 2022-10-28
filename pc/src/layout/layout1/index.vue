@@ -108,11 +108,11 @@
                 
                 <el-dropdown-item @click="toggleDark(!isDark)">
                   <template v-if="!isDark">
-                    <i i="tabler-moon"></i>
+                    <i un-i="tabler-moon"></i>
                     <span>黑暗模式</span>
                   </template>
                   <template v-else>
-                    <i i="tabler-sun"></i>
+                    <i un-i="tabler-sun"></i>
                     <span>明亮模式</span>
                   </template>
                 </el-dropdown-item>
