@@ -12,18 +12,19 @@
     </template>
     <template v-else>
       <div
-        flex="~ [1_0_0] col"
-        overflow="hidden"
-        justify="center"
+        un-flex="~ [1_0_0] col"
+        un-overflow="hidden"
+        un-justify="center"
       >
         <el-empty description="页面不存在!">
           <el-button
-            w="[200px]"
+            un-w="[200px]"
+            
             size="large"
             type="danger"
             @click="goBack"
           >
-            <span text="[18px]">
+            <span un-text="[18px]">
               返 回
             </span>
           </el-button>

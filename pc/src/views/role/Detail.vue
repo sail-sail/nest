@@ -158,7 +158,7 @@
               collapse-tags
               collapse-tags-tooltip
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择菜单"
               :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"

@@ -1,9 +1,9 @@
 <template>
 <div
   class="top_wrap"
-  flex="~ [1_0_0] row"
-  overflow-hidden
-  box-border
+  un-flex="~ [1_0_0] row"
+  un-overflow-hidden
+  un-box-border
 >
 </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
 <el-menu
   
-  w="full"
+  un-w="full"
   
   :default-active="defaultActive"
   :collapse="menuStore.isCollapse"

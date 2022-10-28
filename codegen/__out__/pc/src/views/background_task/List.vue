@@ -330,8 +330,8 @@
     un-m="t-1.5"
   >
     <div
-      flex="~ [1_0_0] col"
-      overflow-hidden
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
     >
       <el-table
         ref="tableRef"

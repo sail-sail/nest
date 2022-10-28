@@ -70,7 +70,7 @@
               v-model="dialogModel.parent_id"
               :height="300"
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择父部门"
               :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"

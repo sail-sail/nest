@@ -6,6 +6,7 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 // import ViteRsw from "vite-plugin-rsw";
 // import Inspector from "vite-plugin-vue-inspector";
 import Unocss from "unocss/vite";
+
 import {
   presetAttributify,
   presetIcons,
@@ -13,6 +14,8 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from "unocss";
+
+import presetRemToPx from "@unocss/preset-rem-to-px";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -65,7 +68,11 @@ export default defineConfig({
     Unocss({
       presets: [
         presetUno(),
-        presetAttributify(),
+        presetAttributify({
+          prefix: "un-",
+          prefixedOnly: true,
+        }),
+        presetRemToPx(),
         presetIcons({
           warn: true,
         }),

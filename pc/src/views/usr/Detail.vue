@@ -141,7 +141,7 @@
               v-model="dialogModel.default_dept_id"
               :height="300"
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择默认部门"
               :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
@@ -235,7 +235,7 @@
               collapse-tags
               collapse-tags-tooltip
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择拥有部门"
               :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
@@ -268,7 +268,7 @@
               collapse-tags
               collapse-tags-tooltip
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择拥有角色"
               :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"

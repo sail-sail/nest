@@ -70,7 +70,7 @@
               v-model="dialogModel.menu_id"
               :height="300"
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择菜单"
               :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"

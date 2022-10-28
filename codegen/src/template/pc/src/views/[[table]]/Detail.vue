@@ -190,7 +190,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               
-              w="full"
+              un-w="full"
               
               placeholder="请选择<#=column_comment#>"
               :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
