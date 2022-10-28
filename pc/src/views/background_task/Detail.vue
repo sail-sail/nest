@@ -27,8 +27,8 @@
     </div>
   </template>
   <div
-    flex="~ [1_0_0] col basis-[inherit]"
-    overflow-hidden
+    un-flex="~ [1_0_0] col basis-[inherit]"
+    un-overflow-hidden
   >
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
@@ -41,16 +41,15 @@
         ref="formRef"
         size="default"
         
-        justify-end
-        items-end
-        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        gap="x-[16px] y-[16px]"
-        place-content-center
+        un-justify-end
+        un-items-end
+        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
+        un-gap="x-[16px] y-[16px]"
+        un-place-content-center
         
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter="saveClk"
       >
         
         <template v-if="builtInModel?.lbl == null">
@@ -311,22 +310,12 @@
         <span>取消</span>
       </el-button>
       
-      <el-button
-        plain
-        type="primary"
-        @click="saveClk"
-      >
-        <template #icon>
-          <CircleCheck />
-        </template>
-        <span>保存</span>
-      </el-button>
-      
       <div
         un-text="[12px] [gray]"
         un-pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
+          
           <el-button
             link
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
@@ -334,11 +323,13 @@
           >
             上一页
           </el-button>
+          
           <span>
             <span>
               {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
             </span>
           </span>
+          
           <el-button
             link
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
@@ -346,6 +337,7 @@
           >
             下一页
           </el-button>
+          
         </template>
         <span v-if="changedIds.length > 0">
           {{ changedIds.length }}
@@ -592,59 +584,6 @@ async function prevId() {
   await refreshEfc();
   emit("nextId", { dialogAction, id: dialogModel.id });
   return true;
-}
-
-/** 确定 */
-async function saveClk() {
-  if (!formRef) {
-    return;
-  }
-  try {
-    await formRef.validate();
-  } catch (err) {
-    return;
-  }
-  let id: string | undefined = undefined;
-  let msg = "";
-  if (dialogAction === "add" || dialogAction === "copy") {
-    id = await create({
-      ...dialogModel,
-      ...builtInModel,
-    });
-    dialogModel.id = id;
-    msg = `增加成功!`;
-  } else if (dialogAction === "edit") {
-    if (!dialogModel.id) {
-      return;
-    }
-    id = await updateById(
-      dialogModel.id,
-      {
-        ...dialogModel,
-        ...builtInModel,
-      },
-    );
-    msg = `修改成功!`;
-  }
-  if (id) {
-    if (dialogModel.id) {
-      changedIds.push(dialogModel.id);
-    }
-    ElMessage.success(msg);
-    const oldId = dialogModel.id;
-    let isNext = await nextId();
-    if (!isNext) {
-      isNext = await prevId();
-    }
-    if (!isNext) {
-      onCloseResolve({
-        type: "ok",
-        changedIds,
-      });
-    } else {
-      ids = ids.filter((id) => id !== oldId);
-    }
-  }
 }
 
 /** 点击取消关闭按钮 */

@@ -25,17 +25,51 @@
       </el-icon>
     </div>
   </template>
-  <div class="wrap_div">
-    <div class="content_div">
-      <div class="dialog_form2">
+  <div
+    un-flex="~ [1_0_0] col basis-[inherit]"
+    un-overflow-hidden
+  >
+    <div
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-justify-start
+      un-items-center
+      un-p="[40px]"
+    >
+      <div
+        un-justify-end
+        un-items-end
+        un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_330px)]"
+        un-gap="x-[16px] y-[16px]"
+        un-place-content-center
+      >
         
-        <label class="form_label">
+        <label
+          un-m="l-[3px]"
+          un-text-right
+          un-self-center
+          un-whitespace-nowrap
+          class="after:content-[:]"
+        >
           <span style="color: red;">*</span>
           <span>文件</span>
         </label>
-        <div class="form_input">
+        <div
+          un-w="full"
+          un-justify-start
+        >
           <div
-            class="upload_div"
+            un-w="full"
+            un-h="[220px]"
+            un-border="[#ccc] dashed"
+            un-rounded="[6px]"
+            un-cursor-pointer
+            un-flex="~"
+            un-justify-center
+            un-items-center
+            un-p="[10px]"
+            un-box-border
+            un-overflow-auto
+            
             @click="fileRef?.click()"
           >
             <template v-if="fileInfo.name">
@@ -52,10 +86,19 @@
         </div>
         
         <template v-if="false">
-          <label class="form_label">
+          <label
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
+            class="after:content-[:]"
+          >
             <span>模板下载</span>
           </label>
-          <div class="form_input">
+          <div
+            un-w="full"
+            un-justify-start
+          >
             <el-button
               plain
               type="primary"
@@ -67,7 +110,13 @@
         
       </div>
     </div>
-    <div class="toolbox_div">
+    <div
+      un-p="t-[10px] b-[20px]"
+      un-flex="~"
+      un-justify-center
+      un-items-center
+    >
+      
       <el-button
         @click="cancelClk"
       >
@@ -76,6 +125,7 @@
         </template>
         <span>取消</span>
       </el-button>
+      
       <el-button
         type="primary"
         :disabled="!fileInfo.name"
@@ -86,12 +136,15 @@
         </template>
         <span>确定导入</span>
       </el-button>
+      
     </div>
   </div>
   <input
     ref="fileRef"
     type="file"
-    style="display: none;"
+    
+    un-display-none
+    
     @change="inputChg"
   />
 </el-dialog>
@@ -214,65 +267,3 @@ async function beforeClose(done: (cancel: boolean) => void) {
 }
 defineExpose({ showDialog });
 </script>
-
-<style lang="scss" scoped>
-.wrap_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  flex-basis: inherit;
-}
-.content_div {
-  flex: 1 0 0;
-  overflow: auto;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  padding: 40px;
-  flex-basis: inherit;
-}
-.toolbox_div {
-  padding-top: 10px;
-  padding-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.dialog_form2 {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(min-content, max-content) 330px);
-  justify-items: end;
-  align-items: center;
-  grid-row-gap: 15px;
-  grid-column-gap: 5px;
-  grid-template-rows: auto;
-  place-content: center;
-}
-.form_label {
-  margin-left: 3px;
-  text-align: right;
-}
-.form_label::after {
-  content: ":";
-}
-.form_input {
-  width: 100%;
-  justify-self: start;
-}
-.upload_div {
-  width: 100%;
-  height: 220px;
-  border-style: dashed;
-  border-radius: 6px;
-  border-color: #ccc;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  box-sizing: border-box;
-  overflow: auto;
-}
-</style>

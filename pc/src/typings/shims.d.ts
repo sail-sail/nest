@@ -41,6 +41,7 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   textRight?: boolean;
   justifyItemsEnd?: boolean;
   set?: any;
+  style?: string;
 }
 
 declare module '@vue/runtime-dom' {

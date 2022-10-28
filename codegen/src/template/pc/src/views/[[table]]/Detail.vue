@@ -50,8 +50,8 @@ for (let i = 0; i < columns.length; i++) {
     </div>
   </template>
   <div
-    flex="~ [1_0_0] col basis-[inherit]"
-    overflow-hidden
+    un-flex="~ [1_0_0] col basis-[inherit]"
+    un-overflow-hidden
   >
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
@@ -66,24 +66,28 @@ for (let i = 0; i < columns.length; i++) {
         
         <#
           if (columnNum > 4) {
-        #>justify-end
-        items-end
-        grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        gap="x-[16px] y-[16px]"
-        place-content-center<#
+        #>un-justify-end
+        un-items-end
+        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
+        un-gap="x-[16px] y-[16px]"
+        un-place-content-center<#
           } else {
-        #>justify-end
-        items-end
-        grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
-        gap="x-[16px] y-[16px]"
-        place-content-center<#
+        #>un-justify-end
+        un-items-end
+        un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
+        un-gap="x-[16px] y-[16px]"
+        un-place-content-center<#
           }
         #>
         
         :model="dialogModel"
         :rules="form_rules"
-        :validate-on-rule-change="false"
-        @keyup.enter="saveClk"
+        :validate-on-rule-change="false"<#
+        if (opts.noAdd !== true || opts.noEdit !== true) {
+        #>
+        @keyup.enter="saveClk"<#
+        }
+        #>
       ><#
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
@@ -350,7 +354,9 @@ for (let i = 0; i < columns.length; i++) {
           <CircleClose />
         </template>
         <span>取消</span>
-      </el-button>
+      </el-button><#
+      if (opts.noAdd !== true || opts.noEdit !== true) {
+      #>
       
       <el-button
         plain
@@ -361,13 +367,16 @@ for (let i = 0; i < columns.length; i++) {
           <CircleCheck />
         </template>
         <span>保存</span>
-      </el-button>
+      </el-button><#
+      }
+      #>
       
       <div
         un-text="[12px] [gray]"
         un-pos="absolute right-2"
       >
         <template v-if="ids && ids.length > 0">
+          
           <el-button
             link
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
@@ -375,11 +384,13 @@ for (let i = 0; i < columns.length; i++) {
           >
             上一页
           </el-button>
+          
           <span>
             <span>
               {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
             </span>
           </span>
+          
           <el-button
             link
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
@@ -387,6 +398,7 @@ for (let i = 0; i < columns.length; i++) {
           >
             下一页
           </el-button>
+          
         </template>
         <span v-if="changedIds.length > 0">
           {{ changedIds.length }}
@@ -875,7 +887,9 @@ async function prevId() {
   await refreshEfc();
   emit("nextId", { dialogAction, id: dialogModel.id });
   return true;
-}
+}<#
+if (opts.noAdd !== true || opts.noEdit !== true) {
+#>
 
 /** 确定 */
 async function saveClk() {
@@ -888,7 +902,9 @@ async function saveClk() {
     return;
   }
   let id: string | undefined = undefined;
-  let msg = "";
+  let msg = "";<#
+  if (opts.noAdd !== true) {
+  #>
   if (dialogAction === "add" || dialogAction === "copy") {
     id = await create({
       ...dialogModel,
@@ -896,7 +912,15 @@ async function saveClk() {
     });
     dialogModel.id = id;
     msg = `增加成功!`;
-  } else if (dialogAction === "edit") {
+  }<#
+  }
+  #><#
+  if (opts.noAdd !== true && opts.noEdit !== true) {
+  #> else <#
+  }
+  #><#
+  if (opts.noEdit !== true) {
+  #>if (dialogAction === "edit") {
     if (!dialogModel.id) {
       return;
     }
@@ -908,7 +932,9 @@ async function saveClk() {
       },
     );
     msg = `修改成功!`;
+  }<#
   }
+  #>
   if (id) {
     if (dialogModel.id) {
       changedIds.push(dialogModel.id);
@@ -928,7 +954,9 @@ async function saveClk() {
       ids = ids.filter((id) => id !== oldId);
     }
   }
+}<#
 }
+#>
 
 /** 点击取消关闭按钮 */
 function cancelClk() {

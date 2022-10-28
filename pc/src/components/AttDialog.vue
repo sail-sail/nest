@@ -24,8 +24,16 @@
       </el-icon>
     </div>
   </template>
-  <div class="wrap_div">
-    <div class="toolbox_div">
+  <div
+    un-flex="~ [1_0_0] col basis-[inherit]"
+    un-overflow-hidden
+  >
+    <div
+      un-p="y-2.5"
+      un-flex
+      un-justify-center
+      un-items-center
+    >
       
       <el-button
         v-if="!dialogModel.readonly && urlList.length > 0"
@@ -74,9 +82,10 @@
       <a
         v-if="urlList[nowIndex]"
         class="el-button"
-        style="text-decoration: none;"
         target="_blank"
         :href="urlList[nowIndex]"
+        
+        un-no-underline
       >
         网页中打开
       </a>
@@ -121,7 +130,14 @@
       </div>
       
     </div>
-    <div class="content_div">
+    <div
+      un-flex="~ [1_0_0] col basis-[inherit]"
+      un-overflow-auto
+      un-justify-start
+      un-items-center
+      un-p="5"
+      un-pos="relative"
+    >
       <template
         v-for="(url, i) in urlList"
         :key="url"
@@ -130,7 +146,11 @@
           v-if="iframeShoweds[i]"
           :ref="(el) => { if (el) iframeRefs[i] = el }"
           :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-          class="iframe"
+          
+          un-flex="~ [1_0_0]"
+          un-overflow-hidden
+          un-w="full"
+          
           :src="url"
           frameborder="0"
           @load="iframeLoad"
@@ -138,7 +158,11 @@
       </template>
       <div
         v-if="urlList.length === 0"
-        class="empty"
+        un-flex="~ [1_0_0]"
+        un-overflow-hidden
+        justify-center
+        items-center
+        un-text="gray [22px]"
       >
         
         <el-button
@@ -155,7 +179,11 @@
         
         <div
           v-else-if="!dialogModel.readonly"
-          class="empty"
+          un-flex="~ [1_0_0]"
+          un-overflow-hidden
+          justify-center
+          items-center
+          un-text="gray [22px]"
         >
           <span>(暂无附件)</span>
         </div>
@@ -163,16 +191,28 @@
       </div>
       <div
         v-if="iframeLoading"
-        class="loading_div"
+        un-flex="~ [1_0_0]"
+        un-overflow-hidden
+        un-justify-center
+        un-items-center
+        un-text="[18px]"
+        un-pos="absolute"
+        un-inset-0
+        un-bg="[#FFF]"
       >
         加载中, 请稍后....
       </div>
     </div>
     <div
       v-if="urlList.length > 1"
-      class="pagination_row"
+      un-p="b-[5px]"
+      un-flex="~"
+      un-justify-center
     >
-      <div class="pagination_div">
+      <div
+        un-flex="~"
+        un-items-center
+      >
         
         <el-button
           :disabled="nowIndex <= 0"
@@ -184,7 +224,12 @@
           </template>
         </el-button>
         
-        <span class="pagination_span">
+        <span
+          un-text="gray"
+          un-m="l-[10px] r-[10px]"
+          un-flex="~ col"
+          un-justify-center
+        >
           {{ nowIndex + 1 }} / {{ urlList.length }}
         </span>
         
@@ -599,83 +644,6 @@ function beforeClose(done: (cancel: boolean) => void) {
 
 defineExpose({ showDialog });
 </script>
-
-<style lang="scss" scoped>
-.wrap_div {
-  flex: 1 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  flex-basis: inherit;
-}
-.content_div {
-  flex: 1 0 0;
-  overflow: auto;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  flex-basis: inherit;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 5px;
-  position: relative;
-}
-.toolbox_div {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  display: flex;
-  align-items: center;
-}
-.pagination_row {
-  padding-bottom: 5px;
-  display: flex;
-  justify-content: center;
-}
-.pagination_div {
-  display: flex;
-  align-items: center;
-  // margin-right: 5px;
-}
-.pagination_span {
-  color: gray;
-  margin-left: 10px;
-  margin-right: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.iframe {
-  display: flex;
-  flex: 1 0 0;
-  overflow: hidden;
-  width: 100%;
-}
-.empty {
-  display: flex;
-  flex: 1 0 0;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  color: gray;
-  font-size: 22px;
-}
-.loading_div {
-  display: flex;
-  flex: 1 0 0;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  top: 0;
-  background-color: #FFF;
-}
-</style>
 
 <style lang="scss">
 .AttDialog {
