@@ -38,7 +38,10 @@ export default defineConfig({
      * although preset is not working for applet, but will generate useless css
      */
     presetApplet({ enable: !isH5 }),
-    presetAttributify(),
+    presetAttributify({
+      prefix: "un-",
+      prefixedOnly: true,
+    }),
     presetRemToRpx({ enable: !isH5 }),
   ],
   transformers: [
