@@ -44,7 +44,7 @@
         un-justify-end
         un-items-end
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-[16px] y-[16px]"
+        un-gap="x-2 y-4"
         un-place-content-center
         
         :model="dialogModel"
@@ -55,7 +55,7 @@
         
         <template v-if="builtInModel?.parent_id == null">
           <label
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -84,7 +84,7 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -108,7 +108,7 @@
         
         <template v-if="builtInModel?.order_by == null">
           <label
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -136,7 +136,7 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -173,7 +173,7 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap

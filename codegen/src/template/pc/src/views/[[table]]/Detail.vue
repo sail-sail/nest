@@ -69,13 +69,13 @@ for (let i = 0; i < columns.length; i++) {
         #>un-justify-end
         un-items-end
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-[16px] y-[16px]"
+        un-gap="x-2 y-4"
         un-place-content-center<#
           } else {
         #>un-justify-end
         un-items-end
         un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
-        un-gap="x-[16px] y-[16px]"
+        un-gap="x-2 y-4"
         un-place-content-center<#
           }
         #>
@@ -128,7 +128,7 @@ for (let i = 0; i < columns.length; i++) {
           #> v-if="<#=vIfStr#>"<#
           }
           #>
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
