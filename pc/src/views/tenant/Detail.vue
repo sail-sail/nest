@@ -55,10 +55,10 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span un-text="red">*</span>
@@ -79,10 +79,10 @@
         
         <template v-if="builtInModel?.host == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>域名绑定</span>
@@ -102,10 +102,10 @@
         
         <template v-if="builtInModel?.expiration == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>到期日</span>
@@ -129,10 +129,10 @@
         
         <template v-if="builtInModel?.max_usr_num == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>最大用户数</span>
@@ -157,10 +157,10 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>启用</span>
@@ -194,10 +194,10 @@
         
         <template v-if="builtInModel?.menu_ids == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>菜单</span>
@@ -227,10 +227,10 @@
         
         <template v-if="builtInModel?.order_by == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>排序</span>
@@ -255,10 +255,10 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>备注</span>

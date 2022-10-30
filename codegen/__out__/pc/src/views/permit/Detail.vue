@@ -55,10 +55,10 @@
         
         <template v-if="builtInModel?.menu_id == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>菜单</span>
@@ -84,10 +84,10 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span un-text="red">*</span>
@@ -108,10 +108,10 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>备注</span>

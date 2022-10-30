@@ -54,10 +54,10 @@
         
         <template v-if="builtInModel?.mod == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>模块</span>
@@ -77,10 +77,10 @@
         
         <template v-if="builtInModel?.mod_lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>模块名称</span>
@@ -100,10 +100,10 @@
         
         <template v-if="builtInModel?.method == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>方法</span>
@@ -123,10 +123,10 @@
         
         <template v-if="builtInModel?.method_lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>方法名称</span>
@@ -146,10 +146,10 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>操作</span>
@@ -169,10 +169,10 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>备注</span>

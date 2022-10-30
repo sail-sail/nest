@@ -55,10 +55,10 @@
         
         <template v-if="builtInModel?.type == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>类型</span>
@@ -92,10 +92,10 @@
         
         <template v-if="builtInModel?.menu_id == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>父菜单</span>
@@ -121,10 +121,10 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span un-text="red">*</span>
@@ -145,10 +145,10 @@
         
         <template v-if="builtInModel?.route_path == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>路由</span>
@@ -168,10 +168,10 @@
         
         <template v-if="builtInModel?.route_query == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>参数</span>
@@ -191,10 +191,10 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>启用</span>
@@ -228,10 +228,10 @@
         
         <template v-if="builtInModel?.order_by == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>排序</span>
@@ -256,10 +256,10 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>备注</span>

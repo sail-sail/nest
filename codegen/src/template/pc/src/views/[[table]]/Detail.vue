@@ -128,10 +128,10 @@ for (let i = 0; i < columns.length; i++) {
           #> v-if="<#=vIfStr#>"<#
           }
           #>
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           ><# if (require) { #>
             <span un-text="red">*</span><#

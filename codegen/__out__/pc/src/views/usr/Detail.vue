@@ -55,10 +55,10 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span un-text="red">*</span>
@@ -79,10 +79,10 @@
         
         <template v-if="builtInModel?.username == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span un-text="red">*</span>
@@ -103,10 +103,10 @@
         
         <template v-if="builtInModel?.password == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>密码</span>
@@ -126,10 +126,10 @@
         
         <template v-if="builtInModel?.default_dept_id == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>默认部门</span>
@@ -155,10 +155,10 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span un-text="red">*</span>
@@ -193,10 +193,10 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>备注</span>
@@ -216,10 +216,10 @@
         
         <template v-if="builtInModel?.dept_ids == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>拥有部门</span>
@@ -249,10 +249,10 @@
         
         <template v-if="builtInModel?.role_ids == null">
           <label
-            m="l-[3px]"
-            text-right
-            self-center
-            whitespace-nowrap
+            un-m="l-[3px]"
+            un-text-right
+            un-self-center
+            un-whitespace-nowrap
             class="after:content-[:]"
           >
             <span>拥有角色</span>
