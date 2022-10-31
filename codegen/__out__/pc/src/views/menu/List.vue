@@ -4,7 +4,7 @@
   un-overflow-hidden
   un-w="full"
   un-h="full"
-  un-p="l-[6px] r-[6px] t-[6px]"
+  un-p="l-1.5 r-1.5 t-1.5"
   un-box="border"
 >
   <div
