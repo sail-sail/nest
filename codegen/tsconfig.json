@@ -26,8 +26,9 @@
   ],
   "exclude": [
     "node_modules",
-    "__out__/**/*",
-    "src/template/**/*"
+    "__out__/**/*.*",
+    "src/template/**/*",
+    "src/**/[[table]].*.ts"
   ],
   "ts-node": {
     "transpileOnly": true,
