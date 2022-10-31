@@ -151,10 +151,9 @@
       </div>
     </div>
     <div
-      un-h="[3px]"
-      un-w="[full]"
+      un-h="0.5"
+      un-w="full"
       un-pos-relative
-      un-bg="[rgba(0,0,0,20%)]"
     >
       <div
         ref="tab_active_lineRef"
@@ -164,7 +163,7 @@
         un-bottom-0
         un-left="[23px]"
         un-bg="[var(--el-menu-active-color)]"
-        un-h="[3px]"
+        un-h="0.5"
         un-border-rounded
         un-transition="property-[width,left] duration-[300ms]"
         un-ease-in
