@@ -27,7 +27,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       un-grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
       un-justify-items-end
       un-items-center
-      un-gap="y-[6px]"
+      un-gap="x-1 y-2"
       
       @keyup.enter="searchClk"
     ><#
@@ -63,7 +63,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
@@ -97,10 +97,10 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
+          un-m="l-1"
+          un-text-gray
+          un-whitespace-nowrap
+          un-overflow-hidden
           class="after:content-[:]"
         >
           <#=column_comment#>
@@ -143,7 +143,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
@@ -174,7 +174,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
@@ -197,7 +197,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
@@ -221,7 +221,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden

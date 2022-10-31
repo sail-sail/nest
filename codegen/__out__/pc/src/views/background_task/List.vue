@@ -20,14 +20,14 @@
       un-grid="~ cols-[repeat(4,minmax(min-content,max-content)210px)]"
       un-justify-items-end
       un-items-center
-      un-gap="y-[6px]"
+      un-gap="x-1 y-2"
       
       @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
@@ -50,10 +50,10 @@
       
       <template v-if="builtInSearch?.state == null">
         <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
+          un-m="l-1"
+          un-text-gray
+          un-whitespace-nowrap
+          un-overflow-hidden
           class="after:content-[:]"
         >
           状态
@@ -96,10 +96,10 @@
       
       <template v-if="builtInSearch?.type == null">
         <label
-          m="r-[3px] l-[6px]"
-          text-gray
-          whitespace-nowrap
-          overflow-hidden
+          un-m="l-1"
+          un-text-gray
+          un-whitespace-nowrap
+          un-overflow-hidden
           class="after:content-[:]"
         >
           类型
@@ -142,7 +142,7 @@
       
       <template v-if="builtInSearch?.begin_time == null">
         <label
-          un-m="r-[3px] l-[6px]"
+          un-m="l-1"
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden

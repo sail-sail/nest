@@ -44,7 +44,7 @@
         un-justify-end
         un-items-end
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-2 y-4"
+        un-gap="x-1 y-4"
         un-place-content-center
         
         :model="dialogModel"

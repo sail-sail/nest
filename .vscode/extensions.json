@@ -33,6 +33,7 @@
     "rapidapi.vscode-rapidapi-client",
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
-    "maggie.eslint-rules-zh-plugin"
+    "maggie.eslint-rules-zh-plugin",
+    "britesnow.vscode-toggle-quotes"
   ]
 }
