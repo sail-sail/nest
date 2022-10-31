@@ -67,7 +67,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <#=column_comment#>
         </label>
@@ -101,7 +101,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <#=column_comment#>
         </label>
@@ -147,7 +147,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <#=column_comment#>
         </label>
@@ -178,7 +178,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <#=column_comment#>
         </label>
@@ -201,7 +201,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <#=column_comment#>
         </label>
@@ -225,7 +225,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <#=column_comment#>
         </label>

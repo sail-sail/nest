@@ -31,7 +31,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           名称
         </label>
@@ -54,7 +54,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           菜单
         </label>

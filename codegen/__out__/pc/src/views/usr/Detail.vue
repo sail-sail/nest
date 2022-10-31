@@ -59,7 +59,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span un-text="red">*</span>
             <span>名称</span>
@@ -83,7 +83,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span un-text="red">*</span>
             <span>用户名</span>
@@ -107,7 +107,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>密码</span>
           </label>
@@ -130,7 +130,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>默认部门</span>
           </label>
@@ -159,7 +159,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span un-text="red">*</span>
             <span>启用</span>
@@ -197,7 +197,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>备注</span>
           </label>
@@ -220,7 +220,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>拥有部门</span>
           </label>
@@ -253,7 +253,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>拥有角色</span>
           </label>

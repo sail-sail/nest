@@ -31,7 +31,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           模块名称
         </label>
@@ -54,7 +54,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           方法名称
         </label>
@@ -77,7 +77,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           操作
         </label>

@@ -31,7 +31,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           名称
         </label>
@@ -54,7 +54,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           状态
         </label>
@@ -100,7 +100,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           类型
         </label>
@@ -146,7 +146,7 @@
           un-text-gray
           un-whitespace-nowrap
           un-overflow-hidden
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           开始时间
         </label>

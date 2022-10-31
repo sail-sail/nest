@@ -59,7 +59,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>名称</span>
           </label>
@@ -82,7 +82,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span un-text="red">*</span>
             <span>键</span>
@@ -106,7 +106,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>值</span>
           </label>
@@ -129,7 +129,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span un-text="red">*</span>
             <span>启用</span>
@@ -167,7 +167,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>备注</span>
           </label>

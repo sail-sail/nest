@@ -58,7 +58,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>模块</span>
           </label>
@@ -81,7 +81,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>模块名称</span>
           </label>
@@ -104,7 +104,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>方法</span>
           </label>
@@ -127,7 +127,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>方法名称</span>
           </label>
@@ -150,7 +150,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>操作</span>
           </label>
@@ -173,7 +173,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>备注</span>
           </label>

@@ -160,8 +160,8 @@
         v-if="urlList.length === 0"
         un-flex="~ [1_0_0]"
         un-overflow-hidden
-        justify-center
-        items-center
+        un-justify-center
+        un-items-center
         un-text="gray [22px]"
       >
         
@@ -181,8 +181,8 @@
           v-else-if="!dialogModel.readonly"
           un-flex="~ [1_0_0]"
           un-overflow-hidden
-          justify-center
-          items-center
+          un-justify-center
+          un-items-center
           un-text="gray [22px]"
         >
           <span>(暂无附件)</span>

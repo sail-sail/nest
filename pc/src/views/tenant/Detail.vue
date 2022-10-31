@@ -59,7 +59,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span un-text="red">*</span>
             <span>名称</span>
@@ -83,7 +83,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>域名绑定</span>
           </label>
@@ -106,7 +106,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>到期日</span>
           </label>
@@ -133,7 +133,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>最大用户数</span>
           </label>
@@ -161,7 +161,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>启用</span>
           </label>
@@ -198,7 +198,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>菜单</span>
           </label>
@@ -231,7 +231,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>排序</span>
           </label>
@@ -259,7 +259,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>备注</span>
           </label>

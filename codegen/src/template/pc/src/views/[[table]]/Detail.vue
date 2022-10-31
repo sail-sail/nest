@@ -132,7 +132,7 @@ for (let i = 0; i < columns.length; i++) {
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           ><# if (require) { #>
             <span un-text="red">*</span><#
             }

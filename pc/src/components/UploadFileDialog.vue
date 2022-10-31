@@ -48,7 +48,7 @@
           un-text-right
           un-self-center
           un-whitespace-nowrap
-          class="after:content-[:]"
+          un-after="content-[quoted::]"
         >
           <span style="color: red;">*</span>
           <span>文件</span>
@@ -91,7 +91,7 @@
             un-text-right
             un-self-center
             un-whitespace-nowrap
-            class="after:content-[:]"
+            un-after="content-[quoted::]"
           >
             <span>模板下载</span>
           </label>
