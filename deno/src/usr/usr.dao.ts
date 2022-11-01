@@ -28,6 +28,7 @@ export async function findLoginUsr(
       and t.username = ${ args.push(username) }
       and t.password = ${ args.push(password) }
       and t.tenant_id = ${ args.push(tenant_id) }
+    limit 1 
   `;
   const result = await context.queryOne<{
     id: string,

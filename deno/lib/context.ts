@@ -544,19 +544,19 @@ export class Context {
       cacheKey2?: string,
     },
   ): Promise<T | undefined> {
-    sql = sql.trim();
-    if (sql.endsWith(";")) {
-      sql = sql.substring(0, sql.length - 1);
-    }
-    if (/\s+limit\s+\d+$/gm.test(sql)) {
-      sql = sql.replace(/\s+limit\s+\d+$/gm, " limit 1");
-    } else {
-      if (/\s+LIMIT\s+\d+$/gm.test(sql)) {
-        sql = sql.replace(/\s+LIMIT\s+\d+$/gm, " limit 1");
-      } else {
-        sql += " limit 1";
-      }
-    }
+    // sql = sql.trim();
+    // if (sql.endsWith(";")) {
+    //   sql = sql.substring(0, sql.length - 1);
+    // }
+    // if (/\s+limit\s+\d+$/gm.test(sql)) {
+    //   sql = sql.replace(/\s+limit\s+\d+$/gm, " limit 1");
+    // } else {
+    //   if (/\s+LIMIT\s+\d+$/gm.test(sql)) {
+    //     sql = sql.replace(/\s+LIMIT\s+\d+$/gm, " limit 1");
+    //   } else {
+    //     sql += " limit 1";
+    //   }
+    // }
     const models = await this.query<T>(sql, args, opt);
     return models && models[0];
   }
@@ -587,10 +587,10 @@ export class Context {
     if (args instanceof QueryArgs) {
       args = args.value;
     }
-    sql = sql.trim();
-    if (sql.endsWith(";")) {
-      sql = sql.substring(0, sql.length - 1);
-    }
+    // sql = sql.trim();
+    // if (sql.endsWith(";")) {
+    //   sql = sql.substring(0, sql.length - 1);
+    // }
     let result: T[] = await this.getCache(opt?.cacheKey1, opt?.cacheKey2);
     if (result != null) {
       return result;
