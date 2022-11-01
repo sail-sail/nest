@@ -134,17 +134,6 @@ ${ mutationStr }
   return gqlSchemaStr2;
 }
 
-export function resetGqlSchema() {
-  if (gqlSchema) {
-    console.log("resetGqlSchema")
-  }
-  gqlSchema = buildSchema(mergeSchema(gqlSchemaStr));
-  const schemaValidationErrors = validateSchema(gqlSchema);
-  if (schemaValidationErrors.length > 0) {
-    throw schemaValidationErrors[0];
-  }
-}
-
 const queryCacheMap = new Map<string, {
   document: DocumentNode,
   validationErrors: readonly GraphQLError[],
@@ -163,7 +152,11 @@ gqlRouter.post("/graphql", async function(ctx) {
   try {
     const gqlObj = await body.value;
     if (gqlSchema === undefined) {
-      resetGqlSchema();
+      gqlSchema = buildSchema(mergeSchema(gqlSchemaStr));
+      const schemaValidationErrors = validateSchema(gqlSchema);
+      if (schemaValidationErrors.length > 0) {
+        throw schemaValidationErrors[0];
+      }
     }
     const query: string = gqlObj.query;
     const variables = gqlObj.variables;

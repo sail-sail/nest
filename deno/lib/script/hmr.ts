@@ -344,7 +344,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
       }
     }
     if (isInnerContext) {
-      await context.closePool();
+      await context.close();
     }
     if (!hasErr) {
       console.log("sql检查成功:", filenames.join("\n"));

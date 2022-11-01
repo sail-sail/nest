@@ -22,7 +22,8 @@
     "**/.rsw": true,
     "**/@rsw": true,
     "web": true,
-    "**/__unconfig_vite.config.ts": true
+    "**/__unconfig_vite.config.ts": true,
+    "deno/tmp/**": true
   },
   "search.exclude": {
     "**/.git": true,
