@@ -316,21 +316,17 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-button
           plain
           type="primary"
+          :icon="Search"
           @click="searchClk"
         >
-          <template #icon>
-            <Search />
-          </template>
           <span>查询</span>
         </el-button>
         
         <el-button
           plain
+          :icon="Delete"
           @click="searchReset"
         >
-          <template #icon>
-            <Delete />
-          </template>
           <span>重置</span>
         </el-button>
         
@@ -349,22 +345,18 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="primary"
+        :icon="CirclePlus"
         @click="openAdd"
       >
-        <template #icon>
-          <CirclePlus />
-        </template>
         <span>新增</span>
       </el-button>
       
       <el-button
         plain
         type="primary"
+        :icon="CopyDocument"
         @click="openCopy"
       >
-        <template #icon>
-          <CopyDocument />
-        </template>
         <span>复制</span>
       </el-button><#
       }
@@ -375,11 +367,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="primary"
+        :icon="Edit"
         @click="openEdit"
       >
-        <template #icon>
-          <Edit />
-        </template>
         <span>编辑</span>
       </el-button><#
       }
@@ -390,11 +380,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="danger"
+        :icon="CircleClose"
         @click="deleteByIdsEfc"
       >
-        <template #icon>
-          <CircleClose />
-        </template>
         <span>删除</span>
       </el-button><#
         }
@@ -404,21 +392,17 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
+        :icon="Lock"
         @click="lockByIdsClk(1)"
       >
-        <template #icon>
-          <Lock />
-        </template>
         <span>锁定</span>
       </el-button>
       
       <el-button
         plain
+        :icon="Unlock"
         @click="lockByIdsClk(0)"
       >
-        <template #icon>
-          <Unlock />
-        </template>
         <span>解锁</span>
       </el-button><#
       }
@@ -428,11 +412,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
+        :icon="Download"
         @click="exportClk"
       >
-        <template #icon>
-          <Download />
-        </template>
         <span>导出</span>
       </el-button><#
         }
@@ -442,11 +424,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
+        :icon="Upload"
         @click="openUploadClk"
       >
-        <template #icon>
-          <Upload />
-        </template>
         <span>导入</span>
       </el-button><#
         }
@@ -459,11 +439,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="primary"
+        :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
-        <template #icon>
-          <CircleCheck />
-        </template>
         <span>还原</span>
       </el-button><#
       }
@@ -474,11 +452,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="danger"
+        :icon="CircleClose"
         @click="forceDeleteByIdsClk"
       >
-        <template #icon>
-          <CircleClose />
-        </template>
         <span>彻底删除</span>
       </el-button><#
         }
@@ -488,11 +464,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
+        :icon="Download"
         @click="exportClk"
       >
-        <template #icon>
-          <Download />
-        </template>
         <span>导出</span>
       </el-button><#
         }
@@ -501,11 +475,9 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     
     <el-button
       plain
+      :icon="Refresh"
       @click="searchClk"
     >
-      <template #icon>
-        <Refresh />
-      </template>
       <span>刷新</span>
     </el-button>
     
