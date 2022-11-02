@@ -285,7 +285,6 @@ import {
 } from "#/types";
 
 import {
-  findAllUsr,
 } from "./Api";
 
 const emit = defineEmits([
@@ -317,37 +316,7 @@ let usrs = $ref<UsrModel[]>([ ]);
 /** 获取下拉框列表 */
 async function getSelectListEfc() {
   [
-    usrs,
-    usrs,
   ] = await Promise.all([
-    findAllUsr(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllUsr(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
   ]);
 }
 
@@ -406,7 +375,11 @@ async function showDialog(
     dialogAction = "add";
   }
   if (action === "add") {
-    const defaultModel = await getDefaultInput();
+    const [
+      defaultModel,
+    ] = await Promise.all([
+      getDefaultInput(),
+    ]);
     dialogModel = {
       ...defaultModel,
       ...model,

@@ -501,13 +501,18 @@ async function showDialog(
     dialogAction = "add";
   }
   if (action === "add") {
-    const defaultModel = await getDefaultInput();
+    const [
+      defaultModel,
+      order_by,
+    ] = await Promise.all([
+      getDefaultInput(),
+      findLastOrderBy(),
+    ]);
     dialogModel = {
       ...defaultModel,
       ...model,
+      order_by: order_by + 1,
     };
-    const order_by = await findLastOrderBy();
-    dialogModel.order_by = order_by + 1;
   } else if (dialogAction === "copy") {
     if (!model?.id) {
       return await dialogPrm;

@@ -549,7 +549,11 @@ async function showDialog(
     dialogAction = "add";
   }
   if (action === "add") {
-    const defaultModel = await getDefaultInput();
+    const [
+      defaultModel,
+    ] = await Promise.all([
+      getDefaultInput(),
+    ]);
     dialogModel = {
       ...defaultModel,
       ...model,

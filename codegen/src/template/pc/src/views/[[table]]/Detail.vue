@@ -507,6 +507,9 @@ import {<#
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     if (foreignTableArr2.includes(foreignTable)) continue;
     foreignTableArr2.push(foreignTable);
+    if (column.noAdd && column.noEdit) {
+      continue;
+    }
   #><#
     if (foreignKey) {
   #>
@@ -653,6 +656,9 @@ async function getSelectListEfc() {
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const defaultSort = foreignKey && foreignKey.defaultSort;
+      if (column.noAdd && column.noEdit) {
+        continue;
+      }
     #><#
       if (foreignKey) {
     #>
@@ -677,6 +683,9 @@ async function getSelectListEfc() {
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const defaultSort = foreignKey && foreignKey.defaultSort;
+    if (column.noAdd && column.noEdit) {
+      continue;
+    }
   #><#
     if (foreignKey) {
   #>
@@ -789,17 +798,30 @@ async function showDialog(
     dialogAction = "add";
   }
   if (action === "add") {
-    const defaultModel = await getDefaultInput();
+    const [
+      defaultModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by,<#
+      }
+      #>
+    ] = await Promise.all([
+      getDefaultInput(),<#
+      if (hasOrderBy) {
+      #>
+      findLastOrderBy(),<#
+      }
+      #>
+    ]);
     dialogModel = {
       ...defaultModel,
-      ...model,
-    };<#
-    if (hasOrderBy) {
-    #>
-    const order_by = await findLastOrderBy();
-    dialogModel.order_by = order_by + 1;<#
-    }
-    #>
+      ...model,<#
+      if (hasOrderBy) {
+      #>
+      order_by: order_by + 1,<#
+      }
+      #>
+    };
   } else if (dialogAction === "copy") {
     if (!model?.id) {
       return await dialogPrm;

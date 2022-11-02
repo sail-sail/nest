@@ -305,7 +305,6 @@ import {
 
 import {
   findAllDept,
-  findAllUsr,
 } from "./Api";
 
 const emit = defineEmits([
@@ -345,8 +344,6 @@ let usrs = $ref<UsrModel[]>([ ]);
 async function getSelectListEfc() {
   [
     depts,
-    usrs,
-    usrs,
   ] = await Promise.all([
     findAllDept(
       undefined,
@@ -355,34 +352,6 @@ async function getSelectListEfc() {
       [
         {
           prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllUsr(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllUsr(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
           order: "ascending",
         },
       ],
@@ -451,13 +420,18 @@ async function showDialog(
     dialogAction = "add";
   }
   if (action === "add") {
-    const defaultModel = await getDefaultInput();
+    const [
+      defaultModel,
+      order_by,
+    ] = await Promise.all([
+      getDefaultInput(),
+      findLastOrderBy(),
+    ]);
     dialogModel = {
       ...defaultModel,
       ...model,
+      order_by: order_by + 1,
     };
-    const order_by = await findLastOrderBy();
-    dialogModel.order_by = order_by + 1;
   } else if (dialogAction === "copy") {
     if (!model?.id) {
       return await dialogPrm;
