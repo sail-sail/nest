@@ -77,5 +77,6 @@
   "editor.quickSuggestionsDelay": 0,
   "references.preferredLocation": "peek",
   "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never"
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "files.eol": "\n"
 }
