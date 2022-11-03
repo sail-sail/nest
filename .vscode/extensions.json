@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "xuedao.super-translate",
     "aaron-bond.better-comments",
     "alefragnani.bookmarks",
     "ms-ceintl.vscode-language-pack-zh-hans",
@@ -26,11 +25,8 @@
     "usernamehw.errorlens",
     "derefs.vscode-inline-sql-highlight",
     "denoland.vscode-deno",
-    "antfu.smart-clicks",
     "antfu.browse-lite",
     "antfu.where-am-i",
-    "ms-edgedevtools.vscode-edge-devtools",
-    "rapidapi.vscode-rapidapi-client",
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
