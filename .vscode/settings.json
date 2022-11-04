@@ -74,10 +74,9 @@
   "volar.icon.preview": false,
   "volar.icon.splitEditors": false,
   "volar.codeLens.references": false,
-  "volar.diagnostics.delay": 200,
+  "volar.diagnostics.delay": 10,
   "editor.quickSuggestionsDelay": 0,
   "references.preferredLocation": "peek",
   "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never",
-  "editor.suggest.preview": true
+  "typescript.updateImportsOnFileMove.enabled": "never"
 }
