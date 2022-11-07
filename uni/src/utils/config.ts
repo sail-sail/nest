@@ -1,12 +1,12 @@
 let host = "";
-let port = undefined;
+let port: string | undefined = undefined;
 let protocol = "http:";
 let wsProt = "ws:";
 
 if(process.env.NODE_ENV === 'development') {
   // #ifndef H5
   host = "localhost";
-  port = 4001;
+  port = "4001";
   protocol = "http:";
   wsProt = "ws:";
   // #endif

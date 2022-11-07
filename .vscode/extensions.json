@@ -30,6 +30,8 @@
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
-    "britesnow.vscode-toggle-quotes"
+    "britesnow.vscode-toggle-quotes",
+    "ms-edgedevtools.vscode-edge-devtools",
+    "modyqyw.vscode-uni-ui-snippets"
   ]
 }

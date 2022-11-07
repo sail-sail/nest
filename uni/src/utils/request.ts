@@ -1,7 +1,7 @@
 import cfg from "./config";
 import useIndexStore from "@/store/index";
 import useUsrStore from "@/store/usr";
-import { isEmpty } from "./util";
+import { isEmpty } from "./StringUtil";
 
 export async function uploadFile(config: {
   url?: string;

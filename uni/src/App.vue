@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onLaunch } from "@dcloudio/uni-app";
-import { uniqueID } from "@/utils/util";
+import { uniqueID } from "@/utils/StringUtil";
 import { uniLogin } from "@/utils/request";
 
 import useIndexStore from "@/store/index";

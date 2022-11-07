@@ -1,23 +1,23 @@
 {
-  "id": "uni-data-checkbox",
-  "displayName": "uni-data-checkbox 数据选择器",
-  "version": "1.0.3",
-  "description": "通过数据驱动的单选框和复选框",
+  "id": "uni-tooltip",
+  "displayName": "uni-tooltip",
+  "version": "0.2.1",
+  "description": "Tooltip 提示文字",
   "keywords": [
+    "uni-tooltip",
     "uni-ui",
-    "checkbox",
-    "单选",
-    "多选",
-    "单选多选"
+    "tooltip",
+    "tip",
+    "文字提示"
 ],
-  "repository": "https://github.com/dcloudio/uni-ui",
-  "engines": {
-    "HBuilderX": "^3.1.1"
+  "repository": "",
+"engines": {
   },
-  "directories": {
-    "example": "../../temps/example_temps"
-  },
-"dcloudext": {
+  "dcloudext": {
+    "category": [
+        "前端组件",
+        "通用组件"
+    ],
     "sale": {
       "regular": {
         "price": "0.00"
@@ -30,15 +30,14 @@
       "qq": ""
     },
     "declaration": {
-      "ads": "无",
+      "ads": "无 ",
       "data": "无",
       "permissions": "无"
     },
-    "npmurl": "https://www.npmjs.com/package/@dcloudio/uni-ui",
-    "type": "component-vue"
+    "npmurl": ""
   },
   "uni_modules": {
-    "dependencies": ["uni-load-more","uni-scss"],
+    "dependencies": [],
     "encrypt": [],
     "platforms": {
       "cloud": {
@@ -46,9 +45,13 @@
         "aliyun": "y"
       },
       "client": {
+        "Vue": {
+          "vue2": "y",
+          "vue3": "y"
+        },
         "App": {
           "app-vue": "y",
-          "app-nvue": "y"
+          "app-nvue": "u"
         },
         "H5-mobile": {
           "Safari": "y",
@@ -65,18 +68,14 @@
         },
         "小程序": {
           "微信": "y",
-          "阿里": "y",
-          "百度": "y",
-          "字节跳动": "y",
-          "QQ": "y"
+          "阿里": "u",
+          "百度": "u",
+          "字节跳动": "u",
+          "QQ": "u"
         },
         "快应用": {
           "华为": "u",
           "联盟": "u"
-        },
-        "Vue": {
-            "vue2": "y",
-            "vue3": "y"
         }
       }
     }

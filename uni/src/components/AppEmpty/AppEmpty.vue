@@ -1,12 +1,17 @@
 <template>
-<view class="app_empty_view">
+<view
+  un-flex="~ [1_0_0] col"
+  un-justify-center
+  un-items-center
+>
   <image
     src="/static/img/Document.png"
     :draggable="false"
-    :mode="mode"
     :style="customStyle"
   ></image>
-  <text style="color: gray;">
+  <text
+    un-text="gray"
+  >
     {{ text }}
   </text>
 </view>
@@ -15,10 +20,6 @@
 <script lang="ts" setup>
 
 defineProps({
-  mode: {
-    type: String,
-    default: "scaleToFill",
-  },
   customStyle: {
     type: Object || String,
     default: undefined,
@@ -28,15 +29,4 @@ defineProps({
     default: "列表为空",
   },
 });
-
 </script>
-
-<style lang="scss" scoped>
-.app_empty_view {
-  flex: 1 0 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-</style>

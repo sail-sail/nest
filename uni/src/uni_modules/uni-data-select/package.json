@@ -1,17 +1,18 @@
 {
-  "id": "uni-pagination",
-  "displayName": "uni-pagination 分页器",
-  "version": "1.2.4",
-  "description": "Pagination 分页器组件，用于展示页码、请求数据等。",
+  "id": "uni-data-select",
+  "displayName": "uni-data-select 下拉框选择器",
+  "version": "0.1.9",
+  "description": "通过数据驱动的下拉框选择器",
   "keywords": [
     "uni-ui",
-    "uniui",
-    "分页器",
-    "页码"
+    "select",
+    "uni-data-select",
+    "下拉框",
+    "下拉选"
 ],
   "repository": "https://github.com/dcloudio/uni-ui",
   "engines": {
-    "HBuilderX": ""
+    "HBuilderX": "^3.1.1"
   },
   "directories": {
     "example": "../../temps/example_temps"
@@ -37,7 +38,7 @@
     "type": "component-vue"
   },
   "uni_modules": {
-    "dependencies": ["uni-scss","uni-icons"],
+    "dependencies": ["uni-load-more"],
     "encrypt": [],
     "platforms": {
       "cloud": {
@@ -46,8 +47,8 @@
       },
       "client": {
         "App": {
-          "app-vue": "y",
-          "app-nvue": "y"
+          "app-vue": "u",
+          "app-nvue": "n"
         },
         "H5-mobile": {
           "Safari": "y",
@@ -64,10 +65,11 @@
         },
         "小程序": {
           "微信": "y",
-          "阿里": "y",
-          "百度": "y",
-          "字节跳动": "y",
-          "QQ": "y"
+          "阿里": "u",
+          "百度": "u",
+          "字节跳动": "u",
+        "QQ": "u",
+        "京东": "u"
         },
         "快应用": {
           "华为": "u",
