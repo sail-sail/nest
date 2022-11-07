@@ -4,9 +4,10 @@ import { createPinia, setActivePinia } from "pinia";
 
 import "uno.css";
 
+globalThis.process = globalThis.process || { };
+globalThis.process.env = globalThis.process.env || { };
+
 export function createApp() {
-  globalThis.process = globalThis.process || { };
-  globalThis.process.env = globalThis.process.env || { };
   const app = createSSRApp(App);
   const pinia = createPinia();
   app.use(pinia);
