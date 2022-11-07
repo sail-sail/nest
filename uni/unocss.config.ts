@@ -48,7 +48,10 @@ export default defineConfig({
     transformerDirectives(),
     transformerVariantGroup(),
     // Don't change the following order
-    transformerAttributify(),
+    transformerAttributify({
+      prefix: "un-",
+      prefixedOnly: true,
+    }),
     transformerApplet(),
   ],
   rules: [
