@@ -251,7 +251,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       <template v-if="builtInSearch?.is_deleted == null">
         <div
-          un-min="w-[20px]"
+          un-min="w-5"
         ></div>
         <el-form-item prop="is_deleted">
           <el-checkbox
@@ -269,7 +269,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       #>
       
       <div
-        min="w-[20px]"
+        min="w-5"
       ></div>
       <el-form-item prop="idsChecked">
         <el-checkbox
@@ -294,7 +294,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           v-show="selectedIds.length > 0"
           title="清空已选择"
           
-          un-cursor="pointer"
+          un-cursor-pointer
           un-m="x-3"
           un-text="hover:[red]"
           
@@ -305,12 +305,12 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       </el-form-item>
       
       <div
-        un-min="w-[20px]"
+        un-min="w-5"
       ></div>
       <el-form-item
         un-self-start
         un-flex="~ nowrap"
-        un-min="w-[170px]"
+        un-min="w-45"
       >
         
         <el-button
@@ -729,7 +729,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       </el-table>
     </div>
     <div
-      un-justify="end"
+      un-justify-end
       un-p="[2px_5px_2px_0px]"
       un-flex
     >

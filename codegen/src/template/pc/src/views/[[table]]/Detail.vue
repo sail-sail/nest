@@ -372,8 +372,9 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <div
-        un-text="[12px] [gray]"
-        un-pos="absolute right-2"
+        un-text="3 gray"
+        un-pos-absolute
+        right-2
       >
         <template v-if="ids && ids.length > 0">
           
