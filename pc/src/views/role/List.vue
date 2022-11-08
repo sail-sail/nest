@@ -375,9 +375,9 @@
       </el-table>
     </div>
     <div
-      un-justify-end
-      un-p="[2px_5px_2px_0px]"
       un-flex
+      un-justify-end
+      un-p="t-0.5 b-0.5"
     >
       <el-pagination
         background
