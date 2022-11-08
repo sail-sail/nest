@@ -370,7 +370,7 @@
                 <el-link
                   type="primary"
                   
-                  min="w-[30px]"
+                  min="w-7.5"
                   
                   @click="menu_idsClk(row)"
                 >

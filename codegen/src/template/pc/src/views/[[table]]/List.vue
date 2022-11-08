@@ -687,7 +687,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
                 <el-link
                   type="primary"
                   
-                  min="w-[30px]"
+                  min="w-7.5"
                   
                   @click="<#=column_name#>Clk(row)"
                 >
