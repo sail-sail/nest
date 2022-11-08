@@ -5,7 +5,7 @@
   un-w="full"
   un-h="full"
   un-p="l-1.5 r-1.5 t-1.5"
-  un-box="border"
+  un-box-border
 >
   <div
     un-m="x-1.5"
