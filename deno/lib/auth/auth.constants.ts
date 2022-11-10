@@ -1,9 +1,9 @@
-import { crypto } from "std/crypto/mod.ts";
-import { encode } from "std/encoding/base64.ts";
-
 import {
+  crypto,
   type DigestAlgorithm,
-} from "std/crypto/_wasm_crypto/mod.ts";
+} from "std/crypto/mod.ts";
+
+import { encode } from "std/encoding/base64.ts";
 
 import {
   type JWTPayload,

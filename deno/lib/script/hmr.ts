@@ -1,8 +1,15 @@
 import "/lib/env.ts";
+// import { resolve } from "std/path/mod.ts";
 import { Context } from "../context.ts";
 import { QueryArgs } from "../query_args.ts";
-import { ExecuteResult } from "../mysql/mod.ts";
-import { PoolConnection } from "../mysql/src/pool.ts";
+
+import {
+  type ExecuteResult,
+} from "../mysql/mod.ts";
+
+import {
+  type PoolConnection,
+} from "../mysql/src/pool.ts";
 
 let watchTimeout: number|undefined = undefined;
 
@@ -119,6 +126,32 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
     isInnerContext = true;
     context = await createContext();
   }
+  // 处理 GraphQL
+  // if (filenames.some((item) => item.endsWith(".dao.ts") || item.endsWith(".service.ts") || item.endsWith(".graphql.ts") || item.endsWith(".resolve.ts"))) {
+  //   const { clearSchema } = await import("../oak/gql.ts");
+  //   clearSchema();
+  //   const timeNow = Date.now();
+  //   const tmpFn = async function(dir: string) {
+  //     for await (const dirEntry of Deno.readDir(dir)) {
+  //       if (dirEntry.isDirectory) {
+  //         await tmpFn(dir + "/" + dirEntry.name);
+  //         continue;
+  //       }
+  //       if (!dirEntry.name.endsWith(".graphql.ts")) {
+  //         continue;
+  //       }
+  //       const file = resolve(dir + "/" + dirEntry.name).replaceAll("\\", "/");
+  //       try {
+  //         await import("file:///" + file + "?" + timeNow);
+  //       } catch (err) {
+  //         console.error(err);
+  //       }
+  //     }
+  //   }
+  //   await tmpFn("../../");
+  // }
+  
+  // 处理 dao
   let hasErr = false;
   for (let i = 0; i < filenames.length; i++) {
     const filename = filenames[i];
@@ -128,7 +161,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
     // deno-lint-ignore no-explicit-any
     let dao: any;
     try {
-      dao = await import("file:///" + filename);
+      dao = await import("file:///" + filename + "?" + Date.now());
     // deno-lint-ignore no-empty
     } catch (_err) {
     }

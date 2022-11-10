@@ -48,7 +48,7 @@ type Query {
 
 let gqlSchemaStr = _gqlSchemaStr;
 
-let gqlSchema: GraphQLSchema|undefined;
+let gqlSchema: GraphQLSchema | undefined;
 
 const _gqlRootValue = {
   _version: function() {
@@ -57,7 +57,17 @@ const _gqlRootValue = {
 };
 
 // deno-lint-ignore ban-types
-const gqlRootValue: { [key: string]: Function | undefined; } = Object.assign({ }, _gqlRootValue);
+let gqlRootValue: { [key: string]: Function | undefined; } = { ..._gqlRootValue };
+
+/**
+ * 重置GraphQL所有API
+ */
+export function clearSchema() {
+  gqlSchema = undefined;
+  gqlSchemaStr = _gqlSchemaStr;
+  gqlRootValue = { ..._gqlRootValue };
+  queryCacheMap.clear();
+}
 
 const gqlRootValueProxy = new Proxy(
   gqlRootValue,

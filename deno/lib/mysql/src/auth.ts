@@ -1,10 +1,14 @@
-import {
-  type DigestAlgorithm,
-} from "../deps.ts";
 import { xor } from "./util.ts";
 import { encode } from "./buffer.ts";
 
-async function hash(algorithm: DigestAlgorithm, data: BufferSource): Promise<Uint8Array> {
+import {
+  type DigestAlgorithm,
+} from "std/crypto/mod.ts";
+
+async function hash(
+  algorithm: DigestAlgorithm,
+  data: BufferSource,
+): Promise<Uint8Array> {
   const hash = await crypto.subtle.digest(algorithm, data);
   return new Uint8Array(hash);
 }

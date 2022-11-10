@@ -309,7 +309,7 @@
       <div
         un-text="3 gray"
         un-pos-absolute
-        right-2
+        un-right-2
       >
         <template v-if="ids && ids.length > 0">
           
@@ -318,7 +318,7 @@
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
             @click="prevIdClk"
           >
-            上一页
+            上一项
           </el-button>
           
           <span>
@@ -332,7 +332,7 @@
             :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
             @click="nextIdClk"
           >
-            下一页
+            下一项
           </el-button>
           
         </template>
@@ -553,17 +553,36 @@ async function refreshEfc() {
   }
 }
 
-/** 点击上一页 */
+/** 点击上一项 */
 async function prevIdClk() {
   await prevId();
 }
 
-/** 点击下一页 */
+/** 上一项 */
+async function prevId() {
+  if (!dialogModel.id) {
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+    }
+  } else {
+    const idx = ids.indexOf(dialogModel.id);
+    if (idx > 0) {
+      dialogModel.id = ids[idx - 1];
+    } else {
+      return false;
+    }
+  }
+  await refreshEfc();
+  emit("nextId", { dialogAction, id: dialogModel.id });
+  return true;
+}
+
+/** 点击下一项 */
 async function nextIdClk() {
   await nextId();
 }
 
-/** 下一页 */
+/** 下一项 */
 async function nextId() {
   if (!dialogModel.id) {
     if (ids && ids.length > 0) {
@@ -575,25 +594,6 @@ async function nextId() {
     const idx = ids.indexOf(dialogModel.id);
     if (idx >= 0 && idx < ids.length - 1) {
       dialogModel.id = ids[idx + 1];
-    } else {
-      return false;
-    }
-  }
-  await refreshEfc();
-  emit("nextId", { dialogAction, id: dialogModel.id });
-  return true;
-}
-
-/** 上一页 */
-async function prevId() {
-  if (!dialogModel.id) {
-    if (ids && ids.length > 0) {
-      dialogModel.id = ids[0];
-    }
-  } else {
-    const idx = ids.indexOf(dialogModel.id);
-    if (idx > 0) {
-      dialogModel.id = ids[idx - 1];
     } else {
       return false;
     }
