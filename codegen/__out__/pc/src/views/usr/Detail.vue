@@ -66,6 +66,7 @@
           </label>
           <el-form-item
             prop="lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -90,6 +91,7 @@
           </label>
           <el-form-item
             prop="username"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.username"
@@ -113,6 +115,7 @@
           </label>
           <el-form-item
             prop="password"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.password"
@@ -136,6 +139,7 @@
           </label>
           <el-form-item
             prop="default_dept_id"
+            un-h="full"
           >
             <el-select-v2
               v-model="dialogModel.default_dept_id"
@@ -166,6 +170,7 @@
           </label>
           <el-form-item
             prop="is_enabled"
+            un-h="full"
           >
             <el-select
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
@@ -203,6 +208,7 @@
           </label>
           <el-form-item
             prop="rem"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
@@ -226,6 +232,7 @@
           </label>
           <el-form-item
             prop="dept_ids"
+            un-h="full"
           >
             <el-select-v2
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
@@ -259,6 +266,7 @@
           </label>
           <el-form-item
             prop="role_ids"
+            un-h="full"
           >
             <el-select-v2
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"

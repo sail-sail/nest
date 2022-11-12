@@ -64,6 +64,7 @@
           </label>
           <el-form-item
             prop="mod"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.mod"
@@ -87,6 +88,7 @@
           </label>
           <el-form-item
             prop="mod_lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.mod_lbl"
@@ -110,6 +112,7 @@
           </label>
           <el-form-item
             prop="method"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.method"
@@ -133,6 +136,7 @@
           </label>
           <el-form-item
             prop="method_lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.method_lbl"
@@ -156,6 +160,7 @@
           </label>
           <el-form-item
             prop="lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -179,6 +184,7 @@
           </label>
           <el-form-item
             prop="rem"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

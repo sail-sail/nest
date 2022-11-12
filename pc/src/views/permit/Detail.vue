@@ -65,6 +65,7 @@
           </label>
           <el-form-item
             prop="menu_id"
+            un-h="full"
           >
             <el-select-v2
               v-model="dialogModel.menu_id"
@@ -95,6 +96,7 @@
           </label>
           <el-form-item
             prop="lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -118,6 +120,7 @@
           </label>
           <el-form-item
             prop="rem"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

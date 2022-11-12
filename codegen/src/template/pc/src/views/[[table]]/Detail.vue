@@ -151,6 +151,7 @@ for (let i = 0; i < columns.length; i++) {
             class="img_form_item"<#
           }
           #>
+            un-h="full"
           ><#
             if (column.isImg) {
             #>

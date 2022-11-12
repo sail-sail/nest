@@ -65,6 +65,7 @@
           </label>
           <el-form-item
             prop="parent_id"
+            un-h="full"
           >
             <el-select-v2
               v-model="dialogModel.parent_id"
@@ -95,6 +96,7 @@
           </label>
           <el-form-item
             prop="lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -118,6 +120,7 @@
           </label>
           <el-form-item
             prop="order_by"
+            un-h="full"
           >
             <el-input-number
               :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
@@ -146,6 +149,7 @@
           </label>
           <el-form-item
             prop="is_enabled"
+            un-h="full"
           >
             <el-select
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
@@ -183,6 +187,7 @@
           </label>
           <el-form-item
             prop="rem"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

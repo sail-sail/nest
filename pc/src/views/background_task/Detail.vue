@@ -65,6 +65,7 @@
           </label>
           <el-form-item
             prop="lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -89,6 +90,7 @@
           </label>
           <el-form-item
             prop="state"
+            un-h="full"
           >
             <el-select
               :set="dialogModel.state = dialogModel.state ?? undefined"
@@ -135,6 +137,7 @@
           </label>
           <el-form-item
             prop="type"
+            un-h="full"
           >
             <el-select
               :set="dialogModel.type = dialogModel.type ?? undefined"
@@ -180,6 +183,7 @@
           </label>
           <el-form-item
             prop="result"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.result"
@@ -203,6 +207,7 @@
           </label>
           <el-form-item
             prop="err_msg"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.err_msg"
@@ -226,6 +231,7 @@
           </label>
           <el-form-item
             prop="begin_time"
+            un-h="full"
           >
             <el-date-picker
               :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
@@ -253,6 +259,7 @@
           </label>
           <el-form-item
             prop="end_time"
+            un-h="full"
           >
             <el-date-picker
               :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
@@ -280,6 +287,7 @@
           </label>
           <el-form-item
             prop="rem"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

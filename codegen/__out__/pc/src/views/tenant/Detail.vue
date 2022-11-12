@@ -66,6 +66,7 @@
           </label>
           <el-form-item
             prop="lbl"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -89,6 +90,7 @@
           </label>
           <el-form-item
             prop="host"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.host"
@@ -112,6 +114,7 @@
           </label>
           <el-form-item
             prop="expiration"
+            un-h="full"
           >
             <el-date-picker
               :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
@@ -139,6 +142,7 @@
           </label>
           <el-form-item
             prop="max_usr_num"
+            un-h="full"
           >
             <el-input-number
               :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
@@ -167,6 +171,7 @@
           </label>
           <el-form-item
             prop="is_enabled"
+            un-h="full"
           >
             <el-select
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
@@ -204,6 +209,7 @@
           </label>
           <el-form-item
             prop="menu_ids"
+            un-h="full"
           >
             <el-select-v2
               :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
@@ -237,6 +243,7 @@
           </label>
           <el-form-item
             prop="order_by"
+            un-h="full"
           >
             <el-input-number
               :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
@@ -265,6 +272,7 @@
           </label>
           <el-form-item
             prop="rem"
+            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
