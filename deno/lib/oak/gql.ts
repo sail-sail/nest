@@ -79,14 +79,9 @@ const gqlRootValueProxy = new Proxy(
         if (!callback) {
           throw new Error(`方法 ${ prop } 不存在!`);
         }
-        const args0 = args[2].fieldNodes[0].arguments;
-        const len: number = args0.length;
+        const args2 = args[2].fieldNodes[0].arguments;
         // deno-lint-ignore no-explicit-any
-        const cbArgs: any[] = new Array(len);
-        for (let i = 0; i < args0.length; i++) {
-          const ele = args0[i];
-          cbArgs[i] = args[0][ele.name.value];
-        }
+        const cbArgs = args2.map((item: any) => args[0][item.name.value]);
         return callback.apply(null, cbArgs);
       };
     },
