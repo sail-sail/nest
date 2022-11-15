@@ -1,4 +1,7 @@
-import { type Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -16,10 +19,9 @@ import {
  * 根据条件查找据数总数
  */
 export async function findCountBackground_task(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await background_taskService.findCount(context, search);
+  const result = await background_taskService.findCount(search);
   return result;
 }
 
@@ -27,12 +29,11 @@ export async function findCountBackground_task(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllBackground_task(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await background_taskService.findAll(context, search, page, sort);
+  const result = await background_taskService.findAll(search, page, sort);
   return result;
 }
 
@@ -40,11 +41,10 @@ export async function findAllBackground_task(
  * 根据搜索条件导出
  */
 export async function exportExcelBackground_task(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await background_taskService.exportExcel(context, search, sort);
+  const result = await background_taskService.exportExcel(search, sort);
   return result;
 }
 
@@ -52,10 +52,9 @@ export async function exportExcelBackground_task(
  * 根据条件查找第一条数据
  */
 export async function findOneBackground_task(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await background_taskService.findOne(context, search);
+  const result = await background_taskService.findOne(search);
   return result;
 }
 
@@ -63,10 +62,9 @@ export async function findOneBackground_task(
  * 根据 id 查找一条数据
  */
 export async function findByIdBackground_task(
-  context: Context,
   id: string,
 ) {
-  const result = await background_taskService.findById(context, id);
+  const result = await background_taskService.findById(id);
   return result;
 }
 
@@ -74,11 +72,12 @@ export async function findByIdBackground_task(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsBackground_task(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await background_taskService.deleteByIds(context, ids);
+  const result = await background_taskService.deleteByIds(ids);
   return result;
 }
 
@@ -86,11 +85,12 @@ export async function deleteByIdsBackground_task(
  * 根据 ids 还原数据
  */
 export async function revertByIdsBackground_task(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await background_taskService.revertByIds(context, ids);
+  const result = await background_taskService.revertByIds(ids);
   return result;
 }
 
@@ -98,10 +98,11 @@ export async function revertByIdsBackground_task(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsBackground_task(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await background_taskService.forceDeleteByIds(context, ids);
+  const result = await background_taskService.forceDeleteByIds(ids);
   return result;
 }

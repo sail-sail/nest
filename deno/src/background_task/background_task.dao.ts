@@ -1,4 +1,3 @@
-import { Context } from "/lib/context.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 import { create, updateById } from "/gen/background_task/background_task.dao.ts";
 import dayjs from "dayjs";
@@ -9,14 +8,13 @@ const timeoutObj = Symbol("timeoutObj");
 export type BtType = "text"|"download"|"inline"|"tag";
 
 // deno-lint-ignore no-explicit-any
-async function handelResult(context: Context, data: any, id: string) {
+async function handelResult(data: any, id: string) {
   if (typeof data === "object" && !(data instanceof String)) {
     data = JSON.stringify(data);
   }
   const dateNow = new Date();
   const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
   await updateById(
-    context,
     id,
     {
       state: "success",
@@ -26,12 +24,11 @@ async function handelResult(context: Context, data: any, id: string) {
   );
 }
 
-async function handelErr(context: Context, err: Error, id: string) {
+async function handelErr(err: Error, id: string) {
   const errMsg = err.message || err.toString();
   const dateNow = new Date();
   const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
   await updateById(
-    context,
     id,
     {
       state: "fail",
@@ -49,7 +46,6 @@ export function backgroundTaskWrap(
   const timeoutPrm = new Promise((resolve) => setTimeout(() => resolve(timeoutObj), 30000));
   // deno-lint-ignore no-explicit-any
   return async (...args: any[]) => {
-    const context = args[0];
     const dateNow = new Date();
     const begin_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
     const result = func(...args);
@@ -59,7 +55,6 @@ export function backgroundTaskWrap(
       taskResult.type = taskResult.type || "text";
       const id = shortUuidV4();
       await create(
-        context,
         {
           id,
           lbl: taskResult.lbl || "",
@@ -72,9 +67,9 @@ export function backgroundTaskWrap(
       (async function() {
         try {
           const data = await Promise.resolve(result);
-          await handelResult(context, data, id);
+          await handelResult(data, id);
         } catch (err) {
-          await handelErr(context, err, id);
+          await handelErr(err, id);
         }
       })();
     }

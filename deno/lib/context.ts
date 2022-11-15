@@ -1,5 +1,7 @@
 export { defineGraphql } from "/lib/oak/gql.ts";
 
+import { AsyncHooksContextManager } from "./async_hooks/AsyncHooksContextManager.ts";
+
 import {
   connect as redisConnect,
   type Redis,
@@ -680,11 +682,11 @@ export class Context {
   
 }
 
-export function getContext(oakContext: OakContext) {
-  // deno-lint-ignore no-explicit-any
-  const context: Context = (oakContext as any)._context;
-  return context;
-}
+// export function getContext(oakContext: OakContext) {
+//   // deno-lint-ignore no-explicit-any
+//   const context: Context = (oakContext as any)._context;
+//   return context;
+// }
 
 export function newContext(
   oakContext: OakContext,
@@ -693,4 +695,25 @@ export function newContext(
   // deno-lint-ignore no-explicit-any
   (oakContext as any)._context = context;
   return context;
+}
+
+const asyncHooksContextManager = new AsyncHooksContextManager<Context>();
+
+asyncHooksContextManager.enable();
+
+export function runInAsyncHooks<A extends unknown[], F extends (...args: A) => ReturnType<F>>(
+  context: Context,
+  fn: F,
+  thisArg?: ThisParameterType<F>,
+  ...args: A
+): ReturnType<F> {
+  return asyncHooksContextManager.run(context, fn, thisArg, ...args);
+}
+
+export function useContext() {
+  return asyncHooksContextManager.active();
+}
+
+export function useMaybeContext() {
+  return asyncHooksContextManager.maybeActive();
 }

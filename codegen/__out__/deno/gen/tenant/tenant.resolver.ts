@@ -1,4 +1,7 @@
-import { type Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -16,10 +19,9 @@ import {
  * 根据条件查找据数总数
  */
 export async function findCountTenant(
-  context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await tenantService.findCount(context, search);
+  const result = await tenantService.findCount(search);
   return result;
 }
 
@@ -27,12 +29,11 @@ export async function findCountTenant(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllTenant(
-  context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await tenantService.findAll(context, search, page, sort);
+  const result = await tenantService.findAll(search, page, sort);
   return result;
 }
 
@@ -40,11 +41,10 @@ export async function findAllTenant(
  * 根据搜索条件导出
  */
 export async function exportExcelTenant(
-  context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await tenantService.exportExcel(context, search, sort);
+  const result = await tenantService.exportExcel(search, sort);
   return result;
 }
 
@@ -52,10 +52,9 @@ export async function exportExcelTenant(
  * 根据条件查找第一条数据
  */
 export async function findOneTenant(
-  context: Context,
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await tenantService.findOne(context, search);
+  const result = await tenantService.findOne(search);
   return result;
 }
 
@@ -63,10 +62,9 @@ export async function findOneTenant(
  * 根据 id 查找一条数据
  */
 export async function findByIdTenant(
-  context: Context,
   id: string,
 ) {
-  const result = await tenantService.findById(context, id);
+  const result = await tenantService.findById(id);
   return result;
 }
 
@@ -74,11 +72,12 @@ export async function findByIdTenant(
  * 创建一条数据
  */
 export async function createTenant(
-  context: Context,
   model: TenantModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await tenantService.create(context, model);
+  const result = await tenantService.create(model);
   return result;
 }
 
@@ -86,12 +85,13 @@ export async function createTenant(
  * 根据id修改一条数据
  */
 export async function updateByIdTenant(
-  context: Context,
   id: string,
   model: TenantModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await tenantService.updateById(context, id, model);
+  const result = await tenantService.updateById(id, model);
   return result;
 }
 
@@ -99,11 +99,12 @@ export async function updateByIdTenant(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsTenant(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await tenantService.deleteByIds(context, ids);
+  const result = await tenantService.deleteByIds(ids);
   return result;
 }
 
@@ -111,10 +112,9 @@ export async function deleteByIdsTenant(
  * 导入租户
  */
 export async function importFileTenant(
-  context: Context,
   id: string,
 ) {
-  const result = await tenantService.importFile(context, id);
+  const result = await tenantService.importFile(id);
   return result;
 }
 
@@ -122,11 +122,12 @@ export async function importFileTenant(
  * 根据 ids 还原数据
  */
 export async function revertByIdsTenant(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await tenantService.revertByIds(context, ids);
+  const result = await tenantService.revertByIds(ids);
   return result;
 }
 
@@ -134,20 +135,19 @@ export async function revertByIdsTenant(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsTenant(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await tenantService.forceDeleteByIds(context, ids);
+  const result = await tenantService.forceDeleteByIds(ids);
   return result;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByTenant(
-  context: Context,
-) {
-  const result = await tenantService.findLastOrderBy(context);
+export async function findLastOrderByTenant() {
+  const result = await tenantService.findLastOrderBy();
   return result;
 }

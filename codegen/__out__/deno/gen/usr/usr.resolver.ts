@@ -1,4 +1,7 @@
-import { type Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -16,10 +19,9 @@ import {
  * 根据条件查找据数总数
  */
 export async function findCountUsr(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await usrService.findCount(context, search);
+  const result = await usrService.findCount(search);
   return result;
 }
 
@@ -27,12 +29,11 @@ export async function findCountUsr(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllUsr(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await usrService.findAll(context, search, page, sort);
+  const result = await usrService.findAll(search, page, sort);
   return result;
 }
 
@@ -40,11 +41,10 @@ export async function findAllUsr(
  * 根据搜索条件导出
  */
 export async function exportExcelUsr(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await usrService.exportExcel(context, search, sort);
+  const result = await usrService.exportExcel(search, sort);
   return result;
 }
 
@@ -52,10 +52,9 @@ export async function exportExcelUsr(
  * 根据条件查找第一条数据
  */
 export async function findOneUsr(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await usrService.findOne(context, search);
+  const result = await usrService.findOne(search);
   return result;
 }
 
@@ -63,10 +62,9 @@ export async function findOneUsr(
  * 根据 id 查找一条数据
  */
 export async function findByIdUsr(
-  context: Context,
   id: string,
 ) {
-  const result = await usrService.findById(context, id);
+  const result = await usrService.findById(id);
   return result;
 }
 
@@ -74,11 +72,12 @@ export async function findByIdUsr(
  * 创建一条数据
  */
 export async function createUsr(
-  context: Context,
   model: UsrModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await usrService.create(context, model);
+  const result = await usrService.create(model);
   return result;
 }
 
@@ -86,12 +85,13 @@ export async function createUsr(
  * 根据id修改一条数据
  */
 export async function updateByIdUsr(
-  context: Context,
   id: string,
   model: UsrModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await usrService.updateById(context, id, model);
+  const result = await usrService.updateById(id, model);
   return result;
 }
 
@@ -99,11 +99,12 @@ export async function updateByIdUsr(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsUsr(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await usrService.deleteByIds(context, ids);
+  const result = await usrService.deleteByIds(ids);
   return result;
 }
 
@@ -111,15 +112,16 @@ export async function deleteByIdsUsr(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsUsr(
-  context: Context,
   ids: string[],
   is_locked: 0 | 1,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await usrService.lockByIds(context, ids, is_locked);
+  const result = await usrService.lockByIds(ids, is_locked);
   return result;
 }
 
@@ -127,10 +129,9 @@ export async function lockByIdsUsr(
  * 导入用户
  */
 export async function importFileUsr(
-  context: Context,
   id: string,
 ) {
-  const result = await usrService.importFile(context, id);
+  const result = await usrService.importFile(id);
   return result;
 }
 
@@ -138,11 +139,12 @@ export async function importFileUsr(
  * 根据 ids 还原数据
  */
 export async function revertByIdsUsr(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await usrService.revertByIds(context, ids);
+  const result = await usrService.revertByIds(ids);
   return result;
 }
 
@@ -150,10 +152,11 @@ export async function revertByIdsUsr(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsUsr(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await usrService.forceDeleteByIds(context, ids);
+  const result = await usrService.forceDeleteByIds(ids);
   return result;
 }

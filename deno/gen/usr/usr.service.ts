@@ -1,4 +1,3 @@
-import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
@@ -28,10 +27,9 @@ import * as usrDao from "./usr.dao.ts";
  * @return {Promise<number>}
  */
 export async function findCount(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const result = await usrDao.findCount(context, search);
+  const result = await usrDao.findCount(search);
   return result;
 }
 
@@ -43,12 +41,11 @@ export async function findCount(
  * @return {Promise<UsrModel[]>} 
  */
 export async function findAll(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel[]> {
-  const result: UsrModel[] = await usrDao.findAll(context, search, page, sort);
+  const result: UsrModel[] = await usrDao.findAll(search, page, sort);
   return result;
 }
 
@@ -57,10 +54,9 @@ export async function findAll(
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function findOne(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const result: UsrModel | undefined = await usrDao.findOne(context, search);
+  const result: UsrModel | undefined = await usrDao.findOne(search);
   return result;
 }
 
@@ -69,10 +65,9 @@ export async function findOne(
  * @param {string} id
  */
 export async function findById(
-  context: Context,
   id?: string,
 ) {
-  const result = await usrDao.findById(context, id);
+  const result = await usrDao.findById(id);
   return result;
 }
 
@@ -81,10 +76,9 @@ export async function findById(
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function exist(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await usrDao.exist(context, search);
+  const result = await usrDao.exist(search);
   return result;
 }
 
@@ -93,10 +87,9 @@ export async function exist(
  * @param {string} id
  */
 export async function existById(
-  context: Context,
   id: string,
 ) {
-  const result = await usrDao.existById(context, id);
+  const result = await usrDao.existById(id);
   return result;
 }
 
@@ -106,10 +99,9 @@ export async function existById(
  * @return {Promise<string | undefined>} 
  */
 export async function create(
-  context: Context,
   model: UsrModel,
 ): Promise<string | undefined> {
-  const result = await usrDao.create(context, model);
+  const result = await usrDao.create(model);
   return result;
 }
 
@@ -120,11 +112,10 @@ export async function create(
  * @return {Promise<string | undefined>}
  */
 export async function updateById(
-  context: Context,
   id: string,
   model: UsrModel,
 ): Promise<string | undefined> {
-  await usrDao.updateById(context, id, model);
+  await usrDao.updateById(id, model);
   return id;
 }
 
@@ -134,10 +125,9 @@ export async function updateById(
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await usrDao.deleteByIds(context, ids);
+  const result = await usrDao.deleteByIds(ids);
   return result;
 }
 
@@ -148,11 +138,10 @@ export async function deleteByIds(
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  context: Context,
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const result = await usrDao.lockByIds(context, ids, is_locked);
+  const result = await usrDao.lockByIds(ids, is_locked);
   return result;
 }
 
@@ -162,10 +151,9 @@ export async function lockByIds(
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await usrDao.revertByIds(context, ids);
+  const result = await usrDao.revertByIds(ids);
   return result;
 }
 
@@ -175,10 +163,9 @@ export async function revertByIds(
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await usrDao.forceDeleteByIds(context, ids);
+  const result = await usrDao.forceDeleteByIds(ids);
   return result;
 }
 
@@ -187,7 +174,6 @@ export async function forceDeleteByIds(
  * @param {string} id
  */
 export async function importFile(
-  context: Context,
   id: string,
 ) {
   const header: { [key: string]: string } = {
@@ -209,7 +195,7 @@ export async function importFile(
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     try {
-      await usrDao.create(context, model, { uniqueType: "update" });
+      await usrDao.create(model, { uniqueType: "update" });
       succNum++;
     } catch (err) {
       failNum++;
@@ -238,11 +224,10 @@ export async function importFile(
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {
-  const models = await findAll(context, search, undefined, sort);
+  const models = await findAll(search, undefined, sort);
   const buffer0 = await getTemplate(`usr.xlsx`);
   if (!buffer0) {
     throw new ServiceException(`模板文件 usr.xlsx 不存在!`);

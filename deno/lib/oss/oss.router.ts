@@ -1,12 +1,12 @@
 import {
-  FormDataFile,
   Router,
-  RouterContext,
+  type FormDataFile,
+  type RouterContext,
 } from "oak";
 
 import {
-  getContext,
   TMP_PATH,
+  useContext,
 } from "/lib/context.ts";
 
 import * as ossServie from "./oss.service.ts";
@@ -21,7 +21,7 @@ router.post("upload", async function(ctx) {
     ctx.response.status = 415;
     return;
   }
-  let file: FormDataFile|undefined = undefined;
+  let file: FormDataFile | undefined = undefined;
   for await (const [ name, value ] of body.value.stream({
     outPath: TMP_PATH,
     prefix: "oss_upload_",
@@ -108,7 +108,7 @@ async function download(ctx: RouterContext<any>) {
       response.body = errMsg;
       return;
     }
-    const context = getContext(ctx);
+    const context = useContext();
     context.error(err);
     const errMsg = err?.message || err?.toString() || err || "";
     response.status = 500;

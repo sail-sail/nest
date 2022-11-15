@@ -1,8 +1,4 @@
 import {
-  type Context,
-} from "/lib/context.ts";
-
-import {
   type Mutation,
 } from "/gen/types.ts"
 
@@ -12,15 +8,13 @@ import * as usrDao from "/gen/usr/usr.dao.ts";
 import * as authService from "/lib/auth/auth.service.ts";
 
 export async function deptLoginSelect(
-  context: Context,
   dept_id: string,
 ): Promise<Mutation["deptLoginSelect"]> {
-  const authModel = (await getAuthModel(context))!;
+  const authModel = (await getAuthModel())!;
   if (authModel.dept_id === dept_id) {
     return "";
   }
   const usrModel = await usrDao.findById(
-    context,
     authModel.id,
   );
   const dept_ids = usrModel?.dept_ids || [ ];

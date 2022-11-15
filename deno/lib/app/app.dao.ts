@@ -1,9 +1,10 @@
-import { shortUuidV4 } from "/lib/util/string_util.ts";
-import { Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
 
-export function generateId(
-  _context: Context,
-) {
+import { shortUuidV4 } from "/lib/util/string_util.ts";
+
+export function generateId() {
   return shortUuidV4();
 }
 
@@ -12,8 +13,9 @@ export function generateId(
  * @return {Promise<boolean>}
  */
 export async function clearCache(
-  context: Context,
 ): Promise<boolean> {
+  const context = useContext();
+  
   await context.clearCache();
   return true;
 }

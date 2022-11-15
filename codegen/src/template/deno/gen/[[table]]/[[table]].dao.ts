@@ -10,7 +10,7 @@ const Table_Up = tableUp.split("_").map(function(item) {
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
-  type Context,
+  useContext,
 } from "/lib/context.ts";
 
 import {
@@ -103,7 +103,6 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.
 #>
 
 async function getWhereQuery(
-  context: Context,
   args: QueryArgs,
   search?: <#=Table_Up#>Search & {
     $extra?: SearchExtra[];<#
@@ -126,8 +125,8 @@ async function getWhereQuery(
   if (hasTenant_id) {
   #>
   if (search?.tenant_id == null) {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -139,7 +138,7 @@ async function getWhereQuery(
   if (hasDeptId) {
   #>
   if (search?.dept_id == null) {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     const dept_id = authModel?.dept_id;
     if (dept_id) {
       whereQuery += ` and t.dept_id = ${ args.push(dept_id) }`;
@@ -253,7 +252,7 @@ async function getWhereQuery(
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
       const extra = extras[i];
-      const queryTmp = await extra(context, args);
+      const queryTmp = await extra(args);
       if (queryTmp) {
         whereQuery += ` ${ queryTmp }`;
       }
@@ -262,9 +261,7 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery(
-  context: Context,
-) {
+function getFromQuery() {
   const fromQuery = /*sql*/ `
     \\`<#=table#>\\` t<#
     for (let i = 0; i < columns.length; i++) {
@@ -326,13 +323,14 @@ function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findCount";
+  
+  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -343,9 +341,9 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery(context) }
+          ${ getFromQuery() }
         where
-          ${ await getWhereQuery(context, args, search, options) }
+          ${ await getWhereQuery(args, search, options) }
         group by t.id
       ) t
   `;<#
@@ -372,12 +370,10 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Context} context
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -386,6 +382,8 @@ export async function findAll(
 ) {
   const table = "<#=table#>";
   const method = "findAll";
+  
+  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -414,9 +412,9 @@ export async function findAll(
       }
       #>
     from
-      ${ getFromQuery(context) }
+      ${ getFromQuery() }
     where
-      ${ await getWhereQuery(context, args, search, options) }
+      ${ await getWhereQuery(args, search, options) }
     group by t.id
   `;<#
   if (defaultSort) {
@@ -501,7 +499,7 @@ export async function findAll(
   #><#
     if (foreignKey && foreignKey.type === "json") {
   #>
-  await setModelIds(context, result, [ { table: "<#=foreignTable#>", fld: "<#=column_name#>"<#
+  await setModelIds(result, [ { table: "<#=foreignTable#>", fld: "<#=column_name#>"<#
     if (foreignKey.lbl) {
   #>, lbl: "<#=foreignKey.lbl#>"<#
     }
@@ -583,9 +581,7 @@ export async function findAll(
  * 获得表的唯一字段名列表
  * @return {{ uniqueKeys: (keyof <#=Table_Up#>Model)[]; uniqueComments: { [key: string]: string }; }}
  */
-export function getUniqueKeys(
-  context: Context,
-): {
+export function getUniqueKeys(): {
   uniqueKeys: (keyof <#=Table_Up#>Model)[];
   uniqueComments: { [key: string]: string };
   } {
@@ -625,16 +621,15 @@ export function getUniqueKeys(
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] } | PartialNull<<#=Table_Up#>Model>} search0
  */
 export async function findByUnique(
-  context: Context,
   search0: <#=Table_Up#>Search & { $extra?: SearchExtra[] } | PartialNull<<#=Table_Up#>Model>,
   options?: {
   },
 ) {
   if (search0.id) {
-    const model = await findOne(context, { id: search0.id }, options);
+    const model = await findOne({ id: search0.id }, options);
     return model;
   }
-  const { uniqueKeys } = getUniqueKeys(context);
+  const { uniqueKeys } = getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
@@ -647,7 +642,7 @@ export async function findByUnique(
     }
     (search as any)[key] = val;
   }
-  const model = await findOne(context, search, options);
+  const model = await findOne(search, options);
   return model;
 }
 
@@ -658,12 +653,11 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  context: Context,
   oldModel: <#=Table_Up#>Model,
   model: PartialNull<<#=Table_Up#>Model>,
 ): boolean {
   if (!oldModel || !model) return false;
-  const { uniqueKeys } = getUniqueKeys(context);
+  const { uniqueKeys } = getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) return false;
   let isEquals = true;
   for (let i = 0; i < uniqueKeys.length; i++) {
@@ -686,23 +680,21 @@ export function equalsByUnique(
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  context: Context,
   model: PartialNull<<#=Table_Up#>Model>,
   oldModel: <#=Table_Up#>Model,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(context, oldModel, model);
+  const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = getUniqueKeys(context);
+      const { uniqueKeys, uniqueComments } = getUniqueKeys();
       const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
       throw new UniqueException(`${ lbl } 的值已经存在!`);
     }
     if (uniqueType === "update") {
       const result = await updateById(
-        context,
         oldModel.id,
         {
           ...model,
@@ -727,13 +719,14 @@ if (hasSummary) {
  * @return {Promise<<#=Table_Up#>Summary>}
  */
 export async function findSummary(
-  context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=table#>";
-  const method = "findSummary";<#
+  const method = "findSummary";
+  
+  const context = useContext();<#
   const findSummaryColumns = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -761,9 +754,9 @@ export async function findSummary(
       }
       #>
     from
-      ${ getFromQuery(context) }
+      ${ getFromQuery() }
     where
-      ${ await getWhereQuery(context, args, search, options) }
+      ${ await getWhereQuery(args, search, options) }
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -781,7 +774,6 @@ export async function findSummary(
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
  */
 export async function findOne(
-  context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -790,7 +782,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(context, search, page, undefined, options);
+  const result = await findAll(search, page, undefined, options);
   const model = result[0] as <#=Table_Up#>Model | undefined;
   return model;
 }
@@ -800,13 +792,12 @@ export async function findOne(
  * @param {string} id
  */
 export async function findById(
-  context: Context,
   id?: string,
   options?: {
   },
 ) {
   if (!id) return;
-  const model = await findOne(context, { id }, options);
+  const model = await findOne({ id }, options);
   return model;
 }
 
@@ -815,12 +806,11 @@ export async function findById(
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
  */
 export async function exist(
-  context: Context,
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
 ) {
-  const model = await findOne(context, search, options);
+  const model = await findOne(search, options);
   const exist = !!model;
   return exist;
 }
@@ -830,7 +820,6 @@ export async function exist(
  * @param {string} id
  */
 export async function existById(
-  context: Context,
   id: string,
 ) {
   const table = "<#=table#>";
@@ -839,6 +828,8 @@ export async function existById(
   if (!id) {
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
+  
+  const context = useContext();
   
   const args = new QueryArgs();
   const sql = /*sql*/ `
@@ -884,7 +875,6 @@ export async function existById(
  * @return {Promise<string | undefined>} 
  */
 export async function create(
-  context: Context,
   model: PartialNull<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -895,7 +885,8 @@ export async function create(
   }
   const table = "<#=table#>";
   const method = "create";
-  <#
+  
+  const context = useContext();<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -949,7 +940,7 @@ export async function create(
   // <#=column_comment#>
   if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
     model._<#=column_name#> = String(model._<#=column_name#>).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne(context, { <#=foreignKey.lbl#>: model._<#=column_name#> });
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model._<#=column_name#> });
     if (<#=foreignTable#>Model) {
       model.<#=column_name#> = <#=foreignTable#>Model.id;
     }
@@ -983,9 +974,9 @@ export async function create(
   }
   #>
   
-  const oldModel = await findByUnique(context, model, options);
+  const oldModel = await findByUnique(model, options);
   if (oldModel) {
-    const result = await checkByUnique(context, model, oldModel, options?.uniqueType, options);
+    const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
     if (result) {
       return result;
     }
@@ -1004,8 +995,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -1015,7 +1006,7 @@ export async function create(
   if (hasDeptId) {
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.dept_id) {
       sql += `,dept_id`;
     }
@@ -1023,7 +1014,7 @@ export async function create(
   }
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -1077,8 +1068,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -1088,7 +1079,7 @@ export async function create(
   if (hasDeptId) {
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.dept_id) {
       sql += `,${ args.push(authModel?.dept_id) }`;
     }
@@ -1096,7 +1087,7 @@ export async function create(
   }
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1170,7 +1161,7 @@ export async function create(
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   // <#=column_comment#>
-  await many2manyUpdate(context, model, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
+  await many2manyUpdate(model, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
     } else if (!foreignKey) {
   #><#
     } else {
@@ -1182,7 +1173,7 @@ export async function create(
   if (cache) {
   #>
   
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   
@@ -1194,11 +1185,12 @@ if (cache) {
 /**
  * 删除缓存
  */
-export async function delCache(
-  context: Context,
-) {
+export async function delCache() {
   const table = "<#=table#>";
   const method = "delCache";
+  
+  const context = useContext();
+  
   const cacheKey1 = `dao.sql.${ table }`;
   await context.delCache(cacheKey1);
   const foreignTables: string[] = [<#
@@ -1240,8 +1232,6 @@ if (hasTenant_id) {
 
 /**
  * 根据id修改租户id
- * @export
- * @param {Context} context
  * @param {string} id
  * @param {string} tenant_id
  * @param {{
@@ -1249,7 +1239,6 @@ if (hasTenant_id) {
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  context: Context,
   id: string,
   tenant_id: string,
   options?: {
@@ -1258,7 +1247,9 @@ export async function updateTenantById(
   const table = "<#=table#>";
   const method = "updateTenantById";
   
-  const tenantExist = await existByIdTenant(context, tenant_id);
+  const context = useContext();
+  
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -1278,7 +1269,7 @@ export async function updateTenantById(
   if (cache) {
   #>
   
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   return num;
@@ -1291,7 +1282,6 @@ if (hasDeptId) {
 /**
  * 根据id修改部门id
  * @export
- * @param {Context} context
  * @param {string} id
  * @param {string} dept_id
  * @param {{
@@ -1299,7 +1289,6 @@ if (hasDeptId) {
  * @return {Promise<number>}
  */
 export async function updateDeptById(
-  context: Context,
   id: string,
   dept_id: string,
   options?: {
@@ -1308,7 +1297,9 @@ export async function updateDeptById(
   const table = "<#=table#>";
   const method = "updateDeptById";
   
-  const deptExist = await existByIdDept(context, dept_id);
+  const context = useContext();
+  
+  const deptExist = await existByIdDept(dept_id);
   if (!deptExist) {
     return 0;
   }
@@ -1328,7 +1319,7 @@ export async function updateDeptById(
   if (cache) {
   #>
   
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   return num;
@@ -1349,7 +1340,6 @@ export async function updateDeptById(
  * @return {Promise<string>}
  */
 export async function updateById(
-  context: Context,
   id: string,
   model: PartialNull<<#=Table_Up#>Model> & {<#
     if (hasDeptId) {
@@ -1370,13 +1360,15 @@ export async function updateById(
   const table = "<#=table#>";
   const method = "updateById";
   
+  const context = useContext();
+  
   if (!id || !model) {
     return id;
   }<#
   if (hasLocked) {
   #>
   
-  const is_locked = await getIs_lockedById(context, id);
+  const is_locked = await getIs_lockedById(id);
   if (is_locked) {
     throw "不能修改已经锁定的数据";
   }<#
@@ -1387,7 +1379,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
-    await updateTenantById(context, id, model.tenant_id);
+    await updateTenantById(id, model.tenant_id);
   }<#
   }
   #><#
@@ -1396,7 +1388,7 @@ export async function updateById(
   
   // 修改部门id
   if (isNotEmpty(model.dept_id)) {
-    await updateDeptById(context, id, model.dept_id);
+    await updateDeptById(id, model.dept_id);
   }<#
   }
   #><#
@@ -1453,7 +1445,7 @@ export async function updateById(
   // <#=column_comment#>
   if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
     model._<#=column_name#> = String(model._<#=column_name#>).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne(context, { <#=foreignKey.lbl#>: model._<#=column_name#> });
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model._<#=column_name#> });
     if (<#=foreignTable#>Model) {
       model.<#=column_name#> = <#=foreignTable#>Model.id;
     }
@@ -1487,17 +1479,17 @@ export async function updateById(
   }
   #>
   
-  const oldModel = await findByUnique(context, model);
+  const oldModel = await findByUnique(model);
   if (oldModel) {
     if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(context, model, oldModel, options?.uniqueType);
+      const result = await checkByUnique(model, oldModel, options?.uniqueType);
       if (result) {
         return result;
       }
     }
   } else {
     if (options?.uniqueType === "create") {
-      const result = await create(context, { ...model, id });
+      const result = await create({ ...model, id });
       return result;
     }
   }
@@ -1565,7 +1557,7 @@ export async function updateById(
   #>
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel(context);
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -1597,7 +1589,7 @@ export async function updateById(
   
   updateFldNum++;
   // <#=column_comment#>
-  await many2manyUpdate(context, { ...model, id }, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
+  await many2manyUpdate({ ...model, id }, "<#=column_name#>", { table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
     } else if (!foreignKey) {
   #><#
     } else {
@@ -1610,7 +1602,7 @@ export async function updateById(
   #>
   
   if (updateFldNum > 0) {
-    await delCache(context);
+    await delCache();
   }<#
   }
   #>
@@ -1624,7 +1616,6 @@ export async function updateById(
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  context: Context,
   ids: string[],
   options?: {
   },
@@ -1636,18 +1627,20 @@ export async function deleteByIds(
     return 0;
   }
   
+  const context = useContext();
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
     const id = ids[i];
-    const isExist = await existById(context, id);
+    const isExist = await existById(id);
     if (!isExist) {
       continue;
     }<#
     if (hasLocked) {
     #>
     
-    const is_locked = await getIs_lockedById(context, id);
+    const is_locked = await getIs_lockedById(id);
     if (is_locked) {
       continue;
     }<#
@@ -1669,7 +1662,7 @@ export async function deleteByIds(
   if (cache) {
   #>
   
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   
@@ -1682,19 +1675,15 @@ if (hasLocked) {
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @export
- * @param {Context} context
  * @param {string} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIs_lockedById(
-  context: Context,
   id: string,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
-    context,
     id,
     options,
   );
@@ -1709,7 +1698,6 @@ export async function getIs_lockedById(
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  context: Context,
   ids: string[],
   is_locked: 0 | 1,
   options?: {
@@ -1722,6 +1710,8 @@ export async function lockByIds(
     return 0;
   }
   
+  const context = useContext();
+  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     update
@@ -1732,7 +1722,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1747,7 +1737,7 @@ export async function lockByIds(
   if (cache) {
   #>
   
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   
@@ -1762,7 +1752,6 @@ export async function lockByIds(
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  context: Context,
   ids: string[],
   options?: {
   },
@@ -1773,6 +1762,8 @@ export async function revertByIds(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const context = useContext();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1792,7 +1783,7 @@ export async function revertByIds(
   }<#
   if (cache) {
   #>
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   
@@ -1805,7 +1796,6 @@ export async function revertByIds(
  * @return {Promise<number>}
  */
  export async function forceDeleteByIds(
-  context: Context,
   ids: string[],
   options?: {
   },
@@ -1816,6 +1806,8 @@ export async function revertByIds(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const context = useContext();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1847,7 +1839,7 @@ export async function revertByIds(
   }<#
   if (cache) {
   #>
-  await delCache(context);<#
+  await delCache();<#
   }
   #>
   
@@ -1861,12 +1853,13 @@ if (hasOrderBy) {
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  context: Context,
   options?: {
   },
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findLastOrderBy";
+  
+  const context = useContext();
   
   let sql = /*sql*/ `
     select
@@ -1880,8 +1873,8 @@ export async function findLastOrderBy(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }
@@ -1889,7 +1882,7 @@ export async function findLastOrderBy(
   if (hasDeptId) {
   #>
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     const dept_id = authModel?.dept_id;
     if (dept_id) {
       whereQuery.push(`t.dept_id = ${ args.push(dept_id) }`);

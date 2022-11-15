@@ -1,13 +1,17 @@
-import { Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
 import { QueryArgs } from "/lib/query_args.ts";
 
 async function _getMenus(
-  context: Context,
   type?: string,
   menu_id?: string,
 ) {
+  const context = useContext();
+  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
@@ -37,8 +41,8 @@ async function _getMenus(
   if (type) {
     sql += ` and t.type = ${ args.push(type) }`;
   }
-  const authModel = await getAuthModel(context);
-  const tenant_id = await getTenant_id(context, authModel?.id);
+  const authModel = await getAuthModel();
+  const tenant_id = await getTenant_id(authModel?.id);
   if (tenant_id) {
     sql += ` and tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
@@ -67,10 +71,9 @@ async function _getMenus(
 }
 
 export async function getMenus(
-  context: Context,
   type = "pc",
 ) {
-  const allModels = await _getMenus(context, type);
+  const allModels = await _getMenus(type);
   let menus: typeof allModels = [ ];
   // deno-lint-ignore no-explicit-any
   async function tmpFn(parent?: any) {

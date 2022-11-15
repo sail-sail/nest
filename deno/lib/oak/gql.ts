@@ -3,7 +3,7 @@ import {
 } from "oak";
 
 import {
-  getContext,
+  useContext,
 } from "/lib/context.ts";
 
 import {
@@ -82,11 +82,10 @@ const gqlRootValueProxy = new Proxy(
         const args0 = args[2].fieldNodes[0].arguments;
         const len: number = args0.length;
         // deno-lint-ignore no-explicit-any
-        const cbArgs: any[] = new Array(len + 1);
-        cbArgs[0] = args[1];
+        const cbArgs: any[] = new Array(len);
         for (let i = 0; i < args0.length; i++) {
           const ele = args0[i];
-          cbArgs[i+1] = args[0][ele.name.value];
+          cbArgs[i] = args[0][ele.name.value];
         }
         return callback.apply(null, cbArgs);
       };
@@ -158,7 +157,7 @@ gqlRouter.post("/graphql", async function(ctx) {
     };
     return;
   }
-  const context = getContext(ctx);
+  const context = useContext();
   try {
     const gqlObj = await body.value;
     if (gqlSchema === undefined) {

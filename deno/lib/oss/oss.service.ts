@@ -1,4 +1,7 @@
-import { FormDataFile } from "oak";
+import {
+  type FormDataFile,
+} from "oak";
+
 import * as ossDao from "./oss.dao.ts";
 
 /**

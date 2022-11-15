@@ -1,18 +1,13 @@
-import { Context } from "/lib/context.ts";
 import * as appDao from "./app.dao.ts";
 
-export function generateId(
-  context: Context,
-) {
-  return appDao.generateId(context);
+export function generateId() {
+  return appDao.generateId();
 }
 
 /**
  * 清空缓存
  * @return {Promise<boolean>}
  */
- export async function clearCache(
-  context: Context,
-): Promise<boolean> {
-  return await appDao.clearCache(context);
+ export async function clearCache(): Promise<boolean> {
+  return await appDao.clearCache();
 }

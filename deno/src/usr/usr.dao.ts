@@ -1,21 +1,24 @@
-import { MutationLoginArgs } from "/gen/types.ts";
-import { Context } from "/lib/context.ts";
+import { useContext } from "/lib/context.ts";
+
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { QueryArgs } from "/lib/query_args.ts";
 
+import {
+  type MutationLoginArgs,
+} from "/gen/types.ts";
+
 /**
  * 返回当前登录的用户
- * @param {Context} context
  * @param {MutationLoginArgs["username"]} username 用户名
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
  * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
  */
 export async function findLoginUsr(
-  context: Context,
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
 ) {
+  const context = useContext();
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
@@ -38,9 +41,9 @@ export async function findLoginUsr(
 }
 
 export async function getDept_idsById(
-  context: Context,
   id: string,
 ) {
+  const context = useContext();
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
@@ -57,11 +60,10 @@ export async function getDept_idsById(
   return (result || [ ]).map((item) => item.dept_id);
 }
 
-async function getTenant_idByWx_usr(
-  context: Context,
-) {
+async function getTenant_idByWx_usr() {
+  const context = useContext();
   const notVerifyToken = context.notVerifyToken;
-  const authModel = await getAuthModel(context, notVerifyToken);
+  const authModel = await getAuthModel(notVerifyToken);
   if (!authModel) {
     return;
   }
@@ -98,12 +100,12 @@ async function getTenant_idByWx_usr(
  * @return {Promise<string>} 
  */
 export async function getTenant_id(
-  context: Context,
   usr_id?: string,
 ): Promise<string | undefined> {
+  const context = useContext();
   const notVerifyToken = context.notVerifyToken;
   if (!usr_id) {
-    const authModel = await getAuthModel(context, notVerifyToken);
+    const authModel = await getAuthModel(notVerifyToken);
     if (!authModel) {
       return;
     }
@@ -141,7 +143,7 @@ export async function getTenant_id(
     }
   }
   if (!tenant_id) {
-    tenant_id = await getTenant_idByWx_usr(context);
+    tenant_id = await getTenant_idByWx_usr();
   }
   return tenant_id;
 }

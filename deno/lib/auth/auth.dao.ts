@@ -20,15 +20,15 @@ import {
 } from "jose/util/errors.ts";
 
 import {
-  type Context,
+  useContext,
 } from "/lib/context.ts";
 
 import { getEnv } from "/lib/env.ts";
 
 export async function getAuthModel<T extends AuthModel>(
-  context: Context,
   notVerifyToken?: boolean,
 ): Promise<T | undefined> {
+  const context = useContext();
   let authModel: T | undefined;
   if (context.cacheMap.has("authModel")) {
     authModel = context.cacheMap.get("authModel");

@@ -1,5 +1,5 @@
 import {
-  type Context,
+  useContext,
 } from "/lib/context.ts";
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
@@ -14,14 +14,14 @@ import {
   type QueryArgs,
 } from "../query_args.ts";
 
-export type SearchExtra = (context: Context, args?: QueryArgs) => Promise<string>;
+export type SearchExtra = (args?: QueryArgs) => Promise<string>;
 
 export async function setModelIds(
-  context: Context,
   // deno-lint-ignore no-explicit-any
   models: any[],
   flds: { table: string, fld: string, lbl: string }[],
 ) {
+  const context = useContext();
   for (let f = 0; f < flds.length; f++) {
     const item = flds[f];
     for (let i = 0; i < models.length; i++) {
@@ -65,7 +65,6 @@ export async function setModelIds(
 }
 
 export async function many2manyUpdate(
-  context: Context,
   // deno-lint-ignore no-explicit-any
   model: { [key: string]: any },
   column_name: string,
@@ -79,8 +78,9 @@ export async function many2manyUpdate(
   if (!column2Ids) {
     return;
   }
-  const { id: usr_id } = await getAuthModel(context) as AuthModel;
-  const tenant_id = await getTenant_id(context, usr_id);
+  const context = useContext();
+  const { id: usr_id } = await getAuthModel() as AuthModel;
+  const tenant_id = await getTenant_id(usr_id);
   // deno-lint-ignore no-explicit-any
   let models: any[] = [ ];
   if (model.id) {

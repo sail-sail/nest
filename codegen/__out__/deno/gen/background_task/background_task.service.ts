@@ -1,4 +1,3 @@
-import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
@@ -28,10 +27,9 @@ import * as background_taskDao from "./background_task.dao.ts";
  * @return {Promise<number>}
  */
 export async function findCount(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const result = await background_taskDao.findCount(context, search);
+  const result = await background_taskDao.findCount(search);
   return result;
 }
 
@@ -43,18 +41,17 @@ export async function findCount(
  * @return {Promise<Background_TaskModel[]>} 
  */
 export async function findAll(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<Background_TaskModel[]> {
   
   search = search || { };
-  const authModel = await authDao.getAuthModel(context);
+  const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const result: Background_TaskModel[] = await background_taskDao.findAll(context, search, page, sort);
+  const result: Background_TaskModel[] = await background_taskDao.findAll(search, page, sort);
   return result;
 }
 
@@ -63,10 +60,9 @@ export async function findAll(
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function findOne(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const result: Background_TaskModel | undefined = await background_taskDao.findOne(context, search);
+  const result: Background_TaskModel | undefined = await background_taskDao.findOne(search);
   return result;
 }
 
@@ -75,10 +71,9 @@ export async function findOne(
  * @param {string} id
  */
 export async function findById(
-  context: Context,
   id?: string,
 ) {
-  const result = await background_taskDao.findById(context, id);
+  const result = await background_taskDao.findById(id);
   return result;
 }
 
@@ -87,10 +82,9 @@ export async function findById(
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function exist(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await background_taskDao.exist(context, search);
+  const result = await background_taskDao.exist(search);
   return result;
 }
 
@@ -99,10 +93,9 @@ export async function exist(
  * @param {string} id
  */
 export async function existById(
-  context: Context,
   id: string,
 ) {
-  const result = await background_taskDao.existById(context, id);
+  const result = await background_taskDao.existById(id);
   return result;
 }
 
@@ -112,10 +105,9 @@ export async function existById(
  * @return {Promise<string | undefined>} 
  */
 export async function create(
-  context: Context,
   model: Background_TaskModel,
 ): Promise<string | undefined> {
-  const result = await background_taskDao.create(context, model);
+  const result = await background_taskDao.create(model);
   return result;
 }
 
@@ -126,11 +118,10 @@ export async function create(
  * @return {Promise<string | undefined>}
  */
 export async function updateById(
-  context: Context,
   id: string,
   model: Background_TaskModel,
 ): Promise<string | undefined> {
-  await background_taskDao.updateById(context, id, model);
+  await background_taskDao.updateById(id, model);
   return id;
 }
 
@@ -140,10 +131,9 @@ export async function updateById(
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await background_taskDao.deleteByIds(context, ids);
+  const result = await background_taskDao.deleteByIds(ids);
   return result;
 }
 
@@ -153,10 +143,9 @@ export async function deleteByIds(
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await background_taskDao.revertByIds(context, ids);
+  const result = await background_taskDao.revertByIds(ids);
   return result;
 }
 
@@ -166,10 +155,9 @@ export async function revertByIds(
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await background_taskDao.forceDeleteByIds(context, ids);
+  const result = await background_taskDao.forceDeleteByIds(ids);
   return result;
 }
 
@@ -178,7 +166,6 @@ export async function forceDeleteByIds(
  * @param {string} id
  */
 export async function importFile(
-  context: Context,
   id: string,
 ) {
   const header: { [key: string]: string } = {
@@ -200,7 +187,7 @@ export async function importFile(
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     try {
-      await background_taskDao.create(context, model, { uniqueType: "update" });
+      await background_taskDao.create(model, { uniqueType: "update" });
       succNum++;
     } catch (err) {
       failNum++;
@@ -229,11 +216,10 @@ export async function importFile(
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
-  context: Context,
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {
-  const models = await findAll(context, search, undefined, sort);
+  const models = await findAll(search, undefined, sort);
   const buffer0 = await getTemplate(`background_task.xlsx`);
   if (!buffer0) {
     throw new ServiceException(`模板文件 background_task.xlsx 不存在!`);

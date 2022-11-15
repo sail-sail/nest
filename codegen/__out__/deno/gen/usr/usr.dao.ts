@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
-  type Context,
+  useContext,
 } from "/lib/context.ts";
 
 import {
@@ -42,7 +42,6 @@ import {
 import * as deptDao from "/gen/dept/dept.dao.ts";
 
 async function getWhereQuery(
-  context: Context,
   args: QueryArgs,
   search?: UsrSearch & {
     $extra?: SearchExtra[];
@@ -54,8 +53,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -135,7 +134,7 @@ async function getWhereQuery(
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
       const extra = extras[i];
-      const queryTmp = await extra(context, args);
+      const queryTmp = await extra(args);
       if (queryTmp) {
         whereQuery += ` ${ queryTmp }`;
       }
@@ -144,9 +143,7 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery(
-  context: Context,
-) {
+function getFromQuery() {
   const fromQuery = /*sql*/ `
     \`usr\` t
     left join dept _default_dept_id
@@ -207,13 +204,14 @@ function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   options?: {
   },
 ): Promise<number> {
   const table = "usr";
   const method = "findCount";
+  
+  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -224,9 +222,9 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery(context) }
+          ${ getFromQuery() }
         where
-          ${ await getWhereQuery(context, args, search, options) }
+          ${ await getWhereQuery(args, search, options) }
         group by t.id
       ) t
   `;
@@ -245,12 +243,10 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Context} context
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -259,6 +255,8 @@ export async function findAll(
 ) {
   const table = "usr";
   const method = "findAll";
+  
+  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -269,9 +267,9 @@ export async function findAll(
         ,max(role_ids) role_ids
         ,max(_role_ids) _role_ids
     from
-      ${ getFromQuery(context) }
+      ${ getFromQuery() }
     where
-      ${ await getWhereQuery(context, args, search, options) }
+      ${ await getWhereQuery(args, search, options) }
     group by t.id
   `;
   
@@ -335,9 +333,7 @@ export async function findAll(
  * 获得表的唯一字段名列表
  * @return {{ uniqueKeys: (keyof UsrModel)[]; uniqueComments: { [key: string]: string }; }}
  */
-export function getUniqueKeys(
-  context: Context,
-): {
+export function getUniqueKeys(): {
   uniqueKeys: (keyof UsrModel)[];
   uniqueComments: { [key: string]: string };
   } {
@@ -355,16 +351,15 @@ export function getUniqueKeys(
  * @param {UsrSearch & { $extra?: SearchExtra[] } | PartialNull<UsrModel>} search0
  */
 export async function findByUnique(
-  context: Context,
   search0: UsrSearch & { $extra?: SearchExtra[] } | PartialNull<UsrModel>,
   options?: {
   },
 ) {
   if (search0.id) {
-    const model = await findOne(context, { id: search0.id }, options);
+    const model = await findOne({ id: search0.id }, options);
     return model;
   }
-  const { uniqueKeys } = getUniqueKeys(context);
+  const { uniqueKeys } = getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
@@ -377,7 +372,7 @@ export async function findByUnique(
     }
     (search as any)[key] = val;
   }
-  const model = await findOne(context, search, options);
+  const model = await findOne(search, options);
   return model;
 }
 
@@ -388,12 +383,11 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  context: Context,
   oldModel: UsrModel,
   model: PartialNull<UsrModel>,
 ): boolean {
   if (!oldModel || !model) return false;
-  const { uniqueKeys } = getUniqueKeys(context);
+  const { uniqueKeys } = getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) return false;
   let isEquals = true;
   for (let i = 0; i < uniqueKeys.length; i++) {
@@ -416,23 +410,21 @@ export function equalsByUnique(
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  context: Context,
   model: PartialNull<UsrModel>,
   oldModel: UsrModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(context, oldModel, model);
+  const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = getUniqueKeys(context);
+      const { uniqueKeys, uniqueComments } = getUniqueKeys();
       const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
       throw new UniqueException(`${ lbl } 的值已经存在!`);
     }
     if (uniqueType === "update") {
       const result = await updateById(
-        context,
         oldModel.id,
         {
           ...model,
@@ -454,7 +446,6 @@ export async function checkByUnique(
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
  */
 export async function findOne(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -463,7 +454,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(context, search, page, undefined, options);
+  const result = await findAll(search, page, undefined, options);
   const model = result[0] as UsrModel | undefined;
   return model;
 }
@@ -473,13 +464,12 @@ export async function findOne(
  * @param {string} id
  */
 export async function findById(
-  context: Context,
   id?: string,
   options?: {
   },
 ) {
   if (!id) return;
-  const model = await findOne(context, { id }, options);
+  const model = await findOne({ id }, options);
   return model;
 }
 
@@ -488,12 +478,11 @@ export async function findById(
  * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
  */
 export async function exist(
-  context: Context,
   search?: UsrSearch & { $extra?: SearchExtra[] },
   options?: {
   },
 ) {
-  const model = await findOne(context, search, options);
+  const model = await findOne(search, options);
   const exist = !!model;
   return exist;
 }
@@ -503,7 +492,6 @@ export async function exist(
  * @param {string} id
  */
 export async function existById(
-  context: Context,
   id: string,
 ) {
   const table = "usr";
@@ -512,6 +500,8 @@ export async function existById(
   if (!id) {
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
+  
+  const context = useContext();
   
   const args = new QueryArgs();
   const sql = /*sql*/ `
@@ -549,7 +539,6 @@ export async function existById(
  * @return {Promise<string | undefined>} 
  */
 export async function create(
-  context: Context,
   model: PartialNull<UsrModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -561,11 +550,12 @@ export async function create(
   const table = "usr";
   const method = "create";
   
+  const context = useContext();
   
   // 默认部门
   if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {
     model._default_dept_id = String(model._default_dept_id).trim();
-    const deptModel = await deptDao.findOne(context, { lbl: model._default_dept_id });
+    const deptModel = await deptDao.findOne({ lbl: model._default_dept_id });
     if (deptModel) {
       model.default_dept_id = deptModel.id;
     }
@@ -635,9 +625,9 @@ export async function create(
     model.role_ids = models.map((item: { id: string }) => item.id);
   }
   
-  const oldModel = await findByUnique(context, model, options);
+  const oldModel = await findByUnique(model, options);
   if (oldModel) {
-    const result = await checkByUnique(context, model, oldModel, options?.uniqueType, options);
+    const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
     if (result) {
       return result;
     }
@@ -654,14 +644,14 @@ export async function create(
       ,create_time
   `;
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
   }
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -689,14 +679,14 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
   {
-    const authModel = await getAuthModel(context);
-    const tenant_id = await getTenant_id(context, authModel?.id);
+    const authModel = await getAuthModel();
+    const tenant_id = await getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -726,11 +716,11 @@ export async function create(
   
   const result = await context.execute(sql, args);
   // 拥有部门
-  await many2manyUpdate(context, model, "dept_ids", { table: "usr_dept", column1: "usr_id", column2: "dept_id" });
+  await many2manyUpdate(model, "dept_ids", { table: "usr_dept", column1: "usr_id", column2: "dept_id" });
   // 拥有角色
-  await many2manyUpdate(context, model, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
+  await many2manyUpdate(model, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
   
-  await delCache(context);
+  await delCache();
   
   return model.id;
 }
@@ -738,11 +728,12 @@ export async function create(
 /**
  * 删除缓存
  */
-export async function delCache(
-  context: Context,
-) {
+export async function delCache() {
   const table = "usr";
   const method = "delCache";
+  
+  const context = useContext();
+  
   const cacheKey1 = `dao.sql.${ table }`;
   await context.delCache(cacheKey1);
   const foreignTables: string[] = [
@@ -762,8 +753,6 @@ export async function delCache(
 
 /**
  * 根据id修改租户id
- * @export
- * @param {Context} context
  * @param {string} id
  * @param {string} tenant_id
  * @param {{
@@ -771,7 +760,6 @@ export async function delCache(
  * @return {Promise<number>}
  */
 export async function updateTenantById(
-  context: Context,
   id: string,
   tenant_id: string,
   options?: {
@@ -780,7 +768,9 @@ export async function updateTenantById(
   const table = "usr";
   const method = "updateTenantById";
   
-  const tenantExist = await existByIdTenant(context, tenant_id);
+  const context = useContext();
+  
+  const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -798,7 +788,7 @@ export async function updateTenantById(
   const result = await context.execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache(context);
+  await delCache();
   return num;
 }
 
@@ -815,7 +805,6 @@ export async function updateTenantById(
  * @return {Promise<string>}
  */
 export async function updateById(
-  context: Context,
   id: string,
   model: PartialNull<UsrModel> & {
     tenant_id?: string | null;
@@ -827,24 +816,26 @@ export async function updateById(
   const table = "usr";
   const method = "updateById";
   
+  const context = useContext();
+  
   if (!id || !model) {
     return id;
   }
   
-  const is_locked = await getIs_lockedById(context, id);
+  const is_locked = await getIs_lockedById(id);
   if (is_locked) {
     throw "不能修改已经锁定的数据";
   }
   
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
-    await updateTenantById(context, id, model.tenant_id);
+    await updateTenantById(id, model.tenant_id);
   }
   
   // 默认部门
   if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {
     model._default_dept_id = String(model._default_dept_id).trim();
-    const deptModel = await deptDao.findOne(context, { lbl: model._default_dept_id });
+    const deptModel = await deptDao.findOne({ lbl: model._default_dept_id });
     if (deptModel) {
       model.default_dept_id = deptModel.id;
     }
@@ -914,17 +905,17 @@ export async function updateById(
     model.role_ids = models.map((item: { id: string }) => item.id);
   }
   
-  const oldModel = await findByUnique(context, model);
+  const oldModel = await findByUnique(model);
   if (oldModel) {
     if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(context, model, oldModel, options?.uniqueType);
+      const result = await checkByUnique(model, oldModel, options?.uniqueType);
       if (result) {
         return result;
       }
     }
   } else {
     if (options?.uniqueType === "create") {
-      const result = await create(context, { ...model, id });
+      const result = await create({ ...model, id });
       return result;
     }
   }
@@ -977,7 +968,7 @@ export async function updateById(
   }
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel(context);
+      const authModel = await getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -988,14 +979,14 @@ export async function updateById(
   
   updateFldNum++;
   // 拥有部门
-  await many2manyUpdate(context, { ...model, id }, "dept_ids", { table: "usr_dept", column1: "usr_id", column2: "dept_id" });
+  await many2manyUpdate({ ...model, id }, "dept_ids", { table: "usr_dept", column1: "usr_id", column2: "dept_id" });
   
   updateFldNum++;
   // 拥有角色
-  await many2manyUpdate(context, { ...model, id }, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
+  await many2manyUpdate({ ...model, id }, "role_ids", { table: "usr_role", column1: "usr_id", column2: "role_id" });
   
   if (updateFldNum > 0) {
-    await delCache(context);
+    await delCache();
   }
   
   return id;
@@ -1007,7 +998,6 @@ export async function updateById(
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  context: Context,
   ids: string[],
   options?: {
   },
@@ -1019,16 +1009,18 @@ export async function deleteByIds(
     return 0;
   }
   
+  const context = useContext();
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
     const id = ids[i];
-    const isExist = await existById(context, id);
+    const isExist = await existById(id);
     if (!isExist) {
       continue;
     }
     
-    const is_locked = await getIs_lockedById(context, id);
+    const is_locked = await getIs_lockedById(id);
     if (is_locked) {
       continue;
     }
@@ -1046,7 +1038,7 @@ export async function deleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache(context);
+  await delCache();
   
   return num;
 }
@@ -1055,19 +1047,15 @@ export async function deleteByIds(
  * 根据 ID 查找是否已锁定
  * 已锁定的记录不能修改和删除
  * 记录不存在则返回 undefined
- * @export
- * @param {Context} context
  * @param {string} id
  * @return {Promise<0 | 1 | undefined>}
  */
 export async function getIs_lockedById(
-  context: Context,
   id: string,
   options?: {
   },
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
-    context,
     id,
     options,
   );
@@ -1082,7 +1070,6 @@ export async function getIs_lockedById(
  * @return {Promise<number>}
  */
 export async function lockByIds(
-  context: Context,
   ids: string[],
   is_locked: 0 | 1,
   options?: {
@@ -1095,6 +1082,8 @@ export async function lockByIds(
     return 0;
   }
   
+  const context = useContext();
+  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     update
@@ -1105,7 +1094,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await getAuthModel(context);
+    const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
       sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1118,7 +1107,7 @@ export async function lockByIds(
   const result = await context.execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache(context);
+  await delCache();
   
   return num;
 }
@@ -1129,7 +1118,6 @@ export async function lockByIds(
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  context: Context,
   ids: string[],
   options?: {
   },
@@ -1140,6 +1128,8 @@ export async function revertByIds(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const context = useContext();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1157,7 +1147,7 @@ export async function revertByIds(
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
-  await delCache(context);
+  await delCache();
   
   return num;
 }
@@ -1168,7 +1158,6 @@ export async function revertByIds(
  * @return {Promise<number>}
  */
  export async function forceDeleteByIds(
-  context: Context,
   ids: string[],
   options?: {
   },
@@ -1179,6 +1168,8 @@ export async function revertByIds(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const context = useContext();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1208,7 +1199,7 @@ export async function revertByIds(
     const result = await context.execute(sql, args);
     num += result.affectedRows;
   }
-  await delCache(context);
+  await delCache();
   
   return num;
 }

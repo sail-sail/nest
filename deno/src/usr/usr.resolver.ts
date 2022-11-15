@@ -1,5 +1,5 @@
 import {
-  type Context,
+  useContext,
 } from "/lib/context.ts";
 
 import * as usrService from "./usr.service.ts";
@@ -18,18 +18,17 @@ import {
  * @param {MutationLoginArgs["dept_id"]} dept_id 部门id
  */
 export async function login(
-  context: Context,
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
   dept_id: MutationLoginArgs["dept_id"],
 ): Promise<Mutation["login"]> {
+  const context = useContext();
+  
   context.is_tran = true;
-  return await usrService.login(context, username, password, tenant_id, dept_id);
+  return await usrService.login(username, password, tenant_id, dept_id);
 }
 
-export async function getLoginInfo(
-  context: Context,
-) {
-  return await usrService.getLoginInfo(context);
+export async function getLoginInfo() {
+  return await usrService.getLoginInfo();
 }

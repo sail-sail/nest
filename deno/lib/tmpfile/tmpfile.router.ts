@@ -1,12 +1,12 @@
 import {
-  FormDataFile,
   Router,
-  RouterContext,
+  type FormDataFile,
+  type RouterContext,
 } from "oak";
 
 import {
-  getContext,
   TMP_PATH,
+  useContext,
 } from "/lib/context.ts";
 
 import * as tmpfileServie from "./tmpfile.service.ts";
@@ -102,7 +102,7 @@ async function download(ctx: RouterContext<any>) {
       response.body = errMsg;
       return;
     }
-    const context = getContext(ctx);
+    const context = useContext();
     context.error(err);
     const errMsg = err?.message || err?.toString() || err || "";
     response.status = 500;

@@ -1,4 +1,7 @@
-import { type Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -16,10 +19,9 @@ import {
  * 根据条件查找据数总数
  */
 export async function findCountOption(
-  context: Context,
   search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await optionService.findCount(context, search);
+  const result = await optionService.findCount(search);
   return result;
 }
 
@@ -27,12 +29,11 @@ export async function findCountOption(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllOption(
-  context: Context,
   search?: OptionSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await optionService.findAll(context, search, page, sort);
+  const result = await optionService.findAll(search, page, sort);
   return result;
 }
 
@@ -40,11 +41,10 @@ export async function findAllOption(
  * 根据搜索条件导出
  */
 export async function exportExcelOption(
-  context: Context,
   search?: OptionSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await optionService.exportExcel(context, search, sort);
+  const result = await optionService.exportExcel(search, sort);
   return result;
 }
 
@@ -52,10 +52,9 @@ export async function exportExcelOption(
  * 根据条件查找第一条数据
  */
 export async function findOneOption(
-  context: Context,
   search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await optionService.findOne(context, search);
+  const result = await optionService.findOne(search);
   return result;
 }
 
@@ -63,10 +62,9 @@ export async function findOneOption(
  * 根据 id 查找一条数据
  */
 export async function findByIdOption(
-  context: Context,
   id: string,
 ) {
-  const result = await optionService.findById(context, id);
+  const result = await optionService.findById(id);
   return result;
 }
 
@@ -74,11 +72,12 @@ export async function findByIdOption(
  * 创建一条数据
  */
 export async function createOption(
-  context: Context,
   model: OptionModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await optionService.create(context, model);
+  const result = await optionService.create(model);
   return result;
 }
 
@@ -86,12 +85,13 @@ export async function createOption(
  * 根据id修改一条数据
  */
 export async function updateByIdOption(
-  context: Context,
   id: string,
   model: OptionModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await optionService.updateById(context, id, model);
+  const result = await optionService.updateById(id, model);
   return result;
 }
 
@@ -99,11 +99,12 @@ export async function updateByIdOption(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsOption(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await optionService.deleteByIds(context, ids);
+  const result = await optionService.deleteByIds(ids);
   return result;
 }
 
@@ -111,10 +112,9 @@ export async function deleteByIdsOption(
  * 导入选项
  */
 export async function importFileOption(
-  context: Context,
   id: string,
 ) {
-  const result = await optionService.importFile(context, id);
+  const result = await optionService.importFile(id);
   return result;
 }
 
@@ -122,11 +122,12 @@ export async function importFileOption(
  * 根据 ids 还原数据
  */
 export async function revertByIdsOption(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await optionService.revertByIds(context, ids);
+  const result = await optionService.revertByIds(ids);
   return result;
 }
 
@@ -134,10 +135,11 @@ export async function revertByIdsOption(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsOption(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await optionService.forceDeleteByIds(context, ids);
+  const result = await optionService.forceDeleteByIds(ids);
   return result;
 }

@@ -1,4 +1,3 @@
-import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
@@ -28,10 +27,9 @@ import * as operation_recordDao from "./operation_record.dao.ts";
  * @return {Promise<number>}
  */
 export async function findCount(
-  context: Context,
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const result = await operation_recordDao.findCount(context, search);
+  const result = await operation_recordDao.findCount(search);
   return result;
 }
 
@@ -43,12 +41,11 @@ export async function findCount(
  * @return {Promise<Operation_RecordModel[]>} 
  */
 export async function findAll(
-  context: Context,
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<Operation_RecordModel[]> {
-  const result: Operation_RecordModel[] = await operation_recordDao.findAll(context, search, page, sort);
+  const result: Operation_RecordModel[] = await operation_recordDao.findAll(search, page, sort);
   return result;
 }
 
@@ -57,10 +54,9 @@ export async function findAll(
  * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function findOne(
-  context: Context,
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
-  const result: Operation_RecordModel | undefined = await operation_recordDao.findOne(context, search);
+  const result: Operation_RecordModel | undefined = await operation_recordDao.findOne(search);
   return result;
 }
 
@@ -69,10 +65,9 @@ export async function findOne(
  * @param {string} id
  */
 export async function findById(
-  context: Context,
   id?: string,
 ) {
-  const result = await operation_recordDao.findById(context, id);
+  const result = await operation_recordDao.findById(id);
   return result;
 }
 
@@ -81,10 +76,9 @@ export async function findById(
  * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function exist(
-  context: Context,
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await operation_recordDao.exist(context, search);
+  const result = await operation_recordDao.exist(search);
   return result;
 }
 
@@ -93,10 +87,9 @@ export async function exist(
  * @param {string} id
  */
 export async function existById(
-  context: Context,
   id: string,
 ) {
-  const result = await operation_recordDao.existById(context, id);
+  const result = await operation_recordDao.existById(id);
   return result;
 }
 
@@ -106,10 +99,9 @@ export async function existById(
  * @return {Promise<string | undefined>} 
  */
 export async function create(
-  context: Context,
   model: Operation_RecordModel,
 ): Promise<string | undefined> {
-  const result = await operation_recordDao.create(context, model);
+  const result = await operation_recordDao.create(model);
   return result;
 }
 
@@ -120,11 +112,10 @@ export async function create(
  * @return {Promise<string | undefined>}
  */
 export async function updateById(
-  context: Context,
   id: string,
   model: Operation_RecordModel,
 ): Promise<string | undefined> {
-  await operation_recordDao.updateById(context, id, model);
+  await operation_recordDao.updateById(id, model);
   return id;
 }
 
@@ -134,10 +125,9 @@ export async function updateById(
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await operation_recordDao.deleteByIds(context, ids);
+  const result = await operation_recordDao.deleteByIds(ids);
   return result;
 }
 
@@ -147,10 +137,9 @@ export async function deleteByIds(
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await operation_recordDao.revertByIds(context, ids);
+  const result = await operation_recordDao.revertByIds(ids);
   return result;
 }
 
@@ -160,10 +149,9 @@ export async function revertByIds(
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await operation_recordDao.forceDeleteByIds(context, ids);
+  const result = await operation_recordDao.forceDeleteByIds(ids);
   return result;
 }
 
@@ -172,7 +160,6 @@ export async function forceDeleteByIds(
  * @param {string} id
  */
 export async function importFile(
-  context: Context,
   id: string,
 ) {
   const header: { [key: string]: string } = {
@@ -192,7 +179,7 @@ export async function importFile(
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     try {
-      await operation_recordDao.create(context, model, { uniqueType: "update" });
+      await operation_recordDao.create(model, { uniqueType: "update" });
       succNum++;
     } catch (err) {
       failNum++;
@@ -221,11 +208,10 @@ export async function importFile(
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
-  context: Context,
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {
-  const models = await findAll(context, search, undefined, sort);
+  const models = await findAll(search, undefined, sort);
   const buffer0 = await getTemplate(`operation_record.xlsx`);
   if (!buffer0) {
     throw new ServiceException(`模板文件 operation_record.xlsx 不存在!`);

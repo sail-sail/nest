@@ -1,12 +1,10 @@
 import { AuthModel } from "./auth.constants.ts";
-import { Context } from "/lib/context.ts";
 import * as authDao from "./auth.dao.ts";
 
 export async function getAuthModel<T extends AuthModel>(
-  context: Context,
   notVerifyToken = false,
 ) {
-  return await authDao.getAuthModel<T>(context, notVerifyToken);
+  return await authDao.getAuthModel<T>(notVerifyToken);
 }
 
 /**

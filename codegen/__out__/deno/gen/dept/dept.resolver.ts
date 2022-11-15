@@ -1,4 +1,7 @@
-import { type Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -16,10 +19,9 @@ import {
  * 根据条件查找据数总数
  */
 export async function findCountDept(
-  context: Context,
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await deptService.findCount(context, search);
+  const result = await deptService.findCount(search);
   return result;
 }
 
@@ -27,12 +29,11 @@ export async function findCountDept(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllDept(
-  context: Context,
   search?: DeptSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await deptService.findAll(context, search, page, sort);
+  const result = await deptService.findAll(search, page, sort);
   return result;
 }
 
@@ -40,11 +41,10 @@ export async function findAllDept(
  * 根据搜索条件导出
  */
 export async function exportExcelDept(
-  context: Context,
   search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await deptService.exportExcel(context, search, sort);
+  const result = await deptService.exportExcel(search, sort);
   return result;
 }
 
@@ -52,10 +52,9 @@ export async function exportExcelDept(
  * 根据条件查找第一条数据
  */
 export async function findOneDept(
-  context: Context,
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await deptService.findOne(context, search);
+  const result = await deptService.findOne(search);
   return result;
 }
 
@@ -63,10 +62,9 @@ export async function findOneDept(
  * 根据 id 查找一条数据
  */
 export async function findByIdDept(
-  context: Context,
   id: string,
 ) {
-  const result = await deptService.findById(context, id);
+  const result = await deptService.findById(id);
   return result;
 }
 
@@ -74,11 +72,12 @@ export async function findByIdDept(
  * 创建一条数据
  */
 export async function createDept(
-  context: Context,
   model: DeptModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await deptService.create(context, model);
+  const result = await deptService.create(model);
   return result;
 }
 
@@ -86,12 +85,13 @@ export async function createDept(
  * 根据id修改一条数据
  */
 export async function updateByIdDept(
-  context: Context,
   id: string,
   model: DeptModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await deptService.updateById(context, id, model);
+  const result = await deptService.updateById(id, model);
   return result;
 }
 
@@ -99,11 +99,12 @@ export async function updateByIdDept(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsDept(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await deptService.deleteByIds(context, ids);
+  const result = await deptService.deleteByIds(ids);
   return result;
 }
 
@@ -111,15 +112,16 @@ export async function deleteByIdsDept(
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsDept(
-  context: Context,
   ids: string[],
   is_locked: 0 | 1,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDept.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await deptService.lockByIds(context, ids, is_locked);
+  const result = await deptService.lockByIds(ids, is_locked);
   return result;
 }
 
@@ -127,10 +129,9 @@ export async function lockByIdsDept(
  * 导入部门
  */
 export async function importFileDept(
-  context: Context,
   id: string,
 ) {
-  const result = await deptService.importFile(context, id);
+  const result = await deptService.importFile(id);
   return result;
 }
 
@@ -138,11 +139,12 @@ export async function importFileDept(
  * 根据 ids 还原数据
  */
 export async function revertByIdsDept(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await deptService.revertByIds(context, ids);
+  const result = await deptService.revertByIds(ids);
   return result;
 }
 
@@ -150,20 +152,19 @@ export async function revertByIdsDept(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsDept(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await deptService.forceDeleteByIds(context, ids);
+  const result = await deptService.forceDeleteByIds(ids);
   return result;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDept(
-  context: Context,
-) {
-  const result = await deptService.findLastOrderBy(context);
+export async function findLastOrderByDept() {
+  const result = await deptService.findLastOrderBy();
   return result;
 }

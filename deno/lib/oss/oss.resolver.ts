@@ -1,8 +1,6 @@
-import { Context } from "/lib/context.ts";
 import * as ossService from "./oss.service.ts";
 
 export async function getStatsOss(
-  _context: Context,
   ids: string[],
 ) {
   const statInfos = [ ];

@@ -1,6 +1,9 @@
 import { crypto } from "std/crypto/mod.ts";
 import { encode } from "std/encoding/base64.ts";
-import { InputMaybe } from "/gen/types.ts";
+
+import {
+  type InputMaybe,
+} from "/gen/types.ts";
 
 export function isEmpty(str?: string | InputMaybe<string>): boolean {
   return str === undefined || str === null || str === "" || str.trim() === "";

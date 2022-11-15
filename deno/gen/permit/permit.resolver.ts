@@ -1,4 +1,7 @@
-import { type Context } from "/lib/context.ts";
+import {
+  useContext,
+} from "/lib/context.ts";
+
 import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -16,10 +19,9 @@ import {
  * 根据条件查找据数总数
  */
 export async function findCountPermit(
-  context: Context,
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await permitService.findCount(context, search);
+  const result = await permitService.findCount(search);
   return result;
 }
 
@@ -27,12 +29,11 @@ export async function findCountPermit(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllPermit(
-  context: Context,
   search?: PermitSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await permitService.findAll(context, search, page, sort);
+  const result = await permitService.findAll(search, page, sort);
   return result;
 }
 
@@ -40,11 +41,10 @@ export async function findAllPermit(
  * 根据搜索条件导出
  */
 export async function exportExcelPermit(
-  context: Context,
   search?: PermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await permitService.exportExcel(context, search, sort);
+  const result = await permitService.exportExcel(search, sort);
   return result;
 }
 
@@ -52,10 +52,9 @@ export async function exportExcelPermit(
  * 根据条件查找第一条数据
  */
 export async function findOnePermit(
-  context: Context,
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await permitService.findOne(context, search);
+  const result = await permitService.findOne(search);
   return result;
 }
 
@@ -63,10 +62,9 @@ export async function findOnePermit(
  * 根据 id 查找一条数据
  */
 export async function findByIdPermit(
-  context: Context,
   id: string,
 ) {
-  const result = await permitService.findById(context, id);
+  const result = await permitService.findById(id);
   return result;
 }
 
@@ -74,11 +72,12 @@ export async function findByIdPermit(
  * 创建一条数据
  */
 export async function createPermit(
-  context: Context,
   model: PermitModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await permitService.create(context, model);
+  const result = await permitService.create(model);
   return result;
 }
 
@@ -86,12 +85,13 @@ export async function createPermit(
  * 根据id修改一条数据
  */
 export async function updateByIdPermit(
-  context: Context,
   id: string,
   model: PermitModel,
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await permitService.updateById(context, id, model);
+  const result = await permitService.updateById(id, model);
   return result;
 }
 
@@ -99,11 +99,12 @@ export async function updateByIdPermit(
  * 根据 ids 删除数据
  */
 export async function deleteByIdsPermit(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await permitService.deleteByIds(context, ids);
+  const result = await permitService.deleteByIds(ids);
   return result;
 }
 
@@ -111,10 +112,9 @@ export async function deleteByIdsPermit(
  * 导入权限
  */
 export async function importFilePermit(
-  context: Context,
   id: string,
 ) {
-  const result = await permitService.importFile(context, id);
+  const result = await permitService.importFile(id);
   return result;
 }
 
@@ -122,11 +122,12 @@ export async function importFilePermit(
  * 根据 ids 还原数据
  */
 export async function revertByIdsPermit(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await permitService.revertByIds(context, ids);
+  const result = await permitService.revertByIds(ids);
   return result;
 }
 
@@ -134,10 +135,11 @@ export async function revertByIdsPermit(
  * 根据 ids 彻底删除数据
  */
 export async function forceDeleteByIdsPermit(
-  context: Context,
   ids: string[],
 ) {
+  const context = useContext();
+  
   context.is_tran = true;
-  const result = await permitService.forceDeleteByIds(context, ids);
+  const result = await permitService.forceDeleteByIds(ids);
   return result;
 }

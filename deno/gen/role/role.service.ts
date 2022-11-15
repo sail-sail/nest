@@ -1,4 +1,3 @@
-import { type Context } from "/lib/context.ts";
 import { renderExcel } from "ejsexcel";
 import * as authDao from "/lib/auth/auth.dao.ts";
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
@@ -28,10 +27,9 @@ import * as roleDao from "./role.dao.ts";
  * @return {Promise<number>}
  */
 export async function findCount(
-  context: Context,
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
-  const result = await roleDao.findCount(context, search);
+  const result = await roleDao.findCount(search);
   return result;
 }
 
@@ -43,12 +41,11 @@ export async function findCount(
  * @return {Promise<RoleModel[]>} 
  */
 export async function findAll(
-  context: Context,
   search?: RoleSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel[]> {
-  const result: RoleModel[] = await roleDao.findAll(context, search, page, sort);
+  const result: RoleModel[] = await roleDao.findAll(search, page, sort);
   return result;
 }
 
@@ -57,10 +54,9 @@ export async function findAll(
  * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function findOne(
-  context: Context,
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
-  const result: RoleModel | undefined = await roleDao.findOne(context, search);
+  const result: RoleModel | undefined = await roleDao.findOne(search);
   return result;
 }
 
@@ -69,10 +65,9 @@ export async function findOne(
  * @param {string} id
  */
 export async function findById(
-  context: Context,
   id?: string,
 ) {
-  const result = await roleDao.findById(context, id);
+  const result = await roleDao.findById(id);
   return result;
 }
 
@@ -81,10 +76,9 @@ export async function findById(
  * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
 export async function exist(
-  context: Context,
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await roleDao.exist(context, search);
+  const result = await roleDao.exist(search);
   return result;
 }
 
@@ -93,10 +87,9 @@ export async function exist(
  * @param {string} id
  */
 export async function existById(
-  context: Context,
   id: string,
 ) {
-  const result = await roleDao.existById(context, id);
+  const result = await roleDao.existById(id);
   return result;
 }
 
@@ -106,10 +99,9 @@ export async function existById(
  * @return {Promise<string | undefined>} 
  */
 export async function create(
-  context: Context,
   model: RoleModel,
 ): Promise<string | undefined> {
-  const result = await roleDao.create(context, model);
+  const result = await roleDao.create(model);
   return result;
 }
 
@@ -120,11 +112,10 @@ export async function create(
  * @return {Promise<string | undefined>}
  */
 export async function updateById(
-  context: Context,
   id: string,
   model: RoleModel,
 ): Promise<string | undefined> {
-  await roleDao.updateById(context, id, model);
+  await roleDao.updateById(id, model);
   return id;
 }
 
@@ -134,10 +125,9 @@ export async function updateById(
  * @return {Promise<number>}
  */
 export async function deleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await roleDao.deleteByIds(context, ids);
+  const result = await roleDao.deleteByIds(ids);
   return result;
 }
 
@@ -147,10 +137,9 @@ export async function deleteByIds(
  * @return {Promise<number>}
  */
 export async function revertByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await roleDao.revertByIds(context, ids);
+  const result = await roleDao.revertByIds(ids);
   return result;
 }
 
@@ -160,10 +149,9 @@ export async function revertByIds(
  * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
-  context: Context,
   ids: string[],
 ): Promise<number> {
-  const result = await roleDao.forceDeleteByIds(context, ids);
+  const result = await roleDao.forceDeleteByIds(ids);
   return result;
 }
 
@@ -172,7 +160,6 @@ export async function forceDeleteByIds(
  * @param {string} id
  */
 export async function importFile(
-  context: Context,
   id: string,
 ) {
   const header: { [key: string]: string } = {
@@ -190,7 +177,7 @@ export async function importFile(
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     try {
-      await roleDao.create(context, model, { uniqueType: "update" });
+      await roleDao.create(model, { uniqueType: "update" });
       succNum++;
     } catch (err) {
       failNum++;
@@ -219,11 +206,10 @@ export async function importFile(
  * @return {Promise<string>} 临时文件id
  */
 export async function exportExcel(
-  context: Context,
   search?: RoleSearch & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {
-  const models = await findAll(context, search, undefined, sort);
+  const models = await findAll(search, undefined, sort);
   const buffer0 = await getTemplate(`role.xlsx`);
   if (!buffer0) {
     throw new ServiceException(`模板文件 role.xlsx 不存在!`);
