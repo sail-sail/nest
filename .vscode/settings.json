@@ -79,5 +79,6 @@
   "references.preferredLocation": "peek",
   "typescript.suggest.autoImports": false,
   "typescript.updateImportsOnFileMove.enabled": "never",
-  "unocss.colorPreview": false
+  "unocss.colorPreview": false,
+  "files.eol": "\n"
 }

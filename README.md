@@ -1,3 +1,7 @@
+```
+git config --global core.autocrlf false
+```
+
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
