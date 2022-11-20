@@ -1297,8 +1297,6 @@ export async function updateDeptById(
   const table = "<#=table#>";
   const method = "updateDeptById";
   
-  const context = useContext();
-  
   const deptExist = await existByIdDept(dept_id);
   if (!deptExist) {
     return 0;
