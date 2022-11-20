@@ -6,7 +6,7 @@ import {
 
 import {
   TMP_PATH,
-  useContext,
+  error,
 } from "/lib/context.ts";
 
 import * as tmpfileServie from "./tmpfile.service.ts";
@@ -102,8 +102,7 @@ async function download(ctx: RouterContext<any>) {
       response.body = errMsg;
       return;
     }
-    const context = useContext();
-    context.error(err);
+    error(err);
     const errMsg = err?.message || err?.toString() || err || "";
     response.status = 500;
     response.body = errMsg;

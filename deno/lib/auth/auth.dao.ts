@@ -20,10 +20,16 @@ import {
 } from "jose/util/errors.ts";
 
 import {
+  getAuthorization,
   useContext,
 } from "/lib/context.ts";
 
 import { getEnv } from "/lib/env.ts";
+
+export async function getAuthModel<T extends AuthModel>(): Promise<T>;
+export async function getAuthModel<T extends AuthModel>(notVerifyToken: false): Promise<T | undefined>;
+export async function getAuthModel<T extends AuthModel>(notVerifyToken: true): Promise<T>;
+export async function getAuthModel<T extends AuthModel>(notVerifyToken: boolean): Promise<T | undefined>;
 
 export async function getAuthModel<T extends AuthModel>(
   notVerifyToken?: boolean,
@@ -35,7 +41,7 @@ export async function getAuthModel<T extends AuthModel>(
     return authModel;
   }
   const response = context.oakCtx?.response;
-  const authorization = context.getAuthorization();
+  const authorization = getAuthorization();
   if (notVerifyToken == null) {
     notVerifyToken = context.notVerifyToken;
   }

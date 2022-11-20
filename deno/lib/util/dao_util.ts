@@ -1,5 +1,13 @@
 import {
+  escapeId,
+} from "sqlstring";
+
+import {
+  query,
+  queryOne,
   useContext,
+  execute,
+  reqDate,
 } from "/lib/context.ts";
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
@@ -21,7 +29,6 @@ export async function setModelIds(
   models: any[],
   flds: { table: string, fld: string, lbl: string }[],
 ) {
-  const context = useContext();
   for (let f = 0; f < flds.length; f++) {
     const item = flds[f];
     for (let i = 0; i < models.length; i++) {
@@ -32,7 +39,7 @@ export async function setModelIds(
         }
         if (!Array.isArray(model[item.fld]) && item.lbl) {
           const id = model[item.fld];
-          const _id = (await context.queryOne<{ lbl: string }>(`
+          const _id = (await queryOne<{ lbl: string }>(`
             select t.${ item.lbl } as lbl
             from ${ item.table } t
             where
@@ -47,7 +54,7 @@ export async function setModelIds(
             if (!id) {
               _ids.push(undefined);
             } else {
-              const lbl = (await context.queryOne<{ lbl: string }>(`
+              const lbl = (await queryOne<{ lbl: string }>(`
                 select t.${ item.lbl } as lbl
                 from ${ item.table } t
                 where
@@ -84,7 +91,7 @@ export async function many2manyUpdate(
   // deno-lint-ignore no-explicit-any
   let models: any[] = [ ];
   if (model.id) {
-    models = await context.query<{
+    models = await query<{
       id: string,
       column1Id: string,
       column2Id: string,
@@ -92,37 +99,37 @@ export async function many2manyUpdate(
     }>(/*sql*/ `
       select
         t.id,
-        t.${ context.escapeId(many.column1) } column1Id,
-        t.${ context.escapeId(many.column2) } column2Id,
+        t.${ escapeId(many.column1) } column1Id,
+        t.${ escapeId(many.column2) } column2Id,
         t.is_deleted
-      from ${ context.escapeId(many.table) } t
+      from ${ escapeId(many.table) } t
       where
-        t.${ context.escapeId(many.column1) } = ?
+        t.${ escapeId(many.column1) } = ?
     `, [ model.id ]);
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       if (column2Ids.includes(model.column2Id) && model.is_deleted === 1) {
         const sql = /*sql*/ `
           update
-            ${ context.escapeId(many.table) }
+            ${ escapeId(many.table) }
           set
             is_deleted = 0
             ,delete_time = ?
           where
             id = ?
         `;
-        await context.execute(sql, [ context.getReqDate(), model.id ]);
+        await execute(sql, [ reqDate(), model.id ]);
       } else if (!column2Ids.includes(model.column2Id) && model.is_deleted === 0) {
         const sql = /*sql*/ `
           update
-            ${ context.escapeId(many.table) }
+            ${ escapeId(many.table) }
           set
             is_deleted = 1
             ,delete_time = ?
           where
             id = ?
         `;
-        await context.execute(sql, [ context.getReqDate(), model.id ]);
+        await execute(sql, [ reqDate(), model.id ]);
       }
     }
   }
@@ -148,7 +155,7 @@ export async function many2manyUpdate(
       sql += `,${ many.column1 },${ many.column2 }`;
       sql += `) values(?,?`;
       args.push(id);
-      args.push(context.getReqDate());
+      args.push(reqDate());
       if (many.column1 !== "tenant_id" && many.column2 !== "tenant_id") {
         if (tenant_id) {
           sql += `,?`;
@@ -164,7 +171,7 @@ export async function many2manyUpdate(
       sql += `,?`;
       args.push(column2Id);
       sql += `)`;
-      await context.execute(sql, args);
+      await execute(sql, args);
     }
   }
 }

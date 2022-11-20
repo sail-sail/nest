@@ -4,7 +4,7 @@ import {
 } from "oak";
 
 import {
-  getContext,
+  log,
 } from "/lib/context.ts";
 
 export function timing(): Middleware {
@@ -17,9 +17,6 @@ export function timing(): Middleware {
     await next();
     const rt = Math.floor(performance.now() - start);
     ctx.response.headers.set("X-Response-Time", `${ rt }ms`);
-    const context = getContext(ctx);
-    if (context) {
-      context.log(`${ rt }ms`);
-    }
+    log(`${ rt }ms`);
   };
 }

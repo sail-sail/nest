@@ -1,5 +1,5 @@
 import {
-  useContext,
+  clearCache as clearCacheCtx,
 } from "/lib/context.ts";
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
@@ -14,8 +14,6 @@ export function generateId() {
  */
 export async function clearCache(
 ): Promise<boolean> {
-  const context = useContext();
-  
-  await context.clearCache();
+  await clearCacheCtx();
   return true;
 }

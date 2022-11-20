@@ -1,4 +1,8 @@
-import { useContext } from "/lib/context.ts";
+import {
+  useContext,
+  query,
+  queryOne,
+} from "/lib/context.ts";
 
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { QueryArgs } from "/lib/query_args.ts";
@@ -18,7 +22,6 @@ export async function findLoginUsr(
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
 ) {
-  const context = useContext();
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
@@ -33,7 +36,7 @@ export async function findLoginUsr(
       and t.tenant_id = ${ args.push(tenant_id) }
     limit 1 
   `;
-  const result = await context.queryOne<{
+  const result = await queryOne<{
     id: string,
     default_dept_id: string,
   }>(sql, args);
@@ -43,7 +46,6 @@ export async function findLoginUsr(
 export async function getDept_idsById(
   id: string,
 ) {
-  const context = useContext();
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
@@ -54,7 +56,7 @@ export async function getDept_idsById(
       t.is_deleted = 0
       and t.usr_id = ${ args.push(id) }
   `;
-  const result = await context.query<{
+  const result = await query<{
     dept_id: string,
   }>(sql, args);
   return (result || [ ]).map((item) => item.dept_id);
@@ -83,7 +85,7 @@ async function getTenant_idByWx_usr() {
   interface Result {
     tenant_id?: string;
   }
-  const model = await context.queryOne<Result>(
+  const model = await queryOne<Result>(
     sql,
     args,
     {
@@ -129,7 +131,7 @@ export async function getTenant_id(
     interface Result {
       tenant_id?: string;
     }
-    const model = await context.queryOne<Result>(
+    const model = await queryOne<Result>(
       sql,
       args,
       {

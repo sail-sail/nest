@@ -10,13 +10,11 @@ import * as authService from "/lib/auth/auth.service.ts";
 export async function deptLoginSelect(
   dept_id: string,
 ): Promise<Mutation["deptLoginSelect"]> {
-  const authModel = (await getAuthModel())!;
+  const authModel = await getAuthModel();
   if (authModel.dept_id === dept_id) {
     return "";
   }
-  const usrModel = await usrDao.findById(
-    authModel.id,
-  );
+  const usrModel = await usrDao.findById(authModel.id);
   const dept_ids = usrModel?.dept_ids || [ ];
   if (!dept_ids.includes(dept_id)) {
     throw `dept_id: ${ dept_id } dose not exit in login usr`;

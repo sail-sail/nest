@@ -1,5 +1,6 @@
 import {
-  useContext,
+  query,
+  queryOne,
 } from "/lib/context.ts";
 
 import { QueryArgs } from "/lib/query_args.ts";
@@ -18,8 +19,6 @@ import { getTenant_id } from "/src/usr/usr.dao.ts";
  * @return {{host: string}} 网址
  */
 export async function getHostTenant(): Promise<typeof result> {
-  const context = useContext();
-  
   const { id: usr_id } = await getAuthModel() as AuthModel;
   const tenant_id = await getTenant_id(usr_id);
   const args = new QueryArgs();
@@ -35,15 +34,13 @@ export async function getHostTenant(): Promise<typeof result> {
   interface Result {
     host: string,
   }
-  const result = await context.queryOne<Result>(sql, args)
+  const result = await queryOne<Result>(sql, args)
   return result;
 }
 
 export async function getLoginTenants(
   _host: string,
 ): Promise<typeof result> {
-  const context = useContext();
-  
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -61,6 +58,6 @@ export async function getLoginTenants(
     id: string,
     lbl: string,
   }
-  const result = await context.query<Result>(sql, args)
+  const result = await query<Result>(sql, args)
   return result;
 }

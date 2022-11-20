@@ -5,8 +5,8 @@ import {
 } from "oak";
 
 import {
+  error,
   TMP_PATH,
-  useContext,
 } from "/lib/context.ts";
 
 import * as ossServie from "./oss.service.ts";
@@ -108,8 +108,7 @@ async function download(ctx: RouterContext<any>) {
       response.body = errMsg;
       return;
     }
-    const context = useContext();
-    context.error(err);
+    error(err);
     const errMsg = err?.message || err?.toString() || err || "";
     response.status = 500;
     response.body = errMsg;

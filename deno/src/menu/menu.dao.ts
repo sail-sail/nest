@@ -1,5 +1,5 @@
 import {
-  useContext,
+  query,
 } from "/lib/context.ts";
 
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
@@ -10,8 +10,6 @@ async function _getMenus(
   type?: string,
   menu_id?: string,
 ) {
-  const context = useContext();
-  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
@@ -59,7 +57,7 @@ async function _getMenus(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  const result = await context.query<{
+  const result = await query<{
     id: string,
     type: string,
     menu_id: string,

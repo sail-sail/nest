@@ -1,6 +1,17 @@
 // deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  escapeId,
+  escape,
+} from "sqlstring";
+
+import {
+  log,
+  escapeDec,
+  reqDate,
+  delCache as delCacheCtx,
+  query,
+  queryOne,
+  execute,
 } from "/lib/context.ts";
 
 import {
@@ -111,8 +122,6 @@ export async function findCount(
   const table = "permit";
   const method = "findCount";
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
@@ -135,7 +144,7 @@ export async function findCount(
   interface Result {
     total: number,
   }
-  const model = await context.queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
   let result = model?.total || 0;
   
   return result;
@@ -155,8 +164,6 @@ export async function findAll(
 ) {
   const table = "permit";
   const method = "findAll";
-  
-  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -183,7 +190,7 @@ export async function findAll(
     } else {
       sql += `,`;
     }
-    sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
+    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
   
   // 分页
@@ -195,7 +202,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await context.query<PermitModel>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<PermitModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -377,8 +384,6 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -397,7 +402,10 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await context.queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let model = await queryOne<Result>(
+    sql,
+    args,{ cacheKey1, cacheKey2 },
+  );
   let result = !!model?.e;
   
   return result;
@@ -425,8 +433,6 @@ export async function create(
   }
   const table = "permit";
   const method = "create";
-  
-  const context = useContext();
   
   // 菜单
   if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
@@ -470,7 +476,7 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,\`rem\``;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
+  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   {
     const authModel = await getAuthModel();
     if (authModel?.id !== undefined) {
@@ -488,7 +494,7 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   
   await delCache();
   
@@ -502,10 +508,8 @@ export async function delCache() {
   const table = "permit";
   const method = "delCache";
   
-  const context = useContext();
-  
   const cacheKey1 = `dao.sql.${ table }`;
-  await context.delCache(cacheKey1);
+  await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [
     "menu",
   ];
@@ -513,7 +517,7 @@ export async function delCache() {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
     const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await context.delCache(cacheKey1);
+    await delCacheCtx(cacheKey1);
   }
 }
 
@@ -539,8 +543,6 @@ export async function updateById(
 ): Promise<string | undefined> {
   const table = "permit";
   const method = "updateById";
-  
-  const context = useContext();
   
   if (!id || !model) {
     return id;
@@ -572,7 +574,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update permit set update_time = ${ args.push(context.getReqDate()) }
+    update permit set update_time = ${ args.push(reqDate()) }
   `;
   let updateFldNum = 0;
   if (model.menu_id !== undefined) {
@@ -601,7 +603,7 @@ export async function updateById(
       }
     }
     sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
   }
   
   if (updateFldNum > 0) {
@@ -628,8 +630,6 @@ export async function deleteByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
@@ -643,12 +643,12 @@ export async function deleteByIds(
         permit
       set
         is_deleted = 1,
-        delete_time = ${ args.push(context.getReqDate()) }
+        delete_time = ${ args.push(reqDate()) }
       where
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   
@@ -674,8 +674,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -689,7 +687,7 @@ export async function revertByIds(
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   await delCache();
@@ -714,8 +712,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -729,8 +725,8 @@ export async function revertByIds(
         where
           id = ${ args.push(id) }
       `;
-      const model = await context.queryOne(sql, args);
-      context.log("forceDeleteByIds:", model);
+      const model = await queryOne(sql, args);
+      log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
     const sql = /*sql*/ `
@@ -741,7 +737,7 @@ export async function revertByIds(
         and is_deleted = 1
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   await delCache();

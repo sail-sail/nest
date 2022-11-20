@@ -1,6 +1,17 @@
 // deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  escapeId,
+  escape,
+} from "sqlstring";
+
+import {
+  log,
+  escapeDec,
+  reqDate,
+  delCache as delCacheCtx,
+  query,
+  queryOne,
+  execute,
 } from "/lib/context.ts";
 
 import {
@@ -183,8 +194,6 @@ export async function findCount(
   const table = "operation_record";
   const method = "findCount";
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
@@ -204,7 +213,7 @@ export async function findCount(
   interface Result {
     total: number,
   }
-  const model = await context.queryOne<Result>(sql, args);
+  const model = await queryOne<Result>(sql, args);
   let result = model?.total || 0;
   
   return result;
@@ -224,8 +233,6 @@ export async function findAll(
 ) {
   const table = "operation_record";
   const method = "findAll";
-  
-  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -253,7 +260,7 @@ export async function findAll(
     } else {
       sql += `,`;
     }
-    sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
+    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
   
   // 分页
@@ -261,7 +268,7 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  let result = await context.query<Operation_RecordModel>(sql, args);
+  let result = await query<Operation_RecordModel>(sql, args);
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -439,8 +446,6 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -456,7 +461,10 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await context.queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+  );
   let result = !!model?.e;
   
   return result;
@@ -484,8 +492,6 @@ export async function create(
   }
   const table = "operation_record";
   const method = "create";
-  
-  const context = useContext();
   
   const oldModel = await findByUnique(model, options);
   if (oldModel) {
@@ -542,7 +548,7 @@ export async function create(
   if (model.update_time !== undefined) {
     sql += `,\`update_time\``;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
+  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -582,7 +588,7 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   
   return model.id;
 }
@@ -604,8 +610,6 @@ export async function updateTenantById(
   const table = "operation_record";
   const method = "updateTenantById";
   
-  const context = useContext();
-  
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
@@ -616,12 +620,12 @@ export async function updateTenantById(
     update
       operation_record
     set
-      update_time = ${ args.push(context.getReqDate()) },
+      update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
     where
       id = ${ args.push(id) }
   `;
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   const num = result.affectedRows;
   return num;
 }
@@ -650,8 +654,6 @@ export async function updateById(
   const table = "operation_record";
   const method = "updateById";
   
-  const context = useContext();
-  
   if (!id || !model) {
     return id;
   }
@@ -678,7 +680,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update operation_record set update_time = ${ args.push(context.getReqDate()) }
+    update operation_record set update_time = ${ args.push(reqDate()) }
   `;
   let updateFldNum = 0;
   if (model.mod !== undefined) {
@@ -725,7 +727,7 @@ export async function updateById(
       }
     }
     sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
   }
   
   return id;
@@ -748,8 +750,6 @@ export async function deleteByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
@@ -763,12 +763,12 @@ export async function deleteByIds(
         operation_record
       set
         is_deleted = 1,
-        delete_time = ${ args.push(context.getReqDate()) }
+        delete_time = ${ args.push(reqDate()) }
       where
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   
@@ -792,8 +792,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -807,7 +805,7 @@ export async function revertByIds(
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   
@@ -831,8 +829,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -846,8 +842,8 @@ export async function revertByIds(
         where
           id = ${ args.push(id) }
       `;
-      const model = await context.queryOne(sql, args);
-      context.log("forceDeleteByIds:", model);
+      const model = await queryOne(sql, args);
+      log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
     const sql = /*sql*/ `
@@ -858,7 +854,7 @@ export async function revertByIds(
         and is_deleted = 1
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   

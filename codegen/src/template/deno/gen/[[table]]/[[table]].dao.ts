@@ -10,7 +10,18 @@ const Table_Up = tableUp.split("_").map(function(item) {
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  escapeId,
+  escape,
+} from "sqlstring";
+
+import {
+  log,
+  escapeDec,
+  reqDate,
+  delCache as delCacheCtx,
+  query,
+  queryOne,
+  execute,
 } from "/lib/context.ts";
 
 import {
@@ -330,8 +341,6 @@ export async function findCount(
   const table = "<#=table#>";
   const method = "findCount";
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
@@ -358,7 +367,7 @@ export async function findCount(
   interface Result {
     total: number,
   }
-  const model = await context.queryOne<Result>(sql, args<#
+  const model = await queryOne<Result>(sql, args<#
   if (cache) {
   #>, { cacheKey1, cacheKey2 }<#
   }
@@ -382,8 +391,6 @@ export async function findAll(
 ) {
   const table = "<#=table#>";
   const method = "findAll";
-  
-  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -439,7 +446,7 @@ export async function findAll(
     } else {
       sql += `,`;
     }
-    sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
+    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }<#
   } else {
   #>
@@ -458,7 +465,7 @@ export async function findAll(
     } else {
       sql += `,`;
     }
-    sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
+    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }<#
   }
   #>
@@ -476,7 +483,7 @@ export async function findAll(
   }
   #>
   
-  let result = await context.query<<#=Table_Up#>Model>(sql, args<#
+  let result = await query<<#=Table_Up#>Model>(sql, args<#
   if (cache) {
   #>, { cacheKey1, cacheKey2 }<#
   }
@@ -724,9 +731,7 @@ export async function findSummary(
   },
 ): Promise<<#=Table_Up#>Summary> {
   const table = "<#=table#>";
-  const method = "findSummary";
-  
-  const context = useContext();<#
+  const method = "findSummary";<#
   const findSummaryColumns = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -762,7 +767,7 @@ export async function findSummary(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  const model = (await context.queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
+  const model = (await queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
   
   return model;
 }<#
@@ -829,8 +834,6 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -853,11 +856,14 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await context.queryOne<Result>(sql, args<#
-  if (cache) {
-  #>, { cacheKey1, cacheKey2 }<#
-  }
-  #>);
+  let model = await queryOne<Result>(
+    sql,
+    args,<#
+    if (cache) {
+    #>{ cacheKey1, cacheKey2 },<#
+    }
+    #>
+  );
   let result = !!model?.e;
   
   return result;
@@ -884,9 +890,7 @@ export async function create(
     return;
   }
   const table = "<#=table#>";
-  const method = "create";
-  
-  const context = useContext();<#
+  const method = "create";<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -966,7 +970,7 @@ export async function create(
     interface Result {
       id: string;
     }
-    const models = await context.query<Result>(sql, args);
+    const models = await query<Result>(sql, args);
     model.<#=column_name#> = models.map((item: { id: string }) => item.id);
   }<#
     }
@@ -1064,7 +1068,7 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;<#
+  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;<#
   if (hasTenant_id) {
   #>
   {
@@ -1138,7 +1142,7 @@ export async function create(
   #>
   sql += `)`;
   
-  const result = await context.execute(sql, args);<#
+  const result = await execute(sql, args);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1189,10 +1193,8 @@ export async function delCache() {
   const table = "<#=table#>";
   const method = "delCache";
   
-  const context = useContext();
-  
   const cacheKey1 = `dao.sql.${ table }`;
-  await context.delCache(cacheKey1);
+  await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1222,7 +1224,7 @@ export async function delCache() {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
     const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await context.delCache(cacheKey1);
+    await delCacheCtx(cacheKey1);
   }
 }<#
 }
@@ -1247,8 +1249,6 @@ export async function updateTenantById(
   const table = "<#=table#>";
   const method = "updateTenantById";
   
-  const context = useContext();
-  
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
@@ -1259,12 +1259,12 @@ export async function updateTenantById(
     update
       <#=table#>
     set
-      update_time = ${ args.push(context.getReqDate()) },
+      update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
     where
       id = ${ args.push(id) }
   `;
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
   #>
@@ -1309,12 +1309,12 @@ export async function updateDeptById(
     update
       <#=table#>
     set
-      update_time = ${ args.push(context.getReqDate()) },
+      update_time = ${ args.push(reqDate()) },
       dept_id = ${ args.push(dept_id) }
     where
       id = ${ args.push(id) }
   `;
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
   #>
@@ -1359,8 +1359,6 @@ export async function updateById(
 ): Promise<string | undefined> {
   const table = "<#=table#>";
   const method = "updateById";
-  
-  const context = useContext();
   
   if (!id || !model) {
     return id;
@@ -1471,7 +1469,7 @@ export async function updateById(
     interface Result {
       id: string;
     }
-    const models = await context.query<Result>(sql, args);
+    const models = await query<Result>(sql, args);
     model.<#=column_name#> = models.map((item: { id: string }) => item.id);
   }<#
     }
@@ -1496,7 +1494,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update <#=table#> set update_time = ${ args.push(context.getReqDate()) }
+    update <#=table#> set update_time = ${ args.push(reqDate()) }
   `;
   let updateFldNum = 0;<#
   for (let i = 0; i < columns.length; i++) {
@@ -1563,7 +1561,7 @@ export async function updateById(
       }
     }
     sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
   }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1627,8 +1625,6 @@ export async function deleteByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
@@ -1651,12 +1647,12 @@ export async function deleteByIds(
         <#=table#>
       set
         is_deleted = 1,
-        delete_time = ${ args.push(context.getReqDate()) }
+        delete_time = ${ args.push(reqDate()) }
       where
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
   if (cache) {
@@ -1710,15 +1706,13 @@ export async function lockByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     update
       <#=table#>
     set
       is_locked = ${ args.push(is_locked) },
-      update_time = ${ args.push(context.getReqDate()) }
+      update_time = ${ args.push(reqDate()) }
     
   `;
   {
@@ -1732,7 +1726,7 @@ export async function lockByIds(
   where
       id in ${ args.push(ids) }
   `;
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
   #>
@@ -1763,8 +1757,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1778,7 +1770,7 @@ export async function revertByIds(
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
   if (cache) {
@@ -1807,8 +1799,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1822,8 +1812,8 @@ export async function revertByIds(
         where
           id = ${ args.push(id) }
       `;
-      const model = await context.queryOne(sql, args);
-      context.log("forceDeleteByIds:", model);
+      const model = await queryOne(sql, args);
+      log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
     const sql = /*sql*/ `
@@ -1834,7 +1824,7 @@ export async function revertByIds(
         and is_deleted = 1
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
   if (cache) {
@@ -1858,8 +1848,6 @@ export async function findLastOrderBy(
 ): Promise<number> {
   const table = "<#=table#>";
   const method = "findLastOrderBy";
-  
-  const context = useContext();
   
   let sql = /*sql*/ `
     select
@@ -1902,7 +1890,7 @@ export async function findLastOrderBy(
   interface Result {
     order_by: number;
   }
-  let model = await context.queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(sql, args);
   let result = model?.order_by ?? 0;
   
   return result;

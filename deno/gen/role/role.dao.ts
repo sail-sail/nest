@@ -1,6 +1,17 @@
 // deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  escapeId,
+  escape,
+} from "sqlstring";
+
+import {
+  log,
+  escapeDec,
+  reqDate,
+  delCache as delCacheCtx,
+  query,
+  queryOne,
+  execute,
 } from "/lib/context.ts";
 
 import {
@@ -149,8 +160,6 @@ export async function findCount(
   const table = "role";
   const method = "findCount";
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
@@ -173,7 +182,7 @@ export async function findCount(
   interface Result {
     total: number,
   }
-  const model = await context.queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
   let result = model?.total || 0;
   
   return result;
@@ -193,8 +202,6 @@ export async function findAll(
 ) {
   const table = "role";
   const method = "findAll";
-  
-  const context = useContext();
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -222,7 +229,7 @@ export async function findAll(
     } else {
       sql += `,`;
     }
-    sql += ` ${ context.escapeId(item.prop) } ${ context.escapeDec(item.order) }`;
+    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
   
   // 分页
@@ -234,7 +241,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await context.query<RoleModel>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<RoleModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     // 启用
@@ -424,8 +431,6 @@ export async function existById(
     throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
   }
   
-  const context = useContext();
-  
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -444,7 +449,10 @@ export async function existById(
   interface Result {
     e: number,
   }
-  let model = await context.queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let model = await queryOne<Result>(
+    sql,
+    args,{ cacheKey1, cacheKey2 },
+  );
   let result = !!model?.e;
   
   return result;
@@ -472,8 +480,6 @@ export async function create(
   }
   const table = "role";
   const method = "create";
-  
-  const context = useContext();
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
@@ -503,7 +509,7 @@ export async function create(
     interface Result {
       id: string;
     }
-    const models = await context.query<Result>(sql, args);
+    const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
@@ -547,7 +553,7 @@ export async function create(
   if (model.is_enabled !== undefined) {
     sql += `,\`is_enabled\``;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(context.getReqDate()) }`;
+  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   {
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
@@ -572,7 +578,7 @@ export async function create(
   }
   sql += `)`;
   
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   // 菜单
   await many2manyUpdate(model, "menu_ids", { table: "role_menu", column1: "role_id", column2: "menu_id" });
   
@@ -588,10 +594,8 @@ export async function delCache() {
   const table = "role";
   const method = "delCache";
   
-  const context = useContext();
-  
   const cacheKey1 = `dao.sql.${ table }`;
-  await context.delCache(cacheKey1);
+  await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [
     "role_menu",
     "menu",
@@ -600,7 +604,7 @@ export async function delCache() {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
     const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await context.delCache(cacheKey1);
+    await delCacheCtx(cacheKey1);
   }
 }
 
@@ -621,8 +625,6 @@ export async function updateTenantById(
   const table = "role";
   const method = "updateTenantById";
   
-  const context = useContext();
-  
   const tenantExist = await existByIdTenant(tenant_id);
   if (!tenantExist) {
     return 0;
@@ -633,12 +635,12 @@ export async function updateTenantById(
     update
       role
     set
-      update_time = ${ args.push(context.getReqDate()) },
+      update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
     where
       id = ${ args.push(id) }
   `;
-  const result = await context.execute(sql, args);
+  const result = await execute(sql, args);
   const num = result.affectedRows;
   
   await delCache();
@@ -668,8 +670,6 @@ export async function updateById(
 ): Promise<string | undefined> {
   const table = "role";
   const method = "updateById";
-  
-  const context = useContext();
   
   if (!id || !model) {
     return id;
@@ -708,7 +708,7 @@ export async function updateById(
     interface Result {
       id: string;
     }
-    const models = await context.query<Result>(sql, args);
+    const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
@@ -729,7 +729,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update role set update_time = ${ args.push(context.getReqDate()) }
+    update role set update_time = ${ args.push(reqDate()) }
   `;
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
@@ -758,7 +758,7 @@ export async function updateById(
       }
     }
     sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
   }
   
   updateFldNum++;
@@ -789,8 +789,6 @@ export async function deleteByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const args = new QueryArgs();
@@ -804,12 +802,12 @@ export async function deleteByIds(
         role
       set
         is_deleted = 1,
-        delete_time = ${ args.push(context.getReqDate()) }
+        delete_time = ${ args.push(reqDate()) }
       where
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   
@@ -835,8 +833,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -850,7 +846,7 @@ export async function revertByIds(
         id = ${ args.push(id) }
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   await delCache();
@@ -875,8 +871,6 @@ export async function revertByIds(
     return 0;
   }
   
-  const context = useContext();
-  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -890,8 +884,8 @@ export async function revertByIds(
         where
           id = ${ args.push(id) }
       `;
-      const model = await context.queryOne(sql, args);
-      context.log("forceDeleteByIds:", model);
+      const model = await queryOne(sql, args);
+      log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
     const sql = /*sql*/ `
@@ -902,7 +896,7 @@ export async function revertByIds(
         and is_deleted = 1
       limit 1
     `;
-    const result = await context.execute(sql, args);
+    const result = await execute(sql, args);
     num += result.affectedRows;
   }
   await delCache();

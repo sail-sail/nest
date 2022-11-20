@@ -4,6 +4,7 @@ import {
 } from "oak";
 
 import {
+  error,
   newContext,
   runInAsyncHooks,
 } from "/lib/context.ts";
@@ -15,7 +16,7 @@ export function createContext(): Middleware {
       try {
         await next();
       } catch (err) {
-        context.error(err);
+        error(err);
         ctx.response.body = {
           code: 1,
           msg: err?.message || err?.toString() || "",

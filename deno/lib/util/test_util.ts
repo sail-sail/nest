@@ -4,22 +4,32 @@ import "/lib/env.ts";
 import "/lib/util/date_util.ts";
 
 import {
-  Context,
+  close,
+  commit,
+  rollback,
+  newContext,
+  runInAsyncHooks,
 } from "/lib/context.ts";
 
-export function wrap(callback: (context: Context) => Promise<void>) {
+export function wrap(callback: () => Promise<void>) {
   return async () => {
-    const context = new Context();
+    // deno-lint-ignore no-explicit-any
+    const context = newContext(undefined as any);
     context.notVerifyToken = true;
     context.is_tran = true;
-    try {
-      await callback(context);
-    } catch(err) {
-      await context.rollback();
-      throw err;
-    } finally {
-      await context.commit();
-      await context.close();
-    }
+    await runInAsyncHooks(
+      context,
+      async () => {
+        try {
+          await callback();
+        } catch(err) {
+          await rollback();
+          throw err;
+        } finally {
+          await commit();
+          await close();
+        }
+      },
+    );
   };
 }

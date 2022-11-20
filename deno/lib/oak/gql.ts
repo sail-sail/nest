@@ -3,6 +3,10 @@ import {
 } from "oak";
 
 import {
+  commit,
+  log,
+  error,
+  rollback,
   useContext,
 } from "/lib/context.ts";
 
@@ -211,19 +215,19 @@ gqlRouter.post("/graphql", async function(ctx) {
       const errors = result.errors as GraphQLError[];
       if (errors && errors.length > 0) {
         if (errors.length === 1) {
-          const error = errors[0];
-          if (error.originalError instanceof ServiceException) {
+          const err = errors[0];
+          if (err.originalError instanceof ServiceException) {
             result.errors = [
               {
-                code: error.originalError.code,
-                message: error.originalError.message,
+                code: err.originalError.code,
+                message: err.originalError.message,
               }
             ];
-            context.log(error.originalError.message);
-            if (error.originalError._rollback !== false) {
-              await context.rollback();
+            log(err.originalError.message);
+            if (err.originalError._rollback !== false) {
+              await rollback();
             } else {
-              await context.commit();
+              await commit();
             }
           } else if (isValidationError) {
             const message = errors[0].message;
@@ -232,20 +236,20 @@ gqlRouter.post("/graphql", async function(ctx) {
                 message,
               }
             ];
-            context.log(`GraphQL Query Error: ${ message }`);
-          } else if (error.originalError?.name === "NonErrorThrown") {
+            log(`GraphQL Query Error: ${ message }`);
+          } else if (err.originalError?.name === "NonErrorThrown") {
             // deno-lint-ignore no-explicit-any
-            const message = (error.originalError as any).thrownValue;
+            const message = (err.originalError as any).thrownValue;
             result.errors = [
               {
                 message,
               }
             ];
-            await context.rollback();
-            context.log(message);
+            await rollback();
+            log(message);
           } else {
-            context.error(error);
-            await context.rollback();
+            error(err);
+            await rollback();
             let msg = "";
             const errLen = errors.length;
             for (let i = 0; i < errLen; i++) {
@@ -262,24 +266,24 @@ gqlRouter.post("/graphql", async function(ctx) {
             ];
           }
         } else {
-          await context.rollback();
+          await rollback();
           let msg = "";
           for (let i = 0; i < errors.length; i++) {
             const error: GraphQLError = errors[i];
             msg += error.toString() + "\n";
           }
-          context.error(msg);
+          error(msg);
         }
       } else {
-        await context.commit();
+        await commit();
       }
     } catch (err) {
-      context.error(err);
-      await context.rollback();
+      error(err);
+      await rollback();
     }
     ctx.response.body = result;
   } catch (err) {
-    context.error(err);
+    error(err);
     ctx.response.body = {
       errors: [
         {
