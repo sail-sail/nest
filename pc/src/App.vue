@@ -101,6 +101,12 @@ html,body {
   font-size: var(--el-font-size-base);
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
 #app {
   flex: 1 0 0;

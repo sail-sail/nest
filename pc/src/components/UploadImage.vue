@@ -1,6 +1,10 @@
 <template>
 <div
-  style="width: 100%;height: 100%;position: relative;"
+  un-w="full"
+  un-h="full"
+  un-pos-relative
+  :un-border="urlList.length === 0 ? '~ gray-200 dark:gray-500' : ''"
+  un-rounded
   @mouseenter="imgMouseenter"
   @mouseleave="imgMouseleave"
 >
@@ -9,9 +13,20 @@
     :src="urlList[nowIndex]"
   >
     <template #placeholder>
-      <el-icon un-color="gray">
-        <Loading></Loading>
-      </el-icon>
+      <div
+        un-w="full"
+        un-h="full"
+        un-flex="~ [1_0_0] col"
+        un-overflow-hidden
+        un-justify-center
+        un-items-center
+      >
+        <el-icon
+          color="gray"
+        >
+          <Loading></Loading>
+        </el-icon>
+      </div>
     </template>
     <template #error>
       <div
@@ -22,19 +37,22 @@
         un-justify-center
         un-items-center
       >
+        
         <el-icon
           v-if="indexStore.loading > 0"
-          un-color="gray"
+          color="gray"
         >
           <Loading></Loading>
         </el-icon>
+        
         <el-icon
           v-else
-          un-color="red"
-          :size="35"
+          color="gray"
+          :size="28"
         >
           <Picture></Picture>
         </el-icon>
+        
       </div>
     </template>
   </el-image>
@@ -42,60 +60,83 @@
     <div
       v-if="showUpload"
       class="upload_div"
+      un-rounded
     >
+      
       <div class="upload_toolbar">
-        <el-button
-          plain
-          type="primary"
+        
+        <ElIcon
+          size="22"
+          un-text="white"
+          un-cursor-pointer
+          un-rounded
           @click="uploadClk"
         >
-          上传
-        </el-button>
-        <el-button
-          v-if="urlList.length > 0"
-          plain
-          type="danger"
+          <Upload />
+        </ElIcon>
+        
+        <ElIcon
+          size="22"
+          un-m="l-3"
+          un-text="white"
+          un-cursor-pointer
+          un-rounded
           @click="deleteClk"
         >
-          删除
-        </el-button>
+          <Delete />
+        </ElIcon>
+        
       </div>
+      
       <div
-        v-if="urlList.length > 0"
         class="upload_padding"
+        v-if="urlList.length > 1"
+        un-h="7"
+        un-flex="~"
+        un-justify-center
+        un-items-center
+        un-bg="[rgba(0,0,0,.4)]"
       >
-        <el-button
-          :disabled="nowIndex <= 0"
-          size="small"
+        
+        <ElIcon
+          v-if="!(nowIndex <= 0)"
+          size="14"
+          un-bg="white hover:[var(--el-color-primary)]"
+          un-cursor-pointer
+          un-rounded-full
           @click="previousClk"
         >
-          <template #icon>
-            <ArrowLeft />
-          </template>
-        </el-button>
-        <span style="color: yellowgreen;margin-left: 10px;margin-right: 10px;">
+          <ArrowLeft />
+        </ElIcon>
+        
+        <div
+          un-text="[yellowgreen]"
+          un-m="l-1 r-1"
+        >
           {{ nowIndex + 1 }} / {{ urlList.length }}
-        </span>
-        <el-button
-          :disabled="nowIndex >= urlList.length - 1"
-          size="small"
+        </div>
+        
+        <ElIcon
+          v-if="!(nowIndex >= urlList.length - 1)"
+          size="14"
+          un-bg="white hover:[yellowgreen]"
+          un-cursor-pointer
+          un-rounded-full
           @click="nextClk"
         >
-          <template #icon>
-            <ArrowRight />
-          </template>
-        </el-button>
+          <ArrowRight />
+        </ElIcon>
+        
       </div>
+      
     </div>
   </transition>
   <input
-    ref="fileRef"
     type="file"
     :accept="accept"
-    
-    un-display-none
-    
     @change="inputChg"
+    style="display: none;"
+    ref="fileRef"
   />
 </div>
 </template>
@@ -106,7 +147,6 @@ import {
   ElMessageBox,
   ElImage,
   ElIcon,
-  ElButton,
 } from "element-plus";
 
 import {
@@ -114,9 +154,15 @@ import {
   Loading,
   ArrowLeft,
   ArrowRight,
+  Upload,
+  Delete,
 } from "@element-plus/icons-vue";
 
-import { baseURL, uploadFile } from "@/utils/axios";
+import {
+  getDownloadUrl,
+  uploadFile,
+} from "@/utils/axios";
+
 import useIndexStore from "@/store/index";
 import { watch } from "vue";
 
@@ -126,7 +172,7 @@ const indexStore = useIndexStore();
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string | null;
+    modelValue: string;
     maxFileSize?: number;
     maxSize?: number;
     accept?: string;
@@ -139,11 +185,11 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref(props.modelValue || "");
+let modelValue = $ref(props.modelValue);
 
 watch(() => props.modelValue, (newVal) => {
   if (modelValue !== newVal) {
-    modelValue = newVal || "";
+    modelValue = newVal;
     nowIndex = 0;
   }
 });
@@ -153,18 +199,25 @@ let nowIndex = $ref(0);
 let urlList = $computed(() => {
   if (!modelValue) return [ ];
   const ids = modelValue.split(",").filter((x) => x);
-  return ids.map((id) => `${ baseURL }/api/oss/download/?id=${ encodeURIComponent(id) }`);
+  return ids.map((id) => {
+    const url = getDownloadUrl(id);
+    return url;
+  });
 });
 
 let fileRef: HTMLInputElement|undefined = $ref(undefined);
 
 async function inputChg() {
-  if (!fileRef) return;
-  const idArr = modelValue.split(",").filter((x) => x);
-  if (idArr.length >= props.maxSize) {
-    fileRef.value = "";
-    ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
+  if (!fileRef) {
     return;
+  }
+  let idArr = modelValue.split(",").filter((x) => x);
+  if (props.maxSize > 1) {
+    if (idArr.length >= props.maxSize) {
+      fileRef.value = "";
+      ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
+      return;
+    }
   }
   const file = fileRef?.files?.[0];
   fileRef.value = "";
@@ -179,9 +232,15 @@ async function inputChg() {
   if (!id) {
     return;
   }
-  idArr.push(id);
-  modelValue = idArr.join(",");
-  nowIndex = idArr.length - 1;
+  if (props.maxSize === 1) {
+    idArr = [ id ];
+    modelValue = id;
+    nowIndex = 0;
+  } else {
+    idArr.push(id);
+    modelValue = idArr.join(",");
+    nowIndex = idArr.length - 1;
+  }
   emit("update:modelValue", modelValue);
 }
 
@@ -189,10 +248,12 @@ async function inputChg() {
 function uploadClk() {
   if (!fileRef) return;
   const idArr = modelValue.split(",").filter((x) => x);
-  if (idArr.length >= props.maxSize) {
-    fileRef.value = "";
-    ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
-    return;
+  if (props.maxSize > 1) {
+    if (idArr.length >= props.maxSize) {
+      fileRef.value = "";
+      ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
+      return;
+    }
   }
   fileRef.click();
 }
@@ -211,7 +272,7 @@ async function deleteClk() {
   } else if (nowIndex > 0) {
     nowIndex--;
   }
-  ElMessage.success("删除成功!");
+  // ElMessage.success("删除成功!");
   emit("update:modelValue", modelValue);
 }
 
@@ -255,7 +316,7 @@ function nextClk() {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: rgba($color: #000, $alpha: .1);
+  background-color: rgba($color: #000, $alpha: .5);
 }
 .upload_toolbar {
   flex: 1 0 0;
@@ -266,7 +327,7 @@ function nextClk() {
   align-items: center;
 }
 .upload_padding {
-  margin-bottom: 5px;
+  // margin-bottom: 5px;
   display: flex;
   width: 100%;
   justify-content: center;
@@ -281,4 +342,3 @@ function nextClk() {
   opacity: 0;
 }
 </style>
-

@@ -1,17 +1,57 @@
 <template>
-<div>
-  <el-link
+<div
+  @click="linkClk"
+>
+  <template
     v-if="urlList.length > 0"
-    type="primary"
-    @click="linkClk"
   >
-    <slot name="default">
-      {{ urlList.length }}
-    </slot>
-  </el-link>
+    <el-image
+      v-for="(url, i) in urlList"
+      :key="url"
+      :src="url"
+      un-rounded
+      :un-m="i > 0 ? 'l-1' : ''"
+    >
+      <template #placeholder>
+        <div
+          un-w="full"
+          un-h="full"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-justify-center
+          un-items-center
+        >
+          <el-icon
+            color="gray"
+          >
+            <Loading></Loading>
+          </el-icon>
+        </div>
+      </template>
+      <template #error>
+        <div
+          un-w="full"
+          un-h="full"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-justify-center
+          un-items-center
+        >
+          
+          <el-icon
+            color="gray"
+            :size="28"
+          >
+            <Picture></Picture>
+          </el-icon>
+          
+        </div>
+      </template>
+    </el-image>
+  </template>
   <div
     v-else
-    style="color: light-gray;"
+    un-text="[light-gray]"
   >
     (无)
   </div>
@@ -32,8 +72,18 @@
 import {
   ElImageViewer,
   ElLink,
+  ElImage,
+  ElIcon,
 } from "element-plus";
-import { baseURL } from '@/utils/axios';
+
+import {
+  Picture,
+  Loading,
+} from "@element-plus/icons-vue";
+
+import {
+  getDownloadUrl,
+} from '@/utils/axios';
 
 const props = withDefaults(
   defineProps<{
@@ -49,8 +99,7 @@ let urlList = $computed(() => {
   if (!props.modelValue) return list;
   let ids = props.modelValue.split(",").filter((x) => x);
   for (let id of ids) {
-    id = encodeURIComponent(id);
-    list.push(`${ baseURL }/api/oss/download/?id=${ id }`);
+    list.push(getDownloadUrl(id));
   }
   return list;
 });
@@ -61,6 +110,3 @@ function linkClk() {
   showImageViewer = !showImageViewer;
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

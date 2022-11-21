@@ -150,7 +150,7 @@ export function getDownloadUrl(
     filename?: string;
     remove?: "0"|"1";
     inline?: "0"|"1";
-  },
+  } | string,
   type: "oss" | "tmpfile" = "tmpfile",
 ): string {
   const usrStore = useUsrStore();
@@ -158,6 +158,9 @@ export function getDownloadUrl(
   const params = new URLSearchParams();
   if (authorization) {
     params.set("authorization", authorization);
+  }
+  if (typeof model === "string") {
+    model = { id: model };
   }
   params.set("id", model.id);
   if (model.filename) {
