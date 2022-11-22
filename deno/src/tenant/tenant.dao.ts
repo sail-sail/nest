@@ -1,9 +1,8 @@
 import {
   query,
   queryOne,
+  QueryArgs,
 } from "/lib/context.ts";
-
-import { QueryArgs } from "/lib/query_args.ts";
 
 import {
   type AuthModel,

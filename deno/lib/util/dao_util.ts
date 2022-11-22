@@ -5,9 +5,9 @@ import {
 import {
   query,
   queryOne,
-  useContext,
   execute,
   reqDate,
+  type QueryArgs,
 } from "/lib/context.ts";
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
@@ -17,10 +17,6 @@ import { getTenant_id } from "/src/usr/usr.dao.ts";
 import {
   type AuthModel,
 } from "/lib/auth/auth.constants.ts";
-
-import {
-  type QueryArgs,
-} from "../query_args.ts";
 
 export type SearchExtra = (args?: QueryArgs) => Promise<string>;
 
@@ -85,7 +81,6 @@ export async function many2manyUpdate(
   if (!column2Ids) {
     return;
   }
-  const context = useContext();
   const { id: usr_id } = await getAuthModel() as AuthModel;
   const tenant_id = await getTenant_id(usr_id);
   // deno-lint-ignore no-explicit-any

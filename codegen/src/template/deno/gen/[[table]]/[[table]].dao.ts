@@ -22,6 +22,7 @@ import {
   query,
   queryOne,
   execute,
+  QueryArgs,
 } from "/lib/context.ts";
 
 import {
@@ -35,7 +36,6 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
-import { QueryArgs } from "/lib/query_args.ts";
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";<#
 if (hasTenant_id) {

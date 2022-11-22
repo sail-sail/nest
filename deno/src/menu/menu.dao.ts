@@ -1,10 +1,10 @@
 import {
   query,
+  QueryArgs,
 } from "/lib/context.ts";
 
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
 import { getTenant_id } from "/src/usr/usr.dao.ts";
-import { QueryArgs } from "/lib/query_args.ts";
 
 async function _getMenus(
   type?: string,

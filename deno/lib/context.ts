@@ -24,7 +24,6 @@ import {
 
 import { Context as OakContext } from "oak";
 
-import { QueryArgs } from "/lib/query_args.ts";
 import { getEnv } from "/lib/env.ts";
 import { AUTHORIZATION } from "./auth/auth.constants.ts";
 
@@ -202,6 +201,43 @@ export class Context {
   }
   
   cacheEnabled = true;
+  
+}
+
+export class QueryArgs {
+  
+  // deno-lint-ignore no-explicit-any
+  value: any[] = [ ];
+  
+  toJSON() {
+    return this.value;
+  }
+  
+  reset() {
+    this.value = [ ];
+  }
+  
+  toString() {
+    return this.value.join(",");
+  }
+  
+  get length() {
+    return this.value.length;
+  }
+  
+  // deno-lint-ignore no-explicit-any
+  push(val: any): "?" {
+    if (val instanceof Promise) {
+      throw new Error(`QueryArgs.push val can not be Promise: ${ val }`);
+    }
+    this.value.push(val);
+    return `?`;
+  }
+  
+  concat(args: QueryArgs) {
+    this.value = this.value.concat(args.value);
+    return this;
+  }
   
 }
 

@@ -2,10 +2,10 @@ import {
   useContext,
   query,
   queryOne,
+  QueryArgs,
 } from "/lib/context.ts";
 
 import { getAuthModel } from "/lib/auth/auth.dao.ts";
-import { QueryArgs } from "/lib/query_args.ts";
 
 import {
   type MutationLoginArgs,
