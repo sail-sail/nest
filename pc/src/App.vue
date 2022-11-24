@@ -433,4 +433,11 @@ body .el-tree {
   width: calc(100% - 100px);
   height: calc(100% - 20px);
 }
+.dark img {
+  filter: invert(1) hue-rotate(180deg);
+}
+.el-icon img {
+  height: 1em;
+  width: 1em;
+}
 </style>

@@ -99,7 +99,10 @@ let urlList = $computed(() => {
   if (!props.modelValue) return list;
   let ids = props.modelValue.split(",").filter((x) => x);
   for (let id of ids) {
-    list.push(getDownloadUrl(id));
+    list.push(getDownloadUrl({
+      id,
+      inline: "1",
+    }));
   }
   return list;
 });

@@ -181,7 +181,7 @@ const props = withDefaults(
     modelValue: "",
     maxFileSize: 1024 * 1024 * 50,
     maxSize: 1,
-    accept: "image/png,image/jpeg",
+    accept: "image/png,image/jpeg,image/svg+xml",
   },
 );
 
@@ -200,12 +200,15 @@ let urlList = $computed(() => {
   if (!modelValue) return [ ];
   const ids = modelValue.split(",").filter((x) => x);
   return ids.map((id) => {
-    const url = getDownloadUrl(id);
+    const url = getDownloadUrl({
+      id,
+      inline: "1",
+    });
     return url;
   });
 });
 
-let fileRef: HTMLInputElement|undefined = $ref(undefined);
+let fileRef = $ref<HTMLInputElement>();
 
 async function inputChg() {
   if (!fileRef) {
