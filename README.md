@@ -1,5 +1,7 @@
 ```
 git config --global core.autocrlf false
+
+185.199.108.133 raw.githubusercontent.com
 ```
 
 1. 安装Mysql数据库
