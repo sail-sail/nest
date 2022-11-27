@@ -15,6 +15,7 @@
     "uuid": "cd codegen && node -r ts-node/register src/util/npmShortUuidV4.ts",
     "pwd": "cd codegen && node -r ts-node/register src/util/npmPassword.ts",
     "build": "cd deno && npm run build",
+    "publish": "cd deno && npm run publish",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "docs": "vitepress dev docs",

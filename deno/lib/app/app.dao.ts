@@ -4,7 +4,12 @@ import {
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
-export function generateId() {
+export const _internals = {
+  generateId,
+  clearCache,
+};
+
+function generateId() {
   return shortUuidV4();
 }
 
@@ -12,7 +17,7 @@ export function generateId() {
  * 清空缓存
  * @return {Promise<boolean>}
  */
-export async function clearCache(
+async function clearCache(
 ): Promise<boolean> {
   await clearCacheCtx();
   return true;

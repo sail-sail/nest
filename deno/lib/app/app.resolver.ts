@@ -1,18 +1,29 @@
-import * as appService from "./app.service.ts";
-import * as authService from "/lib/auth/auth.service.ts";
+import {
+  _internals as appService,
+} from "./app.service.ts";
 
-export function generateId() {
+import {
+  _internals as authService,
+} from "/lib/auth/auth.service.ts";
+
+export const _internals = {
+  generateId,
+  clearCache,
+  checkLogin,
+}
+
+function generateId() {
   return appService.generateId();
 }
 
 /**
  * 清空缓存
  */
-export async function clearCache() {
+async function clearCache() {
   return await appService.clearCache();
 }
 
-export async function checkLogin() {
+async function checkLogin() {
   await authService.getAuthModel();
   return true;
 }
