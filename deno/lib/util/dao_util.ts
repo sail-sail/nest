@@ -11,8 +11,14 @@ import {
 } from "/lib/context.ts";
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
-import { getAuthModel } from "/lib/auth/auth.dao.ts";
-import { getTenant_id } from "/src/usr/usr.dao.ts";
+
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  _internals as usrDaoSrc,
+} from "/src/usr/usr.dao.ts";
 
 import {
   type AuthModel,
@@ -81,8 +87,8 @@ export async function many2manyUpdate(
   if (!column2Ids) {
     return;
   }
-  const { id: usr_id } = await getAuthModel() as AuthModel;
-  const tenant_id = await getTenant_id(usr_id);
+  const { id: usr_id } = await authDao.getAuthModel() as AuthModel;
+  const tenant_id = await usrDaoSrc.getTenant_id(usr_id);
   // deno-lint-ignore no-explicit-any
   let models: any[] = [ ];
   if (model.id) {

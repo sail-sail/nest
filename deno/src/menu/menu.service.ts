@@ -1,6 +1,12 @@
-import * as menuDao from "./menu.dao.ts";
+import {
+  _internals as menuDao,
+} from "./menu.dao.ts";
 
-export async function getMenus(
+export const _internals = {
+  getMenus,
+};
+
+async function getMenus(
   type: string,
 ) {
   return await menuDao.getMenus(type);

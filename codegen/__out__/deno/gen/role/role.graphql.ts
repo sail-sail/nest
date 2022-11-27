@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./role.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `
+import {
+  _internals as roleResolver,
+} from "./role.resolver.ts";
+
+defineGraphql(roleResolver, /* GraphQL */ `
 
 type RoleModel {
   "ID"

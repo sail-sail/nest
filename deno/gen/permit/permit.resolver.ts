@@ -6,7 +6,9 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as permitService from "./permit.service.ts";
+import {
+  _internals as permitService
+} from "./permit.service.ts";
 
 import {
   type PermitModel,
@@ -15,10 +17,24 @@ import {
   type SortInput,
 } from "/gen/types.ts";
 
+export const _internals = {
+  findCountPermit,
+  findAllPermit,
+  exportExcelPermit,
+  findOnePermit,
+  findByIdPermit,
+  createPermit,
+  updateByIdPermit,
+  deleteByIdsPermit,
+  importFilePermit,
+  revertByIdsPermit,
+  forceDeleteByIdsPermit,
+};
+
 /**
  * 根据条件查找据数总数
  */
-export async function findCountPermit(
+async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await permitService.findCount(search);
@@ -28,7 +44,7 @@ export async function findCountPermit(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAllPermit(
+async function findAllPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -40,7 +56,7 @@ export async function findAllPermit(
 /**
  * 根据搜索条件导出
  */
-export async function exportExcelPermit(
+async function exportExcelPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -51,7 +67,7 @@ export async function exportExcelPermit(
 /**
  * 根据条件查找第一条数据
  */
-export async function findOnePermit(
+async function findOnePermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await permitService.findOne(search);
@@ -61,7 +77,7 @@ export async function findOnePermit(
 /**
  * 根据 id 查找一条数据
  */
-export async function findByIdPermit(
+async function findByIdPermit(
   id: string,
 ) {
   const result = await permitService.findById(id);
@@ -71,7 +87,7 @@ export async function findByIdPermit(
 /**
  * 创建一条数据
  */
-export async function createPermit(
+async function createPermit(
   model: PermitModel,
 ) {
   const context = useContext();
@@ -84,7 +100,7 @@ export async function createPermit(
 /**
  * 根据id修改一条数据
  */
-export async function updateByIdPermit(
+async function updateByIdPermit(
   id: string,
   model: PermitModel,
 ) {
@@ -98,7 +114,7 @@ export async function updateByIdPermit(
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIdsPermit(
+async function deleteByIdsPermit(
   ids: string[],
 ) {
   const context = useContext();
@@ -111,7 +127,7 @@ export async function deleteByIdsPermit(
 /**
  * 导入权限
  */
-export async function importFilePermit(
+async function importFilePermit(
   id: string,
 ) {
   const result = await permitService.importFile(id);
@@ -121,7 +137,7 @@ export async function importFilePermit(
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIdsPermit(
+async function revertByIdsPermit(
   ids: string[],
 ) {
   const context = useContext();
@@ -134,7 +150,7 @@ export async function revertByIdsPermit(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIdsPermit(
+async function forceDeleteByIdsPermit(
   ids: string[],
 ) {
   const context = useContext();

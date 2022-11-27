@@ -2,25 +2,34 @@ import {
   type FormDataFile,
 } from "oak";
 
-import * as tmpfileDao from "./tmpfile.dao.ts";
+import {
+  _internals as tmpfileDao,
+} from "./tmpfile.dao.ts";
+
+export const _internals = {
+  upload,
+  statObject,
+  getObject,
+  deleteObject,
+};
 
 /**
  * 上传文件
  * @param {FormDataFile} file
  */
-export async function upload(file: FormDataFile) {
+async function upload(file: FormDataFile) {
   const result = await tmpfileDao.upload(file);
   return result;
 }
 
-export async function statObject(id: string) {
+async function statObject(id: string) {
   return await tmpfileDao.statObject(id);
 }
 
-export async function getObject(id: string) {
+async function getObject(id: string) {
   return await tmpfileDao.getObject(id);
 }
 
-export async function deleteObject(id: string) {
+async function deleteObject(id: string) {
   return await tmpfileDao.deleteObject(id);
 }

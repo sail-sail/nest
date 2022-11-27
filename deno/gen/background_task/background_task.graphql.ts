@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./background_task.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `
+import {
+  _internals as background_taskResolver,
+} from "./background_task.resolver.ts";
+
+defineGraphql(background_taskResolver, /* GraphQL */ `
 
 type Background_TaskModel {
   "ID"

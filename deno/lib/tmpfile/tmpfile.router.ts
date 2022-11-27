@@ -9,7 +9,9 @@ import {
   error,
 } from "/lib/context.ts";
 
-import * as tmpfileServie from "./tmpfile.service.ts";
+import {
+  _internals as tmpfileServie,
+} from "./tmpfile.service.ts";
 
 const router = new Router({
   prefix: "/api/tmpfile/",

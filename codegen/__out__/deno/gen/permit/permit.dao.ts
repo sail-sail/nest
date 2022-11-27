@@ -27,7 +27,10 @@ import {
 } from "/lib/util/string_util.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
-import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
+
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
 
 import {
   many2manyUpdate,
@@ -42,7 +45,29 @@ import {
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
-import * as menuDao from "/gen/menu/menu.dao.ts";
+
+import {
+  _internals as menuDao,
+} from "/gen/menu/menu.dao.ts";
+
+export const _internals = {
+  findCount,
+  findAll,
+  getUniqueKeys,
+  findByUnique,
+  equalsByUnique,
+  checkByUnique,
+  findOne,
+  findById,
+  exist,
+  existById,
+  create,
+  delCache,
+  updateById,
+  deleteByIds,
+  revertByIds,
+  forceDeleteByIds,
+};
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -114,7 +139,7 @@ function getFromQuery() {
  * @param { & { $extra?: SearchExtra[] }} search?
  * @return {Promise<number>}
  */
-export async function findCount(
+async function findCount(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -155,7 +180,7 @@ export async function findCount(
  * @param {PermitSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
-export async function findAll(
+async function findAll(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -214,7 +239,7 @@ export async function findAll(
  * 获得表的唯一字段名列表
  * @return {{ uniqueKeys: (keyof PermitModel)[]; uniqueComments: { [key: string]: string }; }}
  */
-export function getUniqueKeys(): {
+function getUniqueKeys(): {
   uniqueKeys: (keyof PermitModel)[];
   uniqueComments: { [key: string]: string };
   } {
@@ -233,7 +258,7 @@ export function getUniqueKeys(): {
  * 通过唯一约束获得一行数据
  * @param {PermitSearch & { $extra?: SearchExtra[] } | PartialNull<PermitModel>} search0
  */
-export async function findByUnique(
+async function findByUnique(
   search0: PermitSearch & { $extra?: SearchExtra[] } | PartialNull<PermitModel>,
   options?: {
   },
@@ -265,7 +290,7 @@ export async function findByUnique(
  * @param {PartialNull<PermitModel>} model
  * @return {boolean}
  */
-export function equalsByUnique(
+function equalsByUnique(
   oldModel: PermitModel,
   model: PartialNull<PermitModel>,
 ): boolean {
@@ -292,7 +317,7 @@ export function equalsByUnique(
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
-export async function checkByUnique(
+async function checkByUnique(
   model: PartialNull<PermitModel>,
   oldModel: PermitModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
@@ -328,7 +353,7 @@ export async function checkByUnique(
  * 根据条件查找第一条数据
  * @param {PermitSearch & { $extra?: SearchExtra[] }} search?
  */
-export async function findOne(
+async function findOne(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -346,7 +371,7 @@ export async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-export async function findById(
+async function findById(
   id?: string,
   options?: {
   },
@@ -360,7 +385,7 @@ export async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {PermitSearch & { $extra?: SearchExtra[] }} search?
  */
-export async function exist(
+async function exist(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -374,7 +399,7 @@ export async function exist(
  * 根据id判断数据是否存在
  * @param {string} id
  */
-export async function existById(
+async function existById(
   id: string,
 ) {
   const table = "permit";
@@ -422,7 +447,7 @@ export async function existById(
  *   update: 更新冲突数据
  * @return {Promise<string | undefined>} 
  */
-export async function create(
+async function create(
   model: PartialNull<PermitModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -462,7 +487,7 @@ export async function create(
       ,create_time
   `;
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -478,7 +503,7 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -504,7 +529,7 @@ export async function create(
 /**
  * 删除缓存
  */
-export async function delCache() {
+async function delCache() {
   const table = "permit";
   const method = "delCache";
   
@@ -533,7 +558,7 @@ export async function delCache() {
  *   create: 级联插入新数据
  * @return {Promise<string>}
  */
-export async function updateById(
+async function updateById(
   id: string,
   model: PartialNull<PermitModel> & {
   },
@@ -597,7 +622,7 @@ export async function updateById(
   }
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel();
+      const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -618,7 +643,7 @@ export async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function deleteByIds(
+async function deleteByIds(
   ids: string[],
   options?: {
   },
@@ -662,7 +687,7 @@ export async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function revertByIds(
+async function revertByIds(
   ids: string[],
   options?: {
   },
@@ -700,7 +725,7 @@ export async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
- export async function forceDeleteByIds(
+async function forceDeleteByIds(
   ids: string[],
   options?: {
   },

@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./oss.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */`
+import {
+  _internals as ossResolver,
+} from "./oss.resolver.ts";
+
+defineGraphql(ossResolver, /* GraphQL */`
 type GetStatusOss {
   id: ID!
   lbl: String!

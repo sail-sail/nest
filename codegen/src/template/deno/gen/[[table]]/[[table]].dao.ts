@@ -37,16 +37,19 @@ import {
 } from "/lib/util/string_util.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
-import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";<#
+
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";<#
 if (hasTenant_id) {
 #>
 
 import {
-  getTenant_id,
+  _internals as usrDaoSrc,
 } from "/src/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  _internals as tenantDao,
 } from "/gen/tenant/tenant.dao.ts";<#
 }
 #><#
@@ -54,7 +57,7 @@ if (hasDeptId) {
 #>
 
 import {
-  existById as existByIdDept,
+  _internals as deptDao,
 } from "/gen/dept/dept.dao.ts";<#
 }
 #>
@@ -74,7 +77,10 @@ import {
 } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
-import { <#=Table_Up#>Summary } from "/gen/types.ts";<#
+
+import {
+  type <#=Table_Up#>Summary,
+} from "/gen/types.ts";<#
 }
 #><#
 const hasImportDaos = [ ];
@@ -107,11 +113,63 @@ for (let i = 0; i < columns.length; i++) {
     if (hasImportDaos.includes(foreignTable)) continue;
     hasImportDaos.push(foreignTable);
 #>
-import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
+
+import {
+  _internals as <#=foreignTable#>Dao,
+} from "/gen/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
   }
 #><#
 }
 #>
+
+export const _internals = {
+  findCount,
+  findAll,
+  getUniqueKeys,
+  findByUnique,
+  equalsByUnique,
+  checkByUnique,<#
+  if (hasSummary) {
+  #>
+  findSummary,<#
+  }
+  #>
+  findOne,
+  findById,
+  exist,
+  existById,
+  create,<#
+  if (cache) {
+  #>
+  delCache,<#
+  }
+  #><#
+  if (hasTenant_id) {
+  #>
+  updateTenantById,<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  updateDeptById,<#
+  }
+  #>
+  updateById,
+  deleteByIds,<#
+  if (hasLocked) {
+  #>
+  getIs_lockedById,
+  lockByIds,<#
+  }
+  #>
+  revertByIds,
+  forceDeleteByIds,<#
+  if (hasOrderBy) {
+  #>
+  findLastOrderBy,<#
+  }
+  #>
+};
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -136,8 +194,8 @@ async function getWhereQuery(
   if (hasTenant_id) {
   #>
   if (search?.tenant_id == null) {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -149,7 +207,7 @@ async function getWhereQuery(
   if (hasDeptId) {
   #>
   if (search?.dept_id == null) {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     const dept_id = authModel?.dept_id;
     if (dept_id) {
       whereQuery += ` and t.dept_id = ${ args.push(dept_id) }`;
@@ -333,7 +391,7 @@ function getFromQuery() {
  * @param { & { $extra?: SearchExtra[] }} search?
  * @return {Promise<number>}
  */
-export async function findCount(
+async function findCount(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -382,7 +440,7 @@ export async function findCount(
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
-export async function findAll(
+async function findAll(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -588,7 +646,7 @@ export async function findAll(
  * 获得表的唯一字段名列表
  * @return {{ uniqueKeys: (keyof <#=Table_Up#>Model)[]; uniqueComments: { [key: string]: string }; }}
  */
-export function getUniqueKeys(): {
+function getUniqueKeys(): {
   uniqueKeys: (keyof <#=Table_Up#>Model)[];
   uniqueComments: { [key: string]: string };
   } {
@@ -627,7 +685,7 @@ export function getUniqueKeys(): {
  * 通过唯一约束获得一行数据
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] } | PartialNull<<#=Table_Up#>Model>} search0
  */
-export async function findByUnique(
+async function findByUnique(
   search0: <#=Table_Up#>Search & { $extra?: SearchExtra[] } | PartialNull<<#=Table_Up#>Model>,
   options?: {
   },
@@ -659,7 +717,7 @@ export async function findByUnique(
  * @param {PartialNull<<#=Table_Up#>Model>} model
  * @return {boolean}
  */
-export function equalsByUnique(
+function equalsByUnique(
   oldModel: <#=Table_Up#>Model,
   model: PartialNull<<#=Table_Up#>Model>,
 ): boolean {
@@ -686,7 +744,7 @@ export function equalsByUnique(
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
-export async function checkByUnique(
+async function checkByUnique(
   model: PartialNull<<#=Table_Up#>Model>,
   oldModel: <#=Table_Up#>Model,
   uniqueType: "ignore" | "throw" | "update" = "throw",
@@ -725,7 +783,7 @@ if (hasSummary) {
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>}
  */
-export async function findSummary(
+async function findSummary(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -778,7 +836,7 @@ export async function findSummary(
  * 根据条件查找第一条数据
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
  */
-export async function findOne(
+async function findOne(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -796,7 +854,7 @@ export async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-export async function findById(
+async function findById(
   id?: string,
   options?: {
   },
@@ -810,7 +868,7 @@ export async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
  */
-export async function exist(
+async function exist(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -824,7 +882,7 @@ export async function exist(
  * 根据id判断数据是否存在
  * @param {string} id
  */
-export async function existById(
+async function existById(
   id: string,
 ) {
   const table = "<#=table#>";
@@ -880,7 +938,7 @@ export async function existById(
  *   update: 更新冲突数据
  * @return {Promise<string | undefined>} 
  */
-export async function create(
+async function create(
   model: PartialNull<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -999,8 +1057,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
@@ -1010,7 +1068,7 @@ export async function create(
   if (hasDeptId) {
   #>
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.dept_id) {
       sql += `,dept_id`;
     }
@@ -1018,7 +1076,7 @@ export async function create(
   }
   #>
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -1072,8 +1130,8 @@ export async function create(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
@@ -1083,7 +1141,7 @@ export async function create(
   if (hasDeptId) {
   #>
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.dept_id) {
       sql += `,${ args.push(authModel?.dept_id) }`;
     }
@@ -1091,7 +1149,7 @@ export async function create(
   }
   #>
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -1117,7 +1175,7 @@ export async function create(
     if (column.isPassword) {
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,${ args.push(await getPassword(model.<#=column_name#>)) }`;
+    sql += `,${ args.push(await authDao.getPassword(model.<#=column_name#>)) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
@@ -1189,7 +1247,7 @@ if (cache) {
 /**
  * 删除缓存
  */
-export async function delCache() {
+async function delCache() {
   const table = "<#=table#>";
   const method = "delCache";
   
@@ -1240,7 +1298,7 @@ if (hasTenant_id) {
  *   }} [options]
  * @return {Promise<number>}
  */
-export async function updateTenantById(
+async function updateTenantById(
   id: string,
   tenant_id: string,
   options?: {
@@ -1249,7 +1307,7 @@ export async function updateTenantById(
   const table = "<#=table#>";
   const method = "updateTenantById";
   
-  const tenantExist = await existByIdTenant(tenant_id);
+  const tenantExist = await tenantDao.existById(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -1288,7 +1346,7 @@ if (hasDeptId) {
  *   }} [options]
  * @return {Promise<number>}
  */
-export async function updateDeptById(
+async function updateDeptById(
   id: string,
   dept_id: string,
   options?: {
@@ -1297,7 +1355,7 @@ export async function updateDeptById(
   const table = "<#=table#>";
   const method = "updateDeptById";
   
-  const deptExist = await existByIdDept(dept_id);
+  const deptExist = await deptDao.existById(dept_id);
   if (!deptExist) {
     return 0;
   }
@@ -1337,7 +1395,7 @@ export async function updateDeptById(
  *   create: 级联插入新数据
  * @return {Promise<string>}
  */
-export async function updateById(
+async function updateById(
   id: string,
   model: PartialNull<<#=Table_Up#>Model> & {<#
     if (hasDeptId) {
@@ -1515,7 +1573,7 @@ export async function updateById(
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
     sql += `,<#=column_name#> = ?`;
-    args.push(await getPassword(model.<#=column_name#>));
+    args.push(await authDao.getPassword(model.<#=column_name#>));
     updateFldNum++;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
@@ -1553,7 +1611,7 @@ export async function updateById(
   #>
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel();
+      const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -1611,7 +1669,7 @@ export async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function deleteByIds(
+async function deleteByIds(
   ids: string[],
   options?: {
   },
@@ -1672,7 +1730,7 @@ if (hasLocked) {
  * @param {string} id
  * @return {Promise<0 | 1 | undefined>}
  */
-export async function getIs_lockedById(
+async function getIs_lockedById(
   id: string,
   options?: {
   },
@@ -1691,7 +1749,7 @@ export async function getIs_lockedById(
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
-export async function lockByIds(
+async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
   options?: {
@@ -1714,7 +1772,7 @@ export async function lockByIds(
     
   `;
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
     }
@@ -1743,7 +1801,7 @@ export async function lockByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function revertByIds(
+async function revertByIds(
   ids: string[],
   options?: {
   },
@@ -1785,7 +1843,7 @@ export async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
- export async function forceDeleteByIds(
+async function forceDeleteByIds(
   ids: string[],
   options?: {
   },
@@ -1840,7 +1898,7 @@ if (hasOrderBy) {
  * 查找 order_by 字段的最大值
  * @return {Promise<number>}
  */
-export async function findLastOrderBy(
+async function findLastOrderBy(
   options?: {
   },
 ): Promise<number> {
@@ -1859,8 +1917,8 @@ export async function findLastOrderBy(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
   }<#
   }
@@ -1868,7 +1926,7 @@ export async function findLastOrderBy(
   if (hasDeptId) {
   #>
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     const dept_id = authModel?.dept_id;
     if (dept_id) {
       whereQuery.push(`t.dept_id = ${ args.push(dept_id) }`);

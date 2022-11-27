@@ -2,15 +2,26 @@ import {
   type Mutation,
 } from "/gen/types.ts"
 
-import { getAuthModel } from "/lib/auth/auth.dao.ts";
-import * as usrDao from "/gen/usr/usr.dao.ts";
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
 
-import * as authService from "/lib/auth/auth.service.ts";
+import {
+  _internals as usrDao,
+} from "/gen/usr/usr.dao.ts";
 
-export async function deptLoginSelect(
+import {
+  _internals as authService,
+} from "/lib/auth/auth.service.ts";
+
+export const _internals = {
+  deptLoginSelect,
+};
+
+async function deptLoginSelect(
   dept_id: string,
 ): Promise<Mutation["deptLoginSelect"]> {
-  const authModel = await getAuthModel();
+  const authModel = await authDao.getAuthModel();
   if (authModel.dept_id === dept_id) {
     return "";
   }

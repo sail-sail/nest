@@ -1,10 +1,16 @@
-import * as tenantService from "./tenant.service.ts";
+import {
+  _internals as tenantService,
+} from "./tenant.service.ts";
 
 import {
-  QueryGetLoginTenantsArgs,
+  type QueryGetLoginTenantsArgs,
 } from "/gen/types.ts";
 
-export async function getLoginTenants(
+export const _internals = {
+  getLoginTenants,
+};
+
+async function getLoginTenants(
   host: QueryGetLoginTenantsArgs["host"],
 ) {
   const data = await tenantService.getLoginTenants(host);

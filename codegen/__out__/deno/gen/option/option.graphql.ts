@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./option.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `
+import {
+  _internals as optionResolver,
+} from "./option.resolver.ts";
+
+defineGraphql(optionResolver, /* GraphQL */ `
 
 type OptionModel {
   "ID"

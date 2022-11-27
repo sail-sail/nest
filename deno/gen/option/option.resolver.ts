@@ -6,7 +6,9 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as optionService from "./option.service.ts";
+import {
+  _internals as optionService
+} from "./option.service.ts";
 
 import {
   type OptionModel,
@@ -15,10 +17,24 @@ import {
   type SortInput,
 } from "/gen/types.ts";
 
+export const _internals = {
+  findCountOption,
+  findAllOption,
+  exportExcelOption,
+  findOneOption,
+  findByIdOption,
+  createOption,
+  updateByIdOption,
+  deleteByIdsOption,
+  importFileOption,
+  revertByIdsOption,
+  forceDeleteByIdsOption,
+};
+
 /**
  * 根据条件查找据数总数
  */
-export async function findCountOption(
+async function findCountOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await optionService.findCount(search);
@@ -28,7 +44,7 @@ export async function findCountOption(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAllOption(
+async function findAllOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -40,7 +56,7 @@ export async function findAllOption(
 /**
  * 根据搜索条件导出
  */
-export async function exportExcelOption(
+async function exportExcelOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -51,7 +67,7 @@ export async function exportExcelOption(
 /**
  * 根据条件查找第一条数据
  */
-export async function findOneOption(
+async function findOneOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await optionService.findOne(search);
@@ -61,7 +77,7 @@ export async function findOneOption(
 /**
  * 根据 id 查找一条数据
  */
-export async function findByIdOption(
+async function findByIdOption(
   id: string,
 ) {
   const result = await optionService.findById(id);
@@ -71,7 +87,7 @@ export async function findByIdOption(
 /**
  * 创建一条数据
  */
-export async function createOption(
+async function createOption(
   model: OptionModel,
 ) {
   const context = useContext();
@@ -84,7 +100,7 @@ export async function createOption(
 /**
  * 根据id修改一条数据
  */
-export async function updateByIdOption(
+async function updateByIdOption(
   id: string,
   model: OptionModel,
 ) {
@@ -98,7 +114,7 @@ export async function updateByIdOption(
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIdsOption(
+async function deleteByIdsOption(
   ids: string[],
 ) {
   const context = useContext();
@@ -111,7 +127,7 @@ export async function deleteByIdsOption(
 /**
  * 导入选项
  */
-export async function importFileOption(
+async function importFileOption(
   id: string,
 ) {
   const result = await optionService.importFile(id);
@@ -121,7 +137,7 @@ export async function importFileOption(
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIdsOption(
+async function revertByIdsOption(
   ids: string[],
 ) {
   const context = useContext();
@@ -134,7 +150,7 @@ export async function revertByIdsOption(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIdsOption(
+async function forceDeleteByIdsOption(
   ids: string[],
 ) {
   const context = useContext();

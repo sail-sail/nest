@@ -9,7 +9,9 @@ import {
   TMP_PATH,
 } from "/lib/context.ts";
 
-import * as ossServie from "./oss.service.ts";
+import {
+  _internals as ossServie,
+} from "./oss.service.ts";
 
 const router = new Router({
   prefix: "/api/oss/",

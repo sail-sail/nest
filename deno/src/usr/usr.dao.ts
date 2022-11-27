@@ -5,11 +5,20 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import { getAuthModel } from "/lib/auth/auth.dao.ts";
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
 
 import {
   type MutationLoginArgs,
 } from "/gen/types.ts";
+
+export const _internals = {
+  findLoginUsr,
+  getDept_idsById,
+  getTenant_idByWx_usr,
+  getTenant_id,
+};
 
 /**
  * 返回当前登录的用户
@@ -17,7 +26,7 @@ import {
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
  * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
  */
-export async function findLoginUsr(
+async function findLoginUsr(
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
@@ -43,7 +52,7 @@ export async function findLoginUsr(
   return result;
 }
 
-export async function getDept_idsById(
+async function getDept_idsById(
   id: string,
 ) {
   const args = new QueryArgs();
@@ -65,7 +74,7 @@ export async function getDept_idsById(
 async function getTenant_idByWx_usr() {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
-  const authModel = await getAuthModel(notVerifyToken);
+  const authModel = await authDao.getAuthModel(notVerifyToken);
   if (!authModel) {
     return;
   }
@@ -101,13 +110,13 @@ async function getTenant_idByWx_usr() {
  * 根据用户id获取租户id
  * @return {Promise<string>} 
  */
-export async function getTenant_id(
+async function getTenant_id(
   usr_id?: string,
 ): Promise<string | undefined> {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
   if (!usr_id) {
-    const authModel = await getAuthModel(notVerifyToken);
+    const authModel = await authDao.getAuthModel(notVerifyToken);
     if (!authModel) {
       return;
     }

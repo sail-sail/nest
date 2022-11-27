@@ -7,8 +7,14 @@ const Table_Up = tableUp.split("_").map(function(item) {
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { renderExcel } from "ejsexcel";
-import * as authDao from "/lib/auth/auth.dao.ts";
-import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
+
+import {
+  _internals as authDao
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  _internals as tmpfileDao
+} from "/lib/tmpfile/tmpfile.dao.ts";
 
 import {
   getTemplate,
@@ -29,17 +35,51 @@ import {
 } from "/gen/types.ts";<#
 if (hasSummary) {
 #>
+
 import { <#=Table_Up#>Summary } from "/gen/types.ts";<#
 }
 #>
-import * as <#=table#>Dao from "./<#=table#>.dao.ts";
+import {
+  _internals as <#=table#>Dao,
+} from "./<#=table#>.dao.ts";
+
+export const _internals = {
+  findCount,
+  findAll,<#
+  if (hasSummary) {
+  #>
+  findSummary,<#
+  }
+  #>
+  findOne,
+  findById,
+  exist,
+  existById,
+  create,
+  updateById,
+  deleteByIds,<#
+    if (hasLocked) {
+  #>
+  lockByIds,<#
+  }
+  #>
+  revertByIds,
+  forceDeleteByIds,
+  importFile,
+  exportExcel,<#
+  if (hasOrderBy) {
+  #>
+  findLastOrderBy,<#
+  }
+  #>
+};
 
 /**
  * 根据条件查找总数
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
-export async function findCount(
+async function findCount(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const result = await <#=table#>Dao.findCount(search);
@@ -53,7 +93,7 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<<#=Table_Up#>Model[]>} 
  */
-export async function findAll(
+async function findAll(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
@@ -79,7 +119,7 @@ if (hasSummary) {
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>} 
  */
-export async function findSummary(
+async function findSummary(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ): Promise<<#=Table_Up#>Summary> {
   const result = await <#=table#>Dao.findSummary(search);
@@ -92,7 +132,7 @@ export async function findSummary(
  * 根据条件查找第一条数据
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  */
-export async function findOne(
+async function findOne(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const result: <#=Table_Up#>Model | undefined = await <#=table#>Dao.findOne(search);
@@ -103,7 +143,7 @@ export async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-export async function findById(
+async function findById(
   id?: string,
 ) {
   const result = await <#=table#>Dao.findById(id);
@@ -114,7 +154,7 @@ export async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
  */
-export async function exist(
+async function exist(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const result = await <#=table#>Dao.exist(search);
@@ -125,7 +165,7 @@ export async function exist(
  * 根据id查找数据是否存在
  * @param {string} id
  */
-export async function existById(
+async function existById(
   id: string,
 ) {
   const result = await <#=table#>Dao.existById(id);
@@ -137,7 +177,7 @@ export async function existById(
  * @param {<#=Table_Up#>Model} model
  * @return {Promise<string | undefined>} 
  */
-export async function create(
+async function create(
   model: <#=Table_Up#>Model,
 ): Promise<string | undefined> {
   const result = await <#=table#>Dao.create(model);
@@ -150,7 +190,7 @@ export async function create(
  * @param {<#=Table_Up#>Model} model
  * @return {Promise<string | undefined>}
  */
-export async function updateById(
+async function updateById(
   id: string,
   model: <#=Table_Up#>Model,
 ): Promise<string | undefined> {
@@ -163,7 +203,7 @@ export async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function deleteByIds(
+async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   const result = await <#=table#>Dao.deleteByIds(ids);
@@ -178,7 +218,7 @@ export async function deleteByIds(
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
-export async function lockByIds(
+async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
@@ -193,7 +233,7 @@ export async function lockByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function revertByIds(
+async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const result = await <#=table#>Dao.revertByIds(ids);
@@ -205,7 +245,7 @@ export async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function forceDeleteByIds(
+async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
   const result = await <#=table#>Dao.forceDeleteByIds(ids);
@@ -216,7 +256,7 @@ export async function forceDeleteByIds(
  * 导入文件
  * @param {string} id
  */
-export async function importFile(
+async function importFile(
   id: string,
 ) {
   const header: { [key: string]: string } = {<#
@@ -294,7 +334,7 @@ export async function importFile(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
-export async function exportExcel(
+async function exportExcel(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {
@@ -321,7 +361,7 @@ if (hasOrderBy) {
  * 查找 order_by 字段的最大值
  * @return {Promise<number>}
  */
-export async function findLastOrderBy(
+async function findLastOrderBy(
 ): Promise<number> {
   const result = await <#=table#>Dao.findLastOrderBy();
   return result;

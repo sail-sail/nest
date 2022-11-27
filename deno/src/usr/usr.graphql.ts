@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./usr.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */`
+import {
+  _internals as usrResolver
+} from "./usr.resolver.ts";
+
+defineGraphql(usrResolver, /* GraphQL */`
 
   type GetLoginInfoDept_idModels {
     id: String!

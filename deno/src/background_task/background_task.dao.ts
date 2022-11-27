@@ -12,6 +12,10 @@ const timeoutObj = Symbol("timeoutObj");
 //[{value: "text", label: "文本"},{value: "download", label: "下载"},{value: "inline", label: "查看"},{value: "tag", label: "标签"}]
 export type BtType = "text"|"download"|"inline"|"tag";
 
+export const _internals = {
+  backgroundTaskWrap,
+};
+
 // deno-lint-ignore no-explicit-any
 async function handelResult(data: any, id: string) {
   if (typeof data === "object" && !(data instanceof String)) {
@@ -43,7 +47,7 @@ async function handelErr(err: Error, id: string) {
   );
 }
 
-export function backgroundTaskWrap(
+function backgroundTaskWrap(
   taskResult: { lbl: string, type?: BtType },
   // deno-lint-ignore no-explicit-any
   func: (...args: any[]) => Promise<any>,

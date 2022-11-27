@@ -1,14 +1,16 @@
 import "/lib/env.ts";
 // import { resolve } from "std/path/mod.ts";
-import { Context } from "../context.ts";
-import { QueryArgs } from "../query_args.ts";
+import {
+  Context,
+  runInAsyncHooks,
+} from "../context.ts";
 
 import {
   type ExecuteResult,
 } from "../mysql/mod.ts";
 
 import {
-  type PoolConnection,
+  PoolConnection,
 } from "../mysql/src/pool.ts";
 
 let watchTimeout: number|undefined = undefined;
@@ -24,22 +26,19 @@ function getMethods(str: string) {
     if (
       !methodBegin &&
       (
-        (line.startsWith("export async function") && (line.trimEnd().endsWith("{") || line.trimEnd().endsWith("(")))
-        || (line.startsWith("async function") && (line.trimEnd().endsWith("{") || line.trimEnd().endsWith("(")))
+        line.startsWith("async function")
+        &&
+        (
+          line.trimEnd().endsWith("{")
+          || line.trimEnd().endsWith("(")
+        )
       )
     ) {
       methodBegin = true;
-      if (line.startsWith("export async function")) {
-        nowMethodName = line.substring(
-          "export async function".length,
-          line.indexOf("(")
-        ).trim();
-      } else {
-        nowMethodName = line.substring(
-          "async function".length,
-          line.indexOf("(")
-        ).trim();
-      }
+      nowMethodName = line.substring(
+        "async function".length,
+        line.indexOf("(")
+      ).trim();
     }
     if (methodBegin && line.trimEnd() === "}") {
       methodBegin = false;
@@ -89,7 +88,7 @@ async function getSchemaColumn(
     COLUMN_NAME: string;
     IS_NULLABLE: "NO"|"YES";
   // deno-lint-ignore no-explicit-any
-  }[] = (await conn.query(sql)) as any;
+  }[] = (await PoolConnection.prototype.query.apply(conn, [ sql ])) as any;
   _schemaColumns[schema] = result;
   return _schemaColumns[schema].filter((item) => item.TABLE_SCHEMA === schema && item.TABLE_NAME === orgTable && item.COLUMN_NAME === orgName)[0];
 }
@@ -120,12 +119,7 @@ export async function createContext() {
   return context;
 }
 
-export async function handelChg(context?: Context, filenames: string[] = []) {
-  let isInnerContext = false;
-  if (!context) {
-    isInnerContext = true;
-    context = await createContext();
-  }
+async function _handelChg(filenames: string[] = []) {
   // 处理 GraphQL
   // if (filenames.some((item) => item.endsWith(".dao.ts") || item.endsWith(".service.ts") || item.endsWith(".graphql.ts") || item.endsWith(".resolve.ts"))) {
   //   const { clearSchema } = await import("../oak/gql.ts");
@@ -151,9 +145,9 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
   //   await tmpFn("../../");
   // }
   
-  // 处理 dao
-  let hasErr = false;
   for (let i = 0; i < filenames.length; i++) {
+    // 处理 dao
+    let hasErr = false;
     const filename = filenames[i];
     if (!filename.endsWith(".dao.ts")) {
       continue;
@@ -161,7 +155,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
     // deno-lint-ignore no-explicit-any
     let dao: any;
     try {
-      dao = await import("file:///" + filename + "?" + Date.now());
+      dao = (await import("file:///" + filename + "?" + Date.now()))._internals;
     // deno-lint-ignore no-empty
     } catch (_err) {
     }
@@ -186,12 +180,12 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
       }
       const methodStr = methods[methodName];
       let methodStr2 = methodStr;
-      methodStr2 = methodStr2.replace(/await context.query<\{[\s\S]*?\}>\(/gmi, "await context.query(");
-      methodStr2 = methodStr2.replace(/await context.queryOne<\{[\s\S]*?}\>\(/gmi, "await context.queryOne(");
-      let idx = methodStr2.lastIndexOf("await context.query(");
-      let idxOne = methodStr2.lastIndexOf("await context.queryOne(");
+      methodStr2 = methodStr2.replace(/await query<\{[\s\S]*?\}>\(/gmi, "await query(");
+      methodStr2 = methodStr2.replace(/await queryOne<\{[\s\S]*?}\>\(/gmi, "await queryOne(");
+      let idx = methodStr2.lastIndexOf("await query(");
+      let idxOne = methodStr2.lastIndexOf("await queryOne(");
       if (idx > 0 || idxOne > 0) {
-        const oldQuery = context.query;
+        const oldQuery = PoolConnection.prototype.query;
         let typeArr: {
           name: string,
           type: string,
@@ -200,18 +194,12 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           orgTable: string,
           IS_NULLABLE: "NO"|"YES";
         }[] = [];
-        context.query = async function(
+        PoolConnection.prototype.query = async function(
           sql: string,
           // deno-lint-ignore no-explicit-any
-          args?: any[]|QueryArgs,
-          opt?: { debug?: boolean },
+          params?: any[],
         // deno-lint-ignore no-explicit-any
         ): Promise<any> {
-          if (args instanceof QueryArgs) {
-            args = args.value;
-          }
-          opt = opt || { };
-          opt.debug = false;
           sql = sql.trim();
           if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length - 1);
@@ -228,11 +216,11 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
               }
             }
             // console.log(`类型 ${ methodName }: ${ sql }`);
-            const conn = await context?.beginTran({ debug: false });
-            let result: ExecuteResult|undefined = undefined;
+            await PoolConnection.prototype.execute.apply(this, [ "begin" ]);
+            let result: ExecuteResult | undefined = undefined;
             try {
-              result = await conn?.execute(sql, args);
-              const fileds = result?.fields || [ ];
+              result = await PoolConnection.prototype.execute.apply(this, [ sql, params ]);
+              const fileds = result.fields || [ ];
               for (let i = 0; i < fileds.length; i++) {
                 const field = fileds[i];
                 let type = "string";
@@ -256,7 +244,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
                 if (field.name.startsWith("is_")) {
                   type = "0|1";
                 }
-                const colInfo = await getSchemaColumn(conn!, field.schema, field.originTable, field.originName);
+                const colInfo = await getSchemaColumn(this, field.schema, field.originTable, field.originName);
                 let IS_NULLABLE: "NO"|"YES" = "NO";
                 if (colInfo && colInfo.IS_NULLABLE) {
                   IS_NULLABLE = colInfo.IS_NULLABLE;
@@ -271,7 +259,7 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
                 });
               }
             } finally {
-              await context?.rollback(conn, { debug: false });
+              await PoolConnection.prototype.execute.apply(this, [ "rollback" ]);
             }
             return result?.rows || [ ];
           }
@@ -288,10 +276,10 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           if (!method) {
             continue;
           }
-          await method(context);
-          context.query = oldQuery;
+          await method();
+          PoolConnection.prototype.query = oldQuery;
         } catch (err) {
-          context.query = oldQuery;
+          PoolConnection.prototype.query = oldQuery;
           hasErr = true;
           console.error(err);
           continue;
@@ -317,19 +305,13 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           str2 = str2.replace(methodStr, methodStr2);
         }
       } else {
-        const oldQuery = context.query;
-        context.query = async function(
+        const oldQuery = PoolConnection.prototype.query;
+        PoolConnection.prototype.query = async function(
           sql: string,
           // deno-lint-ignore no-explicit-any
-          args?: any[]|QueryArgs,
-          opt?: { debug?: boolean },
+          params?: any[],
         // deno-lint-ignore no-explicit-any
         ): Promise<any> {
-          if (args instanceof QueryArgs) {
-            args = args.value;
-          }
-          opt = opt || { };
-          opt.debug = false;
           sql = sql.trim();
           if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length - 1);
@@ -345,14 +327,14 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
               }
             }
             let result: ExecuteResult|undefined = undefined;
-            const conn = await context?.beginTran({ debug: false });
+            await PoolConnection.prototype.execute.apply(this, [ "begin" ]);
             try {
-              result = await conn?.execute(sql, args);
+              result = await PoolConnection.prototype.execute.apply(this, [ sql, params ]);
             } catch (errTmp) {
               // console.log(`sql错误 ${ methodName }: ${ sql }`);
               throw errTmp;
             } finally {
-              await context?.rollback(conn, { debug: false });
+              await PoolConnection.prototype.execute.apply(this, [ "rollback" ]);
             }
             return result?.rows || [ ];
           }
@@ -362,10 +344,10 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
           if (!method) {
             continue;
           }
-          await method(context);
-          context.query = oldQuery;
+          await method();
+          PoolConnection.prototype.query = oldQuery;
         } catch (err) {
-          context.query = oldQuery;
+          PoolConnection.prototype.query = oldQuery;
           hasErr = true;
           console.error("sql错误: " + methodName + ": " + err.message);
           // console.error("methodName: " + methodName);
@@ -376,15 +358,21 @@ export async function handelChg(context?: Context, filenames: string[] = []) {
         await Deno.writeFile(filename, new TextEncoder().encode(str2));
       }
     }
-    if (isInnerContext) {
-      await context.close();
-    }
     if (!hasErr) {
       console.log("sql检查成功:", filenames.join("\n"));
     } else {
       // console.log("sql错误:", filenames.join("\n"));
     }
   }
+}
+
+export async function handelChg(
+  context: Context,
+  filenames: string[] = [],
+) {
+  await runInAsyncHooks(context, async function() {
+    await _handelChg(filenames);
+  });
 }
 
 let watcher: Deno.FsWatcher|undefined = undefined;
@@ -419,6 +407,7 @@ export async function hmr() {
 // await hmr();
 
 if (import.meta.main) {
+  const context = await createContext();
   let filenamesStr = Deno.env.get("hmr_filenames") || "";
   if (!filenamesStr) {
     for (let i = 0; i < Deno.args.length; i++) {
@@ -433,6 +422,6 @@ if (import.meta.main) {
   }
   const filenames = filenamesStr.split(",");
   if (filenames.length > 0) {
-    handelChg(await createContext(), filenames);
+    handelChg(context, filenames);
   }
 }

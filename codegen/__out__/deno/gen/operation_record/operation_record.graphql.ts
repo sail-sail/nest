@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./operation_record.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `
+import {
+  _internals as operation_recordResolver,
+} from "./operation_record.resolver.ts";
+
+defineGraphql(operation_recordResolver, /* GraphQL */ `
 
 type Operation_RecordModel {
   "ID"

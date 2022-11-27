@@ -1,6 +1,12 @@
 import { renderExcel } from "ejsexcel";
-import * as authDao from "/lib/auth/auth.dao.ts";
-import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
+
+import {
+  _internals as authDao
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  _internals as tmpfileDao
+} from "/lib/tmpfile/tmpfile.dao.ts";
 
 import {
   getTemplate,
@@ -19,14 +25,32 @@ import {
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
-import * as background_taskDao from "./background_task.dao.ts";
+import {
+  _internals as background_taskDao,
+} from "./background_task.dao.ts";
+
+export const _internals = {
+  findCount,
+  findAll,
+  findOne,
+  findById,
+  exist,
+  existById,
+  create,
+  updateById,
+  deleteByIds,
+  revertByIds,
+  forceDeleteByIds,
+  importFile,
+  exportExcel,
+};
 
 /**
  * 根据条件查找总数
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @return {Promise<number>}
  */
-export async function findCount(
+async function findCount(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ): Promise<number> {
   const result = await background_taskDao.findCount(search);
@@ -40,7 +64,7 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<Background_TaskModel[]>} 
  */
-export async function findAll(
+async function findAll(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput|SortInput[],
@@ -59,7 +83,7 @@ export async function findAll(
  * 根据条件查找第一条数据
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
-export async function findOne(
+async function findOne(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
   const result: Background_TaskModel | undefined = await background_taskDao.findOne(search);
@@ -70,7 +94,7 @@ export async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-export async function findById(
+async function findById(
   id?: string,
 ) {
   const result = await background_taskDao.findById(id);
@@ -81,7 +105,7 @@ export async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  */
-export async function exist(
+async function exist(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await background_taskDao.exist(search);
@@ -92,7 +116,7 @@ export async function exist(
  * 根据id查找数据是否存在
  * @param {string} id
  */
-export async function existById(
+async function existById(
   id: string,
 ) {
   const result = await background_taskDao.existById(id);
@@ -104,7 +128,7 @@ export async function existById(
  * @param {Background_TaskModel} model
  * @return {Promise<string | undefined>} 
  */
-export async function create(
+async function create(
   model: Background_TaskModel,
 ): Promise<string | undefined> {
   const result = await background_taskDao.create(model);
@@ -117,7 +141,7 @@ export async function create(
  * @param {Background_TaskModel} model
  * @return {Promise<string | undefined>}
  */
-export async function updateById(
+async function updateById(
   id: string,
   model: Background_TaskModel,
 ): Promise<string | undefined> {
@@ -130,7 +154,7 @@ export async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function deleteByIds(
+async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   const result = await background_taskDao.deleteByIds(ids);
@@ -142,7 +166,7 @@ export async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function revertByIds(
+async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const result = await background_taskDao.revertByIds(ids);
@@ -154,7 +178,7 @@ export async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function forceDeleteByIds(
+async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
   const result = await background_taskDao.forceDeleteByIds(ids);
@@ -165,7 +189,7 @@ export async function forceDeleteByIds(
  * 导入文件
  * @param {string} id
  */
-export async function importFile(
+async function importFile(
   id: string,
 ) {
   const header: { [key: string]: string } = {
@@ -215,7 +239,7 @@ export async function importFile(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
-export async function exportExcel(
+async function exportExcel(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput|SortInput[],
 ): Promise<string> {

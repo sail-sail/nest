@@ -7,9 +7,12 @@ const Table_Up = tableUp.split("_").map(function(item) {
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./<#=table#>.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `
+import {
+  _internals as <#=table#>Resolver,
+} from "./<#=table#>.resolver.ts";
+
+defineGraphql(<#=table#>Resolver, /* GraphQL */ `
 
 type <#=Table_Up#>Model {<#
   for (let i = 0; i < columns.length; i++) {

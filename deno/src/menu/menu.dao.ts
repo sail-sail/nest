@@ -3,8 +3,17 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import { getAuthModel } from "/lib/auth/auth.dao.ts";
-import { getTenant_id } from "/src/usr/usr.dao.ts";
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  _internals as usrDao,
+} from "/src/usr/usr.dao.ts";
+
+export const _internals = {
+  getMenus,
+};
 
 async function _getMenus(
   type?: string,
@@ -39,8 +48,8 @@ async function _getMenus(
   if (type) {
     sql += ` and t.type = ${ args.push(type) }`;
   }
-  const authModel = await getAuthModel();
-  const tenant_id = await getTenant_id(authModel?.id);
+  const authModel = await authDao.getAuthModel();
+  const tenant_id = await usrDao.getTenant_id(authModel?.id);
   if (tenant_id) {
     sql += ` and tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
@@ -68,7 +77,7 @@ async function _getMenus(
   return result;
 }
 
-export async function getMenus(
+async function getMenus(
   type = "pc",
 ) {
   const allModels = await _getMenus(type);

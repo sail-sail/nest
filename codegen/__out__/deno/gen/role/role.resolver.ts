@@ -6,7 +6,9 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as roleService from "./role.service.ts";
+import {
+  _internals as roleService
+} from "./role.service.ts";
 
 import {
   type RoleModel,
@@ -15,10 +17,24 @@ import {
   type SortInput,
 } from "/gen/types.ts";
 
+export const _internals = {
+  findCountRole,
+  findAllRole,
+  exportExcelRole,
+  findOneRole,
+  findByIdRole,
+  createRole,
+  updateByIdRole,
+  deleteByIdsRole,
+  importFileRole,
+  revertByIdsRole,
+  forceDeleteByIdsRole,
+};
+
 /**
  * 根据条件查找据数总数
  */
-export async function findCountRole(
+async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await roleService.findCount(search);
@@ -28,7 +44,7 @@ export async function findCountRole(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAllRole(
+async function findAllRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -40,7 +56,7 @@ export async function findAllRole(
 /**
  * 根据搜索条件导出
  */
-export async function exportExcelRole(
+async function exportExcelRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -51,7 +67,7 @@ export async function exportExcelRole(
 /**
  * 根据条件查找第一条数据
  */
-export async function findOneRole(
+async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await roleService.findOne(search);
@@ -61,7 +77,7 @@ export async function findOneRole(
 /**
  * 根据 id 查找一条数据
  */
-export async function findByIdRole(
+async function findByIdRole(
   id: string,
 ) {
   const result = await roleService.findById(id);
@@ -71,7 +87,7 @@ export async function findByIdRole(
 /**
  * 创建一条数据
  */
-export async function createRole(
+async function createRole(
   model: RoleModel,
 ) {
   const context = useContext();
@@ -84,7 +100,7 @@ export async function createRole(
 /**
  * 根据id修改一条数据
  */
-export async function updateByIdRole(
+async function updateByIdRole(
   id: string,
   model: RoleModel,
 ) {
@@ -98,7 +114,7 @@ export async function updateByIdRole(
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIdsRole(
+async function deleteByIdsRole(
   ids: string[],
 ) {
   const context = useContext();
@@ -111,7 +127,7 @@ export async function deleteByIdsRole(
 /**
  * 导入角色
  */
-export async function importFileRole(
+async function importFileRole(
   id: string,
 ) {
   const result = await roleService.importFile(id);
@@ -121,7 +137,7 @@ export async function importFileRole(
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIdsRole(
+async function revertByIdsRole(
   ids: string[],
 ) {
   const context = useContext();
@@ -134,7 +150,7 @@ export async function revertByIdsRole(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIdsRole(
+async function forceDeleteByIdsRole(
   ids: string[],
 ) {
   const context = useContext();

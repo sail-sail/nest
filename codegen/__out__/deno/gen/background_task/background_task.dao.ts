@@ -27,14 +27,17 @@ import {
 } from "/lib/util/string_util.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
-import { getAuthModel, getPassword } from "/lib/auth/auth.dao.ts";
 
 import {
-  getTenant_id,
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  _internals as usrDaoSrc,
 } from "/src/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  _internals as tenantDao,
 } from "/gen/tenant/tenant.dao.ts";
 
 import {
@@ -50,7 +53,29 @@ import {
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
-import * as usrDao from "/gen/usr/usr.dao.ts";
+
+import {
+  _internals as usrDao,
+} from "/gen/usr/usr.dao.ts";
+
+export const _internals = {
+  findCount,
+  findAll,
+  getUniqueKeys,
+  findByUnique,
+  equalsByUnique,
+  checkByUnique,
+  findOne,
+  findById,
+  exist,
+  existById,
+  create,
+  updateTenantById,
+  updateById,
+  deleteByIds,
+  revertByIds,
+  forceDeleteByIds,
+};
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -64,8 +89,8 @@ async function getWhereQuery(
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
@@ -172,7 +197,7 @@ function getFromQuery() {
  * @param { & { $extra?: SearchExtra[] }} search?
  * @return {Promise<number>}
  */
-export async function findCount(
+async function findCount(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -210,7 +235,7 @@ export async function findCount(
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
-export async function findAll(
+async function findAll(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -298,7 +323,7 @@ export async function findAll(
  * 获得表的唯一字段名列表
  * @return {{ uniqueKeys: (keyof Background_TaskModel)[]; uniqueComments: { [key: string]: string }; }}
  */
-export function getUniqueKeys(): {
+function getUniqueKeys(): {
   uniqueKeys: (keyof Background_TaskModel)[];
   uniqueComments: { [key: string]: string };
   } {
@@ -313,7 +338,7 @@ export function getUniqueKeys(): {
  * 通过唯一约束获得一行数据
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] } | PartialNull<Background_TaskModel>} search0
  */
-export async function findByUnique(
+async function findByUnique(
   search0: Background_TaskSearch & { $extra?: SearchExtra[] } | PartialNull<Background_TaskModel>,
   options?: {
   },
@@ -345,7 +370,7 @@ export async function findByUnique(
  * @param {PartialNull<Background_TaskModel>} model
  * @return {boolean}
  */
-export function equalsByUnique(
+function equalsByUnique(
   oldModel: Background_TaskModel,
   model: PartialNull<Background_TaskModel>,
 ): boolean {
@@ -372,7 +397,7 @@ export function equalsByUnique(
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
-export async function checkByUnique(
+async function checkByUnique(
   model: PartialNull<Background_TaskModel>,
   oldModel: Background_TaskModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
@@ -408,7 +433,7 @@ export async function checkByUnique(
  * 根据条件查找第一条数据
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search?
  */
-export async function findOne(
+async function findOne(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -426,7 +451,7 @@ export async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-export async function findById(
+async function findById(
   id?: string,
   options?: {
   },
@@ -440,7 +465,7 @@ export async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search?
  */
-export async function exist(
+async function exist(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   options?: {
   },
@@ -454,7 +479,7 @@ export async function exist(
  * 根据id判断数据是否存在
  * @param {string} id
  */
-export async function existById(
+async function existById(
   id: string,
 ) {
   const table = "background_task";
@@ -499,7 +524,7 @@ export async function existById(
  *   update: 更新冲突数据
  * @return {Promise<string | undefined>} 
  */
-export async function create(
+async function create(
   model: PartialNull<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -558,14 +583,14 @@ export async function create(
       ,create_time
   `;
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
     }
   }
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
@@ -596,14 +621,14 @@ export async function create(
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
     }
   }
   {
-    const authModel = await getAuthModel();
+    const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
@@ -647,7 +672,7 @@ export async function create(
  *   }} [options]
  * @return {Promise<number>}
  */
-export async function updateTenantById(
+async function updateTenantById(
   id: string,
   tenant_id: string,
   options?: {
@@ -656,7 +681,7 @@ export async function updateTenantById(
   const table = "background_task";
   const method = "updateTenantById";
   
-  const tenantExist = await existByIdTenant(tenant_id);
+  const tenantExist = await tenantDao.existById(tenant_id);
   if (!tenantExist) {
     return 0;
   }
@@ -688,7 +713,7 @@ export async function updateTenantById(
  *   create: 级联插入新数据
  * @return {Promise<string>}
  */
-export async function updateById(
+async function updateById(
   id: string,
   model: PartialNull<Background_TaskModel> & {
     tenant_id?: string | null;
@@ -807,7 +832,7 @@ export async function updateById(
   }
   if (updateFldNum > 0) {
     {
-      const authModel = await getAuthModel();
+      const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
@@ -824,7 +849,7 @@ export async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function deleteByIds(
+async function deleteByIds(
   ids: string[],
   options?: {
   },
@@ -866,7 +891,7 @@ export async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-export async function revertByIds(
+async function revertByIds(
   ids: string[],
   options?: {
   },
@@ -903,7 +928,7 @@ export async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
- export async function forceDeleteByIds(
+async function forceDeleteByIds(
   ids: string[],
   options?: {
   },

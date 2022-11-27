@@ -6,7 +6,9 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as deptService from "./dept.service.ts";
+import {
+  _internals as deptService
+} from "./dept.service.ts";
 
 import {
   type DeptModel,
@@ -15,10 +17,25 @@ import {
   type SortInput,
 } from "/gen/types.ts";
 
+export const _internals = {
+  findCountDept,
+  findAllDept,
+  exportExcelDept,
+  findOneDept,
+  findByIdDept,
+  createDept,
+  updateByIdDept,
+  deleteByIdsDept,lockByIdsDept,
+  importFileDept,
+  revertByIdsDept,
+  forceDeleteByIdsDept,
+  findLastOrderByDept,
+};
+
 /**
  * 根据条件查找据数总数
  */
-export async function findCountDept(
+async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await deptService.findCount(search);
@@ -28,7 +45,7 @@ export async function findCountDept(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAllDept(
+async function findAllDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -40,7 +57,7 @@ export async function findAllDept(
 /**
  * 根据搜索条件导出
  */
-export async function exportExcelDept(
+async function exportExcelDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -51,7 +68,7 @@ export async function exportExcelDept(
 /**
  * 根据条件查找第一条数据
  */
-export async function findOneDept(
+async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
   const result = await deptService.findOne(search);
@@ -61,7 +78,7 @@ export async function findOneDept(
 /**
  * 根据 id 查找一条数据
  */
-export async function findByIdDept(
+async function findByIdDept(
   id: string,
 ) {
   const result = await deptService.findById(id);
@@ -71,7 +88,7 @@ export async function findByIdDept(
 /**
  * 创建一条数据
  */
-export async function createDept(
+async function createDept(
   model: DeptModel,
 ) {
   const context = useContext();
@@ -84,7 +101,7 @@ export async function createDept(
 /**
  * 根据id修改一条数据
  */
-export async function updateByIdDept(
+async function updateByIdDept(
   id: string,
   model: DeptModel,
 ) {
@@ -98,7 +115,7 @@ export async function updateByIdDept(
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIdsDept(
+async function deleteByIdsDept(
   ids: string[],
 ) {
   const context = useContext();
@@ -111,7 +128,7 @@ export async function deleteByIdsDept(
 /**
  * 根据 ids 锁定或者解锁数据
  */
-export async function lockByIdsDept(
+async function lockByIdsDept(
   ids: string[],
   is_locked: 0 | 1,
 ) {
@@ -128,7 +145,7 @@ export async function lockByIdsDept(
 /**
  * 导入部门
  */
-export async function importFileDept(
+async function importFileDept(
   id: string,
 ) {
   const result = await deptService.importFile(id);
@@ -138,7 +155,7 @@ export async function importFileDept(
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIdsDept(
+async function revertByIdsDept(
   ids: string[],
 ) {
   const context = useContext();
@@ -151,7 +168,7 @@ export async function revertByIdsDept(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIdsDept(
+async function forceDeleteByIdsDept(
   ids: string[],
 ) {
   const context = useContext();
@@ -164,7 +181,7 @@ export async function forceDeleteByIdsDept(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDept() {
+async function findLastOrderByDept() {
   const result = await deptService.findLastOrderBy();
   return result;
 }

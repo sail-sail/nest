@@ -1,7 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
-import * as resolvers from "./tenant.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */ `
+import {
+  _internals as tenantResolver,
+} from "./tenant.resolver.ts";
+
+defineGraphql(tenantResolver, /* GraphQL */ `
 
 type TenantModel {
   "ID"
