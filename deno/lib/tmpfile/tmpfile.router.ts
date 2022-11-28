@@ -27,6 +27,7 @@ router.post("upload", async function(ctx) {
   for await (const [ name, value ] of body.value.stream({
     outPath: TMP_PATH,
     prefix: "tmpfile_upload_",
+    maxFileSize: 50 * 1024 * 1024, // 50Mb
   })) {
     if (name === "file") {
       if (value instanceof String) {
