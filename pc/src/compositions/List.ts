@@ -1,8 +1,8 @@
 import {
-  type Ref,
   watch,
   nextTick,
   onUnmounted,
+  type Ref,
 } from "vue";
 
 import {
@@ -10,8 +10,14 @@ import {
 } from "element-plus";
 
 import { useRoute } from "vue-router";
-import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
-import { PageInput } from "@/typings/types";
+
+import {
+  type TableColumnCtx,
+} from "element-plus/es/components/table/src/table-column/defaults";
+
+import {
+  type PageInput,
+} from "#/types";
 
 export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
@@ -42,14 +48,16 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 
   });
 }
 
-export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
+export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable> | undefined>) {
   
   /** 当前多行选中的数据 */
   let selectedIds: string[] = $ref([ ]);
   let prevSelectedIds: string[] = $ref([ ]);
   
   function useSelectedIds() {
-    if (!tableRef.value || !tableRef.value.data) return;
+    if (!tableRef.value || !tableRef.value.data) {
+      return;
+    }
     const newSelectList: any[] = [ ];
     const select2falseList: any[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
@@ -62,6 +70,9 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
     }
     if (newSelectList.length > 0) {
       const selectFn = function() {
+        if (!tableRef.value) {
+          return;
+        }
         for (let i = 0; i < newSelectList.length; i++) {
           const item = newSelectList[i];
           tableRef.value.toggleRowSelection(item, true);
@@ -91,7 +102,7 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
   
   const watch2Stop = watch(
     () => selectedIds,
-    (newSelectIds: string[], oldSelectIds: string[]) => {
+    (_newSelectIds: string[], oldSelectIds: string[]) => {
       if (!tableRef.value?.data) return;
       prevSelectedIds = oldSelectIds;
       useSelectedIds();
@@ -170,6 +181,9 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable>>) {
    * @param {MouseEvent} _event
    */
   function rowClkShift(_event?: MouseEvent) {
+    if (!tableRef.value) {
+      return;
+    }
     const id = selectedIds[0];
     const tableData = tableRef.value.data;
     let fromIdx = tableData.length - 1;
