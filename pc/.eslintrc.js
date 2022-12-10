@@ -30,5 +30,6 @@ module.exports = {
     "@typescript-eslint/ban-types": [ 0 ],
     "vue/html-closing-bracket-newline": [ 0 ],
     "vue/attributes-order": [ 0 ],
+    "vue/valid-v-model": [ 0 ],
   },
 };

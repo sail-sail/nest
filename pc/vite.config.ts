@@ -7,16 +7,6 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 // import Inspector from "vite-plugin-vue-inspector";
 import Unocss from "unocss/vite";
 
-import {
-  presetAttributify,
-  presetIcons,
-  presetUno,
-  transformerDirectives,
-  transformerVariantGroup,
-} from "unocss";
-
-import presetRemToPx from "@unocss/preset-rem-to-px";
-
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -65,23 +55,7 @@ export default defineConfig({
     //     "@rsw/excel-render"
     //   ],
     // }),
-    Unocss({
-      presets: [
-        presetUno(),
-        presetAttributify({
-          prefix: "un-",
-          prefixedOnly: true,
-        }),
-        presetRemToPx(),
-        presetIcons({
-          warn: true,
-        }),
-      ],
-      transformers: [
-        transformerDirectives(),
-        transformerVariantGroup(),
-      ],
-    }),
+    Unocss(),
   ],
   resolve: {
     alias: {

@@ -64,9 +64,9 @@
       >
         <template v-if="loginInfo">
           <el-select
-            v-model="loginInfo.dept_id"
+            v-model="(loginInfo.dept_id as string)"
             size="small"
-            suffix-icon
+            suffix-icon=""
             class="dept_select"
             
             un-m="r-2"
@@ -108,28 +108,30 @@
                 
                 <el-dropdown-item @click="toggleDark(!isDark)">
                   <template v-if="!isDark">
-                    <i un-i="tabler-moon"></i>
+                    <ElIcon>
+                      <div un-i="iconfont-moon"></div>
+                    </ElIcon>
                     <span>黑暗模式</span>
                   </template>
                   <template v-else>
-                    <i un-i="tabler-sun"></i>
+                    <ElIcon>
+                      <div un-i="iconfont-sun"></div>
+                    </ElIcon>
                     <span>明亮模式</span>
                   </template>
                 </el-dropdown-item>
                 
                 <el-dropdown-item @click="closeOtherTabs">
-                  <i
-                    un-w="1em"
-                    un-h="1em"
-                  ></i>
+                  <ElIcon>
+                    <CircleClose />
+                  </ElIcon>
                   <span>关闭其它</span>
                 </el-dropdown-item>
                 
                 <el-dropdown-item @click="clearCacheEfc">
-                  <i
-                    un-w="1em"
-                    un-h="1em"
-                  ></i>
+                  <ElIcon>
+                    <Delete />
+                  </ElIcon>
                   <span>清空缓存</span>
                 </el-dropdown-item>
                 
@@ -137,10 +139,9 @@
                   divided
                   @click="logoutClk"
                 >
-                  <i
-                    un-w="1em"
-                    un-h="1em"
-                  ></i>
+                  <ElIcon>
+                    <div un-i="iconfont-logout"></div>
+                  </ElIcon>
                   <span>退出登录</span>
                 </el-dropdown-item>
                 
@@ -233,6 +234,8 @@ import {
   Fold,
   Expand,
   Setting,
+  CircleClose,
+  Delete,
 } from "@element-plus/icons-vue";
 
 import {
