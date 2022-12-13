@@ -71,14 +71,9 @@
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
   },
-  "volar.icon.preview": false,
-  "volar.icon.splitEditors": false,
-  "volar.codeLens.references": false,
-  "volar.diagnostics.delay": 10,
-  "editor.quickSuggestionsDelay": 0,
-  "references.preferredLocation": "peek",
-  "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never",
   "unocss.colorPreview": false,
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "volar.updateImportsOnFileMove.enabled": false,
+  "volar.codeLens.references": false,
+  "volar.icon.preview": false
 }

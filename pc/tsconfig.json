@@ -14,7 +14,6 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "isolatedModules": true,
     "lib": [ "esnext", "dom", "WebWorker" ],
     "types": [ "vite/client", "node" ],
     "baseUrl": ".",
