@@ -48,7 +48,12 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 
   });
 }
 
-export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable> | undefined>) {
+export function useSelect<T>(
+  tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
+  opts?: {
+    tableSelectable: ((row: T, index?: number) => boolean) | undefined,
+  },
+) {
   
   /** 当前多行选中的数据 */
   let selectedIds: string[] = $ref([ ]);
@@ -146,6 +151,13 @@ export function useSelect<T>(tableRef: Ref<InstanceType<typeof ElTable> | undefi
    * @param {PointerEvent} event
    */
   async function rowClk(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
+    const tableSelectable = opts?.tableSelectable;
+    if (tableSelectable && !tableSelectable(row)) {
+      if (column.type !== "selection") {
+        selectedIds = [ ];
+      }
+      return;
+    }
     if (column.type === "selection") {
       if (selectedIds.includes(row.id)) {
         selectedIds = selectedIds.filter((id) => id !== row.id);
