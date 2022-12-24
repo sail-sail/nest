@@ -1,57 +1,48 @@
-import { computed, ComputedRef, Directive, DirectiveBinding, ref, Ref } from "vue";
+import {
+  computed,
+  ref,
+  type Ref,
+  type Directive,
+  type DirectiveBinding,
+} from "vue";
+
 import { useDraggable } from "../compositions/draggable";
 
-let targetRef: Ref<HTMLElement | undefined> = ref();
-let dragRef: Ref<HTMLElement | undefined> = ref();
-let isDraggable0 = false;
-let isFullScreen0 = false;
-let isDraggable: ComputedRef<boolean> = computed(() => isDraggable0 && !isFullScreen0);
+function getParentEl(el: HTMLElement, clazz: string) {
+  let parent = el.parentElement;
+  while (parent && !parent.classList.contains(clazz)) {
+    parent = parent.parentElement;
+  }
+  return parent;
+}
 
 function updatedFn(el: HTMLElement, binding: DirectiveBinding) {
+  let targetRef: Ref<HTMLElement | undefined> = ref();
+  let dragRef: Ref<HTMLElement | undefined> = ref();
+  let isDraggable0 = false;
   if (binding.value === false) {
     isDraggable0 = false;
   } else {
     isDraggable0 = true;
   }
-  const dialogEl = el.parentElement?.parentElement;
+  const dialogHeaderEl = getParentEl(el, "el-dialog__header");
+  if (!dialogHeaderEl) {
+    return;
+  }
+  const dialogEl = getParentEl(dialogHeaderEl, "el-dialog");
   if (!dialogEl) {
     return;
   }
   targetRef.value = dialogEl;
-  isFullScreen0 = dialogEl.classList.contains("is-fullscreen");
   if (isDraggable0) {
-    dialogEl.classList.add("is-draggable");
-  } else {
-    dialogEl.classList.remove("is-draggable");
+    dialogHeaderEl.classList.add("is-draggable");
   }
-  dragRef.value = el;
-  useDraggable(targetRef, dragRef, isDraggable);
+  dragRef.value = dialogHeaderEl;
+  useDraggable(targetRef, dragRef, computed(() => isDraggable0));
 }
 
 export const draggable: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding, vnode, prevVNode) {
     updatedFn(el, binding);
-  },
-  updated(el: HTMLElement, binding: DirectiveBinding, vnode, prevVNode) {
-    if (binding.value === false) {
-      isDraggable0 = false;
-    } else {
-      isDraggable0 = true;
-    }
-    const dialogEl = el.parentElement?.parentElement;
-    if (!dialogEl) {
-      return;
-    }
-    targetRef.value = dialogEl;
-    isFullScreen0 = dialogEl.classList.contains("is-fullscreen");
-    if (isDraggable0) {
-      dialogEl.classList.add("is-draggable");
-    } else {
-      dialogEl.classList.remove("is-draggable");
-    }
-    dragRef.value = el;
-  },
-  beforeUnmount(el: HTMLElement, binding: DirectiveBinding, vnode, prevVNode) {
-    isDraggable0 = false;
   },
 };
