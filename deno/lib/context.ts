@@ -129,7 +129,6 @@ export async function getClient(): Promise<Client> {
         opt.poolSize = poolSize;
       }
     }
-    console.log(opt);
     client = await new Client().connect(opt);
   }
   return client;

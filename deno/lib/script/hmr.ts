@@ -64,6 +64,8 @@ const _schemaColumns: {
 
 async function getSchemaColumn(
   conn: PoolConnection,
+  // deno-lint-ignore ban-types
+  oldQuery: Function,
   schema: string,
   orgTable: string,
   orgName: string,
@@ -88,7 +90,7 @@ async function getSchemaColumn(
     COLUMN_NAME: string;
     IS_NULLABLE: "NO"|"YES";
   // deno-lint-ignore no-explicit-any
-  }[] = (await PoolConnection.prototype.query.apply(conn, [ sql ])) as any;
+  }[] = (await oldQuery.apply(conn, [ sql ])) as any;
   _schemaColumns[schema] = result;
   return _schemaColumns[schema].filter((item) => item.TABLE_SCHEMA === schema && item.TABLE_NAME === orgTable && item.COLUMN_NAME === orgName)[0];
 }
@@ -244,7 +246,7 @@ async function _handelChg(filenames: string[] = []) {
                 if (field.name.startsWith("is_")) {
                   type = "0|1";
                 }
-                const colInfo = await getSchemaColumn(this, field.schema, field.originTable, field.originName);
+                const colInfo = await getSchemaColumn(this, oldQuery, field.schema, field.originTable, field.originName);
                 let IS_NULLABLE: "NO"|"YES" = "NO";
                 if (colInfo && colInfo.IS_NULLABLE) {
                   IS_NULLABLE = colInfo.IS_NULLABLE;
@@ -291,16 +293,16 @@ async function _handelChg(filenames: string[] = []) {
             typeStr += `    ${ item.name }${ item.IS_NULLABLE === "YES" ? "?" : "" }: ${ item.type },\n`;
           }
           typeStr += "  }";
-          idx = methodStr2.lastIndexOf("await context.query(");
-          idxOne = methodStr2.lastIndexOf("await context.queryOne(");
+          idx = methodStr2.lastIndexOf("await query(");
+          idxOne = methodStr2.lastIndexOf("await queryOne(");
           if (idx > 0) {
             const str1 = methodStr2.substring(0, idx);
-            const str2 = methodStr2.substring(idx + "await context.query(".length);
-            methodStr2 = `${ str1 }await context.query<${ typeStr }>(${ str2 }`;
+            const str2 = methodStr2.substring(idx + "await query(".length);
+            methodStr2 = `${ str1 }await query<${ typeStr }>(${ str2 }`;
           } else if (idxOne > 0) {
             const str1 = methodStr2.substring(0, idxOne);
-            const str2 = methodStr2.substring(idxOne + "await context.queryOne(".length);
-            methodStr2 = `${ str1 }await context.queryOne<${ typeStr }>(${ str2 }`;
+            const str2 = methodStr2.substring(idxOne + "await queryOne(".length);
+            methodStr2 = `${ str1 }await queryOne<${ typeStr }>(${ str2 }`;
           }
           str2 = str2.replace(methodStr, methodStr2);
         }
