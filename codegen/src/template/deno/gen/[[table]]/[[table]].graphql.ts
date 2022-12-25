@@ -338,7 +338,12 @@ type Query {
   findLastOrderBy<#=tableUp#>: Int!<#
   }
   #>
-}
+}<#
+if (opts.noAdd !== true
+  || opts.noEdit !== true
+  || opts.noDelete !== true
+) {
+#>
 type Mutation {<#
   if (opts.noAdd !== true) {
   #>
@@ -378,6 +383,8 @@ type Mutation {<#
   forceDeleteByIds<#=tableUp#>(ids: [ID!]!): Int!<#
   }
   #>
+}<#
 }
+#>
 
 `);
