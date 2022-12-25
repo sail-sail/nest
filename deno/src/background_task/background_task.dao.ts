@@ -1,8 +1,7 @@
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 import {
-  create,
-  updateById,
+  _internals as background_taskDao,
 } from "/gen/background_task/background_task.dao.ts";
 
 import dayjs from "dayjs";
@@ -23,7 +22,7 @@ async function handelResult(data: any, id: string) {
   }
   const dateNow = new Date();
   const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
-  await updateById(
+  await background_taskDao.updateById(
     id,
     {
       state: "success",
@@ -37,7 +36,7 @@ async function handelErr(err: Error, id: string) {
   const errMsg = err.message || err.toString();
   const dateNow = new Date();
   const end_time = dayjs(dateNow).format("YYYY-MM-DD HH:mm:ss");
-  await updateById(
+  await background_taskDao.updateById(
     id,
     {
       state: "fail",
@@ -63,7 +62,7 @@ function backgroundTaskWrap(
       taskResult = taskResult || { };
       taskResult.type = taskResult.type || "text";
       const id = shortUuidV4();
-      await create(
+      await background_taskDao.create(
         {
           id,
           lbl: taskResult.lbl || "",
