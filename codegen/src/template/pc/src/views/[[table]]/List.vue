@@ -247,7 +247,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       }
       #>
       <#
-      if (opts.noRevert !== true) {
+      if (opts.noDelete !== true && opts.noRevert !== true) {
       #>
       <template v-if="builtInSearch?.is_deleted == null">
         <div
@@ -419,7 +419,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       </el-button><#
         }
       #><#
-        if (opts.noImport !== true) {
+        if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
       #>
       
       <el-button
@@ -434,7 +434,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
     </template>
     <template v-else><#
-      if (opts.noRevert !== true) {
+      if (opts.noDelete !== true && opts.noRevert !== true) {
       #>
       <el-button
         plain
@@ -925,7 +925,7 @@ import <#=foreignTableUp#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.vue
 import {
   findAll,
   findCount,<#
-    if (opts.noRevert !== true) {
+    if (opts.noDelete !== true && opts.noRevert !== true) {
   #>
   revertByIds,<#
     }
@@ -951,7 +951,7 @@ import {
   updateById,<#
     }
   #><#
-    if (opts.noImport !== true) {
+    if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
   importFile,<#
     }
@@ -1822,7 +1822,7 @@ async function openCopy() {
     emit("add", changedIds);
   }
 }<#
-  if (opts.noImport !== true) {
+  if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog> | undefined>();
@@ -1969,7 +1969,7 @@ async function lockByIdsClk(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noRevert !== true) {
+if (opts.noDelete !== true && opts.noRevert !== true) {
 #>
 
 /** 点击还原 */

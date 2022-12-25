@@ -1,5 +1,15 @@
 export default {
-  ignoreCodegen: [ "dept_id", "tenant_id", "create_usr_id", "create_time", "update_usr_id", "update_time", "delete_time", "is_deleted" ],
+  ignoreCodegen: [
+    "dept_id",
+    "tenant_id",
+    "create_usr_id",
+    "create_time",
+    "update_usr_id",
+    "update_time",
+    "is_deleted",
+    "delete_usr_id",
+    "delete_time",
+  ],
 };
 
 export interface TableCloumn {
@@ -202,6 +212,11 @@ export interface TableCloumn {
    */
   GENERATION_EXPRESSION?: string,
   SRS_ID?: string,
+  
+  /**
+   * 对_id或者_ids结尾的字段不启用外键关联
+   */
+  notForeignKeyById?: boolean;
   
   /**
    * 外键关联表

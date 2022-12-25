@@ -107,7 +107,7 @@ export async function getSchema(
     if (config.ignoreCodegen.includes(record.COLUMN_NAME) && record.ignoreCodegen == null) {
       record.ignoreCodegen = true;
     }
-    if (!record.foreignKey) {
+    if (!record.foreignKey && !record.notForeignKeyById) {
       if (record.COLUMN_NAME.endsWith("_ids")) {
         const table2 = record.COLUMN_NAME.substring(0, record.COLUMN_NAME.length - "_ids".length);
         const defaultSort = tables[table2]?.opts?.defaultSort;

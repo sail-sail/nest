@@ -22,10 +22,10 @@ for (let i = 0; i < columns.length; i++) {
   :close-on-click-modal="false"<#
     if (columnNum > 20) {
   #>
-  class="custom_dialog"<#
+  class="custom_dialog pointer_pierce_dialog"<#
     } else {
   #>
-  class="custom_dialog auto_dialog"<#
+  class="custom_dialog pointer_pierce_dialog auto_dialog"<#
     }
   #>
   top="0"

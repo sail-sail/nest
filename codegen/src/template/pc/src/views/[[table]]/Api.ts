@@ -400,7 +400,7 @@ export async function lockByIds(
 }<#
 }
 #><#
-if (opts.noDelete !== true) {
+if (opts.noDelete !== true && opts.noRevert !== true) {
 #>
 
 /**
@@ -530,7 +530,7 @@ export async function exportExcel(
   const result = data.exportExcel<#=tableUp#>;
   return result;
 }<#
-if (opts.noAdd !== true && opts.noEdit !== true) {
+if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>
 
 /**
