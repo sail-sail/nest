@@ -210,6 +210,7 @@ async function showDialog(
     dialogModel.id = model?.id;
     await useAllFindCount();
   }
+  inited = true;
   return await dialogPrm;
 }
 
