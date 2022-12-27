@@ -126,7 +126,7 @@ let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("关联列表");
 let dialogVisible = $ref(false);
-let dialogAction = $ref("list");
+let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
   id: string | undefined,
@@ -178,7 +178,7 @@ type OnCloseResolveType = {
   type: "ok" | "cancel";
 };
 
-let onCloseResolve = function(value: OnCloseResolveType) { };
+let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 打开对话框 */
 async function showDialog(
@@ -188,7 +188,7 @@ async function showDialog(
       id?: string;
       ids?: string[];
     };
-    action?: "list";
+    action?: typeof dialogAction;
   },
 ) {
   inited = false;
@@ -210,6 +210,7 @@ async function showDialog(
     dialogModel.id = model?.id;
     await useAllFindCount();
   }
+  return await dialogPrm;
 }
 
 /** 点击取消关闭按钮 */
