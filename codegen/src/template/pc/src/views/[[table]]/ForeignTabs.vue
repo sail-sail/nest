@@ -7,7 +7,7 @@ const foreignTabs = column?.foreignTabs || [ ];
   :fullscreen="fullscreen"
   append-to-body
   :close-on-click-modal="false"
-  class="custom_dialog large_dialog"
+  class="custom_dialog pointer_pierce_dialog large_dialog"
   top="0"
   :before-close="beforeClose"
 >

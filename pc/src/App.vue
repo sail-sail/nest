@@ -448,4 +448,14 @@ body .el-tree {
 .swiper-slide {
   overflow-y: auto;
 }
+// 弹出框点击穿透
+.el-overlay:has(.pointer_pierce_dialog) {
+  pointer-events: none;
+  .pointer_pierce_dialog {
+    pointer-events: auto;
+  }
+}
+.is-draggable {
+  cursor: move;
+}
 </style>

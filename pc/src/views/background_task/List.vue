@@ -514,7 +514,7 @@ import {
   usePage,
   useSelect,
   useTableColumns,
-  ColumnType,
+  type ColumnType,
 } from "@/compositions/List";
 
 import Detail from "./Detail.vue";
