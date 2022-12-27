@@ -429,9 +429,14 @@ body .el-tree {
     flex-direction: column;
   }
 }
+// 最大号的弹出框
 .el-dialog.large_dialog {
   width: calc(100% - 100px);
   height: calc(100% - 20px);
+}
+// 中等大小的弹出框
+.el-dialog.medium_dialog {
+  width: 1250px;
 }
 .dark .filter_invert {
   filter: invert(1) hue-rotate(180deg);
