@@ -55,23 +55,18 @@
   >
     (无)
   </div>
-  <teleport
+  <el-image-viewer
     v-if="urlList.length > 0 && showImageViewer"
-    to="body"
-  >
-    <el-image-viewer
-       hide-on-click-modal
-      :url-list="urlList"
-      @close="showImageViewer = false"
-    ></el-image-viewer>
-  </teleport>
+    hide-on-click-modal
+    :url-list="urlList"
+    @close="showImageViewer = false"
+  ></el-image-viewer>
 </div>
 </template>
 
 <script lang="ts" setup>
 import {
   ElImageViewer,
-  ElLink,
   ElImage,
   ElIcon,
 } from "element-plus";

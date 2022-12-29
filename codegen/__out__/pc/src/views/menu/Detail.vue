@@ -316,38 +316,36 @@
       </el-button>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 gray"
         un-pos-absolute
-        un-right-2
+        un-right="2"
       >
-        <template v-if="ids && ids.length > 0">
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="prevIdClk"
-          >
-            上一项
-          </el-button>
-          
-          <span>
-            <span>
-              {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-            </span>
-          </span>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="nextIdClk"
-          >
-            下一项
-          </el-button>
-          
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="prevIdClk"
+        >
+          上一项
+        </el-button>
+        
+        <span>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </span>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="nextIdClk"
+        >
+          下一项
+        </el-button>
+        
         <span v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </span>
+        
       </div>
       
     </div>
@@ -398,16 +396,18 @@ import {
   findAllMenu,
 } from "./Api";
 
-const emit = defineEmits([
-  "nextId",
-]);
+const emit = defineEmits<
+  (e: "nextId", value: { dialogAction: DialogAction, id: string }) => void
+>();
 
 let inited = $ref(false);
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
+type DialogAction = "add" | "copy" | "edit";
+
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
-let dialogAction = $ref("add");
+let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
 } as MenuInput);
@@ -481,7 +481,7 @@ async function showDialog(
       id?: string;
       ids?: string[];
     };
-    action: "add" | "edit" | "copy";
+    action: DialogAction;
   },
 ) {
   inited = false;
@@ -581,7 +581,7 @@ async function prevId() {
     }
   }
   await refreshEfc();
-  emit("nextId", { dialogAction, id: dialogModel.id });
+  emit("nextId", { dialogAction, id: dialogModel.id! });
   return true;
 }
 
@@ -607,7 +607,7 @@ async function nextId() {
     }
   }
   await refreshEfc();
-  emit("nextId", { dialogAction, id: dialogModel.id });
+  emit("nextId", { dialogAction, id: dialogModel.id! });
   return true;
 }
 

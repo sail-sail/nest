@@ -64,6 +64,9 @@ let attLen = $computed(() => {
 let attDialogRef = $ref<InstanceType<typeof AttDialog>>();
 
 async function linkClk() {
+  if (!attDialogRef) {
+    return;
+  }
   await attDialogRef.showDialog({
     model: {
       modelValue,

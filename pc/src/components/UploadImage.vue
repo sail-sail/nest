@@ -166,7 +166,9 @@ import {
 import useIndexStore from "@/store/index";
 import { watch } from "vue";
 
-const emit = defineEmits([ "update:modelValue" ]);
+const emit = defineEmits<
+  (e: "update:modelValue", value: string) => void
+>();
 
 const indexStore = useIndexStore();
 

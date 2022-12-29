@@ -38,44 +38,36 @@
       <el-button
         v-if="!dialogModel.readonly && urlList.length > 0"
         type="primary"
+        :icon="Upload"
         @click="uploadClk"
       >
-        <template #icon>
-          <Upload />
-        </template>
         <span>上传</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex] && !dialogModel.readonly"
         plain
+        :icon="Delete"
         type="danger"
         @click="deleteClk"
       >
-        <template #icon>
-          <Delete />
-        </template>
         <span>删除</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex]"
         plain
+        :icon="Download"
         @click="downloadClk"
       >
-        <template #icon>
-          <Download />
-        </template>
         <span>下载</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex]"
+        :icon="Printer"
         @click="printClk"
       >
-        <template #icon>
-          <Printer />
-        </template>
         <span>打印</span>
       </el-button>
       
@@ -93,22 +85,18 @@
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === 0"
+        :icon="ArrowLeft"
         @click="moveLeftClk"
       >
-        <template #icon>
-          <ArrowLeft />
-        </template>
         <span>前移</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === urlList.length - 1"
+        :icon="ArrowRight"
         @click="moveRightClk"
       >
-        <template #icon>
-          <ArrowRight />
-        </template>
         <span>后移</span>
       </el-button>
       
@@ -169,11 +157,9 @@
           v-if="!dialogModel.readonly && urlList.length === 0"
           plain
           type="primary"
+          :icon="Upload"
           @click="uploadClk"
         >
-          <template #icon>
-            <Upload />
-          </template>
           <span>上传</span>
         </el-button>
         
@@ -217,11 +203,9 @@
         <el-button
           :disabled="nowIndex <= 0"
           size="small"
+          :icon="ArrowLeft"
           @click="previousClk"
         >
-          <template #icon>
-            <ArrowLeft />
-          </template>
         </el-button>
         
         <span
@@ -236,11 +220,9 @@
         <el-button
           :disabled="nowIndex >= urlList.length - 1"
           size="small"
+          :icon="ArrowRight"
           @click="nextClk"
         >
-          <template #icon>
-            <ArrowRight />
-          </template>
         </el-button>
         
       </div>
@@ -250,9 +232,7 @@
     ref="fileRef"
     type="file"
     :accept="dialogModel.accept"
-    
     un-display-none
-    
     @change="inputChg"
   />
 </el-dialog>

@@ -87,6 +87,9 @@ function iframeLoad() {
 
 // iframe加载完毕之后的后续处理, 固定表头
 function initIframeEl() {
+  if (!iframeRef) {
+    return;
+  }
   const iframeWindow = iframeRef.contentWindow;
   if (!iframeWindow) {
     return;

@@ -102,15 +102,17 @@ let inited = $ref(false);
 
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
-let dialogAction: string = $ref("select");
+let dialogAction = $ref<"select" | "close" | "cancel">("select");
 
-let selectedIds: string[]|undefined = $ref([ ]);
-let oldSelectedIds: string[]|undefined = [ ];
+let selectedIds = $ref<string[] | undefined>([ ]);
+let oldSelectedIds: string[] = [ ];
 
-let onCloseResolve = function(value: {
-  action: "select" | "close" | "cancel";
-  selectedIds: string[]|undefined;
-}) { };
+type OnCloseResolveType = {
+  action: typeof dialogAction;
+  selectedIds?: string[];
+};
+
+let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 // 打开对话框
 async function showDialog(
@@ -122,10 +124,7 @@ async function showDialog(
 ) {
   inited = false;
   dialogVisible = true;
-  const dialogPrm = new Promise<{
-    action: "select" | "close" | "cancel";
-    selectedIds: string[] | undefined;
-  }>(function(resolve) {
+  const dialogPrm = new Promise<OnCloseResolveType>(function(resolve) {
     onCloseResolve = resolve;
   })
   const title = arg?.title;

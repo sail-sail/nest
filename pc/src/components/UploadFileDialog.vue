@@ -118,22 +118,18 @@
     >
       
       <el-button
+        :icon="CircleClose"
         @click="cancelClk"
       >
-        <template #icon>
-          <CircleClose />
-        </template>
         <span>取消</span>
       </el-button>
       
       <el-button
         type="primary"
+        :icon="CircleCheck"
         :disabled="!fileInfo.name"
         @click="confirmClk"
       >
-        <template #icon>
-          <CircleCheck />
-        </template>
         <span>确定导入</span>
       </el-button>
       
@@ -142,9 +138,7 @@
   <input
     ref="fileRef"
     type="file"
-    
     un-display-none
-    
     @change="inputChg"
   />
 </el-dialog>
@@ -155,9 +149,7 @@ import { nextTick } from "vue";
 
 import {
   ElDialog,
-  ElMessage,
   ElMessageBox,
-  ElImage,
   ElIcon,
   ElButton,
 } from "element-plus";
@@ -236,7 +228,7 @@ async function confirmClk() {
 }
 
 async function cancelClk() {
-  if (fileObj) {
+  if (fileObj && fileInfo.name) {
     try {
       await ElMessageBox.confirm(`文件 ${ fileInfo.name } 尚未导入, 取消导入? `, {
         confirmButtonText: "取消导入",
@@ -244,6 +236,7 @@ async function cancelClk() {
         type: "warning",
       });
     } catch (err) {
+      return;
     }
   }
   dialogVisible = false;

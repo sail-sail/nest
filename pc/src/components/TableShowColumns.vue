@@ -65,10 +65,10 @@ interface ColumnType {
   width?: string|number,
 }
 
-const emit = defineEmits([
-  "storeColumns",
-  "resetColumns",
-]);
+const emit = defineEmits<{
+  (e: "storeColumns", tableColumns: ColumnType[]): void
+  (e: "resetColumns"): void
+}>();
 
 const props = withDefaults(
   defineProps<{
@@ -79,7 +79,7 @@ const props = withDefaults(
   },
 );
 
-let dropdownRef: typeof ElDropdown = $ref();
+let dropdownRef = $ref<InstanceType<typeof ElDropdown>>();
 
 function handleCommand(command: { action: "reset"|"item", item?: ColumnType }) {
   const action = command.action;
