@@ -1,4 +1,4 @@
-import Axios, { AxiosRequestConfig } from "axios";
+import Axios, { type AxiosRequestConfig } from "axios";
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr";
 import useIndexStore from "../store/index";
@@ -21,7 +21,7 @@ axios.interceptors.request.use(
     if (authorization) {
       if (!authorization.startsWith("Bearer ")) {
         config.headers = config.headers || { };
-        config.headers.Authorization = `Bearer ${ authorization }`;
+        (config.headers as any).Authorization = `Bearer ${ authorization }`;
       }
     }
     if ((<any>config).notLoading !== true) {

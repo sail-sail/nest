@@ -205,7 +205,7 @@ let urlList = $computed(() => {
     const url = getDownloadUrl({
       id,
       inline: "1",
-    });
+    }, "oss");
     return url;
   });
 });

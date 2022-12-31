@@ -47,31 +47,25 @@
     >
       
       <el-button
+        :icon="CircleClose"
         @click="cancelClk"
       >
-        <template #icon>
-          <CircleClose />
-        </template>
         <span>取消</span>
       </el-button>
       
       <el-button
         un-m="x-1"
+        :icon="Refresh"
         @click="revertClk"
       >
-        <template #icon>
-          <Refresh />
-        </template>
         <span>还原</span>
       </el-button>
       
       <el-button
         type="primary"
+        :icon="CircleCheck"
         @click="saveClk"
       >
-        <template #icon>
-          <CircleCheck />
-        </template>
         <span>确定</span>
       </el-button>
       

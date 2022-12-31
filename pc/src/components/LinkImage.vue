@@ -97,7 +97,7 @@ let urlList = $computed(() => {
     list.push(getDownloadUrl({
       id,
       inline: "1",
-    }));
+    }, "oss"));
   }
   return list;
 });
