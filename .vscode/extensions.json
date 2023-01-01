@@ -17,10 +17,9 @@
     "antfu.unocss",
     "jock.svg",
     "vue.volar",
-    "Vue.vscode-typescript-vue-plugin",
+    "vue.vscode-typescript-vue-plugin",
     "vscode-icons-team.vscode-icons",
     "redhat.vscode-xml",
-    "antfu.unocss",
     "mattpocock.ts-error-translator",
     "usernamehw.errorlens",
     "derefs.vscode-inline-sql-highlight",
@@ -32,6 +31,7 @@
     "maggie.eslint-rules-zh-plugin",
     "britesnow.vscode-toggle-quotes",
     "ms-edgedevtools.vscode-edge-devtools",
-    "modyqyw.vscode-uni-ui-snippets"
+    "modyqyw.vscode-uni-ui-snippets",
+    "vunguyentuan.vscode-css-variables"
   ]
 }

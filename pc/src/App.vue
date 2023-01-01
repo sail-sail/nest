@@ -201,7 +201,7 @@ html,body {
     .dialog_title {
       display: flex;
       padding-right: 20px;
-      color: gray;
+      color: var(--el-text-color-regular);
     }
     .title_lbl {
       flex: 1 0 0;

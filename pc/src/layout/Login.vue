@@ -124,7 +124,7 @@ const router = useRouter();
 const inputStyle = {
   backgroundColor: 'transparent',
   border: 0,
-  borderBottom: '1px gray solid',
+  borderBottom: '1px var(--el-text-color-regular) solid',
   borderRadius: 0,
 };
 

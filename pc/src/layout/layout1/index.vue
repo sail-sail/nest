@@ -177,38 +177,9 @@
     >
       <router-view v-slot="{ Component }">
         <template v-if="Component">
-          <Transition mode="out-in">
-            <KeepAlive>
-              <Suspense>
-                <!-- 主要内容 -->
-                <component :is="Component"></component>
-
-                <!-- 加载中状态 -->
-                <template #fallback>
-                  <div
-                    v-if="errorMessage"
-                    un-flex="~ [1_0_0]"
-                    un-items-center
-                    un-justify-center
-                    un-overflow-hidden
-                    un-text="[red] [28px]"
-                  >
-                    {{ errorMessage }}
-                  </div>
-                  <div
-                    v-else
-                    un-flex="~ [1_0_0]"
-                    un-items-center
-                    un-justify-center
-                    un-overflow-hidden
-                    un-text="[18px]"
-                  >
-                    正在加载...
-                  </div>
-                </template>
-              </Suspense>
-            </KeepAlive>
-          </Transition>
+          <KeepAlive>
+            <component :is="Component"></component>
+          </KeepAlive>
         </template>
       </router-view>
     </div>

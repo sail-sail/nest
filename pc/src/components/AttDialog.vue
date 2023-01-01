@@ -150,7 +150,7 @@
         un-overflow-hidden
         un-justify-center
         un-items-center
-        un-text="gray [22px]"
+        un-text="var(--el-text-color-regular) [22px]"
       >
         
         <el-button
@@ -169,7 +169,7 @@
           un-overflow-hidden
           un-justify-center
           un-items-center
-          un-text="gray [22px]"
+          un-text="var(--el-text-color-regular) 5"
         >
           <span>(暂无附件)</span>
         </div>
@@ -209,8 +209,8 @@
         </el-button>
         
         <span
-          un-text="gray"
-          un-m="l-[10px] r-[10px]"
+          un-text="[var(--el-text-color-regular)]"
+          un-m="x-3"
           un-flex="~ col"
           un-justify-center
         >

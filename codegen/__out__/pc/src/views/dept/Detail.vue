@@ -210,28 +210,24 @@
       
       <el-button
         plain
+        :icon="CircleClose"
         @click="cancelClk"
       >
-        <template #icon>
-          <CircleClose />
-        </template>
         <span>取消</span>
       </el-button>
       
       <el-button
         plain
         type="primary"
+        :icon="CircleCheck"
         @click="saveClk"
       >
-        <template #icon>
-          <CircleCheck />
-        </template>
         <span>保存</span>
       </el-button>
       
       <div
         v-if="(ids && ids.length > 1)"
-        un-text="3 gray"
+        un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
       >

@@ -53,6 +53,13 @@
     "web": true,
     "**/*/types.ts": true
   },
+  "cssVariables.lookupFiles": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.sass",
+    "**/*.less",
+    "node_modules/element-plus/theme-chalk/**/*.css"
+  ],
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",

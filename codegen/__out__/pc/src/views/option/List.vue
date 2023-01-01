@@ -28,7 +28,7 @@
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -51,7 +51,7 @@
       <template v-if="builtInSearch?.kyLike == null && builtInSearch?.ky == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -74,7 +74,7 @@
       <template v-if="builtInSearch?.valLike == null && builtInSearch?.val == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"

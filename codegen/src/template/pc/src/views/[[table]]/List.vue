@@ -64,7 +64,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -98,7 +98,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -144,7 +144,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -175,7 +175,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -198,7 +198,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -222,7 +222,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
         <label
           un-m="l-1"
-          un-text-gray
+          un-text="[var(--el-text-color-regular)]"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"

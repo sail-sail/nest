@@ -349,11 +349,9 @@ for (let i = 0; i < columns.length; i++) {
       
       <el-button
         plain
+        :icon="CircleClose"
         @click="cancelClk"
       >
-        <template #icon>
-          <CircleClose />
-        </template>
         <span>取消</span>
       </el-button><#
       if (opts.noAdd !== true || opts.noEdit !== true) {
@@ -362,11 +360,9 @@ for (let i = 0; i < columns.length; i++) {
       <el-button
         plain
         type="primary"
+        :icon="CircleCheck"
         @click="saveClk"
       >
-        <template #icon>
-          <CircleCheck />
-        </template>
         <span>保存</span>
       </el-button><#
       }
@@ -374,7 +370,7 @@ for (let i = 0; i < columns.length; i++) {
       
       <div
         v-if="(ids && ids.length > 1)"
-        un-text="3 gray"
+        un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
       >
