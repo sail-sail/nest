@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
+// deno-lint-ignore-file no-explicit-any require-await
 import { xor } from "../util.ts";
 import { ReceivePacket } from "../packets/packet.ts";
 import { encryptWithPublicKey } from "./crypt.ts";
@@ -18,7 +18,7 @@ async function start(
 ): Promise<handler> {
   scramble = scramble_;
   password = password_;
-  return { done: false, next: await authMoreResponse };
+  return { done: false, next: authMoreResponse };
 }
 
 async function authMoreResponse(packet: ReceivePacket): Promise<handler> {
@@ -32,7 +32,7 @@ async function authMoreResponse(packet: ReceivePacket): Promise<handler> {
   if (statusFlag === AuthStatusFlags.FullAuth) {
     authMoreData = new Uint8Array([REQUEST_PUBLIC_KEY]);
     done = false;
-    next = await encryptWithKey;
+    next = encryptWithKey;
   }
   if (statusFlag === AuthStatusFlags.FastPath) {
     done = false;

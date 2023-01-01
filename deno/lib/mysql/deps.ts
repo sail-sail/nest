@@ -5,6 +5,10 @@ export {
 } from "std/async/mod.ts";
 
 export {
+  decode as base64Decode,
+} from "std/encoding/base64.ts";
+
+export {
   format as byteFormat,
 } from "https://deno.land/x/bytes_formater@v1.4.0/mod.ts";
 

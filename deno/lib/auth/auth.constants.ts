@@ -1,13 +1,12 @@
-import {
-  crypto,
-  type DigestAlgorithm,
-} from "std/crypto/mod.ts";
-
 import { encode } from "std/encoding/base64.ts";
 
 import {
   type JWTPayload,
 } from "jose/index.ts";
+
+import {
+  createHash,
+} from "/lib/util/hash_util.ts";
 
 export const SECRET_KEY = "38e52379-9e94-467c-8e63-17ad318fc845";
 export const NOT_VERIFY_TOKEN = "not_verify_token";
@@ -19,12 +18,6 @@ export interface AuthModel extends JWTPayload {
   wx_usr_id?: string;
   dept_id?: string;
 }
-
-async function createHash(algorithm: DigestAlgorithm, buffer: Uint8Array): Promise<ArrayBuffer> {
-  const hash = await crypto.subtle.digest(algorithm, buffer);
-  return hash;
-}
-
 export async function getPassword(str: string): Promise<string> {
   if (!str) return "";
   const textEncoder = new TextEncoder();
