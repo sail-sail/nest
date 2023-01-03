@@ -458,4 +458,8 @@ body .el-tree {
 .is-draggable {
   cursor: move;
 }
+// 限制菜单的最大高度
+.el-scrollbar__view.el-dropdown__list {
+  max-height: 650px;
+}
 </style>
