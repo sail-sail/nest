@@ -513,6 +513,9 @@ async function saveClk() {
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
+    if (!dialogModel.id) {
+      return;
+    }
     id = await updateById(
       dialogModel.id,
       {
@@ -524,7 +527,7 @@ async function saveClk() {
   }
   if (id) {
     if (!changedIds.includes(id)) {
-      changedIds.push(dialogModel.id);
+      changedIds.push(id);
     }
     ElMessage.success(msg);
     const isNext = await nextId();

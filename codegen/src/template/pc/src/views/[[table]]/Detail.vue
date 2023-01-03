@@ -941,6 +941,9 @@ async function saveClk() {
   #><#
   if (opts.noEdit !== true) {
   #>if (dialogAction === "edit") {
+    if (!dialogModel.id) {
+      return;
+    }
     id = await updateById(
       dialogModel.id,
       {
@@ -954,7 +957,7 @@ async function saveClk() {
   #>
   if (id) {
     if (!changedIds.includes(id)) {
-      changedIds.push(dialogModel.id);
+      changedIds.push(id);
     }
     ElMessage.success(msg);
     const isNext = await nextId();
