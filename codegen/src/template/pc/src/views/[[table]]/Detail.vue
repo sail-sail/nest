@@ -960,13 +960,14 @@ async function saveClk() {
       changedIds.push(id);
     }
     ElMessage.success(msg);
-    const isNext = await nextId();
-    if (!isNext) {
-      onCloseResolve({
-        type: "ok",
-        changedIds,
-      });
+    const hasNext = await nextId();
+    if (hasNext) {
+      return;
     }
+    onCloseResolve({
+      type: "ok",
+      changedIds,
+    });
   }
 }<#
 }
