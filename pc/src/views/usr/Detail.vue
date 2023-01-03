@@ -672,9 +672,6 @@ async function saveClk() {
     dialogModel.id = id;
     msg = `增加成功!`;
   } else if (dialogAction === "edit") {
-    if (!dialogModel.id) {
-      return;
-    }
     id = await updateById(
       dialogModel.id,
       {
@@ -685,22 +682,16 @@ async function saveClk() {
     msg = `修改成功!`;
   }
   if (id) {
-    if (dialogModel.id) {
+    if (!changedIds.includes(id)) {
       changedIds.push(dialogModel.id);
     }
     ElMessage.success(msg);
-    const oldId = dialogModel.id;
-    let isNext = await nextId();
-    if (!isNext) {
-      isNext = await prevId();
-    }
+    const isNext = await nextId();
     if (!isNext) {
       onCloseResolve({
         type: "ok",
         changedIds,
       });
-    } else {
-      ids = ids.filter((id) => id !== oldId);
     }
   }
 }
