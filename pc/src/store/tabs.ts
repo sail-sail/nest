@@ -19,29 +19,37 @@ export default defineStore("tabs", function() {
   
   const actTab = $computed(() => tabs.find((item) => item.active));
   
+  function tabEqual(tab1: TabInf, tab2: TabInf) {
+    if (tab1.path !== tab2.path) {
+      return false;
+    }
+    const keys1 = tab1.query ? Object.keys(tab1.query) : [ ];
+    const keys2 = Object.keys(tab2?.query || { });
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    for (let i = 0; i < keys1.length; i++) {
+      const key1 = keys1[i];
+      const val1 = tab1.query![key1];
+      const val2 = tab2!.query![key1];
+      if (val1 !== val2) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   function activeTab(tab?: TabInf) {
-    if (tab && actTab && tab.path === actTab.path) {
-      const keys1 = tab.query ? Object.keys(tab.query) : [ ];
-      const keys2 = Object.keys(actTab?.query || { });
-      if (keys1.length === keys2.length) {
-        let isEqual = true;
-        for (let i = 0; i < keys1.length; i++) {
-          const key1 = keys1[i];
-          const val1 = tab.query![key1];
-          const val2 = actTab!.query![key1];
-          if (val1 !== val2) {
-            isEqual = false;
-            break;
-          }
-        }
-        if (isEqual) {
-          return;
-        }
+    if (tab && actTab) {
+      if (tabEqual(tab, actTab)) {
+        return;
       }
     }
     let idx = -1;
     if (tab) {
-      idx = tabs.findIndex((item: TabInf) => item.path === tab.path);
+      idx = tabs.findIndex((item: TabInf) => {
+        return tabEqual(item, tab);
+      });
     }
     tabs.forEach((item: TabInf) => item.active = false);
     if (idx === -1) {
@@ -54,12 +62,23 @@ export default defineStore("tabs", function() {
     }
   }
   
-  async function removeTab(path: string) {
-    if (!path) {
+  function unshiftTab(...tabs0: TabInf[]) {
+    for (let i = 0; i < tabs0.length; i++) {
+      const tab = tabs0[tabs0.length - 1 - i];
+      if (tabs.some((item) => tabEqual(item, tab))) {
+        continue;
+      }
+      tabs.unshift(tab);
+    }
+  }
+  
+  async function removeTab(tab: TabInf) {
+    if (!tab) {
       return false;
     }
-    const idx = tabs.findIndex((item) => item.path === path);
-    const tab = tabs[idx];
+    const idx = tabs.findIndex((item: TabInf) => {
+      return tabEqual(item, tab);
+    });
     if (tab.active) {
       if (idx !== -1) {
         if (tabs[idx + 1]) {
@@ -120,6 +139,7 @@ export default defineStore("tabs", function() {
     tabs,
     actTab,
     activeTab,
+    unshiftTab,
     refreshTab,
     removeTab,
     closeOtherTabs,

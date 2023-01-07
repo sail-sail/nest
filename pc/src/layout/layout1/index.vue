@@ -264,7 +264,7 @@ watch(
       return;
     }
     tabsStore.activeTab({
-      lbl: String(route.name || ""),
+      lbl: (route.meta?.name as string) || (route.name as string) || "",
       active: true,
       path: route.path,
       query: route.query,
@@ -277,8 +277,8 @@ watch(
 
 let inited = $ref(false);
 
-let tabs_divRef = $ref<HTMLDivElement | undefined>();
-let tab_active_lineRef = $ref<HTMLDivElement | undefined>();
+let tabs_divRef = $ref<HTMLDivElement>();
+let tab_active_lineRef = $ref<HTMLDivElement>();
 
 function refreshTab_active_line() {
   if (!tab_active_lineRef) {

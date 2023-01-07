@@ -134,7 +134,8 @@ html,body {
 }
 //弹出框滚动条优化
 .el-dialog.custom_dialog {
-  height: 85vh;
+  height: 90vh;
+  --el-dialog-width: 960px;
   --el-dialog-padding-primary: 10px;
   .el-dialog__footer {
     display: none;

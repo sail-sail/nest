@@ -56,11 +56,14 @@ let tabs = $ref(toRef(props, "tabs"));
 
 async function activeTab(tab: TabInf) {
   tabsStore.activeTab(tab);
-  await router.replace({ path: tab.path, query: tab.query });
+  await router.push({
+    path: tab.path,
+    query: tab.query,
+  });
 }
 
 async function closeClk(tab: TabInf) {
-  await tabsStore.removeTab(tab.path);
+  await tabsStore.removeTab(tab);
   if (tabsStore.actTab) {
     await activeTab(tabsStore.actTab);
   }
