@@ -4,6 +4,13 @@ git config --global core.autocrlf false
 185.199.108.133 raw.githubusercontent.com
 ```
 
+```
+Volor:
+  How to enable Take Over Mode
+  1. Run Extensions: Show Built-in Extensions command
+  2. Find TypeScript and JavaScript Language Features, right click and select Disable (Workspace)
+```
+
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
