@@ -73,8 +73,11 @@ export default defineConfig({
             "ElAutocomplete",
             "ElLink",
           ],
+          "numeral": [
+            [ "default", "numeral" ]
+          ],
           "dayjs": [
-            [ "default", "dayjs" ],
+            [ "default", "dayjs" ]
           ],
           "@/compositions/List": [
             "usePage",
@@ -141,7 +144,9 @@ export default defineConfig({
             "font",
           ],
         }),
-        ElementPlusResolver(),
+        ElementPlusResolver({
+          importStyle: false,
+        }),
       ],
       dts: "./src/typings/components.d.ts",
     }),
