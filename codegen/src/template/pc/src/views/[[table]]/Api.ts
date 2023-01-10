@@ -18,18 +18,6 @@ importForeignTables.push(Table_Up);
   type <#=Table_Up#>Input,
 } from "#/types";
 
-import dayjs from "dayjs";
-import { uploadFile } from "@/utils/axios";
-
-import {
-  gqlQuery,
-  type GqlOpt,
-} from "@/utils/graphql";
-
-import {
-  type Sort,
-} from "element-plus/lib/components/table/src/table/defaults";
-
 import {<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];

@@ -7,18 +7,6 @@ import {
   type RoleInput,
 } from "#/types";
 
-import dayjs from "dayjs";
-import { uploadFile } from "@/utils/axios";
-
-import {
-  gqlQuery,
-  type GqlOpt,
-} from "@/utils/graphql";
-
-import {
-  type Sort,
-} from "element-plus/lib/components/table/src/table/defaults";
-
 import {
   type MenuSearch,
 } from "#/types";

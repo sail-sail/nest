@@ -1,28 +1,11 @@
 import {
-  watch,
-  nextTick,
-  onUnmounted,
   type Ref,
 } from "vue";
-
-import {
-  type ElTable,
-} from "element-plus";
-
-import { useRoute } from "vue-router";
-
-import {
-  type TableColumnCtx,
-} from "element-plus/es/components/table/src/table-column/defaults";
-
-import {
-  type PageInput,
-} from "#/types";
 
 export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
   // 分页
-  let page: PageInput & { size: number, current: number, total: number } = $ref({
+  let page = $ref({
     size: pageSizes[0],
     current: 1,
     total: 0,
@@ -147,22 +130,25 @@ export function useSelect<T>(
   /**
    * 点击一行
    * @param {(T & { id: string })} row
-   * @param {TableColumnCtx<T>} column
-   * @param {PointerEvent} event
+   * @param {TableColumnCtx<T>?} column
+   * @param {PointerEvent?} _event
    */
-  async function rowClk(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
+  async function rowClk(row: T & { id: string }, column?: TableColumnCtx<T>, _event?: PointerEvent) {
     const tableSelectable = opts?.tableSelectable;
     if (tableSelectable && !tableSelectable(row)) {
-      if (column.type !== "selection") {
+      if (column && column.type !== "selection") {
         selectedIds = [ ];
       }
       return;
     }
-    if (column.type === "selection") {
+    if (column && column.type === "selection") {
       if (selectedIds.includes(row.id)) {
         selectedIds = selectedIds.filter((id) => id !== row.id);
       } else {
-        selectedIds = [ ...selectedIds, row.id ];
+        selectedIds = [
+          ...selectedIds,
+          row.id,
+        ];
       }
     } else {
       if (!row) {
@@ -236,19 +222,138 @@ export function useSelect<T>(
   });
 }
 
-export interface ColumnType {
-  prop: string;
-  label: string;
-  hide?: boolean;
-  width?: string | number;
-  minWidth?: string | number;
-  align?: "left" | "center" | "right";
-  headerAlign?: "left" | "center" | "right";
-  className?: string;
-  labelClassName?: string;
-  columnKey?: string;
-  sortable?: "custom" | boolean;
-  showOverflowTooltip?: boolean;
+export function useSelectOne<T>(
+  tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
+  opts?: {
+    tableSelectable: ((row: T, index?: number) => boolean) | undefined,
+  },
+) {
+  
+  /** 当前多行选中的数据 */
+  let selectedIds = $ref<string[]>([ ]);
+  let prevSelectedIds = $ref<string[]>([ ]);
+  
+  function useSelectedIds() {
+    if (!tableRef.value || !tableRef.value.data) return;
+    const newSelectList = [ ];
+    const select2falseList = [ ];
+    for (let i = 0; i < tableRef.value.data.length; i++) {
+      const item = tableRef.value.data[i];
+      if (selectedIds.includes(item.id)) {
+        newSelectList.push(item);
+      } else if (prevSelectedIds.includes(item.id)) {
+        select2falseList.push(item);
+      }
+    }
+    if (newSelectList.length > 0) {
+      for (let i = 0; i < newSelectList.length; i++) {
+        const item = newSelectList[i];
+        tableRef.value.toggleRowSelection(item, true);
+      }
+      for (let i = 0; i < select2falseList.length; i++) {
+        const item = select2falseList[i];
+        tableRef.value.toggleRowSelection(item, false);
+      }
+    } else {
+      tableRef.value.clearSelection();
+    }
+  }
+  
+  const watch1Stop = watch(
+    () => tableRef.value?.data,
+    () => {
+      if (!tableRef.value?.data) return;
+      useSelectedIds();
+    },
+    {
+      immediate: true,
+    },
+  );
+  
+  const watch2Stop = watch(
+    () => selectedIds,
+    (_newSelectIds: string[], oldSelectIds: string[]) => {
+      if (!tableRef.value?.data) return;
+      prevSelectedIds = oldSelectIds;
+      useSelectedIds();
+    },
+  );
+  
+  /**
+   * 多行或单行勾选
+   * @param {(T & { id: string })[]} list
+   * @param {(T & { id: string })} row?
+   */
+  function selectChg(list: (T & { id: string })[], row?: (T & { id: string })) {
+    if (!row) {
+      if (list.length === 0) {
+        selectedIds = [ ];
+      } else {
+        selectedIds = [ list[0].id ];
+      }
+    } else {
+      if (list.includes(row)) {
+        if (!selectedIds.includes(row.id)) {
+          selectedIds = [ row.id ];
+        }
+      } else {
+        if (selectedIds.includes(row.id)) {
+          selectedIds = selectedIds.filter((id) => id !== row.id);
+        }
+      }
+    }
+  }
+  
+  /**
+   * 点击一行
+   * @param {(T & { id: string })} row
+   * @param {TableColumnCtx<T>} column
+   * @param {PointerEvent} event
+   */
+  async function rowClk(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
+    const tableSelectable = opts?.tableSelectable;
+    if (tableSelectable && !tableSelectable(row)) {
+      if (column.type !== "selection") {
+        selectedIds = [ ];
+      }
+      return;
+    }
+    if (column.type === "selection") {
+      if (selectedIds.includes(row.id)) {
+        selectedIds = selectedIds.filter((id) => id !== row.id);
+      } else {
+        selectedIds = [
+          row.id,
+        ];
+      }
+    } else {
+      if (!row) {
+        selectedIds = [ ];
+      } else {
+        selectedIds = [ row.id ];
+      }
+    }
+  }
+  
+  /**
+   * 表格每一行的css样式
+   * @param {{ row: T, rowIndex: number }} { row, rowIndex }
+   */
+  function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
+    return selectedIds.includes((row as any).id) ? "table_current_row" : "";
+  }
+  
+  onUnmounted(function() {
+    watch1Stop();
+    watch2Stop();
+  });
+  
+  return $$({
+    selectedIds,
+    selectChg,
+    rowClk,
+    rowClassName,
+  });
 }
 
 export function useTableColumns<T>(

@@ -6,8 +6,8 @@ const foreignTabs = column?.foreignTabs || [ ];
   v-model="dialogVisible"
   :fullscreen="fullscreen"
   append-to-body
-  :close-on-click-modal="false"
-  class="custom_dialog pointer_pierce_dialog large_dialog"
+  :close-on-click-modal="true"
+  class="custom_dialog large_dialog"
   top="0"
   :before-close="beforeClose"
 >
@@ -17,16 +17,14 @@ const foreignTabs = column?.foreignTabs || [ ];
       class="dialog_title"
     >
       <div class="title_lbl">
-        <span class="dialogTitle_span">
+        <span class="title_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon
+      <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      >
-        <FullScreen />
-      </el-icon>
+      />
     </div>
   </template>
   <div
@@ -42,7 +40,6 @@ const foreignTabs = column?.foreignTabs || [ ];
     >
       <el-tabs
         v-model="tabName"
-        
         class="el-flex-tabs"
         un-flex="~ [1_0_0] col"
         un-w="full"
@@ -82,7 +79,7 @@ const foreignTabs = column?.foreignTabs || [ ];
         @click="cancelClk"
       >
         <template #icon>
-          <CircleClose />
+          <ElIconCircleClose />
         </template>
         <span>关闭</span>
       </el-button>
@@ -92,21 +89,7 @@ const foreignTabs = column?.foreignTabs || [ ];
 </el-dialog>
 </template>
 
-<script setup lang="ts">
-import {
-  ElDialog,
-  ElTabs,
-  ElTabPane,
-  ElIcon,
-  ElButton,
-} from "element-plus";
-
-import {
-  CircleClose,
-  FullScreen,
-} from "@element-plus/icons-vue";
-
-import { useFullscreenEfc } from "@/compositions/fullscreen";<#
+<script setup lang="ts"><#
 for (let im = 0; im < foreignTabs.length; im++) {
   const item = foreignTabs[im];
   const itemTable = item.table;
@@ -122,6 +105,7 @@ import {
 #>
 
 let inited = $ref(false);
+
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("关联列表");
@@ -129,10 +113,8 @@ let dialogVisible = $ref(false);
 let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
-  id: string | undefined,
-}>({
-  id: undefined,
-});
+  id?: string,
+}>({ });
 
 let tabName = $ref("<#=foreignTabs[0]?.label || ""#>");<#
 for (let im = 0; im < foreignTabs.length; im++) {
@@ -186,7 +168,6 @@ async function showDialog(
     title?: string;
     model?: {
       id?: string;
-      ids?: string[];
     };
     action?: typeof dialogAction;
   },

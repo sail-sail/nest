@@ -212,9 +212,11 @@ html,body {
       cursor: pointer;
       position: relative;
       top: 2px;
+      width: 13px;
+      height: 13px;
     }
     .full_but:hover {
-      color: green;
+      color: blue;
     }
   }
 }
@@ -376,6 +378,9 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-date-editor.el-input, .el-date-editor.el-input__inner {
   --el-date-editor-width: 100%;
+}
+.el-date-editor.el-input>.el-input__wrapper {
+  width: 100%;
 }
 .img_form_item {
   height: 200px;

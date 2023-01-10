@@ -147,6 +147,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
+        align: "left",
         width: 140,
       },
       {

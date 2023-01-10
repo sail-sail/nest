@@ -14,16 +14,14 @@
       class="dialog_title"
     >
       <div class="title_lbl">
-        <span class="dialogTitle_span">
+        <span class="title_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon
+      <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      >
-        <FullScreen />
-      </el-icon>
+      />
     </div>
   </template>
   <div class="wrap_div">
@@ -37,21 +35,6 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-
-import {
-  useFullscreenEfc,
-} from "@/compositions/fullscreen";
-
-import {
-  ElDialog,
-  ElIcon,
-} from "element-plus";
-
-import {
-  FullScreen,
-} from "@element-plus/icons-vue";
-
 import useBackground_taskStore from "@/store/background_task";
 import List from "./List.vue";
 
@@ -59,9 +42,14 @@ let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("后台任务列表");
 let dialogVisible = $ref(false);
+
 let background_taskStore = useBackground_taskStore();
 
-let onCloseResolve = function(value: void) { };
+type OnCloseResolveType = {
+  type: "ok" | "cancel";
+};
+
+let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 watch(
   () => background_taskStore.listDialogVisible,
@@ -84,15 +72,20 @@ async function showDialog(
     dialogTitle = arg.title;
   }
   dialogVisible = true;
-  const reslut = await new Promise<void>((resolve) => {
-    onCloseResolve = resolve;
+  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
+    onCloseResolve = function(arg: OnCloseResolveType) {
+      dialogVisible = false;
+      resolve(arg);
+    };
   });
-  return reslut;
+  return await dialogPrm;
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
   (background_taskStore.listDialogVisible as unknown as boolean) = false;
-  onCloseResolve();
+  onCloseResolve({
+    type: "cancel",
+  });
   done(false);
 }
 

@@ -23,7 +23,8 @@
     "**/@rsw": true,
     "web": true,
     "**/__unconfig_vite.config.ts": true,
-    "deno/tmp/**": true
+    "deno/tmp/**": true,
+    "**/.eslintrc-auto-import.json": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -51,7 +52,8 @@
     "**/@rsw": true,
     "**/.nuxt/**": true,
     "web": true,
-    "**/*/types.ts": true
+    "**/*/types.ts": true,
+    "**/.eslintrc-auto-import.json": true
   },
   "cssVariables.lookupFiles": [
     "**/*.css",

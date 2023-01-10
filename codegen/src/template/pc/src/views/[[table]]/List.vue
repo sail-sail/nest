@@ -5,6 +5,8 @@ const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
 const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
+const hasImg = columns.some((item) => item.isImg);
+const hasAtt = columns.some((item) => item.isAtt);
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -23,12 +25,10 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       size="default"
       :model="search"
       inline-message
-      
       un-grid="~ cols-[repeat(auto-fit,minmax(50px,min-content)_220px)]"
       un-justify-items-end
       un-items-center
       un-gap="x-1 y-2"
-      
       @keyup.enter="searchClk"
     ><#
       for (let i = 0; i < columns.length; i++) {
@@ -74,9 +74,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-form-item prop="<#=column_name#>">
           <el-select-v2
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            
             un-w="full"
-            
             :height="300"
             :model-value="search.<#=column_name#>"
             placeholder="请选择<#=column_comment#>"
@@ -108,9 +106,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-form-item prop="<#=column_name#>">
           <el-select
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            
             un-w="full"
-            
             :model-value="search.<#=column_name#>"
             placeholder="请选择<#=column_comment#>"
             filterable
@@ -155,9 +151,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
           <el-date-picker
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             type="daterange"
-            
             un-w="full"
-            
             :model-value="(search.<#=column_name#> as any)"
             start-placeholder="开始"
             end-placeholder="结束"
@@ -184,9 +178,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         </label>
         <el-form-item prop="<#=column_name#>">
           <el-checkbox
-            
             un-w="full"
-            
             v-model="search.<#=column_name#>"
             :false-label="0"
             :true-label="1"
@@ -208,9 +200,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-form-item prop="<#=column_name#>">
           <el-input-number
             v-model="search.<#=column_name#>"
-            
             un-w="full"
-            
             :controls="false"
             clearable
             @clear="searchIptClr"
@@ -232,9 +222,7 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-form-item prop="<#=column_name#>Like">
           <el-input
             v-model="search.<#=column_name#>Like"
-            
             un-w="full"
-            
             placeholder="请输入<#=column_comment#>"
             clearable
             @clear="searchIptClr"
@@ -293,14 +281,12 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-icon
           v-show="selectedIds.length > 0"
           title="清空已选择"
-          
           un-cursor-pointer
           un-m="x-3"
           un-text="hover:[red]"
-          
           @click="clearSelect"
         >
-          <CircleClose />
+          <ElIconCircleClose />
         </el-icon>
       </el-form-item>
       
@@ -316,17 +302,21 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
         <el-button
           plain
           type="primary"
-          :icon="Search"
           @click="searchClk"
         >
+          <template #icon>
+            <ElIconSearch />
+          </template>
           <span>查询</span>
         </el-button>
         
         <el-button
           plain
-          :icon="Delete"
           @click="searchReset"
         >
+          <template #icon>
+            <ElIconDelete />
+          </template>
           <span>重置</span>
         </el-button>
         
@@ -345,18 +335,22 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="primary"
-        :icon="CirclePlus"
         @click="openAdd"
       >
+        <template #icon>
+          <ElIconCirclePlus />
+        </template>
         <span>新增</span>
       </el-button>
       
       <el-button
         plain
         type="primary"
-        :icon="CopyDocument"
         @click="openCopy"
       >
+        <template #icon>
+          <ElIconCopyDocument />
+        </template>
         <span>复制</span>
       </el-button><#
       }
@@ -367,9 +361,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="primary"
-        :icon="Edit"
         @click="openEdit"
       >
+        <template #icon>
+          <ElIconEdit />
+        </template>
         <span>编辑</span>
       </el-button><#
       }
@@ -380,9 +376,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="danger"
-        :icon="CircleClose"
         @click="deleteByIdsEfc"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>删除</span>
       </el-button><#
         }
@@ -392,17 +390,21 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
-        :icon="Lock"
         @click="lockByIdsClk(1)"
       >
+        <template #icon>
+          <ElIconLock />
+        </template>
         <span>锁定</span>
       </el-button>
       
       <el-button
         plain
-        :icon="Unlock"
         @click="lockByIdsClk(0)"
       >
+        <template #icon>
+          <ElIconUnlock />
+        </template>
         <span>解锁</span>
       </el-button><#
       }
@@ -412,9 +414,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
-        :icon="Download"
         @click="exportClk"
       >
+        <template #icon>
+          <ElIconDownload />
+        </template>
         <span>导出</span>
       </el-button><#
         }
@@ -424,9 +428,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
-        :icon="Upload"
         @click="openUploadClk"
       >
+        <template #icon>
+          <ElIconUpload />
+        </template>
         <span>导入</span>
       </el-button><#
         }
@@ -439,9 +445,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="primary"
-        :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
         <span>还原</span>
       </el-button><#
       }
@@ -452,9 +460,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       <el-button
         plain
         type="danger"
-        :icon="CircleClose"
         @click="forceDeleteByIdsClk"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>彻底删除</span>
       </el-button><#
         }
@@ -464,9 +474,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
       
       <el-button
         plain
-        :icon="Download"
         @click="exportClk"
       >
+        <template #icon>
+          <ElIconDownload />
+        </template>
         <span>导出</span>
       </el-button><#
         }
@@ -475,9 +487,11 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     
     <el-button
       plain
-      :icon="Refresh"
       @click="searchClk"
     >
+      <template #icon>
+        <ElIconRefresh />
+      </template>
       <span>刷新</span>
     </el-button>
     
@@ -809,83 +823,8 @@ const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-import useUsrStore from "@/store/usr";
 
-import {
-  ElMessage,
-  ElMessageBox,
-  ElForm,
-  ElFormItem,
-  ElSelect,
-  ElOption,
-  ElSelectV2,
-  ElInput,
-  ElInputNumber,
-  ElCheckbox,
-  ElDatePicker,
-  ElButton,
-  ElIcon,
-  ElTable,
-  ElTableColumn,
-  ElPagination,
-  ElLink,
-} from "element-plus";
-
-import { MessageBox } from "@/components/MessageBox";
-import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
-import {
-  Sort,
-} from "element-plus/lib/components/table/src/table/defaults";
-
-import {
-  Search,
-  Refresh,
-  Delete,
-  Edit,
-  Lock,
-  Unlock,
-  Download,
-  Upload,
-  CirclePlus,
-  CopyDocument,
-  CircleClose,
-  CircleCheck,
-} from "@element-plus/icons-vue";
-
-import TableShowColumns from "@/components/TableShowColumns.vue";<#
-  if (opts.noImport !== true) {
-#>
-import UploadFileDialog from "@/components/UploadFileDialog.vue";<#
-  }
-#>
-import { downloadById } from "@/utils/axios";<#
-const hasImg = columns.some((item) => item.isImg);
-const hasAtt = columns.some((item) => item.isAtt);
-#><#
-if (hasImg) {
-#>
-import LinkImage from "@/components/LinkImage.vue";<#
-}
-#><#
-if (hasAtt) {
-#>
-import LinkAtt from "@/components/LinkAtt.vue";<#
-}
-#>
-import LinkList from "@/components/LinkList.vue";
-import { deepCompare } from "@/utils/ObjectUtil";
-
-import {
-  usePage,
-  useSelect,
-  useTableColumns,
-  type ColumnType,
-} from "@/compositions/List";
-
-import Detail from "./Detail.vue";
-
-import ListSelectDialog from "@/components/ListSelectDialog.vue";<#
+import Detail from "./Detail.vue";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1825,7 +1764,7 @@ async function openCopy() {
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog> | undefined>();
+let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 /**
  * 弹出导入窗口

@@ -16,12 +16,10 @@
       size="default"
       :model="search"
       inline-message
-      
       un-grid="~ cols-[repeat(auto-fit,minmax(50px,min-content)_220px)]"
       un-justify-items-end
       un-items-center
       un-gap="x-1 y-2"
-      
       @keyup.enter="searchClk"
     >
       
@@ -38,9 +36,7 @@
         <el-form-item prop="lblLike">
           <el-input
             v-model="search.lblLike"
-            
             un-w="full"
-            
             placeholder="请输入名称"
             clearable
             @clear="searchIptClr"
@@ -61,9 +57,7 @@
         <el-form-item prop="usernameLike">
           <el-input
             v-model="search.usernameLike"
-            
             un-w="full"
-            
             placeholder="请输入用户名"
             clearable
             @clear="searchIptClr"
@@ -84,9 +78,7 @@
         <el-form-item prop="dept_ids">
           <el-select-v2
             :set="search.dept_ids = search.dept_ids || [ ]"
-            
             un-w="full"
-            
             :height="300"
             :model-value="search.dept_ids"
             placeholder="请选择拥有部门"
@@ -117,9 +109,7 @@
         <el-form-item prop="role_ids">
           <el-select-v2
             :set="search.role_ids = search.role_ids || [ ]"
-            
             un-w="full"
-            
             :height="300"
             :model-value="search.role_ids"
             placeholder="请选择拥有角色"
@@ -179,14 +169,12 @@
         <el-icon
           v-show="selectedIds.length > 0"
           title="清空已选择"
-          
           un-cursor-pointer
           un-m="x-3"
           un-text="hover:[red]"
-          
           @click="clearSelect"
         >
-          <CircleClose />
+          <ElIconCircleClose />
         </el-icon>
       </el-form-item>
       
@@ -202,17 +190,21 @@
         <el-button
           plain
           type="primary"
-          :icon="Search"
           @click="searchClk"
         >
+          <template #icon>
+            <ElIconSearch />
+          </template>
           <span>查询</span>
         </el-button>
         
         <el-button
           plain
-          :icon="Delete"
           @click="searchReset"
         >
+          <template #icon>
+            <ElIconDelete />
+          </template>
           <span>重置</span>
         </el-button>
         
@@ -229,68 +221,84 @@
       <el-button
         plain
         type="primary"
-        :icon="CirclePlus"
         @click="openAdd"
       >
+        <template #icon>
+          <ElIconCirclePlus />
+        </template>
         <span>新增</span>
       </el-button>
       
       <el-button
         plain
         type="primary"
-        :icon="CopyDocument"
         @click="openCopy"
       >
+        <template #icon>
+          <ElIconCopyDocument />
+        </template>
         <span>复制</span>
       </el-button>
       
       <el-button
         plain
         type="primary"
-        :icon="Edit"
         @click="openEdit"
       >
+        <template #icon>
+          <ElIconEdit />
+        </template>
         <span>编辑</span>
       </el-button>
       
       <el-button
         plain
         type="danger"
-        :icon="CircleClose"
         @click="deleteByIdsEfc"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>删除</span>
       </el-button>
       
       <el-button
         plain
-        :icon="Lock"
         @click="lockByIdsClk(1)"
       >
+        <template #icon>
+          <ElIconLock />
+        </template>
         <span>锁定</span>
       </el-button>
       
       <el-button
         plain
-        :icon="Unlock"
         @click="lockByIdsClk(0)"
       >
+        <template #icon>
+          <ElIconUnlock />
+        </template>
         <span>解锁</span>
       </el-button>
       
       <el-button
         plain
-        :icon="Download"
         @click="exportClk"
       >
+        <template #icon>
+          <ElIconDownload />
+        </template>
         <span>导出</span>
       </el-button>
       
       <el-button
         plain
-        :icon="Upload"
         @click="openUploadClk"
       >
+        <template #icon>
+          <ElIconUpload />
+        </template>
         <span>导入</span>
       </el-button>
       
@@ -299,35 +307,43 @@
       <el-button
         plain
         type="primary"
-        :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
         <span>还原</span>
       </el-button>
       
       <el-button
         plain
         type="danger"
-        :icon="CircleClose"
         @click="forceDeleteByIdsClk"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>彻底删除</span>
       </el-button>
       
       <el-button
         plain
-        :icon="Download"
         @click="exportClk"
       >
+        <template #icon>
+          <ElIconDownload />
+        </template>
         <span>导出</span>
       </el-button>
     </template>
     
     <el-button
       plain
-      :icon="Refresh"
       @click="searchClk"
     >
+      <template #icon>
+        <ElIconRefresh />
+      </template>
       <span>刷新</span>
     </el-button>
     
@@ -506,66 +522,8 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-import useUsrStore from "@/store/usr";
-
-import {
-  ElMessage,
-  ElMessageBox,
-  ElForm,
-  ElFormItem,
-  ElSelect,
-  ElOption,
-  ElSelectV2,
-  ElInput,
-  ElInputNumber,
-  ElCheckbox,
-  ElDatePicker,
-  ElButton,
-  ElIcon,
-  ElTable,
-  ElTableColumn,
-  ElPagination,
-  ElLink,
-} from "element-plus";
-
-import { MessageBox } from "@/components/MessageBox";
-import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
-import {
-  Sort,
-} from "element-plus/lib/components/table/src/table/defaults";
-
-import {
-  Search,
-  Refresh,
-  Delete,
-  Edit,
-  Lock,
-  Unlock,
-  Download,
-  Upload,
-  CirclePlus,
-  CopyDocument,
-  CircleClose,
-  CircleCheck,
-} from "@element-plus/icons-vue";
-
-import TableShowColumns from "@/components/TableShowColumns.vue";
-import UploadFileDialog from "@/components/UploadFileDialog.vue";
-import { downloadById } from "@/utils/axios";
-import LinkList from "@/components/LinkList.vue";
-import { deepCompare } from "@/utils/ObjectUtil";
-
-import {
-  usePage,
-  useSelect,
-  useTableColumns,
-  type ColumnType,
-} from "@/compositions/List";
 
 import Detail from "./Detail.vue";
-
-import ListSelectDialog from "@/components/ListSelectDialog.vue";
 
 import {
   findAll,
@@ -1035,7 +993,7 @@ async function openCopy() {
   }
 }
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog> | undefined>();
+let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 /**
  * 弹出导入窗口

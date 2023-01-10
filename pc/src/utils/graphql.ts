@@ -19,28 +19,32 @@ export {
   baseURL,
 } from "./axios";
 
-export interface GqlArg {
-  operationName?: string,
-  query: string,
-  variables?: { [key: string]: any },
-}
-
-export interface GqlOpt {
-  showErrMsg?: boolean,
-  duration?: number,
-  timeout?: number,
-  notLoading?: boolean,
+declare global {
+  
+  interface GqlArg {
+    operationName?: string,
+    query: string,
+    variables?: { [key: string]: any },
+  }
+  
+  interface GqlOpt {
+    showErrMsg?: boolean,
+    duration?: number,
+    timeout?: number,
+    notLoading?: boolean,
+  }
+  
 }
 
 let queryInfos: QueryInfo[] = [ ];
 let tasks: QueryInfo[][] = [ ];
 
 class QueryInfo {
-  gqlArg: GqlArg | undefined = undefined;
-  hash: string | undefined = undefined;
-  result: Promise<any> | undefined = undefined;
-  resolve: ((value: unknown) => void) | undefined = undefined;
-  reject: ((reason?: any) => void) | undefined = undefined;
+  gqlArg?: GqlArg = undefined;
+  hash?: string = undefined;
+  result?: Promise<any> = undefined;
+  resolve?: ((value: unknown) => void) = undefined;
+  reject?: ((reason?: any) => void) = undefined;
 }
 
 /**

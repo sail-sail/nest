@@ -15,7 +15,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": [ "esnext", "dom", "WebWorker" ],
-    "types": [ "vite/client", "node" ],
+    "types": [
+      "vite/client",
+      "node",
+      "src/typings/auto-imports.d.ts",
+      "src/typings/components.d.ts"
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": [ "./src/*" ],

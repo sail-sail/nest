@@ -3,7 +3,7 @@
   un-w="full"
   un-h="full"
   un-pos-relative
-  :un-border="urlList.length === 0 ? '~ gray-200 dark:gray-500' : ''"
+  :class="{ 'border_wrap': urlList.length === 0 }"
   un-rounded
   @mouseenter="imgMouseenter"
   @mouseleave="imgMouseleave"
@@ -67,23 +67,25 @@
         
         <ElIcon
           size="22"
-          un-text="white"
           un-cursor-pointer
           un-rounded
           @click="uploadClk"
         >
-          <Upload />
+          <ElIconUpload
+            un-text="white"
+          />
         </ElIcon>
         
         <ElIcon
           size="22"
           un-m="l-3"
-          un-text="white"
           un-cursor-pointer
           un-rounded
           @click="deleteClk"
         >
-          <Delete />
+          <ElIconDelete
+            un-text="white"
+          />
         </ElIcon>
         
       </div>
@@ -95,7 +97,7 @@
         un-flex="~"
         un-justify-center
         un-items-center
-        un-bg="[rgba(0,0,0,.4)]"
+        un-bg="[rgba(0,0,0,.3)]"
       >
         
         <ElIcon
@@ -345,5 +347,8 @@ function nextClk() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.border_wrap {
+  @apply b-1 b-solid b-gray-200 dark:b-gray-500;
 }
 </style>

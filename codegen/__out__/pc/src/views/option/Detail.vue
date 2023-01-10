@@ -14,16 +14,14 @@
       class="dialog_title"
     >
       <div class="title_lbl">
-        <span class="dialogTitle_span">
+        <span class="title_span">
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon
+      <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      >
-        <FullScreen />
-      </el-icon>
+      />
     </div>
   </template>
   <div
@@ -40,13 +38,11 @@
       <el-form
         ref="formRef"
         size="default"
-        
         un-justify-end
         un-items-end
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
         un-place-content-center
-        
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
@@ -69,9 +65,7 @@
           >
             <el-input
               v-model="dialogModel.lbl"
-              
               un-w="full"
-              
               placeholder="请输入名称"
             ></el-input>
           </el-form-item>
@@ -94,9 +88,7 @@
           >
             <el-input
               v-model="dialogModel.ky"
-              
               un-w="full"
-              
               placeholder="请输入键"
             ></el-input>
           </el-form-item>
@@ -118,9 +110,7 @@
           >
             <el-input
               v-model="dialogModel.val"
-              
               un-w="full"
-              
               placeholder="请输入值"
             ></el-input>
           </el-form-item>
@@ -144,9 +134,7 @@
             <el-select
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
-              
               un-w="full"
-              
               placeholder="请选择启用"
               filterable
               default-first-option
@@ -181,9 +169,7 @@
           >
             <el-input
               v-model="dialogModel.rem"
-              
               un-w="full"
-              
               placeholder="请输入备注"
             ></el-input>
           </el-form-item>
@@ -200,18 +186,22 @@
       
       <el-button
         plain
-        :icon="CircleClose"
         @click="cancelClk"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>取消</span>
       </el-button>
       
       <el-button
         plain
         type="primary"
-        :icon="CircleCheck"
         @click="saveClk"
       >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
         <span>保存</span>
       </el-button>
       
@@ -255,32 +245,6 @@
 
 <script setup lang="ts">
 import {
-  ElDialog,
-  ElIcon,
-  ElMessage,
-  ElMessageBox,
-  ElForm,
-  ElFormItem,
-  FormItemRule,
-  ElInput,
-  ElInputNumber,
-  ElCheckbox,
-  ElSelect,
-  ElSelectV2,
-  ElOption,
-  ElDatePicker,
-  ElButton,
-} from "element-plus";
-
-import {
-  CircleCheck,
-  CircleClose,
-  FullScreen,
-} from "@element-plus/icons-vue";
-
-import { useFullscreenEfc } from "@/compositions/fullscreen";
-
-import {
   create,
   findById,
   updateById,
@@ -294,10 +258,17 @@ import {
 } from "./Api";
 
 const emit = defineEmits<
-  (e: "nextId", value: { dialogAction: DialogAction, id: string }) => void
+  (
+    e: "nextId",
+    value: {
+      dialogAction: DialogAction,
+      id: string,
+    },
+  ) => void
 >();
 
 let inited = $ref(false);
+
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 type DialogAction = "add" | "copy" | "edit";
@@ -312,7 +283,7 @@ let dialogModel = $ref({
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm> | undefined>();
+let formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
@@ -347,7 +318,7 @@ type OnCloseResolveType = {
 let onCloseResolve = function(value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<OptionInput | undefined>();
+let builtInModel = $ref<OptionInput>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -463,7 +434,13 @@ async function prevId() {
     }
   }
   await refreshEfc();
-  emit("nextId", { dialogAction, id: dialogModel.id! });
+  emit(
+    "nextId",
+    {
+      dialogAction,
+      id: dialogModel.id!,
+    },
+  );
   return true;
 }
 
@@ -489,7 +466,13 @@ async function nextId() {
     }
   }
   await refreshEfc();
-  emit("nextId", { dialogAction, id: dialogModel.id! });
+  emit(
+    "nextId",
+    {
+      dialogAction,
+      id: dialogModel.id!,
+    },
+  );
   return true;
 }
 
@@ -530,13 +513,14 @@ async function saveClk() {
       changedIds.push(id);
     }
     ElMessage.success(msg);
-    const isNext = await nextId();
-    if (!isNext) {
-      onCloseResolve({
-        type: "ok",
-        changedIds,
-      });
+    const hasNext = await nextId();
+    if (hasNext) {
+      return;
     }
+    onCloseResolve({
+      type: "ok",
+      changedIds,
+    });
   }
 }
 

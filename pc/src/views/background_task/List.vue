@@ -16,12 +16,10 @@
       size="default"
       :model="search"
       inline-message
-      
       un-grid="~ cols-[repeat(auto-fit,minmax(50px,min-content)_220px)]"
       un-justify-items-end
       un-items-center
       un-gap="x-1 y-2"
-      
       @keyup.enter="searchClk"
     >
       
@@ -38,9 +36,7 @@
         <el-form-item prop="lblLike">
           <el-input
             v-model="search.lblLike"
-            
             un-w="full"
-            
             placeholder="请输入名称"
             clearable
             @clear="searchIptClr"
@@ -61,9 +57,7 @@
         <el-form-item prop="state">
           <el-select
             :set="search.state = search.state || [ ]"
-            
             un-w="full"
-            
             :model-value="search.state"
             placeholder="请选择状态"
             filterable
@@ -107,9 +101,7 @@
         <el-form-item prop="type">
           <el-select
             :set="search.type = search.type || [ ]"
-            
             un-w="full"
-            
             :model-value="search.type"
             placeholder="请选择类型"
             filterable
@@ -154,9 +146,7 @@
           <el-date-picker
             :set="search.begin_time = search.begin_time || [ ]"
             type="daterange"
-            
             un-w="full"
-            
             :model-value="(search.begin_time as any)"
             start-placeholder="开始"
             end-placeholder="结束"
@@ -212,14 +202,12 @@
         <el-icon
           v-show="selectedIds.length > 0"
           title="清空已选择"
-          
           un-cursor-pointer
           un-m="x-3"
           un-text="hover:[red]"
-          
           @click="clearSelect"
         >
-          <CircleClose />
+          <ElIconCircleClose />
         </el-icon>
       </el-form-item>
       
@@ -235,17 +223,21 @@
         <el-button
           plain
           type="primary"
-          :icon="Search"
           @click="searchClk"
         >
+          <template #icon>
+            <ElIconSearch />
+          </template>
           <span>查询</span>
         </el-button>
         
         <el-button
           plain
-          :icon="Delete"
           @click="searchReset"
         >
+          <template #icon>
+            <ElIconDelete />
+          </template>
           <span>重置</span>
         </el-button>
         
@@ -262,9 +254,11 @@
       <el-button
         plain
         type="danger"
-        :icon="CircleClose"
         @click="deleteByIdsEfc"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>删除</span>
       </el-button>
       
@@ -273,27 +267,33 @@
       <el-button
         plain
         type="primary"
-        :icon="CircleCheck"
         @click="revertByIdsEfc"
       >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
         <span>还原</span>
       </el-button>
       
       <el-button
         plain
         type="danger"
-        :icon="CircleClose"
         @click="forceDeleteByIdsClk"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>彻底删除</span>
       </el-button>
     </template>
     
     <el-button
       plain
-      :icon="Refresh"
       @click="searchClk"
     >
+      <template #icon>
+        <ElIconRefresh />
+      </template>
       <span>刷新</span>
     </el-button>
     
@@ -461,65 +461,8 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-import useUsrStore from "@/store/usr";
-
-import {
-  ElMessage,
-  ElMessageBox,
-  ElForm,
-  ElFormItem,
-  ElSelect,
-  ElOption,
-  ElSelectV2,
-  ElInput,
-  ElInputNumber,
-  ElCheckbox,
-  ElDatePicker,
-  ElButton,
-  ElIcon,
-  ElTable,
-  ElTableColumn,
-  ElPagination,
-  ElLink,
-} from "element-plus";
-
-import { MessageBox } from "@/components/MessageBox";
-import { TableColumnCtx } from "element-plus/es/components/table/src/table-column/defaults";
-import {
-  Sort,
-} from "element-plus/lib/components/table/src/table/defaults";
-
-import {
-  Search,
-  Refresh,
-  Delete,
-  Edit,
-  Lock,
-  Unlock,
-  Download,
-  Upload,
-  CirclePlus,
-  CopyDocument,
-  CircleClose,
-  CircleCheck,
-} from "@element-plus/icons-vue";
-
-import TableShowColumns from "@/components/TableShowColumns.vue";
-import { downloadById } from "@/utils/axios";
-import LinkList from "@/components/LinkList.vue";
-import { deepCompare } from "@/utils/ObjectUtil";
-
-import {
-  usePage,
-  useSelect,
-  useTableColumns,
-  type ColumnType,
-} from "@/compositions/List";
 
 import Detail from "./Detail.vue";
-
-import ListSelectDialog from "@/components/ListSelectDialog.vue";
 
 import {
   findAll,
