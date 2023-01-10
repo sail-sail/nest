@@ -1,4 +1,4 @@
-import type { AttributifyAttributes } from "@unocss/preset-attributify";
+import { type AttributifyAttributes } from "@unocss/preset-attributify";
 
 type AttributifyAttributes2 = AttributifyAttributes & {
   overflowHidden?: boolean;
@@ -45,15 +45,12 @@ type AttributifyAttributes2 = AttributifyAttributes & {
 }
 
 declare module '@vue/runtime-dom' {
-  interface HTMLAttributes extends AttributifyAttributes2 {}
+  interface HTMLAttributes extends AttributifyAttributes2 { }
 }
 
 declare module 'vue' {
   interface ComponentCustomProps extends AttributifyAttributes2 { }
   interface CSSProperties {
     [key: `--${string}`]: string;
-  }
-  interface ButtonHTMLAttributes {  
-    type?: string;
   }
 }

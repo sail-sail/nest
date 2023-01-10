@@ -48,8 +48,10 @@
     "@dcloudio/uni-mp-toutiao": "3.0.0-alpha-3060320220919001",
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-3060320220919001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-alpha-3060320220919001",
+    "dayjs": "1.11.7",
     "graphql": "16.6.0",
     "graphql-combine-query": "1.2.4",
+    "numeral": "2.0.6",
     "pinia": "2.0.28",
     "vue": "3.2.45",
     "vue-demi": "0.13.11",
@@ -80,8 +82,12 @@
     "typescript": "4.9.4",
     "unocss": "0.46.4",
     "unocss-applet": "0.2.20",
+    "unplugin-auto-import": "0.12.1",
+    "unplugin-icons": "0.15.1",
+    "unplugin-vue-components": "0.22.12",
     "vite": "4.0.4",
     "vitest": "0.27.0",
+    "vue-router": "4.1.6",
     "vue-tsc": "1.0.24"
   }
 }

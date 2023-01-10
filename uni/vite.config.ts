@@ -1,6 +1,12 @@
 import { defineConfig } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
 
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import Icons from "unplugin-icons/vite";
+import IconsResolver from "unplugin-icons/resolver";
+import { FileSystemIconLoader } from "unplugin-icons/loaders";
+
 import Unocss from "unocss/vite";
 
 // https://vitejs.dev/config/
@@ -17,6 +23,71 @@ export default defineConfig({
       vueOptions:{
         reactivityTransform: /^((?!node_modules).)*$/,
       }
+    }),
+    Icons({
+      compiler: "vue3",
+      customCollections: {
+        font: FileSystemIconLoader("src/assets/iconfont/"),
+      },
+    }),
+    AutoImport({
+      imports: [
+        "vue",
+        "uni-app",
+        {
+          "numeral": [
+            [ "default", "numeral" ]
+          ],
+          "dayjs": [
+            [ "default", "dayjs" ]
+          ],
+          "@/store/usr": [
+            [ "default", "useUsrStore" ],
+          ],
+          "@/store/index": [
+            [ "default", "useIndexStore" ],
+          ],
+          "@/utils/request": [
+            "request",
+            "uploadFile",
+            "getDownloadUrl",
+            "getAttUrl",
+            "downloadFile",
+            "uniLogin",
+          ],
+          "@/utils/graphql": [
+            "gqlQuery",
+            "_gqlQuery",
+          ],
+          "@/utils/StringUtil": [
+            "isEmpty",
+            "isNotEmpty",
+            "uniqueID",
+          ],
+        },
+      ],
+      resolvers: [
+        IconsResolver(),
+      ],
+      eslintrc: {
+        enabled: true,
+      },
+      dts: "./src/typings/auto-imports.d.ts",
+      ignore: [
+        "RouterLink",
+      ],
+    }),
+    Components({
+      dirs: [ ],
+      resolvers: [
+        IconsResolver({
+          prefix: "icon",
+          customCollections: [
+            "font",
+          ],
+        }),
+      ],
+      dts: "./src/typings/components.d.ts",
     }),
     Unocss(),
   ],

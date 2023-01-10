@@ -13,32 +13,36 @@ import combinedQuery from "graphql-combine-query";
 
 import useUsrStore from "@/store/usr";
 
-export interface GqlArg {
-  operationName?: string,
-  query: string,
-  variables?: { [key: string]: any },
-}
-
-export interface GqlOpt {
-  showErrMsg?: boolean;
-    url?: string;
-    notLoading?: boolean;
-    method?: string;
-    data?: any;
-    reqType?: string;
-    notLogin?: boolean;
-    duration?: number;
+declare global {
+  
+  interface GqlArg {
+    operationName?: string,
+    query: string,
+    variables?: { [key: string]: any },
+  }
+  
+  interface GqlOpt {
+    showErrMsg?: boolean;
+      url?: string;
+      notLoading?: boolean;
+      method?: string;
+      data?: any;
+      reqType?: string;
+      notLogin?: boolean;
+      duration?: number;
+  }
+  
 }
 
 let queryInfos: QueryInfo[] = [ ];
 let tasks: QueryInfo[][] = [ ];
 
 class QueryInfo {
-  gqlArg: GqlArg | undefined = undefined;
-  hash: string | undefined = undefined;
-  result: Promise<any> | undefined = undefined;
-  resolve: ((value: unknown) => void) | undefined = undefined;
-  reject: ((reason?: any) => void) | undefined = undefined;
+  gqlArg?: GqlArg = undefined;
+  hash?: string = undefined;
+  result?: Promise<any> = undefined;
+  resolve?: ((value: unknown) => void) = undefined;
+  reject?: ((reason?: any) => void) = undefined;
 }
 
 /**

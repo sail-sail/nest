@@ -1,9 +1,5 @@
-import "vue-router";
+export { }
 
-declare module 'vue-router' {
-  interface RouteMeta {
-    
-  }
+declare global {
+  type PartialNull<T> = { [P in keyof T]?: T[P] | null | undefined; }
 }
-
-type PartialNull<T> = { [P in keyof T]?: T[P] | null | undefined; }

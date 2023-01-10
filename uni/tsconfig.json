@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -13,6 +12,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "lib": [ "esnext", "dom" ],
     "types": [
       "vite/client",
@@ -20,7 +20,9 @@
       "@dcloudio/types",
       "@uni-helper/uni-app-types",
       "@uni-helper/uni-cloud-types",
-      "@uni-helper/uni-ui-types"
+      "@uni-helper/uni-ui-types",
+      "src/typings/auto-imports.d.ts",
+      "src/typings/components.d.ts"
     ],
     "paths": {
       "@/*": [ "./src/*" ],
@@ -28,8 +30,13 @@
     }
   },
   "vueCompilerOptions": {
-    "experimentalRuntimeMode": "runtime-uni-app",
-    "nativeTags": ["block", "component", "template", "slot"]
+    "strictTemplates": false,
+    "nativeTags": [
+      "block",
+      "component",
+      "template",
+      "slot"
+    ]
   },
   "include": [
     "node_modules/vue/ref-macros.d.ts",

@@ -13,7 +13,6 @@
 </template>
 
 <script lang="ts" setup>
-import useIndexStore from "@/store/index";
 import cfg from "@/utils/config";
 
 const indexStore = useIndexStore(cfg.pinia);
