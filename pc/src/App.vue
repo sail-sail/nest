@@ -287,6 +287,23 @@ body .el-table--small {
     }
   }
 }
+.el-table__body-wrapper tr td.el-table-fixed-column--left,
+.el-table__body-wrapper tr td.el-table-fixed-column--right,
+.el-table__body-wrapper tr th.el-table-fixed-column--left,
+.el-table__body-wrapper tr th.el-table-fixed-column--right,
+.el-table__footer-wrapper tr td.el-table-fixed-column--left,
+.el-table__footer-wrapper tr td.el-table-fixed-column--right,
+.el-table__footer-wrapper tr th.el-table-fixed-column--left,
+.el-table__footer-wrapper tr th.el-table-fixed-column--right,
+.el-table__header-wrapper tr td.el-table-fixed-column--left,
+.el-table__header-wrapper tr td.el-table-fixed-column--right,
+.el-table__header-wrapper tr th.el-table-fixed-column--left,
+.el-table__header-wrapper tr th.el-table-fixed-column--right {
+    background-color: inherit;
+}
+.el-table--enable-row-transition .el-table__body td.el-table__cell {
+  transition: unset;
+}
 // 复选框
 body .el-checkbox.el-checkbox--small {
   height: auto;

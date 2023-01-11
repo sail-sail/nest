@@ -39,6 +39,7 @@ declare global {
     columnKey?: string;
     sortable?: "custom" | boolean;
     showOverflowTooltip?: boolean;
+    fixed?: boolean | "left" | "right";
   }
   
   interface FormItemRule extends FormItemRule2 {
