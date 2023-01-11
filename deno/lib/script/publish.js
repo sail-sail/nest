@@ -58,63 +58,19 @@ console.log(publishPath);
   await treeDir("");
   
   try {
-    const cmd = `rm -rf ${ publishPath }/docs`;
-    data = await ssh.exec(cmd);
-    console.log(data);
-  } catch (err) {
-    console.error(err.message);
-  }
-  
-  try {
-    const cmd = `rm -rf ${ publishPath }/pc`;
-    data = await ssh.exec(cmd);
-    console.log(data);
-  } catch (err) {
-    console.error(err.message);
-  }
-  
-  try {
-    const cmd = `pm2 stop ${ projectName }`;
+    let cmd = "";
+    cmd += `rm -rf ${ publishPath }/docs`;
+    cmd += ` ; pm2 stop ${ projectName }`;
+    cmd += ` ; rm -rf ${ publishPath }/pc`
+    cmd += ` ; rm -rf ${ publishPath }/deno`
+    cmd += ` ; mkdir ${ publishPath }`;
+    cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+    cmd += ` ; rmdir ${ publishPathTmp }`;
+    cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
+    cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
     data = await ssh.exec(cmd);
   } catch (err) {
     console.error(err.message);
-  }
-  
-  try {
-    const cmd = `rm -rf ${ publishPath }/deno`;
-    data = await ssh.exec(cmd);
-    console.log(data);
-  } catch (err) {
-    console.error(err.message);
-  }
-  
-  try {
-    const cmd = `mkdir ${ publishPath }`;
-    console.log(cmd);
-    await sftp.mkdir(`${ publishPath }`);
-  } catch (err) {
-    console.log(err);
-  }
-  
-  try {
-    const cmd = `mv -f ${ publishPathTmp }/* ${ publishPath }/ && rm ${ publishPathTmp }`;
-    console.log(cmd);
-    data = await ssh.exec(cmd);
-    console.log(data);
-  } catch (err) {
-    console.error(err.message);
-  }
-  
-  {
-    const cmd = `chmod -R 755 ${ publishPath }/deno/${ projectName }`;
-    console.log(cmd);
-    await ssh.exec(cmd);
-  }
-  
-  {
-    const cmd = `cd ${ publishPath }/deno/ && pm2 start`;
-    console.log(cmd);
-    data = await ssh.exec(cmd);
   }
   
   if (data) {

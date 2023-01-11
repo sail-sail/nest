@@ -4,7 +4,7 @@ import { getEnv, getEnvs } from "/lib/env.ts";
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
   if (index === -1) {
-    return undefined;
+    return;
   }
   return Deno.args[index + 1];
 }
@@ -258,8 +258,8 @@ async function publish() {
   const [ stderr ] = await Promise.all([
     proc.stderrOutput(),
   ]);
-  const stderrStr = new TextDecoder().decode(stderr);
-  if (stderrStr) {
+  if (stderr) {
+    const stderrStr = new TextDecoder().decode(stderr);
     console.error(stderrStr);
   }
 }
