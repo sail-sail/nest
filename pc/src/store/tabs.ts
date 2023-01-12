@@ -15,6 +15,9 @@ export interface TabInf {
 
 export default defineStore("tabs", function() {
   
+  const route = useRoute();
+  const router = useRouter();
+  
   let tabs = $ref<TabInf[]>([ ]);
   
   const actTab = $computed(() => tabs.find((item) => item.active));
@@ -86,7 +89,7 @@ export default defineStore("tabs", function() {
         } else if (tabs[idx - 1]) {
           activeTab(tabs[idx - 1]);
         } else {
-          await useRouter().replace({ path: "/", query: { } });
+          await router.replace({ path: "/", query: { } });
         }
       }
     }
@@ -95,19 +98,17 @@ export default defineStore("tabs", function() {
     }
   }
   
-  function closeOtherTabs(path: string) {
-    const tab = tabs.find((item: TabInf) => item.path === path);
+  async function closeOtherTabs(tab?: TabInf) {
     if (!tab) {
       tabs = [ ];
+      await router.replace({ path: "/home/index", query: { } });
       return;
     }
     tabs = [ tab ];
+    tab.active = true;
   }
   
   async function refreshTab() {
-    const router = useRouter();
-    const route = useRoute();
-    if (!router) return;
     const routes = router.getRoutes();
     if (actTab && routes.some((item) => item.path === actTab?.path)) {
       activeTab(actTab);

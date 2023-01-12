@@ -1,18 +1,52 @@
 <template>
 <div class="tabs_div">
   <div
-    v-for="item in tabs"
+    v-for="(item, i) in tabs"
     :key="item.path"
     class="tab_div"
     :class="{ tab_active: item.active }"
     @click="activeTab(item)"
   >
-    <span
-      class="tab_label"
-      :title="item.lbl"
+    <el-dropdown
+      trigger="contextmenu"
+      @command="menuCommand($event, item)"
+      @visible-change="visibleChange($event, i)"
+      ref="dropdownRef"
     >
-      {{ item.lbl }}
-    </span>
+      <template #default>
+        <span
+          class="tab_label"
+          :title="item.lbl"
+        >
+          {{ item.lbl }}
+        </span>
+      </template>
+      <template #dropdown>
+        <el-dropdown-menu>
+          
+          <el-dropdown-item
+            command="close"
+          >
+            关闭
+          </el-dropdown-item>
+          
+          <el-dropdown-item
+            command="closeOther"
+            :disabled="tabs.length <= 3"
+          >
+            关闭其他
+          </el-dropdown-item>
+          
+          <el-dropdown-item
+            command="closeAll"
+            :disabled="tabs.length <= 3"
+          >
+            全部关闭
+          </el-dropdown-item>
+          
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
     <div
       v-if="tabs.length > 1"
       class="tab_close_div"
@@ -66,6 +100,35 @@ async function closeClk(tab: TabInf) {
   await tabsStore.removeTab(tab);
   if (tabsStore.actTab) {
     await activeTab(tabsStore.actTab);
+  }
+}
+
+async function menuCommand(command: string, tab: TabInf) {
+  switch (command) {
+    case "close":
+      await closeClk(tab);
+      break;
+    case "closeOther":
+      await tabsStore.closeOtherTabs(tab);
+      break;
+    case "closeAll":
+      await tabsStore.closeOtherTabs();
+      break;
+  }
+}
+
+let dropdownRef = $ref<InstanceType<typeof ElDropdown>[]>([ ]);
+
+function visibleChange(visible: boolean, index: number) {
+  if (!visible) {
+    return;
+  }
+  for (let i = 0; i < dropdownRef.length; i++) {
+    const dropdownRefItem = dropdownRef[i];
+    if (i === index) {
+      continue;
+    }
+    dropdownRefItem.handleClose();
   }
 }
 </script>
