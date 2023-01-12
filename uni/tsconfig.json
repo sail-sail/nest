@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
     "module": "esnext",
     "moduleResolution": "node",
     "declaration": false,
@@ -17,12 +18,9 @@
     "types": [
       "vite/client",
       "node",
-      "@dcloudio/types",
       "@uni-helper/uni-app-types",
       "@uni-helper/uni-cloud-types",
-      "@uni-helper/uni-ui-types",
-      "src/typings/auto-imports.d.ts",
-      "src/typings/components.d.ts"
+      "@uni-helper/uni-ui-types"
     ],
     "paths": {
       "@/*": [ "./src/*" ],

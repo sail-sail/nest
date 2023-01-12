@@ -34,6 +34,7 @@ export default defineConfig({
       imports: [
         "vue",
         "uni-app",
+        "pinia",
         {
           "numeral": [
             [ "default", "numeral" ]
@@ -78,7 +79,10 @@ export default defineConfig({
       ],
     }),
     Components({
-      dirs: [ ],
+      dirs: [
+        "src/components",
+        "src/uni_modules",
+      ],
       resolvers: [
         IconsResolver({
           prefix: "icon",

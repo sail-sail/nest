@@ -84,5 +84,6 @@
   "files.eol": "\n",
   "volar.updateImportsOnFileMove.enabled": false,
   "volar.codeLens.references": false,
-  "volar.icon.preview": false
+  "volar.icon.preview": false,
+  "references.preferredLocation": "peek"
 }

@@ -246,7 +246,7 @@ export async function request(
       config.header = config.header || { };
       config.header.authorization = authorization;
     }
-    res = await uni.request(config as any) as any;
+    res = await (uni as any).request(config as any) as any;
   } catch(errTmp) {
     err = (errTmp as Error);
   } finally {

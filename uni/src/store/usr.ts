@@ -1,5 +1,3 @@
-import { defineStore } from "pinia";
-
 const authorization0: string = uni.getStorageSync("authorization") || "";
 
 export default defineStore("usr", function() {
