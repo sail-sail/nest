@@ -695,7 +695,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
+let detailRef = $ref<InstanceType<typeof Detail>>();
 
 let menus = $ref<MenuModel[]>([ ]);
 
@@ -777,16 +777,18 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  const dialogResult = await detailRef.showDialog({
+  const {
+    type,
+    changedIds,
+  } = await detailRef.showDialog({
     title: "增加",
     action: "add",
     builtInModel,
   });
-  if (!dialogResult || dialogResult.type === "cancel") {
+  if (type === "cancel") {
     return;
   }
-  const changedIds = dialogResult?.changedIds;
-  if (changedIds && changedIds.length > 0) {
+  if (changedIds.length > 0) {
     selectedIds = [ ...changedIds ];
     await Promise.all([
       dataGrid(true),
@@ -804,7 +806,10 @@ async function openCopy() {
     ElMessage.warning(`请选择需要 复制 的数据!`);
     return;
   }
-  const dialogResult = await detailRef.showDialog({
+  const {
+    type,
+    changedIds,
+  } = await detailRef.showDialog({
     title: "复制",
     action: "copy",
     builtInModel,
@@ -812,11 +817,10 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
-  if (!dialogResult || dialogResult.type === "cancel") {
+  if (type === "cancel") {
     return;
   }
-  const changedIds = dialogResult?.changedIds;
-  if (changedIds && changedIds.length > 0) {
+  if (changedIds.length > 0) {
     selectedIds = [ ...changedIds ];
     await Promise.all([
       dataGrid(true),
@@ -855,7 +859,10 @@ async function openEdit() {
     ElMessage.warning(`请选择需要编辑的数据!`);
     return;
   }
-  const dialogResult = await detailRef.showDialog({
+  const {
+    type,
+    changedIds,
+  } = await detailRef.showDialog({
     title: "修改",
     action: "edit",
     builtInModel,
@@ -863,11 +870,10 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
-  if (!dialogResult || dialogResult.type === "cancel") {
+  if (type === "cancel") {
     return;
   }
-  const changedIds = dialogResult?.changedIds;
-  if (changedIds && changedIds.length > 0) {
+  if (changedIds.length > 0) {
     await Promise.all([
       dataGrid(),
     ]);
@@ -975,7 +981,7 @@ usrStore.onLogin(initFrame);
 
 initFrame();
 
-let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog> | undefined>();
+let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
 async function menu_idsClk(row: RoleModel) {
   if (!menu_idsListSelectDialogRef) return;

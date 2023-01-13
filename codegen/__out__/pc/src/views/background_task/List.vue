@@ -756,7 +756,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail> | undefined>();
+let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 获取下拉框列表 */
 async function useSelectList() {
