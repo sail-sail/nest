@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
-// import { VitePWA } from "vite-plugin-pwa";
+import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
 
 import Inspector from "vite-plugin-vue-inspector";
@@ -15,6 +15,8 @@ import { FileSystemIconLoader } from "unplugin-icons/loaders";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 import Unocss from "unocss/vite";
+
+import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -151,32 +153,32 @@ export default defineConfig({
       dts: "./src/typings/components.d.ts",
     }),
     Inspector(),
-    // VitePWA({
-    //   manifest: {
-    //     name: "管理系统",
-    //     short_name: "管理系统",
-    //     description: "管理系统",
-    //     theme_color: "#ffffff",
-    //     icons: [
-    //       {
-    //         src: "favicon.png",
-    //         sizes: "192x192",
-    //         type: "image/png",
-    //       },
-    //       {
-    //         src: "favicon.png",
-    //         sizes: "512x512",
-    //         type: "image/png",
-    //       },
-    //       {
-    //         src: "favicon.png",
-    //         sizes: "512x512",
-    //         type: "image/png",
-    //         purpose: "any maskable",
-    //       },
-    //     ]
-    //   },
-    // }),
+    VitePWA({
+      manifest: {
+        name: "管理系统",
+        short_name: "管理系统",
+        description: "管理系统",
+        theme_color: "#ffffff",
+        icons: [
+          {
+            src: "favicon.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "favicon.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "favicon.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ]
+      },
+    }),
     // ViteRsw({
     //   cli: "pnpm",
     //   root: "./",
@@ -185,6 +187,7 @@ export default defineConfig({
     //   ],
     // }),
     Unocss(),
+    webUpdateNotice(),
   ],
   resolve: {
     alias: {
