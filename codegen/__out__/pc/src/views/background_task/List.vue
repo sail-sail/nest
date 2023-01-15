@@ -461,7 +461,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -476,6 +475,10 @@ import {
   type Background_TaskModel,
   type Background_TaskSearch,
 } from "#/types";
+
+defineOptions({
+  name: "后台任务",
+});
 
 const usrStore = useUsrStore();
 

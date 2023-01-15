@@ -407,7 +407,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -424,6 +423,10 @@ import {
   type Operation_RecordSearch,
   type UsrModel,
 } from "#/types";
+
+defineOptions({
+  name: "操作记录",
+});
 
 const usrStore = useUsrStore();
 

@@ -447,7 +447,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -467,6 +466,10 @@ import {
   type DeptSearch,
   type UsrModel,
 } from "#/types";
+
+defineOptions({
+  name: "部门",
+});
 
 const usrStore = useUsrStore();
 

@@ -522,7 +522,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -548,6 +547,10 @@ import {
   findAllDept,
   findAllRole,
 } from "./Api";
+
+defineOptions({
+  name: "用户",
+});
 
 const usrStore = useUsrStore();
 

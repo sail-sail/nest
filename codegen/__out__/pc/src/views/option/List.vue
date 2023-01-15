@@ -424,7 +424,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -442,6 +441,10 @@ import {
   type OptionModel,
   type OptionSearch,
 } from "#/types";
+
+defineOptions({
+  name: "选项",
+});
 
 const usrStore = useUsrStore();
 

@@ -460,7 +460,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 import MenuList from "../menu/List.vue";
 
@@ -484,6 +483,10 @@ import {
 import {
   findAllMenu,
 } from "./Api";
+
+defineOptions({
+  name: "租户",
+});
 
 const usrStore = useUsrStore();
 

@@ -17,7 +17,8 @@
     "lib": [ "esnext", "dom", "WebWorker" ],
     "types": [
       "vite/client",
-      "node"
+      "node",
+      "unplugin-vue-define-options/macros-global"
     ],
     "baseUrl": ".",
     "paths": {

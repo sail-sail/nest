@@ -1,12 +1,9 @@
 <template>
 <el-menu
-  
+  class="AppMenu"
   un-w="full"
-  
   :default-active="defaultActive"
   :collapse="menuStore.isCollapse"
-  background-color="#072540"
-  text-color="#FFF"
   unique-opened
   :router="false"
   @open="menuOpen"
@@ -21,19 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
-
-import {
-  useRoute,
-  useRouter,
-} from "vue-router";
-
-import {
-  ElMenu,
-} from "element-plus";
-
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
+
 import { getMenus } from "./Api";
 import AppSubMenu from "./AppSubMenu.vue";
 
@@ -106,3 +93,35 @@ usrStore.onLogin(initFrame);
 
 initFrame();
 </script>
+
+<style lang="scss" scoped>
+.dark .AppMenu {
+  --el-menu-bg-color: black;
+}
+.AppMenu {
+  --el-menu-bg-color: #072540;
+  --el-menu-border-color: var(--el-border-color-lighter);
+  --el-menu-text-color: #FFF;
+  --el-menu-item-height: 40px;
+  --el-menu-sub-item-height: var(--el-menu-item-height);
+  --el-menu-active-color: var(--el-color-primary);
+  --el-menu-hover-bg-color: var(--el-color-black);
+  :deep(.el-menu-item.is-active) {
+    background-color: var(--el-color-black);
+  }
+  :deep(.el-menu-item.is-active:after) {
+    content: "";
+    width: 5px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: var(--el-color-primary);
+  }
+  border: 0;
+}
+.top_menu_item {
+  // align-items: center;
+  // justify-content: center;
+}
+</style>

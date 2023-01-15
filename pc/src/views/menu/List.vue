@@ -476,7 +476,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -498,6 +497,10 @@ import {
 import {
   findAllMenu,
 } from "./Api";
+
+defineOptions({
+  name: "菜单",
+});
 
 const usrStore = useUsrStore();
 

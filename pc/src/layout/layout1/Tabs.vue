@@ -171,6 +171,7 @@ function visibleChange(visible: boolean, index: number) {
   justify-content: center;
   align-items: center;
   white-space: nowrap;
+  color: #FFF;
 }
 .tab_close_div {
   display: flex;

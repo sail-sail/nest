@@ -823,7 +823,6 @@ const hasAtt = columns.some((item) => item.isAtt);
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -979,6 +978,10 @@ if (hasForeignTabs > 0) {
 import ForeignTabs from "./ForeignTabs.vue";<#
 }
 #>
+
+defineOptions({
+  name: "<#=table_comment#>",
+});
 
 const usrStore = useUsrStore();
 

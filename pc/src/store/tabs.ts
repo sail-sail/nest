@@ -6,6 +6,7 @@ import {
 } from "vue-router";
 
 export interface TabInf {
+  name: string,
   lbl?: string,
   path: string,
   active?: boolean,
@@ -128,7 +129,11 @@ export default defineStore("tabs", function() {
       return navFail;
     }
     const navFail = await router.replace("/");
-    activeTab({ path: route.path });
+    activeTab({
+      name: "首页",
+      path: route.path,
+      query: route.query,
+    });
     return navFail;
   }
   

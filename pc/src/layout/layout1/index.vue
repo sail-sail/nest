@@ -48,8 +48,8 @@
         
         @click="menuStore.isCollapse = !menuStore.isCollapse"
       >
-        <Expand v-if="menuStore.isCollapse" />
-        <Fold v-else />
+        <ElIconExpand v-if="menuStore.isCollapse" />
+        <ElIconFold v-else />
       </el-icon>
       <Tabs
         un-flex="[1_0_0]"
@@ -98,7 +98,7 @@
                 :size="16"
                 color="#FFF"
               >
-                <Setting />
+                <ElIconSetting />
               </el-icon>
             </span>
             <template #dropdown>
@@ -123,14 +123,14 @@
                 
                 <el-dropdown-item @click="closeOtherTabs">
                   <ElIcon>
-                    <CircleClose />
+                    <ElIconCircleClose />
                   </ElIcon>
                   <span>关闭其它</span>
                 </el-dropdown-item>
                 
                 <el-dropdown-item @click="clearCacheEfc">
                   <ElIcon>
-                    <Delete />
+                    <ElIconDelete />
                   </ElIcon>
                   <span>清空缓存</span>
                 </el-dropdown-item>
@@ -177,8 +177,12 @@
     >
       <router-view v-slot="{ Component }">
         <template v-if="Component">
-          <KeepAlive>
-            <component :is="Component"></component>
+          <KeepAlive
+            :include="keepAliveComponentNames"
+          >
+            <component
+              :is="Component"
+            ></component>
           </KeepAlive>
         </template>
       </router-view>
@@ -188,42 +192,10 @@
 </template>
 
 <script setup lang="ts">
-import { onErrorCaptured } from "vue";
-
-import {
-  ElMessage,
-  ElMessageBox,
-  ElIcon,
-  ElDropdown,
-  ElDropdownItem,
-  ElDropdownMenu,
-  ElSelect,
-  ElOption,
-} from "element-plus";
-
-import {
-  Fold,
-  Expand,
-  Setting,
-  CircleClose,
-  Delete,
-} from "@element-plus/icons-vue";
-
-import {
-  RouterView,
-} from "vue-router";
-
-import {
-  nextTick,
-  // onMounted,
-  watch,
-} from "vue";
-
 import useTabsStore from "@/store/tabs";
 import useUsrStore from "@/store/usr";
 import useMenuStore from "@/store/menu";
-import useIndexStore from "@/store/index";
-import { useRoute, useRouter } from "vue-router";
+
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
@@ -244,16 +216,16 @@ import {
 } from "#/types";
 
 const route = useRoute();
-const router = useRouter();
 
 const tabsStore = useTabsStore();
 const usrStore = useUsrStore();
-const indexStore = useIndexStore();
 const menuStore = useMenuStore();
 
+// 黑暗模式
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 
+// 设置选项卡到当前的路由
 watch(
   [
     () => route.path,
@@ -264,6 +236,7 @@ watch(
       return;
     }
     tabsStore.activeTab({
+      name: route.name as string,
       lbl: (route.meta?.name as string) || (route.name as string) || "",
       active: true,
       path: route.path,
@@ -274,6 +247,11 @@ watch(
     immediate: true,
   },
 );
+
+// 关闭选项卡后自动销毁组件
+const keepAliveComponentNames = computed(() => {
+  return tabsStore.tabs.map((tab) => tab.name).filter((name) => name);
+});
 
 let inited = $ref(false);
 
@@ -296,12 +274,6 @@ function refreshTab_active_line() {
   tab_active_lineRef.style.width = `${ offsetWidth }px`;
 }
 
-let errorMessage = $ref("");
-
-onErrorCaptured(function(err) {
-  errorMessage = err instanceof Error ? err.message : (err || "系统错误");
-});
-
 watch(
   [
     () => tabsStore.actTab,
@@ -317,7 +289,9 @@ watch(
 
 // 关闭其它选项卡
 function closeOtherTabs() {
-  tabsStore.closeOtherTabs(route.path);
+  if (tabsStore.actTab) {
+    tabsStore.closeOtherTabs(tabsStore.actTab);
+  }
 }
 
 // 清空缓存

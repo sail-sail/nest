@@ -364,7 +364,6 @@
 </template>
 
 <script setup lang="ts">
-
 import Detail from "./Detail.vue";
 
 import {
@@ -383,6 +382,10 @@ import {
   type PermitSearch,
   type MenuModel,
 } from "#/types";
+
+defineOptions({
+  name: "权限",
+});
 
 const usrStore = useUsrStore();
 

@@ -11,7 +11,7 @@ export default defineStore("usr", function() {
   
   let authorization = $ref("");
   
-  let dept_id = $ref<string | undefined>();
+  let dept_id = $ref<string>();
   
   function refreshToken(authorization0: typeof authorization) {
     authorization = authorization0;

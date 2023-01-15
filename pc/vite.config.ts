@@ -18,6 +18,8 @@ import Unocss from "unocss/vite";
 
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 
+import defineOptions from "unplugin-vue-define-options/vite";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -31,6 +33,7 @@ export default defineConfig({
     vue({
       reactivityTransform: /^((?!node_modules).)*$/,
     }),
+    defineOptions(),
     vueJsx(),
     Icons({
       compiler: "vue3",
