@@ -74,7 +74,7 @@
           <span>已选择</span>
           <span
             un-m="l-0.5"
-            un-text="green"
+            un-text="blue"
             :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
           >
             {{ selectedIds.length }}
@@ -84,11 +84,11 @@
           v-show="selectedIds.length > 0"
           title="清空已选择"
           un-cursor-pointer
-          un-m="x-3"
-          un-text="hover:[red]"
-          @click="clearSelect"
+          un-m="l-1.5"
+          un-text="hover:red"
+          @click="emptySelected"
         >
-          <ElIconCircleClose />
+          <ElIconRemove />
         </el-icon>
       </el-form-item>
       
@@ -524,7 +524,6 @@ let search = $ref(initSearch());
 
 /** 搜索 */
 async function searchClk() {
-  resetSelectedIds();
   await dataGrid(true);
 }
 
@@ -538,7 +537,6 @@ async function searchReset() {
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
-  resetSelectedIds();
   await searchClk();
 }
 
@@ -681,7 +679,7 @@ function resetSelectedIds() {
 }
 
 /** 取消已选择筛选 */
-async function clearSelect() {
+async function emptySelected() {
   resetSelectedIds();
   idsChecked = 0;
   await dataGrid(true);

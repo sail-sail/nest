@@ -33,6 +33,7 @@ declare module '@vue/runtime-core' {
     ElIconFullScreen: typeof import('@element-plus/icons-vue')['FullScreen']
     ElIconLock: typeof import('@element-plus/icons-vue')['Lock']
     ElIconRefresh: typeof import('@element-plus/icons-vue')['Refresh']
+    ElIconRemove: typeof import('@element-plus/icons-vue')['Remove']
     ElIconSearch: typeof import('@element-plus/icons-vue')['Search']
     ElIconSetting: typeof import('@element-plus/icons-vue')['Setting']
     ElIconUnlock: typeof import('@element-plus/icons-vue')['Unlock']
