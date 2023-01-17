@@ -306,7 +306,7 @@ body .el-table--small {
   .el-table__header-wrapper tr td.el-table-fixed-column--right,
   .el-table__header-wrapper tr th.el-table-fixed-column--left,
   .el-table__header-wrapper tr th.el-table-fixed-column--right {
-    background-color: black;
+    background-color: var(--el-table-header-bg-color);
   }
 }
 .el-table--enable-row-transition .el-table__body td.el-table__cell {
