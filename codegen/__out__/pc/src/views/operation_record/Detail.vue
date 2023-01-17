@@ -50,7 +50,6 @@
         
         <template v-if="builtInModel?.mod == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -72,7 +71,6 @@
         
         <template v-if="builtInModel?.mod_lbl == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -94,7 +92,6 @@
         
         <template v-if="builtInModel?.method == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -116,7 +113,6 @@
         
         <template v-if="builtInModel?.method_lbl == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -138,7 +134,6 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -160,7 +155,6 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap

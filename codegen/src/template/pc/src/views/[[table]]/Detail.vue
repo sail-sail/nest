@@ -125,7 +125,6 @@ for (let i = 0; i < columns.length; i++) {
           #> v-if="<#=vIfStr#>"<#
           }
           #>
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap

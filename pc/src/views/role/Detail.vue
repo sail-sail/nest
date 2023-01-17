@@ -51,7 +51,6 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -74,7 +73,6 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -96,7 +94,6 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -132,7 +129,6 @@
         
         <template v-if="builtInModel?.menu_ids == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap

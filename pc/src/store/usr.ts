@@ -19,10 +19,9 @@ export default defineStore("usr", function() {
   
   async function login(authorization0: typeof authorization) {
     authorization = authorization0;
-    for (let i = 0; i < onLoginCallbacks.length; i++) {
-      const onLoginCallback = onLoginCallbacks[i];
-      await onLoginCallback();
-    }
+    await Promise.all([
+      onLoginCallbacks.filter((callback) => callback()).map((callback) => callback()),
+    ]);
   }
   
   function logout() {

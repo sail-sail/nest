@@ -10,12 +10,10 @@
     un-text="[#FFF]"
     un-flex="~ col"
     un-overflow-hidden
-    
-    transition="width"
     :style="{ width: menuStore.isCollapse ? '60px': '250px' }"
   >
     <div
-      un-h="[40px]"
+      un-h="10"
       un-bg="[#072540] dark:[black]"
       un-text="[#FFF]"
       un-flex="~ col"
@@ -34,28 +32,30 @@
   >
     <div
       ref="tabs_divRef"
-      
-      un-h="[40px]"
+      un-h="10"
       un-bg="[#072540] dark:[black]"
-      un-text="[#FFF]"
+      un-text="white"
       un-flex="~ row"
       un-pos-relative
     >
       <el-icon
-        un-text="[18px] hover:[var(--el-color-primary)]"
+        size="18"
+        un-text="hover:[var(--el-color-primary)]"
         un-self-center
         un-cursor-pointer
-        
+        un-m="x-2"
         @click="menuStore.isCollapse = !menuStore.isCollapse"
       >
-        <ElIconExpand v-if="menuStore.isCollapse" />
-        <ElIconFold v-else />
+        <ElIconExpand
+          v-if="menuStore.isCollapse"
+        />
+        <ElIconFold
+          v-else
+        />
       </el-icon>
       <Tabs
         un-flex="[1_0_0]"
         un-overflow="x-auto y-hidden"
-        un-m="l-[5px]"
-        
         :tabs="tabsStore.tabs"
       ></Tabs>
       <div

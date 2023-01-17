@@ -51,7 +51,6 @@
         
         <template v-if="builtInModel?.type == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -87,7 +86,6 @@
         
         <template v-if="builtInModel?.menu_id == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -115,7 +113,6 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -138,7 +135,6 @@
         
         <template v-if="builtInModel?.route_path == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -160,7 +156,6 @@
         
         <template v-if="builtInModel?.route_query == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -182,7 +177,6 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -218,7 +212,6 @@
         
         <template v-if="builtInModel?.order_by == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -245,7 +238,6 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap

@@ -37,27 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-
-import {
-  ElConfigProvider,
-  ElEmpty,
-  ElButton,
-} from "element-plus";
-
 import locale from "@/locales";
 import Background_taskListDialog from "./views/background_task/ListDialog.vue";
 
-import {
-  RouterView,
-  useRouter,
-  useRoute,
-} from "vue-router";
-
 import Login from "./layout/Login.vue";
-
-import useTabsStore from "@/store/tabs";
-import useUsrStore from "@/store/usr";
 
 const tabsStore = useTabsStore();
 const usrStore = useUsrStore();
@@ -71,6 +54,15 @@ function goBack() {
     window.location.reload();
   }
 }
+
+const warn = console.warn;
+console.warn = (...args: any[]) => {
+  if (args[0] === "[HMR] Something went wrong during Vue component hot-reload. Full reload required.") {
+    window.location.reload();
+    return;
+  }
+  warn(...args);
+};
 
 onMounted(async () => {
   await tabsStore.refreshTab();

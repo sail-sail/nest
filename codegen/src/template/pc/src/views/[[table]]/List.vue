@@ -25,7 +25,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       size="default"
       :model="search"
       inline-message
-      un-grid="~ cols-[repeat(auto-fit,minmax(50px,min-content)_220px)]"
+      un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
       un-justify-items-end
       un-items-center
       un-gap="x-1 y-2"
@@ -63,8 +63,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="l-1"
-          un-text="[var(--el-text-color-regular)]"
+          un-text="gray"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -95,8 +94,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="l-1"
-          un-text="[var(--el-text-color-regular)]"
+          un-text="gray"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -139,8 +137,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="l-1"
-          un-text="[var(--el-text-color-regular)]"
+          un-text="gray"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -168,8 +165,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="l-1"
-          un-text="[var(--el-text-color-regular)]"
+          un-text="gray"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -189,8 +185,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="l-1"
-          un-text="[var(--el-text-color-regular)]"
+          un-text="gray"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -211,8 +206,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
         <label
-          un-m="l-1"
-          un-text="[var(--el-text-color-regular)]"
+          un-text="gray"
           un-whitespace-nowrap
           un-overflow-hidden
           un-after="content-[quoted::]"
@@ -268,15 +262,13 @@ const hasAtt = columns.some((item) => item.isAtt);
           @change="idsCheckedChg"
         >
           <span>已选择</span>
-          <span>(</span>
           <span
-            un-m="x-1"
+            un-m="l-0.5"
             un-text="green"
             :style="{ color: selectedIds.length === 0 ? 'var(--el-disabled-text-color)': undefined }"
           >
             {{ selectedIds.length }}
           </span>
-          <span>)</span>
         </el-checkbox>
         <el-icon
           v-show="selectedIds.length > 0"
@@ -384,64 +376,87 @@ const hasAtt = columns.some((item) => item.isAtt);
         <span>删除</span>
       </el-button><#
         }
-      #><#
-      if (hasLocked && opts.noEdit !== true) {
       #>
-      
+    
       <el-button
         plain
-        @click="lockByIdsClk(1)"
+        @click="searchClk"
       >
         <template #icon>
-          <ElIconLock />
+          <ElIconRefresh />
         </template>
-        <span>锁定</span>
+        <span>刷新</span>
       </el-button>
       
-      <el-button
-        plain
-        @click="lockByIdsClk(0)"
+      <el-dropdown
+        trigger="click"
+        un-m="x-3"
       >
-        <template #icon>
-          <ElIconUnlock />
+        
+        <el-button
+          plain
+        >
+          <span>更多操作</span>
+          <el-icon>
+            <ElIconArrowDown />
+          </el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu
+            un-min="w-20"
+            whitespace-nowrap
+          ><#
+            if (opts.noExport !== true) {
+          #>
+            
+            <el-dropdown-item
+              un-justify-center
+              @click="exportClk"
+            >
+              <span>导出</span>
+            </el-dropdown-item><#
+              }
+            #><#
+              if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
+            #>
+            
+            <el-dropdown-item
+              un-justify-center
+              @click="openUploadClk"
+            >
+              <span>导入</span>
+            </el-dropdown-item><#
+              }
+            #><#
+              if (hasLocked && opts.noEdit !== true) {
+            #>
+            
+            <el-dropdown-item
+              un-justify-center
+              @click="lockByIdsClk(1)"
+            >
+              <span>锁定</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              un-justify-center
+              @click="lockByIdsClk(0)"
+            >
+              <span>解锁</span>
+            </el-dropdown-item><#
+            }
+            #>
+            
+          </el-dropdown-menu>
         </template>
-        <span>解锁</span>
-      </el-button><#
-      }
-      #><#
-        if (opts.noExport !== true) {
-      #>
-      
-      <el-button
-        plain
-        @click="exportClk"
-      >
-        <template #icon>
-          <ElIconDownload />
-        </template>
-        <span>导出</span>
-      </el-button><#
-        }
-      #><#
-        if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
-      #>
-      
-      <el-button
-        plain
-        @click="openUploadClk"
-      >
-        <template #icon>
-          <ElIconUpload />
-        </template>
-        <span>导入</span>
-      </el-button><#
-        }
-      #>
+      </el-dropdown>
       
     </template>
+    
     <template v-else><#
       if (opts.noDelete !== true && opts.noRevert !== true) {
-      #>
+    #>
+      
       <el-button
         plain
         type="primary"
@@ -468,7 +483,17 @@ const hasAtt = columns.some((item) => item.isAtt);
         <span>彻底删除</span>
       </el-button><#
         }
-      #><#
+      #>
+      
+      <el-button
+        plain
+        @click="searchClk"
+      >
+        <template #icon>
+          <ElIconRefresh />
+        </template>
+        <span>刷新</span>
+      </el-button><#
         if (opts.noExport !== true) {
       #>
       
@@ -483,17 +508,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
         }
       #>
+      
     </template>
-    
-    <el-button
-      plain
-      @click="searchClk"
-    >
-      <template #icon>
-        <ElIconRefresh />
-      </template>
-      <span>刷新</span>
-    </el-button>
     
     <div
       un-flex="[1_0_0]"

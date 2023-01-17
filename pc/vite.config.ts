@@ -155,7 +155,9 @@ export default defineConfig({
       ],
       dts: "./src/typings/components.d.ts",
     }),
-    Inspector(),
+    Inspector({
+      toggleButtonPos: "top-left",
+    }),
     VitePWA({
       registerType: "autoUpdate",
       manifest: {

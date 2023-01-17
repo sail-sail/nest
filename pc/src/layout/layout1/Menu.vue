@@ -4,6 +4,7 @@
   un-w="full"
   :default-active="defaultActive"
   :collapse="menuStore.isCollapse"
+  :collapse-transition="false"
   unique-opened
   :router="false"
   @open="menuOpen"

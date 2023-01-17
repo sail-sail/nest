@@ -50,7 +50,6 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -73,7 +72,6 @@
         
         <template v-if="builtInModel?.state == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -118,7 +116,6 @@
         
         <template v-if="builtInModel?.type == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -163,7 +160,6 @@
         
         <template v-if="builtInModel?.result == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -185,7 +181,6 @@
         
         <template v-if="builtInModel?.err_msg == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -207,7 +202,6 @@
         
         <template v-if="builtInModel?.begin_time == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -233,7 +227,6 @@
         
         <template v-if="builtInModel?.end_time == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
@@ -259,7 +252,6 @@
         
         <template v-if="builtInModel?.rem == null">
           <label
-            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
