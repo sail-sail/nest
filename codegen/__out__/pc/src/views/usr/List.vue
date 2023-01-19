@@ -16,22 +16,17 @@
       size="default"
       :model="search"
       inline-message
+      
       un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
+      un-gap="x-1 y-2"
       un-justify-items-end
       un-items-center
-      un-gap="x-1 y-2"
+      
       @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          名称
-        </label>
+        <label>名称</label>
         <el-form-item prop="lblLike">
           <el-input
             v-model="search.lblLike"
@@ -44,14 +39,7 @@
       </template>
       
       <template v-if="builtInSearch?.usernameLike == null && builtInSearch?.username == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          用户名
-        </label>
+        <label>用户名</label>
         <el-form-item prop="usernameLike">
           <el-input
             v-model="search.usernameLike"
@@ -64,14 +52,7 @@
       </template>
       
       <template v-if="builtInSearch?.dept_ids == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          拥有部门
-        </label>
+        <label>拥有部门</label>
         <el-form-item prop="dept_ids">
           <el-select-v2
             :set="search.dept_ids = search.dept_ids || [ ]"
@@ -94,14 +75,7 @@
       </template>
       
       <template v-if="builtInSearch?.role_ids == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          拥有角色
-        </label>
+        <label>拥有角色</label>
         <el-form-item prop="role_ids">
           <el-select-v2
             :set="search.role_ids = search.role_ids || [ ]"

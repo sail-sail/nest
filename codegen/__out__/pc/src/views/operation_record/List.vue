@@ -16,22 +16,17 @@
       size="default"
       :model="search"
       inline-message
+      
       un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
+      un-gap="x-1 y-2"
       un-justify-items-end
       un-items-center
-      un-gap="x-1 y-2"
+      
       @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.mod_lblLike == null && builtInSearch?.mod_lbl == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          模块名称
-        </label>
+        <label>模块名称</label>
         <el-form-item prop="mod_lblLike">
           <el-input
             v-model="search.mod_lblLike"
@@ -44,14 +39,7 @@
       </template>
       
       <template v-if="builtInSearch?.method_lblLike == null && builtInSearch?.method_lbl == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          方法名称
-        </label>
+        <label>方法名称</label>
         <el-form-item prop="method_lblLike">
           <el-input
             v-model="search.method_lblLike"
@@ -64,14 +52,7 @@
       </template>
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          操作
-        </label>
+        <label>操作</label>
         <el-form-item prop="lblLike">
           <el-input
             v-model="search.lblLike"

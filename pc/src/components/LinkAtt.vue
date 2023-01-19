@@ -14,10 +14,6 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ElLink,
-} from "element-plus";
-import { watch } from "vue";
 import AttDialog from "./AttDialog.vue";
 
 const emit = defineEmits([

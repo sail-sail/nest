@@ -38,25 +38,19 @@
       <el-form
         ref="formRef"
         size="default"
-        un-justify-end
-        un-items-end
+        
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
-        un-place-content-center
+        un-justify-items-end
+        un-items-center
+        
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
       >
         
         <template v-if="builtInModel?.mod == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>模块</span>
-          </label>
+          <label>模块</label>
           <el-form-item
             prop="mod"
             un-h="full"
@@ -70,14 +64,7 @@
         </template>
         
         <template v-if="builtInModel?.mod_lbl == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>模块名称</span>
-          </label>
+          <label>模块名称</label>
           <el-form-item
             prop="mod_lbl"
             un-h="full"
@@ -91,14 +78,7 @@
         </template>
         
         <template v-if="builtInModel?.method == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>方法</span>
-          </label>
+          <label>方法</label>
           <el-form-item
             prop="method"
             un-h="full"
@@ -112,14 +92,7 @@
         </template>
         
         <template v-if="builtInModel?.method_lbl == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>方法名称</span>
-          </label>
+          <label>方法名称</label>
           <el-form-item
             prop="method_lbl"
             un-h="full"
@@ -133,14 +106,7 @@
         </template>
         
         <template v-if="builtInModel?.lbl == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>操作</span>
-          </label>
+          <label>操作</label>
           <el-form-item
             prop="lbl"
             un-h="full"
@@ -154,14 +120,7 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>备注</span>
-          </label>
+          <label>备注</label>
           <el-form-item
             prop="rem"
             un-h="full"

@@ -16,22 +16,17 @@
       size="default"
       :model="search"
       inline-message
+      
       un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
+      un-gap="x-1 y-2"
       un-justify-items-end
       un-items-center
-      un-gap="x-1 y-2"
+      
       @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          名称
-        </label>
+        <label>名称</label>
         <el-form-item prop="lblLike">
           <el-input
             v-model="search.lblLike"
@@ -44,14 +39,7 @@
       </template>
       
       <template v-if="builtInSearch?.menu_ids == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          菜单
-        </label>
+        <label>菜单</label>
         <el-form-item prop="menu_ids">
           <el-select-v2
             :set="search.menu_ids = search.menu_ids || [ ]"

@@ -1,5 +1,6 @@
-import { MenuModel as MenuModel0 } from "#/types";
-import { defineStore } from "pinia";
+import {
+  type MenuModel as MenuModel0,
+} from "#/types";
 
 import {
   type LocationQuery,

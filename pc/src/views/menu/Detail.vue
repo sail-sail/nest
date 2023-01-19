@@ -38,11 +38,12 @@
       <el-form
         ref="formRef"
         size="default"
-        un-justify-end
-        un-items-end
+        
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
-        un-place-content-center
+        un-justify-items-end
+        un-items-center
+        
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
@@ -50,14 +51,7 @@
       >
         
         <template v-if="builtInModel?.type == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>类型</span>
-          </label>
+          <label>类型</label>
           <el-form-item
             prop="type"
             un-h="full"
@@ -85,14 +79,7 @@
         </template>
         
         <template v-if="builtInModel?.menu_id == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>父菜单</span>
-          </label>
+          <label>父菜单</label>
           <el-form-item
             prop="menu_id"
             un-h="full"
@@ -113,14 +100,7 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>名称</span>
-          </label>
+          un-req>名称</label>
           <el-form-item
             prop="lbl"
             un-h="full"
@@ -134,14 +114,7 @@
         </template>
         
         <template v-if="builtInModel?.route_path == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>路由</span>
-          </label>
+          <label>路由</label>
           <el-form-item
             prop="route_path"
             un-h="full"
@@ -155,14 +128,7 @@
         </template>
         
         <template v-if="builtInModel?.route_query == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>参数</span>
-          </label>
+          <label>参数</label>
           <el-form-item
             prop="route_query"
             un-h="full"
@@ -176,14 +142,7 @@
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>启用</span>
-          </label>
+          <label>启用</label>
           <el-form-item
             prop="is_enabled"
             un-h="full"
@@ -211,14 +170,7 @@
         </template>
         
         <template v-if="builtInModel?.order_by == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>排序</span>
-          </label>
+          <label>排序</label>
           <el-form-item
             prop="order_by"
             un-h="full"
@@ -237,14 +189,7 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>备注</span>
-          </label>
+          <label>备注</label>
           <el-form-item
             prop="rem"
             un-h="full"

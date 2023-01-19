@@ -38,11 +38,12 @@
       <el-form
         ref="formRef"
         size="default"
-        un-justify-end
-        un-items-end
+        
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
-        un-place-content-center
+        un-justify-items-end
+        un-items-center
+        
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
@@ -51,14 +52,7 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>名称</span>
-          </label>
+          un-req>名称</label>
           <el-form-item
             prop="lbl"
             un-h="full"
@@ -73,14 +67,7 @@
         
         <template v-if="builtInModel?.username == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>用户名</span>
-          </label>
+          un-req>用户名</label>
           <el-form-item
             prop="username"
             un-h="full"
@@ -94,14 +81,7 @@
         </template>
         
         <template v-if="builtInModel?.password == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>密码</span>
-          </label>
+          <label>密码</label>
           <el-form-item
             prop="password"
             un-h="full"
@@ -115,14 +95,7 @@
         </template>
         
         <template v-if="builtInModel?.default_dept_id == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>默认部门</span>
-          </label>
+          <label>默认部门</label>
           <el-form-item
             prop="default_dept_id"
             un-h="full"
@@ -143,14 +116,7 @@
         
         <template v-if="builtInModel?.is_enabled == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>启用</span>
-          </label>
+          un-req>启用</label>
           <el-form-item
             prop="is_enabled"
             un-h="full"
@@ -178,14 +144,7 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>备注</span>
-          </label>
+          <label>备注</label>
           <el-form-item
             prop="rem"
             un-h="full"
@@ -199,14 +158,7 @@
         </template>
         
         <template v-if="builtInModel?.dept_ids == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>拥有部门</span>
-          </label>
+          <label>拥有部门</label>
           <el-form-item
             prop="dept_ids"
             un-h="full"
@@ -230,14 +182,7 @@
         </template>
         
         <template v-if="builtInModel?.role_ids == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>拥有角色</span>
-          </label>
+          <label>拥有角色</label>
           <el-form-item
             prop="role_ids"
             un-h="full"

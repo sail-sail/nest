@@ -93,14 +93,12 @@
           un-justify-center
         >
           <el-dropdown>
-            <span class="el-dropdown-link">
-              <el-icon
-                :size="16"
-                color="#FFF"
-              >
-                <ElIconSetting />
-              </el-icon>
-            </span>
+            <el-icon
+              :size="16"
+              color="#FFF"
+            >
+              <ElIconSetting />
+            </el-icon>
             <template #dropdown>
               <el-dropdown-menu
                 whitespace-nowrap
@@ -176,15 +174,13 @@
       un-box-border
     >
       <router-view v-slot="{ Component }">
-        <template v-if="Component">
-          <KeepAlive
-            :include="keepAliveComponentNames"
-          >
-            <component
-              :is="Component"
-            ></component>
-          </KeepAlive>
-        </template>
+        <KeepAlive
+          :include="tabsStore.keepAliveNames"
+        >
+          <component
+            :is="Component"
+          ></component>
+        </KeepAlive>
       </router-view>
     </div>
   </div>
@@ -192,10 +188,6 @@
 </template>
 
 <script setup lang="ts">
-import useTabsStore from "@/store/tabs";
-import useUsrStore from "@/store/usr";
-import useMenuStore from "@/store/menu";
-
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
@@ -205,11 +197,6 @@ import {
   deptLoginSelect,
   clearCache,
 } from "./Api";
-
-import {
-  useDark,
-  useToggle,
-} from "@vueuse/core";
 
 import {
   type GetLoginInfo,
@@ -235,9 +222,10 @@ watch(
     if (route.path === "/" || route.path === "") {
       return;
     }
+    const name = route.name as string;
     tabsStore.activeTab({
-      name: route.name as string,
-      lbl: (route.meta?.name as string) || (route.name as string) || "",
+      name,
+      lbl: (route.meta?.name as string) || name || "",
       active: true,
       path: route.path,
       query: route.query,
@@ -247,11 +235,6 @@ watch(
     immediate: true,
   },
 );
-
-// 关闭选项卡后自动销毁组件
-const keepAliveComponentNames = computed(() => {
-  return tabsStore.tabs.map((tab) => tab.name).filter((name) => name);
-});
 
 let inited = $ref(false);
 

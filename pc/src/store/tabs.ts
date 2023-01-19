@@ -1,10 +1,3 @@
-import { defineStore } from "pinia";
-
-import {
-  useRoute,
-  useRouter,
-} from "vue-router";
-
 export interface TabInf {
   name: string,
   lbl?: string,
@@ -22,6 +15,15 @@ export default defineStore("tabs", function() {
   let tabs = $ref<TabInf[]>([ ]);
   
   const actTab = $computed(() => tabs.find((item) => item.active));
+  
+  let keepAliveNames = $ref<string[]>([ ]);
+  
+  function clearKeepAliveNames() {
+    keepAliveNames = [ ];
+    if (actTab) {
+      keepAliveNames.push(actTab.name);
+    }
+  }
   
   function tabEqual(tab1: TabInf, tab2: TabInf) {
     if (tab1.path !== tab2.path) {
@@ -44,6 +46,11 @@ export default defineStore("tabs", function() {
   }
   
   function activeTab(tab?: TabInf) {
+    if (tab && tab.name) {
+      if (!keepAliveNames.includes(tab.name)) {
+        keepAliveNames.push(tab.name);
+      }
+    }
     if (tab && actTab) {
       if (tabEqual(tab, actTab)) {
         return;
@@ -59,8 +66,14 @@ export default defineStore("tabs", function() {
     if (idx === -1) {
       if (tab && tab.lbl) {
         tabs.push(tab);
+        if (!keepAliveNames.includes(tab.name)) {
+          keepAliveNames.push(tab.name);
+        }
       }
     } else {
+      if (!keepAliveNames.includes(tabs[idx].name)) {
+        keepAliveNames.push(tabs[idx].name);
+      }
       tabs[idx].active = true;
       tabs[idx].query = tab?.query;
     }
@@ -73,6 +86,9 @@ export default defineStore("tabs", function() {
         continue;
       }
       tabs.unshift(tab);
+      if (!keepAliveNames.includes(tab.name)) {
+        keepAliveNames.push(tab.name);
+      }
     }
   }
   
@@ -96,6 +112,10 @@ export default defineStore("tabs", function() {
     }
     if (idx !== -1) {
       tabs.splice(idx, 1);
+      const idx2 = keepAliveNames.findIndex((item) => item === tab.name);
+      if (idx2 !== -1) {
+        keepAliveNames.splice(idx2, 1);
+      }
     }
   }
   
@@ -107,6 +127,7 @@ export default defineStore("tabs", function() {
     }
     tabs = [ tab ];
     tab.active = true;
+    keepAliveNames = [ tab.name ];
   }
   
   async function refreshTab() {
@@ -150,6 +171,14 @@ export default defineStore("tabs", function() {
     removeTab,
     closeOtherTabs,
     reset,
+    keepAliveNames,
+    clearKeepAliveNames,
   });
   
-}, { persist: true });
+}, {
+  persist: {
+    paths: [
+      "tabs",
+    ],
+  },
+});

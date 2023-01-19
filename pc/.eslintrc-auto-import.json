@@ -57,6 +57,7 @@
     "deepCompare": true,
     "defineAsyncComponent": true,
     "defineComponent": true,
+    "defineStore": true,
     "downloadById": true,
     "eagerComputed": true,
     "effectScope": true,

@@ -16,12 +16,10 @@
       <div class="title_lbl">
         <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
       </div>
-      <el-icon
+      <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      >
-        <FullScreen />
-      </el-icon>
+      />
     </div>
   </template>
   <div
@@ -38,36 +36,44 @@
       <el-button
         v-if="!dialogModel.readonly && urlList.length > 0"
         type="primary"
-        :icon="Upload"
         @click="uploadClk"
       >
+        <template #icon>
+          <ElIconUpload />
+        </template>
         <span>上传</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex] && !dialogModel.readonly"
         plain
-        :icon="Delete"
         type="danger"
         @click="deleteClk"
       >
+        <template #icon>
+          <ElIconDelete />
+        </template>
         <span>删除</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex]"
         plain
-        :icon="Download"
         @click="downloadClk"
       >
+        <template #icon>
+          <ElIconDownload />
+        </template>
         <span>下载</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex]"
-        :icon="Printer"
         @click="printClk"
       >
+        <template #icon>
+          <ElIconPrinter />
+        </template>
         <span>打印</span>
       </el-button>
       
@@ -85,18 +91,22 @@
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === 0"
-        :icon="ArrowLeft"
         @click="moveLeftClk"
       >
+        <template #icon>
+          <ElIconArrowLeft />
+        </template>
         <span>前移</span>
       </el-button>
       
       <el-button
         v-if="urlList[nowIndex]"
         :disabled="nowIndex === urlList.length - 1"
-        :icon="ArrowRight"
         @click="moveRightClk"
       >
+        <template #icon>
+          <ElIconArrowRight />
+        </template>
         <span>后移</span>
       </el-button>
       
@@ -157,9 +167,11 @@
           v-if="!dialogModel.readonly && urlList.length === 0"
           plain
           type="primary"
-          :icon="Upload"
           @click="uploadClk"
         >
+          <template #icon>
+            <ElIconUpload />
+          </template>
           <span>上传</span>
         </el-button>
         
@@ -203,9 +215,11 @@
         <el-button
           :disabled="nowIndex <= 0"
           size="small"
-          :icon="ArrowLeft"
           @click="previousClk"
         >
+          <template #icon>
+            <ElIconArrowLeft />
+          </template>
         </el-button>
         
         <span
@@ -220,9 +234,11 @@
         <el-button
           :disabled="nowIndex >= urlList.length - 1"
           size="small"
-          :icon="ArrowRight"
           @click="nextClk"
         >
+          <template #icon>
+            <ElIconArrowRight />
+          </template>
         </el-button>
         
       </div>
@@ -239,27 +255,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ElIcon,
-  ElDialog,
-  ElButton,
-  ElMessage,
-  ElMessageBox,
-  ElColorPicker,
-} from "element-plus";
-
-import {
-  Upload,
-  Delete,
-  Download,
-  Printer,
-  FullScreen,
-  ArrowLeft,
-  ArrowRight,
-} from "@element-plus/icons-vue";
-
-import { useFullscreenEfc } from "@/compositions/fullscreen";
-import { baseURL, uploadFile } from '@/utils/axios';
+import { baseURL } from '@/utils/axios';
 
 import {
   getStatsOss,

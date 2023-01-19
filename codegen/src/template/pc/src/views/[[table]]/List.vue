@@ -25,10 +25,12 @@ const hasAtt = columns.some((item) => item.isAtt);
       size="default"
       :model="search"
       inline-message
+      
       un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
+      un-gap="x-1 y-2"
       un-justify-items-end
       un-items-center
-      un-gap="x-1 y-2"
+      
       @keyup.enter="searchClk"
     ><#
       for (let i = 0; i < columns.length; i++) {
@@ -62,14 +64,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (foreignKey) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          <#=column_comment#>
-        </label>
+        <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
           <el-select-v2
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
@@ -93,14 +88,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (selectList.length > 0) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          <#=column_comment#>
-        </label>
+        <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
           <el-select
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
@@ -136,14 +124,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (data_type === "datetime" || data_type === "date") {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          <#=column_comment#>
-        </label>
+        <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
           <el-date-picker
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
@@ -164,14 +145,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column_type === "int(1)") {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          <#=column_comment#>
-        </label>
+        <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
           <el-checkbox
             un-w="full"
@@ -184,14 +158,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column_type.startsWith("int")) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          <#=column_comment#>
-        </label>
+        <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
           <el-input-number
             v-model="search.<#=column_name#>"
@@ -205,14 +172,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else {
       #>
       <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          <#=column_comment#>
-        </label>
+        <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>Like">
           <el-input
             v-model="search.<#=column_name#>Like"

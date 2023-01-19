@@ -78,6 +78,9 @@ export default defineConfig({
             "ElAutocomplete",
             "ElLink",
           ],
+          "pinia": [
+            "defineStore",
+          ],
           "numeral": [
             [ "default", "numeral" ]
           ],

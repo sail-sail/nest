@@ -24,7 +24,7 @@
         <el-icon
           color="gray"
         >
-          <Loading></Loading>
+          <ElIconLoading />
         </el-icon>
       </div>
     </template>
@@ -42,7 +42,7 @@
           v-if="indexStore.loading > 0"
           color="gray"
         >
-          <Loading></Loading>
+          <ElIconLoading />
         </el-icon>
         
         <el-icon
@@ -50,7 +50,7 @@
           color="gray"
           :size="28"
         >
-          <Picture></Picture>
+          <ElIconPicture />
         </el-icon>
         
       </div>
@@ -108,7 +108,7 @@
           un-rounded-full
           @click="previousClk"
         >
-          <ArrowLeft />
+          <ElIconArrowLeft />
         </ElIcon>
         
         <div
@@ -126,7 +126,7 @@
           un-rounded-full
           @click="nextClk"
         >
-          <ArrowRight />
+          <ElIconArrowRight />
         </ElIcon>
         
       </div>
@@ -144,30 +144,6 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ElMessage,
-  ElMessageBox,
-  ElImage,
-  ElIcon,
-} from "element-plus";
-
-import {
-  Picture,
-  Loading,
-  ArrowLeft,
-  ArrowRight,
-  Upload,
-  Delete,
-} from "@element-plus/icons-vue";
-
-import {
-  getDownloadUrl,
-  uploadFile,
-} from "@/utils/axios";
-
-import useIndexStore from "@/store/index";
-import { watch } from "vue";
-
 const emit = defineEmits<
   (e: "update:modelValue", value: string) => void
 >();

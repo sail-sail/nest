@@ -46,13 +46,6 @@
 </template>
 
 <script lang="ts" setup>
-import { watch } from "vue";
-import {
-  ElPopover,
-  ElTag,
-  ElLink,
-} from "element-plus";
-
 const props = withDefaults(
   defineProps<{
     modelValue: string[] | undefined;

@@ -18,12 +18,10 @@
           {{ dialogTitle }}
         </span>
       </div>
-      <el-icon
+      <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      >
-        <FullScreen />
-      </el-icon>
+      />
     </div>
   </template>
   <div
@@ -47,25 +45,31 @@
     >
       
       <el-button
-        :icon="CircleClose"
         @click="cancelClk"
       >
+        <template #icon>
+          <ElIconClose />
+        </template>
         <span>取消</span>
       </el-button>
       
       <el-button
         un-m="x-1"
-        :icon="Refresh"
         @click="revertClk"
       >
+        <template #icon>
+          <ElIconRefresh />
+        </template>
         <span>还原</span>
       </el-button>
       
       <el-button
         type="primary"
-        :icon="CircleCheck"
         @click="saveClk"
       >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
         <span>确定</span>
       </el-button>
       
@@ -75,21 +79,6 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ElDialog,
-  ElIcon,
-  ElButton
-} from "element-plus";
-
-import {
-  FullScreen,
-  CircleCheck,
-  CircleClose,
-  Refresh,
-} from "@element-plus/icons-vue";
-
-import { useFullscreenEfc } from "@/compositions/fullscreen";
-
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let inited = $ref(false);

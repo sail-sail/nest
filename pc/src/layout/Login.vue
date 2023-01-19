@@ -25,7 +25,7 @@
         >
           <template #prefix>
             <el-icon>
-              <User />
+              <ElIconUser />
             </el-icon>
           </template>
           <el-option
@@ -81,17 +81,6 @@
 
 <script setup lang="ts">
 import {
-  ElForm,
-  ElFormItem,
-  ElButton,
-  ElInput,
-  ElSelect,
-  ElOption,
-  FormItemRule,
-  ElIcon,
-} from "element-plus";
-
-import {
   User,
   Lock,
 } from "@element-plus/icons-vue";
@@ -106,20 +95,10 @@ import {
 } from "./Api";
 
 import {
-  useRoute,
-  useRouter,
-} from "vue-router";
-
-import {
   type MutationLoginArgs,
 } from "#/types";
 
 const usrStore = useUsrStore();
-const indexStore = useIndexStore();
-const tabsStore = useTabsStore();
-
-const route = useRoute();
-const router = useRouter();
 
 const inputStyle = {
   backgroundColor: 'transparent',

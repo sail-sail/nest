@@ -38,11 +38,12 @@
       <el-form
         ref="formRef"
         size="default"
-        un-justify-end
-        un-items-end
+        
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
-        un-place-content-center
+        un-justify-items-end
+        un-items-center
+        
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
@@ -50,14 +51,7 @@
         
         <template v-if="builtInModel?.lbl == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>名称</span>
-          </label>
+          un-req>名称</label>
           <el-form-item
             prop="lbl"
             un-h="full"
@@ -72,14 +66,7 @@
         
         <template v-if="builtInModel?.state == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>状态</span>
-          </label>
+          un-req>状态</label>
           <el-form-item
             prop="state"
             un-h="full"
@@ -116,14 +103,7 @@
         
         <template v-if="builtInModel?.type == null">
           <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span un-text="red">*</span>
-            <span>类型</span>
-          </label>
+          un-req>类型</label>
           <el-form-item
             prop="type"
             un-h="full"
@@ -159,14 +139,7 @@
         </template>
         
         <template v-if="builtInModel?.result == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>执行结果</span>
-          </label>
+          <label>执行结果</label>
           <el-form-item
             prop="result"
             un-h="full"
@@ -180,14 +153,7 @@
         </template>
         
         <template v-if="builtInModel?.err_msg == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>错误信息</span>
-          </label>
+          <label>错误信息</label>
           <el-form-item
             prop="err_msg"
             un-h="full"
@@ -201,14 +167,7 @@
         </template>
         
         <template v-if="builtInModel?.begin_time == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>开始时间</span>
-          </label>
+          <label>开始时间</label>
           <el-form-item
             prop="begin_time"
             un-h="full"
@@ -226,14 +185,7 @@
         </template>
         
         <template v-if="builtInModel?.end_time == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>结束时间</span>
-          </label>
+          <label>结束时间</label>
           <el-form-item
             prop="end_time"
             un-h="full"
@@ -251,14 +203,7 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          >
-            <span>备注</span>
-          </label>
+          <label>备注</label>
           <el-form-item
             prop="rem"
             un-h="full"

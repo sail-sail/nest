@@ -1,5 +1,7 @@
-import { onBeforeUnmount, onMounted, watchEffect } from 'vue';
-import type { ComputedRef, Ref } from 'vue';
+import {
+  type ComputedRef,
+  type Ref,
+} from "vue";
 
 function addUnit(value: string | number, defaultUnit = 'px') {
   if (!value) return '';

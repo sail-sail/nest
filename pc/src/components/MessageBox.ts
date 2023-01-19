@@ -1,8 +1,3 @@
-import {
-  ElMessage,
-  ElMessageBox,
-} from "element-plus";
-
 export const MessageBox = {
   success(msg: string) {
     if (!msg) return;

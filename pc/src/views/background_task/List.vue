@@ -16,22 +16,17 @@
       size="default"
       :model="search"
       inline-message
+      
       un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
+      un-gap="x-1 y-2"
       un-justify-items-end
       un-items-center
-      un-gap="x-1 y-2"
+      
       @keyup.enter="searchClk"
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          名称
-        </label>
+        <label>名称</label>
         <el-form-item prop="lblLike">
           <el-input
             v-model="search.lblLike"
@@ -44,14 +39,7 @@
       </template>
       
       <template v-if="builtInSearch?.state == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          状态
-        </label>
+        <label>状态</label>
         <el-form-item prop="state">
           <el-select
             :set="search.state = search.state || [ ]"
@@ -87,14 +75,7 @@
       </template>
       
       <template v-if="builtInSearch?.type == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          类型
-        </label>
+        <label>类型</label>
         <el-form-item prop="type">
           <el-select
             :set="search.type = search.type || [ ]"
@@ -130,14 +111,7 @@
       </template>
       
       <template v-if="builtInSearch?.begin_time == null">
-        <label
-          un-text="gray"
-          un-whitespace-nowrap
-          un-overflow-hidden
-          un-after="content-[quoted::]"
-        >
-          开始时间
-        </label>
+        <label>开始时间</label>
         <el-form-item prop="begin_time">
           <el-date-picker
             :set="search.begin_time = search.begin_time || [ ]"

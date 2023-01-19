@@ -24,7 +24,7 @@
           <el-icon
             color="gray"
           >
-            <Loading></Loading>
+            <ElIconLoading />
           </el-icon>
         </div>
       </template>
@@ -42,7 +42,7 @@
             color="gray"
             :size="28"
           >
-            <Picture></Picture>
+            <ElIconPicture />
           </el-icon>
           
         </div>
@@ -65,21 +65,6 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ElImageViewer,
-  ElImage,
-  ElIcon,
-} from "element-plus";
-
-import {
-  Picture,
-  Loading,
-} from "@element-plus/icons-vue";
-
-import {
-  getDownloadUrl,
-} from '@/utils/axios';
-
 const props = withDefaults(
   defineProps<{
     modelValue: string|null;

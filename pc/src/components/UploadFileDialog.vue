@@ -17,12 +17,10 @@
       <div class="title_lbl">
         <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
       </div>
-      <el-icon
+      <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      >
-        <FullScreen />
-      </el-icon>
+      />
     </div>
   </template>
   <div
@@ -79,7 +77,7 @@
             </template>
             <template v-else>
               <el-icon>
-                <Plus />
+                <ElIconPlus />
               </el-icon>
             </template>
           </div>
@@ -118,18 +116,22 @@
     >
       
       <el-button
-        :icon="CircleClose"
         @click="cancelClk"
       >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
         <span>取消</span>
       </el-button>
       
       <el-button
         type="primary"
-        :icon="CircleCheck"
         :disabled="!fileInfo.name"
         @click="confirmClk"
       >
+        <template #icon>
+          <ElIconCircleCheck />
+        </template>
         <span>确定导入</span>
       </el-button>
       
@@ -145,24 +147,6 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick } from "vue";
-
-import {
-  ElDialog,
-  ElMessageBox,
-  ElIcon,
-  ElButton,
-} from "element-plus";
-
-import {
-  FullScreen,
-  Plus,
-  CircleCheck,
-  CircleClose,
-} from "@element-plus/icons-vue";
-
-import { useFullscreenEfc } from "@/compositions/fullscreen";
-
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("导入");
@@ -176,7 +160,7 @@ let fileInfo = $ref({
   size: 0,
 });
 
-let onCloseResolve = function(value?: File) { };
+let onCloseResolve = function(_value?: File) { };
 
 async function showDialog(arg?: { title?: string }) {
   if (arg) {

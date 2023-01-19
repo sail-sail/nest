@@ -8,7 +8,7 @@
   <el-button>
     <slot></slot>
     <el-icon class="el-icon--right">
-      <arrow-down />
+      <ElIconArrowDown />
     </el-icon>
   </el-button>
   <template #dropdown>
@@ -21,7 +21,7 @@
         :command="{ action: 'reset' }"
       >
         <el-icon>
-          <RefreshLeft></RefreshLeft>
+          <ElIconRefreshLeft />
         </el-icon>
         <span>
           还原
@@ -34,7 +34,9 @@
         :command="{ action: 'item', item }"
       >
         <el-icon>
-          <Select v-if="!item.hide"></Select>
+          <ElIconSelect
+            v-if="!item.hide"
+          />
         </el-icon>
         {{ item.label }}
       </el-dropdown-item>
@@ -44,20 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ElButton,
-  ElIcon,
-  ElDropdown,
-  ElDropdownMenu,
-  ElDropdownItem,
-} from "element-plus";
-
-import {
-  ArrowDown,
-  Select,
-  RefreshLeft,
-} from "@element-plus/icons-vue";
-
 interface ColumnType {
   prop: string,
   label: string,

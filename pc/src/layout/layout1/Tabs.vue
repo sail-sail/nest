@@ -51,7 +51,7 @@
       v-if="tabs.length > 1"
       class="tab_close_div"
     >
-      <Close
+      <ElIconClose
         class="tab_close"
         @click.stop="closeClk(item)"
       />
@@ -61,15 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
-
-import {
-  Close,
-} from "@element-plus/icons-vue";
-
-import { useRouter } from "vue-router";
-
-import useTabsStore from "@/store/tabs";
 import {
   type TabInf,
 } from "@/store/tabs";

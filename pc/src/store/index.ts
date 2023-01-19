@@ -1,9 +1,6 @@
-import { defineStore } from "pinia";
-import { ElLoading } from "element-plus";
-
-import useMenuStore from "./menu";
-import useTabsStore from "./tabs";
-import useUsrStore from "./usr";
+import {
+  ElLoading,
+} from "element-plus";
 
 let elLoading: ReturnType<typeof ElLoading.service>|undefined;
 

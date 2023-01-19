@@ -63,20 +63,21 @@ for (let i = 0; i < columns.length; i++) {
         size="default"<#
           if (columnNum > 4) {
         #>
-        un-justify-end
-        un-items-end
+        
         un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
-        un-place-content-center<#
+        un-justify-items-end
+        un-items-center<#
           } else {
         #>
-        un-justify-end
-        un-items-end
+        
         un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
         un-gap="x-1 y-4"
-        un-place-content-center<#
+        un-justify-items-end
+        un-items-center<#
           }
         #>
+        
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"<#
@@ -119,28 +120,14 @@ for (let i = 0; i < columns.length; i++) {
           const vIfStr = vIf.join(" && ");
         #>
         
-        <template v-if="builtInModel?.<#=column_name#> == null">
+        <template v-if="builtInModel?.<#=column_name#> == null<#=vIfStr ? ' && '+vIfStr : ''#>">
           <label<#
-          if (vIfStr) {
-          #> v-if="<#=vIfStr#>"<#
+          if (require) {
+          #>
+          un-req<#
           }
-          #>
-            un-text-right
-            un-self-center
-            un-whitespace-nowrap
-            un-after="content-[quoted::]"
-          ><# if (require) { #>
-            <span un-text="red">*</span><#
-            }
-            #>
-            <span><#=column_comment#></span>
-          </label>
-          <el-form-item<#
-          if (vIfStr) {
-          #>
-            v-if="<#=vIfStr#>"<#
-          }
-          #>
+          #>><#=column_comment#></label>
+          <el-form-item
             prop="<#=column_name#>"<#
             if (column.isImg) {
           #>

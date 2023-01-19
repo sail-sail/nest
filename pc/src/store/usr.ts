@@ -1,13 +1,6 @@
-import {
-  onMounted,
-  onBeforeUnmount,
-  onActivated,
-  onDeactivated,
-} from "vue";
-
-import { defineStore } from "pinia";
-
 export default defineStore("usr", function() {
+  
+  const tabsStore = useTabsStore();
   
   let authorization = $ref("");
   
@@ -19,6 +12,7 @@ export default defineStore("usr", function() {
   
   async function login(authorization0: typeof authorization) {
     authorization = authorization0;
+    tabsStore.clearKeepAliveNames();
     await Promise.all([
       onLoginCallbacks.filter((callback) => callback()).map((callback) => callback()),
     ]);
@@ -47,17 +41,20 @@ export default defineStore("usr", function() {
   const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
   
   function onLogin(callback: () => void | PromiseLike<void>) {
-    onBeforeUnmount(function() {
+    onDeactivated(function() {
       const idx = onLoginCallbacks.indexOf(callback);
       if (idx !== -1) {
         onLoginCallbacks.splice(idx, 1);
       }
     });
-    onMounted(function() {
+    onActivated(function() {
       if (!onLoginCallbacks.includes(callback)) {
         onLoginCallbacks.push(callback);
       }
     });
+    if (!onLoginCallbacks.includes(callback)) {
+      onLoginCallbacks.push(callback);
+    }
   }
   
   return $$({

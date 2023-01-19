@@ -1,4 +1,6 @@
-import { DirectiveBinding } from "vue";
+import {
+  type DirectiveBinding,
+} from "vue";
 
 function dragoverFn(event: DragEvent) {
   event.preventDefault();

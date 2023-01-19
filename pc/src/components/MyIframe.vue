@@ -32,27 +32,10 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  onActivated,
-  onDeactivated,
-  watch,
-  type WatchStopHandle,
-} from "vue";
-
-import {
-  ElEmpty,
-} from "element-plus";
-
-import {
-  useRoute,
-} from "vue-router";
-
-import useTabs from "@/store/tabs";
-
 const route = useRoute();
-const tabs = useTabs();
+const tabs = useTabsStore();
 
-let stopWatch: WatchStopHandle;
+let stopWatch: ReturnType<typeof watch> | undefined;
 
 onActivated(function() {
   stopWatch = watch(

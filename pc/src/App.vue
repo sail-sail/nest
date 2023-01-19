@@ -94,6 +94,7 @@ html,body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  text-rendering: optimizeLegibility;
 }
 *,
 *:before,
@@ -107,6 +108,11 @@ html,body {
   flex-direction: column;
 }
 .el-form {
+  label {
+    white-space: nowrap;
+    margin-left: 4px;
+    color: gray;
+  }
   .el-form-item {
     margin-bottom: 0;
     width: 100%;
