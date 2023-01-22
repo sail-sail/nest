@@ -130,6 +130,9 @@ html,body {
   height: 100% !important;
   max-height: 100%;
 }
+.dark .el-dialog {
+  background-color: var(--el-fill-color-lighter);
+}
 //弹出框滚动条优化
 .el-dialog.custom_dialog {
   height: 90vh;
