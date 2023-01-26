@@ -1,5 +1,6 @@
 {
   "globals": {
+    "CustomDialog": true,
     "EffectScope": true,
     "ElAutocomplete": true,
     "ElButton": true,
@@ -236,6 +237,7 @@
     "useParallax": true,
     "usePermission": true,
     "usePointer": true,
+    "usePointerLock": true,
     "usePointerSwipe": true,
     "usePreferredColorScheme": true,
     "usePreferredContrast": true,

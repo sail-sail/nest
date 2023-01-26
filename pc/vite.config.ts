@@ -47,6 +47,11 @@ export default defineConfig({
         "vue-router",
         "@vueuse/core",
         {
+          "@/components/CustomDialog.vue": [
+            [ "default", "CustomDialog" ],
+          ],
+        },
+        {
           "element-plus": [
             "ElButton",
             "ElInput",

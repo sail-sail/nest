@@ -112,6 +112,8 @@ html,body {
     white-space: nowrap;
     margin-left: 4px;
     color: gray;
+    display: flex;
+    align-items: center;
   }
   .el-form-item {
     margin-bottom: 0;

@@ -1,29 +1,8 @@
 <template>
-<el-dialog
-  v-model="dialogVisible"
-  :fullscreen="fullscreen"
-  append-to-body
-  :close-on-click-modal="false"
-  class="custom_dialog pointer_pierce_dialog auto_dialog"
-  top="0"
+<CustomDialog
+  ref="customDialogRef"
   :before-close="beforeClose"
 >
-  <template #header>
-    <div
-      v-draggable
-      class="dialog_title"
-    >
-      <div class="title_lbl">
-        <span class="title_span">
-          {{ dialogTitle }}
-        </span>
-      </div>
-      <ElIconFullScreen
-        class="full_but"
-        @click="setFullscreen"
-      />
-    </div>
-  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -164,7 +143,7 @@
       
     </div>
   </div>
-</el-dialog>
+</CustomDialog>
 </template>
 
 <script setup lang="ts">
@@ -195,12 +174,7 @@ const emit = defineEmits<
 
 let inited = $ref(false);
 
-let { fullscreen, setFullscreen } = $(useFullscreenEfc());
-
 type DialogAction = "add" | "copy" | "edit";
-
-let dialogTitle = $ref("");
-let dialogVisible = $ref(false);
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
@@ -251,7 +225,7 @@ type OnCloseResolveType = {
   changedIds: string[];
 };
 
-let onCloseResolve = function(value: OnCloseResolveType) { };
+let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<PermitInput>();
@@ -262,6 +236,8 @@ async function getDefaultInput() {
   };
   return defaultInput;
 }
+
+let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
 async function showDialog(
@@ -276,22 +252,17 @@ async function showDialog(
   },
 ) {
   inited = false;
-  dialogVisible = true;
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
-  });
-  formRef?.resetFields();
   const title = arg?.title;
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    type: "auto",
+    title,
+    pointerPierce: true,
+  });
+  onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
   dialogAction = action || "add";
-  if (title) {
-    dialogTitle = title;
-  }
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -312,7 +283,7 @@ async function showDialog(
     };
   } else if (dialogAction === "copy") {
     if (!model?.id) {
-      return await dialogPrm;
+      return await dialogRes.dialogPrm;
     }
     const data = await findById(model.id);
     if (data) {
@@ -323,7 +294,7 @@ async function showDialog(
     }
   } else if (action === "edit") {
     if (!model || !model.ids) {
-      return await dialogPrm;
+      return await dialogRes.dialogPrm;
     }
     ids = model.ids;
     if (ids && ids.length > 0) {
@@ -334,7 +305,7 @@ async function showDialog(
   await selectListPrm;
   formRef?.clearValidate();
   inited = true;
-  return await dialogPrm;
+  return await dialogRes.dialogPrm;
 }
 
 /** 刷新 */
