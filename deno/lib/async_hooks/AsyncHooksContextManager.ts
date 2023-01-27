@@ -9,7 +9,7 @@ export interface HookCallbacks {
 const enabledCallbacks = new Set<HookCallbacks>();
 
 // @ts-ignore: Deno.core allowed
-Deno.core.setPromiseHooks(
+Deno[Deno.internal].core.setPromiseHooks(
   (promise: Promise<unknown>, _parentPromise?: Promise<unknown>) => {
     for (const { init } of enabledCallbacks) {
       init(promise);
