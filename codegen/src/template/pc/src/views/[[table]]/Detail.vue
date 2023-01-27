@@ -95,8 +95,7 @@ for (let i = 0; i < columns.length; i++) {
         <template v-if="builtInModel?.<#=column_name#> == null<#=vIfStr ? ' && '+vIfStr : ''#>">
           <label<#
           if (require) {
-          #>
-          un-req<#
+          #> un-req<#
           }
           #>><#=column_comment#></label>
           <el-form-item

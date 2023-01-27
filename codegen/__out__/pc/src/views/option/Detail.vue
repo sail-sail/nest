@@ -44,8 +44,7 @@
         </template>
         
         <template v-if="builtInModel?.ky == null">
-          <label
-          un-req>键</label>
+          <label un-req>键</label>
           <el-form-item
             prop="ky"
             un-h="full"
@@ -73,8 +72,7 @@
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
-          <label
-          un-req>启用</label>
+          <label un-req>启用</label>
           <el-form-item
             prop="is_enabled"
             un-h="full"

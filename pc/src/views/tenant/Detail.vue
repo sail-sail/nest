@@ -30,8 +30,7 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label
-          un-req>名称</label>
+          <label un-req>名称</label>
           <el-form-item
             prop="lbl"
             un-h="full"

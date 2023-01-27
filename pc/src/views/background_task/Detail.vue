@@ -29,8 +29,7 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label
-          un-req>名称</label>
+          <label un-req>名称</label>
           <el-form-item
             prop="lbl"
             un-h="full"
@@ -44,8 +43,7 @@
         </template>
         
         <template v-if="builtInModel?.state == null">
-          <label
-          un-req>状态</label>
+          <label un-req>状态</label>
           <el-form-item
             prop="state"
             un-h="full"
@@ -81,8 +79,7 @@
         </template>
         
         <template v-if="builtInModel?.type == null">
-          <label
-          un-req>类型</label>
+          <label un-req>类型</label>
           <el-form-item
             prop="type"
             un-h="full"

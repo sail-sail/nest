@@ -144,6 +144,10 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  type InputMaybe,
+} from "#/types";
+
 const emit = defineEmits<
   (e: "update:modelValue", value: string) => void
 >();
@@ -152,7 +156,7 @@ const indexStore = useIndexStore();
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string;
+    modelValue: InputMaybe<string>;
     maxFileSize?: number;
     maxSize?: number;
     accept?: string;
@@ -165,11 +169,11 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref(props.modelValue);
+let modelValue = $ref(props.modelValue || "");
 
 watch(() => props.modelValue, (newVal) => {
   if (modelValue !== newVal) {
-    modelValue = newVal;
+    modelValue = newVal || "";
     nowIndex = 0;
   }
 });
