@@ -143,12 +143,15 @@ function visibleChange(visible: boolean, index: number) {
   }
 }
 .tab_active {
-  color: var(--el-menu-active-color);
+  .tab_label {
+    color: var(--el-menu-active-color);
+  }
   // color: #EEE;
   background-color: rgba(0,0,0,.8);
   box-shadow: inset 0px 0px 2px #34404a;
   .tab_close {
     opacity: 1;
+    color: var(--el-menu-active-color);
   }
 }
 .tab_div.tab_active:hover {
