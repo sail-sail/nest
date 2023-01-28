@@ -32,14 +32,14 @@
           
           <el-dropdown-item
             command="closeOther"
-            :disabled="tabs.length <= 3"
+            :disabled="tabs.length <= 1"
           >
             关闭其他
           </el-dropdown-item>
           
           <el-dropdown-item
             command="closeAll"
-            :disabled="tabs.length <= 3"
+            :disabled="tabs.length <= 1"
           >
             全部关闭
           </el-dropdown-item>

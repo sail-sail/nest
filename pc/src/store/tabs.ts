@@ -122,7 +122,7 @@ export default defineStore("tabs", function() {
   async function closeOtherTabs(tab?: TabInf) {
     if (!tab) {
       tabs = [ ];
-      await router.replace({ path: "/home/index", query: { } });
+      await router.replace({ path: "/", query: { } });
       return;
     }
     tabs = [ tab ];
