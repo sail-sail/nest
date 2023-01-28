@@ -80,21 +80,20 @@ axios.interceptors.response.use(
   (error) => {
     const indexStore = useIndexStore();
     indexStore.minusLoading();
-    // let errMsg = "";
-    // if (error.response && error.response.data) {
-    //   // const code = error.response.status
-    //   errMsg = error.response.data.message;
-    // } else {
-    //   errMsg = error;
-    // }
-    // if (errMsg) {
-    //   ElMessage({
-    //     offset: 0,
-    //     type: "error",
-    //     showClose: true,
-    //     message: (<any>errMsg).message || errMsg.toString(),
-    //   });
-    // }
+    let errMsg = "";
+    if (error.code === "ERR_NETWORK") {
+      errMsg = "网络连接失败!";
+    } else if (error.code === "ECONNABORTED") {
+      errMsg = "请求超时!";
+    }
+    if (errMsg) {
+      ElMessage({
+        offset: 0,
+        type: "error",
+        showClose: true,
+        message: errMsg,
+      });
+    }
     return Promise.reject(error);
   },
 );
