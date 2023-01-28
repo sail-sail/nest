@@ -5,9 +5,22 @@ import {
   unlinkSync,
 } from "node:fs";
 
-const id = shortUuidV4();
+const ids = [ ];
 
-writeFileSync("temp", id);
+let num: number | undefined;
+let numStr = process.argv[2];
+if (numStr) {
+  num = parseInt(numStr);
+}
+if (!num) {
+  num = 1;
+}
+for (let i = 0; i < num; i++) {
+  ids.push(shortUuidV4());
+}
+const idStr = ids.join("\n");
+
+writeFileSync("temp", idStr);
 
 exec(`CHCP 65001 && clip < temp`, function(err, stdout, stderr) {
   if (err) {
@@ -19,6 +32,6 @@ exec(`CHCP 65001 && clip < temp`, function(err, stdout, stderr) {
     return;
   }
   console.log(stdout);
-  console.log(id);
+  console.log(idStr);
   unlinkSync("temp");
 });
