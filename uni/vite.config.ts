@@ -9,12 +9,6 @@ import { FileSystemIconLoader } from "unplugin-icons/loaders";
 
 import Unocss from "unocss/vite";
 
-const componentsDirs: string[] = [ ];
-
-if (process.env.NODE_ENV === "development") {
-  componentsDirs.push("src/components");
-}
-
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -85,7 +79,8 @@ export default defineConfig({
       ],
     }),
     Components({
-      dirs: componentsDirs,
+      dirs: [
+      ],
       resolvers: [
         IconsResolver({
           prefix: "icon",
