@@ -1,4 +1,9 @@
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
+import { exec } from "node:child_process";
+import {
+  writeFileSync,
+  unlinkSync,
+} from "node:fs";
 
 export const SECRET_KEY = "38e52379-9e94-467c-8e63-17ad318fc845";
 
@@ -23,4 +28,22 @@ if (!password) {
   console.log("请输入密码!");
   process.exit(0);
 }
-console.log(getPassword(password));
+
+const password2 = getPassword(password);
+
+writeFileSync("temp", password2);
+
+exec(`CHCP 65001 && clip < temp`, function(err, stdout, stderr) {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  if (stderr) {
+    console.error(stderr);
+    return;
+  }
+  console.log(stdout);
+  console.log(password2);
+  unlinkSync("temp");
+});
+
