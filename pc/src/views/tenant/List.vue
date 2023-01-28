@@ -17,7 +17,7 @@
       :model="search"
       inline-message
       
-      un-grid="~ cols-[repeat(auto-fit,60px_220px)]"
+      un-grid="~ cols-[repeat(auto-fit,60px_210px)]"
       un-gap="x-1 y-2"
       un-justify-items-end
       un-items-center
