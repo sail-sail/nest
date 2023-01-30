@@ -41,6 +41,23 @@
       ],
       "smartStep": true,
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "codegen",
+      "autoAttachChildProcesses": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+      ],
+      "cwd": "${workspaceRoot}/codegen",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+      ],
+      "program": "${workspaceRoot}/codegen/src/bin/codegen.ts",
+      "smartStep": true
     }
   ]
 }

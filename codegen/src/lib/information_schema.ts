@@ -3,6 +3,7 @@ import { Pool, PoolConnection } from "mysql2/promise";
 import nestConfig from "./nest_config";
 import tables from "../tables/tables";
 import config, { TableCloumn, TablesConfigItem } from "../config";
+import { isEmpty } from "./StringUitl";
 
 export class Context {
   pool: Pool;
@@ -94,9 +95,10 @@ export async function getSchema(
   tables[table_name].opts.table = table_name;
   tables[table_name].opts.tableUp = table_name.substring(0,1).toUpperCase() + table_name.substring(1);
   tables[table_name].opts.table_comment = await getTableComment(context, table_name);
-  const hasTenant_id = records.some((item: any) => item.COLUMN_NAME === "tenant_id");
+  const hasTenant_id = records.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
   tables[table_name].opts.hasTenant_id = hasTenant_id;
   const columns = [ ];
+  
   for (let k = 0; k < records.length; k++) {
     const record = records[k];
     let column: TableCloumn = tables[table_name].columns.find((column: any) => column.COLUMN_NAME === record.COLUMN_NAME);
@@ -104,6 +106,27 @@ export async function getSchema(
       Object.assign(record, column);
     }
     columns.push(record);
+    // 处理 comment
+    let comment = record.COLUMN_COMMENT;
+    if (isEmpty(comment)) {
+      throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME } comment is empty!`);
+    }
+    comment = comment.trim();
+    // 启用,dict:is_enabled
+    if (!comment.endsWith("]")) {
+      const arr = comment.substring(comment.lastIndexOf(",") + 1).trim().split(":");
+      if (arr.length === 2) {
+        const action = arr[0];
+        const value = arr[1];
+        if (action === "dict") {
+          record.dict = value;
+        } else if (action === "dictbiz") {
+          record.dictbiz = value;
+        }
+        comment = comment.substring(0, comment.lastIndexOf(","));
+        record.COLUMN_COMMENT = comment;
+      }
+    }
     if (config.ignoreCodegen.includes(record.COLUMN_NAME) && record.ignoreCodegen == null) {
       record.ignoreCodegen = true;
     }

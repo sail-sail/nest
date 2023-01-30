@@ -180,6 +180,24 @@ for (let i = 0; i < columns.length; i++) {
               }
             #>
             </el-select><#
+            } else if (column.dict) {
+            #>
+            <DictSelect
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
+              v-model="dialogModel.<#=column_name#>"
+              code="<#=column.dict#>"
+              un-w="full"
+              placeholder="请选择<#=column_comment#>"
+            ></DictSelect><#
+            } else if (column.dictbiz) {
+            #>
+            <DictbizSelect
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
+              v-model="dialogModel.<#=column_name#>"
+              code="<#=column.dictbiz#>"
+              un-w="full"
+              placeholder="请选择<#=column_comment#>"
+            ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
             <el-date-picker
@@ -350,7 +368,7 @@ for (let i = 0; i < columns.length; i++) {
 </CustomDialog>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {<#
   if (opts.noAdd !== true) {
   #>

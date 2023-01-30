@@ -423,7 +423,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'_is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -455,7 +455,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'_is_locked' === col.prop">
+          <template v-else-if="'is_locked' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"

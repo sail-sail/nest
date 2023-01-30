@@ -225,7 +225,7 @@ export function useSelect<T>(
 export function useSelectOne<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
-    tableSelectable: ((row: T, index?: number) => boolean) | undefined,
+    tableSelectable?: (row: T, index?: number) => boolean,
   },
 ) {
   

@@ -6,6 +6,8 @@ const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
+const hasDict = columns.some((column) => column.dict);
+const hasDictbiz = columns.some((column) => column.dictbiz);
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
@@ -34,7 +36,23 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
-} from "/lib/util/string_util.ts";
+} from "/lib/util/string_util.ts";<#
+  if (hasDict) {
+#>
+
+import {
+  _internals as dictSrcDao,
+} from "/src/dict_detail/dict_detail.dao.ts";<#
+  }
+#><#
+  if (hasDictbiz) {
+#>
+
+import {
+  _internals as dictbizSrcDao,
+} from "/src/dictbiz_detail/dictbiz_detail.dao.ts";<#
+  }
+#>
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
@@ -266,7 +284,7 @@ async function getWhereQuery(
   }<#
     }
   #><#
-    } else if (selectList && selectList.length > 0) {
+    } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
   #>
   if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
     search.<#=column_name#> = [ search.<#=column_name#> ];
@@ -578,6 +596,112 @@ async function findAll(
     }
   #><#
   }
+  #><#
+  if (hasDict) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictSrcDao.getDict([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    "<#=column.dict#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);
+  <#
+  }
+  #><#
+  if (hasDictbiz) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictbizDao.getDictbiz([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dictbiz) {
+    #>
+    "<#=column.dictbiz#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);
+  <#
+  }
   #>
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
@@ -631,8 +755,30 @@ async function findAll(
       _<#=column_name#> = String(model.<#=column_name#>);
     }
     model._<#=column_name#> = _<#=column_name#>;<#
-      } else {
-    #><#
+      } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #>
+    
+    // <#=column_comment#>
+    let _<#=column_name#> = model.<#=column_name#>;
+    if (!isEmpty(model.<#=column_name#>)) {
+      const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>);
+      if (dictItem) {
+        _<#=column_name#> = dictItem.lbl;
+      }
+    }
+    model._<#=column_name#> = _<#=column_name#>;<#
+      } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #>
+    
+    // <#=column_comment#>
+    let _<#=column_name#> = model.<#=column_name#>.toString();
+    if (model.<#=column_name#> !== undefined && model.<#=column_name#> !== null) {
+      const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
+      if (dictItem) {
+        _<#=column_name#> = dictItem.lbl;
+      }
+    }
+    model._<#=column_name#> = _<#=column_name#>;<#
       }
     #><#
     }
@@ -649,7 +795,7 @@ async function findAll(
 function getUniqueKeys(): {
   uniqueKeys: (keyof <#=Table_Up#>Model)[];
   uniqueComments: { [key: string]: string };
-  } {
+} {
   const uniqueKeys: (keyof <#=Table_Up#>Model)[] = [<#
   for (let i = 0; i < (opts.unique || []).length; i++) {
     const uniqueKey = opts.unique[i];
@@ -949,6 +1095,111 @@ async function create(
   }
   const table = "<#=table#>";
   const method = "create";<#
+  if (hasDict) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictSrcDao.getDict([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    "<#=column.dict#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);
+  <#
+  }
+  #><#
+  if (hasDictbiz) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictbizDao.getDictbiz([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dictbiz) {
+    #>
+    "<#=column.dictbiz#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -991,6 +1242,26 @@ async function create(
     }<#
       }
     #>
+  }<#
+    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+    if (val !== undefined) {
+      model.<#=column_name#> = val;
+    }
+  }<#
+    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+    if (val !== undefined) {
+      model.<#=column_name#> = Number(val);
+    }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
       let daoStr = "";
@@ -1419,6 +1690,110 @@ async function updateById(
   if (!id || !model) {
     return id;
   }<#
+  if (hasDict) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictSrcDao.getDict([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    "<#=column.dict#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);<#
+  }
+  #><#
+  if (hasDictbiz) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictbizDao.getDictbiz([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dictbiz) {
+    #>
+    "<#=column.dictbiz#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);<#
+  }
+  #><#
   if (hasLocked) {
   #>
   
@@ -1488,6 +1863,26 @@ async function updateById(
     }<#
       }
     #>
+  }<#
+    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+    if (val !== undefined) {
+      model.<#=column_name#> = val;
+    }
+  }<#
+    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+    if (val !== undefined) {
+      model.<#=column_name#> = Number(val);
+    }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
       let daoStr = "";

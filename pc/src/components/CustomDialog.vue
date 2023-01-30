@@ -15,6 +15,7 @@
   top="0"
   :before-close="beforeClose"
   v-bind="$attrs"
+  :style="{ height: isFullscreen ? undefined : props.height }"
 >
   <template #header>
     <div
@@ -22,10 +23,12 @@
       class="dialog_title"
     >
       <div
-        v-if="dialogTitle"
         class="title_lbl"
       >
-        <span class="title_span">
+        <span
+          v-if="dialogTitle"
+          class="title_span"
+        >
           {{ dialogTitle }}
         </span>
       </div>
@@ -41,6 +44,14 @@
 </template>
 
 <script setup lang="ts">
+import {
+  type Ref,
+} from "vue";
+
+import {
+  type WatchStopHandle,
+} from "vue";
+
 let {
   fullscreen: isFullscreen,
   setFullscreen,
@@ -53,10 +64,16 @@ let dialogType = $ref<"auto" | "medium" | "large" | "default">("default");
 
 let pointerPierce = $ref(false);
 
+const props = defineProps<{
+  height?: string;
+}>();
+
+let titleWatchHandle: WatchStopHandle | undefined;
+
 function showDialog<OnCloseResolveType>(
   arg: {
     type?: typeof dialogType;
-    title?: string;
+    title?: Ref<string> | string;
     pointerPierce?: boolean;
     fullscreen?: boolean;
   },
@@ -65,7 +82,19 @@ function showDialog<OnCloseResolveType>(
   onCloseResolve: (arg: OnCloseResolveType) => void;
 } {
   dialogVisible = true;
-  dialogTitle = arg.title || "";
+  if (isRef(arg.title)) {
+    titleWatchHandle = watch(
+      arg.title,
+      () => {
+        dialogTitle = resolveUnref(arg.title) || "";
+      },
+      {
+        immediate: true,
+      },
+    );
+  } else {
+    dialogTitle = arg.title || "";
+  }
   fullscreen = arg.fullscreen ?? true;
   dialogType = arg.type ?? "default";
   pointerPierce = arg.pointerPierce ?? false;
@@ -81,6 +110,9 @@ function showDialog<OnCloseResolveType>(
 
 async function beforeClose(done: (cancel: boolean) => void) {
   done(false);
+  if (titleWatchHandle) {
+    titleWatchHandle();
+  }
 }
 
 defineExpose({ showDialog });

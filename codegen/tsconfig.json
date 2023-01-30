@@ -6,7 +6,6 @@
     "declaration": false,
     "noImplicitAny": false,
     "removeComments": false,
-    "noLib": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -16,6 +15,7 @@
     "allowJs": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "skipLibCheck": true,
     "outDir": "./dist",
     "lib": [
       "esnext"

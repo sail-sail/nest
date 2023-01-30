@@ -203,6 +203,402 @@ export type DeptSearch = {
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
+export type DictInput = {
+  /** 创建人名称 */
+  _create_usr_id?: InputMaybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: InputMaybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: InputMaybe<Scalars['String']>;
+  /** 数据类型名称 */
+  _type?: InputMaybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: InputMaybe<Scalars['String']>;
+  /** 编码 */
+  code?: InputMaybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 启用ID */
+  is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 锁定ID */
+  is_locked?: InputMaybe<Scalars['Int']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Scalars['Int']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 数据类型ID */
+  type?: InputMaybe<Scalars['String']>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id?: InputMaybe<Scalars['ID']>;
+};
+
+export type DictModel = {
+  __typename?: 'DictModel';
+  /** 创建人名称 */
+  _create_usr_id?: Maybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: Maybe<Scalars['String']>;
+  /** 数据类型名称 */
+  _type?: Maybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: Maybe<Scalars['String']>;
+  /** 编码 */
+  code: Scalars['String'];
+  /** 创建时间 */
+  create_time?: Maybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id: Scalars['ID'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 锁定ID */
+  is_locked: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 数据类型ID */
+  type: Scalars['String'];
+  /** 更新时间 */
+  update_time?: Maybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id: Scalars['ID'];
+};
+
+export type DictSearch = {
+  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 编码 */
+  code?: InputMaybe<Scalars['String']>;
+  codeLike?: InputMaybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 创建人 */
+  create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 数据类型 */
+  type?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 更新人 */
+  update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Dict_DetailInput = {
+  /** 系统字典名称 */
+  _dict_id?: InputMaybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: InputMaybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: InputMaybe<Scalars['String']>;
+  /** 系统字典ID */
+  dict_id?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 启用ID */
+  is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 锁定ID */
+  is_locked?: InputMaybe<Scalars['Int']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Scalars['Int']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  val?: InputMaybe<Scalars['String']>;
+};
+
+export type Dict_DetailModel = {
+  __typename?: 'Dict_DetailModel';
+  /** 系统字典名称 */
+  _dict_id?: Maybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: Maybe<Scalars['String']>;
+  /** 系统字典ID */
+  dict_id: Scalars['ID'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 锁定ID */
+  is_locked: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 值 */
+  val: Scalars['String'];
+};
+
+export type Dict_DetailSearch = {
+  _dict_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 系统字典 */
+  dict_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  val?: InputMaybe<Scalars['String']>;
+  valLike?: InputMaybe<Scalars['String']>;
+};
+
+export type DictbizInput = {
+  /** 创建人名称 */
+  _create_usr_id?: InputMaybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: InputMaybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: InputMaybe<Scalars['String']>;
+  /** 数据类型名称 */
+  _type?: InputMaybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: InputMaybe<Scalars['String']>;
+  /** 编码 */
+  code?: InputMaybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 启用ID */
+  is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 锁定ID */
+  is_locked?: InputMaybe<Scalars['Int']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Scalars['Int']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 数据类型ID */
+  type?: InputMaybe<Scalars['String']>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id?: InputMaybe<Scalars['ID']>;
+};
+
+export type DictbizModel = {
+  __typename?: 'DictbizModel';
+  /** 创建人名称 */
+  _create_usr_id?: Maybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: Maybe<Scalars['String']>;
+  /** 数据类型名称 */
+  _type?: Maybe<Scalars['String']>;
+  /** 更新人名称 */
+  _update_usr_id?: Maybe<Scalars['String']>;
+  /** 编码 */
+  code: Scalars['String'];
+  /** 创建时间 */
+  create_time?: Maybe<Scalars['String']>;
+  /** 创建人ID */
+  create_usr_id: Scalars['ID'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 锁定ID */
+  is_locked: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 数据类型ID */
+  type: Scalars['String'];
+  /** 更新时间 */
+  update_time?: Maybe<Scalars['String']>;
+  /** 更新人ID */
+  update_usr_id: Scalars['ID'];
+};
+
+export type DictbizSearch = {
+  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 编码 */
+  code?: InputMaybe<Scalars['String']>;
+  codeLike?: InputMaybe<Scalars['String']>;
+  /** 创建时间 */
+  create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 创建人 */
+  create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 数据类型 */
+  type?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 更新时间 */
+  update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 更新人 */
+  update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Dictbiz_DetailInput = {
+  /** 业务字典名称 */
+  _dictbiz_id?: InputMaybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: InputMaybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: InputMaybe<Scalars['String']>;
+  /** 业务字典ID */
+  dictbiz_id?: InputMaybe<Scalars['ID']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 启用ID */
+  is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 锁定ID */
+  is_locked?: InputMaybe<Scalars['Int']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Scalars['Int']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  val?: InputMaybe<Scalars['String']>;
+};
+
+export type Dictbiz_DetailModel = {
+  __typename?: 'Dictbiz_DetailModel';
+  /** 业务字典名称 */
+  _dictbiz_id?: Maybe<Scalars['String']>;
+  /** 启用名称 */
+  _is_enabled?: Maybe<Scalars['String']>;
+  /** 锁定名称 */
+  _is_locked?: Maybe<Scalars['String']>;
+  /** 业务字典ID */
+  dictbiz_id: Scalars['ID'];
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用ID */
+  is_enabled: Scalars['Int'];
+  /** 锁定ID */
+  is_locked: Scalars['Int'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 值 */
+  val: Scalars['String'];
+};
+
+export type Dictbiz_DetailSearch = {
+  _dictbiz_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** 业务字典 */
+  dictbiz_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  val?: InputMaybe<Scalars['String']>;
+  valLike?: InputMaybe<Scalars['String']>;
+};
+
+export type GetDict = {
+  __typename?: 'GetDict';
+  /** 字典编码 */
+  code: Scalars['String'];
+  /** id */
+  id: Scalars['String'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 数据类型 */
+  type: Scalars['String'];
+  /** 值 */
+  val: Scalars['String'];
+};
+
 export type GetLoginInfo = {
   __typename?: 'GetLoginInfo';
   dept_id?: Maybe<Scalars['String']>;
@@ -330,6 +726,14 @@ export type Mutation = {
   /** 创建一条数据 */
   createDept: Scalars['ID'];
   /** 创建一条数据 */
+  createDict: Scalars['ID'];
+  /** 创建一条数据 */
+  createDict_detail: Scalars['ID'];
+  /** 创建一条数据 */
+  createDictbiz: Scalars['ID'];
+  /** 创建一条数据 */
+  createDictbiz_detail: Scalars['ID'];
+  /** 创建一条数据 */
   createMenu: Scalars['ID'];
   /** 创建一条数据 */
   createOption: Scalars['ID'];
@@ -345,6 +749,14 @@ export type Mutation = {
   deleteByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsDept: Scalars['Int'];
+  /** 根据 ids 删除数据 */
+  deleteByIdsDict: Scalars['Int'];
+  /** 根据 ids 删除数据 */
+  deleteByIdsDict_detail: Scalars['Int'];
+  /** 根据 ids 删除数据 */
+  deleteByIdsDictbiz: Scalars['Int'];
+  /** 根据 ids 删除数据 */
+  deleteByIdsDictbiz_detail: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 删除数据 */
@@ -366,6 +778,14 @@ export type Mutation = {
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsDept: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsDict: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsDict_detail: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsDictbiz: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
+  forceDeleteByIdsDictbiz_detail: Scalars['Int'];
+  /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsOperation_record: Scalars['Int'];
@@ -382,6 +802,14 @@ export type Mutation = {
   /** 导入文件 */
   importFileDept?: Maybe<Scalars['String']>;
   /** 导入文件 */
+  importFileDict?: Maybe<Scalars['String']>;
+  /** 导入文件 */
+  importFileDict_detail?: Maybe<Scalars['String']>;
+  /** 导入文件 */
+  importFileDictbiz?: Maybe<Scalars['String']>;
+  /** 导入文件 */
+  importFileDictbiz_detail?: Maybe<Scalars['String']>;
+  /** 导入文件 */
   importFileMenu?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileOption?: Maybe<Scalars['String']>;
@@ -396,6 +824,14 @@ export type Mutation = {
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsDept: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
+  lockByIdsDict: Scalars['Int'];
+  /** 根据 ids 锁定或者解锁数据 */
+  lockByIdsDict_detail: Scalars['Int'];
+  /** 根据 ids 锁定或者解锁数据 */
+  lockByIdsDictbiz: Scalars['Int'];
+  /** 根据 ids 锁定或者解锁数据 */
+  lockByIdsDictbiz_detail: Scalars['Int'];
+  /** 根据 ids 锁定或者解锁数据 */
   lockByIdsUsr: Scalars['Int'];
   /** 登录 */
   login: LoginModel;
@@ -403,6 +839,14 @@ export type Mutation = {
   revertByIdsBackground_task: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsDept: Scalars['Int'];
+  /** 根据 ids 还原数据 */
+  revertByIdsDict: Scalars['Int'];
+  /** 根据 ids 还原数据 */
+  revertByIdsDict_detail: Scalars['Int'];
+  /** 根据 ids 还原数据 */
+  revertByIdsDictbiz: Scalars['Int'];
+  /** 根据 ids 还原数据 */
+  revertByIdsDictbiz_detail: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsMenu: Scalars['Int'];
   /** 根据 ids 还原数据 */
@@ -420,6 +864,14 @@ export type Mutation = {
   /** 根据id修改一条数据 */
   updateByIdDept: Scalars['ID'];
   /** 根据id修改一条数据 */
+  updateByIdDict: Scalars['ID'];
+  /** 根据id修改一条数据 */
+  updateByIdDict_detail: Scalars['ID'];
+  /** 根据id修改一条数据 */
+  updateByIdDictbiz: Scalars['ID'];
+  /** 根据id修改一条数据 */
+  updateByIdDictbiz_detail: Scalars['ID'];
+  /** 根据id修改一条数据 */
   updateByIdMenu: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdOption: Scalars['ID'];
@@ -436,6 +888,26 @@ export type Mutation = {
 
 export type MutationCreateDeptArgs = {
   model: DeptInput;
+};
+
+
+export type MutationCreateDictArgs = {
+  model: DictInput;
+};
+
+
+export type MutationCreateDict_DetailArgs = {
+  model: Dict_DetailInput;
+};
+
+
+export type MutationCreateDictbizArgs = {
+  model: DictbizInput;
+};
+
+
+export type MutationCreateDictbiz_DetailArgs = {
+  model: Dictbiz_DetailInput;
 };
 
 
@@ -475,6 +947,26 @@ export type MutationDeleteByIdsBackground_TaskArgs = {
 
 
 export type MutationDeleteByIdsDeptArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteByIdsDictArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteByIdsDict_DetailArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteByIdsDictbizArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteByIdsDictbiz_DetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -529,6 +1021,26 @@ export type MutationForceDeleteByIdsDeptArgs = {
 };
 
 
+export type MutationForceDeleteByIdsDictArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationForceDeleteByIdsDict_DetailArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationForceDeleteByIdsDictbizArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationForceDeleteByIdsDictbiz_DetailArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationForceDeleteByIdsMenuArgs = {
   ids: Array<Scalars['ID']>;
 };
@@ -569,6 +1081,26 @@ export type MutationImportFileDeptArgs = {
 };
 
 
+export type MutationImportFileDictArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationImportFileDict_DetailArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationImportFileDictbizArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationImportFileDictbiz_DetailArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationImportFileMenuArgs = {
   id: Scalars['ID'];
 };
@@ -605,6 +1137,30 @@ export type MutationLockByIdsDeptArgs = {
 };
 
 
+export type MutationLockByIdsDictArgs = {
+  ids: Array<Scalars['ID']>;
+  is_locked: Scalars['Int'];
+};
+
+
+export type MutationLockByIdsDict_DetailArgs = {
+  ids: Array<Scalars['ID']>;
+  is_locked: Scalars['Int'];
+};
+
+
+export type MutationLockByIdsDictbizArgs = {
+  ids: Array<Scalars['ID']>;
+  is_locked: Scalars['Int'];
+};
+
+
+export type MutationLockByIdsDictbiz_DetailArgs = {
+  ids: Array<Scalars['ID']>;
+  is_locked: Scalars['Int'];
+};
+
+
 export type MutationLockByIdsUsrArgs = {
   ids: Array<Scalars['ID']>;
   is_locked: Scalars['Int'];
@@ -625,6 +1181,26 @@ export type MutationRevertByIdsBackground_TaskArgs = {
 
 
 export type MutationRevertByIdsDeptArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationRevertByIdsDictArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationRevertByIdsDict_DetailArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationRevertByIdsDictbizArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationRevertByIdsDictbiz_DetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -667,6 +1243,30 @@ export type MutationRevertByIdsUsrArgs = {
 export type MutationUpdateByIdDeptArgs = {
   id: Scalars['ID'];
   model: DeptInput;
+};
+
+
+export type MutationUpdateByIdDictArgs = {
+  id: Scalars['ID'];
+  model: DictInput;
+};
+
+
+export type MutationUpdateByIdDict_DetailArgs = {
+  id: Scalars['ID'];
+  model: Dict_DetailInput;
+};
+
+
+export type MutationUpdateByIdDictbizArgs = {
+  id: Scalars['ID'];
+  model: DictbizInput;
+};
+
+
+export type MutationUpdateByIdDictbiz_DetailArgs = {
+  id: Scalars['ID'];
+  model: Dictbiz_DetailInput;
 };
 
 
@@ -923,6 +1523,14 @@ export type Query = {
   /** 根据搜索条件导出 */
   exportExcelDept: Scalars['String'];
   /** 根据搜索条件导出 */
+  exportExcelDict: Scalars['String'];
+  /** 根据搜索条件导出 */
+  exportExcelDict_detail: Scalars['String'];
+  /** 根据搜索条件导出 */
+  exportExcelDictbiz: Scalars['String'];
+  /** 根据搜索条件导出 */
+  exportExcelDictbiz_detail: Scalars['String'];
+  /** 根据搜索条件导出 */
   exportExcelMenu: Scalars['String'];
   /** 根据搜索条件导出 */
   exportExcelOperation_record: Scalars['String'];
@@ -940,6 +1548,14 @@ export type Query = {
   findAllBackground_task: Array<Background_TaskModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDept: Array<DeptModel>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllDict: Array<DictModel>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllDict_detail: Array<Dict_DetailModel>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllDictbiz: Array<DictbizModel>;
+  /** 根据搜索条件和分页查找数据 */
+  findAllDictbiz_detail: Array<Dictbiz_DetailModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllMenu: Array<MenuModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -959,6 +1575,14 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdDept?: Maybe<DeptModel>;
   /** 根据id查找一条数据 */
+  findByIdDict?: Maybe<DictModel>;
+  /** 根据id查找一条数据 */
+  findByIdDict_detail?: Maybe<Dict_DetailModel>;
+  /** 根据id查找一条数据 */
+  findByIdDictbiz?: Maybe<DictbizModel>;
+  /** 根据id查找一条数据 */
+  findByIdDictbiz_detail?: Maybe<Dictbiz_DetailModel>;
+  /** 根据id查找一条数据 */
   findByIdMenu?: Maybe<MenuModel>;
   /** 根据id查找一条数据 */
   findByIdOperation_record?: Maybe<Operation_RecordModel>;
@@ -977,6 +1601,14 @@ export type Query = {
   /** 根据条件查找据数总数 */
   findCountDept: Scalars['Int'];
   /** 根据条件查找据数总数 */
+  findCountDict: Scalars['Int'];
+  /** 根据条件查找据数总数 */
+  findCountDict_detail: Scalars['Int'];
+  /** 根据条件查找据数总数 */
+  findCountDictbiz: Scalars['Int'];
+  /** 根据条件查找据数总数 */
+  findCountDictbiz_detail: Scalars['Int'];
+  /** 根据条件查找据数总数 */
   findCountMenu: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountOperation_record: Scalars['Int'];
@@ -993,6 +1625,14 @@ export type Query = {
   /** 查找order_by字段的最大值 */
   findLastOrderByDept: Scalars['Int'];
   /** 查找order_by字段的最大值 */
+  findLastOrderByDict: Scalars['Int'];
+  /** 查找order_by字段的最大值 */
+  findLastOrderByDict_detail: Scalars['Int'];
+  /** 查找order_by字段的最大值 */
+  findLastOrderByDictbiz: Scalars['Int'];
+  /** 查找order_by字段的最大值 */
+  findLastOrderByDictbiz_detail: Scalars['Int'];
+  /** 查找order_by字段的最大值 */
   findLastOrderByMenu: Scalars['Int'];
   /** 查找order_by字段的最大值 */
   findLastOrderByTenant: Scalars['Int'];
@@ -1000,6 +1640,14 @@ export type Query = {
   findOneBackground_task?: Maybe<Background_TaskModel>;
   /** 根据条件查找第一条数据 */
   findOneDept?: Maybe<DeptModel>;
+  /** 根据条件查找第一条数据 */
+  findOneDict?: Maybe<DictModel>;
+  /** 根据条件查找第一条数据 */
+  findOneDict_detail?: Maybe<Dict_DetailModel>;
+  /** 根据条件查找第一条数据 */
+  findOneDictbiz?: Maybe<DictbizModel>;
+  /** 根据条件查找第一条数据 */
+  findOneDictbiz_detail?: Maybe<Dictbiz_DetailModel>;
   /** 根据条件查找第一条数据 */
   findOneMenu?: Maybe<MenuModel>;
   /** 根据条件查找第一条数据 */
@@ -1014,6 +1662,10 @@ export type Query = {
   findOneTenant?: Maybe<TenantModel>;
   /** 根据条件查找第一条数据 */
   findOneUsr?: Maybe<UsrModel>;
+  /** 获取系统字典列表 */
+  getDict: Array<Array<GetDict>>;
+  /** 获取业务字典列表 */
+  getDictbiz: Array<Array<GetDict>>;
   /** 获取登录信息 */
   getLoginInfo: GetLoginInfo;
   /** 根据 当前网址的域名+端口 获取 租户列表 */
@@ -1031,6 +1683,30 @@ export type QueryExportExcelBackground_TaskArgs = {
 
 export type QueryExportExcelDeptArgs = {
   search?: InputMaybe<DeptSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelDictArgs = {
+  search?: InputMaybe<DictSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelDict_DetailArgs = {
+  search?: InputMaybe<Dict_DetailSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelDictbizArgs = {
+  search?: InputMaybe<DictbizSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryExportExcelDictbiz_DetailArgs = {
+  search?: InputMaybe<Dictbiz_DetailSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -1087,6 +1763,34 @@ export type QueryFindAllBackground_TaskArgs = {
 export type QueryFindAllDeptArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DeptSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryFindAllDictArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<DictSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryFindAllDict_DetailArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<Dict_DetailSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryFindAllDictbizArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<DictbizSearch>;
+  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+};
+
+
+export type QueryFindAllDictbiz_DetailArgs = {
+  page?: InputMaybe<PageInput>;
+  search?: InputMaybe<Dictbiz_DetailSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -1150,6 +1854,26 @@ export type QueryFindByIdDeptArgs = {
 };
 
 
+export type QueryFindByIdDictArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryFindByIdDict_DetailArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryFindByIdDictbizArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryFindByIdDictbiz_DetailArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type QueryFindByIdMenuArgs = {
   id: Scalars['ID'];
 };
@@ -1192,6 +1916,26 @@ export type QueryFindCountBackground_TaskArgs = {
 
 export type QueryFindCountDeptArgs = {
   search?: InputMaybe<DeptSearch>;
+};
+
+
+export type QueryFindCountDictArgs = {
+  search?: InputMaybe<DictSearch>;
+};
+
+
+export type QueryFindCountDict_DetailArgs = {
+  search?: InputMaybe<Dict_DetailSearch>;
+};
+
+
+export type QueryFindCountDictbizArgs = {
+  search?: InputMaybe<DictbizSearch>;
+};
+
+
+export type QueryFindCountDictbiz_DetailArgs = {
+  search?: InputMaybe<Dictbiz_DetailSearch>;
 };
 
 
@@ -1240,6 +1984,26 @@ export type QueryFindOneDeptArgs = {
 };
 
 
+export type QueryFindOneDictArgs = {
+  search?: InputMaybe<DictSearch>;
+};
+
+
+export type QueryFindOneDict_DetailArgs = {
+  search?: InputMaybe<Dict_DetailSearch>;
+};
+
+
+export type QueryFindOneDictbizArgs = {
+  search?: InputMaybe<DictbizSearch>;
+};
+
+
+export type QueryFindOneDictbiz_DetailArgs = {
+  search?: InputMaybe<Dictbiz_DetailSearch>;
+};
+
+
 export type QueryFindOneMenuArgs = {
   search?: InputMaybe<MenuSearch>;
 };
@@ -1272,6 +2036,16 @@ export type QueryFindOneTenantArgs = {
 
 export type QueryFindOneUsrArgs = {
   search?: InputMaybe<UsrSearch>;
+};
+
+
+export type QueryGetDictArgs = {
+  codes: Array<Scalars['String']>;
+};
+
+
+export type QueryGetDictbizArgs = {
+  codes: Array<Scalars['String']>;
 };
 
 

@@ -77,25 +77,13 @@
             prop="is_enabled"
             un-h="full"
           >
-            <el-select
+            <DictSelect
               :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
               v-model="dialogModel.is_enabled"
+              code="is_enabled"
               un-w="full"
               placeholder="请选择启用"
-              filterable
-              default-first-option
-              clearable
-              @keyup.enter.stop
-            >
-              <el-option
-                :value="1"
-                label="是"
-              ></el-option>
-              <el-option
-                :value="0"
-                label="否"
-              ></el-option>
-            </el-select>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -181,7 +169,7 @@
 </CustomDialog>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   create,
   findById,

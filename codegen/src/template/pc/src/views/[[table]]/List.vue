@@ -85,40 +85,38 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></el-select-v2>
         </el-form-item>
       </template><#
-      } else if (selectList.length > 0) {
+      } else if (column.dict) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
-          <el-select
+          <DictSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
             :model-value="search.<#=column_name#>"
-            placeholder="请选择<#=column_comment#>"
-            filterable
-            default-first-option
-            clearable
+            code="<#=column.dict#>"
+            placeholder="请选择 <#=column_comment#>"
             multiple
-            @keyup.enter.stop
             @update:model-value="search.<#=column_name#> = $event"
             @change="searchClk"
-          ><#
-            for (let item of selectList) {
-              let value = item.value;
-              let label = item.label;
-              if (typeof(value) === "string") {
-                value = `'${ value }'`;
-              } else if (typeof(value) === "number") {
-                value = value.toString();
-              }
-          #>
-            <el-option
-              :value="<#=value#>"
-              label="<#=label#>"
-            ></el-option><#
-            }
-          #>
-          </el-select>
+          ></DictSelect>
+        </el-form-item>
+      </template><#
+      } else if (column.dictbiz) {
+      #>
+      <template v-if="builtInSearch?.<#=column_name#> == null">
+        <label><#=column_comment#></label>
+        <el-form-item prop="<#=column_name#>">
+          <DictbizSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            un-w="full"
+            :model-value="search.<#=column_name#>"
+            code="<#=column.dictbiz#>"
+            placeholder="请选择 <#=column_comment#>"
+            multiple
+            @update:model-value="search.<#=column_name#> = $event"
+            @change="searchClk"
+          ></DictbizSelect>
         </el-form-item>
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
@@ -627,7 +625,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
             </el-table-column>
           </template><#
-            } else if (selectList.length > 0) {
+            } else if (selectList.length > 0 || column.dict || column.dictbiz) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -1095,7 +1093,7 @@ const props = defineProps<{
     if (selectStr) {
       selectList = eval(`(${ selectStr })`);
     }
-    if (foreignKey || selectList.length > 0) {
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
       data_type = "string|string[]";
     }
     if (column_comment.includes("[")) {
@@ -1116,6 +1114,9 @@ const props = defineProps<{
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>
   _<#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
+  #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    } else if (column.dict || column.dictbiz) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else if (column_name === "id") {
@@ -1167,15 +1168,15 @@ const builtInSearchType: { [key: string]: string } = {
   #>
   <#=column_name#>: "string[]",
   _<#=column_name#>: "string[]",<#
-    } else if (selectList && selectList.length > 0 && column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
+    } else if ((selectList && selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "number[]",
   _<#=column_name#>: "string[]",<#
-    } else if (selectList && selectList.length > 0) {
+    } else if ((selectList && selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "string[]",
   _<#=column_name#>: "string[]",<#
-    } else if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int' || column.DATA_TYPE === 'decimal') {
+    } else if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "number",<#
   }
@@ -1376,6 +1377,11 @@ for (let i = 0; i < columns.length; i++) {
     #>
     headerAlign: "<#=column.headerAlign#>",<#
     }
+    #><#
+    if (column.fixed !== undefined) {
+    #>
+    fixed: "<#=column.fixed#>",<#
+    }
     #>
   },<#
   } else if (column.isAtt) {
@@ -1407,9 +1413,14 @@ for (let i = 0; i < columns.length; i++) {
     #>
     headerAlign: "<#=column.headerAlign#>",<#
     }
+    #><#
+    if (column.fixed !== undefined) {
+    #>
+    fixed: "<#=column.fixed#>",<#
+    }
     #>
   },<#
-  } else if (!foreignKey && selectList.length === 0) {
+  } else if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
   #>
   {
     label: "<#=column_comment#>",
@@ -1443,9 +1454,14 @@ for (let i = 0; i < columns.length; i++) {
     #>
     showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
     }
+    #><#
+    if (column.fixed !== undefined) {
+    #>
+    fixed: "<#=column.fixed#>",<#
+    }
     #>
   },<#
-  } else if (selectList.length > 0 || foreignKey) {
+  } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz) {
   #>
   {
     label: "<#=column_comment#>",
@@ -1478,6 +1494,11 @@ for (let i = 0; i < columns.length; i++) {
     if (column.showOverflowTooltip != null) {
     #>
     showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
+    }
+    #><#
+    if (column.fixed !== undefined) {
+    #>
+    fixed: "<#=column.fixed#>",<#
     }
     #>
   },<#
@@ -1932,6 +1953,9 @@ if (hasForeignTabs > 0) {
 let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
 
 async function openForeignTabs(id: string, title: string) {
+  if (!foreignTabsRef) {
+    return;
+  }
   await foreignTabsRef.showDialog({
     title,
     model: {

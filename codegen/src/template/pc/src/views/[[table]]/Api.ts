@@ -80,7 +80,7 @@ export async function findAll(
             }
             const foreignKey = column.foreignKey;
           #><#
-            if (!foreignKey && selectList.length === 0) {
+            if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
           #>
           <#=column_name#><#
             } else {
@@ -291,7 +291,7 @@ export async function findById(
             }
             const foreignKey = column.foreignKey;
           #><#
-            if (!foreignKey && selectList.length === 0) {
+            if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
           #>
           <#=column_name#><#
             } else {

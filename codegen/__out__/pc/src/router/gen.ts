@@ -27,6 +27,54 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/dict",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "系统字典",
+        component: () => import("@/views/dict/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/dict_detail",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "系统字典明细",
+        component: () => import("@/views/dict_detail/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/dictbiz",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "业务字典",
+        component: () => import("@/views/dictbiz/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/dictbiz_detail",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "业务字典明细",
+        component: () => import("@/views/dictbiz_detail/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/menu",
     component: Layout1,
     children: [

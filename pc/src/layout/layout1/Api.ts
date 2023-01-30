@@ -1,5 +1,3 @@
-import { GqlOpt, gqlQuery } from "@/utils/graphql";
-
 import {
   type MenuModel as MenuModel0,
   type GetLoginInfo,

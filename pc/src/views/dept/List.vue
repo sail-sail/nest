@@ -364,7 +364,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'_is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -382,7 +382,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'_is_locked' === col.prop">
+          <template v-else-if="'is_locked' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -567,8 +567,7 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   parent_id: "string[]",
   _parent_id: "string[]",
-  order_by: "number[]",
-  _order_by: "string[]",
+  order_by: "number",
   is_enabled: "number[]",
   _is_enabled: "string[]",
   is_locked: "number[]",
@@ -714,13 +713,16 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
+    width: 180,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
+    fixed: "left",
   },
   {
     label: "排序",
     prop: "order_by",
+    width: 100,
     sortable: "custom",
     align: "right",
     headerAlign: "center",

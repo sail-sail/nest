@@ -80,7 +80,7 @@ type <#=Table_Up#>Model {<#
       data_type += "!";
     }
   #><#
-    if (!foreignKey && selectList.length === 0) {
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
@@ -152,7 +152,7 @@ input <#=Table_Up#>Input {<#
     }
     if (column_name === 'id') column_comment = '';
   #><#
-    if (!foreignKey && selectList.length === 0) {
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
   #><#
     if (column_name === 'id') {
   #>
@@ -245,6 +245,12 @@ input <#=Table_Up#>Search {
       } else {
         data_type = "[String]";
       }
+    } else if (column.dict || column.dictbiz) {
+      if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
+        data_type = "[Int]";
+      } else {
+        data_type = "[String]";
+      }
     }
   #><#
     if (foreignKey) {
@@ -253,6 +259,10 @@ input <#=Table_Up#>Search {
   <#=column_name#>: <#=data_type#>
   _<#=column_name#>: <#=data_type#><#
     } else if (selectList && selectList.length > 0) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#><#
+    } else if (column.dict || column.dictbiz) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#

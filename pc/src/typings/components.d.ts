@@ -8,7 +8,10 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AttDialog: typeof import('./../components/AttDialog.vue')['default']
+    copy: typeof import('./../components/DictSelect copy.vue')['default']
     CustomDialog: typeof import('./../components/CustomDialog.vue')['default']
+    DictbizSelect: typeof import('./../components/DictbizSelect.vue')['default']
+    DictSelect: typeof import('./../components/DictSelect.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
@@ -63,6 +66,8 @@ declare module '@vue/runtime-core' {
     ElSelectV2: typeof import('element-plus/es')['ElSelectV2']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTabPane: typeof import('element-plus/es')['ElTabPane']
+    ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     IconFontPc: typeof import('~icons/font/pc')['default']
     LinkAtt: typeof import('./../components/LinkAtt.vue')['default']

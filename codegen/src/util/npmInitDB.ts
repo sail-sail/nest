@@ -67,6 +67,12 @@ async function execCsvFile(context: Context, item: string) {
     let sql = `insert ignore into \`${ tableName }\`(`;
     for (let j = 0; j < keys.length; j++) {
       const key = keys[j];
+      if (isEmpty(key)) {
+        continue;
+      }
+      if (key.startsWith("_") || key.endsWith("_")) {
+        continue;
+      }
       sql += "`"+key+"`";
       if (j !== keys.length - 1) {
         sql += ",";
@@ -74,7 +80,14 @@ async function execCsvFile(context: Context, item: string) {
     }
     sql += ") values (";
     for (let j = 0; j < keys.length; j++) {
+      const key = keys[j];
       let val = row[j];
+      if (isEmpty(key)) {
+        continue;
+      }
+      if (key.startsWith("_") || key.endsWith("_")) {
+        continue;
+      }
       if (val == null) {
         val = "NULL";
       } else if (val == "default" || val == "NULL") {

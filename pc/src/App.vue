@@ -332,18 +332,24 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-table {
   .table_current_row {
-    background-color: rgba(210,210,210,.8);
+    background-color: var(--el-fill-color-darker);
+  }
+  .table_current_row.hover-row {
+    background-color: var(--el-fill-color-darker);
   }
   .el-table__body tr.table_current_row:hover>td.el-table__cell {
-    background-color: rgba(210,210,210,.8);
+    background-color: var(--el-fill-color-darker);
   }
 }
 .dark .el-table {
   .table_current_row {
-    background-color: rgba(81, 81, 81,.8);
+    background-color: var(--el-fill-color-darker);
+  }
+  .table_current_row.hover-row {
+    background-color: var(--el-fill-color-darker);
   }
   .el-table__body tr.table_current_row:hover>td.el-table__cell {
-    background-color: rgba(81, 81, 81,.8);
+    background-color: var(--el-fill-color-darker);
   }
 }
 .el-date-editor.el-input, .el-date-editor.el-input__inner {
@@ -396,13 +402,24 @@ body .el-tree {
     flex-direction: column;
   }
 }
-.el-flex-tabs.el-tabs {
+// flex布局的el-tabs
+.el-tabs.el-flex-tabs.el-tabs {
   display: flex;
   flex-direction: column;
+  .el-tabs__header {
+    margin: 0;
+  }
   .el-tabs__content, .el-tab-pane {
     flex: 1 0 0;
     display: flex;
     flex-direction: column;
+  }
+}
+.el-tabs.el-tabs--card {
+  .el-tabs__header {
+    .el-tabs__item.is-active {
+      background-color: var(--el-fill-color-extra-light);
+    }
   }
 }
 // 最大号的弹出框

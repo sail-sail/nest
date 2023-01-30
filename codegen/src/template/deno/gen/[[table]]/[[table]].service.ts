@@ -286,7 +286,7 @@ async function importFile(
         continue;
       }
     #><#
-      if (!foreignKey && selectList.length === 0) {
+      if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
     #>
     "<#=column_comment#>": "<#=column_name#>",<#
       } else {

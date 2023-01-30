@@ -47,8 +47,19 @@ export default defineConfig({
         "vue-router",
         "@vueuse/core",
         {
+          "@/components/ListSelectDialog.vue": [
+            [ "default", "ListSelectDialog" ],
+          ],
+        },
+        {
           "@/components/CustomDialog.vue": [
             [ "default", "CustomDialog" ],
+          ],
+        },
+        {
+          "@/utils/common": [
+            "getDict",
+            "getDictbiz",
           ],
         },
         {

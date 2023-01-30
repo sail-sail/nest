@@ -28,28 +28,16 @@
       <template v-if="builtInSearch?.type == null">
         <label>类型</label>
         <el-form-item prop="type">
-          <el-select
+          <DictSelect
             :set="search.type = search.type || [ ]"
             un-w="full"
             :model-value="search.type"
-            placeholder="请选择类型"
-            filterable
-            default-first-option
-            clearable
+            code="menu_type"
+            placeholder="请选择 类型"
             multiple
-            @keyup.enter.stop
             @update:model-value="search.type = $event"
             @change="searchClk"
-          >
-            <el-option
-              :value="'pc'"
-              label="电脑端"
-            ></el-option>
-            <el-option
-              :value="'mobile'"
-              label="手机端"
-            ></el-option>
-          </el-select>
+          ></DictSelect>
         </el-form-item>
       </template>
       
@@ -374,7 +362,7 @@
         >
           
           <!-- 类型 -->
-          <template v-if="'_type' === col.prop">
+          <template v-if="'type' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -419,7 +407,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'_is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -591,8 +579,7 @@ const builtInSearchType: { [key: string]: string } = {
   _menu_id: "string[]",
   is_enabled: "number[]",
   _is_enabled: "string[]",
-  order_by: "number[]",
-  _order_by: "string[]",
+  order_by: "number",
 };
 
 const propsNotInSearch: string[] = [

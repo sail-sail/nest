@@ -26,6 +26,10 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import {
+  _internals as dictSrcDao,
+} from "/src/dict_detail/dict_detail.dao.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -246,16 +250,23 @@ async function findAll(
   const cacheKey2 = JSON.stringify({ sql, args });
   
   let result = await query<OptionModel>(sql, args, { cacheKey1, cacheKey2 });
+  
+  const [
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_enabled",
+  ]);
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
     // 启用
-    let _is_enabled = "";
-    if (model.is_enabled === 1) {
-      _is_enabled = "是";
-    } else if (model.is_enabled === 0) {
-      _is_enabled = "否";
-    } else {
-      _is_enabled = String(model.is_enabled);
+    let _is_enabled = model.is_enabled.toString();
+    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      if (dictItem) {
+        _is_enabled = dictItem.lbl;
+      }
     }
     model._is_enabled = _is_enabled;
   }
@@ -270,7 +281,7 @@ async function findAll(
 function getUniqueKeys(): {
   uniqueKeys: (keyof OptionModel)[];
   uniqueComments: { [key: string]: string };
-  } {
+} {
   const uniqueKeys: (keyof OptionModel)[] = [
     "ky",
   ];
@@ -485,13 +496,18 @@ async function create(
   const table = "option";
   const method = "create";
   
+  const [
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_enabled",
+  ]);
+  
+  
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   
@@ -665,6 +681,12 @@ async function updateById(
     return id;
   }
   
+  const [
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_enabled",
+  ]);
+  
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(id, model.tenant_id);
@@ -672,11 +694,9 @@ async function updateById(
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   

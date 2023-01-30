@@ -26,6 +26,10 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import {
+  _internals as dictSrcDao,
+} from "/src/dict_detail/dict_detail.dao.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -284,34 +288,35 @@ async function findAll(
   }
   
   let result = await query<Background_TaskModel>(sql, args);
+  
+  const [
+    stateDict, // 状态
+    typeDict, // 类型
+  ] = await dictSrcDao.getDict([
+    "background_task_state",
+    "background_task_type",
+  ]);
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
     // 状态
-    let _state = "";
-    if (model.state === "running") {
-      _state = "运行中";
-    } else if (model.state === "success") {
-      _state = "成功";
-    } else if (model.state === "fail") {
-      _state = "失败";
-    } else if (model.state === "cancel") {
-      _state = "取消";
-    } else {
-      _state = String(model.state);
+    let _state = model.state;
+    if (!isEmpty(model.state)) {
+      const dictItem = stateDict.find((dictItem) => dictItem.val === model.state);
+      if (dictItem) {
+        _state = dictItem.lbl;
+      }
     }
     model._state = _state;
+    
     // 类型
-    let _type = "";
-    if (model.type === "text") {
-      _type = "文本";
-    } else if (model.type === "download") {
-      _type = "下载";
-    } else if (model.type === "inline") {
-      _type = "查看";
-    } else if (model.type === "tag") {
-      _type = "标签";
-    } else {
-      _type = String(model.type);
+    let _type = model.type;
+    if (!isEmpty(model.type)) {
+      const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
+      if (dictItem) {
+        _type = dictItem.lbl;
+      }
     }
     model._type = _type;
   }
@@ -326,7 +331,7 @@ async function findAll(
 function getUniqueKeys(): {
   uniqueKeys: (keyof Background_TaskModel)[];
   uniqueComments: { [key: string]: string };
-  } {
+} {
   const uniqueKeys: (keyof Background_TaskModel)[] = [
   ];
   const uniqueComments = {
@@ -536,31 +541,28 @@ async function create(
   const table = "background_task";
   const method = "create";
   
+  const [
+    stateDict, // 状态
+    typeDict, // 类型
+  ] = await dictSrcDao.getDict([
+    "background_task_state",
+    "background_task_type",
+  ]);
+  
+  
   // 状态
   if (isNotEmpty(model._state) && model.state === undefined) {
-    model._state = String(model._state).trim();
-      if (model._state === "运行中") {
-      model.state = "running";
-    } else if (model._state === "成功") {
-      model.state = "success";
-    } else if (model._state === "失败") {
-      model.state = "fail";
-    } else if (model._state === "取消") {
-      model.state = "cancel";
+    const val = stateDict.find((itemTmp) => itemTmp.lbl === model._state)?.val;
+    if (val !== undefined) {
+      model.state = val;
     }
   }
   
   // 类型
   if (isNotEmpty(model._type) && model.type === undefined) {
-    model._type = String(model._type).trim();
-      if (model._type === "文本") {
-      model.type = "text";
-    } else if (model._type === "下载") {
-      model.type = "download";
-    } else if (model._type === "查看") {
-      model.type = "inline";
-    } else if (model._type === "标签") {
-      model.type = "tag";
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === model._type)?.val;
+    if (val !== undefined) {
+      model.type = val;
     }
   }
   
@@ -729,6 +731,14 @@ async function updateById(
     return id;
   }
   
+  const [
+    stateDict, // 状态
+    typeDict, // 类型
+  ] = await dictSrcDao.getDict([
+    "background_task_state",
+    "background_task_type",
+  ]);
+  
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(id, model.tenant_id);
@@ -736,29 +746,17 @@ async function updateById(
   
   // 状态
   if (isNotEmpty(model._state) && model.state === undefined) {
-    model._state = String(model._state).trim();
-      if (model._state === "运行中") {
-      model.state = "running";
-    } else if (model._state === "成功") {
-      model.state = "success";
-    } else if (model._state === "失败") {
-      model.state = "fail";
-    } else if (model._state === "取消") {
-      model.state = "cancel";
+    const val = stateDict.find((itemTmp) => itemTmp.lbl === model._state)?.val;
+    if (val !== undefined) {
+      model.state = val;
     }
   }
   
   // 类型
   if (isNotEmpty(model._type) && model.type === undefined) {
-    model._type = String(model._type).trim();
-      if (model._type === "文本") {
-      model.type = "text";
-    } else if (model._type === "下载") {
-      model.type = "download";
-    } else if (model._type === "查看") {
-      model.type = "inline";
-    } else if (model._type === "标签") {
-      model.type = "tag";
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === model._type)?.val;
+    if (val !== undefined) {
+      model.type = val;
     }
   }
   

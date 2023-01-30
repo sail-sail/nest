@@ -26,6 +26,10 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import {
+  _internals as dictSrcDao,
+} from "/src/dict_detail/dict_detail.dao.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -321,26 +325,35 @@ async function findAll(
   const cacheKey2 = JSON.stringify({ sql, args });
   
   let result = await query<DeptModel>(sql, args, { cacheKey1, cacheKey2 });
+  
+  const [
+    is_enabledDict, // 启用
+    is_lockedDict, // 锁定
+  ] = await dictSrcDao.getDict([
+    "is_enabled",
+    "is_locked",
+  ]);
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
     // 启用
-    let _is_enabled = "";
-    if (model.is_enabled === 1) {
-      _is_enabled = "是";
-    } else if (model.is_enabled === 0) {
-      _is_enabled = "否";
-    } else {
-      _is_enabled = String(model.is_enabled);
+    let _is_enabled = model.is_enabled.toString();
+    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      if (dictItem) {
+        _is_enabled = dictItem.lbl;
+      }
     }
     model._is_enabled = _is_enabled;
+    
     // 锁定
-    let _is_locked = "";
-    if (model.is_locked === 0) {
-      _is_locked = "否";
-    } else if (model.is_locked === 1) {
-      _is_locked = "是";
-    } else {
-      _is_locked = String(model.is_locked);
+    let _is_locked = model.is_locked.toString();
+    if (model.is_locked !== undefined && model.is_locked !== null) {
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      if (dictItem) {
+        _is_locked = dictItem.lbl;
+      }
     }
     model._is_locked = _is_locked;
   }
@@ -355,7 +368,7 @@ async function findAll(
 function getUniqueKeys(): {
   uniqueKeys: (keyof DeptModel)[];
   uniqueComments: { [key: string]: string };
-  } {
+} {
   const uniqueKeys: (keyof DeptModel)[] = [
     "lbl",
   ];
@@ -570,6 +583,15 @@ async function create(
   const table = "dept";
   const method = "create";
   
+  const [
+    is_enabledDict, // 启用
+    is_lockedDict, // 锁定
+  ] = await dictSrcDao.getDict([
+    "is_enabled",
+    "is_locked",
+  ]);
+  
+  
   // 父部门
   if (isNotEmpty(model._parent_id) && model.parent_id === undefined) {
     model._parent_id = String(model._parent_id).trim();
@@ -581,21 +603,17 @@ async function create(
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    model._is_locked = String(model._is_locked).trim();
-      if (model._is_locked === "否") {
-      model.is_locked = 0;
-    } else if (model._is_locked === "是") {
-      model.is_locked = 1;
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
     }
   }
   
@@ -790,6 +808,14 @@ async function updateById(
     return id;
   }
   
+  const [
+    is_enabledDict, // 启用
+    is_lockedDict, // 锁定
+  ] = await dictSrcDao.getDict([
+    "is_enabled",
+    "is_locked",
+  ]);
+  
   const is_locked = await getIs_lockedById(id);
   if (is_locked) {
     throw "不能修改已经锁定的数据";
@@ -811,21 +837,17 @@ async function updateById(
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   
   // 锁定
   if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    model._is_locked = String(model._is_locked).trim();
-      if (model._is_locked === "否") {
-      model.is_locked = 0;
-    } else if (model._is_locked === "是") {
-      model.is_locked = 1;
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
     }
   }
   

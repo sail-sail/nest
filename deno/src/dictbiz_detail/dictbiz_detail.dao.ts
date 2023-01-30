@@ -1,0 +1,69 @@
+import {
+  query,
+  QueryArgs,
+} from "/lib/context.ts";
+
+import {
+  _internals as usrDaoSrc,
+} from "/src/usr/usr.dao.ts";
+
+export const _internals = {
+  getDictbiz,
+};
+
+type DictModel = {
+  id: string;
+  code: string;
+  lbl: string;
+  val: string;
+};
+
+/**
+ * 获取 codes 对应的系统字典
+ */
+async function getDictbiz(
+  codes: string[] = [ ],
+) {
+  const table = "dictbiz_detail";
+  
+  if (codes.length === 0) {
+    return [ ];
+  }
+  
+  const tenant_id = await usrDaoSrc.getTenant_id();
+  
+  const args = new QueryArgs();
+  const sql = /*sql*/ `
+    select
+      t.id,
+      dictbiz.code,
+      t.lbl,
+      t.val
+    from
+      dictbiz_detail t
+    inner join dictbiz
+      on t.dictbiz_id = dictbiz.id
+      and dictbiz.is_deleted = 0
+      and dictbiz.is_enabled = 1
+    where
+      t.is_deleted = 0
+      and t.is_enabled = 1
+      and t.tenant_id = ${ args.push(tenant_id) }
+      and dictbiz.tenant_id = ${ args.push(tenant_id) }
+      and dictbiz.code in ${ args.push(codes) }
+    order by
+      t.order_by asc
+  `;
+  
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = JSON.stringify({ sql, args });
+  
+  const rsArr = await query<DictModel>(sql, args, { cacheKey1, cacheKey2 });
+  const data: DictModel[][] = [ ];
+  for (let i = 0; i < codes.length; i++) {
+    const code = codes[i];
+    const itemArr = rsArr.filter((itemTmp) => itemTmp.code === code);
+    data.push(itemArr);
+  }
+  return data;
+}

@@ -437,7 +437,22 @@ export interface TableCloumn {
    * @memberof TableCloumn
    */
   showSummary?: boolean,
-   
+  
+  /**
+   * 系统字典
+   */
+  dict?: string,
+  
+  /**
+   * 业务字典
+   */
+  dictbiz?: string,
+  
+  /**
+   * 是否为固定列
+   */
+  fixed?: boolean | "left" | "right",
+  
 }
 
 export interface TablesConfigItem {

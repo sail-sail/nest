@@ -41,72 +41,32 @@
       <template v-if="builtInSearch?.state == null">
         <label>状态</label>
         <el-form-item prop="state">
-          <el-select
+          <DictSelect
             :set="search.state = search.state || [ ]"
             un-w="full"
             :model-value="search.state"
-            placeholder="请选择状态"
-            filterable
-            default-first-option
-            clearable
+            code="background_task_state"
+            placeholder="请选择 状态"
             multiple
-            @keyup.enter.stop
             @update:model-value="search.state = $event"
             @change="searchClk"
-          >
-            <el-option
-              :value="'running'"
-              label="运行中"
-            ></el-option>
-            <el-option
-              :value="'success'"
-              label="成功"
-            ></el-option>
-            <el-option
-              :value="'fail'"
-              label="失败"
-            ></el-option>
-            <el-option
-              :value="'cancel'"
-              label="取消"
-            ></el-option>
-          </el-select>
+          ></DictSelect>
         </el-form-item>
       </template>
       
       <template v-if="builtInSearch?.type == null">
         <label>类型</label>
         <el-form-item prop="type">
-          <el-select
+          <DictSelect
             :set="search.type = search.type || [ ]"
             un-w="full"
             :model-value="search.type"
-            placeholder="请选择类型"
-            filterable
-            default-first-option
-            clearable
+            code="background_task_type"
+            placeholder="请选择 类型"
             multiple
-            @keyup.enter.stop
             @update:model-value="search.type = $event"
             @change="searchClk"
-          >
-            <el-option
-              :value="'text'"
-              label="文本"
-            ></el-option>
-            <el-option
-              :value="'download'"
-              label="下载"
-            ></el-option>
-            <el-option
-              :value="'inline'"
-              label="查看"
-            ></el-option>
-            <el-option
-              :value="'tag'"
-              label="标签"
-            ></el-option>
-          </el-select>
+          ></DictSelect>
         </el-form-item>
       </template>
       
@@ -367,7 +327,7 @@
           </template>
           
           <!-- 状态 -->
-          <template v-else-if="'_state' === col.prop">
+          <template v-else-if="'state' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -376,7 +336,7 @@
           </template>
           
           <!-- 类型 -->
-          <template v-else-if="'_type' === col.prop">
+          <template v-else-if="'type' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"

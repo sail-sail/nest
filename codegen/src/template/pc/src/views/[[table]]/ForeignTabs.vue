@@ -2,31 +2,11 @@
 const column = columns.find((item) => item.foreignTabs?.length > 0);
 const foreignTabs = column?.foreignTabs || [ ];
 #><template>
-<el-dialog
-  v-model="dialogVisible"
-  :fullscreen="fullscreen"
-  append-to-body
-  :close-on-click-modal="true"
-  class="custom_dialog large_dialog"
-  top="0"
+<CustomDialog
+  ref="customDialogRef"
   :before-close="beforeClose"
+  click-modal-close
 >
-  <template #header>
-    <div
-      v-draggable
-      class="dialog_title"
-    >
-      <div class="title_lbl">
-        <span class="title_span">
-          {{ dialogTitle }}
-        </span>
-      </div>
-      <ElIconFullScreen
-        class="full_but"
-        @click="setFullscreen"
-      />
-    </div>
-  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -34,12 +14,13 @@ const foreignTabs = column?.foreignTabs || [ ];
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="5"
+      un-p="x-2"
       un-justify-start
       un-items-center
     >
       <el-tabs
         v-model="tabName"
+        type="card"
         class="el-flex-tabs"
         un-flex="~ [1_0_0] col"
         un-w="full"
@@ -86,10 +67,10 @@ const foreignTabs = column?.foreignTabs || [ ];
       
     </div>
   </div>
-</el-dialog>
+</CustomDialog>
 </template>
 
-<script setup lang="ts"><#
+<script lang="ts" setup><#
 for (let im = 0; im < foreignTabs.length; im++) {
   const item = foreignTabs[im];
   const itemTable = item.table;
@@ -106,10 +87,6 @@ import {
 
 let inited = $ref(false);
 
-let { fullscreen, setFullscreen } = $(useFullscreenEfc());
-
-let dialogTitle = $ref("关联列表");
-let dialogVisible = $ref(false);
 let dialogAction = $ref<"list">("list");
 
 let dialogModel = $ref<{
@@ -162,6 +139,8 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
+let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
@@ -173,26 +152,21 @@ async function showDialog(
   },
 ) {
   inited = false;
-  dialogVisible = true;
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
+  const title = arg?.title || "关联列表";
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    type: "large",
+    title,
   });
-  const title = arg?.title;
+  onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
   dialogAction = action || "list";
-  if (title) {
-    dialogTitle = title;
-  }
   if (dialogAction === "list") {
     dialogModel.id = model?.id;
     await useAllFindCount();
   }
   inited = true;
-  return await dialogPrm;
+  return await dialogRes.dialogPrm;
 }
 
 /** 点击取消关闭按钮 */

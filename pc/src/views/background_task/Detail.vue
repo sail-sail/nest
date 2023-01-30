@@ -48,33 +48,13 @@
             prop="state"
             un-h="full"
           >
-            <el-select
+            <DictSelect
               :set="dialogModel.state = dialogModel.state ?? undefined"
               v-model="dialogModel.state"
+              code="background_task_state"
               un-w="full"
               placeholder="请选择状态"
-              filterable
-              default-first-option
-              clearable
-              @keyup.enter.stop
-            >
-              <el-option
-                :value="'running'"
-                label="运行中"
-              ></el-option>
-              <el-option
-                :value="'success'"
-                label="成功"
-              ></el-option>
-              <el-option
-                :value="'fail'"
-                label="失败"
-              ></el-option>
-              <el-option
-                :value="'cancel'"
-                label="取消"
-              ></el-option>
-            </el-select>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -84,33 +64,13 @@
             prop="type"
             un-h="full"
           >
-            <el-select
+            <DictSelect
               :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
+              code="background_task_type"
               un-w="full"
               placeholder="请选择类型"
-              filterable
-              default-first-option
-              clearable
-              @keyup.enter.stop
-            >
-              <el-option
-                :value="'text'"
-                label="文本"
-              ></el-option>
-              <el-option
-                :value="'download'"
-                label="下载"
-              ></el-option>
-              <el-option
-                :value="'inline'"
-                label="查看"
-              ></el-option>
-              <el-option
-                :value="'tag'"
-                label="标签"
-              ></el-option>
-            </el-select>
+            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -249,7 +209,7 @@
 </CustomDialog>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   findById,
 } from "./Api";

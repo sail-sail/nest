@@ -382,7 +382,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'_is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -578,14 +578,12 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
-  max_usr_num: "number[]",
-  _max_usr_num: "string[]",
+  max_usr_num: "number",
   is_enabled: "number[]",
   _is_enabled: "string[]",
   menu_ids: "string[]",
   _menu_ids: "string[]",
-  order_by: "number[]",
-  _order_by: "string[]",
+  order_by: "number",
 };
 
 const propsNotInSearch: string[] = [

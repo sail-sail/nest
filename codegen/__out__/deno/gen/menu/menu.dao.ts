@@ -26,6 +26,10 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import {
+  _internals as dictSrcDao,
+} from "/src/dict_detail/dict_detail.dao.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -262,26 +266,35 @@ async function findAll(
   const cacheKey2 = JSON.stringify({ sql, args });
   
   let result = await query<MenuModel>(sql, args, { cacheKey1, cacheKey2 });
+  
+  const [
+    typeDict, // 类型
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "menu_type",
+    "is_enabled",
+  ]);
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
     // 类型
-    let _type = "";
-    if (model.type === "pc") {
-      _type = "电脑端";
-    } else if (model.type === "mobile") {
-      _type = "手机端";
-    } else {
-      _type = String(model.type);
+    let _type = model.type;
+    if (!isEmpty(model.type)) {
+      const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
+      if (dictItem) {
+        _type = dictItem.lbl;
+      }
     }
     model._type = _type;
+    
     // 启用
-    let _is_enabled = "";
-    if (model.is_enabled === 1) {
-      _is_enabled = "是";
-    } else if (model.is_enabled === 0) {
-      _is_enabled = "否";
-    } else {
-      _is_enabled = String(model.is_enabled);
+    let _is_enabled = model.is_enabled.toString();
+    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      if (dictItem) {
+        _is_enabled = dictItem.lbl;
+      }
     }
     model._is_enabled = _is_enabled;
   }
@@ -296,7 +309,7 @@ async function findAll(
 function getUniqueKeys(): {
   uniqueKeys: (keyof MenuModel)[];
   uniqueComments: { [key: string]: string };
-  } {
+} {
   const uniqueKeys: (keyof MenuModel)[] = [
     "menu_id",
     "lbl",
@@ -513,13 +526,20 @@ async function create(
   const table = "menu";
   const method = "create";
   
+  const [
+    typeDict, // 类型
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "menu_type",
+    "is_enabled",
+  ]);
+  
+  
   // 类型
   if (isNotEmpty(model._type) && model.type === undefined) {
-    model._type = String(model._type).trim();
-      if (model._type === "电脑端") {
-      model.type = "pc";
-    } else if (model._type === "手机端") {
-      model.type = "mobile";
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === model._type)?.val;
+    if (val !== undefined) {
+      model.type = val;
     }
   }
   
@@ -534,11 +554,9 @@ async function create(
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   
@@ -677,13 +695,19 @@ async function updateById(
     return id;
   }
   
+  const [
+    typeDict, // 类型
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "menu_type",
+    "is_enabled",
+  ]);
+  
   // 类型
   if (isNotEmpty(model._type) && model.type === undefined) {
-    model._type = String(model._type).trim();
-      if (model._type === "电脑端") {
-      model.type = "pc";
-    } else if (model._type === "手机端") {
-      model.type = "mobile";
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === model._type)?.val;
+    if (val !== undefined) {
+      model.type = val;
     }
   }
   
@@ -698,11 +722,9 @@ async function updateById(
   
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    model._is_enabled = String(model._is_enabled).trim();
-      if (model._is_enabled === "是") {
-      model.is_enabled = 1;
-    } else if (model._is_enabled === "否") {
-      model.is_enabled = 0;
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   
