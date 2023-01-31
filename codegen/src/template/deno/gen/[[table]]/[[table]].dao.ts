@@ -6,8 +6,26 @@ const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
-const hasDict = columns.some((column) => column.dict);
-const hasDictbiz = columns.some((column) => column.dictbiz);
+const hasDict = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") {
+    return false;
+  }
+  return column.dict;
+});
+const hasDictbiz = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") {
+    return false;
+  }
+  return column.dictbiz;
+});
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
@@ -669,14 +687,14 @@ async function findAll(
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
     #><#
-      if (column.dict) {
+      if (column.dictbiz) {
     #>
     <#=column_name#>Dict, // <#=column_comment#><#
       }
     #><#
     }
     #>
-  ] = await dictbizDao.getDictbiz([<#
+  ] = await dictbizSrcDao.getDictbiz([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1167,14 +1185,14 @@ async function create(
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
     #><#
-      if (column.dict) {
+      if (column.dictbiz) {
     #>
     <#=column_name#>Dict, // <#=column_comment#><#
       }
     #><#
     }
     #>
-  ] = await dictbizDao.getDictbiz([<#
+  ] = await dictbizSrcDao.getDictbiz([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1761,14 +1779,14 @@ async function updateById(
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
     #><#
-      if (column.dict) {
+      if (column.dictbiz) {
     #>
     <#=column_name#>Dict, // <#=column_comment#><#
       }
     #><#
     }
     #>
-  ] = await dictbizDao.getDictbiz([<#
+  ] = await dictbizSrcDao.getDictbiz([<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
