@@ -12,6 +12,7 @@
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
     "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
     "initdb": "cd codegen && node -r ts-node/register src/util/npmInitDB.ts",
+    "importCsv": "cd codegen && node -r ts-node/register src/util/npmImportCsv.ts",
     "uuid": "cd codegen && node -r ts-node/register src/util/npmShortUuidV4.ts",
     "pwd": "cd codegen && node -r ts-node/register src/util/npmPassword.ts",
     "build": "cd deno && npm run build",
