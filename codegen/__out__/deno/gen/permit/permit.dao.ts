@@ -26,10 +26,6 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
-import {
-  _internals as dictSrcDao,
-} from "/src/dict_detail/dict_detail.dao.ts";
-
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -232,11 +228,6 @@ async function findAll(
   const cacheKey2 = JSON.stringify({ sql, args });
   
   let result = await query<PermitModel>(sql, args, { cacheKey1, cacheKey2 });
-  
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
-  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -468,11 +459,6 @@ async function create(
   const table = "permit";
   const method = "create";
   
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
-  
-  
   // 菜单
   if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
     model._menu_id = String(model._menu_id).trim();
@@ -586,10 +572,6 @@ async function updateById(
   if (!id || !model) {
     return id;
   }
-  
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
   
   // 菜单
   if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {

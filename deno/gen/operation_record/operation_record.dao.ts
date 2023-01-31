@@ -26,10 +26,6 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
-import {
-  _internals as dictSrcDao,
-} from "/src/dict_detail/dict_detail.dao.ts";
-
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -298,11 +294,6 @@ async function findAll(
   }
   
   let result = await query<Operation_RecordModel>(sql, args);
-  
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
-  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -527,11 +518,6 @@ async function create(
   const table = "operation_record";
   const method = "create";
   
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
-  
-  
   const oldModel = await findByUnique(model, options);
   if (oldModel) {
     const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
@@ -696,10 +682,6 @@ async function updateById(
   if (!id || !model) {
     return id;
   }
-  
-  const [
-  ] = await dictSrcDao.getDict([
-  ]);
   
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
