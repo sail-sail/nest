@@ -48,4 +48,16 @@ page {
   height: 100%;
   font-size: 14px;
 }
+.uni-flex-card.uni-card, .uni-flex-card>.uni-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 0;
+  overflow: hidden;
+  .uni-card__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 0;
+    overflow: hidden;
+  }
+}
 </style>
