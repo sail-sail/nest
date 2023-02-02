@@ -160,7 +160,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               un-w="full"
-              placeholder="请选择<#=column_comment#>"
+              placeholder="请选择 <#=column_comment#>"
               filterable
               default-first-option
               clearable
@@ -189,7 +189,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
               un-w="full"
-              placeholder="请选择<#=column_comment#>"
+              placeholder="请选择 <#=column_comment#>"
             ></DictSelect><#
             } else if (column.dictbiz) {
             #>
@@ -198,7 +198,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
               un-w="full"
-              placeholder="请选择<#=column_comment#>"
+              placeholder="请选择 <#=column_comment#>"
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
@@ -218,7 +218,7 @@ for (let i = 0; i < columns.length; i++) {
               value-format="YYYY-MM-DD 00:00:00"<#
                 }
               #>
-              placeholder="请选择<#=column_comment#>"
+              placeholder="请选择 <#=column_comment#>"
             ></el-date-picker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
@@ -241,7 +241,7 @@ for (let i = 0; i < columns.length; i++) {
               :step="1"
               :step-strictly="true"
               :controls="false"
-              placeholder="请输入<#=column_comment#>"
+              placeholder="请输入 <#=column_comment#>"
             ></el-input-number><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -269,14 +269,14 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :precision="<#=precision#>"
               :controls="false"
-              placeholder="请输入<#=column_comment#>"
+              placeholder="请输入 <#=column_comment#>"
             ></el-input-number><#
             } else {
             #>
             <el-input
               v-model="dialogModel.<#=column_name#>"
               un-w="full"
-              placeholder="请输入<#=column_comment#>"
+              placeholder="请输入 <#=column_comment#>"
             ></el-input><#
             }
             #>
@@ -519,7 +519,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   <#=column_name#>: [
     {
       required: true,
-      message: "请输入<#=column_comment#>",
+      message: "请输入 <#=column_comment#>",
     },
   ],<#
       } else {
@@ -527,7 +527,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   <#=column_name#>: [
     {
       required: true,
-      message: "请选择<#=column_comment#>",
+      message: "请选择 <#=column_comment#>",
     },
   ],<#
       }

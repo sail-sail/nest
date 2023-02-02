@@ -37,7 +37,7 @@
             <el-input
               v-model="dialogModel.mod"
               un-w="full"
-              placeholder="请输入模块"
+              placeholder="请输入 模块"
             ></el-input>
           </el-form-item>
         </template>
@@ -51,7 +51,7 @@
             <el-input
               v-model="dialogModel.mod_lbl"
               un-w="full"
-              placeholder="请输入模块名称"
+              placeholder="请输入 模块名称"
             ></el-input>
           </el-form-item>
         </template>
@@ -65,7 +65,7 @@
             <el-input
               v-model="dialogModel.method"
               un-w="full"
-              placeholder="请输入方法"
+              placeholder="请输入 方法"
             ></el-input>
           </el-form-item>
         </template>
@@ -79,7 +79,7 @@
             <el-input
               v-model="dialogModel.method_lbl"
               un-w="full"
-              placeholder="请输入方法名称"
+              placeholder="请输入 方法名称"
             ></el-input>
           </el-form-item>
         </template>
@@ -93,7 +93,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入操作"
+              placeholder="请输入 操作"
             ></el-input>
           </el-form-item>
         </template>
@@ -107,7 +107,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入备注"
+              placeholder="请输入 备注"
             ></el-input>
           </el-form-item>
         </template>

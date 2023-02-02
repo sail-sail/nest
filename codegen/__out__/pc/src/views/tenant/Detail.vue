@@ -38,7 +38,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入名称"
+              placeholder="请输入 名称"
             ></el-input>
           </el-form-item>
         </template>
@@ -52,7 +52,7 @@
             <el-input
               v-model="dialogModel.host"
               un-w="full"
-              placeholder="请输入域名绑定"
+              placeholder="请输入 域名绑定"
             ></el-input>
           </el-form-item>
         </template>
@@ -70,7 +70,7 @@
               type="date"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD 00:00:00"
-              placeholder="请选择到期日"
+              placeholder="请选择 到期日"
             ></el-date-picker>
           </el-form-item>
         </template>
@@ -89,7 +89,7 @@
               :step="1"
               :step-strictly="true"
               :controls="false"
-              placeholder="请输入最大用户数"
+              placeholder="请输入 最大用户数"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -105,7 +105,7 @@
               v-model="dialogModel.is_enabled"
               code="is_enabled"
               un-w="full"
-              placeholder="请选择启用"
+              placeholder="请选择 启用"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -147,7 +147,7 @@
               :step="1"
               :step-strictly="true"
               :controls="false"
-              placeholder="请输入排序"
+              placeholder="请输入 排序"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -161,7 +161,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入备注"
+              placeholder="请输入 备注"
             ></el-input>
           </el-form-item>
         </template>
@@ -280,7 +280,7 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
   lbl: [
     {
       required: true,
-      message: "请输入名称",
+      message: "请输入 名称",
     },
   ],
 });

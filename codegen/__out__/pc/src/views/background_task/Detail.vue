@@ -37,7 +37,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入名称"
+              placeholder="请输入 名称"
             ></el-input>
           </el-form-item>
         </template>
@@ -53,7 +53,7 @@
               v-model="dialogModel.state"
               code="background_task_state"
               un-w="full"
-              placeholder="请选择状态"
+              placeholder="请选择 状态"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -69,7 +69,7 @@
               v-model="dialogModel.type"
               code="background_task_type"
               un-w="full"
-              placeholder="请选择类型"
+              placeholder="请选择 类型"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -83,7 +83,7 @@
             <el-input
               v-model="dialogModel.result"
               un-w="full"
-              placeholder="请输入执行结果"
+              placeholder="请输入 执行结果"
             ></el-input>
           </el-form-item>
         </template>
@@ -97,7 +97,7 @@
             <el-input
               v-model="dialogModel.err_msg"
               un-w="full"
-              placeholder="请输入错误信息"
+              placeholder="请输入 错误信息"
             ></el-input>
           </el-form-item>
         </template>
@@ -115,7 +115,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              placeholder="请选择开始时间"
+              placeholder="请选择 开始时间"
             ></el-date-picker>
           </el-form-item>
         </template>
@@ -133,7 +133,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              placeholder="请选择结束时间"
+              placeholder="请选择 结束时间"
             ></el-date-picker>
           </el-form-item>
         </template>
@@ -147,7 +147,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入备注"
+              placeholder="请输入 备注"
             ></el-input>
           </el-form-item>
         </template>
@@ -249,19 +249,19 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
   lbl: [
     {
       required: true,
-      message: "请输入名称",
+      message: "请输入 名称",
     },
   ],
   state: [
     {
       required: true,
-      message: "请输入状态",
+      message: "请输入 状态",
     },
   ],
   type: [
     {
       required: true,
-      message: "请输入类型",
+      message: "请输入 类型",
     },
   ],
 });

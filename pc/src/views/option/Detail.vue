@@ -38,7 +38,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入名称"
+              placeholder="请输入 名称"
             ></el-input>
           </el-form-item>
         </template>
@@ -52,7 +52,7 @@
             <el-input
               v-model="dialogModel.ky"
               un-w="full"
-              placeholder="请输入键"
+              placeholder="请输入 键"
             ></el-input>
           </el-form-item>
         </template>
@@ -66,7 +66,7 @@
             <el-input
               v-model="dialogModel.val"
               un-w="full"
-              placeholder="请输入值"
+              placeholder="请输入 值"
             ></el-input>
           </el-form-item>
         </template>
@@ -82,7 +82,7 @@
               v-model="dialogModel.is_enabled"
               code="is_enabled"
               un-w="full"
-              placeholder="请选择启用"
+              placeholder="请选择 启用"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -96,7 +96,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入备注"
+              placeholder="请输入 备注"
             ></el-input>
           </el-form-item>
         </template>
@@ -211,13 +211,13 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
   ky: [
     {
       required: true,
-      message: "请输入键",
+      message: "请输入 键",
     },
   ],
   is_enabled: [
     {
       required: true,
-      message: "请输入启用",
+      message: "请输入 启用",
     },
   ],
 });
