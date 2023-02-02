@@ -321,6 +321,24 @@ export async function findAllDept(
   return result;
 }
 
+export async function getDeptList() {
+  const data = await findAllDept(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -346,6 +364,24 @@ export async function findAllUsr(
   }, opt);
   const result = data.findAllUsr;
   return result;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
 }
 
 /**

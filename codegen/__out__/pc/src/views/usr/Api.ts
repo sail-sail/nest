@@ -320,6 +320,24 @@ export async function findAllDept(
   return result;
 }
 
+export async function getDeptList() {
+  const data = await findAllDept(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllRole(
   search?: RoleSearch,
   page?: PageInput,
@@ -345,6 +363,24 @@ export async function findAllRole(
   }, opt);
   const result = data.findAllRole;
   return result;
+}
+
+export async function getRoleList() {
+  const data = await findAllRole(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
 }
 
 /**

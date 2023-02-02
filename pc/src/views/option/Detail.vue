@@ -222,15 +222,6 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
   ],
 });
 
-/** 下拉框列表 */
-
-/** 获取下拉框列表 */
-async function getSelectListEfc() {
-  [
-  ] = await Promise.all([
-  ]);
-}
-
 type OnCloseResolveType = {
   type: "ok" | "cancel";
   changedIds: string[];
@@ -279,7 +270,6 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -314,7 +304,6 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;

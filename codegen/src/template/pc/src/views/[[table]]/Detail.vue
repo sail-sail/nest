@@ -82,6 +82,9 @@ for (let i = 0; i < columns.length; i++) {
           const foreignKey = column.foreignKey;
           const foreignTable = foreignKey && foreignKey.table;
           const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+          const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("_");
           let vIf = [ ];
           if (column.noAdd) {
             vIf.push("dialogAction !== 'add'");
@@ -129,29 +132,28 @@ for (let i = 0; i < columns.length; i++) {
             ></UploadImage><#
             } else if (foreignKey) {
             #>
-            <el-select-v2<#
+            <CustomSelect<#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
               v-model="dialogModel.<#=column_name#>"
-              :height="300"<#
+              :method="get<#=foreignTableUp#>List"
+              :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+                return {
+                  label: item.<#=foreignKey.lbl#>,
+                  value: item.<#=foreignKey.column#>,
+                };
+              })"
+              un-w="full"
+              placeholder="请选择 <#=column_comment#>"<#
               if (foreignKey.multiple) {
               #>
-              multiple
-              collapse-tags
-              collapse-tags-tooltip<#
+              multiple<#
               }
               #>
-              un-w="full"
-              placeholder="请选择<#=column_comment#>"
-              :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2><#
+            ></CustomSelect><#
             } else if (selectList.length > 0) {
             #>
             <el-select
@@ -438,7 +440,7 @@ import {<#
   #><#
     if (foreignKey) {
   #>
-  findAll<#=foreignTableUp#>,<#
+  get<#=foreignTableUp#>List,<#
     }
   }
   #>
@@ -536,108 +538,6 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
   #>
 });
 
-/** 下拉框列表 */<#
-const foreignTableArr3 = [];
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") continue;
-  const data_type = column.DATA_TYPE;
-  const column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  if (foreignTableArr3.includes(foreignTable)) continue;
-  foreignTableArr3.push(foreignTable);
-  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
-#><#
-  if (foreignKey) {
-#>
-let <#=foreignTable#>s = $ref<<#=Foreign_Table_Up#>Model[]>([ ]);<#
-  }
-}
-#>
-
-/** 获取下拉框列表 */
-async function getSelectListEfc() {
-  [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const defaultSort = foreignKey && foreignKey.defaultSort;
-      if (column.noAdd && column.noEdit) {
-        continue;
-      }
-    #><#
-      if (foreignKey) {
-    #>
-    <#=foreignTable#>s,<#
-      }
-    }
-    #>
-  ] = await Promise.all([<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    const data_type = column.DATA_TYPE;
-    const column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const defaultSort = foreignKey && foreignKey.defaultSort;
-    if (column.noAdd && column.noEdit) {
-      continue;
-    }
-  #><#
-    if (foreignKey) {
-  #>
-    findAll<#=foreignTableUp#>(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "<#=defaultSort && defaultSort.prop || ""#>",
-          order: "<#=defaultSort && defaultSort.order || "ascending"#>",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),<#
-    }
-  }
-  #>
-  ]);
-}
-
 type OnCloseResolveType = {
   type: "ok" | "cancel";
   changedIds: string[];
@@ -726,7 +626,6 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -776,7 +675,6 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;

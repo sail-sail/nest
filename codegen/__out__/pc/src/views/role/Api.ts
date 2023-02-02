@@ -274,6 +274,24 @@ export async function findAllMenu(
   return result;
 }
 
+export async function getMenuList() {
+  const data = await findAllMenu(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  * @export exportExcel

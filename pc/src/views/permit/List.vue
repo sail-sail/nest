@@ -643,10 +643,6 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
-/** 获取下拉框列表 */
-async function useSelectList() {
-}
-
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
   if (isCount) {
@@ -888,7 +884,6 @@ async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
-      useSelectList(),
     ]);
   }
   inited = true;

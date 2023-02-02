@@ -311,6 +311,24 @@ export async function findAllDict(
   return result;
 }
 
+export async function getDictList() {
+  const data = await findAllDict(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  * @export exportExcel

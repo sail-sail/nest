@@ -6,6 +6,10 @@
   collapse-tags
   collapse-tags-tooltip
   default-first-option
+  :height="props.height"
+  :remote="props.pinyinFilterable"
+  :remote-method="filterMethod"
+  @visible-change="handleVisibleChange"
   v-bind="$attrs"
   @keyup.enter.stop
   :loading="!inited"
@@ -22,6 +26,8 @@
 </template>
 
 <script lang="ts" setup>
+import { pinyin } from "pinyin-pro";
+
 import {
   type OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
@@ -31,6 +37,7 @@ export type DictModel = {
   lbl: string;
   type: string;
   val: string;
+  __pinyin_label?: string;
 };
 
 type OptionsMap = (item: DictModel) => OptionType;
@@ -39,6 +46,8 @@ const props = withDefaults(
   defineProps<{
     code: string;
     optionsMap?: OptionsMap;
+    pinyinFilterable?: boolean;
+    height?: number;
   }>(),
   {
     optionsMap: function(item: DictModel) {
@@ -53,14 +62,40 @@ const props = withDefaults(
         value: item.val,
       };
     },
+    pinyinFilterable: true,
+    height: 300,
   },
 );
 
 let inited = $ref(false);
 
-let options4SelectV2 = $computed(() => dictModels.map(props.optionsMap));
+let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
 let dictModels = $ref<DictModel[]>([ ]);
+
+function filterMethod(value: string) {
+  options4SelectV2 = dictModels.map((item) => {
+    const item2 = props.optionsMap(item);
+    item2.__pinyin_label = item.__pinyin_label;
+    return item2;
+  });
+  if (isEmpty(value)) {
+    return;
+  }
+  options4SelectV2 = options4SelectV2.filter((item) => {
+    return item.label.includes(value)
+    || (item.__pinyin_label && item.__pinyin_label.includes(value));
+  });
+}
+
+function handleVisibleChange(visible: boolean) {
+  if (!props.pinyinFilterable) {
+    return;
+  }
+  if (visible) {
+    filterMethod("");
+  }
+}
 
 async function refreshEfc() {
   const code = props.code;
@@ -71,6 +106,15 @@ async function refreshEfc() {
   }
   inited = false;
   [ dictModels ] = await getDict([ code ]);
+  options4SelectV2 = dictModels.map(props.optionsMap);
+  if (props.pinyinFilterable) {
+    for (let i = 0; i < options4SelectV2.length; i++) {
+      const item = options4SelectV2[i];
+      if (item.label) {
+        dictModels[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
+      }
+    }
+  }
   inited = true;
 }
 

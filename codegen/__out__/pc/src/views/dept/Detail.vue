@@ -35,17 +35,18 @@
             prop="parent_id"
             un-h="full"
           >
-            <el-select-v2
+            <CustomSelect
               v-model="dialogModel.parent_id"
-              :height="300"
+              :method="getDeptList"
+              :options-map="((item: DeptModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              placeholder="请选择父部门"
-              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
+              placeholder="请选择 父部门"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -195,7 +196,7 @@ import {
 } from "#/types";
 
 import {
-  findAllDept,
+  getDeptList,
 } from "./Api";
 
 const emit = defineEmits<
@@ -230,32 +231,6 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
     },
   ],
 });
-
-/** 下拉框列表 */
-let depts = $ref<DeptModel[]>([ ]);
-let usrs = $ref<UsrModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function getSelectListEfc() {
-  [
-    depts,
-  ] = await Promise.all([
-    findAllDept(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -307,7 +282,6 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -345,7 +319,6 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;

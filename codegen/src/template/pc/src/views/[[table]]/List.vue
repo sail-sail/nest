@@ -55,6 +55,9 @@ const hasAtt = columns.some((item) => item.isAtt);
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("_");
       #><#
         if (search) {
       #>
@@ -66,23 +69,22 @@ const hasAtt = columns.some((item) => item.isAtt);
       <template v-if="builtInSearch?.<#=column_name#> == null">
         <label><#=column_comment#></label>
         <el-form-item prop="<#=column_name#>">
-          <el-select-v2
+          <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
-            :height="300"
             :model-value="search.<#=column_name#>"
-            placeholder="请选择<#=column_comment#>"
-            :options="<#=foreignTable#>s.map((item) => ({ value: item.<#=foreignKey.column#>, label: item.<#=foreignKey.lbl#> }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
             @update:model-value="search.<#=column_name#> = $event"
+            :method="get<#=foreignTableUp#>List"
+            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+              return {
+                label: item.<#=foreignKey.lbl#>,
+                value: item.<#=foreignKey.column#>,
+              };
+            })"
+            placeholder="请选择 <#=column_comment#>"
+            multiple
             @change="searchClk"
-          ></el-select-v2>
+          ></CustomSelect>
         </el-form-item>
       </template><#
       } else if (column.dict) {
@@ -94,10 +96,10 @@ const hasAtt = columns.some((item) => item.isAtt);
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
             :model-value="search.<#=column_name#>"
+            @update:model-value="search.<#=column_name#> = $event"
             code="<#=column.dict#>"
             placeholder="请选择 <#=column_comment#>"
             multiple
-            @update:model-value="search.<#=column_name#> = $event"
             @change="searchClk"
           ></DictSelect>
         </el-form-item>
@@ -111,10 +113,10 @@ const hasAtt = columns.some((item) => item.isAtt);
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
             :model-value="search.<#=column_name#>"
+            @update:model-value="search.<#=column_name#> = $event"
             code="<#=column.dictbiz#>"
             placeholder="请选择 <#=column_comment#>"
             multiple
-            @update:model-value="search.<#=column_name#> = $event"
             @change="searchClk"
           ></DictbizSelect>
         </el-form-item>
@@ -940,7 +942,7 @@ import {<#
     const foreignTable = foreignTableArr[i];
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   #>
-  findAll<#=foreignTableUp#>,<#
+  get<#=foreignTableUp#>List,<#
   }
   #>
 } from "./Api";<#
@@ -1520,83 +1522,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();<#
-let foreignTableTmpArr = [ ];
-for (let i = 0; i < foreignTableArr.length; i++) {
-  const column = columns.find((item) => {
-    const foreignKey = item.foreignKey;
-    if (!foreignKey) return false;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (!foreignTable) return false;
-    return foreignTableArr[i] === foreignTable;
-  });
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") continue;
-  const data_type = column.DATA_TYPE;
-  const column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
-  const foreignKey = column.foreignKey;
-  const foreignTable = foreignKey && foreignKey.table;
-  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  if (foreignTableTmpArr.includes(foreignTable)) continue;
-  foreignTableTmpArr.push(foreignTable);
-  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-    return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
-#><#
-  if (foreignKey) {
-#>
-
-let <#=foreignTable#>s = $ref<<#=Foreign_Table_Up#>Model[]>([ ]);<#
-  }
-}
-#>
-
-/** 获取下拉框列表 */
-async function useSelectList() {<#
-  if (foreignTableArr.length > 0) {
-  #>
-  [<#
-  for (let i = 0; i < foreignTableArr.length; i++) {
-    const foreignTable = foreignTableArr[i];
-    const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
-    const defaultSort = foreignKey && foreignKey.defaultSort;
-  #>
-    <#=foreignTable#>s,<#
-  }
-  #>
-  ] = await Promise.all([<#
-  for (let i = 0; i < foreignTableArr.length; i++) {
-    const foreignTable = foreignTableArr[i];
-    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const foreignKey = foreignKeyArr.find((item) => item && item.table === foreignTable);
-    const defaultSort = foreignKey && foreignKey.defaultSort;
-  #>
-    findAll<#=foreignTableUp#>(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "<#=defaultSort && defaultSort.prop || ""#>",
-          order: "<#=defaultSort && defaultSort.order || "ascending"#>",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),<#
-  }
-  #>
-  ]);<#
-  }
-  #>
-}
+let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
@@ -1969,8 +1895,7 @@ async function openForeignTabs(id: string, title: string) {
 async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
-      searchClk(),
-      useSelectList(),<#
+      searchClk(),<#
       if (hasSummary) {
       #>
       dataSummary(),<#

@@ -231,6 +231,24 @@ export async function findAllUsr(
   return result;
 }
 
+export async function getUsrList() {
+  const data = await findAllUsr(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  * @export exportExcel

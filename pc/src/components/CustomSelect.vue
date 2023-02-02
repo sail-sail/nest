@@ -32,34 +32,29 @@ import {
   type OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
-export type DictModel = {
-  id: string;
-  lbl: string;
-  type: string;
-  val: string;
-  __pinyin_label?: string;
-};
+const usrStore = useUsrStore();
 
-type OptionsMap = (item: DictModel) => OptionType;
+let inited = $ref(false);
+
+type OptionsMap = (item: any) => OptionType;
+
+let data = $ref<any[]>([ ]);
+
+let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
 const props = withDefaults(
   defineProps<{
-    code: string;
+    method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
   }>(),
   {
-    optionsMap: function(item: DictModel) {
-      if ([ "number", "time", "boolean" ].includes(item.type)) {
-        return {
-          label: item.lbl,
-          value: Number(item.val),
-        };
-      }
+    optionsMap: function(item: any) {
+      const item2 = item as { lbl: string; id: string; };
       return {
-        label: item.lbl,
-        value: item.val,
+        label: item2.lbl,
+        value: item2.id,
       };
     },
     pinyinFilterable: true,
@@ -67,16 +62,10 @@ const props = withDefaults(
   },
 );
 
-let inited = $ref(false);
-
-let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
-
-let dictModels = $ref<DictModel[]>([ ]);
-
 function filterMethod(value: string) {
-  options4SelectV2 = dictModels.map((item) => {
+  options4SelectV2 = data.map((item) => {
     const item2 = props.optionsMap(item);
-    item2.__pinyin_label = item.__pinyin_label;
+    item2.__pinyin_label = (item as any).__pinyin_label;
     return item2;
   });
   if (isEmpty(value)) {
@@ -98,33 +87,26 @@ function handleVisibleChange(visible: boolean) {
 }
 
 async function refreshEfc() {
-  const code = props.code;
-  if (!code) {
+  const method = props.method;
+  if (!method) {
     inited = false;
-    dictModels = [ ];
     return;
   }
   inited = false;
-  [ dictModels ] = await getDictbiz([ code ]);
-  options4SelectV2 = dictModels.map(props.optionsMap);
+  data = await method();
+  options4SelectV2 = data.map(props.optionsMap);
   if (props.pinyinFilterable) {
     for (let i = 0; i < options4SelectV2.length; i++) {
       const item = options4SelectV2[i];
       if (item.label) {
-        dictModels[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
+        (data as any)[i].__pinyin_label = pinyin(item.label, { pattern: "first", toneType: "none", type: "array" }).join("");
       }
     }
   }
   inited = true;
 }
 
-watch(
-  () => props.code,
-  async () => {
-    await refreshEfc();
-  },
-  {
-    immediate: true,
-  },
-);
+refreshEfc();
+
+usrStore.onLogin(refreshEfc);
 </script>

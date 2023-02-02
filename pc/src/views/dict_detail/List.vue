@@ -28,23 +28,22 @@
       <template v-if="builtInSearch?.dict_id == null">
         <label>系统字典</label>
         <el-form-item prop="dict_id">
-          <el-select-v2
+          <CustomSelect
             :set="search.dict_id = search.dict_id || [ ]"
             un-w="full"
-            :height="300"
             :model-value="search.dict_id"
-            placeholder="请选择系统字典"
-            :options="dicts.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
             @update:model-value="search.dict_id = $event"
+            :method="getDictList"
+            :options-map="((item: DictModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            placeholder="请选择 系统字典"
+            multiple
             @change="searchClk"
-          ></el-select-v2>
+          ></CustomSelect>
         </el-form-item>
       </template>
       
@@ -493,7 +492,7 @@ import {
 } from "#/types";
 
 import {
-  findAllDict,
+  getDictList,
 } from "./Api";
 
 defineOptions({
@@ -779,30 +778,6 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
-let dicts = $ref<DictModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function useSelectList() {
-  [
-    dicts,
-  ] = await Promise.all([
-    findAllDict(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
-
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
   if (isCount) {
@@ -1057,7 +1032,6 @@ async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
-      useSelectList(),
     ]);
   }
   inited = true;

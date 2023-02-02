@@ -45,10 +45,10 @@
             :set="search.state = search.state || [ ]"
             un-w="full"
             :model-value="search.state"
+            @update:model-value="search.state = $event"
             code="background_task_state"
             placeholder="请选择 状态"
             multiple
-            @update:model-value="search.state = $event"
             @change="searchClk"
           ></DictSelect>
         </el-form-item>
@@ -61,10 +61,10 @@
             :set="search.type = search.type || [ ]"
             un-w="full"
             :model-value="search.type"
+            @update:model-value="search.type = $event"
             code="background_task_type"
             placeholder="请选择 类型"
             multiple
-            @update:model-value="search.type = $event"
             @change="searchClk"
           ></DictSelect>
         </el-form-item>
@@ -723,10 +723,6 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
-/** 获取下拉框列表 */
-async function useSelectList() {
-}
-
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
   if (isCount) {
@@ -859,7 +855,6 @@ async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
-      useSelectList(),
     ]);
   }
   inited = true;

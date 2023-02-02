@@ -32,10 +32,10 @@
             :set="search.type = search.type || [ ]"
             un-w="full"
             :model-value="search.type"
+            @update:model-value="search.type = $event"
             code="menu_type"
             placeholder="请选择 类型"
             multiple
-            @update:model-value="search.type = $event"
             @change="searchClk"
           ></DictSelect>
         </el-form-item>
@@ -44,23 +44,22 @@
       <template v-if="builtInSearch?.menu_id == null">
         <label>父菜单</label>
         <el-form-item prop="menu_id">
-          <el-select-v2
+          <CustomSelect
             :set="search.menu_id = search.menu_id || [ ]"
             un-w="full"
-            :height="300"
             :model-value="search.menu_id"
-            placeholder="请选择父菜单"
-            :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
             @update:model-value="search.menu_id = $event"
+            :method="getMenuList"
+            :options-map="((item: MenuModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            placeholder="请选择 父菜单"
+            multiple
             @change="searchClk"
-          ></el-select-v2>
+          ></CustomSelect>
         </el-form-item>
       </template>
       
@@ -489,7 +488,7 @@ import {
 } from "#/types";
 
 import {
-  findAllMenu,
+  getMenuList,
 } from "./Api";
 
 defineOptions({
@@ -785,30 +784,6 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
-let menus = $ref<MenuModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function useSelectList() {
-  [
-    menus,
-  ] = await Promise.all([
-    findAllMenu(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
-
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
   if (isCount) {
@@ -1050,7 +1025,6 @@ async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
-      useSelectList(),
     ]);
   }
   inited = true;

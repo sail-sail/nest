@@ -51,17 +51,18 @@
             prop="menu_id"
             un-h="full"
           >
-            <el-select-v2
+            <CustomSelect
               v-model="dialogModel.menu_id"
-              :height="300"
+              :method="getMenuList"
+              :options-map="((item: MenuModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              placeholder="请选择父菜单"
-              :options="menus.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
+              placeholder="请选择 父菜单"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -238,7 +239,7 @@ import {
 } from "#/types";
 
 import {
-  findAllMenu,
+  getMenuList,
 } from "./Api";
 
 const emit = defineEmits<
@@ -273,31 +274,6 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
     },
   ],
 });
-
-/** 下拉框列表 */
-let menus = $ref<MenuModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function getSelectListEfc() {
-  [
-    menus,
-  ] = await Promise.all([
-    findAllMenu(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -349,7 +325,6 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -387,7 +362,6 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;

@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     AttDialog: typeof import('./../components/AttDialog.vue')['default']
     copy: typeof import('./../components/DictSelect copy.vue')['default']
     CustomDialog: typeof import('./../components/CustomDialog.vue')['default']
+    CustomSelect: typeof import('./../components/CustomSelect.vue')['default']
     DictbizSelect: typeof import('./../components/DictbizSelect.vue')['default']
     DictSelect: typeof import('./../components/DictSelect.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']

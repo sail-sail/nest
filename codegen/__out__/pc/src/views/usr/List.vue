@@ -54,46 +54,44 @@
       <template v-if="builtInSearch?.dept_ids == null">
         <label>拥有部门</label>
         <el-form-item prop="dept_ids">
-          <el-select-v2
+          <CustomSelect
             :set="search.dept_ids = search.dept_ids || [ ]"
             un-w="full"
-            :height="300"
             :model-value="search.dept_ids"
-            placeholder="请选择拥有部门"
-            :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
             @update:model-value="search.dept_ids = $event"
+            :method="getDeptList"
+            :options-map="((item: DeptModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            placeholder="请选择 拥有部门"
+            multiple
             @change="searchClk"
-          ></el-select-v2>
+          ></CustomSelect>
         </el-form-item>
       </template>
       
       <template v-if="builtInSearch?.role_ids == null">
         <label>拥有角色</label>
         <el-form-item prop="role_ids">
-          <el-select-v2
+          <CustomSelect
             :set="search.role_ids = search.role_ids || [ ]"
             un-w="full"
-            :height="300"
             :model-value="search.role_ids"
-            placeholder="请选择拥有角色"
-            :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
-            filterable
-            clearable
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            :loading="!inited"
-            @keyup.enter.stop
             @update:model-value="search.role_ids = $event"
+            :method="getRoleList"
+            :options-map="((item: RoleModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            placeholder="请选择 拥有角色"
+            multiple
             @change="searchClk"
-          ></el-select-v2>
+          ></CustomSelect>
         </el-form-item>
       </template>
       
@@ -536,8 +534,8 @@ import {
 } from "#/types";
 
 import {
-  findAllDept,
-  findAllRole,
+  getDeptList,
+  getRoleList,
 } from "./Api";
 
 defineOptions({
@@ -841,47 +839,6 @@ let {
 
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
-let depts = $ref<DeptModel[]>([ ]);
-
-let roles = $ref<RoleModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function useSelectList() {
-  [
-    depts,
-    roles,
-  ] = await Promise.all([
-    findAllDept(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllRole(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
-
 /** 刷新表格 */
 async function dataGrid(isCount = false) {
   if (isCount) {
@@ -1136,7 +1093,6 @@ async function initFrame() {
   if (usrStore.authorization) {
     await Promise.all([
       searchClk(),
-      useSelectList(),
     ]);
   }
   inited = true;

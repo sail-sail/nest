@@ -77,17 +77,18 @@
             prop="default_dept_id"
             un-h="full"
           >
-            <el-select-v2
+            <CustomSelect
               v-model="dialogModel.default_dept_id"
-              :height="300"
+              :method="getDeptList"
+              :options-map="((item: DeptModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              placeholder="请选择默认部门"
-              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
+              placeholder="请选择 默认部门"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -127,21 +128,20 @@
             prop="dept_ids"
             un-h="full"
           >
-            <el-select-v2
+            <CustomSelect
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
               v-model="dialogModel.dept_ids"
-              :height="300"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
+              :method="getDeptList"
+              :options-map="((item: DeptModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              placeholder="请选择拥有部门"
-              :options="depts.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
+              placeholder="请选择 拥有部门"
+              multiple
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -151,21 +151,20 @@
             prop="role_ids"
             un-h="full"
           >
-            <el-select-v2
+            <CustomSelect
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               v-model="dialogModel.role_ids"
-              :height="300"
-              multiple
-              collapse-tags
-              collapse-tags-tooltip
+              :method="getRoleList"
+              :options-map="((item: RoleModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              placeholder="请选择拥有角色"
-              :options="roles.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
+              placeholder="请选择 拥有角色"
+              multiple
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -251,8 +250,8 @@ import {
 } from "#/types";
 
 import {
-  findAllDept,
-  findAllRole,
+  getDeptList,
+  getRoleList,
 } from "./Api";
 
 const emit = defineEmits<
@@ -301,62 +300,6 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
     },
   ],
 });
-
-/** 下拉框列表 */
-let depts = $ref<DeptModel[]>([ ]);
-let roles = $ref<RoleModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function getSelectListEfc() {
-  [
-    depts,
-    depts,
-    roles,
-  ] = await Promise.all([
-    findAllDept(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllDept(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-    findAllRole(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -407,7 +350,6 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -442,7 +384,6 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;

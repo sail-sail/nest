@@ -460,6 +460,7 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("_");
+  const defaultSort = foreignKey && foreignKey.defaultSort;
 #>
 
 export async function findAll<#=foreignTableUp#>(
@@ -487,6 +488,24 @@ export async function findAll<#=foreignTableUp#>(
   }, opt);
   const result = data.findAll<#=foreignTableUp#>;
   return result;
+}
+
+export async function get<#=foreignTableUp#>List() {
+  const data = await findAll<#=foreignTableUp#>(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "<#=defaultSort && defaultSort.prop || ""#>",
+        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
 }<#
 }
 #>

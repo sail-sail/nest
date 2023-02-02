@@ -35,17 +35,18 @@
             prop="dictbiz_id"
             un-h="full"
           >
-            <el-select-v2
+            <CustomSelect
               v-model="dialogModel.dictbiz_id"
-              :height="300"
+              :method="getDictbizList"
+              :options-map="((item: DictbizModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              placeholder="请选择业务字典"
-              :options="dictbizs.map((item) => ({ value: item.id, label: item.lbl }))"
-              filterable
-              clearable
-              :loading="!inited"
-              @keyup.enter.stop
-            ></el-select-v2>
+              placeholder="请选择 业务字典"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -208,7 +209,7 @@ import {
 } from "#/types";
 
 import {
-  findAllDictbiz,
+  getDictbizList,
 } from "./Api";
 
 const emit = defineEmits<
@@ -255,31 +256,6 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
     },
   ],
 });
-
-/** 下拉框列表 */
-let dictbizs = $ref<DictbizModel[]>([ ]);
-
-/** 获取下拉框列表 */
-async function getSelectListEfc() {
-  [
-    dictbizs,
-  ] = await Promise.all([
-    findAllDictbiz(
-      undefined,
-      {
-      },
-      [
-        {
-          prop: "order_by",
-          order: "ascending",
-        },
-      ],
-      {
-        notLoading: true,
-      },
-    ),
-  ]);
-}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -331,7 +307,6 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  const selectListPrm = getSelectListEfc();
   if (dialogAction === "copy" && !model?.id) {
     dialogAction = "add";
   }
@@ -369,7 +344,6 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  await selectListPrm;
   formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;
