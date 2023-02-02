@@ -96,11 +96,6 @@ html,body {
   box-sizing: border-box;
   text-rendering: optimizeLegibility;
 }
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
 #app {
   flex: 1 0 0;
   overflow: hidden;
