@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AttDialog: typeof import('./../components/AttDialog.vue')['default']
-    copy: typeof import('./../components/DictSelect copy.vue')['default']
     CustomDialog: typeof import('./../components/CustomDialog.vue')['default']
     CustomSelect: typeof import('./../components/CustomSelect.vue')['default']
     DictbizSelect: typeof import('./../components/DictbizSelect.vue')['default']
