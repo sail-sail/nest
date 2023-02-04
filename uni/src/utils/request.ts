@@ -302,7 +302,7 @@ export async function request(
 
 async function code2Session(code: string) {
   const appbaseInfo = uni.getAppBaseInfo();
-  let appid = appbaseInfo.host?.appId;
+  const appid = (appbaseInfo as any).host?.appId;
   await request({
     url: `wx_usr/code2Session`,
     method: "POST",
@@ -310,7 +310,7 @@ async function code2Session(code: string) {
       appid,
       code,
     },
-    showErrMsg: false,
+    showErrMsg: true,
     notLogin: true,
   });
 }

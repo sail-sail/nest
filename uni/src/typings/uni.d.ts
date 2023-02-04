@@ -9621,7 +9621,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=showmodal](http://uniapp.dcloud.io/api/ui/prompt?id=showmodal)
      */
-    showModal(options: UniNamespace.ShowModalOptions): void;
+    showModal(options: UniNamespace.ShowModalOptions): Promise<UniNamespace.ShowModalRes>;
     /**
      * 显示操作菜单
      *
