@@ -27,7 +27,7 @@
     un-overflow-hidden
   >
     <div
-      un-p="y-2.5"
+      un-p="y-2.5 x-4"
       un-flex
       un-justify-center
       un-items-center
@@ -35,6 +35,7 @@
       
       <el-button
         v-if="!dialogModel.readonly && urlList.length > 0"
+        plain
         type="primary"
         @click="uploadClk"
       >
