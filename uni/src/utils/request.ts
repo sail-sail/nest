@@ -300,9 +300,13 @@ export async function request(
   return data.data;
 }
 
-async function code2Session(code: string) {
+export function getAppid() {
   const appbaseInfo = uni.getAppBaseInfo();
-  const appid = (appbaseInfo as any).host?.appId;
+  return (appbaseInfo as any).host?.appId;
+}
+
+async function code2Session(code: string) {
+  const appid = getAppid();
   await request({
     url: `wx_usr/code2Session`,
     method: "POST",

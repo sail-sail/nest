@@ -20,6 +20,7 @@
     "sheetjs": "https://cdn.sheetjs.com/xlsx-latest/package/xlsx.mjs",
     "sheetjs_cptable": "https://cdn.sheetjs.com/xlsx-latest/package/dist/cpexcel.full.mjs",
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
-    "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts"
+    "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts",
+    "wechatpay-node-v3": "https://esm.sh/wechatpay-node-v3@2.1.0"
   }
 }
