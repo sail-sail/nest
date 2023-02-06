@@ -17,9 +17,9 @@ if (!argv2) {
 }
 let fileArr = argv2.split(",");
 fileArr = fileArr.filter((file) => !isEmpty(file));
-fileArr.forEach((file) => {
+fileArr.forEach((file, i) => {
   if (!file.endsWith(".sql.csv")) {
-    file += ".sql.csv";
+    fileArr[i] += ".sql.csv";
   }
 });
 
