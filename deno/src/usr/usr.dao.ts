@@ -85,6 +85,7 @@ async function getTenant_idByWx_usr() {
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
+      t.id,
       t.tenant_id
     from wx_usr t
     where

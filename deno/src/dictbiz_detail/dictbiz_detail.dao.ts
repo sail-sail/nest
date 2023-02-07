@@ -37,6 +37,7 @@ async function getDictbiz(
     select
       t.id,
       dictbiz.code,
+      dictbiz.type,
       t.lbl,
       t.val
     from

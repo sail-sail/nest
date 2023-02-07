@@ -461,6 +461,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 120,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -547,6 +548,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 120,
       },
       {
         COLUMN_NAME: "is_locked",

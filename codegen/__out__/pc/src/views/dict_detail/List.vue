@@ -750,6 +750,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "备注",
     prop: "rem",
+    width: 120,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
