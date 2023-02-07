@@ -281,8 +281,8 @@ async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-        ,_create_usr_id.lbl _create_usr_id
-        ,_update_usr_id.lbl _update_usr_id
+      ,_create_usr_id.lbl _create_usr_id
+      ,_update_usr_id.lbl _update_usr_id
     from
       ${ getFromQuery() }
     where

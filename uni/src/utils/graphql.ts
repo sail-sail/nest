@@ -252,6 +252,7 @@ export async function _gqlQuery(
       mask: true,
       position: "center",
     });
+    throw new Error(errMsg, { cause: errors });
   }
   return data;
 }

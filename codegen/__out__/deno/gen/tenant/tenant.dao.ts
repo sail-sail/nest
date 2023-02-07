@@ -245,8 +245,8 @@ async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-        ,max(menu_ids) menu_ids
-        ,max(_menu_ids) _menu_ids
+      ,max(menu_ids) menu_ids
+      ,max(_menu_ids) _menu_ids
     from
       ${ getFromQuery() }
     where

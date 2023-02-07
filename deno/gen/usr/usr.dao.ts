@@ -300,11 +300,11 @@ async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-        ,_default_dept_id.lbl _default_dept_id
-        ,max(dept_ids) dept_ids
-        ,max(_dept_ids) _dept_ids
-        ,max(role_ids) role_ids
-        ,max(_role_ids) _role_ids
+      ,_default_dept_id.lbl _default_dept_id
+      ,max(dept_ids) dept_ids
+      ,max(_dept_ids) _dept_ids
+      ,max(role_ids) role_ids
+      ,max(_role_ids) _role_ids
     from
       ${ getFromQuery() }
     where

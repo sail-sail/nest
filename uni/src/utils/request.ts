@@ -302,7 +302,8 @@ export async function request(
 
 export function getAppid() {
   const appbaseInfo = uni.getAppBaseInfo();
-  return (appbaseInfo as any).host?.appId;
+  let appid = (appbaseInfo as any).host?.appId;
+  return appid;
 }
 
 async function code2Session(code: string) {

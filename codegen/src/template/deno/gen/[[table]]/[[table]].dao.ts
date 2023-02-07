@@ -503,11 +503,11 @@ async function findAll(
       #><#
         if (foreignKey && foreignKey.type === "many2many") {
       #>
-        ,max(<#=column_name#>) <#=column_name#>
-        ,max(_<#=column_name#>) _<#=column_name#><#
+      ,max(<#=column_name#>) <#=column_name#>
+      ,max(_<#=column_name#>) _<#=column_name#><#
       } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
       #>
-        ,_<#=column_name#>.<#=foreignKey.lbl#> _<#=column_name#><#
+      ,_<#=column_name#>.<#=foreignKey.lbl#> _<#=column_name#><#
         }
       #><#
       }

@@ -226,7 +226,7 @@ async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-        ,_dict_id.lbl _dict_id
+      ,_dict_id.lbl _dict_id
     from
       ${ getFromQuery() }
     where

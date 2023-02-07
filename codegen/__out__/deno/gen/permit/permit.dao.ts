@@ -193,7 +193,7 @@ async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-        ,_menu_id.lbl _menu_id
+      ,_menu_id.lbl _menu_id
     from
       ${ getFromQuery() }
     where
