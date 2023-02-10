@@ -299,6 +299,7 @@
         @select="selectChg"
         @select-all="selectChg"
         @row-click="rowClk"
+        @row-dblclick="openEdit"
         @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
