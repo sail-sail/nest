@@ -422,8 +422,10 @@ async function findOne(
     pgSize: 1,
   };
   const result = await findAll(search, page, undefined, options);
-  const model = result[0] as RoleModel | undefined;
-  return model;
+  if (result && result.length > 0) {
+    return result[0];
+  }
+  return;
 }
 
 /**
