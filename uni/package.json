@@ -73,7 +73,7 @@
     "@unocss/preset-attributify": "0.49.4",
     "@vue/runtime-core": "3.2.47",
     "@vue/runtime-dom": "3.2.47",
-    "eslint": "8.33.0",
+    "eslint": "8.34.0",
     "eslint-plugin-vue": "9.9.0",
     "husky": "8.0.3",
     "less": "4.1.3",
