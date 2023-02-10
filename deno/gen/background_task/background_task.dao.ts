@@ -287,7 +287,10 @@ async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  let result = await query<Background_TaskModel>(sql, args);
+  type Result = Background_TaskModel & {
+    tenant_id: string;
+  };
+  let result = await query<Result>(sql, args);
   
   const [
     stateDict, // 状态
@@ -527,17 +530,14 @@ async function existById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} 
  */
 async function create(
   model: PartialNull<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
-): Promise<string | undefined> {
-  if (!model) {
-    return;
-  }
+): Promise<string> {
   const table = "background_task";
   const method = "create";
   

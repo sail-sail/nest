@@ -227,7 +227,9 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await query<PermitModel>(sql, args, { cacheKey1, cacheKey2 });
+  type Result = PermitModel & {
+  };
+  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -445,17 +447,14 @@ async function existById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} 
  */
 async function create(
   model: PartialNull<PermitModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
-): Promise<string | undefined> {
-  if (!model) {
-    return;
-  }
+): Promise<string> {
   const table = "permit";
   const method = "create";
   

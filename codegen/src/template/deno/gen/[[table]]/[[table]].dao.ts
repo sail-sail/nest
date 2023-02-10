@@ -577,7 +577,19 @@ async function findAll(
   }
   #>
   
-  let result = await query<<#=Table_Up#>Model>(sql, args<#
+  type Result = <#=Table_Up#>Model & {<#
+    if (hasTenant_id) {
+    #>
+    tenant_id: string;<#
+    }
+    #><#
+    if (hasDeptId) {
+    #>
+    dept_id: string;<#
+    }
+    #>
+  };
+  let result = await query<Result>(sql, args<#
   if (cache) {
   #>, { cacheKey1, cacheKey2 }<#
   }
@@ -1100,17 +1112,14 @@ async function existById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} 
  */
 async function create(
   model: PartialNull<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
-): Promise<string | undefined> {
-  if (!model) {
-    return;
-  }
+): Promise<string> {
   const table = "<#=table#>";
   const method = "create";<#
   if (hasDict) {

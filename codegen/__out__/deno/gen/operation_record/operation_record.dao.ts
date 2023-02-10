@@ -293,7 +293,10 @@ async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  let result = await query<Operation_RecordModel>(sql, args);
+  type Result = Operation_RecordModel & {
+    tenant_id: string;
+  };
+  let result = await query<Result>(sql, args);
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -504,17 +507,14 @@ async function existById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} 
  */
 async function create(
   model: PartialNull<Operation_RecordModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
-): Promise<string | undefined> {
-  if (!model) {
-    return;
-  }
+): Promise<string> {
   const table = "operation_record";
   const method = "create";
   

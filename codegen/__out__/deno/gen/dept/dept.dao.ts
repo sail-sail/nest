@@ -324,7 +324,10 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await query<DeptModel>(sql, args, { cacheKey1, cacheKey2 });
+  type Result = DeptModel & {
+    tenant_id: string;
+  };
+  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -569,17 +572,14 @@ async function existById(
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   update: 更新冲突数据
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} 
  */
 async function create(
   model: PartialNull<DeptModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
-): Promise<string | undefined> {
-  if (!model) {
-    return;
-  }
+): Promise<string> {
   const table = "dept";
   const method = "create";
   
