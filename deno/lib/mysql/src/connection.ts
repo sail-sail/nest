@@ -287,7 +287,11 @@ export class Connection {
           affectedRows: receive.body.readEncodedLen(),
           lastInsertId: receive.body.readEncodedLen(),
         };
-      } else if (receive.type !== PacketType.Result) {
+      }
+      else if (receive.type === PacketType.EOF_Packet) {
+        receive.body.skip(1);
+      }
+      else if (receive.type !== PacketType.Result) {
         throw new ProtocolError();
       }
       let fieldCount = receive.body.readEncodedLen();
