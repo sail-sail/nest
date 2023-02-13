@@ -1,4 +1,8 @@
 import {
+  promises as fs,
+} from "node:fs";
+
+import {
   defineConfig,
   presetAttributify,
   presetIcons,
@@ -31,6 +35,9 @@ export default defineConfig({
       extraProperties: {
         "display": "inline-block",
         "vertical-align": "middle",
+      },
+      collections: {
+        iconfont: async (iconName) => await fs.readFile(`./src/assets/iconfont/${ iconName }.svg`, "utf8"),
       },
     }),
     /**
