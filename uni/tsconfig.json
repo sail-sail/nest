@@ -16,8 +16,8 @@
     "skipLibCheck": true,
     "lib": [ "esnext", "dom" ],
     "types": [
-      "vite/client",
       "node",
+      "vite/client",
       "@uni-helper/uni-app-types",
       "@uni-helper/uni-cloud-types",
       "@uni-helper/uni-ui-types"
@@ -38,9 +38,9 @@
   },
   "include": [
     "node_modules/vue/ref-macros.d.ts",
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
+    "**/*.ts",
+    "**/*.d.ts",
+    "**/*.tsx",
+    "**/*.vue"
   ]
 }
