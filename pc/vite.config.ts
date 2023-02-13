@@ -18,6 +18,8 @@ import Unocss from "unocss/vite";
 
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import defineOptions from "unplugin-vue-define-options/vite";
 
 // https://vitejs.dev/config/
