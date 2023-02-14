@@ -31,7 +31,6 @@
     "maggie.eslint-rules-zh-plugin",
     "britesnow.vscode-toggle-quotes",
     "ms-edgedevtools.vscode-edge-devtools",
-    "uni-helper.uni-ui-snippets-vscode",
-    "vunguyentuan.vscode-css-variables"
+    "uni-helper.uni-ui-snippets-vscode"
   ]
 }
