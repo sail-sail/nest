@@ -6,17 +6,20 @@ let elLoading: ReturnType<typeof ElLoading.service>|undefined;
 
 export default defineStore("index", function() {
   
+  let notLoading = $ref(false);
+  
   let loading = $ref(0);
   
   let version: string|null = $ref(localStorage.getItem("__version"));
   
   function addLoading() {
-    loading++;
-    if (elLoading) {
-      elLoading.close();
-      elLoading = undefined;
+    if (notLoading) {
+      return;
     }
-    elLoading = ElLoading.service({ fullscreen: true, background: "rgba(0,0,0,0)" });
+    loading++;
+    if (!elLoading) {
+      elLoading = ElLoading.service({ fullscreen: true, background: "rgba(0,0,0,0)" });
+    }
   }
   
   function minusLoading() {
@@ -49,6 +52,7 @@ export default defineStore("index", function() {
   }
   
   return $$({
+    notLoading,
     loading,
     version,
     addLoading,

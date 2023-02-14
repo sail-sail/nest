@@ -322,8 +322,11 @@ body .el-checkbox.el-checkbox--small {
     top: 5px;
   }
 }
+body .el-input-number {
+  width: 100%;
+}
 body .el-input-number.is-without-controls .el-input__inner {
-  text-align: left;
+  text-align: inherit;
 }
 .el-table {
   .table_current_row {
