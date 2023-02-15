@@ -9339,7 +9339,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/barcode?id=scancode](http://uniapp.dcloud.io/api/system/barcode?id=scancode)
      */
-    scanCode(options: UniNamespace.ScanCodeOptions): void;
+    scanCode(options: UniNamespace.ScanCodeOptions): Promise<UniNamespace.ScanCodeSuccessRes>;
     /**
      * 设置系统剪贴板的内容
      *
