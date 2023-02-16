@@ -17,9 +17,10 @@
       <el-form
         ref="formRef"
         size="default"
+        label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
         
@@ -30,8 +31,8 @@
       >
         
         <template v-if="builtInModel?.type == null">
-          <label>类型</label>
           <el-form-item
+            label="类型"
             prop="type"
             un-h="full"
           >
@@ -46,8 +47,8 @@
         </template>
         
         <template v-if="builtInModel?.menu_id == null">
-          <label>父菜单</label>
           <el-form-item
+            label="父菜单"
             prop="menu_id"
             un-h="full"
           >
@@ -67,8 +68,8 @@
         </template>
         
         <template v-if="builtInModel?.lbl == null">
-          <label un-req>名称</label>
           <el-form-item
+            label="名称"
             prop="lbl"
             un-h="full"
           >
@@ -81,8 +82,8 @@
         </template>
         
         <template v-if="builtInModel?.route_path == null">
-          <label>路由</label>
           <el-form-item
+            label="路由"
             prop="route_path"
             un-h="full"
           >
@@ -95,8 +96,8 @@
         </template>
         
         <template v-if="builtInModel?.route_query == null">
-          <label>参数</label>
           <el-form-item
+            label="参数"
             prop="route_query"
             un-h="full"
           >
@@ -109,8 +110,8 @@
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
-          <label>启用</label>
           <el-form-item
+            label="启用"
             prop="is_enabled"
             un-h="full"
           >
@@ -125,8 +126,8 @@
         </template>
         
         <template v-if="builtInModel?.order_by == null">
-          <label>排序</label>
           <el-form-item
+            label="排序"
             prop="order_by"
             un-h="full"
           >
@@ -144,8 +145,8 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label>备注</label>
           <el-form-item
+            label="备注"
             prop="rem"
             un-h="full"
           >

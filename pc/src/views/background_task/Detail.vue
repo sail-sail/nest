@@ -17,9 +17,10 @@
       <el-form
         ref="formRef"
         size="default"
+        label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
         
@@ -29,8 +30,8 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label un-req>名称</label>
           <el-form-item
+            label="名称"
             prop="lbl"
             un-h="full"
           >
@@ -43,8 +44,8 @@
         </template>
         
         <template v-if="builtInModel?.state == null">
-          <label un-req>状态</label>
           <el-form-item
+            label="状态"
             prop="state"
             un-h="full"
           >
@@ -59,8 +60,8 @@
         </template>
         
         <template v-if="builtInModel?.type == null">
-          <label un-req>类型</label>
           <el-form-item
+            label="类型"
             prop="type"
             un-h="full"
           >
@@ -75,8 +76,8 @@
         </template>
         
         <template v-if="builtInModel?.result == null">
-          <label>执行结果</label>
           <el-form-item
+            label="执行结果"
             prop="result"
             un-h="full"
           >
@@ -89,8 +90,8 @@
         </template>
         
         <template v-if="builtInModel?.err_msg == null">
-          <label>错误信息</label>
           <el-form-item
+            label="错误信息"
             prop="err_msg"
             un-h="full"
           >
@@ -103,8 +104,8 @@
         </template>
         
         <template v-if="builtInModel?.begin_time == null">
-          <label>开始时间</label>
           <el-form-item
+            label="开始时间"
             prop="begin_time"
             un-h="full"
           >
@@ -121,8 +122,8 @@
         </template>
         
         <template v-if="builtInModel?.end_time == null">
-          <label>结束时间</label>
           <el-form-item
+            label="结束时间"
             prop="end_time"
             un-h="full"
           >
@@ -139,8 +140,8 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label>备注</label>
           <el-form-item
+            label="备注"
             prop="rem"
             un-h="full"
           >

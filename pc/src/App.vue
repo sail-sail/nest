@@ -369,6 +369,15 @@ body .el-input-number.is-without-controls .el-input__inner {
 .el-form .el-form-item__error {
   padding: 0;
 }
+.el-form .el-form-item__label {
+  padding-right: 4px;
+}
+.el-form-item__content:has(.el-select-v2) {
+  padding-left: 4px;
+  .el-form-item__error {
+    padding-left: 4px;
+  }
+}
 
 body .el-tree {
   .el-tree-node.is-current .el-tree-node__content {

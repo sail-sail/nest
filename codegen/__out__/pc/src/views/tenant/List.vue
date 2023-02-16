@@ -16,9 +16,10 @@
       size="default"
       :model="search"
       inline-message
+      label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,60px_210px)]"
-      un-gap="x-1 y-2"
+      un-grid="~ cols-[repeat(auto-fit,280px)]"
+      un-gap="x-2 y-2"
       un-justify-items-end
       un-items-center
       
@@ -26,8 +27,10 @@
     >
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
-        <label>名称</label>
-        <el-form-item prop="lblLike">
+        <el-form-item
+          label="名称"
+          prop="lblLike"
+        >
           <el-input
             v-model="search.lblLike"
             un-w="full"
@@ -39,8 +42,10 @@
       </template>
       
       <template v-if="builtInSearch?.menu_ids == null">
-        <label>菜单</label>
-        <el-form-item prop="menu_ids">
+        <el-form-item
+          label="菜单"
+          prop="menu_ids"
+        >
           <CustomSelect
             :set="search.menu_ids = search.menu_ids || [ ]"
             un-w="full"
@@ -61,10 +66,10 @@
       </template>
       
       <template v-if="builtInSearch?.is_deleted == null">
-        <div
-          un-min="w-5"
-        ></div>
-        <el-form-item prop="is_deleted">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
           <el-checkbox
             :set="search.is_deleted = search.is_deleted || 0"
             v-model="search.is_deleted"
@@ -72,15 +77,15 @@
             :true-label="1"
             @change="searchClk"
           >
-            回收站
+            <span>回收站</span>
           </el-checkbox>
         </el-form-item>
       </template>
       
-      <div
-        min="w-5"
-      ></div>
-      <el-form-item prop="idsChecked">
+      <el-form-item
+        label=" "
+        prop="idsChecked"
+      >
         <el-checkbox
           v-model="idsChecked"
           :false-label="0"
@@ -109,10 +114,8 @@
         </el-icon>
       </el-form-item>
       
-      <div
-        un-min="w-5"
-      ></div>
       <el-form-item
+        label=""
         un-self-start
         un-flex="~ nowrap"
         un-min="w-45"
@@ -145,7 +148,7 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex
+    un-flex="~ nowrap"
   >
     <template v-if="search.is_deleted !== 1">
       

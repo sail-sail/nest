@@ -25,9 +25,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       size="default"
       :model="search"
       inline-message
+      label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fit,60px_210px)]"
-      un-gap="x-1 y-2"
+      un-grid="~ cols-[repeat(auto-fit,280px)]"
+      un-gap="x-2 y-2"
       un-justify-items-end
       un-items-center
       
@@ -67,8 +68,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (foreignKey) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
           <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
@@ -90,8 +93,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column.dict) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
           <DictSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
@@ -107,8 +112,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column.dictbiz) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
           <DictbizSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
@@ -124,8 +131,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (data_type === "datetime" || data_type === "date") {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
           <el-date-picker
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             type="daterange"
@@ -145,8 +154,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column_type === "int(1)") {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
           <el-checkbox
             un-w="full"
             v-model="search.<#=column_name#>"
@@ -158,8 +169,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (column_type.startsWith("int")) {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
           <el-input-number
             v-model="search.<#=column_name#>"
             un-w="full"
@@ -172,8 +185,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else {
       #>
       <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
-        <label><#=column_comment#></label>
-        <el-form-item prop="<#=column_name#>Like">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>Like"
+        >
           <el-input
             v-model="search.<#=column_name#>Like"
             un-w="full"
@@ -192,10 +207,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       if (opts.noDelete !== true && opts.noRevert !== true) {
       #>
       <template v-if="builtInSearch?.is_deleted == null">
-        <div
-          un-min="w-5"
-        ></div>
-        <el-form-item prop="is_deleted">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
           <el-checkbox
             :set="search.is_deleted = search.is_deleted || 0"
             v-model="search.is_deleted"
@@ -203,17 +218,17 @@ const hasAtt = columns.some((item) => item.isAtt);
             :true-label="1"
             @change="searchClk"
           >
-            回收站
+            <span>回收站</span>
           </el-checkbox>
         </el-form-item>
       </template><#
       }
       #>
       
-      <div
-        min="w-5"
-      ></div>
-      <el-form-item prop="idsChecked">
+      <el-form-item
+        label=" "
+        prop="idsChecked"
+      >
         <el-checkbox
           v-model="idsChecked"
           :false-label="0"
@@ -242,10 +257,8 @@ const hasAtt = columns.some((item) => item.isAtt);
         </el-icon>
       </el-form-item>
       
-      <div
-        un-min="w-5"
-      ></div>
       <el-form-item
+        label=""
         un-self-start
         un-flex="~ nowrap"
         un-min="w-45"
@@ -278,7 +291,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex
+    un-flex="~ nowrap"
   >
     <template v-if="search.is_deleted !== 1"><#
       if (opts.noAdd !== true) {

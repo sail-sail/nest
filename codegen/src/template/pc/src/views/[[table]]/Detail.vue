@@ -32,19 +32,20 @@ for (let i = 0; i < columns.length; i++) {
     >
       <el-form
         ref="formRef"
-        size="default"<#
+        size="default"
+        label-width="auto"<#
           if (columnNum > 4) {
         #>
         
-        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center<#
           } else {
         #>
         
-        un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(1,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center<#
           }
@@ -96,12 +97,8 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <template v-if="builtInModel?.<#=column_name#> == null<#=vIfStr ? ' && '+vIfStr : ''#>">
-          <label<#
-          if (require) {
-          #> un-req<#
-          }
-          #>><#=column_comment#></label>
           <el-form-item
+            label="<#=column_comment#>"
             prop="<#=column_name#>"<#
             if (column.isImg) {
           #>
@@ -287,7 +284,6 @@ for (let i = 0; i < columns.length; i++) {
           <#
             if (columnNum > 4) {
           #>
-            <div></div>
             <div></div>
           <#
             }

@@ -17,9 +17,10 @@
       <el-form
         ref="formRef"
         size="default"
+        label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
         
@@ -30,8 +31,8 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label un-req>名称</label>
           <el-form-item
+            label="名称"
             prop="lbl"
             un-h="full"
           >
@@ -44,8 +45,8 @@
         </template>
         
         <template v-if="builtInModel?.username == null">
-          <label un-req>用户名</label>
           <el-form-item
+            label="用户名"
             prop="username"
             un-h="full"
           >
@@ -58,8 +59,8 @@
         </template>
         
         <template v-if="builtInModel?.password == null">
-          <label>密码</label>
           <el-form-item
+            label="密码"
             prop="password"
             un-h="full"
           >
@@ -72,8 +73,8 @@
         </template>
         
         <template v-if="builtInModel?.default_dept_id == null">
-          <label>默认部门</label>
           <el-form-item
+            label="默认部门"
             prop="default_dept_id"
             un-h="full"
           >
@@ -93,8 +94,8 @@
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
-          <label un-req>启用</label>
           <el-form-item
+            label="启用"
             prop="is_enabled"
             un-h="full"
           >
@@ -109,8 +110,8 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label>备注</label>
           <el-form-item
+            label="备注"
             prop="rem"
             un-h="full"
           >
@@ -123,8 +124,8 @@
         </template>
         
         <template v-if="builtInModel?.dept_ids == null">
-          <label>拥有部门</label>
           <el-form-item
+            label="拥有部门"
             prop="dept_ids"
             un-h="full"
           >
@@ -146,8 +147,8 @@
         </template>
         
         <template v-if="builtInModel?.role_ids == null">
-          <label>拥有角色</label>
           <el-form-item
+            label="拥有角色"
             prop="role_ids"
             un-h="full"
           >

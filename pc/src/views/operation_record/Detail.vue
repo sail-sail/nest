@@ -17,9 +17,10 @@
       <el-form
         ref="formRef"
         size="default"
+        label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
         
@@ -29,8 +30,8 @@
       >
         
         <template v-if="builtInModel?.mod == null">
-          <label>模块</label>
           <el-form-item
+            label="模块"
             prop="mod"
             un-h="full"
           >
@@ -43,8 +44,8 @@
         </template>
         
         <template v-if="builtInModel?.mod_lbl == null">
-          <label>模块名称</label>
           <el-form-item
+            label="模块名称"
             prop="mod_lbl"
             un-h="full"
           >
@@ -57,8 +58,8 @@
         </template>
         
         <template v-if="builtInModel?.method == null">
-          <label>方法</label>
           <el-form-item
+            label="方法"
             prop="method"
             un-h="full"
           >
@@ -71,8 +72,8 @@
         </template>
         
         <template v-if="builtInModel?.method_lbl == null">
-          <label>方法名称</label>
           <el-form-item
+            label="方法名称"
             prop="method_lbl"
             un-h="full"
           >
@@ -85,8 +86,8 @@
         </template>
         
         <template v-if="builtInModel?.lbl == null">
-          <label>操作</label>
           <el-form-item
+            label="操作"
             prop="lbl"
             un-h="full"
           >
@@ -99,8 +100,8 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label>备注</label>
           <el-form-item
+            label="备注"
             prop="rem"
             un-h="full"
           >

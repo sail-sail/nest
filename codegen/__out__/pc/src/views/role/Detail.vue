@@ -17,9 +17,10 @@
       <el-form
         ref="formRef"
         size="default"
+        label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
-        un-gap="x-1 y-4"
+        un-grid="~ rows-[auto] cols-[repeat(1,380px)]"
+        un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
         
@@ -30,8 +31,8 @@
       >
         
         <template v-if="builtInModel?.lbl == null">
-          <label un-req>名称</label>
           <el-form-item
+            label="名称"
             prop="lbl"
             un-h="full"
           >
@@ -44,8 +45,8 @@
         </template>
         
         <template v-if="builtInModel?.rem == null">
-          <label>备注</label>
           <el-form-item
+            label="备注"
             prop="rem"
             un-h="full"
           >
@@ -58,8 +59,8 @@
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
-          <label>启用</label>
           <el-form-item
+            label="启用"
             prop="is_enabled"
             un-h="full"
           >
@@ -74,8 +75,8 @@
         </template>
         
         <template v-if="builtInModel?.menu_ids == null">
-          <label>菜单</label>
           <el-form-item
+            label="菜单"
             prop="menu_ids"
             un-h="full"
           >
