@@ -13,18 +13,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type Dict_DetailModel,
   type Dict_DetailSearch,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";
+} from "./dict_detail.model.ts";
 import {
   _internals as dict_detailDao,
 } from "./dict_detail.dao.ts";
@@ -49,41 +50,44 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dict_DetailSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
 ): Promise<number> {
-  const result = await dict_detailDao.findCount(search);
-  return result;
+  search = search || { };
+  const data = await dict_detailDao.findCount(search);
+  return data;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dict_DetailSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<Dict_DetailModel[]>} 
  */
 async function findAll(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<Dict_DetailModel[]> {
-  const result: Dict_DetailModel[] = await dict_detailDao.findAll(search, page, sort);
-  return result;
+  search = search || { };
+  const data: Dict_DetailModel[] = await dict_detailDao.findAll(search, page, sort);
+  return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dict_DetailSearch} search? 搜索条件
  */
 async function findOne(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
 ) {
-  const result: Dict_DetailModel | undefined = await dict_detailDao.findOne(search);
-  return result;
+  search = search || { };
+  const data = await dict_detailDao.findOne(search);
+  return data;
 }
 
 /**
@@ -93,19 +97,20 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await dict_detailDao.findById(id);
-  return result;
+  const data = await dict_detailDao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dict_DetailSearch} search? 搜索条件
  */
 async function exist(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
 ) {
-  const result = await dict_detailDao.exist(search);
-  return result;
+  search = search || { };
+  const data = await dict_detailDao.exist(search);
+  return data;
 }
 
 /**
@@ -115,34 +120,34 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await dict_detailDao.existById(id);
-  return result;
+  const data = await dict_detailDao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {Dict_DetailModel} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: Dict_DetailModel,
-): Promise<string | undefined> {
-  const result = await dict_detailDao.create(model);
-  return result;
+): Promise<string> {
+  const data = await dict_detailDao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {Dict_DetailModel} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: Dict_DetailModel,
-): Promise<string | undefined> {
-  await dict_detailDao.updateById(id, model);
-  return id;
+): Promise<string> {
+  const data = await dict_detailDao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -153,8 +158,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await dict_detailDao.deleteByIds(ids);
-  return result;
+  const data = await dict_detailDao.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -167,8 +172,8 @@ async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const result = await dict_detailDao.lockByIds(ids, is_locked);
-  return result;
+  const data = await dict_detailDao.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -179,8 +184,8 @@ async function lockByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await dict_detailDao.revertByIds(ids);
-  return result;
+  const data = await dict_detailDao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -191,8 +196,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await dict_detailDao.forceDeleteByIds(ids);
-  return result;
+  const data = await dict_detailDao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -227,28 +232,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\n`;
+    data = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\n`;
+    data += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\n");
+    data += failErrMsgs.join("\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dict_DetailSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -257,7 +262,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 dict_detail.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -265,7 +270,7 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }
 
 /**
@@ -274,6 +279,6 @@ async function exportExcel(
  */
 async function findLastOrderBy(
 ): Promise<number> {
-  const result = await dict_detailDao.findLastOrderBy();
-  return result;
+  const data = await dict_detailDao.findLastOrderBy();
+  return data;
 }

@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -21,18 +22,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type <#=Table_Up#>Model,
   type <#=Table_Up#>Search,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";<#
+} from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
 
@@ -76,67 +78,145 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
 ): Promise<number> {
-  const result = await <#=table#>Dao.findCount(search);
-  return result;
-}
-
-/**
- * 根据条件和分页查找数据
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<<#=Table_Up#>Model[]>} 
- */
-async function findAll(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
-  page?: PageInput,
-  sort?: SortInput|SortInput[],
-): Promise<<#=Table_Up#>Model[]> {<#
+  search = search || { };<#
+  if (hasTenant_id) {
+  #>
+  
+  search.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  search.dept_id = undefined;<#
+  }
+  #><#
     if (opts.filterDataByCreateUsr) {
   #>
   
-  search = search || { };
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }<#
     }
   #>
-  const result: <#=Table_Up#>Model[] = await <#=table#>Dao.findAll(search, page, sort);
-  return result;
+  const data = await <#=table#>Dao.findCount(search);
+  return data;
+}
+
+/**
+ * 根据条件和分页查找数据
+ * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {PageInput} page? 分页条件
+ * @param {SortInput|SortInput[]} sort? 排序
+ * @return {Promise<<#=Table_Up#>Model[]>} 
+ */
+async function findAll(
+  search?: <#=Table_Up#>Search,
+  page?: PageInput,
+  sort?: SortInput|SortInput[],
+): Promise<<#=Table_Up#>Model[]> {
+  search = search || { };<#
+  if (hasTenant_id) {
+  #>
+  
+  search.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  search.dept_id = undefined;<#
+  }
+  #><#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }<#
+    }
+  #>
+  const data: <#=Table_Up#>Model[] = await <#=table#>Dao.findAll(search, page, sort);
+  return data;
 }<#
 if (hasSummary) {
 #>
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>} 
  */
 async function findSummary(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
 ): Promise<<#=Table_Up#>Summary> {
-  const result = await <#=table#>Dao.findSummary(search);
-  return result;
+  search = search || { };<#
+  if (hasTenant_id) {
+  #>
+  
+  search.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  search.dept_id = undefined;<#
+  }
+  #><#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }<#
+    }
+  #>
+  const data = await <#=table#>Dao.findSummary(search);
+  return data;
 }<#
 }
 #>
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  */
 async function findOne(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
 ) {
-  const result: <#=Table_Up#>Model | undefined = await <#=table#>Dao.findOne(search);
-  return result;
+  search = search || { };<#
+  if (hasTenant_id) {
+  #>
+  
+  search.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  search.dept_id = undefined;<#
+  }
+  #><#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }<#
+    }
+  #>
+  const data = await <#=table#>Dao.findOne(search);
+  return data;
 }
 
 /**
@@ -146,19 +226,41 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await <#=table#>Dao.findById(id);
-  return result;
+  const data = await <#=table#>Dao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  */
 async function exist(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
 ) {
-  const result = await <#=table#>Dao.exist(search);
-  return result;
+  search = search || { };<#
+  if (hasTenant_id) {
+  #>
+  
+  search.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  search.dept_id = undefined;<#
+  }
+  #><#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }<#
+    }
+  #>
+  const data = await <#=table#>Dao.exist(search);
+  return data;
 }
 
 /**
@@ -168,34 +270,58 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await <#=table#>Dao.existById(id);
-  return result;
+  const data = await <#=table#>Dao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {<#=Table_Up#>Model} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: <#=Table_Up#>Model,
-): Promise<string | undefined> {
-  const result = await <#=table#>Dao.create(model);
-  return result;
+): Promise<string> {<#
+  if (hasTenant_id) {
+  #>
+  
+  model.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  model.dept_id = undefined;<#
+  }
+  #>
+  const data = await <#=table#>Dao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {<#=Table_Up#>Model} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: <#=Table_Up#>Model,
-): Promise<string | undefined> {
-  await <#=table#>Dao.updateById(id, model);
-  return id;
+): Promise<string> {<#
+  if (hasTenant_id) {
+  #>
+  
+  model.tenant_id = undefined;<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  model.dept_id = undefined;<#
+  }
+  #>
+  const data = await <#=table#>Dao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -206,8 +332,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await <#=table#>Dao.deleteByIds(ids);
-  return result;
+  const data = await <#=table#>Dao.deleteByIds(ids);
+  return data;
 }<#
   if (hasLocked) {
 #>
@@ -222,8 +348,8 @@ async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const result = await <#=table#>Dao.lockByIds(ids, is_locked);
-  return result;
+  const data = await <#=table#>Dao.lockByIds(ids, is_locked);
+  return data;
 }<#
   }
 #>
@@ -236,8 +362,8 @@ async function lockByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await <#=table#>Dao.revertByIds(ids);
-  return result;
+  const data = await <#=table#>Dao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -248,8 +374,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await <#=table#>Dao.forceDeleteByIds(ids);
-  return result;
+  const data = await <#=table#>Dao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -304,7 +430,19 @@ async function importFile(
   const failErrMsgs: string[] = [ ];
   
   for (let i = 0; i < models.length; i++) {
-    const model = models[i];
+    const model = models[i];<#
+    if (hasTenant_id) {
+    #>
+    
+    model.tenant_id = undefined;<#
+    }
+    #><#
+    if (hasDeptId) {
+    #>
+    
+    model.dept_id = undefined;<#
+    }
+    #>
     try {
       await <#=table#>Dao.create(model, { uniqueType: "update" });
       succNum++;
@@ -314,28 +452,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\\n`;
+    data = `导入成功 ${ succNum } 条\\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\\n`;
+    data += `导入失败 ${ failNum } 条\\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\\n");
+    data += failErrMsgs.join("\\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -344,7 +482,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 <#=table#>.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -352,7 +490,7 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }<#
 if (hasOrderBy) {
 #>
@@ -363,8 +501,8 @@ if (hasOrderBy) {
  */
 async function findLastOrderBy(
 ): Promise<number> {
-  const result = await <#=table#>Dao.findLastOrderBy();
-  return result;
+  const data = await <#=table#>Dao.findLastOrderBy();
+  return data;
 }<#
 }
 #>

@@ -13,18 +13,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type Background_TaskModel,
   type Background_TaskSearch,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";
+} from "./background_task.model.ts";
 import {
   _internals as background_taskDao,
 } from "./background_task.dao.ts";
@@ -47,47 +48,65 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
 ): Promise<number> {
-  const result = await background_taskDao.findCount(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }
+  const data = await background_taskDao.findCount(search);
+  return data;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<Background_TaskModel[]>} 
  */
 async function findAll(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<Background_TaskModel[]> {
-  
   search = search || { };
+  
+  search.tenant_id = undefined;
+  
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const result: Background_TaskModel[] = await background_taskDao.findAll(search, page, sort);
-  return result;
+  const data: Background_TaskModel[] = await background_taskDao.findAll(search, page, sort);
+  return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  */
 async function findOne(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
 ) {
-  const result: Background_TaskModel | undefined = await background_taskDao.findOne(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }
+  const data = await background_taskDao.findOne(search);
+  return data;
 }
 
 /**
@@ -97,19 +116,27 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await background_taskDao.findById(id);
-  return result;
+  const data = await background_taskDao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  */
 async function exist(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
 ) {
-  const result = await background_taskDao.exist(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  
+  const authModel = await authDao.getAuthModel();
+  if (authModel?.id) {
+    search.create_usr_id = [ authModel.id ];
+  }
+  const data = await background_taskDao.exist(search);
+  return data;
 }
 
 /**
@@ -119,34 +146,38 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await background_taskDao.existById(id);
-  return result;
+  const data = await background_taskDao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {Background_TaskModel} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: Background_TaskModel,
-): Promise<string | undefined> {
-  const result = await background_taskDao.create(model);
-  return result;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await background_taskDao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {Background_TaskModel} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: Background_TaskModel,
-): Promise<string | undefined> {
-  await background_taskDao.updateById(id, model);
-  return id;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await background_taskDao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -157,8 +188,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await background_taskDao.deleteByIds(ids);
-  return result;
+  const data = await background_taskDao.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -169,8 +200,8 @@ async function deleteByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await background_taskDao.revertByIds(ids);
-  return result;
+  const data = await background_taskDao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -181,8 +212,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await background_taskDao.forceDeleteByIds(ids);
-  return result;
+  const data = await background_taskDao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -210,6 +241,8 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
+    
+    model.tenant_id = undefined;
     try {
       await background_taskDao.create(model, { uniqueType: "update" });
       succNum++;
@@ -219,28 +252,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\n`;
+    data = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\n`;
+    data += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\n");
+    data += failErrMsgs.join("\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -249,7 +282,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 background_task.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -257,5 +290,5 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }

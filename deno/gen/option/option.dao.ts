@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type OptionModel,
-  type OptionSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type OptionModel,
+  type OptionSearch,
+} from "./option.model.ts";
 
 export const _internals = {
   findCount,
@@ -80,10 +82,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: OptionSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: OptionSearch,
   options?: {
   },
 ) {
@@ -95,7 +94,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -159,11 +158,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { OptionSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
   options?: {
   },
 ): Promise<number> {
@@ -200,11 +199,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -249,10 +248,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = OptionModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<OptionModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -296,10 +292,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {OptionSearch & { $extra?: SearchExtra[] } | PartialNull<OptionModel>} search0
+ * @param {OptionSearch | PartialNull<OptionModel>} search0
  */
 async function findByUnique(
-  search0: OptionSearch & { $extra?: SearchExtra[] } | PartialNull<OptionModel>,
+  search0: OptionSearch | PartialNull<OptionModel>,
   options?: {
   },
 ) {
@@ -311,7 +307,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: OptionSearch & { $extra?: SearchExtra[] } = { };
+  const search: OptionSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -391,10 +387,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search?
+ * @param {OptionSearch} search?
  */
 async function findOne(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
   options?: {
   },
 ) {
@@ -425,10 +421,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search?
+ * @param {OptionSearch} search?
  */
 async function exist(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
   options?: {
   },
 ) {
@@ -669,13 +665,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<OptionModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<OptionModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "option";
   const method = "updateById";
   

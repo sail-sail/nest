@@ -13,18 +13,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type Operation_RecordModel,
   type Operation_RecordSearch,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";
+} from "./operation_record.model.ts";
 import {
   _internals as operation_recordDao,
 } from "./operation_record.dao.ts";
@@ -47,41 +48,50 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Operation_RecordSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
 ): Promise<number> {
-  const result = await operation_recordDao.findCount(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await operation_recordDao.findCount(search);
+  return data;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Operation_RecordSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<Operation_RecordModel[]>} 
  */
 async function findAll(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<Operation_RecordModel[]> {
-  const result: Operation_RecordModel[] = await operation_recordDao.findAll(search, page, sort);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data: Operation_RecordModel[] = await operation_recordDao.findAll(search, page, sort);
+  return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Operation_RecordSearch} search? 搜索条件
  */
 async function findOne(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
 ) {
-  const result: Operation_RecordModel | undefined = await operation_recordDao.findOne(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await operation_recordDao.findOne(search);
+  return data;
 }
 
 /**
@@ -91,19 +101,22 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await operation_recordDao.findById(id);
-  return result;
+  const data = await operation_recordDao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Operation_RecordSearch} search? 搜索条件
  */
 async function exist(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
 ) {
-  const result = await operation_recordDao.exist(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await operation_recordDao.exist(search);
+  return data;
 }
 
 /**
@@ -113,34 +126,38 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await operation_recordDao.existById(id);
-  return result;
+  const data = await operation_recordDao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {Operation_RecordModel} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: Operation_RecordModel,
-): Promise<string | undefined> {
-  const result = await operation_recordDao.create(model);
-  return result;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await operation_recordDao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {Operation_RecordModel} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: Operation_RecordModel,
-): Promise<string | undefined> {
-  await operation_recordDao.updateById(id, model);
-  return id;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await operation_recordDao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -151,8 +168,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await operation_recordDao.deleteByIds(ids);
-  return result;
+  const data = await operation_recordDao.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -163,8 +180,8 @@ async function deleteByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await operation_recordDao.revertByIds(ids);
-  return result;
+  const data = await operation_recordDao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -175,8 +192,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await operation_recordDao.forceDeleteByIds(ids);
-  return result;
+  const data = await operation_recordDao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -202,6 +219,8 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
+    
+    model.tenant_id = undefined;
     try {
       await operation_recordDao.create(model, { uniqueType: "update" });
       succNum++;
@@ -211,28 +230,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\n`;
+    data = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\n`;
+    data += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\n");
+    data += failErrMsgs.join("\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Operation_RecordSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -241,7 +260,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 operation_record.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -249,5 +268,5 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }

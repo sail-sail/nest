@@ -13,18 +13,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type DeptModel,
   type DeptSearch,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";
+} from "./dept.model.ts";
 import {
   _internals as deptDao,
 } from "./dept.dao.ts";
@@ -49,41 +50,50 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
 ): Promise<number> {
-  const result = await deptDao.findCount(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await deptDao.findCount(search);
+  return data;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<DeptModel[]>} 
  */
 async function findAll(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel[]> {
-  const result: DeptModel[] = await deptDao.findAll(search, page, sort);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data: DeptModel[] = await deptDao.findAll(search, page, sort);
+  return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch} search? 搜索条件
  */
 async function findOne(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
 ) {
-  const result: DeptModel | undefined = await deptDao.findOne(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await deptDao.findOne(search);
+  return data;
 }
 
 /**
@@ -93,19 +103,22 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await deptDao.findById(id);
-  return result;
+  const data = await deptDao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch} search? 搜索条件
  */
 async function exist(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
 ) {
-  const result = await deptDao.exist(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await deptDao.exist(search);
+  return data;
 }
 
 /**
@@ -115,34 +128,38 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await deptDao.existById(id);
-  return result;
+  const data = await deptDao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {DeptModel} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: DeptModel,
-): Promise<string | undefined> {
-  const result = await deptDao.create(model);
-  return result;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await deptDao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {DeptModel} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: DeptModel,
-): Promise<string | undefined> {
-  await deptDao.updateById(id, model);
-  return id;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await deptDao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -153,8 +170,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await deptDao.deleteByIds(ids);
-  return result;
+  const data = await deptDao.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -167,8 +184,8 @@ async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const result = await deptDao.lockByIds(ids, is_locked);
-  return result;
+  const data = await deptDao.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -179,8 +196,8 @@ async function lockByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await deptDao.revertByIds(ids);
-  return result;
+  const data = await deptDao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -191,8 +208,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await deptDao.forceDeleteByIds(ids);
-  return result;
+  const data = await deptDao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -217,6 +234,8 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
+    
+    model.tenant_id = undefined;
     try {
       await deptDao.create(model, { uniqueType: "update" });
       succNum++;
@@ -226,28 +245,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\n`;
+    data = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\n`;
+    data += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\n");
+    data += failErrMsgs.join("\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -256,7 +275,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 dept.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -264,7 +283,7 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }
 
 /**
@@ -273,6 +292,6 @@ async function exportExcel(
  */
 async function findLastOrderBy(
 ): Promise<number> {
-  const result = await deptDao.findLastOrderBy();
-  return result;
+  const data = await deptDao.findLastOrderBy();
+  return data;
 }

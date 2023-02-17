@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type Dictbiz_DetailModel,
-  type Dictbiz_DetailSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type Dictbiz_DetailModel,
+  type Dictbiz_DetailSearch,
+} from "./dictbiz_detail.model.ts";
 
 import {
   _internals as dictbizDao,
@@ -87,10 +89,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: Dictbiz_DetailSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: Dictbiz_DetailSearch,
   options?: {
   },
 ) {
@@ -102,7 +101,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -188,11 +187,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { Dictbiz_DetailSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dictbiz_DetailSearch,
   options?: {
   },
 ): Promise<number> {
@@ -229,11 +228,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Dictbiz_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dictbiz_DetailSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dictbiz_DetailSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -284,10 +283,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = Dictbiz_DetailModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<Dictbiz_DetailModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -345,10 +341,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Dictbiz_DetailSearch & { $extra?: SearchExtra[] } | PartialNull<Dictbiz_DetailModel>} search0
+ * @param {Dictbiz_DetailSearch | PartialNull<Dictbiz_DetailModel>} search0
  */
 async function findByUnique(
-  search0: Dictbiz_DetailSearch & { $extra?: SearchExtra[] } | PartialNull<Dictbiz_DetailModel>,
+  search0: Dictbiz_DetailSearch | PartialNull<Dictbiz_DetailModel>,
   options?: {
   },
 ) {
@@ -360,7 +356,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: Dictbiz_DetailSearch & { $extra?: SearchExtra[] } = { };
+  const search: Dictbiz_DetailSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -440,10 +436,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Dictbiz_DetailSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Dictbiz_DetailSearch} search?
  */
 async function findOne(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dictbiz_DetailSearch,
   options?: {
   },
 ) {
@@ -474,10 +470,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Dictbiz_DetailSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Dictbiz_DetailSearch} search?
  */
 async function exist(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dictbiz_DetailSearch,
   options?: {
   },
 ) {
@@ -750,13 +746,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<Dictbiz_DetailModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<Dictbiz_DetailModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "dictbiz_detail";
   const method = "updateById";
   

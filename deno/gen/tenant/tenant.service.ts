@@ -13,18 +13,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type TenantModel,
   type TenantSearch,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";
+} from "./tenant.model.ts";
 import {
   _internals as tenantDao,
 } from "./tenant.dao.ts";
@@ -48,41 +49,44 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {TenantSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
 ): Promise<number> {
-  const result = await tenantDao.findCount(search);
-  return result;
+  search = search || { };
+  const data = await tenantDao.findCount(search);
+  return data;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {TenantSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<TenantModel[]>} 
  */
 async function findAll(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel[]> {
-  const result: TenantModel[] = await tenantDao.findAll(search, page, sort);
-  return result;
+  search = search || { };
+  const data: TenantModel[] = await tenantDao.findAll(search, page, sort);
+  return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {TenantSearch} search? 搜索条件
  */
 async function findOne(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
 ) {
-  const result: TenantModel | undefined = await tenantDao.findOne(search);
-  return result;
+  search = search || { };
+  const data = await tenantDao.findOne(search);
+  return data;
 }
 
 /**
@@ -92,19 +96,20 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await tenantDao.findById(id);
-  return result;
+  const data = await tenantDao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {TenantSearch} search? 搜索条件
  */
 async function exist(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
 ) {
-  const result = await tenantDao.exist(search);
-  return result;
+  search = search || { };
+  const data = await tenantDao.exist(search);
+  return data;
 }
 
 /**
@@ -114,34 +119,34 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await tenantDao.existById(id);
-  return result;
+  const data = await tenantDao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {TenantModel} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: TenantModel,
-): Promise<string | undefined> {
-  const result = await tenantDao.create(model);
-  return result;
+): Promise<string> {
+  const data = await tenantDao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {TenantModel} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: TenantModel,
-): Promise<string | undefined> {
-  await tenantDao.updateById(id, model);
-  return id;
+): Promise<string> {
+  const data = await tenantDao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -152,8 +157,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await tenantDao.deleteByIds(ids);
-  return result;
+  const data = await tenantDao.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -164,8 +169,8 @@ async function deleteByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await tenantDao.revertByIds(ids);
-  return result;
+  const data = await tenantDao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -176,8 +181,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await tenantDao.forceDeleteByIds(ids);
-  return result;
+  const data = await tenantDao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -214,28 +219,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\n`;
+    data = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\n`;
+    data += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\n");
+    data += failErrMsgs.join("\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {TenantSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -244,7 +249,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 tenant.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -252,7 +257,7 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }
 
 /**
@@ -261,6 +266,6 @@ async function exportExcel(
  */
 async function findLastOrderBy(
 ): Promise<number> {
-  const result = await tenantDao.findLastOrderBy();
-  return result;
+  const data = await tenantDao.findLastOrderBy();
+  return data;
 }

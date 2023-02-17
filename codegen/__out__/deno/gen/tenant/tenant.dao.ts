@@ -39,16 +39,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type TenantModel,
-  type TenantSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type TenantModel,
+  type TenantSearch,
+} from "./tenant.model.ts";
 
 export const _internals = {
   findCount,
@@ -72,9 +74,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: TenantSearch & {
-    $extra?: SearchExtra[];
-  },
+  search?: TenantSearch,
   options?: {
   },
 ) {
@@ -188,11 +188,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { TenantSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   options?: {
   },
 ): Promise<number> {
@@ -229,11 +229,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {TenantSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -285,9 +285,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = TenantModel & {
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<TenantModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -331,10 +329,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {TenantSearch & { $extra?: SearchExtra[] } | PartialNull<TenantModel>} search0
+ * @param {TenantSearch | PartialNull<TenantModel>} search0
  */
 async function findByUnique(
-  search0: TenantSearch & { $extra?: SearchExtra[] } | PartialNull<TenantModel>,
+  search0: TenantSearch | PartialNull<TenantModel>,
   options?: {
   },
 ) {
@@ -346,7 +344,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: TenantSearch & { $extra?: SearchExtra[] } = { };
+  const search: TenantSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -426,10 +424,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search?
+ * @param {TenantSearch} search?
  */
 async function findOne(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   options?: {
   },
 ) {
@@ -460,10 +458,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {TenantSearch & { $extra?: SearchExtra[] }} search?
+ * @param {TenantSearch} search?
  */
 async function exist(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
+  search?: TenantSearch,
   options?: {
   },
 ) {
@@ -689,12 +687,11 @@ async function delCache() {
  */
 async function updateById(
   id: string,
-  model: PartialNull<TenantModel> & {
-  },
+  model: PartialNull<TenantModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "tenant";
   const method = "updateById";
   

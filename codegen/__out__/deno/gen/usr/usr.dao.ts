@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type UsrModel,
-  type UsrSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type UsrModel,
+  type UsrSearch,
+} from "./usr.model.ts";
 
 import {
   _internals as deptDao,
@@ -86,10 +88,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: UsrSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: UsrSearch,
   options?: {
   },
 ) {
@@ -101,7 +100,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -243,11 +242,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { UsrSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
   options?: {
   },
 ): Promise<number> {
@@ -284,11 +283,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {UsrSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -338,10 +337,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = UsrModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<UsrModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -399,10 +395,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {UsrSearch & { $extra?: SearchExtra[] } | PartialNull<UsrModel>} search0
+ * @param {UsrSearch | PartialNull<UsrModel>} search0
  */
 async function findByUnique(
-  search0: UsrSearch & { $extra?: SearchExtra[] } | PartialNull<UsrModel>,
+  search0: UsrSearch | PartialNull<UsrModel>,
   options?: {
   },
 ) {
@@ -414,7 +410,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: UsrSearch & { $extra?: SearchExtra[] } = { };
+  const search: UsrSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -494,10 +490,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
+ * @param {UsrSearch} search?
  */
 async function findOne(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
   options?: {
   },
 ) {
@@ -528,10 +524,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {UsrSearch & { $extra?: SearchExtra[] }} search?
+ * @param {UsrSearch} search?
  */
 async function exist(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
+  search?: UsrSearch,
   options?: {
   },
 ) {
@@ -856,13 +852,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<UsrModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<UsrModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "usr";
   const method = "updateById";
   

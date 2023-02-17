@@ -101,16 +101,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
   type PageInput,
   type SortInput,
-} from "/gen/types.ts";<#
+} from "/gen/types.ts";
+
+import {
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
+} from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
 
@@ -209,19 +211,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: <#=Table_Up#>Search & {
-    $extra?: SearchExtra[];<#
-    if (hasDeptId) {
-    #>
-    dept_id?: string | null;<#
-    }
-    #><#
-    if (hasTenant_id) {
-    #>
-    tenant_id?: string | null;<#
-    }
-    #>
-  },
+  search?: <#=Table_Up#>Search,
   options?: {
   },
 ) {
@@ -235,7 +225,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }<#
   }
@@ -248,7 +238,7 @@ async function getWhereQuery(
     if (dept_id) {
       whereQuery += ` and t.dept_id = ${ args.push(dept_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.dept_id) || search?.dept_id === "-") {
     whereQuery += ` and t.dept_id = ${ args.push(search.dept_id) }`;
   }<#
   }
@@ -424,11 +414,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { <#=Table_Up#>Search } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
   options?: {
   },
 ): Promise<number> {
@@ -473,11 +463,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -577,19 +567,7 @@ async function findAll(
   }
   #>
   
-  type Result = <#=Table_Up#>Model & {<#
-    if (hasTenant_id) {
-    #>
-    tenant_id: string;<#
-    }
-    #><#
-    if (hasDeptId) {
-    #>
-    dept_id: string;<#
-    }
-    #>
-  };
-  let result = await query<Result>(sql, args<#
+  let result = await query<<#=Table_Up#>Model>(sql, args<#
   if (cache) {
   #>, { cacheKey1, cacheKey2 }<#
   }
@@ -859,10 +837,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] } | PartialNull<<#=Table_Up#>Model>} search0
+ * @param {<#=Table_Up#>Search | PartialNull<<#=Table_Up#>Model>} search0
  */
 async function findByUnique(
-  search0: <#=Table_Up#>Search & { $extra?: SearchExtra[] } | PartialNull<<#=Table_Up#>Model>,
+  search0: <#=Table_Up#>Search | PartialNull<<#=Table_Up#>Model>,
   options?: {
   },
 ) {
@@ -874,7 +852,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: <#=Table_Up#>Search & { $extra?: SearchExtra[] } = { };
+  const search: <#=Table_Up#>Search = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -956,11 +934,11 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找合计
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {<#=Table_Up#>Search} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>}
  */
 async function findSummary(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
   options?: {
   },
 ): Promise<<#=Table_Up#>Summary> {
@@ -1010,10 +988,10 @@ async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
+ * @param {<#=Table_Up#>Search} search?
  */
 async function findOne(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
   options?: {
   },
 ) {
@@ -1044,10 +1022,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=Table_Up#>Search & { $extra?: SearchExtra[] }} search?
+ * @param {<#=Table_Up#>Search} search?
  */
 async function exist(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=Table_Up#>Search,
   options?: {
   },
 ) {
@@ -1697,22 +1675,11 @@ async function updateDeptById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<<#=Table_Up#>Model> & {<#
-    if (hasDeptId) {
-    #>
-    dept_id?: string | null;<#
-    }
-    #><#
-    if (hasTenant_id) {
-    #>
-    tenant_id?: string | null;<#
-    }
-    #>
-  },
+  model: PartialNull<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "<#=table#>";
   const method = "updateById";
   

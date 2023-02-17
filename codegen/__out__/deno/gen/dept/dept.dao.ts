@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type DeptModel,
-  type DeptSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type DeptModel,
+  type DeptSearch,
+} from "./dept.model.ts";
 
 import {
   _internals as usrDao,
@@ -87,10 +89,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: DeptSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: DeptSearch,
   options?: {
   },
 ) {
@@ -102,7 +101,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -226,11 +225,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { DeptSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   options?: {
   },
 ): Promise<number> {
@@ -267,11 +266,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DeptSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -324,10 +323,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = DeptModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<DeptModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -383,10 +379,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {DeptSearch & { $extra?: SearchExtra[] } | PartialNull<DeptModel>} search0
+ * @param {DeptSearch | PartialNull<DeptModel>} search0
  */
 async function findByUnique(
-  search0: DeptSearch & { $extra?: SearchExtra[] } | PartialNull<DeptModel>,
+  search0: DeptSearch | PartialNull<DeptModel>,
   options?: {
   },
 ) {
@@ -398,7 +394,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: DeptSearch & { $extra?: SearchExtra[] } = { };
+  const search: DeptSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -478,10 +474,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search?
+ * @param {DeptSearch} search?
  */
 async function findOne(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   options?: {
   },
 ) {
@@ -512,10 +508,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {DeptSearch & { $extra?: SearchExtra[] }} search?
+ * @param {DeptSearch} search?
  */
 async function exist(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
+  search?: DeptSearch,
   options?: {
   },
 ) {
@@ -796,13 +792,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<DeptModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<DeptModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "dept";
   const method = "updateById";
   

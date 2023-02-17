@@ -43,16 +43,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type Operation_RecordModel,
-  type Operation_RecordSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type Operation_RecordModel,
+  type Operation_RecordSearch,
+} from "./operation_record.model.ts";
 
 import {
   _internals as usrDao,
@@ -79,10 +81,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: Operation_RecordSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: Operation_RecordSearch,
   options?: {
   },
 ) {
@@ -94,7 +93,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -208,11 +207,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { Operation_RecordSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
   options?: {
   },
 ): Promise<number> {
@@ -246,11 +245,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Operation_RecordSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -293,10 +292,7 @@ async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  type Result = Operation_RecordModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args);
+  let result = await query<Operation_RecordModel>(sql, args);
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -321,10 +317,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] } | PartialNull<Operation_RecordModel>} search0
+ * @param {Operation_RecordSearch | PartialNull<Operation_RecordModel>} search0
  */
 async function findByUnique(
-  search0: Operation_RecordSearch & { $extra?: SearchExtra[] } | PartialNull<Operation_RecordModel>,
+  search0: Operation_RecordSearch | PartialNull<Operation_RecordModel>,
   options?: {
   },
 ) {
@@ -336,7 +332,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: Operation_RecordSearch & { $extra?: SearchExtra[] } = { };
+  const search: Operation_RecordSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -416,10 +412,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Operation_RecordSearch} search?
  */
 async function findOne(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
   options?: {
   },
 ) {
@@ -450,10 +446,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Operation_RecordSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Operation_RecordSearch} search?
  */
 async function exist(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: Operation_RecordSearch,
   options?: {
   },
 ) {
@@ -671,13 +667,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<Operation_RecordModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<Operation_RecordModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "operation_record";
   const method = "updateById";
   

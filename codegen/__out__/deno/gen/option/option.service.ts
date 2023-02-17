@@ -13,18 +13,19 @@ import {
   getImportFileRows,
 } from "/lib/util/excel_util.ts";
 
-import { ServiceException } from "/lib/exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "/lib/exceptions/service.exception.ts";
 
 import {
-  type SearchExtra,
-} from "/lib/util/dao_util.ts";
+  type PageInput,
+  type SortInput,
+} from "/gen/types.ts";
 
 import {
   type OptionModel,
   type OptionSearch,
-  type PageInput,
-  type SortInput,
-} from "/gen/types.ts";
+} from "./option.model.ts";
 import {
   _internals as optionDao,
 } from "./option.dao.ts";
@@ -47,41 +48,50 @@ export const _internals = {
 
 /**
  * 根据条件查找总数
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
 ): Promise<number> {
-  const result = await optionDao.findCount(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await optionDao.findCount(search);
+  return data;
 }
 
 /**
  * 根据条件和分页查找数据
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<OptionModel[]>} 
  */
 async function findAll(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<OptionModel[]> {
-  const result: OptionModel[] = await optionDao.findAll(search, page, sort);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data: OptionModel[] = await optionDao.findAll(search, page, sort);
+  return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  */
 async function findOne(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
 ) {
-  const result: OptionModel | undefined = await optionDao.findOne(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await optionDao.findOne(search);
+  return data;
 }
 
 /**
@@ -91,19 +101,22 @@ async function findOne(
 async function findById(
   id?: string,
 ) {
-  const result = await optionDao.findById(id);
-  return result;
+  const data = await optionDao.findById(id);
+  return data;
 }
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  */
 async function exist(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
 ) {
-  const result = await optionDao.exist(search);
-  return result;
+  search = search || { };
+  
+  search.tenant_id = undefined;
+  const data = await optionDao.exist(search);
+  return data;
 }
 
 /**
@@ -113,34 +126,38 @@ async function exist(
 async function existById(
   id: string,
 ) {
-  const result = await optionDao.existById(id);
-  return result;
+  const data = await optionDao.existById(id);
+  return data;
 }
 
 /**
  * 创建数据
  * @param {OptionModel} model
- * @return {Promise<string | undefined>} 
+ * @return {Promise<string>} id
  */
 async function create(
   model: OptionModel,
-): Promise<string | undefined> {
-  const result = await optionDao.create(model);
-  return result;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await optionDao.create(model);
+  return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
  * @param {OptionModel} model
- * @return {Promise<string | undefined>}
+ * @return {Promise<string>}
  */
 async function updateById(
   id: string,
   model: OptionModel,
-): Promise<string | undefined> {
-  await optionDao.updateById(id, model);
-  return id;
+): Promise<string> {
+  
+  model.tenant_id = undefined;
+  const data = await optionDao.updateById(id, model);
+  return data;
 }
 
 /**
@@ -151,8 +168,8 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await optionDao.deleteByIds(ids);
-  return result;
+  const data = await optionDao.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -163,8 +180,8 @@ async function deleteByIds(
 async function revertByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await optionDao.revertByIds(ids);
-  return result;
+  const data = await optionDao.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -175,8 +192,8 @@ async function revertByIds(
 async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
-  const result = await optionDao.forceDeleteByIds(ids);
-  return result;
+  const data = await optionDao.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
@@ -201,6 +218,8 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
+    
+    model.tenant_id = undefined;
     try {
       await optionDao.create(model, { uniqueType: "update" });
       succNum++;
@@ -210,28 +229,28 @@ async function importFile(
     }
   }
   
-  let result = "";
+  let data = "";
   if (succNum > 0) {
-    result = `导入成功 ${ succNum } 条\n`;
+    data = `导入成功 ${ succNum } 条\n`;
   }
   if (failNum > 0) {
-    result += `导入失败 ${ failNum } 条\n`;
+    data += `导入失败 ${ failNum } 条\n`;
   }
   if (failErrMsgs.length > 0) {
-    result += failErrMsgs.join("\n");
+    data += failErrMsgs.join("\n");
   }
   
-  return result;
+  return data;
 }
 
 /**
  * 导出Excel
- * @param {OptionSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {OptionSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
 async function exportExcel(
-  search?: OptionSearch & { $extra?: SearchExtra[] },
+  search?: OptionSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
   const models = await findAll(search, undefined, sort);
@@ -240,7 +259,7 @@ async function exportExcel(
     throw new ServiceException(`模板文件 option.xlsx 不存在!`);
   }
   const buffer = await renderExcel(buffer0, { models });
-  const result = await tmpfileDao.upload(
+  const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
@@ -248,5 +267,5 @@ async function exportExcel(
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );
-  return result;
+  return data;
 }

@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type Background_TaskModel,
-  type Background_TaskSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type Background_TaskModel,
+  type Background_TaskSearch,
+} from "./background_task.model.ts";
 
 import {
   _internals as usrDao,
@@ -83,10 +85,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: Background_TaskSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: Background_TaskSearch,
   options?: {
   },
 ) {
@@ -98,7 +97,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -198,11 +197,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { Background_TaskSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
   options?: {
   },
 ): Promise<number> {
@@ -236,11 +235,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Background_TaskSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -287,10 +286,7 @@ async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  type Result = Background_TaskModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args);
+  let result = await query<Background_TaskModel>(sql, args);
   
   const [
     stateDict, // 状态
@@ -344,10 +340,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] } | PartialNull<Background_TaskModel>} search0
+ * @param {Background_TaskSearch | PartialNull<Background_TaskModel>} search0
  */
 async function findByUnique(
-  search0: Background_TaskSearch & { $extra?: SearchExtra[] } | PartialNull<Background_TaskModel>,
+  search0: Background_TaskSearch | PartialNull<Background_TaskModel>,
   options?: {
   },
 ) {
@@ -359,7 +355,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: Background_TaskSearch & { $extra?: SearchExtra[] } = { };
+  const search: Background_TaskSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -439,10 +435,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Background_TaskSearch} search?
  */
 async function findOne(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
   options?: {
   },
 ) {
@@ -473,10 +469,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Background_TaskSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Background_TaskSearch} search?
  */
 async function exist(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: Background_TaskSearch,
   options?: {
   },
 ) {
@@ -719,13 +715,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<Background_TaskModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<Background_TaskModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "background_task";
   const method = "updateById";
   

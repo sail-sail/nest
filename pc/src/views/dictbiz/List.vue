@@ -874,10 +874,6 @@ async function useFindAll() {
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
   tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
-  if (tableData.length === 1) {
-    await nextTick();
-    selectedIds = [ tableData[0].id ];
-  }
 }
 
 async function useFindCount() {
@@ -1114,10 +1110,15 @@ async function openForeignTabs(id: string, title: string) {
 }
 
 async function initFrame() {
-  if (usrStore.authorization) {
-    await Promise.all([
-      searchClk(),
-    ]);
+  if (!usrStore.authorization) {
+    return;
+  }
+  await Promise.all([
+    searchClk(),
+  ]);
+  if (tableData.length === 1) {
+    await nextTick();
+    selectedIds = [ tableData[0].id ];
   }
   inited = true;
 }

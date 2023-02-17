@@ -39,16 +39,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type MenuModel,
-  type MenuSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type MenuModel,
+  type MenuSearch,
+} from "./menu.model.ts";
 
 export const _internals = {
   findCount,
@@ -72,9 +74,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: MenuSearch & {
-    $extra?: SearchExtra[];
-  },
+  search?: MenuSearch,
   options?: {
   },
 ) {
@@ -169,11 +169,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { MenuSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
   options?: {
   },
 ): Promise<number> {
@@ -210,11 +210,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {MenuSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {MenuSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -265,9 +265,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = MenuModel & {
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<MenuModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     typeDict, // 类型
@@ -325,10 +323,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {MenuSearch & { $extra?: SearchExtra[] } | PartialNull<MenuModel>} search0
+ * @param {MenuSearch | PartialNull<MenuModel>} search0
  */
 async function findByUnique(
-  search0: MenuSearch & { $extra?: SearchExtra[] } | PartialNull<MenuModel>,
+  search0: MenuSearch | PartialNull<MenuModel>,
   options?: {
   },
 ) {
@@ -340,7 +338,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: MenuSearch & { $extra?: SearchExtra[] } = { };
+  const search: MenuSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -420,10 +418,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {MenuSearch & { $extra?: SearchExtra[] }} search?
+ * @param {MenuSearch} search?
  */
 async function findOne(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
   options?: {
   },
 ) {
@@ -454,10 +452,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {MenuSearch & { $extra?: SearchExtra[] }} search?
+ * @param {MenuSearch} search?
  */
 async function exist(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
+  search?: MenuSearch,
   options?: {
   },
 ) {
@@ -683,12 +681,11 @@ async function delCache() {
  */
 async function updateById(
   id: string,
-  model: PartialNull<MenuModel> & {
-  },
+  model: PartialNull<MenuModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "menu";
   const method = "updateById";
   

@@ -35,16 +35,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type PermitModel,
-  type PermitSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type PermitModel,
+  type PermitSearch,
+} from "./permit.model.ts";
 
 import {
   _internals as menuDao,
@@ -71,9 +73,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: PermitSearch & {
-    $extra?: SearchExtra[];
-  },
+  search?: PermitSearch,
   options?: {
   },
 ) {
@@ -136,11 +136,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { PermitSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
   options?: {
   },
 ): Promise<number> {
@@ -177,11 +177,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {PermitSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {PermitSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -227,9 +227,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = PermitModel & {
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<PermitModel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -258,10 +256,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {PermitSearch & { $extra?: SearchExtra[] } | PartialNull<PermitModel>} search0
+ * @param {PermitSearch | PartialNull<PermitModel>} search0
  */
 async function findByUnique(
-  search0: PermitSearch & { $extra?: SearchExtra[] } | PartialNull<PermitModel>,
+  search0: PermitSearch | PartialNull<PermitModel>,
   options?: {
   },
 ) {
@@ -273,7 +271,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: PermitSearch & { $extra?: SearchExtra[] } = { };
+  const search: PermitSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -353,10 +351,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {PermitSearch & { $extra?: SearchExtra[] }} search?
+ * @param {PermitSearch} search?
  */
 async function findOne(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
   options?: {
   },
 ) {
@@ -387,10 +385,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {PermitSearch & { $extra?: SearchExtra[] }} search?
+ * @param {PermitSearch} search?
  */
 async function exist(
-  search?: PermitSearch & { $extra?: SearchExtra[] },
+  search?: PermitSearch,
   options?: {
   },
 ) {
@@ -561,12 +559,11 @@ async function delCache() {
  */
 async function updateById(
   id: string,
-  model: PartialNull<PermitModel> & {
-  },
+  model: PartialNull<PermitModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "permit";
   const method = "updateById";
   

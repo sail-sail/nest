@@ -39,16 +39,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type Dict_DetailModel,
-  type Dict_DetailSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type Dict_DetailModel,
+  type Dict_DetailSearch,
+} from "./dict_detail.model.ts";
 
 import {
   _internals as dictDao,
@@ -78,9 +80,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: Dict_DetailSearch & {
-    $extra?: SearchExtra[];
-  },
+  search?: Dict_DetailSearch,
   options?: {
   },
 ) {
@@ -169,11 +169,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { Dict_DetailSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
   options?: {
   },
 ): Promise<number> {
@@ -210,11 +210,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {Dict_DetailSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -265,9 +265,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = Dict_DetailModel & {
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<Dict_DetailModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -325,10 +323,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] } | PartialNull<Dict_DetailModel>} search0
+ * @param {Dict_DetailSearch | PartialNull<Dict_DetailModel>} search0
  */
 async function findByUnique(
-  search0: Dict_DetailSearch & { $extra?: SearchExtra[] } | PartialNull<Dict_DetailModel>,
+  search0: Dict_DetailSearch | PartialNull<Dict_DetailModel>,
   options?: {
   },
 ) {
@@ -340,7 +338,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: Dict_DetailSearch & { $extra?: SearchExtra[] } = { };
+  const search: Dict_DetailSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -420,10 +418,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Dict_DetailSearch} search?
  */
 async function findOne(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
   options?: {
   },
 ) {
@@ -454,10 +452,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Dict_DetailSearch & { $extra?: SearchExtra[] }} search?
+ * @param {Dict_DetailSearch} search?
  */
 async function exist(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: Dict_DetailSearch,
   options?: {
   },
 ) {
@@ -677,12 +675,11 @@ async function delCache() {
  */
 async function updateById(
   id: string,
-  model: PartialNull<Dict_DetailModel> & {
-  },
+  model: PartialNull<Dict_DetailModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "dict_detail";
   const method = "updateById";
   

@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type RoleModel,
-  type RoleSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type RoleModel,
+  type RoleSearch,
+} from "./role.model.ts";
 
 export const _internals = {
   findCount,
@@ -80,10 +82,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: RoleSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: RoleSearch,
   options?: {
   },
 ) {
@@ -95,7 +94,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -176,11 +175,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { RoleSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
   options?: {
   },
 ): Promise<number> {
@@ -217,11 +216,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {RoleSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {RoleSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -268,10 +267,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = RoleModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<RoleModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -315,10 +311,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {RoleSearch & { $extra?: SearchExtra[] } | PartialNull<RoleModel>} search0
+ * @param {RoleSearch | PartialNull<RoleModel>} search0
  */
 async function findByUnique(
-  search0: RoleSearch & { $extra?: SearchExtra[] } | PartialNull<RoleModel>,
+  search0: RoleSearch | PartialNull<RoleModel>,
   options?: {
   },
 ) {
@@ -330,7 +326,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: RoleSearch & { $extra?: SearchExtra[] } = { };
+  const search: RoleSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -410,10 +406,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {RoleSearch & { $extra?: SearchExtra[] }} search?
+ * @param {RoleSearch} search?
  */
 async function findOne(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
   options?: {
   },
 ) {
@@ -444,10 +440,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {RoleSearch & { $extra?: SearchExtra[] }} search?
+ * @param {RoleSearch} search?
  */
 async function exist(
-  search?: RoleSearch & { $extra?: SearchExtra[] },
+  search?: RoleSearch,
   options?: {
   },
 ) {
@@ -702,13 +698,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<RoleModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<RoleModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "role";
   const method = "updateById";
   

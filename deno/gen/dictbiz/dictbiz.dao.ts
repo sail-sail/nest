@@ -47,16 +47,18 @@ import {
 import {
   many2manyUpdate,
   setModelIds,
-  type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
   SortOrderEnum,
-  type DictbizModel,
-  type DictbizSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type DictbizModel,
+  type DictbizSearch,
+} from "./dictbiz.model.ts";
 
 import {
   _internals as usrDao,
@@ -87,10 +89,7 @@ export const _internals = {
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: DictbizSearch & {
-    $extra?: SearchExtra[];
-    tenant_id?: string | null;
-  },
+  search?: DictbizSearch,
   options?: {
   },
 ) {
@@ -102,7 +101,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else {
+  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
@@ -224,11 +223,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { & { $extra?: SearchExtra[] }} search?
+ * @param { DictbizSearch } search?
  * @return {Promise<number>}
  */
 async function findCount(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
   options?: {
   },
 ): Promise<number> {
@@ -265,11 +264,11 @@ async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {DictbizSearch & { $extra?: SearchExtra[] }} search? 搜索条件
+ * @param {DictbizSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 async function findAll(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -321,10 +320,7 @@ async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  type Result = DictbizModel & {
-    tenant_id: string;
-  };
-  let result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<DictbizModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     typeDict, // 数据类型
@@ -392,10 +388,10 @@ function getUniqueKeys(): {
 
 /**
  * 通过唯一约束获得一行数据
- * @param {DictbizSearch & { $extra?: SearchExtra[] } | PartialNull<DictbizModel>} search0
+ * @param {DictbizSearch | PartialNull<DictbizModel>} search0
  */
 async function findByUnique(
-  search0: DictbizSearch & { $extra?: SearchExtra[] } | PartialNull<DictbizModel>,
+  search0: DictbizSearch | PartialNull<DictbizModel>,
   options?: {
   },
 ) {
@@ -407,7 +403,7 @@ async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: DictbizSearch & { $extra?: SearchExtra[] } = { };
+  const search: DictbizSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -487,10 +483,10 @@ async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {DictbizSearch & { $extra?: SearchExtra[] }} search?
+ * @param {DictbizSearch} search?
  */
 async function findOne(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
   options?: {
   },
 ) {
@@ -521,10 +517,10 @@ async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {DictbizSearch & { $extra?: SearchExtra[] }} search?
+ * @param {DictbizSearch} search?
  */
 async function exist(
-  search?: DictbizSearch & { $extra?: SearchExtra[] },
+  search?: DictbizSearch,
   options?: {
   },
 ) {
@@ -811,13 +807,11 @@ async function updateTenantById(
  */
 async function updateById(
   id: string,
-  model: PartialNull<DictbizModel> & {
-    tenant_id?: string | null;
-  },
+  model: PartialNull<DictbizModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
-): Promise<string | undefined> {
+): Promise<string> {
   const table = "dictbiz";
   const method = "updateById";
   
