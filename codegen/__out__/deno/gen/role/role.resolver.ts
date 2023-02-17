@@ -37,8 +37,8 @@ export const _internals = {
 async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await roleService.findCount(search);
-  return result;
+  const data = await roleService.findCount(search);
+  return data;
 }
 
 /**
@@ -49,8 +49,8 @@ async function findAllRole(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await roleService.findAll(search, page, sort);
-  return result;
+  const data = await roleService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -60,8 +60,8 @@ async function exportExcelRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await roleService.exportExcel(search, sort);
-  return result;
+  const data = await roleService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -70,8 +70,8 @@ async function exportExcelRole(
 async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await roleService.findOne(search);
-  return result;
+  const data = await roleService.findOne(search);
+  return data;
 }
 
 /**
@@ -80,8 +80,8 @@ async function findOneRole(
 async function findByIdRole(
   id: string,
 ) {
-  const result = await roleService.findById(id);
-  return result;
+  const data = await roleService.findById(id);
+  return data;
 }
 
 /**
@@ -93,8 +93,8 @@ async function createRole(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await roleService.create(model);
-  return result;
+  const data = await roleService.create(model);
+  return data;
 }
 
 /**
@@ -107,8 +107,8 @@ async function updateByIdRole(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await roleService.updateById(id, model);
-  return result;
+  const data = await roleService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -120,8 +120,8 @@ async function deleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await roleService.deleteByIds(ids);
-  return result;
+  const data = await roleService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -130,8 +130,8 @@ async function deleteByIdsRole(
 async function importFileRole(
   id: string,
 ) {
-  const result = await roleService.importFile(id);
-  return result;
+  const data = await roleService.importFile(id);
+  return data;
 }
 
 /**
@@ -143,8 +143,8 @@ async function revertByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await roleService.revertByIds(ids);
-  return result;
+  const data = await roleService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -156,6 +156,6 @@ async function forceDeleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await roleService.forceDeleteByIds(ids);
-  return result;
+  const data = await roleService.forceDeleteByIds(ids);
+  return data;
 }

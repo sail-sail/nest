@@ -38,8 +38,8 @@ export const _internals = {
 async function findCountDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await dictbizService.findCount(search);
-  return result;
+  const data = await dictbizService.findCount(search);
+  return data;
 }
 
 /**
@@ -50,8 +50,8 @@ async function findAllDictbiz(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await dictbizService.findAll(search, page, sort);
-  return result;
+  const data = await dictbizService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -61,8 +61,8 @@ async function exportExcelDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await dictbizService.exportExcel(search, sort);
-  return result;
+  const data = await dictbizService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -71,8 +71,8 @@ async function exportExcelDictbiz(
 async function findOneDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await dictbizService.findOne(search);
-  return result;
+  const data = await dictbizService.findOne(search);
+  return data;
 }
 
 /**
@@ -81,8 +81,8 @@ async function findOneDictbiz(
 async function findByIdDictbiz(
   id: string,
 ) {
-  const result = await dictbizService.findById(id);
-  return result;
+  const data = await dictbizService.findById(id);
+  return data;
 }
 
 /**
@@ -94,8 +94,8 @@ async function createDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictbizService.create(model);
-  return result;
+  const data = await dictbizService.create(model);
+  return data;
 }
 
 /**
@@ -108,8 +108,8 @@ async function updateByIdDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictbizService.updateById(id, model);
-  return result;
+  const data = await dictbizService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -121,8 +121,8 @@ async function deleteByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictbizService.deleteByIds(ids);
-  return result;
+  const data = await dictbizService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -138,8 +138,8 @@ async function lockByIdsDictbiz(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDictbiz.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await dictbizService.lockByIds(ids, is_locked);
-  return result;
+  const data = await dictbizService.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -148,8 +148,8 @@ async function lockByIdsDictbiz(
 async function importFileDictbiz(
   id: string,
 ) {
-  const result = await dictbizService.importFile(id);
-  return result;
+  const data = await dictbizService.importFile(id);
+  return data;
 }
 
 /**
@@ -161,8 +161,8 @@ async function revertByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictbizService.revertByIds(ids);
-  return result;
+  const data = await dictbizService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -174,14 +174,14 @@ async function forceDeleteByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictbizService.forceDeleteByIds(ids);
-  return result;
+  const data = await dictbizService.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderByDictbiz() {
-  const result = await dictbizService.findLastOrderBy();
-  return result;
+  const data = await dictbizService.findLastOrderBy();
+  return data;
 }

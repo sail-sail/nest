@@ -34,8 +34,8 @@ export const _internals = {
 async function findCountBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await background_taskService.findCount(search);
-  return result;
+  const data = await background_taskService.findCount(search);
+  return data;
 }
 
 /**
@@ -46,8 +46,8 @@ async function findAllBackground_task(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await background_taskService.findAll(search, page, sort);
-  return result;
+  const data = await background_taskService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -57,8 +57,8 @@ async function exportExcelBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await background_taskService.exportExcel(search, sort);
-  return result;
+  const data = await background_taskService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -67,8 +67,8 @@ async function exportExcelBackground_task(
 async function findOneBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await background_taskService.findOne(search);
-  return result;
+  const data = await background_taskService.findOne(search);
+  return data;
 }
 
 /**
@@ -77,8 +77,8 @@ async function findOneBackground_task(
 async function findByIdBackground_task(
   id: string,
 ) {
-  const result = await background_taskService.findById(id);
-  return result;
+  const data = await background_taskService.findById(id);
+  return data;
 }
 
 /**
@@ -90,8 +90,8 @@ async function deleteByIdsBackground_task(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await background_taskService.deleteByIds(ids);
-  return result;
+  const data = await background_taskService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -103,8 +103,8 @@ async function revertByIdsBackground_task(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await background_taskService.revertByIds(ids);
-  return result;
+  const data = await background_taskService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -116,6 +116,6 @@ async function forceDeleteByIdsBackground_task(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await background_taskService.forceDeleteByIds(ids);
-  return result;
+  const data = await background_taskService.forceDeleteByIds(ids);
+  return data;
 }

@@ -37,8 +37,8 @@ export const _internals = {
 async function findCountOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await optionService.findCount(search);
-  return result;
+  const data = await optionService.findCount(search);
+  return data;
 }
 
 /**
@@ -49,8 +49,8 @@ async function findAllOption(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await optionService.findAll(search, page, sort);
-  return result;
+  const data = await optionService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -60,8 +60,8 @@ async function exportExcelOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await optionService.exportExcel(search, sort);
-  return result;
+  const data = await optionService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -70,8 +70,8 @@ async function exportExcelOption(
 async function findOneOption(
   search?: OptionSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await optionService.findOne(search);
-  return result;
+  const data = await optionService.findOne(search);
+  return data;
 }
 
 /**
@@ -80,8 +80,8 @@ async function findOneOption(
 async function findByIdOption(
   id: string,
 ) {
-  const result = await optionService.findById(id);
-  return result;
+  const data = await optionService.findById(id);
+  return data;
 }
 
 /**
@@ -93,8 +93,8 @@ async function createOption(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await optionService.create(model);
-  return result;
+  const data = await optionService.create(model);
+  return data;
 }
 
 /**
@@ -107,8 +107,8 @@ async function updateByIdOption(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await optionService.updateById(id, model);
-  return result;
+  const data = await optionService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -120,8 +120,8 @@ async function deleteByIdsOption(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await optionService.deleteByIds(ids);
-  return result;
+  const data = await optionService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -130,8 +130,8 @@ async function deleteByIdsOption(
 async function importFileOption(
   id: string,
 ) {
-  const result = await optionService.importFile(id);
-  return result;
+  const data = await optionService.importFile(id);
+  return data;
 }
 
 /**
@@ -143,8 +143,8 @@ async function revertByIdsOption(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await optionService.revertByIds(ids);
-  return result;
+  const data = await optionService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -156,6 +156,6 @@ async function forceDeleteByIdsOption(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await optionService.forceDeleteByIds(ids);
-  return result;
+  const data = await optionService.forceDeleteByIds(ids);
+  return data;
 }

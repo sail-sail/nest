@@ -100,7 +100,7 @@ async function findOne(
  * @param {string} id
  */
 async function findById(
-  id?: string,
+  id?: string | null,
 ) {
   const data = await usrDao.findById(id);
   return data;
@@ -125,7 +125,7 @@ async function exist(
  * @param {string} id
  */
 async function existById(
-  id: string,
+  id?: string | null,
 ) {
   const data = await usrDao.existById(id);
   return data;

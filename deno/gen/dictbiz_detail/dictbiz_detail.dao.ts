@@ -459,11 +459,13 @@ async function findOne(
  * @param {string} id
  */
 async function findById(
-  id?: string,
+  id?: string | null,
   options?: {
   },
 ) {
-  if (!id) return;
+  if (isEmpty(id)) {
+    return;
+  }
   const model = await findOne({ id }, options);
   return model;
 }
@@ -487,13 +489,13 @@ async function exist(
  * @param {string} id
  */
 async function existById(
-  id: string,
+  id?: string | null,
 ) {
   const table = "dictbiz_detail";
   const method = "existById";
   
-  if (!id) {
-    throw new Error(`${ table }Dao.${ method }: id 不能为空!`);
+  if (isEmpty(id)) {
+    return false;
   }
   
   const args = new QueryArgs();

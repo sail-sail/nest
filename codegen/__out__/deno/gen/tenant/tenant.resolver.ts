@@ -38,8 +38,8 @@ export const _internals = {
 async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await tenantService.findCount(search);
-  return result;
+  const data = await tenantService.findCount(search);
+  return data;
 }
 
 /**
@@ -50,8 +50,8 @@ async function findAllTenant(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await tenantService.findAll(search, page, sort);
-  return result;
+  const data = await tenantService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -61,8 +61,8 @@ async function exportExcelTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await tenantService.exportExcel(search, sort);
-  return result;
+  const data = await tenantService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -71,8 +71,8 @@ async function exportExcelTenant(
 async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await tenantService.findOne(search);
-  return result;
+  const data = await tenantService.findOne(search);
+  return data;
 }
 
 /**
@@ -81,8 +81,8 @@ async function findOneTenant(
 async function findByIdTenant(
   id: string,
 ) {
-  const result = await tenantService.findById(id);
-  return result;
+  const data = await tenantService.findById(id);
+  return data;
 }
 
 /**
@@ -94,8 +94,8 @@ async function createTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await tenantService.create(model);
-  return result;
+  const data = await tenantService.create(model);
+  return data;
 }
 
 /**
@@ -108,8 +108,8 @@ async function updateByIdTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await tenantService.updateById(id, model);
-  return result;
+  const data = await tenantService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -121,8 +121,8 @@ async function deleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await tenantService.deleteByIds(ids);
-  return result;
+  const data = await tenantService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -131,8 +131,8 @@ async function deleteByIdsTenant(
 async function importFileTenant(
   id: string,
 ) {
-  const result = await tenantService.importFile(id);
-  return result;
+  const data = await tenantService.importFile(id);
+  return data;
 }
 
 /**
@@ -144,8 +144,8 @@ async function revertByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await tenantService.revertByIds(ids);
-  return result;
+  const data = await tenantService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -157,14 +157,14 @@ async function forceDeleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await tenantService.forceDeleteByIds(ids);
-  return result;
+  const data = await tenantService.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderByTenant() {
-  const result = await tenantService.findLastOrderBy();
-  return result;
+  const data = await tenantService.findLastOrderBy();
+  return data;
 }

@@ -79,8 +79,8 @@ export const _internals = {
 async function findCount<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
-  const result = await <#=table#>Service.findCount(search);
-  return result;
+  const data = await <#=table#>Service.findCount(search);
+  return data;
 }
 
 /**
@@ -91,8 +91,8 @@ async function findAll<#=tableUp#>(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await <#=table#>Service.findAll(search, page, sort);
-  return result;
+  const data = await <#=table#>Service.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -102,8 +102,8 @@ async function exportExcel<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await <#=table#>Service.exportExcel(search, sort);
-  return result;
+  const data = await <#=table#>Service.exportExcel(search, sort);
+  return data;
 }<#
 if (hasSummary) {
 #>
@@ -114,8 +114,8 @@ if (hasSummary) {
 async function findSummary<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
-  const result = await <#=table#>Service.findSummary(search);
-  return result;
+  const data = await <#=table#>Service.findSummary(search);
+  return data;
 }<#
 }
 #>
@@ -126,8 +126,8 @@ async function findSummary<#=tableUp#>(
 async function findOne<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
-  const result = await <#=table#>Service.findOne(search);
-  return result;
+  const data = await <#=table#>Service.findOne(search);
+  return data;
 }
 
 /**
@@ -136,8 +136,8 @@ async function findOne<#=tableUp#>(
 async function findById<#=tableUp#>(
   id: string,
 ) {
-  const result = await <#=table#>Service.findById(id);
-  return result;
+  const data = await <#=table#>Service.findById(id);
+  return data;
 }<#
 if (opts.noAdd !== true) {
 #>
@@ -151,8 +151,8 @@ async function create<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await <#=table#>Service.create(model);
-  return result;
+  const data = await <#=table#>Service.create(model);
+  return data;
 }<#
 }
 #><#
@@ -169,8 +169,8 @@ async function updateById<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await <#=table#>Service.updateById(id, model);
-  return result;
+  const data = await <#=table#>Service.updateById(id, model);
+  return data;
 }<#
 }
 #><#
@@ -186,8 +186,8 @@ async function deleteByIds<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await <#=table#>Service.deleteByIds(ids);
-  return result;
+  const data = await <#=table#>Service.deleteByIds(ids);
+  return data;
 }<#
 }
 #><#
@@ -207,8 +207,8 @@ async function lockByIds<#=tableUp#>(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=tableUp#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await <#=table#>Service.lockByIds(ids, is_locked);
-  return result;
+  const data = await <#=table#>Service.lockByIds(ids, is_locked);
+  return data;
 }<#
   }
 #><#
@@ -221,8 +221,8 @@ if (opts.noAdd !== true && opts.noEdit !== true) {
 async function importFile<#=tableUp#>(
   id: string,
 ) {
-  const result = await <#=table#>Service.importFile(id);
-  return result;
+  const data = await <#=table#>Service.importFile(id);
+  return data;
 }<#
 }
 #><#
@@ -238,8 +238,8 @@ async function revertByIds<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await <#=table#>Service.revertByIds(ids);
-  return result;
+  const data = await <#=table#>Service.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -251,8 +251,8 @@ async function forceDeleteByIds<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await <#=table#>Service.forceDeleteByIds(ids);
-  return result;
+  const data = await <#=table#>Service.forceDeleteByIds(ids);
+  return data;
 }<#
 }
 #><#
@@ -263,8 +263,8 @@ if (hasOrderBy) {
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderBy<#=tableUp#>() {
-  const result = await <#=table#>Service.findLastOrderBy();
-  return result;
+  const data = await <#=table#>Service.findLastOrderBy();
+  return data;
 }<#
 }
 #>

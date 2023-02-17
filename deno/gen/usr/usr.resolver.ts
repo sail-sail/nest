@@ -37,8 +37,8 @@ export const _internals = {
 async function findCountUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await usrService.findCount(search);
-  return result;
+  const data = await usrService.findCount(search);
+  return data;
 }
 
 /**
@@ -49,8 +49,8 @@ async function findAllUsr(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await usrService.findAll(search, page, sort);
-  return result;
+  const data = await usrService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -60,8 +60,8 @@ async function exportExcelUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await usrService.exportExcel(search, sort);
-  return result;
+  const data = await usrService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -70,8 +70,8 @@ async function exportExcelUsr(
 async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await usrService.findOne(search);
-  return result;
+  const data = await usrService.findOne(search);
+  return data;
 }
 
 /**
@@ -80,8 +80,8 @@ async function findOneUsr(
 async function findByIdUsr(
   id: string,
 ) {
-  const result = await usrService.findById(id);
-  return result;
+  const data = await usrService.findById(id);
+  return data;
 }
 
 /**
@@ -93,8 +93,8 @@ async function createUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await usrService.create(model);
-  return result;
+  const data = await usrService.create(model);
+  return data;
 }
 
 /**
@@ -107,8 +107,8 @@ async function updateByIdUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await usrService.updateById(id, model);
-  return result;
+  const data = await usrService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -120,8 +120,8 @@ async function deleteByIdsUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await usrService.deleteByIds(ids);
-  return result;
+  const data = await usrService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -137,8 +137,8 @@ async function lockByIdsUsr(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await usrService.lockByIds(ids, is_locked);
-  return result;
+  const data = await usrService.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -147,8 +147,8 @@ async function lockByIdsUsr(
 async function importFileUsr(
   id: string,
 ) {
-  const result = await usrService.importFile(id);
-  return result;
+  const data = await usrService.importFile(id);
+  return data;
 }
 
 /**
@@ -160,8 +160,8 @@ async function revertByIdsUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await usrService.revertByIds(ids);
-  return result;
+  const data = await usrService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -173,6 +173,6 @@ async function forceDeleteByIdsUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await usrService.forceDeleteByIds(ids);
-  return result;
+  const data = await usrService.forceDeleteByIds(ids);
+  return data;
 }

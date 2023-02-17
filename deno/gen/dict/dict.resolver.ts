@@ -38,8 +38,8 @@ export const _internals = {
 async function findCountDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await dictService.findCount(search);
-  return result;
+  const data = await dictService.findCount(search);
+  return data;
 }
 
 /**
@@ -50,8 +50,8 @@ async function findAllDict(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await dictService.findAll(search, page, sort);
-  return result;
+  const data = await dictService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -61,8 +61,8 @@ async function exportExcelDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await dictService.exportExcel(search, sort);
-  return result;
+  const data = await dictService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -71,8 +71,8 @@ async function exportExcelDict(
 async function findOneDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await dictService.findOne(search);
-  return result;
+  const data = await dictService.findOne(search);
+  return data;
 }
 
 /**
@@ -81,8 +81,8 @@ async function findOneDict(
 async function findByIdDict(
   id: string,
 ) {
-  const result = await dictService.findById(id);
-  return result;
+  const data = await dictService.findById(id);
+  return data;
 }
 
 /**
@@ -94,8 +94,8 @@ async function createDict(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictService.create(model);
-  return result;
+  const data = await dictService.create(model);
+  return data;
 }
 
 /**
@@ -108,8 +108,8 @@ async function updateByIdDict(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictService.updateById(id, model);
-  return result;
+  const data = await dictService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -121,8 +121,8 @@ async function deleteByIdsDict(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictService.deleteByIds(ids);
-  return result;
+  const data = await dictService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -138,8 +138,8 @@ async function lockByIdsDict(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDict.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await dictService.lockByIds(ids, is_locked);
-  return result;
+  const data = await dictService.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -148,8 +148,8 @@ async function lockByIdsDict(
 async function importFileDict(
   id: string,
 ) {
-  const result = await dictService.importFile(id);
-  return result;
+  const data = await dictService.importFile(id);
+  return data;
 }
 
 /**
@@ -161,8 +161,8 @@ async function revertByIdsDict(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictService.revertByIds(ids);
-  return result;
+  const data = await dictService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -174,14 +174,14 @@ async function forceDeleteByIdsDict(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dictService.forceDeleteByIds(ids);
-  return result;
+  const data = await dictService.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderByDict() {
-  const result = await dictService.findLastOrderBy();
-  return result;
+  const data = await dictService.findLastOrderBy();
+  return data;
 }

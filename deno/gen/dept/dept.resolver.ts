@@ -38,8 +38,8 @@ export const _internals = {
 async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await deptService.findCount(search);
-  return result;
+  const data = await deptService.findCount(search);
+  return data;
 }
 
 /**
@@ -50,8 +50,8 @@ async function findAllDept(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await deptService.findAll(search, page, sort);
-  return result;
+  const data = await deptService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -61,8 +61,8 @@ async function exportExcelDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await deptService.exportExcel(search, sort);
-  return result;
+  const data = await deptService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -71,8 +71,8 @@ async function exportExcelDept(
 async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await deptService.findOne(search);
-  return result;
+  const data = await deptService.findOne(search);
+  return data;
 }
 
 /**
@@ -81,8 +81,8 @@ async function findOneDept(
 async function findByIdDept(
   id: string,
 ) {
-  const result = await deptService.findById(id);
-  return result;
+  const data = await deptService.findById(id);
+  return data;
 }
 
 /**
@@ -94,8 +94,8 @@ async function createDept(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await deptService.create(model);
-  return result;
+  const data = await deptService.create(model);
+  return data;
 }
 
 /**
@@ -108,8 +108,8 @@ async function updateByIdDept(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await deptService.updateById(id, model);
-  return result;
+  const data = await deptService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -121,8 +121,8 @@ async function deleteByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await deptService.deleteByIds(ids);
-  return result;
+  const data = await deptService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -138,8 +138,8 @@ async function lockByIdsDept(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDept.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await deptService.lockByIds(ids, is_locked);
-  return result;
+  const data = await deptService.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -148,8 +148,8 @@ async function lockByIdsDept(
 async function importFileDept(
   id: string,
 ) {
-  const result = await deptService.importFile(id);
-  return result;
+  const data = await deptService.importFile(id);
+  return data;
 }
 
 /**
@@ -161,8 +161,8 @@ async function revertByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await deptService.revertByIds(ids);
-  return result;
+  const data = await deptService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -174,14 +174,14 @@ async function forceDeleteByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await deptService.forceDeleteByIds(ids);
-  return result;
+  const data = await deptService.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderByDept() {
-  const result = await deptService.findLastOrderBy();
-  return result;
+  const data = await deptService.findLastOrderBy();
+  return data;
 }

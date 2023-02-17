@@ -38,8 +38,8 @@ export const _internals = {
 async function findCountMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await menuService.findCount(search);
-  return result;
+  const data = await menuService.findCount(search);
+  return data;
 }
 
 /**
@@ -50,8 +50,8 @@ async function findAllMenu(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await menuService.findAll(search, page, sort);
-  return result;
+  const data = await menuService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -61,8 +61,8 @@ async function exportExcelMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await menuService.exportExcel(search, sort);
-  return result;
+  const data = await menuService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -71,8 +71,8 @@ async function exportExcelMenu(
 async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await menuService.findOne(search);
-  return result;
+  const data = await menuService.findOne(search);
+  return data;
 }
 
 /**
@@ -81,8 +81,8 @@ async function findOneMenu(
 async function findByIdMenu(
   id: string,
 ) {
-  const result = await menuService.findById(id);
-  return result;
+  const data = await menuService.findById(id);
+  return data;
 }
 
 /**
@@ -94,8 +94,8 @@ async function createMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await menuService.create(model);
-  return result;
+  const data = await menuService.create(model);
+  return data;
 }
 
 /**
@@ -108,8 +108,8 @@ async function updateByIdMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await menuService.updateById(id, model);
-  return result;
+  const data = await menuService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -121,8 +121,8 @@ async function deleteByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await menuService.deleteByIds(ids);
-  return result;
+  const data = await menuService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -131,8 +131,8 @@ async function deleteByIdsMenu(
 async function importFileMenu(
   id: string,
 ) {
-  const result = await menuService.importFile(id);
-  return result;
+  const data = await menuService.importFile(id);
+  return data;
 }
 
 /**
@@ -144,8 +144,8 @@ async function revertByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await menuService.revertByIds(ids);
-  return result;
+  const data = await menuService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -157,14 +157,14 @@ async function forceDeleteByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await menuService.forceDeleteByIds(ids);
-  return result;
+  const data = await menuService.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderByMenu() {
-  const result = await menuService.findLastOrderBy();
-  return result;
+  const data = await menuService.findLastOrderBy();
+  return data;
 }

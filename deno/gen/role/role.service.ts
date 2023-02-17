@@ -99,7 +99,7 @@ async function findOne(
  * @param {string} id
  */
 async function findById(
-  id?: string,
+  id?: string | null,
 ) {
   const data = await roleDao.findById(id);
   return data;
@@ -124,7 +124,7 @@ async function exist(
  * @param {string} id
  */
 async function existById(
-  id: string,
+  id?: string | null,
 ) {
   const data = await roleDao.existById(id);
   return data;

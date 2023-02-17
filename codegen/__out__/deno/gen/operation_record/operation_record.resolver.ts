@@ -34,8 +34,8 @@ export const _internals = {
 async function findCountOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await operation_recordService.findCount(search);
-  return result;
+  const data = await operation_recordService.findCount(search);
+  return data;
 }
 
 /**
@@ -46,8 +46,8 @@ async function findAllOperation_record(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await operation_recordService.findAll(search, page, sort);
-  return result;
+  const data = await operation_recordService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -57,8 +57,8 @@ async function exportExcelOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await operation_recordService.exportExcel(search, sort);
-  return result;
+  const data = await operation_recordService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -67,8 +67,8 @@ async function exportExcelOperation_record(
 async function findOneOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await operation_recordService.findOne(search);
-  return result;
+  const data = await operation_recordService.findOne(search);
+  return data;
 }
 
 /**
@@ -77,8 +77,8 @@ async function findOneOperation_record(
 async function findByIdOperation_record(
   id: string,
 ) {
-  const result = await operation_recordService.findById(id);
-  return result;
+  const data = await operation_recordService.findById(id);
+  return data;
 }
 
 /**
@@ -90,8 +90,8 @@ async function deleteByIdsOperation_record(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await operation_recordService.deleteByIds(ids);
-  return result;
+  const data = await operation_recordService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -103,8 +103,8 @@ async function revertByIdsOperation_record(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await operation_recordService.revertByIds(ids);
-  return result;
+  const data = await operation_recordService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -116,6 +116,6 @@ async function forceDeleteByIdsOperation_record(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await operation_recordService.forceDeleteByIds(ids);
-  return result;
+  const data = await operation_recordService.forceDeleteByIds(ids);
+  return data;
 }

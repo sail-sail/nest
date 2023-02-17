@@ -38,8 +38,8 @@ export const _internals = {
 async function findCountDict_detail(
   search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await dict_detailService.findCount(search);
-  return result;
+  const data = await dict_detailService.findCount(search);
+  return data;
 }
 
 /**
@@ -50,8 +50,8 @@ async function findAllDict_detail(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await dict_detailService.findAll(search, page, sort);
-  return result;
+  const data = await dict_detailService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -61,8 +61,8 @@ async function exportExcelDict_detail(
   search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await dict_detailService.exportExcel(search, sort);
-  return result;
+  const data = await dict_detailService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -71,8 +71,8 @@ async function exportExcelDict_detail(
 async function findOneDict_detail(
   search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await dict_detailService.findOne(search);
-  return result;
+  const data = await dict_detailService.findOne(search);
+  return data;
 }
 
 /**
@@ -81,8 +81,8 @@ async function findOneDict_detail(
 async function findByIdDict_detail(
   id: string,
 ) {
-  const result = await dict_detailService.findById(id);
-  return result;
+  const data = await dict_detailService.findById(id);
+  return data;
 }
 
 /**
@@ -94,8 +94,8 @@ async function createDict_detail(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dict_detailService.create(model);
-  return result;
+  const data = await dict_detailService.create(model);
+  return data;
 }
 
 /**
@@ -108,8 +108,8 @@ async function updateByIdDict_detail(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dict_detailService.updateById(id, model);
-  return result;
+  const data = await dict_detailService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -121,8 +121,8 @@ async function deleteByIdsDict_detail(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dict_detailService.deleteByIds(ids);
-  return result;
+  const data = await dict_detailService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -138,8 +138,8 @@ async function lockByIdsDict_detail(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDict_detail.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const result = await dict_detailService.lockByIds(ids, is_locked);
-  return result;
+  const data = await dict_detailService.lockByIds(ids, is_locked);
+  return data;
 }
 
 /**
@@ -148,8 +148,8 @@ async function lockByIdsDict_detail(
 async function importFileDict_detail(
   id: string,
 ) {
-  const result = await dict_detailService.importFile(id);
-  return result;
+  const data = await dict_detailService.importFile(id);
+  return data;
 }
 
 /**
@@ -161,8 +161,8 @@ async function revertByIdsDict_detail(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dict_detailService.revertByIds(ids);
-  return result;
+  const data = await dict_detailService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -174,14 +174,14 @@ async function forceDeleteByIdsDict_detail(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await dict_detailService.forceDeleteByIds(ids);
-  return result;
+  const data = await dict_detailService.forceDeleteByIds(ids);
+  return data;
 }
 
 /**
  * 查找 order_by 字段的最大值
  */
 async function findLastOrderByDict_detail() {
-  const result = await dict_detailService.findLastOrderBy();
-  return result;
+  const data = await dict_detailService.findLastOrderBy();
+  return data;
 }

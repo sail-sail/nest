@@ -37,8 +37,8 @@ export const _internals = {
 async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await permitService.findCount(search);
-  return result;
+  const data = await permitService.findCount(search);
+  return data;
 }
 
 /**
@@ -49,8 +49,8 @@ async function findAllPermit(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const result = await permitService.findAll(search, page, sort);
-  return result;
+  const data = await permitService.findAll(search, page, sort);
+  return data;
 }
 
 /**
@@ -60,8 +60,8 @@ async function exportExcelPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const result = await permitService.exportExcel(search, sort);
-  return result;
+  const data = await permitService.exportExcel(search, sort);
+  return data;
 }
 
 /**
@@ -70,8 +70,8 @@ async function exportExcelPermit(
 async function findOnePermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
-  const result = await permitService.findOne(search);
-  return result;
+  const data = await permitService.findOne(search);
+  return data;
 }
 
 /**
@@ -80,8 +80,8 @@ async function findOnePermit(
 async function findByIdPermit(
   id: string,
 ) {
-  const result = await permitService.findById(id);
-  return result;
+  const data = await permitService.findById(id);
+  return data;
 }
 
 /**
@@ -93,8 +93,8 @@ async function createPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await permitService.create(model);
-  return result;
+  const data = await permitService.create(model);
+  return data;
 }
 
 /**
@@ -107,8 +107,8 @@ async function updateByIdPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await permitService.updateById(id, model);
-  return result;
+  const data = await permitService.updateById(id, model);
+  return data;
 }
 
 /**
@@ -120,8 +120,8 @@ async function deleteByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await permitService.deleteByIds(ids);
-  return result;
+  const data = await permitService.deleteByIds(ids);
+  return data;
 }
 
 /**
@@ -130,8 +130,8 @@ async function deleteByIdsPermit(
 async function importFilePermit(
   id: string,
 ) {
-  const result = await permitService.importFile(id);
-  return result;
+  const data = await permitService.importFile(id);
+  return data;
 }
 
 /**
@@ -143,8 +143,8 @@ async function revertByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await permitService.revertByIds(ids);
-  return result;
+  const data = await permitService.revertByIds(ids);
+  return data;
 }
 
 /**
@@ -156,6 +156,6 @@ async function forceDeleteByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const result = await permitService.forceDeleteByIds(ids);
-  return result;
+  const data = await permitService.forceDeleteByIds(ids);
+  return data;
 }
