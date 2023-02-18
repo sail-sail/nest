@@ -15,8 +15,7 @@ import {
   type <#=Table_Up#>Search as <#=Table_Up#>SearchType,
 } from "/gen/types.ts";
 
-export interface <#=Table_Up#>Search extends <#=Table_Up#>SearchType {
-  $extra?: SearchExtra[],<#
+export interface <#=Table_Up#>Search extends <#=Table_Up#>SearchType {<#
   if (hasTenant_id) {
   #>
   tenant_id?: string | null;<#
@@ -27,9 +26,14 @@ export interface <#=Table_Up#>Search extends <#=Table_Up#>SearchType {
   dept_id?: string | null;<#
   }
   #>
+  $extra?: SearchExtra[];
 }
 
-export interface <#=Table_Up#>Model extends <#=Table_Up#>ModelType {<#
+export interface <#=Table_Up#>Model extends <#=Table_Up#>ModelType {
+  create_usr_id?: string | null;
+  create_time?: string | null;
+  update_usr_id?: string | null;
+  update_time?: string | null;<#
   if (hasTenant_id) {
   #>
   tenant_id?: string | null;<#

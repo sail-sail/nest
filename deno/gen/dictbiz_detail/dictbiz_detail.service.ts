@@ -57,8 +57,6 @@ async function findCount(
   search?: Dictbiz_DetailSearch,
 ): Promise<number> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await dictbiz_detailDao.findCount(search);
   return data;
 }
@@ -76,8 +74,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<Dictbiz_DetailModel[]> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data: Dictbiz_DetailModel[] = await dictbiz_detailDao.findAll(search, page, sort);
   return data;
 }
@@ -90,8 +86,6 @@ async function findOne(
   search?: Dictbiz_DetailSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await dictbiz_detailDao.findOne(search);
   return data;
 }
@@ -115,8 +109,6 @@ async function exist(
   search?: Dictbiz_DetailSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await dictbiz_detailDao.exist(search);
   return data;
 }
@@ -140,8 +132,6 @@ async function existById(
 async function create(
   model: Dictbiz_DetailModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await dictbiz_detailDao.create(model);
   return data;
 }
@@ -156,8 +146,6 @@ async function updateById(
   id: string,
   model: Dictbiz_DetailModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await dictbiz_detailDao.updateById(id, model);
   return data;
 }
@@ -235,8 +223,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await dictbiz_detailDao.create(model, { uniqueType: "update" });
       succNum++;

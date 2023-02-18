@@ -55,8 +55,6 @@ async function findCount(
   search?: OptionSearch,
 ): Promise<number> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await optionDao.findCount(search);
   return data;
 }
@@ -74,8 +72,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OptionModel[]> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data: OptionModel[] = await optionDao.findAll(search, page, sort);
   return data;
 }
@@ -88,8 +84,6 @@ async function findOne(
   search?: OptionSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await optionDao.findOne(search);
   return data;
 }
@@ -113,8 +107,6 @@ async function exist(
   search?: OptionSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await optionDao.exist(search);
   return data;
 }
@@ -138,8 +130,6 @@ async function existById(
 async function create(
   model: OptionModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await optionDao.create(model);
   return data;
 }
@@ -154,8 +144,6 @@ async function updateById(
   id: string,
   model: OptionModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await optionDao.updateById(id, model);
   return data;
 }
@@ -218,8 +206,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await optionDao.create(model, { uniqueType: "update" });
       succNum++;

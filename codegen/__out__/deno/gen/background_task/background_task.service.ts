@@ -56,8 +56,6 @@ async function findCount(
 ): Promise<number> {
   search = search || { };
   
-  search.tenant_id = undefined;
-  
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
@@ -80,8 +78,6 @@ async function findAll(
 ): Promise<Background_TaskModel[]> {
   search = search || { };
   
-  search.tenant_id = undefined;
-  
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
@@ -98,8 +94,6 @@ async function findOne(
   search?: Background_TaskSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
@@ -129,8 +123,6 @@ async function exist(
 ) {
   search = search || { };
   
-  search.tenant_id = undefined;
-  
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
@@ -158,8 +150,6 @@ async function existById(
 async function create(
   model: Background_TaskModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await background_taskDao.create(model);
   return data;
 }
@@ -174,8 +164,6 @@ async function updateById(
   id: string,
   model: Background_TaskModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await background_taskDao.updateById(id, model);
   return data;
 }
@@ -241,8 +229,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await background_taskDao.create(model, { uniqueType: "update" });
       succNum++;

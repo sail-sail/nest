@@ -8,10 +8,14 @@ import {
 } from "/gen/types.ts";
 
 export interface DeptSearch extends DeptSearchType {
-  $extra?: SearchExtra[],
   tenant_id?: string | null;
+  $extra?: SearchExtra[];
 }
 
 export interface DeptModel extends DeptModelType {
+  create_usr_id?: string | null;
+  create_time?: string | null;
+  update_usr_id?: string | null;
+  update_time?: string | null;
   tenant_id?: string | null;
 }

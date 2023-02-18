@@ -57,8 +57,6 @@ async function findCount(
   search?: DeptSearch,
 ): Promise<number> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await deptDao.findCount(search);
   return data;
 }
@@ -76,8 +74,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel[]> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data: DeptModel[] = await deptDao.findAll(search, page, sort);
   return data;
 }
@@ -90,8 +86,6 @@ async function findOne(
   search?: DeptSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await deptDao.findOne(search);
   return data;
 }
@@ -115,8 +109,6 @@ async function exist(
   search?: DeptSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await deptDao.exist(search);
   return data;
 }
@@ -140,8 +132,6 @@ async function existById(
 async function create(
   model: DeptModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await deptDao.create(model);
   return data;
 }
@@ -156,8 +146,6 @@ async function updateById(
   id: string,
   model: DeptModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await deptDao.updateById(id, model);
   return data;
 }
@@ -234,8 +222,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await deptDao.create(model, { uniqueType: "update" });
       succNum++;

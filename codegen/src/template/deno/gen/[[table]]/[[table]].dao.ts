@@ -1336,7 +1336,9 @@ async function create(
   `;<#
   if (hasTenant_id) {
   #>
-  {
+  if (model.tenant_id != null) {
+    sql += `,tenant_id`;
+  } else {
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
@@ -1347,7 +1349,9 @@ async function create(
   #><#
   if (hasDeptId) {
   #>
-  {
+  if (model.dept_id != null) {
+    sql += `,dept_id`;
+  } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.dept_id) {
       sql += `,dept_id`;
@@ -1355,7 +1359,9 @@ async function create(
   }<#
   }
   #>
-  {
+  if (model.create_usr_id != null) {
+    sql += `,create_usr_id`;
+  } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
@@ -1409,7 +1415,9 @@ async function create(
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;<#
   if (hasTenant_id) {
   #>
-  {
+  if (model.tenant_id != null) {
+    sql += `,${ args.push(model.tenant_id) }`;
+  } else {
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
@@ -1420,7 +1428,9 @@ async function create(
   #><#
   if (hasDeptId) {
   #>
-  {
+  if (model.dept_id != null) {
+    sql += `,${ args.push(model.dept_id) }`;
+  } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.dept_id) {
       sql += `,${ args.push(authModel?.dept_id) }`;
@@ -1428,7 +1438,9 @@ async function create(
   }<#
   }
   #>
-  {
+  if (model.create_usr_id != null) {
+    sql += `,${ args.push(model.create_usr_id) }`;
+  } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
@@ -1943,7 +1955,7 @@ async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update <#=table#> set update_time = ${ args.push(reqDate()) }
+    update <#=table#> set
   `;
   let updateFldNum = 0;<#
   for (let i = 0; i < columns.length; i++) {
@@ -1961,6 +1973,12 @@ async function updateById(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    if (column_name === "tenant_id") {
+      continue;
+    }
+    if (column_name === "dept_id") {
+      continue;
+    }
   #><#
     if (column.isPassword) {
   #>
@@ -2003,13 +2021,16 @@ async function updateById(
   }
   #>
   if (updateFldNum > 0) {
-    {
+    if (model.update_usr_id != null) {
+      sql += `,update_usr_id = ${ args.push(model.update_usr_id) }`;
+    } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
     }
-    sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
+    sql += `,update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -2160,8 +2181,7 @@ async function lockByIds(
     update
       <#=table#>
     set
-      is_locked = ${ args.push(is_locked) },
-      update_time = ${ args.push(reqDate()) }
+      is_locked = ${ args.push(is_locked) }
     
   `;
   {

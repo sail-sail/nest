@@ -55,8 +55,6 @@ async function findCount(
   search?: RoleSearch,
 ): Promise<number> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await roleDao.findCount(search);
   return data;
 }
@@ -74,8 +72,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel[]> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data: RoleModel[] = await roleDao.findAll(search, page, sort);
   return data;
 }
@@ -88,8 +84,6 @@ async function findOne(
   search?: RoleSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await roleDao.findOne(search);
   return data;
 }
@@ -113,8 +107,6 @@ async function exist(
   search?: RoleSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await roleDao.exist(search);
   return data;
 }
@@ -138,8 +130,6 @@ async function existById(
 async function create(
   model: RoleModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await roleDao.create(model);
   return data;
 }
@@ -154,8 +144,6 @@ async function updateById(
   id: string,
   model: RoleModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await roleDao.updateById(id, model);
   return data;
 }
@@ -217,8 +205,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await roleDao.create(model, { uniqueType: "update" });
       succNum++;

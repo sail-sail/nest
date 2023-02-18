@@ -56,8 +56,6 @@ async function findCount(
   search?: UsrSearch,
 ): Promise<number> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await usrDao.findCount(search);
   return data;
 }
@@ -75,8 +73,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel[]> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data: UsrModel[] = await usrDao.findAll(search, page, sort);
   return data;
 }
@@ -89,8 +85,6 @@ async function findOne(
   search?: UsrSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await usrDao.findOne(search);
   return data;
 }
@@ -114,8 +108,6 @@ async function exist(
   search?: UsrSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await usrDao.exist(search);
   return data;
 }
@@ -139,8 +131,6 @@ async function existById(
 async function create(
   model: UsrModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await usrDao.create(model);
   return data;
 }
@@ -155,8 +145,6 @@ async function updateById(
   id: string,
   model: UsrModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await usrDao.updateById(id, model);
   return data;
 }
@@ -236,8 +224,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await usrDao.create(model, { uniqueType: "update" });
       succNum++;

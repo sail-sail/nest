@@ -1,7 +1,6 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -85,18 +84,6 @@ async function findCount(
   search?: <#=Table_Up#>Search,
 ): Promise<number> {
   search = search || { };<#
-  if (hasTenant_id) {
-  #>
-  
-  search.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  search.dept_id = undefined;<#
-  }
-  #><#
     if (opts.filterDataByCreateUsr) {
   #>
   
@@ -123,18 +110,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<<#=Table_Up#>Model[]> {
   search = search || { };<#
-  if (hasTenant_id) {
-  #>
-  
-  search.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  search.dept_id = undefined;<#
-  }
-  #><#
     if (opts.filterDataByCreateUsr) {
   #>
   
@@ -159,18 +134,6 @@ async function findSummary(
   search?: <#=Table_Up#>Search,
 ): Promise<<#=Table_Up#>Summary> {
   search = search || { };<#
-  if (hasTenant_id) {
-  #>
-  
-  search.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  search.dept_id = undefined;<#
-  }
-  #><#
     if (opts.filterDataByCreateUsr) {
   #>
   
@@ -194,18 +157,6 @@ async function findOne(
   search?: <#=Table_Up#>Search,
 ) {
   search = search || { };<#
-  if (hasTenant_id) {
-  #>
-  
-  search.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  search.dept_id = undefined;<#
-  }
-  #><#
     if (opts.filterDataByCreateUsr) {
   #>
   
@@ -238,18 +189,6 @@ async function exist(
   search?: <#=Table_Up#>Search,
 ) {
   search = search || { };<#
-  if (hasTenant_id) {
-  #>
-  
-  search.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  search.dept_id = undefined;<#
-  }
-  #><#
     if (opts.filterDataByCreateUsr) {
   #>
   
@@ -281,19 +220,7 @@ async function existById(
  */
 async function create(
   model: <#=Table_Up#>Model,
-): Promise<string> {<#
-  if (hasTenant_id) {
-  #>
-  
-  model.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  model.dept_id = undefined;<#
-  }
-  #>
+): Promise<string> {
   const data = await <#=table#>Dao.create(model);
   return data;
 }
@@ -307,19 +234,7 @@ async function create(
 async function updateById(
   id: string,
   model: <#=Table_Up#>Model,
-): Promise<string> {<#
-  if (hasTenant_id) {
-  #>
-  
-  model.tenant_id = undefined;<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  model.dept_id = undefined;<#
-  }
-  #>
+): Promise<string> {
   const data = await <#=table#>Dao.updateById(id, model);
   return data;
 }
@@ -430,19 +345,7 @@ async function importFile(
   const failErrMsgs: string[] = [ ];
   
   for (let i = 0; i < models.length; i++) {
-    const model = models[i];<#
-    if (hasTenant_id) {
-    #>
-    
-    model.tenant_id = undefined;<#
-    }
-    #><#
-    if (hasDeptId) {
-    #>
-    
-    model.dept_id = undefined;<#
-    }
-    #>
+    const model = models[i];
     try {
       await <#=table#>Dao.create(model, { uniqueType: "update" });
       succNum++;

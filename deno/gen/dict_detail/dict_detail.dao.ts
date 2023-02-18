@@ -579,7 +579,9 @@ async function create(
       id
       ,create_time
   `;
-  {
+  if (model.create_usr_id != null) {
+    sql += `,create_usr_id`;
+  } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
@@ -607,7 +609,9 @@ async function create(
     sql += `,\`is_locked\``;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
-  {
+  if (model.create_usr_id != null) {
+    sql += `,${ args.push(model.create_usr_id) }`;
+  } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
@@ -744,7 +748,7 @@ async function updateById(
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
-    update dict_detail set update_time = ${ args.push(reqDate()) }
+    update dict_detail set
   `;
   let updateFldNum = 0;
   if (model.dict_id !== undefined) {
@@ -790,13 +794,16 @@ async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    {
+    if (model.update_usr_id != null) {
+      sql += `,update_usr_id = ${ args.push(model.update_usr_id) }`;
+    } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
         sql += `,update_usr_id = ${ args.push(authModel.id) }`;
       }
     }
-    sql += /*sql*/ ` where id = ${ args.push(id) } limit 1`;
+    sql += `,update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }
   
@@ -900,8 +907,7 @@ async function lockByIds(
     update
       dict_detail
     set
-      is_locked = ${ args.push(is_locked) },
-      update_time = ${ args.push(reqDate()) }
+      is_locked = ${ args.push(is_locked) }
     
   `;
   {

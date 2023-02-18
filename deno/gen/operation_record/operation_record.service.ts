@@ -55,8 +55,6 @@ async function findCount(
   search?: Operation_RecordSearch,
 ): Promise<number> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await operation_recordDao.findCount(search);
   return data;
 }
@@ -74,8 +72,6 @@ async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<Operation_RecordModel[]> {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data: Operation_RecordModel[] = await operation_recordDao.findAll(search, page, sort);
   return data;
 }
@@ -88,8 +84,6 @@ async function findOne(
   search?: Operation_RecordSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await operation_recordDao.findOne(search);
   return data;
 }
@@ -113,8 +107,6 @@ async function exist(
   search?: Operation_RecordSearch,
 ) {
   search = search || { };
-  
-  search.tenant_id = undefined;
   const data = await operation_recordDao.exist(search);
   return data;
 }
@@ -138,8 +130,6 @@ async function existById(
 async function create(
   model: Operation_RecordModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await operation_recordDao.create(model);
   return data;
 }
@@ -154,8 +144,6 @@ async function updateById(
   id: string,
   model: Operation_RecordModel,
 ): Promise<string> {
-  
-  model.tenant_id = undefined;
   const data = await operation_recordDao.updateById(id, model);
   return data;
 }
@@ -219,8 +207,6 @@ async function importFile(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    
-    model.tenant_id = undefined;
     try {
       await operation_recordDao.create(model, { uniqueType: "update" });
       succNum++;
