@@ -225,7 +225,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
+  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }<#
   }
@@ -238,7 +238,7 @@ async function getWhereQuery(
     if (dept_id) {
       whereQuery += ` and t.dept_id = ${ args.push(dept_id) }`;
     }
-  } else if (isNotEmpty(search?.dept_id) || search?.dept_id === "-") {
+  } else if (isNotEmpty(search?.dept_id) && search?.dept_id !== "-") {
     whereQuery += ` and t.dept_id = ${ args.push(search.dept_id) }`;
   }<#
   }
