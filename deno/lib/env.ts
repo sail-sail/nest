@@ -28,7 +28,7 @@ function initEnv() {
       const cwdTmp = item.replace(/^-c=/, "").replace(/^--cwd=/, "");
       if (cwdTmp) {
         cwd = cwdTmp;
-        Deno.cwd = () => cwd;
+        Deno.chdir(cwd);
       }
     }
   }

@@ -32,7 +32,9 @@ import {
   type InputMaybe,
 } from "../gen/types.ts";
 
-import { ServiceException } from "./exceptions/service.exception.ts";
+import {
+  ServiceException,
+} from "./exceptions/service.exception.ts";
 
 declare global {
   interface Window {
@@ -68,9 +70,15 @@ async function redisClient() {
   if (cache_ECONNREFUSED) {
     return;
   }
-  if (_redisClient) return _redisClient;
+  if (_redisClient) {
+    return _redisClient;
+  }
+  const hostname = await getEnv("cache_hostname");
+  if (!hostname) {
+    return;
+  }
   const option: RedisConnectOptions = {
-    hostname: await getEnv("cache_hostname") || "127.0.0.1",
+    hostname,
     port: Number(await getEnv("cache_port")) || 6379,
     db: Number(await getEnv("cache_db")) || 0,
   };
@@ -241,11 +249,13 @@ export class QueryArgs {
 }
 
 export function newContext(
-  oakContext: OakContext,
+  oakContext?: OakContext,
 ) {
   const context = new Context(oakContext);
-  // deno-lint-ignore no-explicit-any
-  (oakContext as any)._context = context;
+  if (oakContext) {
+    // deno-lint-ignore no-explicit-any
+    (oakContext as any)._context = context;
+  }
   return context;
 }
 
