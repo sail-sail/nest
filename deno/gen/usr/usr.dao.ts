@@ -100,7 +100,7 @@ async function getWhereQuery(
     if (tenant_id) {
       whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
     }
-  } else if (isNotEmpty(search?.tenant_id) || search?.tenant_id === "-") {
+  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
   }
   if (isNotEmpty(search?.id)) {
