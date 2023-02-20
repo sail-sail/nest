@@ -50,10 +50,10 @@ async function getAuthModel<T extends AuthModel>(
     return authModel;
   }
   const response = context.oakCtx?.response;
-  const authorization = getAuthorization();
   if (notVerifyToken == null) {
     notVerifyToken = context.notVerifyToken;
   }
+  const authorization = getAuthorization();
   if (!authorization) {
     authModel = undefined;
     context.cacheMap.set("authModel", authModel);
