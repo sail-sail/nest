@@ -673,6 +673,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -680,6 +681,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "备注",
     prop: "rem",
+    width: 180,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -687,6 +689,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "启用",
     prop: "_is_enabled",
+    width: 80,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

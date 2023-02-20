@@ -81,7 +81,40 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
-  return records;
+  const records2: TableCloumn[] = [ ];
+  if (!tables[table_name].columns) {
+    throw new Error(`table: ${ table_name } columns is empty!`);
+  }
+  const idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "id");
+  if (idColumn) {
+    records2.push(idColumn);
+  }
+  for (let j = 0; j < tables[table_name].columns.length; j++) {
+    const column = tables[table_name].columns[j];
+    for (let k = 0; k < records.length; k++) {
+      const record = records[k];
+      if (record.COLUMN_NAME === "id") {
+        continue;
+      }
+      if (column.COLUMN_NAME === record.COLUMN_NAME) {
+        records2.push(record);
+        break;
+      }
+    }
+  }
+  const tenant_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
+  if (tenant_idColumn) {
+    records2.push(tenant_idColumn);
+  }
+  const dept_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "dept_id");
+  if (dept_idColumn) {
+    records2.push(dept_idColumn);
+  }
+  const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
+  if (is_deletedColumn) {
+    records2.push(is_deletedColumn);
+  }
+  return records2;
 }
 
 export async function getSchema(

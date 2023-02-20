@@ -306,7 +306,6 @@
         @select="selectChg"
         @select-all="selectChg"
         @row-click="rowClk"
-        @row-dblclick="openEdit"
         @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
@@ -654,7 +653,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
-    minWidth: 120,
+    width: 120,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -662,7 +661,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "状态",
     prop: "_state",
-    minWidth: 55,
+    width: 120,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -670,7 +669,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "类型",
     prop: "_type",
-    minWidth: 55,
+    width: 120,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -678,7 +677,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "执行结果",
     prop: "result",
-    minWidth: 140,
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -686,6 +685,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "错误信息",
     prop: "err_msg",
+    width: 160,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -693,7 +693,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "开始时间",
     prop: "begin_time",
-    minWidth: 110,
+    width: 180,
     sortable: "custom",
     align: "center",
     headerAlign: "center",
@@ -702,7 +702,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "结束时间",
     prop: "end_time",
-    minWidth: 110,
+    width: 180,
     sortable: "custom",
     align: "center",
     headerAlign: "center",
@@ -711,6 +711,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "备注",
     prop: "rem",
+    width: 180,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

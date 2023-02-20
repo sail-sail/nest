@@ -9,6 +9,12 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 140,
+      },
+      {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单",
         ORDINAL_POSITION: 5,
@@ -18,6 +24,15 @@ export default defineConfig({
         foreignKey: {
           showType: "dialog",
         },
+      },
+      {
+        COLUMN_NAME: "rem",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        require: true,
+        width: 80,
       },
     ],
   },
@@ -29,6 +44,33 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "host",
+        require: true,
+        width: 280,
+      },
+      {
+        COLUMN_NAME: "expiration",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "max_usr_num",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "order_by",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
+      },
+      {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单",
         ORDINAL_POSITION: 6,
@@ -38,6 +80,10 @@ export default defineConfig({
         foreignKey: {
           showType: "dialog",
         },
+      },
+      {
+        COLUMN_NAME: "rem",
+        width: 180,
       },
     ],
   },
@@ -108,6 +154,10 @@ export default defineConfig({
         search: true,
         width: 140,
       },
+      {
+        COLUMN_NAME: "rem",
+        width: 140,
+      },
     ],
   },
   // 菜单
@@ -168,15 +218,16 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 180,
       },
     ]
   },
-  permit: {
-    opts: {
-      cache: true,
-      unique: [ "menu_id", "lbl" ],
-    },
-  },
+  // permit: {
+  //   opts: {
+  //     cache: true,
+  //     unique: [ "menu_id", "lbl" ],
+  //   },
+  // },
   background_task: {
     opts: {
       noAdd: true,
@@ -194,34 +245,38 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
-        minWidth: 120,
+        width: 120,
       },
       {
         COLUMN_NAME: "state",
         require: true,
         search: true,
-        minWidth: 55,
+        width: 120,
       },
       {
         COLUMN_NAME: "type",
         require: true,
         search: true,
-        minWidth: 55,
+        width: 120,
       },
       {
         COLUMN_NAME: "result",
-        minWidth: 140,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "err_msg",
+        width: 160,
       },
       {
         COLUMN_NAME: "begin_time",
         search: true,
         sortable: true,
-        minWidth: 110,
+        width: 180,
       },
       {
         COLUMN_NAME: "end_time",
         sortable: true,
-        minWidth: 110,
+        width: 180,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -230,6 +285,10 @@ export default defineConfig({
         foreignKey: {
           table: "usr",
         },
+      },
+      {
+        COLUMN_NAME: "rem",
+        width: 180,
       },
     ]
   },
@@ -369,6 +428,10 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
+      },
+      {
         COLUMN_NAME: "rem",
       },
       {
@@ -460,6 +523,10 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
+      },
+      {
         COLUMN_NAME: "rem",
         width: 120,
       },
@@ -547,6 +614,10 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
+      },
+      {
         COLUMN_NAME: "rem",
         width: 120,
       },
@@ -599,6 +670,10 @@ export default defineConfig({
         COLUMN_NAME: "order_by",
         sortable: true,
         width: 100,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
       },
       {
         COLUMN_NAME: "rem",
@@ -685,6 +760,10 @@ export default defineConfig({
         COLUMN_NAME: "order_by",
         sortable: true,
         width: 100,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        width: 60,
       },
       {
         COLUMN_NAME: "rem",

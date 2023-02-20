@@ -284,6 +284,12 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
       message: "请输入 名称",
     },
   ],
+  host: [
+    {
+      required: true,
+      message: "请输入 域名绑定",
+    },
+  ],
 });
 
 type OnCloseResolveType = {

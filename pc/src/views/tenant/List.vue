@@ -716,6 +716,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "名称",
     prop: "lbl",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -723,6 +724,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "域名绑定",
     prop: "host",
+    width: 280,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -730,6 +732,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "到期日",
     prop: "expiration",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -737,6 +740,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "最大用户数",
     prop: "max_usr_num",
+    width: 100,
     align: "right",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -744,6 +748,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "启用",
     prop: "_is_enabled",
+    width: 60,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,
@@ -759,6 +764,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "排序",
     prop: "order_by",
+    width: 100,
     sortable: "custom",
     align: "right",
     headerAlign: "center",
@@ -767,6 +773,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "备注",
     prop: "rem",
+    width: 180,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

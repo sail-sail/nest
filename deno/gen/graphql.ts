@@ -7,7 +7,6 @@ import "/gen/dictbiz_detail/dictbiz_detail.graphql.ts";
 import "/gen/menu/menu.graphql.ts";
 import "/gen/operation_record/operation_record.graphql.ts";
 import "/gen/option/option.graphql.ts";
-import "/gen/permit/permit.graphql.ts";
 import "/gen/role/role.graphql.ts";
 import "/gen/tenant/tenant.graphql.ts";
 import "/gen/usr/usr.graphql.ts";

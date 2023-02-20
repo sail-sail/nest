@@ -733,6 +733,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "启用",
     prop: "_is_enabled",
+    width: 60,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

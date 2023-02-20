@@ -804,6 +804,7 @@ let tableColumns = $ref<ColumnType[]>([
   {
     label: "备注",
     prop: "rem",
+    width: 140,
     align: "center",
     headerAlign: "center",
     showOverflowTooltip: true,

@@ -213,6 +213,12 @@ let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
       message: "请输入 名称",
     },
   ],
+  is_enabled: [
+    {
+      required: true,
+      message: "请输入 启用",
+    },
+  ],
 });
 
 type OnCloseResolveType = {
