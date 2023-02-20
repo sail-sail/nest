@@ -12,8 +12,8 @@ export interface DictSearch extends DictSearchType {
 }
 
 export interface DictModel extends DictModelType {
-  create_usr_id?: string | null;
+  create_usr_id: string;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id: string;
   update_time?: string | null;
 }

@@ -30,9 +30,9 @@ export interface <#=Table_Up#>Search extends <#=Table_Up#>SearchType {<#
 }
 
 export interface <#=Table_Up#>Model extends <#=Table_Up#>ModelType {
-  create_usr_id?: string | null;
+  create_usr_id: string;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id: string;
   update_time?: string | null;<#
   if (hasTenant_id) {
   #>

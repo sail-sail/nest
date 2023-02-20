@@ -13,9 +13,9 @@ export interface Background_TaskSearch extends Background_TaskSearchType {
 }
 
 export interface Background_TaskModel extends Background_TaskModelType {
-  create_usr_id?: string | null;
+  create_usr_id: string;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id: string;
   update_time?: string | null;
   tenant_id?: string | null;
 }

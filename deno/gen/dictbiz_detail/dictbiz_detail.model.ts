@@ -13,9 +13,9 @@ export interface Dictbiz_DetailSearch extends Dictbiz_DetailSearchType {
 }
 
 export interface Dictbiz_DetailModel extends Dictbiz_DetailModelType {
-  create_usr_id?: string | null;
+  create_usr_id: string;
   create_time?: string | null;
-  update_usr_id?: string | null;
+  update_usr_id: string;
   update_time?: string | null;
   tenant_id?: string | null;
 }
