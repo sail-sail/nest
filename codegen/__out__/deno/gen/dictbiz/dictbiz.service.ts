@@ -26,6 +26,7 @@ import {
   type DictbizModel,
   type DictbizSearch,
 } from "./dictbiz.model.ts";
+
 import {
   _internals as dictbizDao,
 } from "./dictbiz.dao.ts";

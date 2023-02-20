@@ -37,9 +37,12 @@ import {
 if (hasSummary) {
 #>
 
-import { <#=Table_Up#>Summary } from "/gen/types.ts";<#
+import {
+  <#=Table_Up#>Summary,
+} from "/gen/types.ts";<#
 }
 #>
+
 import {
   _internals as <#=table#>Dao,
 } from "./<#=table#>.dao.ts";

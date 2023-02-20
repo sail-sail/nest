@@ -11,11 +11,14 @@ import {
 } from "./role.service.ts";
 
 import {
-  type RoleModel,
-  type RoleSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type RoleModel,
+  type RoleSearch,
+} from "./role.model.ts";
 
 export const _internals = {
   findCountRole,

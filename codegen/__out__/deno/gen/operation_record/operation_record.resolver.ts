@@ -11,11 +11,14 @@ import {
 } from "./operation_record.service.ts";
 
 import {
-  type Operation_RecordModel,
-  type Operation_RecordSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type Operation_RecordModel,
+  type Operation_RecordSearch,
+} from "./operation_record.model.ts";
 
 export const _internals = {
   findCountOperation_record,

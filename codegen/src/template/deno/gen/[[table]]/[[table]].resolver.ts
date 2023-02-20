@@ -19,11 +19,14 @@ import {
 } from "./<#=table#>.service.ts";
 
 import {
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type <#=Table_Up#>Model,
+  type <#=Table_Up#>Search,
+} from "./<#=table#>.model.ts";
 
 export const _internals = {
   findCount<#=tableUp#>,

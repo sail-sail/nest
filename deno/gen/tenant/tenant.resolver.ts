@@ -11,11 +11,14 @@ import {
 } from "./tenant.service.ts";
 
 import {
-  type TenantModel,
-  type TenantSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type TenantModel,
+  type TenantSearch,
+} from "./tenant.model.ts";
 
 export const _internals = {
   findCountTenant,

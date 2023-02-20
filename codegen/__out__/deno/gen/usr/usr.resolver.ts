@@ -11,11 +11,14 @@ import {
 } from "./usr.service.ts";
 
 import {
-  type UsrModel,
-  type UsrSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type UsrModel,
+  type UsrSearch,
+} from "./usr.model.ts";
 
 export const _internals = {
   findCountUsr,

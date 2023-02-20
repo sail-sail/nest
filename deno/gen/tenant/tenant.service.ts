@@ -26,6 +26,7 @@ import {
   type TenantModel,
   type TenantSearch,
 } from "./tenant.model.ts";
+
 import {
   _internals as tenantDao,
 } from "./tenant.dao.ts";

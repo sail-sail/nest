@@ -11,11 +11,14 @@ import {
 } from "./menu.service.ts";
 
 import {
-  type MenuModel,
-  type MenuSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type MenuModel,
+  type MenuSearch,
+} from "./menu.model.ts";
 
 export const _internals = {
   findCountMenu,

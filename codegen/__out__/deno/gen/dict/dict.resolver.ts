@@ -11,11 +11,14 @@ import {
 } from "./dict.service.ts";
 
 import {
-  type DictModel,
-  type DictSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type DictModel,
+  type DictSearch,
+} from "./dict.model.ts";
 
 export const _internals = {
   findCountDict,

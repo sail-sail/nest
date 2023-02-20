@@ -11,11 +11,14 @@ import {
 } from "./option.service.ts";
 
 import {
-  type OptionModel,
-  type OptionSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type OptionModel,
+  type OptionSearch,
+} from "./option.model.ts";
 
 export const _internals = {
   findCountOption,

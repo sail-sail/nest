@@ -11,11 +11,14 @@ import {
 } from "./dictbiz.service.ts";
 
 import {
-  type DictbizModel,
-  type DictbizSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type DictbizModel,
+  type DictbizSearch,
+} from "./dictbiz.model.ts";
 
 export const _internals = {
   findCountDictbiz,

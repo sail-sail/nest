@@ -11,11 +11,14 @@ import {
 } from "./background_task.service.ts";
 
 import {
-  type Background_TaskModel,
-  type Background_TaskSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type Background_TaskModel,
+  type Background_TaskSearch,
+} from "./background_task.model.ts";
 
 export const _internals = {
   findCountBackground_task,

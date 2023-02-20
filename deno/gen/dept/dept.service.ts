@@ -26,6 +26,7 @@ import {
   type DeptModel,
   type DeptSearch,
 } from "./dept.model.ts";
+
 import {
   _internals as deptDao,
 } from "./dept.dao.ts";

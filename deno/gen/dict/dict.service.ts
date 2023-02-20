@@ -26,6 +26,7 @@ import {
   type DictModel,
   type DictSearch,
 } from "./dict.model.ts";
+
 import {
   _internals as dictDao,
 } from "./dict.dao.ts";

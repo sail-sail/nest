@@ -26,6 +26,7 @@ import {
   type Dict_DetailModel,
   type Dict_DetailSearch,
 } from "./dict_detail.model.ts";
+
 import {
   _internals as dict_detailDao,
 } from "./dict_detail.dao.ts";

@@ -26,6 +26,7 @@ import {
   type OptionModel,
   type OptionSearch,
 } from "./option.model.ts";
+
 import {
   _internals as optionDao,
 } from "./option.dao.ts";

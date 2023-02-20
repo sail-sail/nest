@@ -11,11 +11,14 @@ import {
 } from "./dept.service.ts";
 
 import {
-  type DeptModel,
-  type DeptSearch,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
+
+import {
+  type DeptModel,
+  type DeptSearch,
+} from "./dept.model.ts";
 
 export const _internals = {
   findCountDept,
