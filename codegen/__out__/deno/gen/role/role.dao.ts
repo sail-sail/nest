@@ -606,7 +606,7 @@ async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (model.create_usr_id != null) {
+  if (model.create_usr_id != null && model.create_usr_id !== "-") {
     sql += `,${ args.push(model.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -783,32 +783,32 @@ async function updateById(
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      sql += `\`rem\` = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `,\`is_enabled\` = ${ args.push(model.is_enabled) }`;
+      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null) {
-      sql += `,update_usr_id = ${ args.push(model.update_usr_id) }`;
+    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
-        sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `,update_time = ${ args.push(new Date()) }`;
+    sql += `update_time = ${ args.push(new Date()) },`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }

@@ -1438,7 +1438,7 @@ async function create(
   }<#
   }
   #>
-  if (model.create_usr_id != null) {
+  if (model.create_usr_id != null && model.create_usr_id !== "-") {
     sql += `,${ args.push(model.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -1983,7 +1983,7 @@ async function updateById(
     if (column.isPassword) {
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,<#=column_name#> = ?`;
+    sql += `<#=column_name#> = ?,`;
     args.push(await authDao.getPassword(model.<#=column_name#>));
     updateFldNum++;
   }<#
@@ -1994,7 +1994,7 @@ async function updateById(
       model.<#=column_name#> = null;
     }
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
+      sql += `\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2004,7 +2004,7 @@ async function updateById(
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
+      sql += `\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2012,7 +2012,7 @@ async function updateById(
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `,\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) }`;
+      sql += `\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2021,15 +2021,15 @@ async function updateById(
   }
   #>
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null) {
-      sql += `,update_usr_id = ${ args.push(model.update_usr_id) }`;
+    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
-        sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `,update_time = ${ args.push(new Date()) }`;
+    sql += `update_time = ${ args.push(new Date()) },`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }<#

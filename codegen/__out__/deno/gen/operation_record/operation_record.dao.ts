@@ -587,7 +587,7 @@ async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (model.create_usr_id != null) {
+  if (model.create_usr_id != null && model.create_usr_id !== "-") {
     sql += `,${ args.push(model.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -716,50 +716,50 @@ async function updateById(
   let updateFldNum = 0;
   if (model.mod !== undefined) {
     if (model.mod != oldModel?.mod) {
-      sql += `,\`mod\` = ${ args.push(model.mod) }`;
+      sql += `\`mod\` = ${ args.push(model.mod) },`;
       updateFldNum++;
     }
   }
   if (model.mod_lbl !== undefined) {
     if (model.mod_lbl != oldModel?.mod_lbl) {
-      sql += `,\`mod_lbl\` = ${ args.push(model.mod_lbl) }`;
+      sql += `\`mod_lbl\` = ${ args.push(model.mod_lbl) },`;
       updateFldNum++;
     }
   }
   if (model.method !== undefined) {
     if (model.method != oldModel?.method) {
-      sql += `,\`method\` = ${ args.push(model.method) }`;
+      sql += `\`method\` = ${ args.push(model.method) },`;
       updateFldNum++;
     }
   }
   if (model.method_lbl !== undefined) {
     if (model.method_lbl != oldModel?.method_lbl) {
-      sql += `,\`method_lbl\` = ${ args.push(model.method_lbl) }`;
+      sql += `\`method_lbl\` = ${ args.push(model.method_lbl) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      sql += `\`rem\` = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null) {
-      sql += `,update_usr_id = ${ args.push(model.update_usr_id) }`;
+    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
-        sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `,update_time = ${ args.push(new Date()) }`;
+    sql += `update_time = ${ args.push(new Date()) },`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }

@@ -635,7 +635,7 @@ async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (model.create_usr_id != null) {
+  if (model.create_usr_id != null && model.create_usr_id !== "-") {
     sql += `,${ args.push(model.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -788,62 +788,62 @@ async function updateById(
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `,\`lbl\` = ${ args.push(model.lbl) }`;
+      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.state !== undefined) {
     if (model.state != oldModel?.state) {
-      sql += `,\`state\` = ${ args.push(model.state) }`;
+      sql += `\`state\` = ${ args.push(model.state) },`;
       updateFldNum++;
     }
   }
   if (model.type !== undefined) {
     if (model.type != oldModel?.type) {
-      sql += `,\`type\` = ${ args.push(model.type) }`;
+      sql += `\`type\` = ${ args.push(model.type) },`;
       updateFldNum++;
     }
   }
   if (model.result !== undefined) {
     if (model.result != oldModel?.result) {
-      sql += `,\`result\` = ${ args.push(model.result) }`;
+      sql += `\`result\` = ${ args.push(model.result) },`;
       updateFldNum++;
     }
   }
   if (model.err_msg !== undefined) {
     if (model.err_msg != oldModel?.err_msg) {
-      sql += `,\`err_msg\` = ${ args.push(model.err_msg) }`;
+      sql += `\`err_msg\` = ${ args.push(model.err_msg) },`;
       updateFldNum++;
     }
   }
   if (model.begin_time !== undefined) {
     if (model.begin_time != oldModel?.begin_time) {
-      sql += `,\`begin_time\` = ${ args.push(model.begin_time) }`;
+      sql += `\`begin_time\` = ${ args.push(model.begin_time) },`;
       updateFldNum++;
     }
   }
   if (model.end_time !== undefined) {
     if (model.end_time != oldModel?.end_time) {
-      sql += `,\`end_time\` = ${ args.push(model.end_time) }`;
+      sql += `\`end_time\` = ${ args.push(model.end_time) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `,\`rem\` = ${ args.push(model.rem) }`;
+      sql += `\`rem\` = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null) {
-      sql += `,update_usr_id = ${ args.push(model.update_usr_id) }`;
+    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
-        sql += `,update_usr_id = ${ args.push(authModel.id) }`;
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
     }
-    sql += `,update_time = ${ args.push(new Date()) }`;
+    sql += `update_time = ${ args.push(new Date()) },`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }
