@@ -253,8 +253,8 @@ CREATE TABLE if not exists `dept` (
 drop table if exists `dict`;
 CREATE TABLE if not exists `dict` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `code` varchar(22) NOT NULL DEFAULT '' COMMENT '编码',
-  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
+  `code` varchar(50) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `type` varchar(22) NOT NULL DEFAULT 'string' COMMENT '数据类型,dict:dict_type',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
@@ -295,8 +295,8 @@ CREATE TABLE if not exists `dict_detail` (
 drop table if exists `dictbiz`;
 CREATE TABLE if not exists `dictbiz` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `code` varchar(22) NOT NULL DEFAULT '' COMMENT '编码',
-  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
+  `code` varchar(50) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `type` varchar(22) NOT NULL DEFAULT 'string' COMMENT '数据类型,dict:dict_type',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
