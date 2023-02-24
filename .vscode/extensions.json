@@ -3,7 +3,6 @@
     "aaron-bond.better-comments",
     "alefragnani.bookmarks",
     "ms-ceintl.vscode-language-pack-zh-hans",
-    "oouo-diogo-perdigao.docthis",
     "mikestead.dotenv",
     "hediet.vscode-drawio-insiders-build",
     "janisdd.vscode-edit-csv",
@@ -29,8 +28,6 @@
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
-    "britesnow.vscode-toggle-quotes",
-    "ms-edgedevtools.vscode-edge-devtools",
-    "uni-helper.uni-ui-snippets-vscode"
+    "britesnow.vscode-toggle-quotes"
   ]
 }
