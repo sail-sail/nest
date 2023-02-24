@@ -1,4 +1,7 @@
 <template>
+<!-- #ifndef MP -->
+<Teleport to="body">
+<!-- #endif -->
 	<view v-if="showPopup" class="uni-popup" :class="[popupstyle, isDesktop ? 'fixforpc-z-index' : '']">
 		<view @touchstart="touchstart">
 			<uni-transition key="1" v-if="maskShow" name="mask" mode-class="fade" :styles="maskClass"
@@ -14,6 +17,9 @@
 		<keypress v-if="maskShow" @esc="onTap" />
 		<!-- #endif -->
 	</view>
+<!-- #ifndef MP -->
+</Teleport>
+<!-- #endif -->
 </template>
 
 <script>

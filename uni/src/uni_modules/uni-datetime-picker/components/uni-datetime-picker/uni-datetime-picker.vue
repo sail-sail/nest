@@ -88,10 +88,16 @@
 				</view>
 			</view>
 		</view>
+    <!-- #ifndef MP -->
+    <Teleport to="body">
+    <!-- #endif -->
 		<calendar v-if="isPhone" ref="mobile" :clearDate="false" :date="defSingleDate" :defTime="reactMobDefTime"
 			:start-date="caleRange.startDate" :end-date="caleRange.endDate" :selectableTimes="mobSelectableTime"
 			:pleStatus="endMultipleStatus" :showMonth="false" :range="isRange" :typeHasTime="hasTime" :insert="false"
 			:hideSecond="hideSecond" @confirm="mobileChange" @maskClose="close" />
+    <!-- #ifndef MP -->
+    </Teleport>
+    <!-- #endif -->
 	</view>
 </template>
 <script>
