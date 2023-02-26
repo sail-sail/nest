@@ -41,6 +41,7 @@ export function getLocale() {
   }
   return lang;
 }
-const lang = getLocale();
+
+export const lang = getLocale();
 
 export default messages[lang];
