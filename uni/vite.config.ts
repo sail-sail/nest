@@ -103,7 +103,7 @@ export default defineConfig({
     
   },
   server: {
-    port: 4001,
+    port: 4002,
     open: false,
     cors: true,
     proxy: {

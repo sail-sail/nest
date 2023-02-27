@@ -19,6 +19,30 @@ import {
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
+const presets = [
+  presetIcons({
+    scale: 1.2,
+    warn: true,
+    extraProperties: {
+      "display": "inline-block",
+      "vertical-align": "middle",
+    },
+    collections: {
+      iconfont: async (iconName) => await fs.readFile(`./src/assets/iconfont/${ iconName }.svg`, "utf8"),
+    },
+  }),
+  /**
+   * you can add `presetAttributify()` here to enable unocss attributify mode prompt
+   * although preset is not working for applet, but will generate useless css
+   */
+  presetApplet({ enable: !isH5 }),
+  presetAttributify({
+    prefix: "un-",
+    prefixedOnly: true,
+  }),
+  presetRemToRpx({ enable: true }),
+];
+
 export default defineConfig({
   shortcuts: {
     "bg-base": "bg-gray-100 dark:bg-dark",
@@ -28,29 +52,7 @@ export default defineConfig({
     "border-base": "border border-gray-200 dark:border-gray/60",
     "bg-primary": "bg-light-blue-500 dark:bg-light-blue-600",
   },
-  presets: [
-    presetIcons({
-      scale: 1.2,
-      warn: true,
-      extraProperties: {
-        "display": "inline-block",
-        "vertical-align": "middle",
-      },
-      collections: {
-        iconfont: async (iconName) => await fs.readFile(`./src/assets/iconfont/${ iconName }.svg`, "utf8"),
-      },
-    }),
-    /**
-     * you can add `presetAttributify()` here to enable unocss attributify mode prompt
-     * although preset is not working for applet, but will generate useless css
-     */
-    presetApplet({ enable: !isH5 }),
-    presetAttributify({
-      prefix: "un-",
-      prefixedOnly: true,
-    }),
-    presetRemToRpx({ enable: !isH5 }),
-  ],
+  presets,
   transformers: [
     transformerDirectives(),
     transformerVariantGroup(),
