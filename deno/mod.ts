@@ -1,4 +1,3 @@
-import "/typings/types.ts";
 import "/lib/env.ts";
 import "/lib/util/date_util.ts";
 import { getEnv } from "/lib/env.ts";

@@ -5,10 +5,7 @@
     "allowUnreachableCode": true,
     "allowUnusedLabels": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "types": [
-      "typings/types.ts"
-    ]
+    "noUnusedParameters": false
   },
   "tasks": {
     "update": "deno run --allow-read=./ --allow-net --allow-write=./ https://deno.land/x/deno_outdated@0.2.4/cli.ts"
