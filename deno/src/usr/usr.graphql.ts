@@ -13,6 +13,7 @@ defineGraphql(usrResolver, /* GraphQL */`
 
   type GetLoginInfo {
     lbl: String!
+    lang: String!
     dept_id: String
     dept_idModels: [GetLoginInfoDept_idModels!]!
   }
@@ -24,7 +25,8 @@ defineGraphql(usrResolver, /* GraphQL */`
   
   type Mutation {
     "登录"
-    login(username: String!, password: String!, tenant_id: String!, dept_id: String): LoginModel!
+    login(username: String!, password: String!, tenant_id: String!, dept_id: String, lang: String!): LoginModel!
+    selectLang(lang: String!): String!
   }
   
   type Query {

@@ -1,3 +1,4 @@
+import { uniqueID } from "./StringUtil";
 import { request, uniLogin } from "./request";
 import cfg from "./config"
 
@@ -31,11 +32,12 @@ declare global {
       notLogin?: boolean;
       duration?: number;
   }
-  
 }
 
 let queryInfos: QueryInfo[] = [ ];
+let queryInfosRepeat: QueryInfo[][] = [ ];
 let tasks: QueryInfo[][] = [ ];
+let tasksRepeat: QueryInfo[][][] = [ ];
 
 class QueryInfo {
   gqlArg?: GqlArg = undefined;
@@ -43,6 +45,36 @@ class QueryInfo {
   result?: Promise<any> = undefined;
   resolve?: ((value: unknown) => void) = undefined;
   reject?: ((reason?: any) => void) = undefined;
+}
+
+function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
+  const idx = queryInfos.findIndex((item) => {
+    if (item.gqlArg!.query !== queryInfo.gqlArg!.query) {
+      return false;
+    }
+    if (item.gqlArg!.variables != null && queryInfo.gqlArg!.variables == null) {
+      return false;
+    }
+    if (item.gqlArg!.variables == null && queryInfo.gqlArg!.variables != null) {
+      return false;
+    }
+    if (item.gqlArg!.variables == null && queryInfo.gqlArg!.variables == null) {
+      return true;
+    }
+    const keys1 = Object.keys(item.gqlArg!.variables!);
+    const keys2 = Object.keys(queryInfo.gqlArg!.variables!);
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    for (let i = 0; i < keys1.length; i++) {
+      const key = keys1[i];
+      if (item.gqlArg!.variables![key] !== queryInfo.gqlArg!.variables![key]) {
+        return false;
+      }
+    }
+    return true;
+  });
+  return idx;
 }
 
 /**
@@ -59,19 +91,29 @@ class QueryInfo {
     queryInfo.resolve = resolve;
     queryInfo.reject = reject;
   });
-  queryInfos.push(queryInfo);
+  const idx = findQueryInfosIdx(queryInfos, queryInfo);
+  if (idx !== -1) {
+    queryInfosRepeat[idx] = queryInfosRepeat[idx] || [ ];
+    queryInfosRepeat[idx].push(queryInfo);
+  } else {
+    queryInfos.push(queryInfo);
+  }
   await Promise.resolve();
   const queryInfos2 = queryInfos;
+  const queryInfosRepeat2 = queryInfosRepeat;
   queryInfos = [ ];
-  if (queryInfos2.length === 1) {
+  queryInfosRepeat = [ ];
+  if (queryInfos2.length === 1 && queryInfosRepeat2.length === 0) {
     return await _gqlQuery(gqlArg, opt);
-  } else if (queryInfos2.length > 1) {
+  }
+  if (queryInfos2.length > 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
       const queryInfo = queryInfos2[i];
-      const hash = `l${ i }`;
+      const hash = `l${ uniqueID() }`;
       queryInfo.hash = hash;
     }
     tasks.push(queryInfos2);
+    tasksRepeat.push(queryInfosRepeat2);
     (async function() {
       let queryBuilder = combinedQuery("");
       let queryBuilderAdd: ReturnType<typeof queryBuilder.add> | undefined;
@@ -127,7 +169,7 @@ class QueryInfo {
         },
         opt,
       );
-      const resluts: any[] = [ ];
+      const results: any[] = [ ];
       const hashs: string[] = [ ];
       const keys = Object.keys(newResult || { });
       for (let i = 0; i < keys.length; i++) {
@@ -136,9 +178,8 @@ class QueryInfo {
         const idx = key.indexOf("_");
         const hash = key.substring(0, idx);
         const name = key.substring(idx + 1);
-        const groupNum = Number(hash.substring(1));
-        resluts[groupNum] = resluts[groupNum] || { };
-        resluts[groupNum][name] = val;
+        results[hash] = results[hash] || { };
+        results[hash][name] = val;
         if (!hashs.includes(hash)) {
           hashs.push(hash);
         }
@@ -154,7 +195,14 @@ class QueryInfo {
           for (let k = 0; k < task.length; k++) {
             const item = task[k];
             if (item.hash === hash) {
-              item.resolve!(resluts[l]);
+              item.resolve!(results[hash]);
+              const itemRepeat = queryInfosRepeat2[queryInfos2.indexOf(item)];
+              if (itemRepeat && itemRepeat.length > 0) {
+                for (let m = 0; m < itemRepeat.length; m++) {
+                  const itemRepeatTmp = itemRepeat[m];
+                  itemRepeatTmp.resolve!(results[hash]);
+                }
+              }
               isTaskEq = true;
               break;
             }
@@ -167,6 +215,7 @@ class QueryInfo {
         }
       }
       tasks = tasks.filter((_, i) => !willRemoves.includes(i));
+      tasksRepeat = tasksRepeat.filter((_, i) => !willRemoves.includes(i));
     })();
   }
   for (let i = 0; i < tasks.length; i++) {
@@ -175,6 +224,21 @@ class QueryInfo {
       const item = task[k];
       if (item.gqlArg === gqlArg) {
         return await item.result;
+      }
+    }
+  }
+  for (let i = 0; i < tasksRepeat.length; i++) {
+    const task = tasksRepeat[i];
+    for (let k = 0; k < task.length; k++) {
+      const items = task[k];
+      if (!items) {
+        continue;
+      }
+      for (let m = 0; m < items.length; m++) {
+        const item = items[m];
+        if (item.gqlArg === gqlArg) {
+          return await item.result;
+        }
       }
     }
   }

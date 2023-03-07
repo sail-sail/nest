@@ -223,7 +223,9 @@ gqlRouter.post("/graphql", async function(ctx) {
                 message: err.originalError.message,
               }
             ];
-            log(err.originalError.message);
+            if (err.originalError.message) {
+              log(err.originalError.message);
+            }
             if (err.originalError._rollback !== false) {
               await rollback();
             } else {

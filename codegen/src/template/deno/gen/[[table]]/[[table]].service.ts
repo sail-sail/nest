@@ -9,6 +9,11 @@ const hasSummary = columns.some((column) => column.showSummary);
 #>import { renderExcel } from "ejsexcel";
 
 import {
+  initN,
+  ns,
+} from "/src/i18n/i18n.ts";
+
+import {
   _internals as authDao
 } from "/lib/auth/auth.dao.ts";
 
@@ -238,7 +243,16 @@ async function updateById(
   id: string,
   model: <#=Table_Up#>Model,
 ): Promise<string> {
-  const data = await <#=table#>Dao.updateById(id, model);
+  const data = await <#=table#>Dao.updateById(id, model);<#
+  if (table === "i18n") {
+  #>
+  
+  {
+    const optionsSrcDao = (await import("/src/options/options.dao.ts"))._internals;
+    await optionsSrcDao.updateI18n_version();
+  }<#
+  }
+  #>
   return data;
 }
 
@@ -250,7 +264,16 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
-  const data = await <#=table#>Dao.deleteByIds(ids);
+  const data = await <#=table#>Dao.deleteByIds(ids);<#
+  if (table === "i18n") {
+  #>
+  
+  {
+    const optionsSrcDao = (await import("/src/options/options.dao.ts"))._internals;
+    await optionsSrcDao.updateI18n_version();
+  }<#
+  }
+  #>
   return data;
 }<#
   if (hasLocked) {
@@ -303,6 +326,7 @@ async function forceDeleteByIds(
 async function importFile(
   id: string,
 ) {
+  const n = initN("/<#=table#>");
   const header: { [key: string]: string } = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -332,10 +356,10 @@ async function importFile(
     #><#
       if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
     #>
-    "<#=column_comment#>": "<#=column_name#>",<#
+    [ await n("<#=column_comment#>") ]: "<#=column_name#>",<#
       } else {
     #>
-    "<#=column_comment#>": "_<#=column_name#>",<#
+    [ await n("<#=column_comment#>") ]: "_<#=column_name#>",<#
       }
     #><#
     }
@@ -354,20 +378,31 @@ async function importFile(
       succNum++;
     } catch (err) {
       failNum++;
-      failErrMsgs.push(`第 ${ i + 1 } 行: ${ err.message || err.toString() }`);
+      failErrMsgs.push(await ns("第 {0} 行: {1}", (i + 1).toString(), err.message || err.toString()));
     }
   }
   
   let data = "";
   if (succNum > 0) {
-    data = `导入成功 ${ succNum } 条\\n`;
+    data = await ns("导入成功 {0} 条", succNum.toString());
+    data += "\\n";
   }
   if (failNum > 0) {
-    data += `导入失败 ${ failNum } 条\\n`;
+    data += await ns("导入失败 {0} 条", failNum.toString());
+    data += "\\n";
   }
   if (failErrMsgs.length > 0) {
     data += failErrMsgs.join("\\n");
+  }<#
+  if (table === "i18n") {
+  #>
+  
+  if (succNum > 0) {
+    const optionsSrcDao = (await import("/src/options/options.dao.ts"))._internals;
+    await optionsSrcDao.updateI18n_version();
+  }<#
   }
+  #>
   
   return data;
 }
@@ -382,17 +417,19 @@ async function exportExcel(
   search?: <#=Table_Up#>Search,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
+  const n = initN("/<#=table#>");
   const models = await findAll(search, undefined, sort);
   const buffer0 = await getTemplate(`<#=table#>.xlsx`);
   if (!buffer0) {
-    throw new ServiceException(`模板文件 <#=table#>.xlsx 不存在!`);
+    const msg = await ns("模板文件 {0}.xlsx 不存在", "<#=table#>");
+    throw new ServiceException(msg);
   }
-  const buffer = await renderExcel(buffer0, { models });
+  const buffer = await renderExcel(buffer0, { models, n });
   const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
-      originalName: "<#=table_comment#>.xlsx",
+      originalName: `${ await ns("<#=table_comment#>") }.xlsx`,
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );

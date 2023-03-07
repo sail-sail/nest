@@ -1,4 +1,5 @@
 import {
+  type Query,
   type Mutation,
   type MutationLoginArgs,
 } from "#/types";
@@ -26,22 +27,48 @@ export async function getLoginTenants(
   return data?.getLoginTenants;
 }
 
-export async function login(
-  variables: MutationLoginArgs,
+/**
+ * 获取语言列表
+ */
+export async function getLoginLangs(
   opt?: GqlOpt,
 ) {
-  const data: {
+  const res: {
+    getLoginLangs: Query["getLoginLangs"],
+  } = await gqlQuery({
+    query: /* GraphQL */ `
+      query {
+        getLoginLangs {
+          id
+          code
+          lbl
+        }
+      }
+    `,
+  }, opt);
+  const data = res.getLoginLangs;
+  return data;
+}
+
+export async function login(
+  model: MutationLoginArgs,
+  opt?: GqlOpt,
+) {
+  const res: {
     login: Mutation["login"],
   } = await gqlQuery({
     query: /* GraphQL */ `
-      mutation($username: String!, $password: String!, $tenant_id: String!, $dept_id: String) {
-        login(username: $username, password: $password, tenant_id: $tenant_id, dept_id: $dept_id) {
+      mutation($username: String!, $password: String!, $tenant_id: String!, $dept_id: String, $lang: String!) {
+        login(username: $username, password: $password, tenant_id: $tenant_id, dept_id: $dept_id, lang: $lang) {
           authorization
           dept_id
         }
       }
     `,
-    variables,
+    variables: {
+      ...model,
+    },
   }, opt);
-  return data?.login;
+  const data = res.login;
+  return data;
 }

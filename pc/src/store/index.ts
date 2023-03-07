@@ -2,6 +2,10 @@ import {
   ElLoading,
 } from "element-plus";
 
+import {
+  getOptionsByLbl,
+} from "./Api";
+
 let elLoading: ReturnType<typeof ElLoading.service>|undefined;
 
 export default defineStore("index", function() {
@@ -10,7 +14,24 @@ export default defineStore("index", function() {
   
   let loading = $ref(0);
   
-  let version: string|null = $ref(localStorage.getItem("__version"));
+  let version: string | null = $ref(localStorage.getItem("__version"));
+  
+  /** 国际化版本号 */
+  let i18n_version: string | null = $ref(localStorage.getItem("__i18n_version"));
+  
+  /**
+ * 获取 i18n 版本
+ */
+  async function initI18nVersion() {
+    const options = await getOptionsByLbl({
+      lbl: "国际化版本号",
+    });
+    const lbl = options.find((item) => item.ky === "i18n_version")?.val;
+    i18n_version = lbl ?? version;
+    if (i18n_version !== null) {
+      localStorage.setItem("__i18n_version", i18n_version);
+    }
+  }
   
   function addLoading() {
     if (notLoading) {
@@ -55,6 +76,8 @@ export default defineStore("index", function() {
     notLoading,
     loading,
     version,
+    i18n_version,
+    initI18nVersion,
     addLoading,
     minusLoading,
     reset,

@@ -60,7 +60,7 @@ async function getAuthModel<T extends AuthModel>(
     if (notVerifyToken) {
       return;
     } else {
-      throw new ServiceException("令牌不能为空!", "token_empty");
+      throw new ServiceException("", "token_empty");
     }
   }
   if (notVerifyToken) {
@@ -141,12 +141,12 @@ function decodeToken<T extends JWTPayload>(authorization :string): T {
 async function refreshToken(authorization: string): Promise<{ expires_in: number, authorization: string }> {
   const obj = decodeJwt(authorization);
   if (!obj || !obj.exp) {
-    throw new ServiceException("令牌超时!", "refresh_token_expired");
+    throw new ServiceException("", "refresh_token_expired");
   }
   const token_timeout = Number(await getEnv("server_tokentimeout"));
   const date = new Date();
   if (date.getTime() / 1000 - token_timeout > obj.exp) {
-    throw new ServiceException("令牌超时!", "refresh_token_expired");
+    throw new ServiceException("", "refresh_token_expired");
   }
   // deno-lint-ignore no-explicit-any
   const obj2: any = {};

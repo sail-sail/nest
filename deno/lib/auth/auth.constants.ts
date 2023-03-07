@@ -17,6 +17,7 @@ export interface AuthModel extends JWTPayload {
   id: string;
   wx_usr_id?: string;
   dept_id?: string;
+  lang: string;
 }
 export async function getPassword(str: string): Promise<string> {
   if (!str) return "";

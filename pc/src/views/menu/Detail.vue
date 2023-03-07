@@ -32,7 +32,7 @@
         
         <template v-if="builtInModel?.type == null">
           <el-form-item
-            label="类型"
+            :label="n('类型')"
             prop="type"
             un-h="full"
           >
@@ -41,14 +41,14 @@
               v-model="dialogModel.type"
               code="menu_type"
               un-w="full"
-              placeholder="请选择 类型"
+              :placeholder="`${ n('请选择') } ${ n('类型') }`"
             ></DictSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.menu_id == null">
           <el-form-item
-            label="父菜单"
+            :label="n('父菜单')"
             prop="menu_id"
             un-h="full"
           >
@@ -62,56 +62,56 @@
                 };
               })"
               un-w="full"
-              placeholder="请选择 父菜单"
+              :placeholder="`${ n('请选择') } ${ n('父菜单') }`"
             ></CustomSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.lbl == null">
           <el-form-item
-            label="名称"
+            :label="n('名称')"
             prop="lbl"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入 名称"
+              :placeholder="`${ n('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.route_path == null">
           <el-form-item
-            label="路由"
+            :label="n('路由')"
             prop="route_path"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.route_path"
               un-w="full"
-              placeholder="请输入 路由"
+              :placeholder="`${ n('请输入') } ${ n('路由') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.route_query == null">
           <el-form-item
-            label="参数"
+            :label="n('参数')"
             prop="route_query"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.route_query"
               un-w="full"
-              placeholder="请输入 参数"
+              :placeholder="`${ n('请输入') } ${ n('参数') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
           <el-form-item
-            label="启用"
+            :label="n('启用')"
             prop="is_enabled"
             un-h="full"
           >
@@ -120,14 +120,14 @@
               v-model="dialogModel.is_enabled"
               code="is_enabled"
               un-w="full"
-              placeholder="请选择 启用"
+              :placeholder="`${ n('请选择') } ${ n('启用') }`"
             ></DictSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.order_by == null">
           <el-form-item
-            label="排序"
+            :label="n('排序')"
             prop="order_by"
             un-h="full"
           >
@@ -139,21 +139,21 @@
               :step="1"
               :step-strictly="true"
               :controls="false"
-              placeholder="请输入 排序"
+              :placeholder="`${ n('请输入') } ${ n('排序') }`"
             ></el-input-number>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.rem == null">
           <el-form-item
-            label="备注"
+            :label="n('备注')"
             prop="rem"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入 备注"
+              :placeholder="`${ n('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -174,7 +174,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ n('取消') }}</span>
       </el-button>
       
       <el-button
@@ -185,7 +185,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>保存</span>
+        <span>{{ n('保存') }}</span>
       </el-button>
       
       <div
@@ -200,7 +200,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
           @click="prevIdClk"
         >
-          上一项
+          {{ n('上一项') }}
         </el-button>
         
         <span>
@@ -212,7 +212,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
           @click="nextIdClk"
         >
-          下一项
+          {{ n('下一项') }}
         </el-button>
         
         <span v-if="changedIds.length > 0">
@@ -253,6 +253,13 @@ const emit = defineEmits<
   ) => void
 >();
 
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit";
@@ -267,13 +274,22 @@ let changedIds = $ref<string[]>([ ]);
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
-let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
-  lbl: [
-    {
-      required: true,
-      message: "请输入 名称",
-    },
-  ],
+let form_rules = $ref<Record<string, FormItemRule[]>>({ });
+
+watchEffect(async () => {
+  if (!inited) {
+    form_rules = { };
+    return;
+  }
+  await nextTick();
+  form_rules = {
+    lbl: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("名称") }`,
+      },
+    ],
+  };
 });
 
 type OnCloseResolveType = {
@@ -363,14 +379,12 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;
 }
 
 /** 刷新 */
 async function refreshEfc() {
-  formRef?.clearValidate();
   if (!dialogModel.id) {
     return;
   }
@@ -460,7 +474,7 @@ async function saveClk() {
       ...builtInModel,
     });
     dialogModel.id = id;
-    msg = `增加成功!`;
+    msg = ns("添加成功");
   } else if (dialogAction === "edit") {
     if (!dialogModel.id) {
       return;
@@ -472,7 +486,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = `修改成功!`;
+    msg = ns("修改成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -505,6 +519,25 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const codes: string[] = [
+    "类型",
+    "父菜单",
+    "名称",
+    "路由",
+    "参数",
+    "启用",
+    "排序",
+    "备注",
+  ];
+  await Promise.all([
+    initDetailI18ns(),
+    initI18ns(codes),
+  ]);
+}
+initI18nsEfc();
 
 defineExpose({ showDialog });
 </script>

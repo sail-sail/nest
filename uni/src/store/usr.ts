@@ -20,10 +20,18 @@ export default defineStore("usr", function() {
     showAuth = showAuth1;
   }
   
+  let lang = $ref("");
+  
+  function setLang(lang0: typeof lang) {
+    lang = lang0;
+  }
+  
   return $$({
     authorization,
     showAuth,
     setAccessToken,
     setShowAuth,
+    lang,
+    setLang,
   });
 });

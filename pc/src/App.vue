@@ -106,7 +106,6 @@ html,body {
   label {
     white-space: nowrap;
     margin-left: 4px;
-    color: gray;
     display: flex;
     align-items: center;
   }

@@ -31,21 +31,21 @@
         
         <template v-if="builtInModel?.lbl == null">
           <el-form-item
-            label="名称"
+            :label="n('名称')"
             prop="lbl"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入 名称"
+              :placeholder="`${ n('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.state == null">
           <el-form-item
-            label="状态"
+            :label="n('状态')"
             prop="state"
             un-h="full"
           >
@@ -54,14 +54,14 @@
               v-model="dialogModel.state"
               code="background_task_state"
               un-w="full"
-              placeholder="请选择 状态"
+              :placeholder="`${ n('请选择') } ${ n('状态') }`"
             ></DictSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.type == null">
           <el-form-item
-            label="类型"
+            :label="n('类型')"
             prop="type"
             un-h="full"
           >
@@ -70,42 +70,42 @@
               v-model="dialogModel.type"
               code="background_task_type"
               un-w="full"
-              placeholder="请选择 类型"
+              :placeholder="`${ n('请选择') } ${ n('类型') }`"
             ></DictSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.result == null">
           <el-form-item
-            label="执行结果"
+            :label="n('执行结果')"
             prop="result"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.result"
               un-w="full"
-              placeholder="请输入 执行结果"
+              :placeholder="`${ n('请输入') } ${ n('执行结果') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.err_msg == null">
           <el-form-item
-            label="错误信息"
+            :label="n('错误信息')"
             prop="err_msg"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.err_msg"
               un-w="full"
-              placeholder="请输入 错误信息"
+              :placeholder="`${ n('请输入') } ${ n('错误信息') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.begin_time == null">
           <el-form-item
-            label="开始时间"
+            :label="n('开始时间')"
             prop="begin_time"
             un-h="full"
           >
@@ -116,14 +116,14 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              placeholder="请选择 开始时间"
+              :placeholder="`${ n('请选择') } ${ n('开始时间') }`"
             ></el-date-picker>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.end_time == null">
           <el-form-item
-            label="结束时间"
+            :label="n('结束时间')"
             prop="end_time"
             un-h="full"
           >
@@ -134,21 +134,21 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              placeholder="请选择 结束时间"
+              :placeholder="`${ n('请选择') } ${ n('结束时间') }`"
             ></el-date-picker>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.rem == null">
           <el-form-item
-            label="备注"
+            :label="n('备注')"
             prop="rem"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入 备注"
+              :placeholder="`${ n('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -169,7 +169,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ n('取消') }}</span>
       </el-button>
       
       <div
@@ -184,7 +184,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
           @click="prevIdClk"
         >
-          上一项
+          {{ n('上一项') }}
         </el-button>
         
         <span>
@@ -196,7 +196,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
           @click="nextIdClk"
         >
-          下一项
+          {{ n('下一项') }}
         </el-button>
         
         <span v-if="changedIds.length > 0">
@@ -232,6 +232,13 @@ const emit = defineEmits<
   ) => void
 >();
 
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit";
@@ -246,25 +253,34 @@ let changedIds = $ref<string[]>([ ]);
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
-let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
-  lbl: [
-    {
-      required: true,
-      message: "请输入 名称",
-    },
-  ],
-  state: [
-    {
-      required: true,
-      message: "请输入 状态",
-    },
-  ],
-  type: [
-    {
-      required: true,
-      message: "请输入 类型",
-    },
-  ],
+let form_rules = $ref<Record<string, FormItemRule[]>>({ });
+
+watchEffect(async () => {
+  if (!inited) {
+    form_rules = { };
+    return;
+  }
+  await nextTick();
+  form_rules = {
+    lbl: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("名称") }`,
+      },
+    ],
+    state: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("状态") }`,
+      },
+    ],
+    type: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("类型") }`,
+      },
+    ],
+  };
 });
 
 type OnCloseResolveType = {
@@ -348,14 +364,12 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;
 }
 
 /** 刷新 */
 async function refreshEfc() {
-  formRef?.clearValidate();
   if (!dialogModel.id) {
     return;
   }
@@ -442,6 +456,25 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const codes: string[] = [
+    "名称",
+    "状态",
+    "类型",
+    "执行结果",
+    "错误信息",
+    "开始时间",
+    "结束时间",
+    "备注",
+  ];
+  await Promise.all([
+    initDetailI18ns(),
+    initI18ns(codes),
+  ]);
+}
+initI18nsEfc();
 
 defineExpose({ showDialog });
 </script>

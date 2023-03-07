@@ -32,49 +32,49 @@
         
         <template v-if="builtInModel?.lbl == null">
           <el-form-item
-            label="名称"
+            :label="n('名称')"
             prop="lbl"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入 名称"
+              :placeholder="`${ n('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.username == null">
           <el-form-item
-            label="用户名"
+            :label="n('用户名')"
             prop="username"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.username"
               un-w="full"
-              placeholder="请输入 用户名"
+              :placeholder="`${ n('请输入') } ${ n('用户名') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.password == null">
           <el-form-item
-            label="密码"
+            :label="n('密码')"
             prop="password"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.password"
               un-w="full"
-              placeholder="请输入 密码"
+              :placeholder="`${ n('请输入') } ${ n('密码') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.default_dept_id == null">
           <el-form-item
-            label="默认部门"
+            :label="n('默认部门')"
             prop="default_dept_id"
             un-h="full"
           >
@@ -88,14 +88,14 @@
                 };
               })"
               un-w="full"
-              placeholder="请选择 默认部门"
+              :placeholder="`${ n('请选择') } ${ n('默认部门') }`"
             ></CustomSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.is_enabled == null">
           <el-form-item
-            label="启用"
+            :label="n('启用')"
             prop="is_enabled"
             un-h="full"
           >
@@ -104,28 +104,28 @@
               v-model="dialogModel.is_enabled"
               code="is_enabled"
               un-w="full"
-              placeholder="请选择 启用"
+              :placeholder="`${ n('请选择') } ${ n('启用') }`"
             ></DictSelect>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.rem == null">
           <el-form-item
-            label="备注"
+            :label="n('备注')"
             prop="rem"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入 备注"
+              :placeholder="`${ n('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.dept_ids == null">
           <el-form-item
-            label="拥有部门"
+            :label="n('拥有部门')"
             prop="dept_ids"
             un-h="full"
           >
@@ -140,7 +140,7 @@
                 };
               })"
               un-w="full"
-              placeholder="请选择 拥有部门"
+              :placeholder="`${ n('请选择') } ${ n('拥有部门') }`"
               multiple
             ></CustomSelect>
           </el-form-item>
@@ -148,7 +148,7 @@
         
         <template v-if="builtInModel?.role_ids == null">
           <el-form-item
-            label="拥有角色"
+            :label="n('拥有角色')"
             prop="role_ids"
             un-h="full"
           >
@@ -163,7 +163,7 @@
                 };
               })"
               un-w="full"
-              placeholder="请选择 拥有角色"
+              :placeholder="`${ n('请选择') } ${ n('拥有角色') }`"
               multiple
             ></CustomSelect>
           </el-form-item>
@@ -185,7 +185,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ n('取消') }}</span>
       </el-button>
       
       <el-button
@@ -196,7 +196,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>保存</span>
+        <span>{{ n('保存') }}</span>
       </el-button>
       
       <div
@@ -211,7 +211,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
           @click="prevIdClk"
         >
-          上一项
+          {{ n('上一项') }}
         </el-button>
         
         <span>
@@ -223,7 +223,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
           @click="nextIdClk"
         >
-          下一项
+          {{ n('下一项') }}
         </el-button>
         
         <span v-if="changedIds.length > 0">
@@ -265,6 +265,13 @@ const emit = defineEmits<
   ) => void
 >();
 
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit";
@@ -281,25 +288,34 @@ let changedIds = $ref<string[]>([ ]);
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
-let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
-  lbl: [
-    {
-      required: true,
-      message: "请输入 名称",
-    },
-  ],
-  username: [
-    {
-      required: true,
-      message: "请输入 用户名",
-    },
-  ],
-  is_enabled: [
-    {
-      required: true,
-      message: "请输入 启用",
-    },
-  ],
+let form_rules = $ref<Record<string, FormItemRule[]>>({ });
+
+watchEffect(async () => {
+  if (!inited) {
+    form_rules = { };
+    return;
+  }
+  await nextTick();
+  form_rules = {
+    lbl: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("名称") }`,
+      },
+    ],
+    username: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("用户名") }`,
+      },
+    ],
+    is_enabled: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("启用") }`,
+      },
+    ],
+  };
 });
 
 type OnCloseResolveType = {
@@ -385,14 +401,12 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;
 }
 
 /** 刷新 */
 async function refreshEfc() {
-  formRef?.clearValidate();
   if (!dialogModel.id) {
     return;
   }
@@ -482,7 +496,7 @@ async function saveClk() {
       ...builtInModel,
     });
     dialogModel.id = id;
-    msg = `增加成功!`;
+    msg = ns("添加成功");
   } else if (dialogAction === "edit") {
     if (!dialogModel.id) {
       return;
@@ -494,7 +508,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = `修改成功!`;
+    msg = ns("修改成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -527,6 +541,25 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const codes: string[] = [
+    "名称",
+    "用户名",
+    "默认部门",
+    "启用",
+    "备注",
+    "拥有部门",
+    "锁定",
+    "拥有角色",
+  ];
+  await Promise.all([
+    initDetailI18ns(),
+    initI18ns(codes),
+  ]);
+}
+initI18nsEfc();
 
 defineExpose({ showDialog });
 </script>

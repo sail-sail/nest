@@ -64,6 +64,15 @@ let dialogType = $ref<"auto" | "medium" | "large" | "default">("default");
 
 let pointerPierce = $ref(false);
 
+watch(
+  () => dialogVisible,
+  () => {
+    if (dialogVisible) {
+      isFullscreen = false;
+    }
+  },
+);
+
 const props = defineProps<{
   height?: string;
 }>();

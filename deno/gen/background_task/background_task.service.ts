@@ -1,6 +1,11 @@
 import { renderExcel } from "ejsexcel";
 
 import {
+  initN,
+  ns,
+} from "/src/i18n/i18n.ts";
+
+import {
   _internals as authDao
 } from "/lib/auth/auth.dao.ts";
 
@@ -212,15 +217,16 @@ async function forceDeleteByIds(
 async function importFile(
   id: string,
 ) {
+  const n = initN("/background_task");
   const header: { [key: string]: string } = {
-    "名称": "lbl",
-    "状态": "_state",
-    "类型": "_type",
-    "执行结果": "result",
-    "错误信息": "err_msg",
-    "开始时间": "begin_time",
-    "结束时间": "end_time",
-    "备注": "rem",
+    [ await n("名称") ]: "lbl",
+    [ await n("状态") ]: "_state",
+    [ await n("类型") ]: "_type",
+    [ await n("执行结果") ]: "result",
+    [ await n("错误信息") ]: "err_msg",
+    [ await n("开始时间") ]: "begin_time",
+    [ await n("结束时间") ]: "end_time",
+    [ await n("备注") ]: "rem",
   };
   const models = await getImportFileRows(id, header);
   
@@ -235,16 +241,18 @@ async function importFile(
       succNum++;
     } catch (err) {
       failNum++;
-      failErrMsgs.push(`第 ${ i + 1 } 行: ${ err.message || err.toString() }`);
+      failErrMsgs.push(await ns("第 {0} 行: {1}", (i + 1).toString(), err.message || err.toString()));
     }
   }
   
   let data = "";
   if (succNum > 0) {
-    data = `导入成功 ${ succNum } 条\n`;
+    data = await ns("导入成功 {0} 条", succNum.toString());
+    data += "\n";
   }
   if (failNum > 0) {
-    data += `导入失败 ${ failNum } 条\n`;
+    data += await ns("导入失败 {0} 条", failNum.toString());
+    data += "\n";
   }
   if (failErrMsgs.length > 0) {
     data += failErrMsgs.join("\n");
@@ -263,17 +271,19 @@ async function exportExcel(
   search?: Background_TaskSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
+  const n = initN("/background_task");
   const models = await findAll(search, undefined, sort);
   const buffer0 = await getTemplate(`background_task.xlsx`);
   if (!buffer0) {
-    throw new ServiceException(`模板文件 background_task.xlsx 不存在!`);
+    const msg = await ns("模板文件 {0}.xlsx 不存在", "background_task");
+    throw new ServiceException(msg);
   }
-  const buffer = await renderExcel(buffer0, { models });
+  const buffer = await renderExcel(buffer0, { models, n });
   const data = await tmpfileDao.upload(
     {
       content: buffer,
       name: "file",
-      originalName: "后台任务.xlsx",
+      originalName: `${ await ns("后台任务") }.xlsx`,
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   );

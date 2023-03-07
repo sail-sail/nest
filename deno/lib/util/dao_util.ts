@@ -24,7 +24,7 @@ import {
   type AuthModel,
 } from "/lib/auth/auth.constants.ts";
 
-export type SearchExtra = (args?: QueryArgs) => Promise<string>;
+export type SearchExtra = (args: QueryArgs) => Promise<string> | string | undefined | null;
 
 export async function setModelIds(
   // deno-lint-ignore no-explicit-any

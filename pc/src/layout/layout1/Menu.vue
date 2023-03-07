@@ -18,12 +18,11 @@
 </el-menu>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import useMenuStore from "@/store/menu";
 import useUsrStore from "@/store/usr";
 
 import { getMenus } from "./Api";
-import AppSubMenu from "./AppSubMenu.vue";
 
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();

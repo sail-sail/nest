@@ -81,7 +81,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           }
           const isPassword = column.isPassword;
           if (isPassword) continue;
-          lbls.push(column_comment);
+          lbls.push(`<%=await _data_.n("${ column_comment }")%>`);
           let str = "";
           if (fields.length === 0) {
             str += "<%forRow model in _data_.models%>";

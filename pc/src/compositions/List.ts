@@ -1,4 +1,8 @@
 import {
+  useI18n,
+} from "@/locales/i18n";
+
+import {
   type Ref,
 } from "vue";
 
@@ -451,4 +455,37 @@ export function useTableColumns<T>(
     storeColumns,
     deleteColumns,
   });
+}
+
+export async function initListI18ns() {
+  const {
+    initSysI18ns,
+  } = useI18n("");
+  const codes = [
+    "增加",
+    "请选择需要 复制 的数据",
+    "复制",
+    "请选择需要修改的数据",
+    "修改",
+    "请选择需要删除的数据",
+    "确定删除已选择的 {0} 条数据",
+    "确定",
+    "取消",
+    "删除 {0} 条数据成功",
+    "请选择需要 彻底删除 的数据",
+    "确定 彻底删除 已选择的 {0} 条数据",
+    "彻底删除 {0} 条数据成功",
+    "锁定",
+    "解锁",
+    "请选择需要 锁定 的数据",
+    "请选择需要 解锁 的数据",
+    "锁定 {0} 条数据成功",
+    "解锁 {0} 条数据成功",
+    "请选择需要还原的数据",
+    "确定还原已选择的 {0} 条数据",
+    "还原 {0} 条数据成功",
+    "请输入",
+    "请选择",
+  ];
+  await initSysI18ns(codes);
 }

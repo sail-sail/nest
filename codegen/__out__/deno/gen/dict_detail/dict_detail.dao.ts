@@ -16,6 +16,11 @@ import {
 } from "/lib/context.ts";
 
 import {
+  initN,
+  ns,
+} from "/src/i18n/i18n.ts";
+
+import {
   type PartialNull,
 } from "/typings/types.ts";
 
@@ -101,6 +106,9 @@ async function getWhereQuery(
   if (search?.dict_id && search?.dict_id.length > 0) {
     whereQuery += ` and _dict_id.id in ${ args.push(search.dict_id) }`;
   }
+  if (search?.dict_id === null) {
+    whereQuery += ` and _dict_id.id is null`;
+  }
   if (search?._dict_id && !Array.isArray(search?._dict_id)) {
     search._dict_id = [ search._dict_id ];
   }
@@ -110,11 +118,17 @@ async function getWhereQuery(
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
+  if (search?.lbl === null) {
+    whereQuery += ` and t.lbl is null`;
+  }
   if (isNotEmpty(search?.lblLike)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.val !== undefined) {
     whereQuery += ` and t.val = ${ args.push(search.val) }`;
+  }
+  if (search?.val === null) {
+    whereQuery += ` and t.val is null`;
   }
   if (isNotEmpty(search?.valLike)) {
     whereQuery += ` and t.val like ${ args.push(sqlLike(search?.valLike) + "%") }`;
@@ -135,6 +149,9 @@ async function getWhereQuery(
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+  }
+  if (search?.rem === null) {
+    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.remLike)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
@@ -304,19 +321,19 @@ async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: (keyof Dict_DetailModel)[]; uniqueComments: { [key: string]: string }; }}
  */
-function getUniqueKeys(): {
+async function getUniqueKeys(): Promise<{
   uniqueKeys: (keyof Dict_DetailModel)[];
   uniqueComments: { [key: string]: string };
-} {
+}> {
+  const n = initN("/i18n");
   const uniqueKeys: (keyof Dict_DetailModel)[] = [
     "dict_id",
     "lbl",
   ];
   const uniqueComments = {
-    dict_id: "系统字典",
-    lbl: "名称",
+    dict_id: await n("系统字典"),
+    lbl: await n("名称"),
   };
   return { uniqueKeys, uniqueComments };
 }
@@ -334,7 +351,7 @@ async function findByUnique(
     const model = await findOne({ id: search0.id }, options);
     return model;
   }
-  const { uniqueKeys } = getUniqueKeys();
+  const { uniqueKeys } = await getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
@@ -357,12 +374,12 @@ async function findByUnique(
  * @param {PartialNull<Dict_DetailModel>} model
  * @return {boolean}
  */
-function equalsByUnique(
+async function equalsByUnique(
   oldModel: Dict_DetailModel,
   model: PartialNull<Dict_DetailModel>,
-): boolean {
+): Promise<boolean> {
   if (!oldModel || !model) return false;
-  const { uniqueKeys } = getUniqueKeys();
+  const { uniqueKeys } = await getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) return false;
   let isEquals = true;
   for (let i = 0; i < uniqueKeys.length; i++) {
@@ -391,10 +408,10 @@ async function checkByUnique(
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = await equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = getUniqueKeys();
+      const { uniqueKeys, uniqueComments } = await getUniqueKeys();
       const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
       throw new UniqueException(`${ lbl } 的值已经存在!`);
     }

@@ -70,6 +70,7 @@ export async function getLoginInfo(
       query {
         getLoginInfo {
           lbl
+          lang
           dept_id
           dept_idModels {
             id
@@ -99,4 +100,27 @@ export async function deptLoginSelect(
     variables,
   }, opt);
   return data.deptLoginSelect;
+}
+
+/**
+ * 切换语言
+ */
+export async function selectLang(
+  variables: {
+    lang: string;
+  },
+  opt?: GqlOpt,
+) {
+  const res: {
+    selectLang: Mutation["selectLang"];
+  } = await gqlQuery({
+    query: /* GraphQL */ `
+      mutation($lang: String!) {
+        selectLang(lang: $lang)
+      }
+    `,
+    variables,
+  }, opt);
+  const data = res.selectLang;
+  return data;
 }

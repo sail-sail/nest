@@ -31,84 +31,84 @@
         
         <template v-if="builtInModel?.mod == null">
           <el-form-item
-            label="模块"
+            :label="n('模块')"
             prop="mod"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.mod"
               un-w="full"
-              placeholder="请输入 模块"
+              :placeholder="`${ n('请输入') } ${ n('模块') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.mod_lbl == null">
           <el-form-item
-            label="模块名称"
+            :label="n('模块名称')"
             prop="mod_lbl"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.mod_lbl"
               un-w="full"
-              placeholder="请输入 模块名称"
+              :placeholder="`${ n('请输入') } ${ n('模块名称') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.method == null">
           <el-form-item
-            label="方法"
+            :label="n('方法')"
             prop="method"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.method"
               un-w="full"
-              placeholder="请输入 方法"
+              :placeholder="`${ n('请输入') } ${ n('方法') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.method_lbl == null">
           <el-form-item
-            label="方法名称"
+            :label="n('方法名称')"
             prop="method_lbl"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.method_lbl"
               un-w="full"
-              placeholder="请输入 方法名称"
+              :placeholder="`${ n('请输入') } ${ n('方法名称') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.lbl == null">
           <el-form-item
-            label="操作"
+            :label="n('操作')"
             prop="lbl"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              placeholder="请输入 操作"
+              :placeholder="`${ n('请输入') } ${ n('操作') }`"
             ></el-input>
           </el-form-item>
         </template>
         
         <template v-if="builtInModel?.rem == null">
           <el-form-item
-            label="备注"
+            :label="n('备注')"
             prop="rem"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              placeholder="请输入 备注"
+              :placeholder="`${ n('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -129,7 +129,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ n('取消') }}</span>
       </el-button>
       
       <div
@@ -144,7 +144,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
           @click="prevIdClk"
         >
-          上一项
+          {{ n('上一项') }}
         </el-button>
         
         <span>
@@ -156,7 +156,7 @@
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
           @click="nextIdClk"
         >
-          下一项
+          {{ n('下一项') }}
         </el-button>
         
         <span v-if="changedIds.length > 0">
@@ -193,6 +193,13 @@ const emit = defineEmits<
   ) => void
 >();
 
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit";
@@ -207,7 +214,16 @@ let changedIds = $ref<string[]>([ ]);
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
-let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
+let form_rules = $ref<Record<string, FormItemRule[]>>({ });
+
+watchEffect(async () => {
+  if (!inited) {
+    form_rules = { };
+    return;
+  }
+  await nextTick();
+  form_rules = {
+  };
 });
 
 type OnCloseResolveType = {
@@ -291,14 +307,12 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;
 }
 
 /** 刷新 */
 async function refreshEfc() {
-  formRef?.clearValidate();
   if (!dialogModel.id) {
     return;
   }
@@ -385,6 +399,25 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const codes: string[] = [
+    "模块名称",
+    "方法名称",
+    "操作",
+    "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
+  ];
+  await Promise.all([
+    initDetailI18ns(),
+    initI18ns(codes),
+  ]);
+}
+initI18nsEfc();
 
 defineExpose({ showDialog });
 </script>

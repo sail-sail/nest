@@ -15,7 +15,7 @@ const messages = {
   },
 };
 
-export function getLocale() {
+export function getLocale(): string {
   let usr: any = { };
   const usrStr = localStorage.getItem("usr");
   if (usrStr) {
@@ -28,6 +28,9 @@ export function getLocale() {
     return lang;
   }
   lang = navigator.language.toLowerCase();
+  if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(lang) > -1) {
+    lang = "zh-cn";
+  }
   const locales = Object.keys(messages);
   for (const locale of locales) {
     if (lang.indexOf(locale) > -1) {

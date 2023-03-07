@@ -46,6 +46,11 @@ import {
 } from "/lib/context.ts";
 
 import {
+  initN,
+  ns,
+} from "/src/i18n/i18n.ts";
+
+import {
   type PartialNull,
 } from "/typings/types.ts";
 
@@ -271,6 +276,9 @@ async function getWhereQuery(
   }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
     whereQuery += ` and _<#=column_name#>.id in ${ args.push(search.<#=column_name#>) }`;
+  }
+  if (search?.<#=column_name#> === null) {
+    whereQuery += ` and _<#=column_name#>.id is null`;
   }<#
     if (foreignKey.lbl) {
   #>
@@ -289,6 +297,9 @@ async function getWhereQuery(
   }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
     whereQuery += ` and <#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
+  }
+  if (search?.<#=column_name#> === null) {
+    whereQuery += ` and <#=foreignKey.table#>.id is null`;
   }<#
     }
   #><#
@@ -335,6 +346,9 @@ async function getWhereQuery(
   #>
   if (search?.<#=column_name#> !== undefined) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
+  }
+  if (search?.<#=column_name#> === null) {
+    whereQuery += ` and t.<#=column_name#> is null`;
   }
   if (isNotEmpty(search?.<#=column_name#>Like)) {
     whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>Like) + "%") }`;
@@ -798,12 +812,12 @@ async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: (keyof <#=Table_Up#>Model)[]; uniqueComments: { [key: string]: string }; }}
  */
-function getUniqueKeys(): {
+async function getUniqueKeys(): Promise<{
   uniqueKeys: (keyof <#=Table_Up#>Model)[];
   uniqueComments: { [key: string]: string };
-} {
+}> {
+  const n = initN("/i18n");
   const uniqueKeys: (keyof <#=Table_Up#>Model)[] = [<#
   for (let i = 0; i < (opts.unique || []).length; i++) {
     const uniqueKey = opts.unique[i];
@@ -828,7 +842,7 @@ function getUniqueKeys(): {
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
   #>
-    <#=column_name#>: "<#=column_comment#>",<#
+    <#=column_name#>: await n("<#=column_comment#>"),<#
     }
   #>
   };
@@ -848,7 +862,7 @@ async function findByUnique(
     const model = await findOne({ id: search0.id }, options);
     return model;
   }
-  const { uniqueKeys } = getUniqueKeys();
+  const { uniqueKeys } = await getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
@@ -871,12 +885,12 @@ async function findByUnique(
  * @param {PartialNull<<#=Table_Up#>Model>} model
  * @return {boolean}
  */
-function equalsByUnique(
+async function equalsByUnique(
   oldModel: <#=Table_Up#>Model,
   model: PartialNull<<#=Table_Up#>Model>,
-): boolean {
+): Promise<boolean> {
   if (!oldModel || !model) return false;
-  const { uniqueKeys } = getUniqueKeys();
+  const { uniqueKeys } = await getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) return false;
   let isEquals = true;
   for (let i = 0; i < uniqueKeys.length; i++) {
@@ -905,10 +919,10 @@ async function checkByUnique(
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = await equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = getUniqueKeys();
+      const { uniqueKeys, uniqueComments } = await getUniqueKeys();
       const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
       throw new UniqueException(`${ lbl } 的值已经存在!`);
     }

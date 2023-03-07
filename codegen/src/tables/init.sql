@@ -130,6 +130,44 @@ CREATE TABLE if not exists `menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='菜单';
 
+------------------------------------------------------------------------------------------------ 语言
+drop table if exists `lang`;
+CREATE TABLE if not exists `lang` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `code` varchar(10) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`code`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='语言';
+
+------------------------------------------------------------------------------------------------ 国际化
+drop table if exists `i18n`;
+CREATE TABLE if not exists `i18n` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lang_id` varchar(22) NOT NULL DEFAULT '' COMMENT '语言',
+  `menu_id` varchar(45) NOT NULL DEFAULT '' COMMENT '菜单',
+  `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lang_id`, `menu_id`, `code`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='国际化';
+
 ------------------------------------------------------------------------------------------------ 权限
 drop table if exists `permit`;
 CREATE TABLE if not exists `permit` (
@@ -189,24 +227,25 @@ CREATE TABLE if not exists `background_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='后台任务';
 
 ------------------------------------------------------------------------------------------------ 选项
-drop table if exists `option`;
-CREATE TABLE if not exists `option` (
+drop table if exists `options`;
+CREATE TABLE if not exists `options` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
   `ky` varchar(50) NOT NULL DEFAULT '' COMMENT '键',
   `val` varchar(255) NOT NULL DEFAULT '' COMMENT '值',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`ky`, `tenant_id`),
+  INDEX (`lbl`, `ky`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='选项';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统选项';
 
 ------------------------------------------------------------------------------------------------ 操作记录
 drop table if exists `operation_record`;

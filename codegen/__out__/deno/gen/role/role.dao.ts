@@ -16,6 +16,11 @@ import {
 } from "/lib/context.ts";
 
 import {
+  initN,
+  ns,
+} from "/src/i18n/i18n.ts";
+
+import {
   type PartialNull,
 } from "/typings/types.ts";
 
@@ -109,11 +114,17 @@ async function getWhereQuery(
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
+  if (search?.lbl === null) {
+    whereQuery += ` and t.lbl is null`;
+  }
   if (isNotEmpty(search?.lblLike)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+  }
+  if (search?.rem === null) {
+    whereQuery += ` and t.rem is null`;
   }
   if (isNotEmpty(search?.remLike)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
@@ -129,6 +140,9 @@ async function getWhereQuery(
   }
   if (search?.menu_ids && search?.menu_ids.length > 0) {
     whereQuery += ` and menu.id in ${ args.push(search.menu_ids) }`;
+  }
+  if (search?.menu_ids === null) {
+    whereQuery += ` and menu.id is null`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -294,17 +308,17 @@ async function findAll(
 
 /**
  * 获得表的唯一字段名列表
- * @return {{ uniqueKeys: (keyof RoleModel)[]; uniqueComments: { [key: string]: string }; }}
  */
-function getUniqueKeys(): {
+async function getUniqueKeys(): Promise<{
   uniqueKeys: (keyof RoleModel)[];
   uniqueComments: { [key: string]: string };
-} {
+}> {
+  const n = initN("/i18n");
   const uniqueKeys: (keyof RoleModel)[] = [
     "lbl",
   ];
   const uniqueComments = {
-    lbl: "名称",
+    lbl: await n("名称"),
   };
   return { uniqueKeys, uniqueComments };
 }
@@ -322,7 +336,7 @@ async function findByUnique(
     const model = await findOne({ id: search0.id }, options);
     return model;
   }
-  const { uniqueKeys } = getUniqueKeys();
+  const { uniqueKeys } = await getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
@@ -345,12 +359,12 @@ async function findByUnique(
  * @param {PartialNull<RoleModel>} model
  * @return {boolean}
  */
-function equalsByUnique(
+async function equalsByUnique(
   oldModel: RoleModel,
   model: PartialNull<RoleModel>,
-): boolean {
+): Promise<boolean> {
   if (!oldModel || !model) return false;
-  const { uniqueKeys } = getUniqueKeys();
+  const { uniqueKeys } = await getUniqueKeys();
   if (!uniqueKeys || uniqueKeys.length === 0) return false;
   let isEquals = true;
   for (let i = 0; i < uniqueKeys.length; i++) {
@@ -379,10 +393,10 @@ async function checkByUnique(
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = await equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = getUniqueKeys();
+      const { uniqueKeys, uniqueComments } = await getUniqueKeys();
       const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
       throw new UniqueException(`${ lbl } 的值已经存在!`);
     }

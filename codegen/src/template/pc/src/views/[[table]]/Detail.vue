@@ -98,7 +98,7 @@ for (let i = 0; i < columns.length; i++) {
         
         <template v-if="builtInModel?.<#=column_name#> == null<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
-            label="<#=column_comment#>"
+            :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
             if (column.isImg) {
           #>
@@ -144,7 +144,7 @@ for (let i = 0; i < columns.length; i++) {
                 };
               })"
               un-w="full"
-              placeholder="请选择 <#=column_comment#>"<#
+              :placeholder="`${ n('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (foreignKey.multiple) {
               #>
               multiple<#
@@ -157,7 +157,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               un-w="full"
-              placeholder="请选择 <#=column_comment#>"
+              :placeholder="`${ n('请选择') } ${ n('<#=column_comment#>') }`"
               filterable
               default-first-option
               clearable
@@ -174,7 +174,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
               <el-option
                 :value="<#=value#>"
-                label="<#=label#>"
+                :label="n('<#=label#>')"
               ></el-option><#
               }
             #>
@@ -186,7 +186,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
               un-w="full"
-              placeholder="请选择 <#=column_comment#>"
+              :placeholder="`${ n('请选择') } ${ n('<#=column_comment#>') }`"
             ></DictSelect><#
             } else if (column.dictbiz) {
             #>
@@ -195,7 +195,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
               un-w="full"
-              placeholder="请选择 <#=column_comment#>"
+              :placeholder="`${ n('请选择') } ${ n('<#=column_comment#>') }`"
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
@@ -215,7 +215,7 @@ for (let i = 0; i < columns.length; i++) {
               value-format="YYYY-MM-DD 00:00:00"<#
                 }
               #>
-              placeholder="请选择 <#=column_comment#>"
+              :placeholder="`${ n('请选择') } ${ n('<#=column_comment#>') }`"
             ></el-date-picker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
@@ -238,7 +238,7 @@ for (let i = 0; i < columns.length; i++) {
               :step="1"
               :step-strictly="true"
               :controls="false"
-              placeholder="请输入 <#=column_comment#>"
+              :placeholder="`${ n('请输入') } ${ n('<#=column_comment#>') }`"
             ></el-input-number><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -266,14 +266,14 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :precision="<#=precision#>"
               :controls="false"
-              placeholder="请输入 <#=column_comment#>"
+              :placeholder="`${ n('请输入') } ${ n('<#=column_comment#>') }`"
             ></el-input-number><#
             } else {
             #>
             <el-input
               v-model="dialogModel.<#=column_name#>"
               un-w="full"
-              placeholder="请输入 <#=column_comment#>"
+              :placeholder="`${ n('请输入') } ${ n('<#=column_comment#>') }`"
             ></el-input><#
             }
             #>
@@ -310,7 +310,7 @@ for (let i = 0; i < columns.length; i++) {
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ n('取消') }}</span>
       </el-button><#
       if (opts.noAdd !== true || opts.noEdit !== true) {
       #>
@@ -323,7 +323,7 @@ for (let i = 0; i < columns.length; i++) {
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>保存</span>
+        <span>{{ n('保存') }}</span>
       </el-button><#
       }
       #>
@@ -340,7 +340,7 @@ for (let i = 0; i < columns.length; i++) {
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
           @click="prevIdClk"
         >
-          上一项
+          {{ n('上一项') }}
         </el-button>
         
         <span>
@@ -352,7 +352,7 @@ for (let i = 0; i < columns.length; i++) {
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
           @click="nextIdClk"
         >
-          下一项
+          {{ n('下一项') }}
         </el-button>
         
         <span v-if="changedIds.length > 0">
@@ -452,6 +452,13 @@ const emit = defineEmits<
   ) => void
 >();
 
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit";
@@ -488,50 +495,59 @@ let changedIds = $ref<string[]>([ ]);
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
-let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    let require = column.require;
-    if (data_type == "datetime" || data_type == "date") {
-      column_comment = column_comment + "开始";
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-  #><#
-    if (require) {
-      if (!foreignKey) {
-  #>
-  <#=column_name#>: [
-    {
-      required: true,
-      message: "请输入 <#=column_comment#>",
-    },
-  ],<#
-      } else {
-  #>
-  <#=column_name#>: [
-    {
-      required: true,
-      message: "请选择 <#=column_comment#>",
-    },
-  ],<#
-      }
-  #><#
-    }
-  #><#
+let form_rules = $ref<Record<string, FormItemRule[]>>({ });
+
+watchEffect(async () => {
+  if (!inited) {
+    form_rules = { };
+    return;
   }
-  #>
+  await nextTick();
+  form_rules = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      let require = column.require;
+      if (data_type == "datetime" || data_type == "date") {
+        column_comment = column_comment + "开始";
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    #><#
+      if (require) {
+        if (!foreignKey) {
+    #>
+    <#=column_name#>: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("<#=column_comment#>") }`,
+      },
+    ],<#
+        } else {
+    #>
+    <#=column_name#>: [
+      {
+        required: true,
+        message: `${ ns("请选择") } ${ n("<#=column_comment#>") }`,
+      },
+    ],<#
+        }
+    #><#
+      }
+    #><#
+    }
+    #>
+  };
 });
 
 type OnCloseResolveType = {
@@ -671,14 +687,12 @@ async function showDialog(
       await refreshEfc();
     }
   }
-  formRef?.clearValidate();
   inited = true;
   return await dialogRes.dialogPrm;
 }
 
 /** 刷新 */
 async function refreshEfc() {
-  formRef?.clearValidate();
   if (!dialogModel.id) {
     return;
   }
@@ -772,7 +786,7 @@ async function saveClk() {
       ...builtInModel,
     });
     dialogModel.id = id;
-    msg = `增加成功!`;
+    msg = ns("添加成功");
   }<#
   }
   #><#
@@ -792,7 +806,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = `修改成功!`;
+    msg = ns("修改成功");
   }<#
   }
   #>
@@ -829,6 +843,39 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const codes: string[] = [<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (column.noList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+  #>
+    "<#=column_comment#>",<#
+  }
+  #>
+  ];
+  await Promise.all([
+    initDetailI18ns(),
+    initI18ns(codes),
+  ]);
+}
+initI18nsEfc();
 
 defineExpose({ showDialog });
 </script>

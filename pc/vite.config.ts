@@ -108,6 +108,10 @@ export default defineConfig({
             "useSelect",
             "useSelectOne",
             "useTableColumns",
+            "initListI18ns",
+          ],
+          "@/compositions/Detail": [
+            "initDetailI18ns",
           ],
           "@/components/UploadFileDialog.vue": [
             [ "default", "UploadFileDialog" ],
@@ -148,6 +152,9 @@ export default defineConfig({
           ],
           "@/utils/ObjectUtil": [
             "deepCompare",
+          ],
+          "@/locales/i18n": [
+            "useI18n",
           ],
         },
       ],

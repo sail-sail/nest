@@ -28,13 +28,13 @@
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
         <el-form-item
-          label="名称"
+          :label="n('名称')"
           prop="lblLike"
         >
           <el-input
             v-model="search.lblLike"
             un-w="full"
-            placeholder="请输入名称"
+            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
             @clear="searchIptClr"
           ></el-input>
@@ -43,7 +43,7 @@
       
       <template v-if="builtInSearch?.state == null">
         <el-form-item
-          label="状态"
+          :label="n('状态')"
           prop="state"
         >
           <DictSelect
@@ -52,7 +52,7 @@
             :model-value="search.state"
             @update:model-value="search.state = $event"
             code="background_task_state"
-            placeholder="请选择 状态"
+            :placeholder="`${ ns('请选择') } ${ n('状态') }`"
             multiple
             @change="searchClk"
           ></DictSelect>
@@ -61,7 +61,7 @@
       
       <template v-if="builtInSearch?.type == null">
         <el-form-item
-          label="类型"
+          :label="n('类型')"
           prop="type"
         >
           <DictSelect
@@ -70,7 +70,7 @@
             :model-value="search.type"
             @update:model-value="search.type = $event"
             code="background_task_type"
-            placeholder="请选择 类型"
+            :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             multiple
             @change="searchClk"
           ></DictSelect>
@@ -79,7 +79,7 @@
       
       <template v-if="builtInSearch?.begin_time == null">
         <el-form-item
-          label="开始时间"
+          :label="n('开始时间')"
           prop="begin_time"
         >
           <el-date-picker
@@ -87,8 +87,8 @@
             type="daterange"
             un-w="full"
             :model-value="(search.begin_time as any)"
-            start-placeholder="开始"
-            end-placeholder="结束"
+            :start-placeholder="ns('开始')"
+            :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD HH:mm:ss"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
@@ -111,7 +111,7 @@
             :true-label="1"
             @change="searchClk"
           >
-            <span>回收站</span>
+            <span>{{ ns('回收站') }}</span>
           </el-checkbox>
         </el-form-item>
       </template>
@@ -127,7 +127,7 @@
           :disabled="selectedIds.length === 0"
           @change="idsCheckedChg"
         >
-          <span>已选择</span>
+          <span>{{ ns('已选择') }}</span>
           <span
             un-m="l-0.5"
             un-text="blue"
@@ -138,7 +138,7 @@
         </el-checkbox>
         <el-icon
           v-show="selectedIds.length > 0"
-          title="清空已选择"
+          :title="ns('清空已选择')"
           un-cursor-pointer
           un-m="l-1.5"
           un-text="hover:red"
@@ -163,7 +163,7 @@
           <template #icon>
             <ElIconSearch />
           </template>
-          <span>查询</span>
+          <span>{{ ns('查询') }}</span>
         </el-button>
         
         <el-button
@@ -173,7 +173,7 @@
           <template #icon>
             <ElIconDelete />
           </template>
-          <span>重置</span>
+          <span>{{ ns('重置') }}</span>
         </el-button>
         
       </el-form-item>
@@ -194,7 +194,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>删除</span>
+        <span>{{ ns('删除') }}</span>
       </el-button>
     
       <el-button
@@ -204,7 +204,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>刷新</span>
+        <span>{{ ns('刷新') }}</span>
       </el-button>
       
       <el-dropdown
@@ -215,7 +215,7 @@
         <el-button
           plain
         >
-          <span>更多操作</span>
+          <span>{{ ns('更多操作') }}</span>
           <el-icon>
             <ElIconArrowDown />
           </el-icon>
@@ -242,7 +242,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>还原</span>
+        <span>{{ ns('还原') }}</span>
       </el-button>
       
       <el-button
@@ -253,7 +253,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>彻底删除</span>
+        <span>{{ ns('彻底删除') }}</span>
       </el-button>
       
       <el-button
@@ -263,7 +263,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>刷新</span>
+        <span>{{ ns('刷新') }}</span>
       </el-button>
       
     </template>
@@ -279,7 +279,7 @@
       @reset-columns="resetColumns"
       @store-columns="storeColumns"
     >
-      列操作
+      {{ ns('列操作') }}
     </TableShowColumns>
     
   </div>
@@ -301,7 +301,7 @@
         size="small"
         height="100%"
         row-key="id"
-        :empty-text="inited ? undefined : '加载中...'"
+        :empty-text="inited ? undefined : ns('加载中...')"
         :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
@@ -431,7 +431,7 @@
 </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import Detail from "./Detail.vue";
 
 import {
@@ -450,6 +450,13 @@ import {
 defineOptions({
   name: "后台任务",
 });
+
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns
+} = useI18n();
 
 const usrStore = useUsrStore();
 
@@ -502,19 +509,19 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  id?: string; //ID
-  lbl?: string; //名称
-  lblLike?: string; //名称
-  state?: string|string[]; //状态
-  type?: string|string[]; //类型
-  result?: string; //执行结果
-  resultLike?: string; //执行结果
-  err_msg?: string; //错误信息
-  err_msgLike?: string; //错误信息
-  begin_time?: string; //开始时间
-  end_time?: string; //结束时间
-  rem?: string; //备注
-  remLike?: string; //备注
+  id?: string; // ID
+  lbl?: string; // 名称
+  lblLike?: string; // 名称
+  state?: string|string[]; // 状态
+  type?: string|string[]; // 类型
+  result?: string; // 执行结果
+  resultLike?: string; // 执行结果
+  err_msg?: string; // 错误信息
+  err_msgLike?: string; // 错误信息
+  begin_time?: string; // 开始时间
+  end_time?: string; // 结束时间
+  rem?: string; // 备注
+  remLike?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -649,74 +656,89 @@ let idsChecked = $ref<0|1>(0);
 /** 表格数据 */
 let tableData = $ref<Background_TaskModel[]>([ ]);
 
-let tableColumns = $ref<ColumnType[]>([
-  {
-    label: "名称",
-    prop: "lbl",
-    width: 120,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "状态",
-    prop: "_state",
-    width: 120,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "类型",
-    prop: "_type",
-    width: 120,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "执行结果",
-    prop: "result",
-    width: 140,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "错误信息",
-    prop: "err_msg",
-    width: 160,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "开始时间",
-    prop: "begin_time",
-    width: 180,
-    sortable: "custom",
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "结束时间",
-    prop: "end_time",
-    width: 180,
-    sortable: "custom",
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "备注",
-    prop: "rem",
-    width: 180,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-]);
+function getTableColumns(): ColumnType[] {
+  return [
+    {
+      label: "名称",
+      prop: "lbl",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "状态",
+      prop: "_state",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "类型",
+      prop: "_type",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "执行结果",
+      prop: "result",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "错误信息",
+      prop: "err_msg",
+      width: 160,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "开始时间",
+      prop: "begin_time",
+      width: 180,
+      sortable: "custom",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "结束时间",
+      prop: "end_time",
+      width: 180,
+      sortable: "custom",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "备注",
+      prop: "rem",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+  ];
+}
+
+/** 表格列 */
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
+
+/** 表格列标签国际化 */
+watchEffect(() => {
+  const tableColumns2 = getTableColumns();
+  for (let i = 0; i < tableColumns2.length; i++) {
+    const column2 = tableColumns2[i];
+    const column = tableColumns[i];
+    column.label = n(column2.label);
+  }
+});
 
 /** 表格列 */
 let {
@@ -786,13 +808,13 @@ async function sortChange(
 /** 点击删除 */
 async function deleteByIdsEfc() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要删除的数据!`);
+    ElMessage.warning(ns("请选择需要删除的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定删除已选择的 ${ selectedIds.length } 条数据?`, {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(`${ ns("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: ns("确定"),
+      cancelButtonText: ns("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -804,7 +826,7 @@ async function deleteByIdsEfc() {
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(`删除 ${ num } 条数据成功!`);
+    ElMessage.success(ns("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
 }
@@ -812,13 +834,13 @@ async function deleteByIdsEfc() {
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要 彻底删除 的数据!`);
+    ElMessage.warning(ns("请选择需要 彻底删除 的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定 彻底删除 已选择的 ${ selectedIds.length } 条数据?`, {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(`${ ns("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: ns("确定"),
+      cancelButtonText: ns("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -827,7 +849,7 @@ async function forceDeleteByIdsClk() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
+    ElMessage.success(ns("彻底删除 {0} 条数据成功", num));
     await Promise.all([
       dataGrid(true),
     ]);
@@ -837,13 +859,13 @@ async function forceDeleteByIdsClk() {
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要还原的数据!`);
+    ElMessage.warning(ns("请选择需要还原的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定还原已选择的 ${ selectedIds.length } 条数据?`, {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(`${ ns("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: ns("确定"),
+      cancelButtonText: ns("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -855,9 +877,27 @@ async function revertByIdsEfc() {
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(`还原 ${ num } 条数据成功!`);
+    ElMessage.success(ns("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
+}
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const i18nCodes: string[] = [
+    "名称",
+    "状态",
+    "类型",
+    "执行结果",
+    "错误信息",
+    "开始时间",
+    "结束时间",
+    "备注",
+  ];
+  await Promise.all([
+    initListI18ns(),
+    initI18ns(i18nCodes),
+  ]);
 }
 
 async function initFrame() {
@@ -865,6 +905,7 @@ async function initFrame() {
     return;
   }
   await Promise.all([
+    initI18nsEfc(),
     searchClk(),
   ]);
   if (tableData.length === 1) {

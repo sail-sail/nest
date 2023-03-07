@@ -28,7 +28,7 @@
       
       <template v-if="builtInSearch?.type == null">
         <el-form-item
-          label="类型"
+          :label="n('类型')"
           prop="type"
         >
           <DictSelect
@@ -37,7 +37,7 @@
             :model-value="search.type"
             @update:model-value="search.type = $event"
             code="menu_type"
-            placeholder="请选择 类型"
+            :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             multiple
             @change="searchClk"
           ></DictSelect>
@@ -61,7 +61,7 @@
                 value: item.id,
               };
             })"
-            placeholder="请选择 父菜单"
+            :placeholder="`${ ns('请选择') } ${ n('父菜单') }`"
             multiple
             @change="searchClk"
           ></CustomSelect>
@@ -70,13 +70,13 @@
       
       <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
         <el-form-item
-          label="名称"
+          :label="n('名称')"
           prop="lblLike"
         >
           <el-input
             v-model="search.lblLike"
             un-w="full"
-            placeholder="请输入名称"
+            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
             @clear="searchIptClr"
           ></el-input>
@@ -95,7 +95,7 @@
             :true-label="1"
             @change="searchClk"
           >
-            <span>回收站</span>
+            <span>{{ ns('回收站') }}</span>
           </el-checkbox>
         </el-form-item>
       </template>
@@ -111,7 +111,7 @@
           :disabled="selectedIds.length === 0"
           @change="idsCheckedChg"
         >
-          <span>已选择</span>
+          <span>{{ ns('已选择') }}</span>
           <span
             un-m="l-0.5"
             un-text="blue"
@@ -122,7 +122,7 @@
         </el-checkbox>
         <el-icon
           v-show="selectedIds.length > 0"
-          title="清空已选择"
+          :title="ns('清空已选择')"
           un-cursor-pointer
           un-m="l-1.5"
           un-text="hover:red"
@@ -147,7 +147,7 @@
           <template #icon>
             <ElIconSearch />
           </template>
-          <span>查询</span>
+          <span>{{ ns('查询') }}</span>
         </el-button>
         
         <el-button
@@ -157,7 +157,7 @@
           <template #icon>
             <ElIconDelete />
           </template>
-          <span>重置</span>
+          <span>{{ ns('重置') }}</span>
         </el-button>
         
       </el-form-item>
@@ -178,7 +178,7 @@
         <template #icon>
           <ElIconCirclePlus />
         </template>
-        <span>新增</span>
+        <span>{{ ns('新增') }}</span>
       </el-button>
       
       <el-button
@@ -189,7 +189,7 @@
         <template #icon>
           <ElIconCopyDocument />
         </template>
-        <span>复制</span>
+        <span>{{ ns('复制') }}</span>
       </el-button>
       
       <el-button
@@ -200,7 +200,7 @@
         <template #icon>
           <ElIconEdit />
         </template>
-        <span>编辑</span>
+        <span>{{ ns('编辑') }}</span>
       </el-button>
       
       <el-button
@@ -211,7 +211,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>删除</span>
+        <span>{{ ns('删除') }}</span>
       </el-button>
     
       <el-button
@@ -221,7 +221,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>刷新</span>
+        <span>{{ ns('刷新') }}</span>
       </el-button>
       
       <el-dropdown
@@ -232,7 +232,7 @@
         <el-button
           plain
         >
-          <span>更多操作</span>
+          <span>{{ ns('更多操作') }}</span>
           <el-icon>
             <ElIconArrowDown />
           </el-icon>
@@ -247,14 +247,14 @@
               un-justify-center
               @click="exportClk"
             >
-              <span>导出</span>
+              <span>{{ ns('导出') }}</span>
             </el-dropdown-item>
             
             <el-dropdown-item
               un-justify-center
               @click="openUploadClk"
             >
-              <span>导入</span>
+              <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -273,7 +273,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>还原</span>
+        <span>{{ ns('还原') }}</span>
       </el-button>
       
       <el-button
@@ -284,7 +284,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>彻底删除</span>
+        <span>{{ ns('彻底删除') }}</span>
       </el-button>
       
       <el-button
@@ -294,7 +294,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>刷新</span>
+        <span>{{ ns('刷新') }}</span>
       </el-button>
       
       <el-button
@@ -304,7 +304,7 @@
         <template #icon>
           <ElIconDownload />
         </template>
-        <span>导出</span>
+        <span>{{ ns('导出') }}</span>
       </el-button>
       
     </template>
@@ -320,7 +320,7 @@
       @reset-columns="resetColumns"
       @store-columns="storeColumns"
     >
-      列操作
+      {{ ns('列操作') }}
     </TableShowColumns>
     
   </div>
@@ -342,7 +342,7 @@
         size="small"
         height="100%"
         row-key="id"
-        :empty-text="inited ? undefined : '加载中...'"
+        :empty-text="inited ? undefined : ns('加载中...')"
         :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
@@ -470,11 +470,13 @@
   <Detail
     ref="detailRef"
   ></Detail>
-  <UploadFileDialog ref="uploadFileDialogRef"></UploadFileDialog>
+  <UploadFileDialog
+    ref="uploadFileDialogRef"
+  ></UploadFileDialog>
 </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import Detail from "./Detail.vue";
 
 import {
@@ -500,6 +502,13 @@ import {
 defineOptions({
   name: "菜单",
 });
+
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns
+} = useI18n();
 
 const usrStore = useUsrStore();
 
@@ -559,20 +568,20 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  id?: string; //ID
-  type?: string|string[]; //类型
-  menu_id?: string|string[]; //父菜单
-  _menu_id?: string|string[]; //父菜单
-  lbl?: string; //名称
-  lblLike?: string; //名称
-  route_path?: string; //路由
-  route_pathLike?: string; //路由
-  route_query?: string; //参数
-  route_queryLike?: string; //参数
-  is_enabled?: string|string[]; //启用
-  order_by?: string; //排序
-  rem?: string; //备注
-  remLike?: string; //备注
+  id?: string; // ID
+  type?: string|string[]; // 类型
+  menu_id?: string|string[]; // 父菜单
+  _menu_id?: string|string[]; // 父菜单
+  lbl?: string; // 名称
+  lblLike?: string; // 名称
+  route_path?: string; // 路由
+  route_pathLike?: string; // 路由
+  route_query?: string; // 参数
+  route_queryLike?: string; // 参数
+  is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
+  rem?: string; // 备注
+  remLike?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -710,72 +719,87 @@ let idsChecked = $ref<0|1>(0);
 /** 表格数据 */
 let tableData = $ref<MenuModel[]>([ ]);
 
-let tableColumns = $ref<ColumnType[]>([
-  {
-    label: "类型",
-    prop: "_type",
-    width: 100,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "父菜单",
-    prop: "_menu_id",
-    width: 140,
-    sortable: "custom",
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "名称",
-    prop: "lbl",
-    width: 140,
-    align: "left",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "路由",
-    prop: "route_path",
-    align: "left",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "参数",
-    prop: "route_query",
-    align: "left",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "启用",
-    prop: "_is_enabled",
-    width: 60,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "排序",
-    prop: "order_by",
-    width: 100,
-    sortable: "custom",
-    align: "right",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-  {
-    label: "备注",
-    prop: "rem",
-    width: 180,
-    align: "center",
-    headerAlign: "center",
-    showOverflowTooltip: true,
-  },
-]);
+function getTableColumns(): ColumnType[] {
+  return [
+    {
+      label: "类型",
+      prop: "_type",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "父菜单",
+      prop: "_menu_id",
+      width: 140,
+      sortable: "custom",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "名称",
+      prop: "lbl",
+      width: 140,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "路由",
+      prop: "route_path",
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "参数",
+      prop: "route_query",
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "启用",
+      prop: "_is_enabled",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "备注",
+      prop: "rem",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+  ];
+}
+
+/** 表格列 */
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
+
+/** 表格列标签国际化 */
+watchEffect(() => {
+  const tableColumns2 = getTableColumns();
+  for (let i = 0; i < tableColumns2.length; i++) {
+    const column2 = tableColumns2[i];
+    const column = tableColumns[i];
+    column.label = n(column2.label);
+  }
+});
 
 /** 表格列 */
 let {
@@ -851,7 +875,7 @@ async function openAdd() {
     type,
     changedIds,
   } = await detailRef.showDialog({
-    title: "增加",
+    title: ns("增加"),
     action: "add",
     builtInModel,
   });
@@ -873,14 +897,14 @@ async function openCopy() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要 复制 的数据!`);
+    ElMessage.warning(ns("请选择需要 复制 的数据"));
     return;
   }
   const {
     type,
     changedIds,
   } = await detailRef.showDialog({
-    title: "复制",
+    title: ns("复制"),
     action: "copy",
     builtInModel,
     model: {
@@ -926,14 +950,14 @@ async function openEdit() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要编辑的数据!`);
+    ElMessage.warning(ns("请选择需要修改的数据"));
     return;
   }
   const {
     type,
     changedIds,
   } = await detailRef.showDialog({
-    title: "修改",
+    title: ns("修改"),
     action: "edit",
     builtInModel,
     model: {
@@ -954,13 +978,13 @@ async function openEdit() {
 /** 点击删除 */
 async function deleteByIdsEfc() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要删除的数据!`);
+    ElMessage.warning(ns("请选择需要删除的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定删除已选择的 ${ selectedIds.length } 条数据?`, {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(`${ ns("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: ns("确定"),
+      cancelButtonText: ns("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -972,7 +996,7 @@ async function deleteByIdsEfc() {
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(`删除 ${ num } 条数据成功!`);
+    ElMessage.success(ns("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
 }
@@ -980,13 +1004,13 @@ async function deleteByIdsEfc() {
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要 彻底删除 的数据!`);
+    ElMessage.warning(ns("请选择需要 彻底删除 的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定 彻底删除 已选择的 ${ selectedIds.length } 条数据?`, {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(`${ ns("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: ns("确定"),
+      cancelButtonText: ns("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -995,7 +1019,7 @@ async function forceDeleteByIdsClk() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(`彻底删除 ${ num } 条数据成功!`);
+    ElMessage.success(ns("彻底删除 {0} 条数据成功", num));
     await Promise.all([
       dataGrid(true),
     ]);
@@ -1005,13 +1029,13 @@ async function forceDeleteByIdsClk() {
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(`请选择需要还原的数据!`);
+    ElMessage.warning(ns("请选择需要还原的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定还原已选择的 ${ selectedIds.length } 条数据?`, {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
+    await ElMessageBox.confirm(`${ ns("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: ns("确定"),
+      cancelButtonText: ns("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -1023,9 +1047,27 @@ async function revertByIdsEfc() {
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(`还原 ${ num } 条数据成功!`);
+    ElMessage.success(ns("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
+}
+
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const i18nCodes: string[] = [
+    "类型",
+    "父菜单",
+    "名称",
+    "路由",
+    "参数",
+    "启用",
+    "排序",
+    "备注",
+  ];
+  await Promise.all([
+    initListI18ns(),
+    initI18ns(i18nCodes),
+  ]);
 }
 
 async function initFrame() {
@@ -1033,6 +1075,7 @@ async function initFrame() {
     return;
   }
   await Promise.all([
+    initI18nsEfc(),
     searchClk(),
   ]);
   if (tableData.length === 1) {

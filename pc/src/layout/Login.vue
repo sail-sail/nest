@@ -4,7 +4,7 @@
     <div
       style="margin-top: 20px;margin-left: 20px;font-size: 14px;"
     >
-      登录
+      {{ i18n.ns('登录') }}
     </div>
     <el-form
       ref="formRef"
@@ -38,11 +38,53 @@
         </el-select>
       </el-form-item>
       
+      <el-form-item prop="lang">
+        <CustomSelect
+          v-model="model.lang"
+          :method="getLoginLangs"
+          :placeholder="`${ i18n.ns('请选择') } ${ i18n.n('语言') }`"
+          :pinyin-filterable="false"
+          :options4-select-v2="[
+            {
+              label: '中文',
+              value: 'zh-cn',
+            },
+            {
+              label: 'English',
+              value: 'en',
+            },
+          ]"
+          :options-map="(item: LangModel) => {
+            return {
+              label: item.lbl,
+              value: item.code,
+            };
+          }"
+          un-w="full"
+          class="from_input"
+          @change="langChg"
+        >
+          <template #prefix>
+            <div
+              un-w="3.5"
+              un-h="3.5"
+              un-text-gray
+              un-m="l-2"
+              un-self-stretch
+              un-flex
+              un-place-content-center
+            >
+              <ElIconUser />
+            </div>
+          </template>
+        </CustomSelect>
+      </el-form-item>
+      
       <el-form-item prop="username">
         <el-input
           v-model="model.username"
           class="from_input"
-          placeholder="请输入用户名"
+          :placeholder="`${ i18n.ns('请输入') } ${ i18n.n('用户名') }`"
           :input-style="inputStyle"
           clearable
           :prefix-icon="User"
@@ -55,7 +97,7 @@
           v-model="model.password" 
           class="from_input"
           size="large"
-          placeholder="请输入密码"
+          :placeholder="`${ i18n.ns('请输入') } ${ i18n.n('密码') }`"
           type="password"
           :input-style="inputStyle"
           show-password
@@ -71,7 +113,7 @@
         style="width: 100%;margin-top: 20px;"
         @click="loginClk"
       >
-        登录
+        {{ i18n.ns("登录") }}
       </el-button>
       
     </el-form>
@@ -79,26 +121,36 @@
 </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
+import {
+  useI18n,
+} from "@/locales/i18n";
+
+import {
+  lang,
+} from "@/locales/index";
+
 import {
   User,
   Lock,
 } from "@element-plus/icons-vue";
 
-import useUsrStore from "@/store/usr";
-import useIndexStore from "@/store/index";
-import useTabsStore from "@/store/tabs";
-
 import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
+  getLoginLangs,
 } from "./Api";
 
 import {
+  type LangModel,
   type MutationLoginArgs,
 } from "#/types";
 
+let i18n = $ref(useI18n("/usr"));
+
 const usrStore = useUsrStore();
+const indexStore = useIndexStore();
+const tabsStore = useTabsStore();
 
 const inputStyle = {
   backgroundColor: 'transparent',
@@ -112,29 +164,66 @@ let model = $ref<MutationLoginArgs>({
   password: "",
   tenant_id: "",
   dept_id: undefined,
+  lang,
 });
 
-let form_rules = $ref<Record<string, FormItemRule | FormItemRule[]>>({
-  tenant_id: [
-    { required: true, message: "请选择租户" },
-  ],
-  username: [
-    { required: true, message: "请输入用户名" },
-  ],
-  password: [
-    { required: true, message: "请输入密码" },
-  ],
+let formRef = $ref<InstanceType<typeof ElForm>>();
+
+let form_rules = $ref<Record<string, FormItemRule[]>>({ });
+
+watchEffect(() => {
+  form_rules = {
+    tenant_id: [
+      { required: true, message: `${ i18n.ns("请选择") } ${ i18n.n("租户") }` },
+    ],
+    username: [
+      { required: true, message: `${ i18n.ns("请输入") } ${ i18n.n("用户名") }` },
+    ],
+    password: [
+      { required: true, message: `${ i18n.ns("请输入") } ${ i18n.n("密码") }` },
+    ],
+  };
+  console.log(usrStore.lang);
+  console.log(form_rules.username[0].message);
+  console.log(i18n.n("用户名"));
 });
 
+/**
+ * 语言切换
+ */
+async function langChg() {
+  if (!model.lang) {
+    return;
+  }
+  if (model.lang === usrStore.lang) {
+    return;
+  }
+  usrStore.setLang(model.lang);
+  await initI18nEfc();
+}
+
+/**
+ * 登录
+ */
 async function loginClk() {
+  if (!formRef) {
+    return;
+  }
+  try {
+    await formRef.validate();
+  } catch (err) {
+    return;
+  }
   model.dept_id = usrStore.dept_id;
   const loginModel = await login(model);
+  if (!loginModel.authorization) {
+    return;
+  }
   usrStore.dept_id = loginModel.dept_id ?? undefined;
-  await usrStore.login(loginModel.authorization);
-  // if (authorization) {
-  //   await router.replace("/");
-  //   await tabsStore.refreshTab();
-  // }
+  usrStore.authorization = loginModel.authorization;
+  tabsStore.clearKeepAliveNames();
+  await indexStore.initI18nVersion();
+  window.location.reload();
 }
 
 let tenants = $ref<{
@@ -142,15 +231,39 @@ let tenants = $ref<{
   lbl: string;
 }[]>([ ]);
 
-(async function() {
+async function getLoginTenantsEfc() {
   tenants = await getLoginTenants({ host: window.location.host });
   if (tenants.length > 0) {
     model.tenant_id = tenants[0].id;
   }
-})();
+}
+
+async function initI18nEfc() {
+  i18n = useI18n("/usr");
+  await Promise.all([
+    i18n.initSysI18ns([
+      "请选择",
+      "请输入",
+    ]),
+    i18n.initI18ns([
+      "租户",
+      "用户名",
+      "密码",
+    ]),
+  ]);
+}
+
+async function initFrame() {
+  await Promise.all([
+    initI18nEfc(),
+    getLoginTenantsEfc(),
+  ]);
+}
+
+initFrame();
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .wrap_login_div {
   position: absolute;
   top: 0;
@@ -167,7 +280,7 @@ let tenants = $ref<{
 .login_div {
   background-color: #114f86;
   color: #FFF;
-  width: 380px;
+  width: 480px;
   min-height: 320px;
   box-shadow: 0 0 5px lightblue;
   border-radius: 5px;
@@ -177,11 +290,10 @@ let tenants = $ref<{
 }
 .login_form {
   margin: 20px;
-  flex: 1 0 0;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  gap: 20px;
 }
 .from_input {
   --el-input-bg-color: transparent;
@@ -190,5 +302,8 @@ let tenants = $ref<{
 .from_input :deep(.el-input__inner),.from_input {
   color: #FFF;
   border: 0 !important;
+}
+.from_input.custom_select :deep(.el-select-v2__placeholder) {
+  padding-left: 22px;
 }
 </style>

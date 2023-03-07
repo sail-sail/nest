@@ -22,9 +22,14 @@ import {
   type MutationLoginArgs,
 } from "/gen/types.ts";
 
+import {
+  ns
+} from "/src/i18n/i18n.ts";
+
 export const _internals = {
   login,
   getLoginInfo,
+  selectLang,
 };
 
 /**
@@ -33,18 +38,20 @@ export const _internals = {
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
  * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
  * @param {MutationLoginArgs["dept_id"]} dept_id 部门id
+ * @param {MutationLoginArgs["lang"]} lang 语言编码
  */
 async function login(
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
   dept_id: MutationLoginArgs["dept_id"],
+  lang: MutationLoginArgs["lang"],
 ) {
   if (isEmpty(username) || isEmpty(password)) {
-    throw "用户名或密码不能为空!";
+    throw await ns("用户名或密码不能为空");
   }
   if (isEmpty(tenant_id)) {
-    throw "请选择租户!";
+    throw await ns("请选择租户");
   }
   const password2 = await authService.getPassword(password);
   const model = await usrDao.findLoginUsr(
@@ -53,7 +60,7 @@ async function login(
     tenant_id,
   );
   if (!model || !model.id) {
-    throw "用户名或密码错误!";
+    throw await ns("用户名或密码错误");
   }
   if (dept_id === null) {
     dept_id = undefined;
@@ -72,6 +79,7 @@ async function login(
   const { authorization } = await authService.createToken({
     id: model.id,
     dept_id,
+    lang,
   });
   return {
     authorization,
@@ -82,13 +90,13 @@ async function login(
 async function getLoginInfo() {
   const authModel = await authService.getAuthModel();
   if (!authModel) {
-    throw "未登录";
+    throw await ns("未登录");
   }
   const dept_id = authModel.dept_id;
   const id = authModel.id;
   const usrModel = await usrDaoGen.findById(id);
   if (!usrModel) {
-    throw `用户 id: ${ id } 不存在`;
+    throw await ns("用户不存在");
   }
   const dept_ids = usrModel.dept_ids || [ ];
   const deptModels = await deptDaoGen.findAll();
@@ -104,7 +112,28 @@ async function getLoginInfo() {
   }
   return {
     lbl: usrModel.lbl,
+    lang: authModel.lang,
     dept_id,
     dept_idModels,
   };
+}
+
+/**
+ * 切换语言
+ * @param {string} lang 语言编码
+ **/
+async function selectLang(lang: string) {
+  if (!lang) {
+    throw await ns("语言编码不能为空");
+  }
+  const authModel = await authService.getAuthModel();
+  if (!authModel) {
+    throw await ns("未登录");
+  }
+  const { authorization } = await authService.createToken({
+    id: authModel.id,
+    dept_id: authModel.dept_id,
+    lang,
+  });
+  return authorization;
 }

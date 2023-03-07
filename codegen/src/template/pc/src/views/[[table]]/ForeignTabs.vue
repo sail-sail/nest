@@ -62,7 +62,7 @@ const foreignTabs = column?.foreignTabs || [ ];
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>关闭</span>
+        <span>{{ n("关闭") }}</span>
       </el-button>
       
     </div>
@@ -84,6 +84,11 @@ import {
 } from "@/views/<#=itemTable#>/Api";<#
 }
 #>
+
+const {
+  n,
+  initI18ns,
+} = useI18n();
 
 let inited = $ref(false);
 
@@ -152,7 +157,7 @@ async function showDialog(
   },
 ) {
   inited = false;
-  const title = arg?.title || "关联列表";
+  const title = arg?.title || n("关联列表");
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "large",
     title,
@@ -169,13 +174,24 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
+/** 初始化ts中的国际化信息 */
+async function initI18nsEfc() {
+  const {
+    initI18ns,
+  } = useI18n();
+  const codes: string[] = [
+    "关联列表",
+  ];
+  await initI18ns(codes);
+}
+initI18nsEfc();
+
 /** 点击取消关闭按钮 */
 function cancelClk() {
   onCloseResolve({
     type: "cancel",
   });
 }
-
 
 async function beforeClose(done: (cancel: boolean) => void) {
   done(false);

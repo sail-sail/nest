@@ -75,6 +75,30 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/i18n",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "国际化",
+        component: () => import("@/views/i18n/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/lang",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "语言",
+        component: () => import("@/views/lang/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/menu",
     component: Layout1,
     children: [
@@ -99,13 +123,13 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/option",
+    path: "/options",
     component: Layout1,
     children: [
       {
         path: "",
-        name: "选项",
-        component: () => import("@/views/option/List.vue"),
+        name: "系统选项",
+        component: () => import("@/views/options/List.vue"),
         props: (route) => route.query,
       },
     ],

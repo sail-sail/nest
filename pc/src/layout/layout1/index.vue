@@ -59,17 +59,18 @@
         :tabs="tabsStore.tabs"
       ></Tabs>
       <div
-        un-flex
+        un-flex="~"
         un-items-center
+        un-gap="x-3"
+        un-m="r-4"
       >
         <template v-if="loginInfo">
           <el-select
-            v-model="(loginInfo.dept_id as string)"
+            :set="loginInfo.dept_id = loginInfo.dept_id || ''"
+            v-model="loginInfo.dept_id"
             size="small"
             suffix-icon=""
             class="dept_select"
-            
-            un-m="r-2"
             
             @change="deptSelectChg"
           >
@@ -82,7 +83,42 @@
           </el-select>
         </template>
         <div
-          un-m="r-2"
+          un-flex="~"
+          un-items-center
+          un-h="full"
+          un-m="r-1"
+        >
+          <el-dropdown
+            
+          >
+            <IconFontLocales
+              un-w="4"
+              un-h="4"
+              un-pos-relative
+              un-top="0.5"
+            ></IconFontLocales>
+            <template #dropdown>
+              <el-dropdown-menu
+                whitespace-nowrap
+              >
+                <el-dropdown-item
+                  v-for="item of locales"
+                  :key="item.code"
+                  @click="selectLangClk(item.code)"
+                >
+                  <span
+                    :style="{
+                      color: item.code === loginInfo?.lang ? 'var(--el-color-primary)' : ''
+                    }"
+                  >
+                    {{ item.lbl }}
+                  </span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+        <div
           un-pos-relative
           un-top="[1px]"
           un-border-1px
@@ -109,13 +145,13 @@
                     <ElIcon>
                       <div un-i="iconfont-moon"></div>
                     </ElIcon>
-                    <span>黑暗模式</span>
+                    <span>{{ ns('黑暗模式') }}</span>
                   </template>
                   <template v-else>
                     <ElIcon>
                       <div un-i="iconfont-sun"></div>
                     </ElIcon>
-                    <span>明亮模式</span>
+                    <span>{{ ns('明亮模式') }}</span>
                   </template>
                 </el-dropdown-item>
                 
@@ -123,14 +159,14 @@
                   <ElIcon>
                     <ElIconCircleClose />
                   </ElIcon>
-                  <span>关闭其它</span>
+                  <span>{{ ns('关闭其它') }}</span>
                 </el-dropdown-item>
                 
                 <el-dropdown-item @click="clearCacheEfc">
                   <ElIcon>
                     <ElIconDelete />
                   </ElIcon>
-                  <span>清空缓存</span>
+                  <span>{{ ns('清空缓存') }}</span>
                 </el-dropdown-item>
                 
                 <el-dropdown-item
@@ -140,7 +176,7 @@
                   <ElIcon>
                     <div un-i="iconfont-logout"></div>
                   </ElIcon>
-                  <span>退出登录</span>
+                  <span>{{ ns('退出登录') }}</span>
                 </el-dropdown-item>
                 
               </el-dropdown-menu>
@@ -187,7 +223,7 @@
 </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
@@ -196,17 +232,36 @@ import {
   getLoginInfo,
   deptLoginSelect,
   clearCache,
+  selectLang,
 } from "./Api";
 
 import {
   type GetLoginInfo,
 } from "#/types";
 
+const {
+  n,
+  ns,
+  initI18ns,
+  initSysI18ns,
+} = useI18n();
+
 const route = useRoute();
 
 const tabsStore = useTabsStore();
 const usrStore = useUsrStore();
 const menuStore = useMenuStore();
+
+let locales = $ref([
+  {
+    code: "zh-cn",
+    lbl: "简体中文",
+  },
+  {
+    code: "en-us",
+    lbl: "English",
+  },
+]);
 
 // 黑暗模式
 const isDark = useDark();
@@ -296,7 +351,18 @@ async function logoutClk() {
   usrStore.logout();
 }
 
-let loginInfo = $ref<GetLoginInfo | undefined>();
+let loginInfo = $ref<GetLoginInfo>();
+
+async function selectLangClk(lang: string) {
+  const authorization = await selectLang({
+    lang,
+  });
+  if (authorization) {
+    usrStore.authorization = authorization;
+    usrStore.setLang(lang);
+    window.location.reload();
+  }
+}
 
 async function deptSelectChg() {
   const dept_id = loginInfo?.dept_id;
@@ -317,7 +383,7 @@ async function initFrame() {
     const [
       loginInfoTmp,
     ] = await Promise.all([
-      getLoginInfo(),
+      getLoginInfo({ notLoading: true }),
     ]);
     loginInfo = loginInfoTmp;
   }

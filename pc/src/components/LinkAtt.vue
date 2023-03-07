@@ -59,7 +59,11 @@ let attLen = $computed(() => {
 
 let attDialogRef = $ref<InstanceType<typeof AttDialog>>();
 
-async function linkClk() {
+async function linkClk(e?: MouseEvent) {
+  if (e) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+  } 
   if (!attDialogRef) {
     return;
   }

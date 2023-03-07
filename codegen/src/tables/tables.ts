@@ -292,8 +292,86 @@ export default defineConfig({
       },
     ]
   },
-  // 选项
-  option: {
+  // 语言
+  lang: {
+    opts: {
+      cache: true,
+      unique: [ "code" ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "code",
+        require: true,
+        search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+        require: true,
+        width: 60,
+      },
+      {
+        COLUMN_NAME: "order_by",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "rem",
+        width: 300,
+      },
+    ],
+  },
+  // 国际化
+  i18n: {
+    opts: {
+      cache: true,
+      unique: [ "lang_id", "menu_id", "code" ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lang_id",
+        require: true,
+        search: true,
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "menu_id",
+        search: true,
+        headerAlign: "center",
+        align: "left",
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "code",
+        require: true,
+        search: true,
+        headerAlign: "center",
+        align: "left",
+        width: 300,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        headerAlign: "center",
+        align: "left",
+        width: 300,
+      },
+      {
+        COLUMN_NAME: "rem",
+        headerAlign: "center",
+        align: "left",
+        width: 300,
+      },
+    ],
+  },
+  // 系统选项
+  options: {
     opts: {
       cache: true,
       unique: [ "ky" ],
@@ -302,15 +380,23 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         search: true,
+        width: 140,
       },
       {
         COLUMN_NAME: "ky",
         require: true,
         search: true,
+        width: 140,
       },
       {
         COLUMN_NAME: "val",
         search: true,
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "order_by",
+        sortable: true,
+        width: 100,
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -319,41 +405,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-      },
-    ],
-  },
-  // 操作记录
-  operation_record: {
-    opts: {
-      noAdd: true,
-      noEdit: true,
-      noImport: true,
-    },
-    columns: [
-      {
-        COLUMN_NAME: "mod",
-        noList: true,
-      },
-      {
-        COLUMN_NAME: "mod_lbl",
-        search: true,
         width: 180,
       },
       {
-        COLUMN_NAME: "method",
-        noList: true,
-      },
-      {
-        COLUMN_NAME: "method_lbl",
-        search: true,
-        width: 180,
-      },
-      {
-        COLUMN_NAME: "lbl",
-        search: true,
-      },
-      {
-        COLUMN_NAME: "rem",
+        COLUMN_NAME: "is_locked",
+        require: true,
+        width: 60,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -372,7 +429,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
       {
         COLUMN_NAME: "update_usr_id",
@@ -391,7 +448,83 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
+      },
+    ],
+  },
+  // 操作记录
+  operation_record: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      noImport: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "mod",
+        noList: true,
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "mod_lbl",
+        search: true,
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "method",
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "method_lbl",
+        search: true,
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        search: true,
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "rem",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        foreignKey: {
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "create_time",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        width: 150,
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        foreignKey: {
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "update_time",
+        ignoreCodegen: false,
+        noAdd: true,
+        noEdit: true,
+        width: 150,
       },
     ],
   },
@@ -457,7 +590,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
       {
         COLUMN_NAME: "update_usr_id",
@@ -476,7 +609,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
     ],
   },
@@ -553,7 +686,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
       {
         COLUMN_NAME: "update_usr_id",
@@ -572,7 +705,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
     ],
   },
@@ -701,7 +834,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
       {
         COLUMN_NAME: "update_usr_id",
@@ -720,7 +853,7 @@ export default defineConfig({
         ignoreCodegen: false,
         noAdd: true,
         noEdit: true,
-        width: 140,
+        width: 150,
       },
     ],
   },

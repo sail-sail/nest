@@ -1,0 +1,116 @@
+import {
+  _internals as langDao,
+} from "/gen/lang/lang.dao.ts";
+
+import {
+  _internals as i18nDao,
+} from "/gen/i18n/i18n.dao.ts";
+
+import {
+  _internals as menuDao,
+} from "/gen/menu/menu.dao.ts";
+
+import {
+  type I18nModel,
+} from "/gen/i18n/i18n.model.ts";
+
+import {
+  _internals as authDao,
+} from "/lib/auth/auth.dao.ts";
+
+const reg = /\{([\s\S]*?)\}/gm;
+
+export async function n(
+  routePath: string | null,
+  code: string,
+  // deno-lint-ignore no-explicit-any
+  ...args: any[]
+) {
+  const authModel = await authDao.getAuthModel();
+  const langCode = authModel.lang;
+  return await nLang(langCode, routePath, code, ...args);
+}
+
+export function initN(
+  routePath: string | null,
+) {
+  // deno-lint-ignore no-explicit-any
+  return function(code: string, ...args: any[]) {
+    return n(routePath, code, ...args);
+  };
+}
+
+export async function ns(
+  code: string,
+  // deno-lint-ignore no-explicit-any
+  ...args: any[]
+) {
+  const authModel = await authDao.getAuthModel();
+  const langCode = authModel.lang;
+  return await nLang(langCode, null, code, ...args);
+}
+
+export async function nLang(
+  langCode: string,
+  routePath: string | null,
+  code: string,
+  // deno-lint-ignore no-explicit-any
+  ...args: any[]
+) {
+  let i18nLbl = code;
+  const langModel = await langDao.findOne({
+    code: langCode,
+    is_enabled: [ 1 ],
+  });
+  let menu_id: string | undefined;
+  if (routePath != null) {
+    const menuModel = await menuDao.findOne({
+      route_path: routePath,
+      is_enabled: [ 1 ],
+    });
+    menu_id = menuModel?.id;
+  }
+  if (langModel) {
+    let i18nModel: I18nModel | undefined
+    if (menu_id) {
+      i18nModel = await i18nDao.findOne({
+        lang_id: [ langModel.id ],
+        menu_id: [ menu_id ],
+        code,
+      });
+      if (!i18nModel) {
+        i18nModel = await i18nDao.findOne({
+          lang_id: [ langModel.id ],
+          menu_id: null,
+          code,
+        });
+      }
+    } else {
+      i18nModel = await i18nDao.findOne({
+        lang_id: [ langModel.id ],
+        menu_id: null,
+        code,
+      });
+    }
+    if (i18nModel) {
+      i18nLbl = i18nModel.lbl;
+    }
+  }
+  if (args.length === 1 && typeof args[0] === "object") {
+    const obj = args[0];
+    i18nLbl = i18nLbl.replace(reg, (str) => {
+      const str2 = str.substring(1, str.length-1);
+      return obj[str2] ?? str;
+    });
+  } else if (args.length > 0) {
+    i18nLbl = i18nLbl.replace(reg, (str) => {
+      const str2 = str.substring(1, str.length-1);
+      const num = Number(str2);
+      if (isNaN(num)) {
+        return str;
+      }
+      return args[num] ?? str;
+    });
+  }
+  return i18nLbl;
+}

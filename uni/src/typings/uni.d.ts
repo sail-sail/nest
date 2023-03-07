@@ -9231,7 +9231,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/info?id=getsysteminfo](http://uniapp.dcloud.io/api/system/info?id=getsysteminfo)
      */
-    getSystemInfo(options: UniNamespace.GetSystemInfoOptions): void;
+    getSystemInfo(options?: UniNamespace.GetSystemInfoOptions): Promise<UniNamespace.GetSystemInfoResult>;
     /**
      * 同步获取系统信息
      *

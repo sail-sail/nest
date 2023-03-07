@@ -13,12 +13,12 @@
   v-bind="$attrs"
   @keyup.enter.stop
   :loading="!inited"
+  class="custom_select"
 >
-  <!--传递插槽-->
   <template
     v-for="(item, key, index) in $slots"
     :key="index"
-    v-slot:[key]
+    #[key]
   >
     <slot :name="key"></slot>
   </template>
@@ -40,14 +40,13 @@ type OptionsMap = (item: any) => OptionType;
 
 let data = $ref<any[]>([ ]);
 
-let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
-
 const props = withDefaults(
   defineProps<{
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
+    options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
   }>(),
   {
     optionsMap: function(item: any) {
@@ -59,15 +58,20 @@ const props = withDefaults(
     },
     pinyinFilterable: true,
     height: 300,
+    options4SelectV2: () => [ ],
   },
 );
 
+let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
+
 function filterMethod(value: string) {
-  options4SelectV2 = data.map((item) => {
-    const item2 = props.optionsMap(item);
-    item2.__pinyin_label = (item as any).__pinyin_label;
-    return item2;
-  });
+  if (!options4SelectV2 || options4SelectV2.length === 0) {
+    options4SelectV2 = data.map((item) => {
+      const item2 = props.optionsMap(item);
+      item2.__pinyin_label = (item as any).__pinyin_label;
+      return item2;
+    });
+  }
   if (isEmpty(value)) {
     return;
   }
@@ -89,10 +93,18 @@ function handleVisibleChange(visible: boolean) {
 async function refreshEfc() {
   const method = props.method;
   if (!method) {
-    inited = false;
+    if (!options4SelectV2 || options4SelectV2.length === 0) {
+      inited = false;
+    } else {
+      inited = true;
+    }
     return;
   }
-  inited = false;
+  if (!options4SelectV2 || options4SelectV2.length === 0) {
+    inited = false;
+  } else {
+    inited = true;
+  }
   data = await method();
   options4SelectV2 = data.map(props.optionsMap);
   if (props.pinyinFilterable) {
