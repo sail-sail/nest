@@ -13,6 +13,7 @@ import router from "./router/index";
 import "./utils/DateUtil";
 import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
 import { draggable } from "./components/draggable";
+import { tableDataSortable } from "./components/TableDataSortable";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -24,5 +25,6 @@ app.use(router);
 
 app.directive("header-order-drag", headerOrderDrag);
 app.directive("draggable", draggable);
+app.directive("table-data-sortable", tableDataSortable);
 
 app.mount("#app");

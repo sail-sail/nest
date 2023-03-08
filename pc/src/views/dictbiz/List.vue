@@ -851,8 +851,10 @@ watchEffect(() => {
   const tableColumns2 = getTableColumns();
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
-    const column = tableColumns[i];
-    column.label = n(column2.label);
+    const column = tableColumns.find((item) => item.prop === column2.prop);
+    if (column) {
+      column.label = n(column2.label);
+    }
   }
 });
 

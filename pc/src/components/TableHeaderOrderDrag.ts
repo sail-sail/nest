@@ -2,9 +2,11 @@ import {
   type DirectiveBinding,
 } from "vue";
 
-function dragoverFn(event: DragEvent) {
-  event.preventDefault();
-}
+import {
+  type SortableEvent,
+} from "sortablejs";
+
+import Sortable from "sortablejs";
 
 export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
   const bindVal: Function = binding.value;
@@ -12,67 +14,33 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
     console.error("请设置正确的 v-header-order-drag 参数值!", el, binding.value);
     return;
   }
-  const headTr = el.querySelector(".el-table__header-wrapper>.el-table__header thead tr");
+  const headTr = el.querySelector(".el-table__header-wrapper>.el-table__header thead tr") as HTMLTableElement;
   if (!headTr) {
     return;
   }
-  const ths = headTr.querySelectorAll(".el-table__cell");
-  for (let i = 0; i < ths.length; i++) {
-    if (i < (bindVal().offset || 0)) continue;
-    const th = <HTMLTableColElement> ths[i];
-    th.draggable = true;
-    if (!(<any>th).__hasDragEvent) {
-      (<any>th).__hasDragEvent = true;
-      th.addEventListener("dragstart", function(event: DragEvent) {
-        let targetEl = <HTMLElement> event.target;
-        for (let k = 0; k < 3; k++) {
-          if (targetEl.nodeName === "TH") {
-            break;
-          }
-          if (!targetEl.parentElement) {
-            break;
-          }
-          targetEl = targetEl.parentElement;
+  Sortable.create(
+    headTr,
+    {
+      animation: 150,
+      onEnd: function (event: SortableEvent) {
+        let { oldIndex, newIndex } = event;
+        if (oldIndex == null || newIndex == null) {
+          return;
         }
-        if (targetEl.nodeName !== "TH") return;
-        const ths = headTr.querySelectorAll(".el-table__cell");
-        const targetIndex = Array.prototype.indexOf.call(ths, targetEl);
-        const prop = bindVal().tableColumns.filter((column: any) => column.hide !== true)[targetIndex - (bindVal().offset || 0)].prop;
-        event.dataTransfer?.setData("prop", prop);
-      });
-      th.addEventListener("dragover", dragoverFn);
-      th.addEventListener("drop", function(event: DragEvent) {
-        event.preventDefault();
-        const srcProp = event.dataTransfer?.getData("prop");
-        if (!srcProp) return;
-        let targetEl = <HTMLElement> event.target;
-        for (let k = 0; k < 3; k++) {
-          if (targetEl.nodeName === "TH") {
-            break;
-          }
-          if (!targetEl.parentElement) {
-            break;
-          }
-          targetEl = targetEl.parentElement;
+        const bindValue = bindVal();
+        const tableColumns = bindValue.tableColumns;
+        const storeColumns = bindValue.storeColumns;
+        const offset = bindValue.offset || 0;
+        oldIndex = oldIndex - offset;
+        newIndex = newIndex - offset;
+        const oldTableColumn = tableColumns[oldIndex];
+        tableColumns.splice(oldIndex, 1);
+        tableColumns.splice(newIndex, 0, oldTableColumn);
+        if (storeColumns) {
+          storeColumns(tableColumns.concat([ ]));
         }
-        if (targetEl.nodeName !== "TH") return;
-        const ths = headTr.querySelectorAll(".el-table__cell");
-        let targetIndex = Array.prototype.indexOf.call(ths, targetEl);
-        if (targetIndex === -1) return;
-        const hiddenColumnsDivArr: NodeListOf<HTMLDivElement> = el.querySelectorAll(".el-table__inner-wrapper>.hidden-columns>div");
-        const hiddenColumnsDiv = hiddenColumnsDivArr[targetIndex];
-        if (!hiddenColumnsDiv) return;
-        const prop = (hiddenColumnsDiv as any).__vnode?.el?.__vueParentComponent?.columnConfig?._value?.property;
-        if (!prop) return;
-        targetIndex = bindVal().tableColumns.findIndex((column: any) => column.prop === prop);
-        const target0Idx = bindVal().tableColumns.findIndex((column: any) => column.prop === srcProp);
-        if (target0Idx === -1) return;
-        if (targetIndex === target0Idx) return;
-        bindVal().tableColumns.splice(targetIndex, 0, bindVal().tableColumns.splice(target0Idx, 1)[0]);
-        if (bindVal().storeColumns) {
-          bindVal().storeColumns(bindVal().tableColumns);
-        }
-      });
+      },
+      filter: ".el-table-column--selection",
     }
-  }
+  );
 }
