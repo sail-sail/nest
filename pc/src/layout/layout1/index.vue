@@ -57,6 +57,7 @@
         un-flex="[1_0_0]"
         un-overflow="x-auto y-hidden"
         :tabs="tabsStore.tabs"
+        @tab_active_line="refreshTab_active_line"
       ></Tabs>
       <div
         un-flex="~"

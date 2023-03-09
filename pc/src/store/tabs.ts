@@ -5,6 +5,7 @@ export interface TabInf {
   active?: boolean,
   query?: { [key: string]: any },
   _hasPermit?: boolean, // 当前选项卡是否有权限打开
+  fixed?: boolean, // 是否固定选项卡
 }
 
 export default defineStore("tabs", function() {
@@ -128,6 +129,16 @@ export default defineStore("tabs", function() {
     tabs = [ tab ];
     tab.active = true;
     keepAliveNames = [ tab.name ];
+    await router.replace({ path: tab.path, query: tab.query });
+  }
+  
+  async function moveTab(oldIndex: number, newIndex: number) {
+    if (oldIndex === newIndex) {
+      return;
+    }
+    const tab = tabs[oldIndex];
+    tabs.splice(oldIndex, 1);
+    tabs.splice(newIndex, 0, tab);
   }
   
   async function refreshTab() {
@@ -170,6 +181,7 @@ export default defineStore("tabs", function() {
     refreshTab,
     removeTab,
     closeOtherTabs,
+    moveTab,
     reset,
     keepAliveNames,
     clearKeepAliveNames,

@@ -1,10 +1,13 @@
 <template>
-<div class="tabs_div">
+<div
+  ref="tabs_divRef"
+  class="tabs_div"
+>
   <div
     v-for="(item, i) in tabs"
     :key="item.path"
     class="tab_div"
-    :class="{ tab_active: item.active }"
+    :class="{ tab_active: item.active, tab_fixed: item.fixed }"
     @click="activeTab(item)"
   >
     <el-dropdown
@@ -60,13 +63,23 @@
 </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   type TabInf,
 } from "@/store/tabs";
 
+import {
+  type SortableEvent,
+} from "sortablejs";
+
+import Sortable from "sortablejs";
+
 const router = useRouter();
 const tabsStore = useTabsStore();
+
+const emit = defineEmits<{
+  (e: "tab_active_line"): void;
+}>();
 
 const props = withDefaults(
   defineProps<{
@@ -76,6 +89,8 @@ const props = withDefaults(
     tabs: () => [ ],
   },
 );
+
+let tabs_divRef = $ref<HTMLDivElement>();
 
 let tabs = $ref(toRef(props, "tabs"));
 
@@ -122,6 +137,41 @@ function visibleChange(visible: boolean, index: number) {
     dropdownRefItem.handleClose();
   }
 }
+
+function initTabsSort() {
+  if (!tabs_divRef) {
+    return;
+  }
+  Sortable.create(
+    tabs_divRef,
+    {
+      animation: 150,
+      async onEnd(event: SortableEvent) {
+        let { oldIndex, newIndex } = event;
+        if (oldIndex == null || newIndex == null) {
+          return;
+        }
+        await tabsStore.moveTab(oldIndex, newIndex);
+        if (oldIndex !== newIndex) {
+          emit("tab_active_line")
+        }
+      },
+      filter(_, el: HTMLElement) {
+        if (el.classList.contains("tab_fixed")) {
+          return true;
+        }
+        if (!el.classList.contains("tab_div")) {
+          return true;
+        }
+        return false;
+      },
+    },
+  );
+}
+
+onMounted(function() {
+  initTabsSort();
+});
 </script>
 
 <style lang="scss" scoped>
