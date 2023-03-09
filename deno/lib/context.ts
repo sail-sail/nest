@@ -159,6 +159,9 @@ export class Context {
   // deno-lint-ignore no-explicit-any
   cacheMap: Map<any, any> = new Map();
   
+  /** 当前请求的语言 */
+  lang = "zh-cn";
+  
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
     const dateNow = new Date();

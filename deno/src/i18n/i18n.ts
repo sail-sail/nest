@@ -18,6 +18,10 @@ import {
   _internals as authDao,
 } from "/lib/auth/auth.dao.ts";
 
+import {
+  useContext,
+} from "/lib/context.ts";
+
 const reg = /\{([\s\S]*?)\}/gm;
 
 export async function n(
@@ -27,7 +31,11 @@ export async function n(
   ...args: any[]
 ) {
   const authModel = await authDao.getAuthModel();
-  const langCode = authModel.lang;
+  let langCode = authModel?.lang;
+  if (!langCode) {
+    const context = useContext();
+    langCode = context.lang;
+  }
   return await nLang(langCode, routePath, code, ...args);
 }
 
@@ -46,7 +54,11 @@ export async function ns(
   ...args: any[]
 ) {
   const authModel = await authDao.getAuthModel();
-  const langCode = authModel.lang;
+  let langCode = authModel?.lang;
+  if (!langCode) {
+    const context = useContext();
+    langCode = context.lang;
+  }
   return await nLang(langCode, null, code, ...args);
 }
 

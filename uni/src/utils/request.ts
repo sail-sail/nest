@@ -306,14 +306,19 @@ export function getAppid() {
   return appid;
 }
 
-async function code2Session(code: string) {
+async function code2Session(
+  model: {
+    code: string;
+    lang: string;
+  },
+) {
   const appid = getAppid();
   await request({
     url: `wx_usr/code2Session`,
     method: "POST",
     data: {
       appid,
-      code,
+      ...model,
     },
     showErrMsg: true,
     notLogin: true,
@@ -328,9 +333,19 @@ export async function uniLogin() {
   } catch (err) {
   }
   if (providers && providers.includes("weixin")) {
+    const systemInfo = await uni.getSystemInfo();
+    let appLanguage = systemInfo.appLanguage?.toLocaleLowerCase() || "zh-cn";
+    if (appLanguage === "en") {
+      appLanguage = "en-us";
+    } else if (appLanguage === "zh" || appLanguage === "zh-hans" || appLanguage === "zh-hant" || appLanguage === "zh-hans-cn" || appLanguage === "zh-hk" || appLanguage === "zh-tw" || appLanguage === "zh-mo") {
+      appLanguage = "zh-cn";
+    }
     const loginRes = await uni.login({ provider: "weixin" });
     const code = loginRes.code;
-    await code2Session(code);
+    await code2Session({
+      code,
+      lang: appLanguage,
+    });
     return true;
   }
   return false;
