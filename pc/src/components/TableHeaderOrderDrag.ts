@@ -37,10 +37,22 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
         tableColumns.splice(oldIndex, 1);
         tableColumns.splice(newIndex, 0, oldTableColumn);
         if (storeColumns) {
-          storeColumns(tableColumns.concat([ ]));
+          storeColumns(tableColumns);
         }
       },
-      filter: ".el-table-column--selection",
+      filter: function(_, el) {
+        let filter = false;
+        if (el.classList.contains("el-table-fixed-column--left")) {
+          filter = true;
+        }
+        if (el.classList.contains("el-table-fixed-column--right")) {
+          filter = true;
+        }
+        if (el.classList.contains("el-table-column--selection")) {
+          filter = true;
+        }
+        return filter;
+      },
     }
   );
 }

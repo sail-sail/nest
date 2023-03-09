@@ -382,38 +382,38 @@ export function useTableColumns<T>(
   const persistKey = `TableColumns-${ routePath }--${ opt?.persistKey }`;
   
   if (opt?.persistKey) {
-    const str = window.localStorage.getItem(persistKey);
-    if (str) {
-      try {
+    try {
+      const str = window.localStorage.getItem(persistKey);
+      if (str) {
         tableColumn1s = JSON.parse(str);
-      } catch (err) {
-        console.error(err);
-        window.localStorage.removeItem(persistKey);
-        tableColumn1s = undefined;
       }
-    }
-    if (tableColumn1s) {
-      let hasChg = false;
-      for (let i = 0; i < tableColumn0s.length; i++) {
-        const col0 = tableColumn0s[i];
-        if (tableColumn1s.some((col1) => col1.prop === col0.prop)) continue;
-        tableColumn1s.splice(i, 0, col0);
-        hasChg = true;
+      if (tableColumn1s) {
+        let hasChg = false;
+        for (let i = 0; i < tableColumn0s.length; i++) {
+          const col0 = tableColumn0s[i];
+          if (tableColumn1s.some((col1) => col1.prop === col0.prop)) continue;
+          tableColumn1s.splice(i, 0, col0);
+          hasChg = true;
+        }
+        const rmvIdxs: number[] = [ ];
+        for (let i = 0; i < tableColumn1s.length; i++) {
+          const col1 = tableColumn1s[i];
+          if (tableColumn0s.some((col0) => col1.prop === col0.prop)) continue;
+          rmvIdxs.push(i);
+          hasChg = true;
+        }
+        for (let i = 0; i < rmvIdxs.length; i++) {
+          const rmvIdx = rmvIdxs[i];
+          tableColumn1s.splice(rmvIdx, 1);
+        }
+        if (hasChg) {
+          window.localStorage.setItem(persistKey, JSON.stringify(tableColumn1s));
+        }
       }
-      const rmvIdxs: number[] = [ ];
-      for (let i = 0; i < tableColumn1s.length; i++) {
-        const col1 = tableColumn1s[i];
-        if (tableColumn0s.some((col0) => col1.prop === col0.prop)) continue;
-        rmvIdxs.push(i);
-        hasChg = true;
-      }
-      for (let i = 0; i < rmvIdxs.length; i++) {
-        const rmvIdx = rmvIdxs[i];
-        tableColumn1s.splice(rmvIdx, 1);
-      }
-      if (hasChg) {
-        window.localStorage.setItem(persistKey, JSON.stringify(tableColumn1s));
-      }
+    } catch (err) {
+      console.error(err);
+      window.localStorage.removeItem(persistKey);
+      tableColumn1s = undefined;
     }
   }
   

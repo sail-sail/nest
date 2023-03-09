@@ -547,8 +547,8 @@ const hasAtt = columns.some((item) => item.isAtt);
         ></el-table-column>
         
         <template
-          v-for="(col, i) in tableColumns"
-          :key="i + col"
+          v-for="col in tableColumns"
+          :key="col.prop"
         ><#
           let colIdx = 0;
           for (let i = 0; i < columns.length; i++) {

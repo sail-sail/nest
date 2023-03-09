@@ -349,8 +349,8 @@
         ></el-table-column>
         
         <template
-          v-for="(col, i) in tableColumns"
-          :key="i + col"
+          v-for="col in tableColumns"
+          :key="col.prop"
         >
           
           <!-- 编码 -->
