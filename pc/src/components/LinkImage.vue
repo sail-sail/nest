@@ -55,12 +55,14 @@
   >
     (无)
   </div>
-  <el-image-viewer
-    v-if="urlList.length > 0 && showImageViewer"
-    hide-on-click-modal
-    :url-list="urlList"
-    @close="showImageViewer = false"
-  ></el-image-viewer>
+  <Teleport to="body">
+    <el-image-viewer
+      v-if="urlList.length > 0 && showImageViewer"
+      hide-on-click-modal
+      :url-list="urlList"
+      @close="showImageViewer = false"
+    ></el-image-viewer>
+  </Teleport>
 </div>
 </template>
 

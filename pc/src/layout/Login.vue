@@ -183,9 +183,6 @@ watchEffect(() => {
       { required: true, message: `${ i18n.ns("请输入") } ${ i18n.n("密码") }` },
     ],
   };
-  console.log(usrStore.lang);
-  console.log(form_rules.username[0].message);
-  console.log(i18n.n("用户名"));
 });
 
 /**
