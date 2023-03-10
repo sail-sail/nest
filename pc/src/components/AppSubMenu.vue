@@ -11,8 +11,8 @@
   >
     <template #title>
       <el-icon>
-        <FolderOpened v-if="openedIndex.includes(item.id)" />
-        <Folder v-else />
+        <ElIconFolderOpened v-if="openedIndex.includes(item.id)" />
+        <ElIconFolder v-else />
       </el-icon>
       <span>{{ item.lbl }}</span>
     </template>
@@ -30,7 +30,7 @@
     :class="{ top_menu_item: lvl === 1 }"
   >
     <el-icon v-if="lvl > 0">
-      <Document />
+      <ElIconDocument />
     </el-icon>
     <span>
       {{ item.route_path ? "" : "-" }}
@@ -41,21 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
-
 import {
-  ElMenuItem,
-  ElSubMenu,
-  ElIcon,
-} from "element-plus";
-
-import {
-  Folder,
-  FolderOpened,
-  Document,
-} from "@element-plus/icons-vue";
-
-import { MenuModel as MenuModel0 } from "#/types";
+  type MenuModel as MenuModel0,
+} from "#/types";
 
 type MenuModel = MenuModel0 & {
   children: MenuModel[];
