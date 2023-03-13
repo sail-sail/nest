@@ -33,6 +33,27 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
         const offset = bindValue.offset || 0;
         oldIndex = oldIndex - offset;
         newIndex = newIndex - offset;
+        let leftFixed = 0;
+        let rightFixed = 0;
+        for (let i = 0; i < tableColumns.length; i++) {
+          const item = tableColumns[i];
+          if (item.fixed === "left" || item.fixed === true) {
+            leftFixed++;
+          }
+          if (item.fixed === "right") {
+            rightFixed++;
+          }
+        }
+        if (leftFixed > 0) {
+          if (newIndex < leftFixed) {
+            newIndex = leftFixed;
+          }
+        }
+        if (rightFixed > 0) {
+          if (newIndex >= tableColumns.length - rightFixed) {
+            newIndex = tableColumns.length - rightFixed - 1;
+          }
+        }
         const oldTableColumn = tableColumns[oldIndex];
         tableColumns.splice(oldIndex, 1);
         tableColumns.splice(newIndex, 0, oldTableColumn);
