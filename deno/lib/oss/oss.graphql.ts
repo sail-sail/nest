@@ -9,6 +9,7 @@ type GetStatusOss {
   id: ID!
   lbl: String!
   content_type: String
+  size: Int
 }
 
 type Query {

@@ -31,7 +31,12 @@ async function getStatsOss(
     if (filename) {
       lbl = decodeURIComponent(filename || "");
     }
-    statInfos.push({ id, lbl });
+    statInfos.push({
+      id,
+      lbl,
+      contentType: stats?.contentType,
+      size: stats?.contentLength,
+    });
   }
   return statInfos;
 }

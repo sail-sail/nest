@@ -1,27 +1,9 @@
 <template>
-<el-dialog
-  v-model="dialogVisible"
-  :fullscreen="fullscreen"
-  append-to-body
-  :close-on-click-modal="false"
-  :class="'custom_dialog AttDialog'"
-  top="0"
+<CustomDialog
+  ref="customDialogRef"
   :before-close="beforeClose"
+  :close-on-click-modal="true"
 >
-  <template #header>
-    <div
-      v-draggable
-      class="dialog_title"
-    >
-      <div class="title_lbl">
-        <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
-      </div>
-      <ElIconFullScreen
-        class="full_but"
-        @click="setFullscreen"
-      />
-    </div>
-  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -132,7 +114,7 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-justify-start
+      un-justify-center
       un-items-center
       un-p="5"
       un-pos="relative"
@@ -141,19 +123,34 @@
         v-for="(url, i) in urlList"
         :key="url"
       >
-        <iframe
-          v-if="iframeShoweds[i]"
-          :ref="(el) => { if (el) iframeRefs[i] = el }"
-          :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-          
-          un-flex="~ [1_0_0]"
-          un-overflow-hidden
-          un-w="full"
-          
-          :src="url"
-          frameborder="0"
-          @load="iframeLoad"
-        ></iframe>
+        <template
+          v-if="i === 0"
+        >
+          <iframe
+            v-if="iframeShoweds[i]"
+            :ref="(el) => { if (el) iframeRefs[i] = el as HTMLIFrameElement }"
+            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+            
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-w="full"
+            
+            :src="url"
+            frameborder="0"
+            @load="iframeLoad"
+          ></iframe>
+        </template>
+        <template
+          v-else
+        >
+          <img
+            v-if="iframeShoweds[i]"
+            :ref="(el) => { if (el) iframeRefs[i] = el as HTMLImageElement }"
+            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+            object-fit="scale-down"
+            :src="url"
+          >
+        </template>
       </template>
       <div
         v-if="urlList.length === 0"
@@ -252,10 +249,11 @@
     un-display-none
     @change="inputChg"
   />
-</el-dialog>
+</CustomDialog>
 </template>
 
 <script lang="ts" setup>
+import { filesize } from "filesize";
 import { baseURL } from '@/utils/axios';
 
 import {
@@ -263,29 +261,28 @@ import {
 } from "./Api";
 // import usrTenantStore from "@/store/tenant";
 
-let { fullscreen, setFullscreen } = $(useFullscreenEfc());
-
 const emit = defineEmits([
   "change",
 ]);
 
 // 文件名列表
 let fileStats = $ref<{
-  id: string,
-  lbl: string,
-  content_type: string,
+  id: string;
+  lbl: string;
+  content_type?: string;
+  size?: number;
 }[]>([ ]);
 
 // 当前弹出框的标题
 let dialogTitle = $computed(() => {
   let title = "";
-  if (fileStats.length > 0) {
-    title = fileStats[nowIndex]?.lbl;
+  const fileStat = fileStats[nowIndex];
+  if (fileStat) {
+    const fileSizeStr = filesize(fileStat.size || 0, { round: 0 });
+    title = `${ fileStat.lbl } (${ fileSizeStr })`;
   }
   return title;
 });
-
-let dialogVisible = $ref(false);
 
 type DialogModel = {
   modelValue?: string,
@@ -338,16 +335,10 @@ let urlList = $computed(() => {
     const id = ids[i];
     const fileStat = fileStats && fileStats[i];
     let lbl = fileStat?.lbl || "";
-    // let content_type = fileStat?.content_type || "";
     if (lbl.length > 45) {
       lbl = lbl.substring(0, 45) + "...";
     }
     let url = `${ baseURL }/api/oss/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
-    // if (tenantHost) {
-    //   if (content_type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-    //     url = "https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(tenantHost + url);
-    //   }
-    // }
     list.push(url);
   }
   return list;
@@ -356,11 +347,25 @@ let urlList = $computed(() => {
 // 已经加载过的iframe索引
 let iframeShoweds = $ref<boolean[]>([ ]);
 
+let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+
+type OnCloseResolveType = {
+  type: "ok" | "cancel";
+};
+
+let onCloseResolve = function(_value: OnCloseResolveType) { };
+
 // 打开对话框
 async function showDialog(
   { model }: { model?: typeof dialogModel },
 ): Promise<void> {
   inited = false;
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    type: "medium",
+    title: $$(dialogTitle),
+    pointerPierce: true,
+  });
+  onCloseResolve = dialogRes.onCloseResolve;
   // const tenantStore = usrTenantStore();
   // const { host } = await tenantStore.getHost();
   // tenantHost = host;
@@ -382,7 +387,6 @@ async function showDialog(
     await getStatsOssEfc(ids);
   }
   inited = true;
-  dialogVisible = true;
 }
 
 async function getStatsOssEfc(ids?: string[]): Promise<{
@@ -398,50 +402,63 @@ async function getStatsOssEfc(ids?: string[]): Promise<{
 }
 
 function beforeNextIframe() {
-  const iframeWindow = iframeRefs[nowIndex]?.contentWindow;
-  const iframeDocument = iframeWindow?.document;
-  if (iframeDocument) {
-    const videoEls = iframeDocument.getElementsByTagName("video");
-    for (let i = 0; i < videoEls.length; i++) {
-      const videoEl = videoEls[i];
-      videoEl.pause();
+  const eleRef = iframeRefs[nowIndex];
+  if (eleRef instanceof HTMLIFrameElement) {
+    const iframeWindow = eleRef?.contentWindow;
+    const iframeDocument = iframeWindow?.document;
+    if (iframeDocument) {
+      const videoEls = iframeDocument.getElementsByTagName("video");
+      for (let i = 0; i < videoEls.length; i++) {
+        const videoEl = videoEls[i];
+        videoEl.pause();
+      }
     }
-  }
-}
-
-function afterNextIframe() {
-  if (!iframeShoweds[nowIndex]) {
-    iframeLoading = true;
-    setTimeout(() => {
-      iframeLoading = false;
-    }, 2000);
-    iframeShoweds[nowIndex] = true;
     return;
   }
-  const iframeWindow = iframeRefs[nowIndex]?.contentWindow;
-  const iframeDocument = iframeWindow?.document;
-  if (iframeDocument) {
-    const videoEls = iframeDocument.getElementsByTagName("video");
-    for (let i = 0; i < videoEls.length; i++) {
-      const videoEl = videoEls[i];
-      videoEl.play();
+}
+
+async function afterNextIframe() {
+  const eleRef = iframeRefs[nowIndex];
+  if (eleRef instanceof HTMLIFrameElement) {
+    if (!iframeShoweds[nowIndex]) {
+      iframeLoading = true;
+      setTimeout(() => {
+        iframeLoading = false;
+      }, 2000);
+      iframeShoweds[nowIndex] = true;
+      return;
     }
+    const iframeWindow = eleRef?.contentWindow;
+    const iframeDocument = iframeWindow?.document;
+    if (iframeDocument) {
+      const videoEls = iframeDocument.getElementsByTagName("video");
+      for (let i = 0; i < videoEls.length; i++) {
+        const videoEl = videoEls[i];
+        videoEl.play();
+      }
+    }
+    return;
   }
 }
 
-function previousClk() {
+async function previousClk() {
   if (nowIndex > 0) {
     beforeNextIframe();
     nowIndex--;
-    afterNextIframe();
+    await afterNextIframe();
   }
 }
 
-function nextClk() {
+async function nextClk() {
   if (nowIndex < urlList.length - 1) {
     beforeNextIframe();
     nowIndex++;
-    afterNextIframe();
+    await afterNextIframe();
+  }
+  const eleRef = iframeRefs[nowIndex];
+  // 如果不是iframe
+  if (!(eleRef instanceof HTMLIFrameElement)) {
+    iframeShoweds[nowIndex] = true;
   }
 }
 
@@ -450,15 +467,17 @@ function iframeLoad() {
   iframeLoading = false;
   for (let i = 0; i < iframeRefs.length; i++) {
     const iframeRef = iframeRefs[i];
-    try {
-      initIframeEl(iframeRef);
-    } catch (err) {
-      console.error(err);
+    if (iframeRef instanceof HTMLIFrameElement) {
+      try {
+        initIframeEl(iframeRef);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }
 
-let iframeRefs = $ref<any[]>([ ]);
+let iframeRefs = $ref<(HTMLIFrameElement | HTMLImageElement)[]>([ ]);
 
 function initIframeEl(iframeRef: HTMLIFrameElement) {
   const iframeWindow = iframeRef?.contentWindow;
@@ -512,9 +531,12 @@ function downloadClk() {
 
 // 打印
 function printClk() {
-  const iframeWindow = iframeRefs[nowIndex]?.contentWindow;
-  if (iframeWindow) {
-    iframeWindow.print();
+  const eleRef = iframeRefs[nowIndex];
+  if (eleRef instanceof HTMLIFrameElement) {
+    const iframeWindow = eleRef?.contentWindow;
+    if (iframeWindow) {
+      iframeWindow.print();
+    }
   }
 }
 
@@ -545,7 +567,7 @@ async function inputChg() {
   }
   ids.splice(nowIndex, 0, id);
   modelValue = ids.join(",");
-  afterNextIframe();
+  await afterNextIframe();
   await getStatsOssEfc([ id ]);
   emit("change", modelValue);
 }
@@ -580,7 +602,7 @@ async function deleteClk() {
   modelValue = ids2.join(",");
   if (nowIndex >= ids2.length && ids2.length > 0) {
     nowIndex = ids2.length - 1;
-    afterNextIframe();
+    await afterNextIframe();
   }
   ElMessage.success("删除成功!");
   emit("change", modelValue);
@@ -617,13 +639,10 @@ function moveRightClk() {
 function beforeClose(done: (cancel: boolean) => void) {
   beforeNextIframe();
   done(false);
+  onCloseResolve({
+    type: "cancel",
+  });
 }
 
 defineExpose({ showDialog });
 </script>
-
-<style lang="scss">
-.AttDialog {
-  width: 900px;
-}
-</style>

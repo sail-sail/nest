@@ -5,7 +5,8 @@ export async function getStatsOss(
 ): Promise<{
   id: string,
   lbl: string,
-  content_type: string,
+  content_type?: string,
+  size?: number,
 }[]> {
   if (ids.length === 0) {
     return [ ];
@@ -17,6 +18,7 @@ export async function getStatsOss(
           id
           lbl
           content_type
+          size
         }
       }
     `,
