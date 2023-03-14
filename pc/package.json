@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.1.0",
+    "@vue-office/docx": "0.2.4",
+    "@vue-office/excel": "0.2.6",
     "@vue/reactivity": "3.2.47",
     "@vue/runtime-dom": "3.2.47",
     "@vue/shared": "3.2.47",
@@ -32,6 +34,7 @@
     "pinyin-pro": "3.13.1",
     "sortablejs": "1.15.0",
     "vue": "3.2.47",
+    "vue-demi": "0.13.11",
     "vue-router": "4.1.6"
   },
   "devDependencies": {

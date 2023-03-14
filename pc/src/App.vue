@@ -42,6 +42,11 @@ import Background_taskListDialog from "./views/background_task/ListDialog.vue";
 
 import Login from "./layout/Login.vue";
 
+const {
+  ns,
+  initSysI18ns,
+} = useI18n();
+
 const tabsStore = useTabsStore();
 const usrStore = useUsrStore();
 
@@ -63,6 +68,14 @@ console.warn = (...args: any[]) => {
   }
   warn(...args);
 };
+
+async function initI18nsEfc() {
+  const codes = [
+    "删除成功",
+  ];
+  await initSysI18ns(codes);
+}
+initI18nsEfc();
 
 onMounted(async () => {
   await tabsStore.refreshTab();
@@ -460,5 +473,9 @@ body .el-tree {
 // 限制菜单的最大高度
 .el-scrollbar__view.el-dropdown__list {
   max-height: 650px;
+}
+// Excel预览
+.hide-input {
+  display: none;
 }
 </style>

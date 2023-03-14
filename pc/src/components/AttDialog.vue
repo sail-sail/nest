@@ -124,33 +124,72 @@
         :key="url"
       >
         <template
-          v-if="i === 0"
+          v-if="fileStats && fileStats.length > 0"
         >
-          <iframe
-            v-if="iframeShoweds[i]"
-            :ref="(el) => { if (el) iframeRefs[i] = el as HTMLIFrameElement }"
-            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-            
-            un-flex="~ [1_0_0]"
-            un-overflow-hidden
-            un-w="full"
-            
-            :src="url"
-            frameborder="0"
-            @load="iframeLoad"
-          ></iframe>
-        </template>
-        <template
-          v-else
-        >
-          <img
-            v-if="iframeShoweds[i]"
-            :ref="(el) => { if (el) iframeRefs[i] = el as HTMLImageElement }"
-            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-            object-fit="scale-down"
-            :src="url"
+          
+          <!-- 判断是否为图片 -->
+          <template
+            v-if="fileStats[i]?.contentType?.startsWith('image/')"
           >
+            <img
+              v-if="iframeShoweds[i]"
+              :ref="(el) => { if (el) iframeRefs[i] = el as HTMLImageElement }"
+              :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+              object-fit="scale-down"
+              :src="url"
+            >
+          </template>
+          
+          <!-- 判断是否为xlsx文件 -->
+          <template
+            v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            || fileStats[i]?.contentType?.startsWith('application/vnd.ms-excel.sheet')"
+          >
+            <VueOfficeExcel
+              v-if="iframeShoweds[i]"
+              :src="url"
+              :style="{ display: i === nowIndex ? '' : 'none' }"
+              un-flex="~ [1_0_0]"
+              un-overflow-auto
+              un-w="full"
+            ></VueOfficeExcel>
+          </template>
+          
+          <!-- 判断是否为docx文件 -->
+          <template
+            v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            || fileStats[i]?.contentType?.startsWith('application/msword')"
+          >
+            <VueOfficeDocx
+              v-if="iframeShoweds[i]"
+              :src="url"
+              :style="{ display: i === nowIndex ? '' : 'none' }"
+              un-flex="~ [1_0_0]"
+              un-overflow-auto
+              un-w="full"
+            ></VueOfficeDocx>
+          </template>
+          
+          <template
+            v-else
+          >
+            <iframe
+              v-if="iframeShoweds[i]"
+              :ref="(el) => { if (el) iframeRefs[i] = el as HTMLIFrameElement }"
+              :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+              
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-w="full"
+              
+              :src="url"
+              frameborder="0"
+              @load="iframeLoad"
+            ></iframe>
+          </template>
+          
         </template>
+        
       </template>
       <div
         v-if="urlList.length === 0"
@@ -196,7 +235,7 @@
         un-inset-0
         un-bg="[#FFF]"
       >
-        加载中, 请稍后....
+        加载中, 请稍后...
       </div>
     </div>
     <div
@@ -256,27 +295,38 @@
 import { filesize } from "filesize";
 import { baseURL } from '@/utils/axios';
 
+import VueOfficeExcel0 from "@vue-office/excel";
+import VueOfficeDocx0 from "@vue-office/docx";
+
 import {
   getStatsOss,
 } from "./Api";
 // import usrTenantStore from "@/store/tenant";
 
+const VueOfficeExcel = VueOfficeExcel0 as any;
+const VueOfficeDocx = VueOfficeDocx0 as any;
+
+const {
+  ns,
+} = useI18n();
+
 const emit = defineEmits([
   "change",
 ]);
+
 
 // 文件名列表
 let fileStats = $ref<{
   id: string;
   lbl: string;
-  content_type?: string;
+  contentType?: string;
   size?: number;
-}[]>([ ]);
+}[]>();
 
 // 当前弹出框的标题
 let dialogTitle = $computed(() => {
   let title = "";
-  const fileStat = fileStats[nowIndex];
+  const fileStat = fileStats?.[nowIndex];
   if (fileStat) {
     const fileSizeStr = filesize(fileStat.size || 0, { round: 0 });
     title = `${ fileStat.lbl } (${ fileSizeStr })`;
@@ -322,7 +372,7 @@ let predefineColors = $ref([
   '#c7158577',
 ]);
 
-let modelValue = $ref<string | undefined>("");
+let modelValue = $ref<string | null>();
 
 // let tenantHost = $ref("");
 
@@ -383,22 +433,14 @@ async function showDialog(
     iframeRefs = [ ];
     fileStats = [ ];
     iframeShoweds = [ true ];
-    const ids = modelValue?.split(",").filter((x) => x);
-    await getStatsOssEfc(ids);
+    await getStatsOssEfc();
   }
   inited = true;
 }
 
-async function getStatsOssEfc(ids?: string[]): Promise<{
-  id: string,
-  lbl: string,
-}[]> {
-  if (!ids) {
-    return [];
-  }
-  const data = await getStatsOss(ids);
-  fileStats = fileStats.concat(data);
-  return data;
+async function getStatsOssEfc() {
+  const ids = modelValue?.split(",").filter((x) => x) || [ ];
+  fileStats = await getStatsOss(ids);
 }
 
 function beforeNextIframe() {
@@ -567,8 +609,9 @@ async function inputChg() {
   }
   ids.splice(nowIndex, 0, id);
   modelValue = ids.join(",");
+  await getStatsOssEfc();
   await afterNextIframe();
-  await getStatsOssEfc([ id ]);
+  iframeShoweds[nowIndex] = true;
   emit("change", modelValue);
 }
 
@@ -597,14 +640,14 @@ async function deleteClk() {
   }
   const ids2 = ids.filter((_, i) => i !== nowIndex);
   iframeShoweds = iframeShoweds.filter((_, i) => i !== nowIndex);
-  fileStats = fileStats.filter((_, i) => i !== nowIndex);
+  fileStats = (fileStats || [ ]).filter((_, i) => i !== nowIndex);
   iframeRefs = iframeRefs.filter((_, i) => i !== nowIndex);
   modelValue = ids2.join(",");
   if (nowIndex >= ids2.length && ids2.length > 0) {
     nowIndex = ids2.length - 1;
     await afterNextIframe();
   }
-  ElMessage.success("删除成功!");
+  ElMessage.success(ns("删除成功"));
   emit("change", modelValue);
 }
 

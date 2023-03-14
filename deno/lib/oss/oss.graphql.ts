@@ -8,7 +8,7 @@ defineGraphql(ossResolver, /* GraphQL */`
 type GetStatusOss {
   id: ID!
   lbl: String!
-  content_type: String
+  contentType: String
   size: Int
 }
 

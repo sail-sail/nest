@@ -5,7 +5,7 @@ export async function getStatsOss(
 ): Promise<{
   id: string,
   lbl: string,
-  content_type?: string,
+  contentType?: string,
   size?: number,
 }[]> {
   if (ids.length === 0) {
@@ -17,7 +17,7 @@ export async function getStatsOss(
         getStatsOss(ids: $ids) {
           id
           lbl
-          content_type
+          contentType
           size
         }
       }
