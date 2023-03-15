@@ -48,7 +48,7 @@ async function initI18ns(
   const code2Prms: Promise<string>[] = [ ];
   for (let i = 0; i < codes.length; i++) {
     const code = codes[i];
-    const key = JSON.stringify([ code, routePath ]);
+    const key = `${ routePath } ${ code }`;
     if (!i18nLbls[key]) {
       keys2.push(key);
       code2Prms.push(n0(lang, routePath, code, { notLoading: true }));
@@ -139,7 +139,7 @@ function getLbl(
     return "";
   }
   const i18nLbls = i18nLblsLang[lang];
-  const key = JSON.stringify([ code, routePath ]);
+  const key = `${ routePath } ${ code }`;
   let i18nLbl: string = i18nLbls[key];
   if (i18nLbl) {
     i18nLbl = setLblArgs(i18nLbl, args);
