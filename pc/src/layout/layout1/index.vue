@@ -65,23 +65,30 @@
         un-gap="x-3"
         un-m="r-4"
       >
-        <template v-if="loginInfo">
-          <el-select
-            :set="loginInfo.dept_id = loginInfo.dept_id || ''"
-            v-model="loginInfo.dept_id"
-            size="small"
-            suffix-icon=""
-            class="dept_select"
-            
-            @change="deptSelectChg"
+        <template v-if="loginInfo && loginInfo.dept_idModels">
+          <el-dropdown
+            trigger="click"
           >
-            <el-option
-              v-for="item of loginInfo.dept_idModels"
-              :key="item.id"
-              :value="item.id"
-              :label="item.lbl"
-            ></el-option>
-          </el-select>
+            <span
+              un-text="white hover:[var(--el-color-primary)]"
+              un-cursor-pointer
+            >
+              {{ loginInfo.dept_idModels.find(item => item.id === loginInfo?.dept_id)?.lbl || '' }}
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu
+                un-whitespace-nowrap
+              >
+                <el-dropdown-item
+                  v-for="item of loginInfo.dept_idModels"
+                  :key="item.id"
+                  @click="deptSelectClk(item.id)"
+                >
+                  {{ item.lbl }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
         <div
           un-flex="~"
@@ -90,17 +97,19 @@
           un-m="r-1"
         >
           <el-dropdown
-            
+            trigger="click"
           >
             <IconFontLocales
               un-w="4"
               un-h="4"
               un-pos-relative
               un-top="0.5"
+              un-text="white hover:[var(--el-color-primary)]"
+              un-cursor-pointer
             ></IconFontLocales>
             <template #dropdown>
               <el-dropdown-menu
-                whitespace-nowrap
+                un-whitespace-nowrap
               >
                 <el-dropdown-item
                   v-for="item of locales"
@@ -129,7 +138,9 @@
           un-items-center
           un-justify-center
         >
-          <el-dropdown>
+          <el-dropdown
+            trigger="click"
+          >
             <el-icon
               :size="16"
               color="#FFF"
@@ -365,11 +376,11 @@ async function selectLangClk(lang: string) {
   }
 }
 
-async function deptSelectChg() {
-  const dept_id = loginInfo?.dept_id;
-  if (!dept_id) {
+async function deptSelectClk(dept_id: string) {
+  if (!loginInfo) {
     return;
   }
+  loginInfo.dept_id = dept_id;
   const token = await deptLoginSelect({
     dept_id,
   });

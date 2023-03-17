@@ -19,14 +19,6 @@
     "publish": "cd deno && npm run publish",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
-    "docs": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
     "preinstall": "npx only-allow pnpm"
-  },
-  "devDependencies": {
-    "@types/markdown-it": "12.2.3",
-    "cross-env": "7.0.3",
-    "markdown-it-anchor": "8.6.6",
-    "vitepress": "1.0.0-alpha.46"
   }
 }

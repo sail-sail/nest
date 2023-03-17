@@ -5,7 +5,6 @@
     "**/.swc": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/tsconfig.json": true,
     "**/.editorconfig": true,
     "**/protractor.conf.js": true,
     "**/tslint.json": true,
@@ -16,8 +15,11 @@
     "**/package-lock.json": true,
     "**/pnpm-lock.yaml": true,
     "**/node_modules/**": true,
-    "dist": true,
-    "**/__unconfig_vite.config.ts": true
+    "**/.rsw": true,
+    "**/@rsw": true,
+    "**/__unconfig_vite.config.ts": true,
+    "tmp/**": true,
+    "**/.eslintrc-auto-import.json": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -35,28 +37,33 @@
     "**/LICENSE": true,
     "**/package-lock.json": true,
     "**/pnpm-lock.yaml": true,
+    "build": true,
     "**/node_modules/**": true,
-    "dist": true,
-    "**/__unconfig_vite.config.ts": true
+    "**/.rsw": true,
+    "**/@rsw": true,
+    "**/.nuxt/**": true,
+    "**/*/types.ts": true,
+    "**/.eslintrc-auto-import.json": true
   },
-  "deno.enable": false,
-  "css.validate": false,
-  "less.validate": false,
-  "scss.validate": false,
-  "unocss.root": "",
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": true,
+  "deno.importMap": "./import_map.json",
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "unocss.root": "pc",
   "terminal.integrated.confirmOnKill": "never",
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
   },
-  "volar.icon.preview": false,
-  "volar.icon.splitEditors": false,
+  "unocss.colorPreview": false,
+  "files.eol": "\n",
+  "volar.updateImportsOnFileMove.enabled": false,
   "volar.codeLens.references": false,
-  "volar.diagnostics.delay": 10,
-  "editor.quickSuggestionsDelay": 0,
   "references.preferredLocation": "peek",
-  "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never"
+  "deno.suggest.autoImports": false
 }

@@ -1,0 +1,37 @@
+{
+	"folders": [
+		{
+		  "path": "./deno",
+		  "deno": true
+		},
+		{
+		  "path": "./pc",
+		  "deno": false
+		},
+		{
+		  "path": "./uni",
+		  "deno": false
+		},
+		{
+			"path": "./codegen",
+			"deno": false
+		}
+	],
+	"settings": {
+		"npm.registry": "https://registry.npmmirror.com",
+		"npm.updateStrategy": "LATEST",
+		"deno.lint": true,
+		"deno.unstable": true,
+		"deno.importMap": "./import_map.json",
+		"unocss.root": "pc",
+		"terminal.integrated.confirmOnKill": "never",
+		"terminal.integrated.env.windows": {
+			"VUE_EDITOR": "code"
+		},
+		"unocss.colorPreview": false,
+		"volar.updateImportsOnFileMove.enabled": false,
+		"volar.codeLens.references": false,
+		"references.preferredLocation": "peek",
+		"deno.suggest.autoImports": false
+	}
+}
