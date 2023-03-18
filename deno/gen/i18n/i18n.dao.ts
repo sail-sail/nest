@@ -375,8 +375,10 @@ async function checkByUnique(
   if (isEquals) {
     if (uniqueType === "throw") {
       const { uniqueKeys, uniqueComments } = await getUniqueKeys();
-      const lbl = uniqueKeys.map((key) => uniqueComments[key]).join(", ");
-      throw new UniqueException(`${ lbl } 的值已经存在!`);
+      const lbl = uniqueKeys
+        .filter((key) => typeof key !== "symbol")
+        .map((key) => uniqueComments[key as string]).join(", ");
+      throw new UniqueException(await ns("{0} 的值已经存在", lbl));
     }
     if (uniqueType === "update") {
       const result = await updateById(
