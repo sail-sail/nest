@@ -121,22 +121,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.is_locked == null">
-          <el-form-item
-            :label="n('锁定')"
-            prop="is_locked"
-            un-h="full"
-          >
-            <DictSelect
-              :set="dialogModel.is_locked = dialogModel.is_locked ?? undefined"
-              v-model="dialogModel.is_locked"
-              code="is_locked"
-              un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('锁定') }`"
-            ></DictSelect>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div
@@ -357,6 +341,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_locked: undefined,
+        _is_locked: undefined,
       };
     }
   } else if (action === "edit") {

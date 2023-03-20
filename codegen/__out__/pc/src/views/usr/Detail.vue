@@ -389,6 +389,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_locked: undefined,
+        _is_locked: undefined,
       };
     }
   } else if (action === "edit") {

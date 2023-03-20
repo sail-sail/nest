@@ -970,7 +970,6 @@ async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const args = new QueryArgs();
     const id = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
@@ -981,6 +980,7 @@ async function deleteByIds(
     if (is_locked) {
       continue;
     }
+    const args = new QueryArgs();
     const sql = /*sql*/ `
       update
         dept

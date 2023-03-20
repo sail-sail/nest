@@ -2104,7 +2104,6 @@ async function deleteByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const args = new QueryArgs();
     const id = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
@@ -2119,6 +2118,7 @@ async function deleteByIds(
     }<#
     }
     #>
+    const args = new QueryArgs();
     const sql = /*sql*/ `
       update
         <#=table#>

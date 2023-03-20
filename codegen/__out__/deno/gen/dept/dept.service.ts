@@ -169,6 +169,18 @@ async function updateById(
 async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
+  const lockedIds: string[] = [ ];
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const is_locked = await deptDao.getIs_lockedById(id);
+    if (is_locked) {
+      lockedIds.push(id);
+    }
+  }
+  if (lockedIds.length > 0 && lockedIds.length === ids.length) {
+    throw await ns("不能删除已经锁定的数据");
+  }
   const data = await deptDao.deleteByIds(ids);
   return data;
 }

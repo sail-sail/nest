@@ -1,5 +1,6 @@
 <template><#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -68,6 +69,7 @@ for (let i = 0; i < columns.length; i++) {
           if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
+          if (column_name === "is_locked") continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -674,7 +676,13 @@ async function showDialog(
     if (data) {
       dialogModel = {
         ...data,
-        id: undefined,
+        id: undefined,<#
+        if (hasLocked) {
+        #>
+        is_locked: undefined,
+        _is_locked: undefined,<#
+        }
+        #>
       };
     }
   } else if (action === "edit") {
