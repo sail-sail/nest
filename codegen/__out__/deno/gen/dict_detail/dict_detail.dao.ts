@@ -720,11 +720,6 @@ async function updateById(
     "is_locked",
   ]);
   
-  const is_locked = await getIs_lockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的数据";
-  }
-  
   // 系统字典
   if (isNotEmpty(model._dict_id) && model.dict_id === undefined) {
     model._dict_id = String(model._dict_id).trim();

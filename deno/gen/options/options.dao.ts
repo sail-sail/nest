@@ -765,11 +765,6 @@ async function updateById(
     "is_locked",
   ]);
   
-  const is_locked = await getIs_lockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的数据";
-  }
-  
   // 启用
   if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;

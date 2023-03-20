@@ -242,7 +242,16 @@ async function create(
 async function updateById(
   id: string,
   model: <#=Table_Up#>Model,
-): Promise<string> {
+): Promise<string> {<#
+  if (hasLocked) {
+  #>
+  
+  const is_locked = await <#=table#>Dao.getIs_lockedById(id);
+  if (is_locked) {
+    throw await ns("不能修改已经锁定的数据");
+  }<#
+  }
+  #>
   const data = await <#=table#>Dao.updateById(id, model);<#
   if (table === "i18n") {
   #>

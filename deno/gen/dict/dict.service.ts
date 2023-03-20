@@ -152,6 +152,11 @@ async function updateById(
   id: string,
   model: DictModel,
 ): Promise<string> {
+  
+  const is_locked = await dictDao.getIs_lockedById(id);
+  if (is_locked) {
+    throw await ns("不能修改已经锁定的数据");
+  }
   const data = await dictDao.updateById(id, model);
   return data;
 }

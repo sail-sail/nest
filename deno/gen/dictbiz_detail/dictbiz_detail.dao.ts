@@ -795,11 +795,6 @@ async function updateById(
     "is_locked",
   ]);
   
-  const is_locked = await getIs_lockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的数据";
-  }
-  
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(id, model.tenant_id);

@@ -1820,15 +1820,6 @@ async function updateById(
   ]);<#
   }
   #><#
-  if (hasLocked) {
-  #>
-  
-  const is_locked = await getIs_lockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的数据";
-  }<#
-  }
-  #><#
   if (hasTenant_id) {
   #>
   

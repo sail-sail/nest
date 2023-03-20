@@ -151,6 +151,11 @@ async function updateById(
   id: string,
   model: UsrModel,
 ): Promise<string> {
+  
+  const is_locked = await usrDao.getIs_lockedById(id);
+  if (is_locked) {
+    throw await ns("不能修改已经锁定的数据");
+  }
   const data = await usrDao.updateById(id, model);
   return data;
 }
