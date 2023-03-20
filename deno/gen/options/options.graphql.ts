@@ -27,6 +27,8 @@ type OptionsModel {
   is_locked: Int!
   "锁定名称"
   _is_locked: String
+  "版本号"
+  version: Int!
   "创建人ID"
   create_usr_id: ID!
   "创建人名称"
@@ -63,6 +65,8 @@ input OptionsInput {
   is_locked: Int
   "锁定名称"
   _is_locked: String
+  "版本号"
+  version: Int
   "创建人ID"
   create_usr_id: ID
   "创建人名称"
@@ -101,6 +105,8 @@ input OptionsSearch {
   remLike: String
   "锁定"
   is_locked: [Int]
+  "版本号"
+  version: [Int]
   "创建人"
   create_usr_id: [String]
   _create_usr_id: [String]

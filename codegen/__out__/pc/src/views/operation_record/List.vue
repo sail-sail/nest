@@ -887,7 +887,7 @@ async function revertByIdsEfc() {
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
-  const i18nCodes: string[] = [
+  const codes: string[] = [
     "模块名称",
     "方法名称",
     "操作",
@@ -899,7 +899,7 @@ async function initI18nsEfc() {
   ];
   await Promise.all([
     initListI18ns(),
-    initI18ns(i18nCodes),
+    initI18ns(codes),
   ]);
 }
 

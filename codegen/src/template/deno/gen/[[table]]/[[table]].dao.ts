@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
+const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -178,7 +179,12 @@ export const _internals = {
   }
   #>
   findOne,
-  findById,
+  findById,<#
+  if (hasVersion) {
+  #>
+  getVersionById,<#
+  }
+  #>
   exist,
   existById,
   create,<#
@@ -1689,6 +1695,22 @@ async function updateDeptById(
   return num;
 }<#
 }
+#><#
+if (hasVersion) {
+#>
+
+/**
+ * 根据 id 获取版本号
+ */
+async function getVersionById(id: string) {
+  const model = await findById(id);
+  if (!model) {
+    return 0;
+  }
+  const version = model.version;
+  return version;
+}<#
+}
 #>
 
 /**
@@ -2035,7 +2057,18 @@ async function updateById(
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
+    }<#
+    if (hasVersion) {
+    #>
+    if (model.version != null && model.version > 0) {
+      const version = await getVersionById(id);
+      if (version && version > model.version) {
+        throw await ns("数据已被修改，请刷新后重试");
+      }
+      sql += `version = ${ args.push(version + 1) },`;
+    }<#
     }
+    #>
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);

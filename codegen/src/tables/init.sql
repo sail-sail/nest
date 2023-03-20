@@ -237,6 +237,7 @@ CREATE TABLE if not exists `options` (
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `version` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '版本号',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',

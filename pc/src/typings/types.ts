@@ -1660,6 +1660,8 @@ export type OptionsInput = {
   update_usr_id?: InputMaybe<Scalars['ID']>;
   /** 值 */
   val?: InputMaybe<Scalars['String']>;
+  /** 版本号 */
+  version?: InputMaybe<Scalars['Int']>;
 };
 
 export type OptionsModel = {
@@ -1696,6 +1698,8 @@ export type OptionsModel = {
   update_usr_id: Scalars['ID'];
   /** 值 */
   val: Scalars['String'];
+  /** 版本号 */
+  version: Scalars['Int'];
 };
 
 export type OptionsSearch = {
@@ -1733,6 +1737,8 @@ export type OptionsSearch = {
   /** 值 */
   val?: InputMaybe<Scalars['String']>;
   valLike?: InputMaybe<Scalars['String']>;
+  /** 版本号 */
+  version?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 /** 分页输入 */

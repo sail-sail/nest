@@ -1059,7 +1059,7 @@ async function revertByIdsEfc() {
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
-  const i18nCodes: string[] = [
+  const codes: string[] = [
     "名称",
     "域名绑定",
     "到期日",
@@ -1071,7 +1071,7 @@ async function initI18nsEfc() {
   ];
   await Promise.all([
     initListI18ns(),
-    initI18ns(i18nCodes),
+    initI18ns(codes),
   ]);
 }
 

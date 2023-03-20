@@ -41,6 +41,7 @@ export async function findAll(
           rem
           is_locked
           _is_locked
+          version
           create_usr_id
           _create_usr_id
           create_time
@@ -170,6 +171,7 @@ export async function findById(
           rem
           is_locked
           _is_locked
+          version
           create_usr_id
           _create_usr_id
           create_time

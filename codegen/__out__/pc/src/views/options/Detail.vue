@@ -282,6 +282,7 @@ async function getDefaultInput() {
     order_by: 1,
     is_enabled: 1,
     is_locked: 0,
+    version: 1,
   };
   return defaultInput;
 }
@@ -506,6 +507,7 @@ async function initI18nsEfc() {
     "启用",
     "备注",
     "锁定",
+    "版本号",
     "创建人",
     "创建时间",
     "更新人",

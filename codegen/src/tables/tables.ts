@@ -413,6 +413,9 @@ export default defineConfig({
         width: 60,
       },
       {
+        COLUMN_NAME: "version",
+      },
+      {
         COLUMN_NAME: "create_usr_id",
         ignoreCodegen: false,
         noAdd: true,

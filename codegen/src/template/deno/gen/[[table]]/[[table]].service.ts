@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -61,7 +62,12 @@ export const _internals = {
   }
   #>
   findOne,
-  findById,
+  findById,<#
+  if (hasVersion) {
+  #>
+  getVersionById,<#
+  }
+  #>
   exist,
   existById,
   create,
@@ -231,7 +237,19 @@ async function create(
 ): Promise<string> {
   const data = await <#=table#>Dao.create(model);
   return data;
+}<#
+if (hasVersion) {
+#>
+
+/**
+ * 根据 id 获取版本号
+ */
+async function getVersionById(id: string) {
+  const version = await <#=table#>Dao.getVersionById(id);
+  return version;
+}<#
 }
+#>
 
 /**
  * 根据 id 修改数据

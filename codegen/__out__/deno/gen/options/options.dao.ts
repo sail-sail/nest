@@ -70,6 +70,7 @@ export const _internals = {
   checkByUnique,
   findOne,
   findById,
+  getVersionById,
   exist,
   existById,
   create,
@@ -155,6 +156,14 @@ async function getWhereQuery(
   }
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  }
+  if (search?.version && search?.version?.length > 0) {
+    if (search.version[0] != null) {
+      whereQuery += ` and t.version >= ${ args.push(search.version[0]) }`;
+    }
+    if (search.version[1] != null) {
+      whereQuery += ` and t.version <= ${ args.push(search.version[1]) }`;
+    }
   }
   if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
     search.create_usr_id = [ search.create_usr_id ];
@@ -659,6 +668,9 @@ async function create(
   if (model.is_locked !== undefined) {
     sql += `,\`is_locked\``;
   }
+  if (model.version !== undefined) {
+    sql += `,\`version\``;
+  }
   if (model.update_usr_id !== undefined) {
     sql += `,\`update_usr_id\``;
   }
@@ -695,6 +707,9 @@ async function create(
   if (model.is_locked !== undefined) {
     sql += `,${ args.push(model.is_locked) }`;
   }
+  if (model.version !== undefined) {
+    sql += `,${ args.push(model.version) }`;
+  }
   if (model.update_usr_id !== undefined) {
     sql += `,${ args.push(model.update_usr_id) }`;
   }
@@ -729,6 +744,18 @@ async function delCache() {
     const cacheKey1 = `dao.sql.${ foreignTable }`;
     await delCacheCtx(cacheKey1);
   }
+}
+
+/**
+ * 根据 id 获取版本号
+ */
+async function getVersionById(id: string) {
+  const model = await findById(id);
+  if (!model) {
+    return 0;
+  }
+  const version = model.version;
+  return version;
 }
 
 /**
@@ -843,6 +870,12 @@ async function updateById(
       updateFldNum++;
     }
   }
+  if (model.version !== undefined) {
+    if (model.version != oldModel?.version) {
+      sql += `\`version\` = ${ args.push(model.version) },`;
+      updateFldNum++;
+    }
+  }
   if (updateFldNum > 0) {
     if (model.update_usr_id != null && model.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
@@ -851,6 +884,13 @@ async function updateById(
       if (authModel?.id !== undefined) {
         sql += `update_usr_id = ${ args.push(authModel.id) },`;
       }
+    }
+    if (model.version != null && model.version > 0) {
+      const version = await getVersionById(id);
+      if (version && version > model.version) {
+        throw await ns("数据已被修改，请刷新后重试");
+      }
+      sql += `version = ${ args.push(version + 1) },`;
     }
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;

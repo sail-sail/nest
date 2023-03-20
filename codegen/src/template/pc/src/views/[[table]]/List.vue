@@ -558,6 +558,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (column.noList) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
+            if (column_name === "version") continue;
             const foreignKey = column.foreignKey;
             let data_type = column.DATA_TYPE;
             let column_type = column.COLUMN_TYPE;
@@ -1346,6 +1347,7 @@ function getTableColumns(): ColumnType[] {
     if (column.noList) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "version") continue;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
@@ -1950,7 +1952,7 @@ async function openForeignTabs(id: string, title: string) {
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
-  const i18nCodes: string[] = [<#
+  const codes: string[] = [<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1958,6 +1960,7 @@ async function initI18nsEfc() {
     if (column.noList) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
+    if (column_name === "version") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1976,7 +1979,7 @@ async function initI18nsEfc() {
   ];
   await Promise.all([
     initListI18ns(),
-    initI18ns(i18nCodes),
+    initI18ns(codes),
   ]);
 }
 

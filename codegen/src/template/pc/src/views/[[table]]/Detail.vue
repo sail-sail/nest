@@ -70,6 +70,7 @@ for (let i = 0; i < columns.length; i++) {
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
           if (column_name === "is_locked") continue;
+          if (column_name === "version") continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";

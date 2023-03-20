@@ -41,6 +41,7 @@ export const _internals = {
   findAll,
   findOne,
   findById,
+  getVersionById,
   exist,
   existById,
   create,
@@ -143,6 +144,14 @@ async function create(
 }
 
 /**
+ * 根据 id 获取版本号
+ */
+async function getVersionById(id: string) {
+  const version = await optionsDao.getVersionById(id);
+  return version;
+}
+
+/**
  * 根据 id 修改数据
  * @param {string} id
  * @param {OptionsModel} model
@@ -239,6 +248,7 @@ async function importFile(
     [ await n("启用") ]: "_is_enabled",
     [ await n("备注") ]: "rem",
     [ await n("锁定") ]: "_is_locked",
+    [ await n("版本号") ]: "version",
   };
   const models = await getImportFileRows(id, header);
   

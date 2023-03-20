@@ -606,6 +606,7 @@ const props = defineProps<{
   rem?: string; // 备注
   remLike?: string; // 备注
   is_locked?: string|string[]; // 锁定
+  version?: string; // 版本号
   create_usr_id?: string|string[]; // 创建人
   _create_usr_id?: string|string[]; // 创建人
   create_time?: string; // 创建时间
@@ -622,6 +623,7 @@ const builtInSearchType: { [key: string]: string } = {
   _is_enabled: "string[]",
   is_locked: "number[]",
   _is_locked: "string[]",
+  version: "number",
   create_usr_id: "string[]",
   _create_usr_id: "string[]",
   update_usr_id: "string[]",
@@ -1138,7 +1140,7 @@ async function revertByIdsEfc() {
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
-  const i18nCodes: string[] = [
+  const codes: string[] = [
     "名称",
     "键",
     "值",
@@ -1153,7 +1155,7 @@ async function initI18nsEfc() {
   ];
   await Promise.all([
     initListI18ns(),
-    initI18ns(i18nCodes),
+    initI18ns(codes),
   ]);
 }
 
