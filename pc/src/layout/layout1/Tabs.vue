@@ -152,6 +152,7 @@ function initTabsSort() {
           return;
         }
         await tabsStore.moveTab(oldIndex, newIndex);
+        await activeTab(tabsStore.tabs[newIndex]);
         if (oldIndex !== newIndex) {
           emit("tab_active_line")
         }
