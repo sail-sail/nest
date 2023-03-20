@@ -290,9 +290,11 @@ watch(
       return;
     }
     const name = route.name as string;
+    const menuLbl = menuStore.getLblByPath(route.path);
+    const lbl = menuLbl || (route.meta?.name as string) || name || "";
     tabsStore.activeTab({
       name,
-      lbl: (route.meta?.name as string) || name || "",
+      lbl,
       active: true,
       path: route.path,
       query: route.query,

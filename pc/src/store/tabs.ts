@@ -30,15 +30,17 @@ export default defineStore("tabs", function() {
     if (tab1.path !== tab2.path) {
       return false;
     }
-    const keys1 = tab1.query ? Object.keys(tab1.query) : [ ];
-    const keys2 = Object.keys(tab2?.query || { });
+    tab1.query = tab1.query || { };
+    tab2.query = tab2.query || { };
+    const keys1 = Object.keys(tab1.query);
+    const keys2 = Object.keys(tab2.query);
     if (keys1.length !== keys2.length) {
       return false;
     }
     for (let i = 0; i < keys1.length; i++) {
       const key1 = keys1[i];
-      const val1 = tab1.query![key1];
-      const val2 = tab2!.query![key1];
+      const val1 = tab1.query[key1];
+      const val2 = tab2.query[key1];
       if (val1 !== val2) {
         return false;
       }

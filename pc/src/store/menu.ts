@@ -15,6 +15,23 @@ export default defineStore("menu", function() {
   
   let menus = $ref<MenuModel[]>([ ]);
   
+  const pathMenuMap = $computed(() => {
+    const pathMenuMap = new Map<string, MenuModel>();
+    treeMenu(menus, (item) => {
+      pathMenuMap.set(item.route_path, item);
+      return true;
+    });
+    return pathMenuMap;
+  });
+  
+  /**
+   * 通过当前路由获取菜单名字
+   */
+  function getLblByPath(path: string) {
+    const menu = pathMenuMap.get(path);
+    return menu?.lbl;
+  }
+  
   function setMenus(menus0: typeof menus) {
     menus = menus0 || [ ];
   }
@@ -125,5 +142,12 @@ export default defineStore("menu", function() {
     getParentIds,
     clear,
     reset,
+    getLblByPath,
   });
-}, { persist: true });
+}, {
+  persist: {
+    paths: [
+      "menus",
+    ],
+  },
+});
