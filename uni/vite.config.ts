@@ -57,8 +57,8 @@ export default defineConfig({
             "uniLogin",
           ],
           "@/utils/graphql": [
-            "gqlQuery",
-            "_gqlQuery",
+            "query",
+            "mutation",
           ],
           "@/utils/StringUtil": [
             "isEmpty",

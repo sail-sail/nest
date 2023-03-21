@@ -59,7 +59,7 @@ export async function findAll(
 ) {
   const data: {
     findAll<#=tableUp#>: Query["findAll<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
@@ -137,7 +137,7 @@ export async function findCount(
 ) {
   const data: {
     findCount<#=tableUp#>: Query["findCount<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
         findCount<#=tableUp#>(search: $search)
@@ -164,7 +164,7 @@ export async function findSummary(
 ) {
   const data: {
     findSummary<#=tableUp#>: Query["findSummary<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
         findSummary<#=tableUp#>(search: $search) {<#
@@ -209,7 +209,7 @@ export async function create(
 ) {
   const data: {
     create<#=tableUp#>: Mutation["create<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: <#=Table_Up#>Input!) {
         create<#=tableUp#>(model: $model)
@@ -241,7 +241,7 @@ export async function updateById(
 ) {
   const data: {
     updateById<#=tableUp#>: Mutation["updateById<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: <#=Table_Up#>Input!) {
         updateById<#=tableUp#>(id: $id, model: $model)
@@ -270,7 +270,7 @@ export async function findById(
 ) {
   const data: {
     findById<#=tableUp#>: Query["findById<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findById<#=tableUp#>(id: $id) {<#
@@ -340,7 +340,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIds<#=tableUp#>: Mutation["deleteByIds<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIds<#=tableUp#>(ids: $ids)
@@ -372,7 +372,7 @@ export async function lockByIds(
 ) {
   const data: {
     lockByIds<#=tableUp#>: Mutation["lockByIds<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIds<#=tableUp#>(ids: $ids, is_locked: $is_locked)
@@ -403,7 +403,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIds<#=tableUp#>: Mutation["revertByIds<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIds<#=tableUp#>(ids: $ids)
@@ -429,7 +429,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIds<#=tableUp#>: Mutation["forceDeleteByIds<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIds<#=tableUp#>(ids: $ids)
@@ -471,7 +471,7 @@ export async function findAll<#=foreignTableUp#>(
 ) {
   const data: {
     findAll<#=foreignTableUp#>: Query["findAll<#=foreignTableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
@@ -523,7 +523,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcel<#=tableUp#>: Query["exportExcel<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
         exportExcel<#=tableUp#>(search: $search, sort: $sort)
@@ -554,7 +554,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFile<#=tableUp#>: Mutation["importFile<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFile<#=tableUp#>(id: $id)
@@ -582,7 +582,7 @@ export async function findLastOrderBy(
 ) {
   const data: {
     findLastOrderBy<#=tableUp#>: Query["findLastOrderBy<#=tableUp#>"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         findLastOrderBy<#=tableUp#>

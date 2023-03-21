@@ -26,7 +26,7 @@ export async function findAll(
 ) {
   const data: {
     findAllMenu: Query["findAllMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -71,7 +71,7 @@ export async function findCount(
 ) {
   const data: {
     findCountMenu: Query["findCountMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch) {
         findCountMenu(search: $search)
@@ -97,7 +97,7 @@ export async function create(
 ) {
   const data: {
     createMenu: Mutation["createMenu"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: MenuInput!) {
         createMenu(model: $model)
@@ -125,7 +125,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdMenu: Mutation["updateByIdMenu"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: MenuInput!) {
         updateByIdMenu(id: $id, model: $model)
@@ -152,7 +152,7 @@ export async function findById(
 ) {
   const data: {
     findByIdMenu: Query["findByIdMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdMenu(id: $id) {
@@ -194,7 +194,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsMenu: Mutation["deleteByIdsMenu"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsMenu(ids: $ids)
@@ -220,7 +220,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsMenu: Mutation["revertByIdsMenu"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsMenu(ids: $ids)
@@ -246,7 +246,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsMenu: Mutation["forceDeleteByIdsMenu"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsMenu(ids: $ids)
@@ -268,7 +268,7 @@ export async function findAllMenu(
 ) {
   const data: {
     findAllMenu: Query["findAllMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -318,7 +318,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelMenu: Query["exportExcelMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput]) {
         exportExcelMenu(search: $search, sort: $sort)
@@ -347,7 +347,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileMenu: Mutation["importFileMenu"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileMenu(id: $id)
@@ -371,7 +371,7 @@ export async function findLastOrderBy(
 ) {
   const data: {
     findLastOrderByMenu: Query["findLastOrderByMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         findLastOrderByMenu

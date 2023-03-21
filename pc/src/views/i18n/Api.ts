@@ -28,7 +28,7 @@ export async function findAll(
 ) {
   const data: {
     findAllI18n: Query["findAllI18n"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch, $page: PageInput, $sort: [SortInput]) {
         findAllI18n(search: $search, page: $page, sort: $sort) {
@@ -68,7 +68,7 @@ export async function findCount(
 ) {
   const data: {
     findCountI18n: Query["findCountI18n"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch) {
         findCountI18n(search: $search)
@@ -94,7 +94,7 @@ export async function create(
 ) {
   const data: {
     createI18n: Mutation["createI18n"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: I18nInput!) {
         createI18n(model: $model)
@@ -122,7 +122,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdI18n: Mutation["updateByIdI18n"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: I18nInput!) {
         updateByIdI18n(id: $id, model: $model)
@@ -149,7 +149,7 @@ export async function findById(
 ) {
   const data: {
     findByIdI18n: Query["findByIdI18n"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdI18n(id: $id) {
@@ -184,7 +184,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsI18n: Mutation["deleteByIdsI18n"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsI18n(ids: $ids)
@@ -210,7 +210,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsI18n: Mutation["revertByIdsI18n"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsI18n(ids: $ids)
@@ -236,7 +236,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsI18n: Mutation["forceDeleteByIdsI18n"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsI18n(ids: $ids)
@@ -258,7 +258,7 @@ export async function findAllLang(
 ) {
   const data: {
     findAllLang: Query["findAllLang"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
@@ -303,7 +303,7 @@ export async function findAllMenu(
 ) {
   const data: {
     findAllMenu: Query["findAllMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -353,7 +353,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelI18n: Query["exportExcelI18n"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: I18nSearch, $sort: [SortInput]) {
         exportExcelI18n(search: $search, sort: $sort)
@@ -382,7 +382,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileI18n: Mutation["importFileI18n"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileI18n(id: $id)

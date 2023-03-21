@@ -5,7 +5,6 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
-  const _gqlQuery: typeof import('@/utils/graphql')['_gqlQuery']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
@@ -22,7 +21,6 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const getDownloadUrl: typeof import('@/utils/request')['getDownloadUrl']
-  const gqlQuery: typeof import('@/utils/graphql')['gqlQuery']
   const h: typeof import('vue')['h']
   const inject: typeof import('vue')['inject']
   const isEmpty: typeof import('@/utils/StringUtil')['isEmpty']
@@ -37,6 +35,7 @@ declare global {
   const mapStores: typeof import('pinia')['mapStores']
   const mapWritableState: typeof import('pinia')['mapWritableState']
   const markRaw: typeof import('vue')['markRaw']
+  const mutation: typeof import('@/utils/graphql')['mutation']
   const nextTick: typeof import('vue')['nextTick']
   const numeral: typeof import('numeral')['default']
   const onActivated: typeof import('vue')['onActivated']
@@ -77,6 +76,7 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const provide: typeof import('vue')['provide']
+  const query: typeof import('@/utils/graphql')['query']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']

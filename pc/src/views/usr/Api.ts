@@ -28,7 +28,7 @@ export async function findAll(
 ) {
   const data: {
     findAllUsr: Query["findAllUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
@@ -75,7 +75,7 @@ export async function findCount(
 ) {
   const data: {
     findCountUsr: Query["findCountUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch) {
         findCountUsr(search: $search)
@@ -101,7 +101,7 @@ export async function create(
 ) {
   const data: {
     createUsr: Mutation["createUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: UsrInput!) {
         createUsr(model: $model)
@@ -129,7 +129,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdUsr: Mutation["updateByIdUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: UsrInput!) {
         updateByIdUsr(id: $id, model: $model)
@@ -156,7 +156,7 @@ export async function findById(
 ) {
   const data: {
     findByIdUsr: Query["findByIdUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdUsr(id: $id) {
@@ -198,7 +198,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsUsr: Mutation["deleteByIdsUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsUsr(ids: $ids)
@@ -226,7 +226,7 @@ export async function lockByIds(
 ) {
   const data: {
     lockByIdsUsr: Mutation["lockByIdsUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIdsUsr(ids: $ids, is_locked: $is_locked)
@@ -253,7 +253,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsUsr: Mutation["revertByIdsUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsUsr(ids: $ids)
@@ -279,7 +279,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsUsr: Mutation["forceDeleteByIdsUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsUsr(ids: $ids)
@@ -301,7 +301,7 @@ export async function findAllDept(
 ) {
   const data: {
     findAllDept: Query["findAllDept"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
@@ -346,7 +346,7 @@ export async function findAllRole(
 ) {
   const data: {
     findAllRole: Query["findAllRole"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
@@ -396,7 +396,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelUsr: Query["exportExcelUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $sort: [SortInput]) {
         exportExcelUsr(search: $search, sort: $sort)
@@ -425,7 +425,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileUsr: Mutation["importFileUsr"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileUsr(id: $id)

@@ -147,14 +147,36 @@ const queryCacheMap = new Map<string, {
   validationErrors: readonly GraphQLError[],
 }>();
 
+const requestIdMap = new Map<string, number>();
+
 gqlRouter.post("/graphql", async function(ctx) {
-  const body = ctx.request.body();
+  const request = ctx.request;
+  const body = request.body();
   if (body.type !== "json") {
     ctx.response.body = {
       code: 1,
       errMsg: "Unsupported Media Type",
     };
     return;
+  }
+  const requestId = request.headers.get("Request-ID");
+  if (requestId) {
+    if (requestIdMap.has(requestId)) {
+      if (requestIdMap.get(requestId)) {
+        clearTimeout(requestIdMap.get(requestId));
+      }
+      requestIdMap.set(requestId, setTimeout(() => {
+        requestIdMap.delete(requestId);
+      }, 1000 * 60 * 2));
+      ctx.response.body = {
+        code: 1,
+        errMsg: `Request ID is duplicated: ${ requestId }`,
+      };
+      return;
+    }
+    requestIdMap.set(requestId, setTimeout(() => {
+      requestIdMap.delete(requestId);
+    }, 1000 * 60 * 2));
   }
   const context = useContext();
   try {

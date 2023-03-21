@@ -15,15 +15,17 @@ export async function getLoginTenants(
   variables: { host: string },
   opt?: GqlOpt,
 ): Promise<{ id: string, lbl: string }[]> {
-  const query = /* GraphQL */ `
-    query($host: String!) {
-      getLoginTenants(host: $host) {
-        id
-        lbl
+  const data = await query({
+    query: /* GraphQL */ `
+      query($host: String!) {
+        getLoginTenants(host: $host) {
+          id
+          lbl
+        }
       }
-    }
-  `;
-  const data = await gqlQuery({ query, variables }, opt);
+    `,
+    variables,
+  },opt);
   return data?.getLoginTenants;
 }
 
@@ -35,7 +37,7 @@ export async function getLoginLangs(
 ) {
   const res: {
     getLoginLangs: Query["getLoginLangs"],
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         getLoginLangs {
@@ -56,7 +58,7 @@ export async function login(
 ) {
   const res: {
     login: Mutation["login"],
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($username: String!, $password: String!, $tenant_id: String!, $dept_id: String, $lang: String!) {
         login(username: $username, password: $password, tenant_id: $tenant_id, dept_id: $dept_id, lang: $lang) {

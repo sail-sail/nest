@@ -27,7 +27,7 @@ export async function getMenus(
   variables?: { type?: string },
   opt?: GqlOpt,
 ): Promise<any> {
-  const data = await gqlQuery({
+  const data = await query({
     query: /* GraphQL */ `
       query($type: String) {
         menus: getMenus(type: $type) {
@@ -49,7 +49,7 @@ export async function clearCache(
   variables?: { [key: string]: any; },
   opt?: GqlOpt,
 ): Promise<any> {
-  const data = await gqlQuery({
+  const data = await mutation({
     query: /* GraphQL */ `
       mutation {
         clearCache
@@ -65,7 +65,7 @@ export async function getLoginInfo(
 ) {
   const data: {
     getLoginInfo?: GetLoginInfo;
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         getLoginInfo {
@@ -91,7 +91,7 @@ export async function deptLoginSelect(
 ) {
   const data: {
     deptLoginSelect: Mutation["deptLoginSelect"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($dept_id: String!) {
         deptLoginSelect(dept_id: $dept_id)
@@ -113,7 +113,7 @@ export async function selectLang(
 ) {
   const res: {
     selectLang: Mutation["selectLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($lang: String!) {
         selectLang(lang: $lang)

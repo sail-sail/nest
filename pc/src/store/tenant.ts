@@ -1,7 +1,7 @@
 export default defineStore("tenant", function() {
   
   // async function getHost(): Promise<{ host: string }> {
-  //   const rvData = await gqlQuery({
+  //   const rvData = await query({
   //     query: /* GraphQL */ `
   //       query {
   //         getHostTenant {

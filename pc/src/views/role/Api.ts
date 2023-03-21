@@ -27,7 +27,7 @@ export async function findAll(
 ) {
   const data: {
     findAllRole: Query["findAllRole"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
@@ -66,7 +66,7 @@ export async function findCount(
 ) {
   const data: {
     findCountRole: Query["findCountRole"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch) {
         findCountRole(search: $search)
@@ -92,7 +92,7 @@ export async function create(
 ) {
   const data: {
     createRole: Mutation["createRole"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: RoleInput!) {
         createRole(model: $model)
@@ -120,7 +120,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdRole: Mutation["updateByIdRole"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: RoleInput!) {
         updateByIdRole(id: $id, model: $model)
@@ -147,7 +147,7 @@ export async function findById(
 ) {
   const data: {
     findByIdRole: Query["findByIdRole"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdRole(id: $id) {
@@ -181,7 +181,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsRole: Mutation["deleteByIdsRole"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsRole(ids: $ids)
@@ -207,7 +207,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsRole: Mutation["revertByIdsRole"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsRole(ids: $ids)
@@ -233,7 +233,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsRole: Mutation["forceDeleteByIdsRole"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsRole(ids: $ids)
@@ -255,7 +255,7 @@ export async function findAllMenu(
 ) {
   const data: {
     findAllMenu: Query["findAllMenu"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
@@ -305,7 +305,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelRole: Query["exportExcelRole"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: RoleSearch, $sort: [SortInput]) {
         exportExcelRole(search: $search, sort: $sort)
@@ -334,7 +334,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileRole: Mutation["importFileRole"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileRole(id: $id)

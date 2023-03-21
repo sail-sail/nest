@@ -27,7 +27,7 @@ export async function findAll(
 ) {
   const data: {
     findAllOptions: Query["findAllOptions"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOptions(search: $search, page: $page, sort: $sort) {
@@ -76,7 +76,7 @@ export async function findCount(
 ) {
   const data: {
     findCountOptions: Query["findCountOptions"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch) {
         findCountOptions(search: $search)
@@ -102,7 +102,7 @@ export async function create(
 ) {
   const data: {
     createOptions: Mutation["createOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: OptionsInput!) {
         createOptions(model: $model)
@@ -130,7 +130,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdOptions: Mutation["updateByIdOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: OptionsInput!) {
         updateByIdOptions(id: $id, model: $model)
@@ -157,7 +157,7 @@ export async function findById(
 ) {
   const data: {
     findByIdOptions: Query["findByIdOptions"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdOptions(id: $id) {
@@ -201,7 +201,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsOptions: Mutation["deleteByIdsOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsOptions(ids: $ids)
@@ -229,7 +229,7 @@ export async function lockByIds(
 ) {
   const data: {
     lockByIdsOptions: Mutation["lockByIdsOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIdsOptions(ids: $ids, is_locked: $is_locked)
@@ -256,7 +256,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsOptions: Mutation["revertByIdsOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsOptions(ids: $ids)
@@ -282,7 +282,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsOptions: Mutation["forceDeleteByIdsOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsOptions(ids: $ids)
@@ -304,7 +304,7 @@ export async function findAllUsr(
 ) {
   const data: {
     findAllUsr: Query["findAllUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
@@ -354,7 +354,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelOptions: Query["exportExcelOptions"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: OptionsSearch, $sort: [SortInput]) {
         exportExcelOptions(search: $search, sort: $sort)
@@ -383,7 +383,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileOptions: Mutation["importFileOptions"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileOptions(id: $id)
@@ -407,7 +407,7 @@ export async function findLastOrderBy(
 ) {
   const data: {
     findLastOrderByOptions: Query["findLastOrderByOptions"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         findLastOrderByOptions

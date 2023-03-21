@@ -26,7 +26,7 @@ export async function findAll(
 ) {
   const data: {
     findAllLang: Query["findAllLang"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $page: PageInput, $sort: [SortInput]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
@@ -65,7 +65,7 @@ export async function findCount(
 ) {
   const data: {
     findCountLang: Query["findCountLang"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch) {
         findCountLang(search: $search)
@@ -91,7 +91,7 @@ export async function create(
 ) {
   const data: {
     createLang: Mutation["createLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: LangInput!) {
         createLang(model: $model)
@@ -119,7 +119,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdLang: Mutation["updateByIdLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: LangInput!) {
         updateByIdLang(id: $id, model: $model)
@@ -146,7 +146,7 @@ export async function findById(
 ) {
   const data: {
     findByIdLang: Query["findByIdLang"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdLang(id: $id) {
@@ -180,7 +180,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsLang: Mutation["deleteByIdsLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsLang(ids: $ids)
@@ -206,7 +206,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsLang: Mutation["revertByIdsLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsLang(ids: $ids)
@@ -232,7 +232,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsLang: Mutation["forceDeleteByIdsLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsLang(ids: $ids)
@@ -259,7 +259,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelLang: Query["exportExcelLang"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: LangSearch, $sort: [SortInput]) {
         exportExcelLang(search: $search, sort: $sort)
@@ -288,7 +288,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileLang: Mutation["importFileLang"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileLang(id: $id)
@@ -312,7 +312,7 @@ export async function findLastOrderBy(
 ) {
   const data: {
     findLastOrderByLang: Query["findLastOrderByLang"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         findLastOrderByLang

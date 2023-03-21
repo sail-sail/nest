@@ -27,7 +27,7 @@ export async function findAll(
 ) {
   const data: {
     findAllDictbiz_detail: Query["findAllDictbiz_detail"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: Dictbiz_DetailSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDictbiz_detail(search: $search, page: $page, sort: $sort) {
@@ -70,7 +70,7 @@ export async function findCount(
 ) {
   const data: {
     findCountDictbiz_detail: Query["findCountDictbiz_detail"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: Dictbiz_DetailSearch) {
         findCountDictbiz_detail(search: $search)
@@ -96,7 +96,7 @@ export async function create(
 ) {
   const data: {
     createDictbiz_detail: Mutation["createDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: Dictbiz_DetailInput!) {
         createDictbiz_detail(model: $model)
@@ -124,7 +124,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdDictbiz_detail: Mutation["updateByIdDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: Dictbiz_DetailInput!) {
         updateByIdDictbiz_detail(id: $id, model: $model)
@@ -151,7 +151,7 @@ export async function findById(
 ) {
   const data: {
     findByIdDictbiz_detail: Query["findByIdDictbiz_detail"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdDictbiz_detail(id: $id) {
@@ -189,7 +189,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsDictbiz_detail: Mutation["deleteByIdsDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsDictbiz_detail(ids: $ids)
@@ -217,7 +217,7 @@ export async function lockByIds(
 ) {
   const data: {
     lockByIdsDictbiz_detail: Mutation["lockByIdsDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIdsDictbiz_detail(ids: $ids, is_locked: $is_locked)
@@ -244,7 +244,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsDictbiz_detail: Mutation["revertByIdsDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsDictbiz_detail(ids: $ids)
@@ -270,7 +270,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsDictbiz_detail: Mutation["forceDeleteByIdsDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsDictbiz_detail(ids: $ids)
@@ -292,7 +292,7 @@ export async function findAllDictbiz(
 ) {
   const data: {
     findAllDictbiz: Query["findAllDictbiz"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: DictbizSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDictbiz(search: $search, page: $page, sort: $sort) {
@@ -342,7 +342,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelDictbiz_detail: Query["exportExcelDictbiz_detail"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: Dictbiz_DetailSearch, $sort: [SortInput]) {
         exportExcelDictbiz_detail(search: $search, sort: $sort)
@@ -371,7 +371,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileDictbiz_detail: Mutation["importFileDictbiz_detail"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileDictbiz_detail(id: $id)
@@ -395,7 +395,7 @@ export async function findLastOrderBy(
 ) {
   const data: {
     findLastOrderByDictbiz_detail: Query["findLastOrderByDictbiz_detail"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         findLastOrderByDictbiz_detail

@@ -27,7 +27,7 @@ export async function findAll(
 ) {
   const data: {
     findAllOperation_record: Query["findAllOperation_record"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOperation_record(search: $search, page: $page, sort: $sort) {
@@ -72,7 +72,7 @@ export async function findCount(
 ) {
   const data: {
     findCountOperation_record: Query["findCountOperation_record"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch) {
         findCountOperation_record(search: $search)
@@ -98,7 +98,7 @@ export async function findById(
 ) {
   const data: {
     findByIdOperation_record: Query["findByIdOperation_record"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdOperation_record(id: $id) {
@@ -138,7 +138,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsOperation_record: Mutation["deleteByIdsOperation_record"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsOperation_record(ids: $ids)
@@ -164,7 +164,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsOperation_record: Mutation["revertByIdsOperation_record"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsOperation_record(ids: $ids)
@@ -190,7 +190,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsOperation_record: Mutation["forceDeleteByIdsOperation_record"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsOperation_record(ids: $ids)
@@ -212,7 +212,7 @@ export async function findAllUsr(
 ) {
   const data: {
     findAllUsr: Query["findAllUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
@@ -262,7 +262,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelOperation_record: Query["exportExcelOperation_record"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch, $sort: [SortInput]) {
         exportExcelOperation_record(search: $search, sort: $sort)

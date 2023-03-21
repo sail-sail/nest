@@ -144,8 +144,8 @@ export default defineConfig({
             "downloadById",
           ],
           "@/utils/graphql": [
-            "gqlQuery",
-            "_gqlQuery",
+            "query",
+            "mutation",
           ],
           "@/utils/StringUtil": [
             "isEmpty",

@@ -14,7 +14,7 @@ export async function getStatsOss(
   if (ids.length === 0) {
     return [ ];
   }
-  const rvData = await gqlQuery({
+  const rvData = await query({
     query: /* GraphQL */ `
       query($ids: [ID]!) {
         getStatsOss(ids: $ids) {

@@ -1,4 +1,4 @@
-import { uniqueID } from "./StringUtil";
+import { uniqueID, uuid } from "./StringUtil";
 import { request, uniLogin } from "./request";
 import cfg from "./config"
 
@@ -24,13 +24,16 @@ declare global {
   
   interface GqlOpt {
     showErrMsg?: boolean;
-      url?: string;
-      notLoading?: boolean;
-      method?: string;
-      data?: any;
-      reqType?: string;
-      notLogin?: boolean;
-      duration?: number;
+    url?: string;
+    notLoading?: boolean;
+    method?: string;
+    data?: any;
+    reqType?: string;
+    notLogin?: boolean;
+    duration?: number;
+    isMutation?: boolean;
+    "Request-ID"?: string;
+    header?: { [key: string]: any };
   }
 }
 
@@ -78,13 +81,9 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
 }
 
 /**
- * @description: 发送 GraphQL 请求
- * @export
- * @param {GqlArg} gqlArg
- * @param {GqlOpt} opt?
- * @return {Promise<any>} 
+ * 发送 GraphQL 查询请求
  */
- export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const queryInfo = new QueryInfo();
   queryInfo.gqlArg = gqlArg;
   queryInfo.result = new Promise(function(resolve, reject) {
@@ -104,7 +103,7 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
   queryInfos = [ ];
   queryInfosRepeat = [ ];
   if (queryInfos2.length === 1 && queryInfosRepeat2.length === 0) {
-    return await _gqlQuery(gqlArg, opt);
+    return await gqlQuery(gqlArg, opt);
   }
   if (queryInfos2.length > 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
@@ -162,7 +161,7 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
       }
       const newQuery = print(queryBuilderAdd!.document!);
       const newVariables = queryBuilderAdd?.variables as any;
-      const newResult = await _gqlQuery(
+      const newResult = await gqlQuery(
         {
           query: newQuery,
           variables: newVariables,
@@ -245,18 +244,27 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
 }
 
 /**
- *
- * @export
- * @param {GqlArg} gqlArg
- * @param {GqlOpt} config
- *   showErrMsg: boolean 是否显示错误信息, 默认为true
- * @return {Promise<any>} 
+ * 发送 GraphQL 修改请求 
  */
-export async function _gqlQuery(
+export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+  return await gqlQuery(gqlArg, opt);
+}
+
+export async function gqlQuery(
   gqlArg: GqlArg,
   config?: GqlOpt,
 ): Promise<any> {
-  gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
+  // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
+  const header: {
+    "Request-ID"?: string;
+  } = { };
+  if (config && config.isMutation) {
+    let requestId = config["Request-ID"];
+    if (!requestId) {
+      requestId = uuid();
+    }
+    header["Request-ID"] = requestId;
+  }
   let rvData: any = undefined;
   try {
     config = config || { };
@@ -268,6 +276,7 @@ export async function _gqlQuery(
     config.method = "POST";
     config.data = gqlArg;
     config.reqType = "graphql";
+    config.header = header;
     rvData = await request(config);
   } catch (err) {
     if (err && (!config || config.showErrMsg !== false)) {

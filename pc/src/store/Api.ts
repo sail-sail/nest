@@ -12,7 +12,7 @@ export async function getOptionsByLbl(
 ) {
   const res: {
     getOptionsByLbl: Query["getOptionsByLbl"],
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($lbl: String!) {
         getOptionsByLbl(lbl: $lbl) {

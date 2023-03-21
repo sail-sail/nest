@@ -1,4 +1,4 @@
-import { uniqueID } from "./StringUtil";
+import { uniqueID, uuid } from "./StringUtil";
 import { ElMessage } from "element-plus";
 import { axios } from "./axios";
 
@@ -29,10 +29,12 @@ declare global {
   }
   
   interface GqlOpt {
-    showErrMsg?: boolean,
-    duration?: number,
-    timeout?: number,
-    notLoading?: boolean,
+    showErrMsg?: boolean;
+    duration?: number;
+    timeout?: number;
+    notLoading?: boolean;
+    isMutation?: boolean;
+    "Request-ID"?: string;
   }
   
 }
@@ -81,13 +83,9 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
 }
 
 /**
- * @description: 发送 GraphQL 请求
- * @export
- * @param {GqlArg} gqlArg
- * @param {GqlOpt} opt?
- * @return {Promise<any>} 
+ * 发送 GraphQL 查询请求
  */
-export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const queryInfo = new QueryInfo();
   queryInfo.gqlArg = gqlArg;
   queryInfo.result = new Promise(function(resolve, reject) {
@@ -107,7 +105,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   queryInfos = [ ];
   queryInfosRepeat = [ ];
   if (queryInfos2.length === 1 && queryInfosRepeat2.length === 0) {
-    return await _gqlQuery(gqlArg, opt);
+    return await gqlQuery(gqlArg, opt);
   }
   if (queryInfos2.length > 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
@@ -165,7 +163,7 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       }
       const newQuery = print(queryBuilderAdd!.document!);
       const newVariables = queryBuilderAdd?.variables as any;
-      const newResult = await _gqlQuery(
+      const newResult = await gqlQuery(
         {
           query: newQuery,
           variables: newVariables,
@@ -248,18 +246,30 @@ export async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
 }
 
 /**
- * @description: 发送 GraphQL 请求
- * @export
- * @param {GqlArg} gqlArg
- * @param {GqlOpt} opt?
- * @return {Promise<any>} 
+ * 发送 GraphQL 修改请求 
  */
-export async function _gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+  opt = opt || { };
+  opt.isMutation = true;
+  return await gqlQuery(gqlArg, opt);
+}
+
+async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   let duration = 3000;
   if (opt && opt.duration != null) {
     duration = opt.duration;
   }
   // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
+  const headers: {
+    "Request-ID"?: string;
+  } = { };
+  if (opt && opt.isMutation) {
+    let requestId = opt["Request-ID"];
+    if (!requestId) {
+      requestId = uuid();
+    }
+    headers["Request-ID"] = requestId;
+  }
   let rvData: any = undefined;
   try {
     rvData = await axios.request(<any> {
@@ -269,6 +279,7 @@ export async function _gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       timeout: opt?.timeout,
       reqType: "graphql",
       notLoading: opt?.notLoading,
+      headers,
       // showErrMsg: opt?.showErrMsg,
       // duration: opt?.duration,
     });

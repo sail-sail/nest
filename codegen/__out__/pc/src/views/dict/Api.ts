@@ -27,7 +27,7 @@ export async function findAll(
 ) {
   const data: {
     findAllDict: Query["findAllDict"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDict(search: $search, page: $page, sort: $sort) {
@@ -76,7 +76,7 @@ export async function findCount(
 ) {
   const data: {
     findCountDict: Query["findCountDict"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch) {
         findCountDict(search: $search)
@@ -102,7 +102,7 @@ export async function create(
 ) {
   const data: {
     createDict: Mutation["createDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($model: DictInput!) {
         createDict(model: $model)
@@ -130,7 +130,7 @@ export async function updateById(
 ) {
   const data: {
     updateByIdDict: Mutation["updateByIdDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: DictInput!) {
         updateByIdDict(id: $id, model: $model)
@@ -157,7 +157,7 @@ export async function findById(
 ) {
   const data: {
     findByIdDict: Query["findByIdDict"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
         findByIdDict(id: $id) {
@@ -201,7 +201,7 @@ export async function deleteByIds(
 ) {
   const data: {
     deleteByIdsDict: Mutation["deleteByIdsDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         deleteByIdsDict(ids: $ids)
@@ -229,7 +229,7 @@ export async function lockByIds(
 ) {
   const data: {
     lockByIdsDict: Mutation["lockByIdsDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
         lockByIdsDict(ids: $ids, is_locked: $is_locked)
@@ -256,7 +256,7 @@ export async function revertByIds(
 ) {
   const data: {
     revertByIdsDict: Mutation["revertByIdsDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         revertByIdsDict(ids: $ids)
@@ -282,7 +282,7 @@ export async function forceDeleteByIds(
 ) {
   const data: {
     forceDeleteByIdsDict: Mutation["forceDeleteByIdsDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
         forceDeleteByIdsDict(ids: $ids)
@@ -304,7 +304,7 @@ export async function findAllUsr(
 ) {
   const data: {
     findAllUsr: Query["findAllUsr"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
@@ -354,7 +354,7 @@ export async function exportExcel(
 ) {
   const data: {
     exportExcelDict: Query["exportExcelDict"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($search: DictSearch, $sort: [SortInput]) {
         exportExcelDict(search: $search, sort: $sort)
@@ -383,7 +383,7 @@ export async function importFile(
   if (!id) return;
   const data: {
     importFileDict: Mutation["importFileDict"];
-  } = await gqlQuery({
+  } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!) {
         importFileDict(id: $id)
@@ -407,7 +407,7 @@ export async function findLastOrderBy(
 ) {
   const data: {
     findLastOrderByDict: Query["findLastOrderByDict"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query {
         findLastOrderByDict
