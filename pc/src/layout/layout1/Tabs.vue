@@ -1,7 +1,6 @@
 <template>
 <div
   ref="tabs_divRef"
-  class="tabs_div"
 >
   <div
     v-for="(item, i) in tabs"
@@ -78,7 +77,8 @@ const router = useRouter();
 const tabsStore = useTabsStore();
 
 const emit = defineEmits<{
-  (e: "tab_active_line"): void;
+  (e: "refreshActive_line"): void;
+  (e: "refreshScrollVisible"): void;
 }>();
 
 const props = withDefaults(
@@ -154,7 +154,7 @@ function initTabsSort() {
         await tabsStore.moveTab(oldIndex, newIndex);
         await activeTab(tabsStore.tabs[newIndex]);
         if (oldIndex !== newIndex) {
-          emit("tab_active_line")
+          emit("refreshActive_line")
         }
       },
       filter(_, el: HTMLElement) {
@@ -173,12 +173,15 @@ function initTabsSort() {
 onMounted(function() {
   initTabsSort();
 });
+
+useResizeObserver($$(tabs_divRef), function() {
+  emit("refreshScrollVisible");
+});
+
+defineExpose({ tabs_divRef: $$(tabs_divRef) });
 </script>
 
 <style lang="scss" scoped>
-.tabs_div {
-  display: flex;
-}
 .tab_div {
   display: flex;
   position: relative;

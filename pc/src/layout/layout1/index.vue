@@ -54,11 +54,48 @@
         />
       </el-icon>
       <Tabs
-        un-flex="[1_0_0]"
-        un-overflow="x-auto y-hidden"
+        ref="tabsRef"
+        un-flex="~ [1_0_0]"
+        un-overflow-hidden
         :tabs="tabsStore.tabs"
-        @tab_active_line="refreshTab_active_line"
+        @refresh-active_line="refreshTab_active_line"
+        @refresh-scroll-visible="refreshScrollVisible"
       ></Tabs>
+      <div
+        un-flex="~"
+        un-h="full"
+      >
+        <div
+          v-if="scrollLeftVisible || scrollRightVisible"
+          un-flex="~"
+          un-h="full"
+          un-justify-center
+          un-items-center
+        >
+          <el-icon
+            v-if="scrollLeftVisible"
+            un-p="x-1"
+            un-h="full"
+            un-cursor-pointer
+            un-bg="[var(--el-fill-color-lighter)] hover:gray"
+            un-text="hover:white hover:dark:black"
+            @click="scrollLeftClk"
+          >
+            <ElIconArrowLeft />
+          </el-icon>
+          <el-icon
+            v-if="scrollRightVisible"
+            un-p="x-1"
+            un-h="full"
+            un-cursor-pointer
+            un-bg="[var(--el-fill-color-lighter)] hover:gray"
+            un-text="hover:white hover:dark:black"
+            @click="scrollRightClk"
+          >
+            <ElIconArrowRight />
+          </el-icon>
+        </div>
+      </div>
       <div
         un-flex="~"
         un-items-center
@@ -72,6 +109,7 @@
             <span
               un-text="white hover:[var(--el-color-primary)]"
               un-cursor-pointer
+              un-whitespace-nowrap
             >
               {{ loginInfo.dept_idModels.find(item => item.id === loginInfo?.dept_id)?.lbl || '' }}
             </span>
@@ -308,7 +346,64 @@ watch(
 let inited = $ref(false);
 
 let tabs_divRef = $ref<HTMLDivElement>();
+let tabsRef = $ref<InstanceType<typeof Tabs>>();
 let tab_active_lineRef = $ref<HTMLDivElement>();
+
+let scrollLeftVisible = $ref(false);
+let scrollRightVisible = $ref(false);
+
+async function refreshScrollVisible() {
+  const tabs_divRef = tabsRef?.tabs_divRef;
+  if (!tabs_divRef) {
+    return;
+  }
+  const clientWidth = tabs_divRef.clientWidth;
+  const scrollWidth = tabs_divRef.scrollWidth;
+  const scrollLeft = tabs_divRef.scrollLeft;
+  if (scrollLeft === 0) {
+    scrollLeftVisible = false;
+  } else {
+    scrollLeftVisible = true;
+  }
+  if (Math.ceil(scrollLeft + clientWidth) >= scrollWidth) {
+    scrollRightVisible = false;
+  } else {
+    scrollRightVisible = true;
+  }
+  await nextTick();
+  resetTab_active_line();
+}
+
+async function scrollLeftClk() {
+  const tabs_divRef = tabsRef?.tabs_divRef;
+  if (!tabs_divRef) {
+    return;
+  }
+  tabs_divRef.scrollLeft -= 228;
+  await refreshScrollVisible();
+}
+
+async function scrollRightClk() {
+  const tabs_divRef = tabsRef?.tabs_divRef;
+  if (!tabs_divRef) {
+    return;
+  }
+  tabs_divRef.scrollLeft += 228;
+  await refreshScrollVisible();
+}
+
+function resetTab_active_line() {
+  const tab_activeEl = tabs_divRef?.getElementsByClassName("tab_active")[0] as HTMLDivElement | undefined;
+  if (tab_activeEl) {
+    const offsetLeft = tab_activeEl.offsetLeft - (tab_activeEl.parentElement?.scrollLeft || 0);
+    const offsetWidth = tab_activeEl.offsetWidth;
+    if (tab_active_lineRef) {
+      tab_active_lineRef.style.display = "block";
+      tab_active_lineRef.style.left = `${ offsetLeft }px`;
+      tab_active_lineRef.style.width = `${ offsetWidth }px`;
+    }
+  }
+}
 
 function refreshTab_active_line() {
   if (!tab_active_lineRef) {
