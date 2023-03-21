@@ -10,16 +10,9 @@ import {
 import { getEnv } from "/lib/env.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
-export const _internals = {
-  upload,
-  statObject,
-  getObject,
-  deleteObject,
-};
-
 let _bucket: S3Bucket | undefined;
 
-async function getBucket() {
+export async function getBucket() {
   if (_bucket) {
     return _bucket;
   }
@@ -38,7 +31,7 @@ async function getBucket() {
   return _bucket;
 }
 
-async function upload(
+export async function upload(
   file: FormDataFile,
   opt?: {
     notDownloadMulti?: boolean,
@@ -67,13 +60,13 @@ async function upload(
   return id;
 }
 
-async function statObject(id: string) {
+export async function statObject(id: string) {
   const bucket = await getBucket();
   const obj = await bucket.headObject(id);
   return obj;
 }
 
-async function getObject(id: string) {
+export async function getObject(id: string) {
   const bucket = await getBucket();
   const obj = await bucket.getObject(id);
   if (!obj) {
@@ -85,7 +78,7 @@ async function getObject(id: string) {
   };
 }
 
-async function deleteObject(id: string) {
+export async function deleteObject(id: string) {
   const bucket = await getBucket();
   await bucket.deleteObject(id);
 }

@@ -9,16 +9,14 @@ import {
   TMP_PATH,
 } from "/lib/context.ts";
 
-import {
-  _internals as ossServie,
-} from "./oss.service.ts";
+import * as ossServie from "./oss.service.ts";
 
 const router = new Router({
   prefix: "/api/oss/",
 });
 
 router.post("upload", async function(ctx) {
-  const body = await ctx.request.body();
+  const body = ctx.request.body();
   if (body.type !== "form-data") {
     ctx.response.status = 415;
     return;

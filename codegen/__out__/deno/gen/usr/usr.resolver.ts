@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as usrService
-} from "./usr.service.ts";
+import * as usrService from "./usr.service.ts";
 
 import {
   type PageInput,
@@ -20,24 +18,10 @@ import {
   type UsrSearch,
 } from "./usr.model.ts";
 
-export const _internals = {
-  findCountUsr,
-  findAllUsr,
-  exportExcelUsr,
-  findOneUsr,
-  findByIdUsr,
-  createUsr,
-  updateByIdUsr,
-  deleteByIdsUsr,lockByIdsUsr,
-  importFileUsr,
-  revertByIdsUsr,
-  forceDeleteByIdsUsr,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountUsr(
+export async function findCountUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await usrService.findCount(search);
@@ -47,7 +31,7 @@ async function findCountUsr(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllUsr(
+export async function findAllUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -59,7 +43,7 @@ async function findAllUsr(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelUsr(
+export async function exportExcelUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -70,7 +54,7 @@ async function exportExcelUsr(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneUsr(
+export async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await usrService.findOne(search);
@@ -80,7 +64,7 @@ async function findOneUsr(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdUsr(
+export async function findByIdUsr(
   id: string,
 ) {
   const data = await usrService.findById(id);
@@ -90,7 +74,7 @@ async function findByIdUsr(
 /**
  * 创建一条数据
  */
-async function createUsr(
+export async function createUsr(
   model: UsrModel,
 ) {
   const context = useContext();
@@ -103,7 +87,7 @@ async function createUsr(
 /**
  * 根据id修改一条数据
  */
-async function updateByIdUsr(
+export async function updateByIdUsr(
   id: string,
   model: UsrModel,
 ) {
@@ -117,7 +101,7 @@ async function updateByIdUsr(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsUsr(
+export async function deleteByIdsUsr(
   ids: string[],
 ) {
   const context = useContext();
@@ -130,7 +114,7 @@ async function deleteByIdsUsr(
 /**
  * 根据 ids 锁定或者解锁数据
  */
-async function lockByIdsUsr(
+export async function lockByIdsUsr(
   ids: string[],
   is_locked: 0 | 1,
 ) {
@@ -147,7 +131,7 @@ async function lockByIdsUsr(
 /**
  * 导入用户
  */
-async function importFileUsr(
+export async function importFileUsr(
   id: string,
 ) {
   const data = await usrService.importFile(id);
@@ -157,7 +141,7 @@ async function importFileUsr(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsUsr(
+export async function revertByIdsUsr(
   ids: string[],
 ) {
   const context = useContext();
@@ -170,7 +154,7 @@ async function revertByIdsUsr(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsUsr(
+export async function forceDeleteByIdsUsr(
   ids: string[],
 ) {
   const context = useContext();

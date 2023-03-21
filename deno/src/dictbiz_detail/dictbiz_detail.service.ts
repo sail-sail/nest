@@ -1,15 +1,9 @@
-import {
-  _internals as dict_detailDao,
-} from "./dictbiz_detail.dao.ts";
-
-export const _internals = {
-  getDictbiz,
-};
+import * as dict_detailDao from "./dictbiz_detail.dao.ts";
 
 /**
  * 获取 codes 对应的业务字典
  */
-async function getDictbiz(
+export async function getDictbiz(
   codes: string[] = [ ],
 ) {
   return await dict_detailDao.getDictbiz(codes);

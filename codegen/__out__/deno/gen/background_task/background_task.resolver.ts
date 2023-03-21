@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as background_taskService
-} from "./background_task.service.ts";
+import * as background_taskService from "./background_task.service.ts";
 
 import {
   type PageInput,
@@ -20,21 +18,10 @@ import {
   type Background_TaskSearch,
 } from "./background_task.model.ts";
 
-export const _internals = {
-  findCountBackground_task,
-  findAllBackground_task,
-  exportExcelBackground_task,
-  findOneBackground_task,
-  findByIdBackground_task,
-  deleteByIdsBackground_task,
-  revertByIdsBackground_task,
-  forceDeleteByIdsBackground_task,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountBackground_task(
+export async function findCountBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await background_taskService.findCount(search);
@@ -44,7 +31,7 @@ async function findCountBackground_task(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllBackground_task(
+export async function findAllBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -56,7 +43,7 @@ async function findAllBackground_task(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelBackground_task(
+export async function exportExcelBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -67,7 +54,7 @@ async function exportExcelBackground_task(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneBackground_task(
+export async function findOneBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await background_taskService.findOne(search);
@@ -77,7 +64,7 @@ async function findOneBackground_task(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdBackground_task(
+export async function findByIdBackground_task(
   id: string,
 ) {
   const data = await background_taskService.findById(id);
@@ -87,7 +74,7 @@ async function findByIdBackground_task(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsBackground_task(
+export async function deleteByIdsBackground_task(
   ids: string[],
 ) {
   const context = useContext();
@@ -100,7 +87,7 @@ async function deleteByIdsBackground_task(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsBackground_task(
+export async function revertByIdsBackground_task(
   ids: string[],
 ) {
   const context = useContext();
@@ -113,7 +100,7 @@ async function revertByIdsBackground_task(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsBackground_task(
+export async function forceDeleteByIdsBackground_task(
   ids: string[],
 ) {
   const context = useContext();

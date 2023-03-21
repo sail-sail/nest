@@ -157,7 +157,7 @@ async function _handelChg(filenames: string[] = []) {
     // deno-lint-ignore no-explicit-any
     let dao: any;
     try {
-      dao = (await import("file:///" + filename + "?" + Date.now()))._internals;
+      dao = await import("file:///" + filename + "?" + Date.now());
     // deno-lint-ignore no-empty
     } catch (_err) {
     }

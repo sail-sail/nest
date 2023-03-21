@@ -865,8 +865,6 @@ export type Mutation = {
   /** 创建一条数据 */
   createOptions: Scalars['ID'];
   /** 创建一条数据 */
-  createPermit: Scalars['ID'];
-  /** 创建一条数据 */
   createRole: Scalars['ID'];
   /** 创建一条数据 */
   createTenant: Scalars['ID'];
@@ -894,8 +892,6 @@ export type Mutation = {
   deleteByIdsOperation_record: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsOptions: Scalars['Int'];
-  /** 根据 ids 删除数据 */
-  deleteByIdsPermit: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsRole: Scalars['Int'];
   /** 根据 ids 删除数据 */
@@ -927,8 +923,6 @@ export type Mutation = {
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsOptions: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
-  forceDeleteByIdsPermit: Scalars['Int'];
-  /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsRole: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsTenant: Scalars['Int'];
@@ -952,8 +946,6 @@ export type Mutation = {
   importFileMenu?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileOptions?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFilePermit?: Maybe<Scalars['String']>;
   /** 导入文件 */
   importFileRole?: Maybe<Scalars['String']>;
   /** 导入文件 */
@@ -999,8 +991,6 @@ export type Mutation = {
   /** 根据 ids 还原数据 */
   revertByIdsOptions: Scalars['Int'];
   /** 根据 ids 还原数据 */
-  revertByIdsPermit: Scalars['Int'];
-  /** 根据 ids 还原数据 */
   revertByIdsRole: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsTenant: Scalars['Int'];
@@ -1025,8 +1015,6 @@ export type Mutation = {
   updateByIdMenu: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdOptions: Scalars['ID'];
-  /** 根据id修改一条数据 */
-  updateByIdPermit: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdRole: Scalars['ID'];
   /** 根据id修改一条数据 */
@@ -1078,11 +1066,6 @@ export type MutationCreateMenuArgs = {
 
 export type MutationCreateOptionsArgs = {
   model: OptionsInput;
-};
-
-
-export type MutationCreatePermitArgs = {
-  model: PermitInput;
 };
 
 
@@ -1152,11 +1135,6 @@ export type MutationDeleteByIdsOperation_RecordArgs = {
 
 
 export type MutationDeleteByIdsOptionsArgs = {
-  ids: Array<Scalars['ID']>;
-};
-
-
-export type MutationDeleteByIdsPermitArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1236,11 +1214,6 @@ export type MutationForceDeleteByIdsOptionsArgs = {
 };
 
 
-export type MutationForceDeleteByIdsPermitArgs = {
-  ids: Array<Scalars['ID']>;
-};
-
-
 export type MutationForceDeleteByIdsRoleArgs = {
   ids: Array<Scalars['ID']>;
 };
@@ -1297,11 +1270,6 @@ export type MutationImportFileMenuArgs = {
 
 
 export type MutationImportFileOptionsArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type MutationImportFilePermitArgs = {
   id: Scalars['ID'];
 };
 
@@ -1427,11 +1395,6 @@ export type MutationRevertByIdsOptionsArgs = {
 };
 
 
-export type MutationRevertByIdsPermitArgs = {
-  ids: Array<Scalars['ID']>;
-};
-
-
 export type MutationRevertByIdsRoleArgs = {
   ids: Array<Scalars['ID']>;
 };
@@ -1503,12 +1466,6 @@ export type MutationUpdateByIdMenuArgs = {
 export type MutationUpdateByIdOptionsArgs = {
   id: Scalars['ID'];
   model: OptionsInput;
-};
-
-
-export type MutationUpdateByIdPermitArgs = {
-  id: Scalars['ID'];
-  model: PermitInput;
 };
 
 
@@ -1749,52 +1706,6 @@ export type PageInput = {
   pgSize?: InputMaybe<Scalars['Int']>;
 };
 
-export type PermitInput = {
-  /** 菜单名称 */
-  _menu_id?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['ID']>;
-  /** 名称 */
-  lbl?: InputMaybe<Scalars['String']>;
-  /** 菜单ID */
-  menu_id?: InputMaybe<Scalars['ID']>;
-  /** 备注 */
-  rem?: InputMaybe<Scalars['String']>;
-  /** 租户ID */
-  tenant_id?: InputMaybe<Scalars['String']>;
-};
-
-export type PermitModel = {
-  __typename?: 'PermitModel';
-  /** 菜单名称 */
-  _menu_id?: Maybe<Scalars['String']>;
-  /** ID */
-  id: Scalars['ID'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 菜单ID */
-  menu_id: Scalars['ID'];
-  /** 备注 */
-  rem: Scalars['String'];
-};
-
-export type PermitSearch = {
-  _menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** ID */
-  id?: InputMaybe<Scalars['ID']>;
-  /** ID列表 */
-  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  /** 是否已删除 */
-  is_deleted?: InputMaybe<Scalars['Int']>;
-  /** 名称 */
-  lbl?: InputMaybe<Scalars['String']>;
-  lblLike?: InputMaybe<Scalars['String']>;
-  /** 菜单 */
-  menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** 备注 */
-  rem?: InputMaybe<Scalars['String']>;
-  remLike?: InputMaybe<Scalars['String']>;
-};
-
 export type Query = {
   __typename?: 'Query';
   _version?: Maybe<Scalars['String']>;
@@ -1820,8 +1731,6 @@ export type Query = {
   exportExcelOperation_record: Scalars['String'];
   /** 根据搜索条件导出 */
   exportExcelOptions: Scalars['String'];
-  /** 根据搜索条件导出 */
-  exportExcelPermit: Scalars['String'];
   /** 根据搜索条件导出 */
   exportExcelRole: Scalars['String'];
   /** 根据搜索条件导出 */
@@ -1851,8 +1760,6 @@ export type Query = {
   /** 根据搜索条件和分页查找数据 */
   findAllOptions: Array<OptionsModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllPermit: Array<PermitModel>;
-  /** 根据搜索条件和分页查找数据 */
   findAllRole: Array<RoleModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllTenant: Array<TenantModel>;
@@ -1881,8 +1788,6 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdOptions?: Maybe<OptionsModel>;
   /** 根据id查找一条数据 */
-  findByIdPermit?: Maybe<PermitModel>;
-  /** 根据id查找一条数据 */
   findByIdRole?: Maybe<RoleModel>;
   /** 根据id查找一条数据 */
   findByIdTenant?: Maybe<TenantModel>;
@@ -1910,8 +1815,6 @@ export type Query = {
   findCountOperation_record: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountOptions: Scalars['Int'];
-  /** 根据条件查找据数总数 */
-  findCountPermit: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountRole: Scalars['Int'];
   /** 根据条件查找据数总数 */
@@ -1958,8 +1861,6 @@ export type Query = {
   findOneOperation_record?: Maybe<Operation_RecordModel>;
   /** 根据条件查找第一条数据 */
   findOneOptions?: Maybe<OptionsModel>;
-  /** 根据条件查找第一条数据 */
-  findOnePermit?: Maybe<PermitModel>;
   /** 根据条件查找第一条数据 */
   findOneRole?: Maybe<RoleModel>;
   /** 根据条件查找第一条数据 */
@@ -2047,12 +1948,6 @@ export type QueryExportExcelOperation_RecordArgs = {
 
 export type QueryExportExcelOptionsArgs = {
   search?: InputMaybe<OptionsSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
-};
-
-
-export type QueryExportExcelPermitArgs = {
-  search?: InputMaybe<PermitSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2152,13 +2047,6 @@ export type QueryFindAllOptionsArgs = {
 };
 
 
-export type QueryFindAllPermitArgs = {
-  page?: InputMaybe<PageInput>;
-  search?: InputMaybe<PermitSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
-};
-
-
 export type QueryFindAllRoleArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<RoleSearch>;
@@ -2235,11 +2123,6 @@ export type QueryFindByIdOptionsArgs = {
 };
 
 
-export type QueryFindByIdPermitArgs = {
-  id: Scalars['ID'];
-};
-
-
 export type QueryFindByIdRoleArgs = {
   id: Scalars['ID'];
 };
@@ -2310,11 +2193,6 @@ export type QueryFindCountOptionsArgs = {
 };
 
 
-export type QueryFindCountPermitArgs = {
-  search?: InputMaybe<PermitSearch>;
-};
-
-
 export type QueryFindCountRoleArgs = {
   search?: InputMaybe<RoleSearch>;
 };
@@ -2382,11 +2260,6 @@ export type QueryFindOneOperation_RecordArgs = {
 
 export type QueryFindOneOptionsArgs = {
   search?: InputMaybe<OptionsSearch>;
-};
-
-
-export type QueryFindOnePermitArgs = {
-  search?: InputMaybe<PermitSearch>;
 };
 
 

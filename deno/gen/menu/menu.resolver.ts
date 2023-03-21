@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as menuService
-} from "./menu.service.ts";
+import * as menuService from "./menu.service.ts";
 
 import {
   type PageInput,
@@ -20,25 +18,10 @@ import {
   type MenuSearch,
 } from "./menu.model.ts";
 
-export const _internals = {
-  findCountMenu,
-  findAllMenu,
-  exportExcelMenu,
-  findOneMenu,
-  findByIdMenu,
-  createMenu,
-  updateByIdMenu,
-  deleteByIdsMenu,
-  importFileMenu,
-  revertByIdsMenu,
-  forceDeleteByIdsMenu,
-  findLastOrderByMenu,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountMenu(
+export async function findCountMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await menuService.findCount(search);
@@ -48,7 +31,7 @@ async function findCountMenu(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllMenu(
+export async function findAllMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -60,7 +43,7 @@ async function findAllMenu(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelMenu(
+export async function exportExcelMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -71,7 +54,7 @@ async function exportExcelMenu(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneMenu(
+export async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await menuService.findOne(search);
@@ -81,7 +64,7 @@ async function findOneMenu(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdMenu(
+export async function findByIdMenu(
   id: string,
 ) {
   const data = await menuService.findById(id);
@@ -91,7 +74,7 @@ async function findByIdMenu(
 /**
  * 创建一条数据
  */
-async function createMenu(
+export async function createMenu(
   model: MenuModel,
 ) {
   const context = useContext();
@@ -104,7 +87,7 @@ async function createMenu(
 /**
  * 根据id修改一条数据
  */
-async function updateByIdMenu(
+export async function updateByIdMenu(
   id: string,
   model: MenuModel,
 ) {
@@ -118,7 +101,7 @@ async function updateByIdMenu(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsMenu(
+export async function deleteByIdsMenu(
   ids: string[],
 ) {
   const context = useContext();
@@ -131,7 +114,7 @@ async function deleteByIdsMenu(
 /**
  * 导入菜单
  */
-async function importFileMenu(
+export async function importFileMenu(
   id: string,
 ) {
   const data = await menuService.importFile(id);
@@ -141,7 +124,7 @@ async function importFileMenu(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsMenu(
+export async function revertByIdsMenu(
   ids: string[],
 ) {
   const context = useContext();
@@ -154,7 +137,7 @@ async function revertByIdsMenu(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsMenu(
+export async function forceDeleteByIdsMenu(
   ids: string[],
 ) {
   const context = useContext();
@@ -167,7 +150,7 @@ async function forceDeleteByIdsMenu(
 /**
  * 查找 order_by 字段的最大值
  */
-async function findLastOrderByMenu() {
+export async function findLastOrderByMenu() {
   const data = await menuService.findLastOrderBy();
   return data;
 }

@@ -2,21 +2,13 @@ import {
   isEmpty,
 } from "/lib/util/string_util.ts";
 
-import {
-  _internals as authService,
-} from "/lib/auth/auth.service.ts";
+import * as authService from "/lib/auth/auth.service.ts";
 
-import {
-  _internals as usrDao,
-} from "./usr.dao.ts";
+import * as usrDao from "./usr.dao.ts";
 
-import {
-  _internals as usrDaoGen,
-} from "/gen/usr/usr.dao.ts";
+import * as usrDaoGen from "/gen/usr/usr.dao.ts";
 
-import {
- _internals as deptDaoGen,
-} from "/gen/dept/dept.dao.ts";
+import * as deptDaoGen from "/gen/dept/dept.dao.ts";
 
 import {
   type MutationLoginArgs,
@@ -26,12 +18,6 @@ import {
   ns
 } from "/src/i18n/i18n.ts";
 
-export const _internals = {
-  login,
-  getLoginInfo,
-  selectLang,
-};
-
 /**
  * 登录获得 authorization
  * @param {MutationLoginArgs["username"]} username 用户名
@@ -40,7 +26,7 @@ export const _internals = {
  * @param {MutationLoginArgs["dept_id"]} dept_id 部门id
  * @param {MutationLoginArgs["lang"]} lang 语言编码
  */
-async function login(
+export async function login(
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
@@ -87,7 +73,7 @@ async function login(
   };
 }
 
-async function getLoginInfo() {
+export async function getLoginInfo() {
   const authModel = await authService.getAuthModel();
   if (!authModel) {
     throw await ns("未登录");
@@ -122,7 +108,7 @@ async function getLoginInfo() {
  * 切换语言
  * @param {string} lang 语言编码
  **/
-async function selectLang(lang: string) {
+export async function selectLang(lang: string) {
   if (!lang) {
     throw await ns("语言编码不能为空");
   }

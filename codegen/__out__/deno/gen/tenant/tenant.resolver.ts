@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as tenantService
-} from "./tenant.service.ts";
+import * as tenantService from "./tenant.service.ts";
 
 import {
   type PageInput,
@@ -20,25 +18,10 @@ import {
   type TenantSearch,
 } from "./tenant.model.ts";
 
-export const _internals = {
-  findCountTenant,
-  findAllTenant,
-  exportExcelTenant,
-  findOneTenant,
-  findByIdTenant,
-  createTenant,
-  updateByIdTenant,
-  deleteByIdsTenant,
-  importFileTenant,
-  revertByIdsTenant,
-  forceDeleteByIdsTenant,
-  findLastOrderByTenant,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountTenant(
+export async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await tenantService.findCount(search);
@@ -48,7 +31,7 @@ async function findCountTenant(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllTenant(
+export async function findAllTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -60,7 +43,7 @@ async function findAllTenant(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelTenant(
+export async function exportExcelTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -71,7 +54,7 @@ async function exportExcelTenant(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneTenant(
+export async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await tenantService.findOne(search);
@@ -81,7 +64,7 @@ async function findOneTenant(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdTenant(
+export async function findByIdTenant(
   id: string,
 ) {
   const data = await tenantService.findById(id);
@@ -91,7 +74,7 @@ async function findByIdTenant(
 /**
  * 创建一条数据
  */
-async function createTenant(
+export async function createTenant(
   model: TenantModel,
 ) {
   const context = useContext();
@@ -104,7 +87,7 @@ async function createTenant(
 /**
  * 根据id修改一条数据
  */
-async function updateByIdTenant(
+export async function updateByIdTenant(
   id: string,
   model: TenantModel,
 ) {
@@ -118,7 +101,7 @@ async function updateByIdTenant(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsTenant(
+export async function deleteByIdsTenant(
   ids: string[],
 ) {
   const context = useContext();
@@ -131,7 +114,7 @@ async function deleteByIdsTenant(
 /**
  * 导入租户
  */
-async function importFileTenant(
+export async function importFileTenant(
   id: string,
 ) {
   const data = await tenantService.importFile(id);
@@ -141,7 +124,7 @@ async function importFileTenant(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsTenant(
+export async function revertByIdsTenant(
   ids: string[],
 ) {
   const context = useContext();
@@ -154,7 +137,7 @@ async function revertByIdsTenant(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsTenant(
+export async function forceDeleteByIdsTenant(
   ids: string[],
 ) {
   const context = useContext();
@@ -167,7 +150,7 @@ async function forceDeleteByIdsTenant(
 /**
  * 查找 order_by 字段的最大值
  */
-async function findLastOrderByTenant() {
+export async function findLastOrderByTenant() {
   const data = await tenantService.findLastOrderBy();
   return data;
 }

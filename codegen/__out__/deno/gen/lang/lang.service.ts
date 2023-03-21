@@ -5,13 +5,9 @@ import {
   ns,
 } from "/src/i18n/i18n.ts";
 
-import {
-  _internals as authDao
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as tmpfileDao
-} from "/lib/tmpfile/tmpfile.dao.ts";
+import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 import {
   getTemplate,
@@ -32,33 +28,14 @@ import {
   type LangSearch,
 } from "./lang.model.ts";
 
-import {
-  _internals as langDao,
-} from "./lang.dao.ts";
-
-export const _internals = {
-  findCount,
-  findAll,
-  findOne,
-  findById,
-  exist,
-  existById,
-  create,
-  updateById,
-  deleteByIds,
-  revertByIds,
-  forceDeleteByIds,
-  importFile,
-  exportExcel,
-  findLastOrderBy,
-};
+import * as langDao from "./lang.dao.ts";
 
 /**
  * 根据条件查找总数
  * @param {LangSearch} search? 搜索条件
  * @return {Promise<number>}
  */
-async function findCount(
+export async function findCount(
   search?: LangSearch,
 ): Promise<number> {
   search = search || { };
@@ -73,7 +50,7 @@ async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<LangModel[]>} 
  */
-async function findAll(
+export async function findAll(
   search?: LangSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
@@ -87,7 +64,7 @@ async function findAll(
  * 根据条件查找第一条数据
  * @param {LangSearch} search? 搜索条件
  */
-async function findOne(
+export async function findOne(
   search?: LangSearch,
 ) {
   search = search || { };
@@ -99,7 +76,7 @@ async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-async function findById(
+export async function findById(
   id?: string | null,
 ) {
   const data = await langDao.findById(id);
@@ -110,7 +87,7 @@ async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {LangSearch} search? 搜索条件
  */
-async function exist(
+export async function exist(
   search?: LangSearch,
 ) {
   search = search || { };
@@ -122,7 +99,7 @@ async function exist(
  * 根据id查找数据是否存在
  * @param {string} id
  */
-async function existById(
+export async function existById(
   id?: string | null,
 ) {
   const data = await langDao.existById(id);
@@ -134,7 +111,7 @@ async function existById(
  * @param {LangModel} model
  * @return {Promise<string>} id
  */
-async function create(
+export async function create(
   model: LangModel,
 ): Promise<string> {
   const data = await langDao.create(model);
@@ -147,7 +124,7 @@ async function create(
  * @param {LangModel} model
  * @return {Promise<string>}
  */
-async function updateById(
+export async function updateById(
   id: string,
   model: LangModel,
 ): Promise<string> {
@@ -160,7 +137,7 @@ async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function deleteByIds(
+export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await langDao.deleteByIds(ids);
@@ -172,7 +149,7 @@ async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function revertByIds(
+export async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const data = await langDao.revertByIds(ids);
@@ -184,7 +161,7 @@ async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function forceDeleteByIds(
+export async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await langDao.forceDeleteByIds(ids);
@@ -195,7 +172,7 @@ async function forceDeleteByIds(
  * 导入文件
  * @param {string} id
  */
-async function importFile(
+export async function importFile(
   id: string,
 ) {
   const n = initN("/lang");
@@ -245,7 +222,7 @@ async function importFile(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
-async function exportExcel(
+export async function exportExcel(
   search?: LangSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
@@ -272,7 +249,7 @@ async function exportExcel(
  * 查找 order_by 字段的最大值
  * @return {Promise<number>}
  */
-async function findLastOrderBy(
+export async function findLastOrderBy(
 ): Promise<number> {
   const data = await langDao.findLastOrderBy();
   return data;

@@ -5,20 +5,11 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
   type MutationLoginArgs,
 } from "/gen/types.ts";
-
-export const _internals = {
-  findLoginUsr,
-  getDept_idsById,
-  getTenant_idByWx_usr,
-  getTenant_id,
-};
 
 /**
  * 返回当前登录的用户
@@ -26,7 +17,7 @@ export const _internals = {
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
  * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
  */
-async function findLoginUsr(
+export async function findLoginUsr(
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
@@ -52,7 +43,7 @@ async function findLoginUsr(
   return result;
 }
 
-async function getDept_idsById(
+export async function getDept_idsById(
   id: string,
 ) {
   const args = new QueryArgs();
@@ -71,7 +62,7 @@ async function getDept_idsById(
   return (result || [ ]).map((item) => item.dept_id);
 }
 
-async function getTenant_idByWx_usr() {
+export async function getTenant_idByWx_usr() {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
   const authModel = await authDao.getAuthModel(notVerifyToken);
@@ -111,7 +102,7 @@ async function getTenant_idByWx_usr() {
  * 根据用户id获取租户id
  * @return {Promise<string>} 
  */
-async function getTenant_id(
+export async function getTenant_id(
   usr_id?: string,
 ): Promise<string | undefined> {
   const context = useContext();

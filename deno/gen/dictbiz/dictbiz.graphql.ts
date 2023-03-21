@@ -1,8 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import {
-  _internals as dictbizResolver,
-} from "./dictbiz.resolver.ts";
+import * as dictbizResolver from "./dictbiz.resolver.ts";
 
 defineGraphql(dictbizResolver, /* GraphQL */ `
 

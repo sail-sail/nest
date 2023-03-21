@@ -9,16 +9,14 @@ import {
   error,
 } from "/lib/context.ts";
 
-import {
-  _internals as tmpfileServie,
-} from "./tmpfile.service.ts";
+import * as tmpfileServie from "./tmpfile.service.ts";
 
 const router = new Router({
   prefix: "/api/tmpfile/",
 });
 
 router.post("upload", async function(ctx) {
-  const body = await ctx.request.body();
+  const body = ctx.request.body();
   if (body.type !== "form-data") {
     ctx.response.status = 415;
     return;

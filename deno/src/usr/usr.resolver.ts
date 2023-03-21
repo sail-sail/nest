@@ -2,20 +2,12 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  _internals as usrService,
-} from "./usr.service.ts";
+import * as usrService from "./usr.service.ts";
 
 import {
   type MutationLoginArgs,
   type Mutation,
 } from "/gen/types.ts"
-
-export const _internals = {
-  login,
-  getLoginInfo,
-  selectLang,
-};
 
 /**
  * 登录获得 authorization
@@ -25,7 +17,7 @@ export const _internals = {
  * @param {MutationLoginArgs["dept_id"]} dept_id 部门id
  * @param {MutationLoginArgs["lang"]} lang 语言编码
  */
-async function login(
+export async function login(
   username: MutationLoginArgs["username"],
   password: MutationLoginArgs["password"],
   tenant_id: MutationLoginArgs["tenant_id"],
@@ -38,10 +30,10 @@ async function login(
   return await usrService.login(username, password, tenant_id, dept_id, lang);
 }
 
-async function getLoginInfo() {
+export async function getLoginInfo() {
   return await usrService.getLoginInfo();
 }
 
-async function selectLang(lang: string) {
+export async function selectLang(lang: string) {
   return await usrService.selectLang(lang);
 }

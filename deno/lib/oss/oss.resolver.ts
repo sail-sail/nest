@@ -1,12 +1,6 @@
-import {
-  _internals as ossService,
-} from "./oss.service.ts";
+import * as ossService from "./oss.service.ts";
 
-export const _internals = {
-  getStatsOss,
-};
-
-async function getStatsOss(
+export async function getStatsOss(
   ids: string[],
 ) {
   const statInfos = [ ];

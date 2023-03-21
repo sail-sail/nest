@@ -3,13 +3,7 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import {
-  _internals as usrDaoSrc,
-} from "/src/usr/usr.dao.ts";
-
-export const _internals = {
-  getDictbiz,
-};
+import * as usrDaoSrc from "/src/usr/usr.dao.ts";
 
 type DictModel = {
   id: string;
@@ -21,7 +15,7 @@ type DictModel = {
 /**
  * 获取 codes 对应的系统字典
  */
-async function getDictbiz(
+export async function getDictbiz(
   codes: string[] = [ ],
 ) {
   const table = "dictbiz_detail";

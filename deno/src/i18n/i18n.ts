@@ -1,22 +1,14 @@
-import {
-  _internals as langDao,
-} from "/gen/lang/lang.dao.ts";
+import * as langDao from "/gen/lang/lang.dao.ts";
 
-import {
-  _internals as i18nDao,
-} from "/gen/i18n/i18n.dao.ts";
+import * as i18nDao from "/gen/i18n/i18n.dao.ts";
 
-import {
-  _internals as menuDao,
-} from "/gen/menu/menu.dao.ts";
+import * as menuDao from "/gen/menu/menu.dao.ts";
 
 import {
   type I18nModel,
 } from "/gen/i18n/i18n.model.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
   useContext,

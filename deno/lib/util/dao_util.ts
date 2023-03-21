@@ -12,13 +12,9 @@ import {
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as usrDaoSrc,
-} from "/src/usr/usr.dao.ts";
+import * as usrDaoSrc from "/src/usr/usr.dao.ts";
 
 import {
   type AuthModel,

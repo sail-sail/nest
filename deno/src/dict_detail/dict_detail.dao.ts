@@ -3,10 +3,6 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-export const _internals = {
-  getDict,
-};
-
 type DictModel = {
   id: string;
   code: string;
@@ -18,7 +14,7 @@ type DictModel = {
 /**
  * 获取 codes 对应的系统字典
  */
-async function getDict(
+export async function getDict(
   codes: string[] = [ ],
 ) {
   const table = "dict_detail";

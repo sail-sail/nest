@@ -3,17 +3,9 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as usrDao,
-} from "/src/usr/usr.dao.ts";
-
-export const _internals = {
-  getMenus,
-};
+import * as usrDao from "/src/usr/usr.dao.ts";
 
 async function _getMenus(
   type?: string,
@@ -77,7 +69,7 @@ async function _getMenus(
   return result;
 }
 
-async function getMenus(
+export async function getMenus(
   type = "pc",
 ) {
   const allModels = await _getMenus(type);

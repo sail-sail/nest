@@ -1,19 +1,8 @@
 import { AuthModel } from "./auth.constants.ts";
 
-import {
-  _internals as authDao,
-} from "./auth.dao.ts";
+import * as authDao from "./auth.dao.ts";
 
-export const _internals = {
-  getAuthModel,
-  createToken,
-  verifyToken,
-  decodeToken,
-  refreshToken,
-  getPassword,
-};
-
-async function getAuthModel<T extends AuthModel>(
+export async function getAuthModel<T extends AuthModel>(
   notVerifyToken = false,
 ) {
   return await authDao.getAuthModel<T>(notVerifyToken);
@@ -24,7 +13,7 @@ async function getAuthModel<T extends AuthModel>(
  * @param {T} obj 对象
  * @returns Promise<{ expires_in: number, authorization: string }> expires_in: 过期时间
  */
-async function createToken<T extends AuthModel>(obj :T): Promise<{ expires_in: number, authorization: string }> {
+export async function createToken<T extends AuthModel>(obj :T): Promise<{ expires_in: number, authorization: string }> {
   return await authDao.createToken(obj);
 }
 
@@ -33,7 +22,7 @@ async function createToken<T extends AuthModel>(obj :T): Promise<{ expires_in: n
  * @param {string} authorization
  * @returns Promise<T> 验证成功后的对象
  */
-async function verifyToken<T extends AuthModel>(authorization :string): Promise<T> {
+export async function verifyToken<T extends AuthModel>(authorization :string): Promise<T> {
   return await authDao.verifyToken(authorization);
 }
 
@@ -42,7 +31,7 @@ async function verifyToken<T extends AuthModel>(authorization :string): Promise<
  * @param {string} authorization
  * @returns T 验证成功后的对象
  */
-function decodeToken<T extends AuthModel>(authorization :string) :T {
+export function decodeToken<T extends AuthModel>(authorization :string) :T {
   return authDao.decodeToken(authorization);
 }
 
@@ -51,7 +40,7 @@ function decodeToken<T extends AuthModel>(authorization :string) :T {
  * @param  {string} authorization 旧token
  * @returns Promise<{ expires_in: number, authorization: string }> 新tokenInfo
  */
-async function refreshToken(authorization: string) :Promise<{ expires_in: number, authorization: string }> {
+export async function refreshToken(authorization: string) :Promise<{ expires_in: number, authorization: string }> {
   return await authDao.refreshToken(authorization);
 }
 
@@ -60,6 +49,6 @@ async function refreshToken(authorization: string) :Promise<{ expires_in: number
  * @param {string} str
  * @return {string}
  */
-async function getPassword(str: string): Promise<string> {
+export async function getPassword(str: string): Promise<string> {
   return await authDao.getPassword(str);
 }

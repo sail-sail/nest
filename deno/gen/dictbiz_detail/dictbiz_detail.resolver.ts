@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as dictbiz_detailService
-} from "./dictbiz_detail.service.ts";
+import * as dictbiz_detailService from "./dictbiz_detail.service.ts";
 
 import {
   type PageInput,
@@ -20,25 +18,10 @@ import {
   type Dictbiz_DetailSearch,
 } from "./dictbiz_detail.model.ts";
 
-export const _internals = {
-  findCountDictbiz_detail,
-  findAllDictbiz_detail,
-  exportExcelDictbiz_detail,
-  findOneDictbiz_detail,
-  findByIdDictbiz_detail,
-  createDictbiz_detail,
-  updateByIdDictbiz_detail,
-  deleteByIdsDictbiz_detail,lockByIdsDictbiz_detail,
-  importFileDictbiz_detail,
-  revertByIdsDictbiz_detail,
-  forceDeleteByIdsDictbiz_detail,
-  findLastOrderByDictbiz_detail,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountDictbiz_detail(
+export async function findCountDictbiz_detail(
   search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await dictbiz_detailService.findCount(search);
@@ -48,7 +31,7 @@ async function findCountDictbiz_detail(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllDictbiz_detail(
+export async function findAllDictbiz_detail(
   search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -60,7 +43,7 @@ async function findAllDictbiz_detail(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelDictbiz_detail(
+export async function exportExcelDictbiz_detail(
   search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -71,7 +54,7 @@ async function exportExcelDictbiz_detail(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneDictbiz_detail(
+export async function findOneDictbiz_detail(
   search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await dictbiz_detailService.findOne(search);
@@ -81,7 +64,7 @@ async function findOneDictbiz_detail(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdDictbiz_detail(
+export async function findByIdDictbiz_detail(
   id: string,
 ) {
   const data = await dictbiz_detailService.findById(id);
@@ -91,7 +74,7 @@ async function findByIdDictbiz_detail(
 /**
  * 创建一条数据
  */
-async function createDictbiz_detail(
+export async function createDictbiz_detail(
   model: Dictbiz_DetailModel,
 ) {
   const context = useContext();
@@ -104,7 +87,7 @@ async function createDictbiz_detail(
 /**
  * 根据id修改一条数据
  */
-async function updateByIdDictbiz_detail(
+export async function updateByIdDictbiz_detail(
   id: string,
   model: Dictbiz_DetailModel,
 ) {
@@ -118,7 +101,7 @@ async function updateByIdDictbiz_detail(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsDictbiz_detail(
+export async function deleteByIdsDictbiz_detail(
   ids: string[],
 ) {
   const context = useContext();
@@ -131,7 +114,7 @@ async function deleteByIdsDictbiz_detail(
 /**
  * 根据 ids 锁定或者解锁数据
  */
-async function lockByIdsDictbiz_detail(
+export async function lockByIdsDictbiz_detail(
   ids: string[],
   is_locked: 0 | 1,
 ) {
@@ -148,7 +131,7 @@ async function lockByIdsDictbiz_detail(
 /**
  * 导入业务字典明细
  */
-async function importFileDictbiz_detail(
+export async function importFileDictbiz_detail(
   id: string,
 ) {
   const data = await dictbiz_detailService.importFile(id);
@@ -158,7 +141,7 @@ async function importFileDictbiz_detail(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsDictbiz_detail(
+export async function revertByIdsDictbiz_detail(
   ids: string[],
 ) {
   const context = useContext();
@@ -171,7 +154,7 @@ async function revertByIdsDictbiz_detail(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsDictbiz_detail(
+export async function forceDeleteByIdsDictbiz_detail(
   ids: string[],
 ) {
   const context = useContext();
@@ -184,7 +167,7 @@ async function forceDeleteByIdsDictbiz_detail(
 /**
  * 查找 order_by 字段的最大值
  */
-async function findLastOrderByDictbiz_detail() {
+export async function findLastOrderByDictbiz_detail() {
   const data = await dictbiz_detailService.findLastOrderBy();
   return data;
 }

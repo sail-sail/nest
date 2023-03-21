@@ -31,15 +31,11 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
-import {
-  _internals as dictSrcDao,
-} from "/src/dict_detail/dict_detail.dao.ts";
+import * as dictSrcDao from "/src/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
   many2manyUpdate,
@@ -56,26 +52,6 @@ import {
   type TenantModel,
   type TenantSearch,
 } from "./tenant.model.ts";
-
-export const _internals = {
-  findCount,
-  findAll,
-  getUniqueKeys,
-  findByUnique,
-  equalsByUnique,
-  checkByUnique,
-  findOne,
-  findById,
-  exist,
-  existById,
-  create,
-  delCache,
-  updateById,
-  deleteByIds,
-  revertByIds,
-  forceDeleteByIds,
-  findLastOrderBy,
-};
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -208,7 +184,7 @@ function getFromQuery() {
  * @param { TenantSearch } search?
  * @return {Promise<number>}
  */
-async function findCount(
+export async function findCount(
   search?: TenantSearch,
   options?: {
   },
@@ -249,7 +225,7 @@ async function findCount(
  * @param {TenantSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
-async function findAll(
+export async function findAll(
   search?: TenantSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -330,7 +306,7 @@ async function findAll(
 /**
  * 获得表的唯一字段名列表
  */
-async function getUniqueKeys(): Promise<{
+export async function getUniqueKeys(): Promise<{
   uniqueKeys: (keyof TenantModel)[];
   uniqueComments: { [key: string]: string };
 }> {
@@ -348,7 +324,7 @@ async function getUniqueKeys(): Promise<{
  * 通过唯一约束获得一行数据
  * @param {TenantSearch | PartialNull<TenantModel>} search0
  */
-async function findByUnique(
+export async function findByUnique(
   search0: TenantSearch | PartialNull<TenantModel>,
   options?: {
   },
@@ -380,7 +356,7 @@ async function findByUnique(
  * @param {PartialNull<TenantModel>} model
  * @return {boolean}
  */
-async function equalsByUnique(
+export async function equalsByUnique(
   oldModel: TenantModel,
   model: PartialNull<TenantModel>,
 ): Promise<boolean> {
@@ -407,7 +383,7 @@ async function equalsByUnique(
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
-async function checkByUnique(
+export async function checkByUnique(
   model: PartialNull<TenantModel>,
   oldModel: TenantModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
@@ -445,7 +421,7 @@ async function checkByUnique(
  * 根据条件查找第一条数据
  * @param {TenantSearch} search?
  */
-async function findOne(
+export async function findOne(
   search?: TenantSearch,
   options?: {
   },
@@ -465,7 +441,7 @@ async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-async function findById(
+export async function findById(
   id?: string | null,
   options?: {
   },
@@ -481,7 +457,7 @@ async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {TenantSearch} search?
  */
-async function exist(
+export async function exist(
   search?: TenantSearch,
   options?: {
   },
@@ -495,7 +471,7 @@ async function exist(
  * 根据id判断数据是否存在
  * @param {string} id
  */
-async function existById(
+export async function existById(
   id?: string | null,
 ) {
   const table = "tenant";
@@ -543,7 +519,7 @@ async function existById(
  *   update: 更新冲突数据
  * @return {Promise<string>} 
  */
-async function create(
+export async function create(
   model: PartialNull<TenantModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -680,7 +656,7 @@ async function create(
 /**
  * 删除缓存
  */
-async function delCache() {
+export async function delCache() {
   const table = "tenant";
   const method = "delCache";
   
@@ -710,7 +686,7 @@ async function delCache() {
  *   create: 级联插入新数据
  * @return {Promise<string>}
  */
-async function updateById(
+export async function updateById(
   id: string,
   model: PartialNull<TenantModel>,
   options?: {
@@ -852,7 +828,7 @@ async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function deleteByIds(
+export async function deleteByIds(
   ids: string[],
   options?: {
   },
@@ -896,7 +872,7 @@ async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function revertByIds(
+export async function revertByIds(
   ids: string[],
   options?: {
   },
@@ -934,7 +910,7 @@ async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function forceDeleteByIds(
+export async function forceDeleteByIds(
   ids: string[],
   options?: {
   },
@@ -983,7 +959,7 @@ async function forceDeleteByIds(
  * 查找 order_by 字段的最大值
  * @return {Promise<number>}
  */
-async function findLastOrderBy(
+export async function findLastOrderBy(
   options?: {
   },
 ): Promise<number> {

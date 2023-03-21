@@ -1,9 +1,7 @@
 import { extension } from "std/media_types/mod.ts";
 import { getXLSX } from "/deps.ts";
 
-import {
-  _internals as tmpfileDao,
-} from "/lib/tmpfile/tmpfile.dao.ts";
+import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 export async function getTemplate(
   template: string,

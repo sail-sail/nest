@@ -5,13 +5,9 @@ import {
   ns,
 } from "/src/i18n/i18n.ts";
 
-import {
-  _internals as authDao
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as tmpfileDao
-} from "/lib/tmpfile/tmpfile.dao.ts";
+import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 import {
   getTemplate,
@@ -32,33 +28,14 @@ import {
   type UsrSearch,
 } from "./usr.model.ts";
 
-import {
-  _internals as usrDao,
-} from "./usr.dao.ts";
-
-export const _internals = {
-  findCount,
-  findAll,
-  findOne,
-  findById,
-  exist,
-  existById,
-  create,
-  updateById,
-  deleteByIds,
-  lockByIds,
-  revertByIds,
-  forceDeleteByIds,
-  importFile,
-  exportExcel,
-};
+import * as usrDao from "./usr.dao.ts";
 
 /**
  * 根据条件查找总数
  * @param {UsrSearch} search? 搜索条件
  * @return {Promise<number>}
  */
-async function findCount(
+export async function findCount(
   search?: UsrSearch,
 ): Promise<number> {
   search = search || { };
@@ -73,7 +50,7 @@ async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<UsrModel[]>} 
  */
-async function findAll(
+export async function findAll(
   search?: UsrSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
@@ -87,7 +64,7 @@ async function findAll(
  * 根据条件查找第一条数据
  * @param {UsrSearch} search? 搜索条件
  */
-async function findOne(
+export async function findOne(
   search?: UsrSearch,
 ) {
   search = search || { };
@@ -99,7 +76,7 @@ async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-async function findById(
+export async function findById(
   id?: string | null,
 ) {
   const data = await usrDao.findById(id);
@@ -110,7 +87,7 @@ async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {UsrSearch} search? 搜索条件
  */
-async function exist(
+export async function exist(
   search?: UsrSearch,
 ) {
   search = search || { };
@@ -122,7 +99,7 @@ async function exist(
  * 根据id查找数据是否存在
  * @param {string} id
  */
-async function existById(
+export async function existById(
   id?: string | null,
 ) {
   const data = await usrDao.existById(id);
@@ -134,7 +111,7 @@ async function existById(
  * @param {UsrModel} model
  * @return {Promise<string>} id
  */
-async function create(
+export async function create(
   model: UsrModel,
 ): Promise<string> {
   const data = await usrDao.create(model);
@@ -147,7 +124,7 @@ async function create(
  * @param {UsrModel} model
  * @return {Promise<string>}
  */
-async function updateById(
+export async function updateById(
   id: string,
   model: UsrModel,
 ): Promise<string> {
@@ -165,7 +142,7 @@ async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function deleteByIds(
+export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   
@@ -190,7 +167,7 @@ async function deleteByIds(
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
-async function lockByIds(
+export async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
@@ -203,7 +180,7 @@ async function lockByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function revertByIds(
+export async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const data = await usrDao.revertByIds(ids);
@@ -215,7 +192,7 @@ async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function forceDeleteByIds(
+export async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await usrDao.forceDeleteByIds(ids);
@@ -226,7 +203,7 @@ async function forceDeleteByIds(
  * 导入文件
  * @param {string} id
  */
-async function importFile(
+export async function importFile(
   id: string,
 ) {
   const n = initN("/usr");
@@ -279,7 +256,7 @@ async function importFile(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
-async function exportExcel(
+export async function exportExcel(
   search?: UsrSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {

@@ -1,8 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import {
-  _internals as menuResolver,
-} from "./menu.resolver.ts";
+import * as menuResolver from "./menu.resolver.ts";
 
 defineGraphql(menuResolver, /* GraphQL */`
 type GetMenus {

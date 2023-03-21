@@ -1,8 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import {
-  _internals as background_taskResolver,
-} from "./background_task.resolver.ts";
+import * as background_taskResolver from "./background_task.resolver.ts";
 
 defineGraphql(background_taskResolver, /* GraphQL */ `
 

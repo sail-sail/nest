@@ -14,9 +14,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as <#=table#>Service
-} from "./<#=table#>.service.ts";
+import * as <#=table#>Service from "./<#=table#>.service.ts";
 
 import {
   type PageInput,
@@ -28,58 +26,10 @@ import {
   type <#=Table_Up#>Search,
 } from "./<#=table#>.model.ts";
 
-export const _internals = {
-  findCount<#=tableUp#>,
-  findAll<#=tableUp#>,
-  exportExcel<#=tableUp#>,<#
-  if (hasSummary) {
-  #>
-  findSummary<#=tableUp#>,<#
-  }
-  #>
-  findOne<#=tableUp#>,
-  findById<#=tableUp#>,<#
-  if (opts.noAdd !== true) {
-  #>
-  create<#=tableUp#>,<#
-  }
-  #><#
-  if (opts.noEdit !== true) {
-  #>
-  updateById<#=tableUp#>,<#
-  }
-  #><#
-  if (opts.noDelete !== true) {
-  #>
-  deleteByIds<#=tableUp#>,<#
-  }
-  #><#
-    if (hasLocked && opts.noEdit !== true) {
-  #>lockByIds<#=tableUp#>,<#
-  }
-  #><#
-  if (opts.noAdd !== true && opts.noEdit !== true) {
-  #>
-  importFile<#=tableUp#>,<#
-  }
-  #><#
-  if (opts.noDelete !== true) {
-  #>
-  revertByIds<#=tableUp#>,
-  forceDeleteByIds<#=tableUp#>,<#
-  }
-  #><#
-  if (hasOrderBy) {
-  #>
-  findLastOrderBy<#=tableUp#>,<#
-  }
-  #>
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCount<#=tableUp#>(
+export async function findCount<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const data = await <#=table#>Service.findCount(search);
@@ -89,7 +39,7 @@ async function findCount<#=tableUp#>(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAll<#=tableUp#>(
+export async function findAll<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -101,7 +51,7 @@ async function findAll<#=tableUp#>(
 /**
  * 根据搜索条件导出
  */
-async function exportExcel<#=tableUp#>(
+export async function exportExcel<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -114,7 +64,7 @@ if (hasSummary) {
 /**
  * 根据搜索条件查找合计
  */
-async function findSummary<#=tableUp#>(
+export async function findSummary<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const data = await <#=table#>Service.findSummary(search);
@@ -126,7 +76,7 @@ async function findSummary<#=tableUp#>(
 /**
  * 根据条件查找第一条数据
  */
-async function findOne<#=tableUp#>(
+export async function findOne<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const data = await <#=table#>Service.findOne(search);
@@ -136,7 +86,7 @@ async function findOne<#=tableUp#>(
 /**
  * 根据 id 查找一条数据
  */
-async function findById<#=tableUp#>(
+export async function findById<#=tableUp#>(
   id: string,
 ) {
   const data = await <#=table#>Service.findById(id);
@@ -148,7 +98,7 @@ if (opts.noAdd !== true) {
 /**
  * 创建一条数据
  */
-async function create<#=tableUp#>(
+export async function create<#=tableUp#>(
   model: <#=Table_Up#>Model,
 ) {
   const context = useContext();
@@ -165,7 +115,7 @@ if (opts.noEdit !== true) {
 /**
  * 根据id修改一条数据
  */
-async function updateById<#=tableUp#>(
+export async function updateById<#=tableUp#>(
   id: string,
   model: <#=Table_Up#>Model,
 ) {
@@ -183,7 +133,7 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIds<#=tableUp#>(
+export async function deleteByIds<#=tableUp#>(
   ids: string[],
 ) {
   const context = useContext();
@@ -200,7 +150,7 @@ async function deleteByIds<#=tableUp#>(
 /**
  * 根据 ids 锁定或者解锁数据
  */
-async function lockByIds<#=tableUp#>(
+export async function lockByIds<#=tableUp#>(
   ids: string[],
   is_locked: 0 | 1,
 ) {
@@ -221,7 +171,7 @@ if (opts.noAdd !== true && opts.noEdit !== true) {
 /**
  * 导入<#=table_comment#>
  */
-async function importFile<#=tableUp#>(
+export async function importFile<#=tableUp#>(
   id: string,
 ) {
   const data = await <#=table#>Service.importFile(id);
@@ -235,7 +185,7 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 还原数据
  */
-async function revertByIds<#=tableUp#>(
+export async function revertByIds<#=tableUp#>(
   ids: string[],
 ) {
   const context = useContext();
@@ -248,7 +198,7 @@ async function revertByIds<#=tableUp#>(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIds<#=tableUp#>(
+export async function forceDeleteByIds<#=tableUp#>(
   ids: string[],
 ) {
   const context = useContext();
@@ -265,7 +215,7 @@ if (hasOrderBy) {
 /**
  * 查找 order_by 字段的最大值
  */
-async function findLastOrderBy<#=tableUp#>() {
+export async function findLastOrderBy<#=tableUp#>() {
   const data = await <#=table#>Service.findLastOrderBy();
   return data;
 }<#

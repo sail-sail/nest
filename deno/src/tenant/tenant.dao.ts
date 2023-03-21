@@ -8,25 +8,16 @@ import {
   type AuthModel,
 } from "/lib/auth/auth.constants.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as usrDao,
-} from "/src/usr/usr.dao.ts";
-
-export const _internals = {
-  getHostTenant,
-  getLoginTenants,
-};
+import * as usrDao from "/src/usr/usr.dao.ts";
 
 /**
  * 获取当前租户绑定的网址
  * @export getHostTenant
  * @return {{host: string}} 网址
  */
-async function getHostTenant(): Promise<typeof result> {
+export async function getHostTenant(): Promise<typeof result> {
   const { id: usr_id } = await authDao.getAuthModel() as AuthModel;
   const tenant_id = await usrDao.getTenant_id(usr_id);
   const args = new QueryArgs();
@@ -46,7 +37,7 @@ async function getHostTenant(): Promise<typeof result> {
   return result;
 }
 
-async function getLoginTenants(
+export async function getLoginTenants(
   _host: string,
 ): Promise<typeof result> {
   const args = new QueryArgs();

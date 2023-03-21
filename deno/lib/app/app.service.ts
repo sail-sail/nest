@@ -1,13 +1,6 @@
-import {
-  _internals as appDao,
-} from "./app.dao.ts";
+import * as appDao from "./app.dao.ts";
 
-export const _internals = {
-  generateId,
-  clearCache,
-};
-
-function generateId() {
+export function generateId() {
   return appDao.generateId();
 }
 
@@ -15,6 +8,6 @@ function generateId() {
  * 清空缓存
  * @return {Promise<boolean>}
  */
- async function clearCache(): Promise<boolean> {
+export async function clearCache(): Promise<boolean> {
   return await appDao.clearCache();
 }

@@ -5,13 +5,9 @@ import {
   ns,
 } from "/src/i18n/i18n.ts";
 
-import {
-  _internals as authDao
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as tmpfileDao
-} from "/lib/tmpfile/tmpfile.dao.ts";
+import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 import {
   getTemplate,
@@ -32,32 +28,14 @@ import {
   type I18nSearch,
 } from "./i18n.model.ts";
 
-import {
-  _internals as i18nDao,
-} from "./i18n.dao.ts";
-
-export const _internals = {
-  findCount,
-  findAll,
-  findOne,
-  findById,
-  exist,
-  existById,
-  create,
-  updateById,
-  deleteByIds,
-  revertByIds,
-  forceDeleteByIds,
-  importFile,
-  exportExcel,
-};
+import * as i18nDao from "./i18n.dao.ts";
 
 /**
  * 根据条件查找总数
  * @param {I18nSearch} search? 搜索条件
  * @return {Promise<number>}
  */
-async function findCount(
+export async function findCount(
   search?: I18nSearch,
 ): Promise<number> {
   search = search || { };
@@ -72,7 +50,7 @@ async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<I18nModel[]>} 
  */
-async function findAll(
+export async function findAll(
   search?: I18nSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
@@ -86,7 +64,7 @@ async function findAll(
  * 根据条件查找第一条数据
  * @param {I18nSearch} search? 搜索条件
  */
-async function findOne(
+export async function findOne(
   search?: I18nSearch,
 ) {
   search = search || { };
@@ -98,7 +76,7 @@ async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-async function findById(
+export async function findById(
   id?: string | null,
 ) {
   const data = await i18nDao.findById(id);
@@ -109,7 +87,7 @@ async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {I18nSearch} search? 搜索条件
  */
-async function exist(
+export async function exist(
   search?: I18nSearch,
 ) {
   search = search || { };
@@ -121,7 +99,7 @@ async function exist(
  * 根据id查找数据是否存在
  * @param {string} id
  */
-async function existById(
+export async function existById(
   id?: string | null,
 ) {
   const data = await i18nDao.existById(id);
@@ -133,7 +111,7 @@ async function existById(
  * @param {I18nModel} model
  * @return {Promise<string>} id
  */
-async function create(
+export async function create(
   model: I18nModel,
 ): Promise<string> {
   const data = await i18nDao.create(model);
@@ -146,14 +124,14 @@ async function create(
  * @param {I18nModel} model
  * @return {Promise<string>}
  */
-async function updateById(
+export async function updateById(
   id: string,
   model: I18nModel,
 ): Promise<string> {
   const data = await i18nDao.updateById(id, model);
   
   {
-    const optionsSrcDao = (await import("/src/options/options.dao.ts"))._internals;
+    const optionsSrcDao = await import("/src/options/options.dao.ts");
     await optionsSrcDao.updateI18n_version();
   }
   return data;
@@ -164,13 +142,13 @@ async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function deleteByIds(
+export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await i18nDao.deleteByIds(ids);
   
   {
-    const optionsSrcDao = (await import("/src/options/options.dao.ts"))._internals;
+    const optionsSrcDao = await import("/src/options/options.dao.ts");
     await optionsSrcDao.updateI18n_version();
   }
   return data;
@@ -181,7 +159,7 @@ async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function revertByIds(
+export async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const data = await i18nDao.revertByIds(ids);
@@ -193,7 +171,7 @@ async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function forceDeleteByIds(
+export async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await i18nDao.forceDeleteByIds(ids);
@@ -204,7 +182,7 @@ async function forceDeleteByIds(
  * 导入文件
  * @param {string} id
  */
-async function importFile(
+export async function importFile(
   id: string,
 ) {
   const n = initN("/i18n");
@@ -246,7 +224,7 @@ async function importFile(
   }
   
   if (succNum > 0) {
-    const optionsSrcDao = (await import("/src/options/options.dao.ts"))._internals;
+    const optionsSrcDao = await import("/src/options/options.dao.ts");
     await optionsSrcDao.updateI18n_version();
   }
   
@@ -259,7 +237,7 @@ async function importFile(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
-async function exportExcel(
+export async function exportExcel(
   search?: I18nSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {

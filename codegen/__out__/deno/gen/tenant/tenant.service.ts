@@ -5,13 +5,9 @@ import {
   ns,
 } from "/src/i18n/i18n.ts";
 
-import {
-  _internals as authDao
-} from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  _internals as tmpfileDao
-} from "/lib/tmpfile/tmpfile.dao.ts";
+import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
 import {
   getTemplate,
@@ -32,33 +28,14 @@ import {
   type TenantSearch,
 } from "./tenant.model.ts";
 
-import {
-  _internals as tenantDao,
-} from "./tenant.dao.ts";
-
-export const _internals = {
-  findCount,
-  findAll,
-  findOne,
-  findById,
-  exist,
-  existById,
-  create,
-  updateById,
-  deleteByIds,
-  revertByIds,
-  forceDeleteByIds,
-  importFile,
-  exportExcel,
-  findLastOrderBy,
-};
+import * as tenantDao from "./tenant.dao.ts";
 
 /**
  * 根据条件查找总数
  * @param {TenantSearch} search? 搜索条件
  * @return {Promise<number>}
  */
-async function findCount(
+export async function findCount(
   search?: TenantSearch,
 ): Promise<number> {
   search = search || { };
@@ -73,7 +50,7 @@ async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<TenantModel[]>} 
  */
-async function findAll(
+export async function findAll(
   search?: TenantSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
@@ -87,7 +64,7 @@ async function findAll(
  * 根据条件查找第一条数据
  * @param {TenantSearch} search? 搜索条件
  */
-async function findOne(
+export async function findOne(
   search?: TenantSearch,
 ) {
   search = search || { };
@@ -99,7 +76,7 @@ async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-async function findById(
+export async function findById(
   id?: string | null,
 ) {
   const data = await tenantDao.findById(id);
@@ -110,7 +87,7 @@ async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {TenantSearch} search? 搜索条件
  */
-async function exist(
+export async function exist(
   search?: TenantSearch,
 ) {
   search = search || { };
@@ -122,7 +99,7 @@ async function exist(
  * 根据id查找数据是否存在
  * @param {string} id
  */
-async function existById(
+export async function existById(
   id?: string | null,
 ) {
   const data = await tenantDao.existById(id);
@@ -134,7 +111,7 @@ async function existById(
  * @param {TenantModel} model
  * @return {Promise<string>} id
  */
-async function create(
+export async function create(
   model: TenantModel,
 ): Promise<string> {
   const data = await tenantDao.create(model);
@@ -147,7 +124,7 @@ async function create(
  * @param {TenantModel} model
  * @return {Promise<string>}
  */
-async function updateById(
+export async function updateById(
   id: string,
   model: TenantModel,
 ): Promise<string> {
@@ -160,7 +137,7 @@ async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function deleteByIds(
+export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await tenantDao.deleteByIds(ids);
@@ -172,7 +149,7 @@ async function deleteByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function revertByIds(
+export async function revertByIds(
   ids: string[],
 ): Promise<number> {
   const data = await tenantDao.revertByIds(ids);
@@ -184,7 +161,7 @@ async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function forceDeleteByIds(
+export async function forceDeleteByIds(
   ids: string[],
 ): Promise<number> {
   const data = await tenantDao.forceDeleteByIds(ids);
@@ -195,7 +172,7 @@ async function forceDeleteByIds(
  * 导入文件
  * @param {string} id
  */
-async function importFile(
+export async function importFile(
   id: string,
 ) {
   const n = initN("/tenant");
@@ -248,7 +225,7 @@ async function importFile(
  * @param {SortInput|SortInput[]} sort? 排序
  * @return {Promise<string>} 临时文件id
  */
-async function exportExcel(
+export async function exportExcel(
   search?: TenantSearch,
   sort?: SortInput|SortInput[],
 ): Promise<string> {
@@ -275,7 +252,7 @@ async function exportExcel(
  * 查找 order_by 字段的最大值
  * @return {Promise<number>}
  */
-async function findLastOrderBy(
+export async function findLastOrderBy(
 ): Promise<number> {
   const data = await tenantDao.findLastOrderBy();
   return data;

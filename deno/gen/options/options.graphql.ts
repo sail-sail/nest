@@ -1,8 +1,6 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import {
-  _internals as optionsResolver,
-} from "./options.resolver.ts";
+import * as optionsResolver from "./options.resolver.ts";
 
 defineGraphql(optionsResolver, /* GraphQL */ `
 

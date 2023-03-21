@@ -1,17 +1,10 @@
-import {
-  _internals as optionsDao,
-} from "/gen/options/options.dao.ts";
-
-export const _internals = {
-  getOptionsByLbl,
-  updateI18n_version,
-};
+import * as optionsDao from "/gen/options/options.dao.ts";
 
 /**
  * 获取系统选项
  * @param lbl 
  */
-async function getOptionsByLbl(
+export async function getOptionsByLbl(
   lbl: string,
 ) {
   const optionsModels = await optionsDao.findAll({
@@ -23,7 +16,7 @@ async function getOptionsByLbl(
 /**
  * 更新国际化版本号
  **/
-async function updateI18n_version() {
+export async function updateI18n_version() {
   const models = await getOptionsByLbl("国际化版本号");
   const optionsModel = models.find((m) => m.ky === "i18n_version");
   if (!optionsModel) {

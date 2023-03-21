@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as optionsService
-} from "./options.service.ts";
+import * as optionsService from "./options.service.ts";
 
 import {
   type PageInput,
@@ -20,25 +18,10 @@ import {
   type OptionsSearch,
 } from "./options.model.ts";
 
-export const _internals = {
-  findCountOptions,
-  findAllOptions,
-  exportExcelOptions,
-  findOneOptions,
-  findByIdOptions,
-  createOptions,
-  updateByIdOptions,
-  deleteByIdsOptions,lockByIdsOptions,
-  importFileOptions,
-  revertByIdsOptions,
-  forceDeleteByIdsOptions,
-  findLastOrderByOptions,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountOptions(
+export async function findCountOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await optionsService.findCount(search);
@@ -48,7 +31,7 @@ async function findCountOptions(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllOptions(
+export async function findAllOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -60,7 +43,7 @@ async function findAllOptions(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelOptions(
+export async function exportExcelOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -71,7 +54,7 @@ async function exportExcelOptions(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneOptions(
+export async function findOneOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await optionsService.findOne(search);
@@ -81,7 +64,7 @@ async function findOneOptions(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdOptions(
+export async function findByIdOptions(
   id: string,
 ) {
   const data = await optionsService.findById(id);
@@ -91,7 +74,7 @@ async function findByIdOptions(
 /**
  * 创建一条数据
  */
-async function createOptions(
+export async function createOptions(
   model: OptionsModel,
 ) {
   const context = useContext();
@@ -104,7 +87,7 @@ async function createOptions(
 /**
  * 根据id修改一条数据
  */
-async function updateByIdOptions(
+export async function updateByIdOptions(
   id: string,
   model: OptionsModel,
 ) {
@@ -118,7 +101,7 @@ async function updateByIdOptions(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsOptions(
+export async function deleteByIdsOptions(
   ids: string[],
 ) {
   const context = useContext();
@@ -131,7 +114,7 @@ async function deleteByIdsOptions(
 /**
  * 根据 ids 锁定或者解锁数据
  */
-async function lockByIdsOptions(
+export async function lockByIdsOptions(
   ids: string[],
   is_locked: 0 | 1,
 ) {
@@ -148,7 +131,7 @@ async function lockByIdsOptions(
 /**
  * 导入系统选项
  */
-async function importFileOptions(
+export async function importFileOptions(
   id: string,
 ) {
   const data = await optionsService.importFile(id);
@@ -158,7 +141,7 @@ async function importFileOptions(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsOptions(
+export async function revertByIdsOptions(
   ids: string[],
 ) {
   const context = useContext();
@@ -171,7 +154,7 @@ async function revertByIdsOptions(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsOptions(
+export async function forceDeleteByIdsOptions(
   ids: string[],
 ) {
   const context = useContext();
@@ -184,7 +167,7 @@ async function forceDeleteByIdsOptions(
 /**
  * 查找 order_by 字段的最大值
  */
-async function findLastOrderByOptions() {
+export async function findLastOrderByOptions() {
   const data = await optionsService.findLastOrderBy();
   return data;
 }

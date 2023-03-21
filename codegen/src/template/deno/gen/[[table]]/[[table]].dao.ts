@@ -64,43 +64,31 @@ import {
   if (hasDict) {
 #>
 
-import {
-  _internals as dictSrcDao,
-} from "/src/dict_detail/dict_detail.dao.ts";<#
+import * as dictSrcDao from "/src/dict_detail/dict_detail.dao.ts";<#
   }
 #><#
   if (hasDictbiz) {
 #>
 
-import {
-  _internals as dictbizSrcDao,
-} from "/src/dictbiz_detail/dictbiz_detail.dao.ts";<#
+import * as dictbizSrcDao from "/src/dictbiz_detail/dictbiz_detail.dao.ts";<#
   }
 #>
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
-import {
-  _internals as authDao,
-} from "/lib/auth/auth.dao.ts";<#
+import * as authDao from "/lib/auth/auth.dao.ts";<#
 if (hasTenant_id) {
 #>
 
-import {
-  _internals as usrDaoSrc,
-} from "/src/usr/usr.dao.ts";
+import * as usrDaoSrc from "/src/usr/usr.dao.ts";
 
-import {
-  _internals as tenantDao,
-} from "/gen/tenant/tenant.dao.ts";<#
+import * as tenantDao from "/gen/tenant/tenant.dao.ts";<#
 }
 #><#
 if (hasDeptId) {
 #>
 
-import {
-  _internals as deptDao,
-} from "/gen/dept/dept.dao.ts";<#
+import * as deptDao from "/gen/dept/dept.dao.ts";<#
 }
 #>
 
@@ -158,67 +146,11 @@ for (let i = 0; i < columns.length; i++) {
     hasImportDaos.push(foreignTable);
 #>
 
-import {
-  _internals as <#=foreignTable#>Dao,
-} from "/gen/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
+import * as <#=foreignTable#>Dao from "/gen/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
   }
 #><#
 }
 #>
-
-export const _internals = {
-  findCount,
-  findAll,
-  getUniqueKeys,
-  findByUnique,
-  equalsByUnique,
-  checkByUnique,<#
-  if (hasSummary) {
-  #>
-  findSummary,<#
-  }
-  #>
-  findOne,
-  findById,<#
-  if (hasVersion) {
-  #>
-  getVersionById,<#
-  }
-  #>
-  exist,
-  existById,
-  create,<#
-  if (cache) {
-  #>
-  delCache,<#
-  }
-  #><#
-  if (hasTenant_id) {
-  #>
-  updateTenantById,<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  updateDeptById,<#
-  }
-  #>
-  updateById,
-  deleteByIds,<#
-  if (hasLocked) {
-  #>
-  getIs_lockedById,
-  lockByIds,<#
-  }
-  #>
-  revertByIds,
-  forceDeleteByIds,<#
-  if (hasOrderBy) {
-  #>
-  findLastOrderBy,<#
-  }
-  #>
-};
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -437,7 +369,7 @@ function getFromQuery() {
  * @param { <#=Table_Up#>Search } search?
  * @return {Promise<number>}
  */
-async function findCount(
+export async function findCount(
   search?: <#=Table_Up#>Search,
   options?: {
   },
@@ -486,7 +418,7 @@ async function findCount(
  * @param {<#=Table_Up#>Search} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
-async function findAll(
+export async function findAll(
   search?: <#=Table_Up#>Search,
   page?: PageInput,
   sort?: SortInput | SortInput[],
@@ -819,7 +751,7 @@ async function findAll(
 /**
  * 获得表的唯一字段名列表
  */
-async function getUniqueKeys(): Promise<{
+export async function getUniqueKeys(): Promise<{
   uniqueKeys: (keyof <#=Table_Up#>Model)[];
   uniqueComments: { [key: string]: string };
 }> {
@@ -859,7 +791,7 @@ async function getUniqueKeys(): Promise<{
  * 通过唯一约束获得一行数据
  * @param {<#=Table_Up#>Search | PartialNull<<#=Table_Up#>Model>} search0
  */
-async function findByUnique(
+export async function findByUnique(
   search0: <#=Table_Up#>Search | PartialNull<<#=Table_Up#>Model>,
   options?: {
   },
@@ -891,7 +823,7 @@ async function findByUnique(
  * @param {PartialNull<<#=Table_Up#>Model>} model
  * @return {boolean}
  */
-async function equalsByUnique(
+export async function equalsByUnique(
   oldModel: <#=Table_Up#>Model,
   model: PartialNull<<#=Table_Up#>Model>,
 ): Promise<boolean> {
@@ -918,7 +850,7 @@ async function equalsByUnique(
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
-async function checkByUnique(
+export async function checkByUnique(
   model: PartialNull<<#=Table_Up#>Model>,
   oldModel: <#=Table_Up#>Model,
   uniqueType: "ignore" | "throw" | "update" = "throw",
@@ -959,7 +891,7 @@ if (hasSummary) {
  * @param {<#=Table_Up#>Search} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>}
  */
-async function findSummary(
+export async function findSummary(
   search?: <#=Table_Up#>Search,
   options?: {
   },
@@ -1012,7 +944,7 @@ async function findSummary(
  * 根据条件查找第一条数据
  * @param {<#=Table_Up#>Search} search?
  */
-async function findOne(
+export async function findOne(
   search?: <#=Table_Up#>Search,
   options?: {
   },
@@ -1032,7 +964,7 @@ async function findOne(
  * 根据id查找数据
  * @param {string} id
  */
-async function findById(
+export async function findById(
   id?: string | null,
   options?: {
   },
@@ -1048,7 +980,7 @@ async function findById(
  * 根据搜索条件判断数据是否存在
  * @param {<#=Table_Up#>Search} search?
  */
-async function exist(
+export async function exist(
   search?: <#=Table_Up#>Search,
   options?: {
   },
@@ -1062,7 +994,7 @@ async function exist(
  * 根据id判断数据是否存在
  * @param {string} id
  */
-async function existById(
+export async function existById(
   id?: string | null,
 ) {
   const table = "<#=table#>";
@@ -1118,7 +1050,7 @@ async function existById(
  *   update: 更新冲突数据
  * @return {Promise<string>} 
  */
-async function create(
+export async function create(
   model: PartialNull<<#=Table_Up#>Model>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
@@ -1561,7 +1493,7 @@ if (cache) {
 /**
  * 删除缓存
  */
-async function delCache() {
+export async function delCache() {
   const table = "<#=table#>";
   const method = "delCache";
   
@@ -1612,7 +1544,7 @@ if (hasTenant_id) {
  *   }} [options]
  * @return {Promise<number>}
  */
-async function updateTenantById(
+export async function updateTenantById(
   id: string,
   tenant_id: string,
   options?: {
@@ -1660,7 +1592,7 @@ if (hasDeptId) {
  *   }} [options]
  * @return {Promise<number>}
  */
-async function updateDeptById(
+export async function updateDeptById(
   id: string,
   dept_id: string,
   options?: {
@@ -1702,7 +1634,7 @@ if (hasVersion) {
 /**
  * 根据 id 获取版本号
  */
-async function getVersionById(id: string) {
+export async function getVersionById(id: string) {
   const model = await findById(id);
   if (!model) {
     return 0;
@@ -1725,7 +1657,7 @@ async function getVersionById(id: string) {
  *   create: 级联插入新数据
  * @return {Promise<string>}
  */
-async function updateById(
+export async function updateById(
   id: string,
   model: PartialNull<<#=Table_Up#>Model>,
   options?: {
@@ -2123,7 +2055,7 @@ async function updateById(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function deleteByIds(
+export async function deleteByIds(
   ids: string[],
   options?: {
   },
@@ -2184,7 +2116,7 @@ if (hasLocked) {
  * @param {string} id
  * @return {Promise<0 | 1 | undefined>}
  */
-async function getIs_lockedById(
+export async function getIs_lockedById(
   id: string,
   options?: {
   },
@@ -2203,7 +2135,7 @@ async function getIs_lockedById(
  * @param {0 | 1} is_locked
  * @return {Promise<number>}
  */
-async function lockByIds(
+export async function lockByIds(
   ids: string[],
   is_locked: 0 | 1,
   options?: {
@@ -2254,7 +2186,7 @@ async function lockByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function revertByIds(
+export async function revertByIds(
   ids: string[],
   options?: {
   },
@@ -2296,7 +2228,7 @@ async function revertByIds(
  * @param {string[]} ids
  * @return {Promise<number>}
  */
-async function forceDeleteByIds(
+export async function forceDeleteByIds(
   ids: string[],
   options?: {
   },
@@ -2351,7 +2283,7 @@ if (hasOrderBy) {
  * 查找 order_by 字段的最大值
  * @return {Promise<number>}
  */
-async function findLastOrderBy(
+export async function findLastOrderBy(
   options?: {
   },
 ): Promise<number> {

@@ -6,9 +6,7 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  _internals as operation_recordService
-} from "./operation_record.service.ts";
+import * as operation_recordService from "./operation_record.service.ts";
 
 import {
   type PageInput,
@@ -20,21 +18,10 @@ import {
   type Operation_RecordSearch,
 } from "./operation_record.model.ts";
 
-export const _internals = {
-  findCountOperation_record,
-  findAllOperation_record,
-  exportExcelOperation_record,
-  findOneOperation_record,
-  findByIdOperation_record,
-  deleteByIdsOperation_record,
-  revertByIdsOperation_record,
-  forceDeleteByIdsOperation_record,
-};
-
 /**
  * 根据条件查找据数总数
  */
-async function findCountOperation_record(
+export async function findCountOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await operation_recordService.findCount(search);
@@ -44,7 +31,7 @@ async function findCountOperation_record(
 /**
  * 根据搜索条件和分页查找数据
  */
-async function findAllOperation_record(
+export async function findAllOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -56,7 +43,7 @@ async function findAllOperation_record(
 /**
  * 根据搜索条件导出
  */
-async function exportExcelOperation_record(
+export async function exportExcelOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -67,7 +54,7 @@ async function exportExcelOperation_record(
 /**
  * 根据条件查找第一条数据
  */
-async function findOneOperation_record(
+export async function findOneOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
   const data = await operation_recordService.findOne(search);
@@ -77,7 +64,7 @@ async function findOneOperation_record(
 /**
  * 根据 id 查找一条数据
  */
-async function findByIdOperation_record(
+export async function findByIdOperation_record(
   id: string,
 ) {
   const data = await operation_recordService.findById(id);
@@ -87,7 +74,7 @@ async function findByIdOperation_record(
 /**
  * 根据 ids 删除数据
  */
-async function deleteByIdsOperation_record(
+export async function deleteByIdsOperation_record(
   ids: string[],
 ) {
   const context = useContext();
@@ -100,7 +87,7 @@ async function deleteByIdsOperation_record(
 /**
  * 根据 ids 还原数据
  */
-async function revertByIdsOperation_record(
+export async function revertByIdsOperation_record(
   ids: string[],
 ) {
   const context = useContext();
@@ -113,7 +100,7 @@ async function revertByIdsOperation_record(
 /**
  * 根据 ids 彻底删除数据
  */
-async function forceDeleteByIdsOperation_record(
+export async function forceDeleteByIdsOperation_record(
   ids: string[],
 ) {
   const context = useContext();
