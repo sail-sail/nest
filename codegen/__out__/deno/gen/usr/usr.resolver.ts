@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as usrService from "./usr.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await usrService.findCount(search);
+  const { findCount } = await import("./usr.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllUsr(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await usrService.findAll(search, page, sort);
+  const { findAll } = await import("./usr.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await usrService.exportExcel(search, sort);
+  const { exportExcel } = await import("./usr.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelUsr(
 export async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await usrService.findOne(search);
+  const { findOne } = await import("./usr.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneUsr(
 export async function findByIdUsr(
   id: string,
 ) {
-  const data = await usrService.findById(id);
+  const { findById } = await import("./usr.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await usrService.create(model);
+  const { create } = await import("./usr.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await usrService.updateById(id, model);
+  const { updateById } = await import("./usr.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await usrService.deleteByIds(ids);
+  const { deleteByIds } = await import("./usr.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -124,7 +130,8 @@ export async function lockByIdsUsr(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const data = await usrService.lockByIds(ids, is_locked);
+  const { lockByIds } = await import("./usr.service.ts");
+  const data = await lockByIds(ids, is_locked);
   return data;
 }
 
@@ -134,7 +141,8 @@ export async function lockByIdsUsr(
 export async function importFileUsr(
   id: string,
 ) {
-  const data = await usrService.importFile(id);
+  const { importFile } = await import("./usr.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -147,7 +155,8 @@ export async function revertByIdsUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await usrService.revertByIds(ids);
+  const { revertByIds } = await import("./usr.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -160,6 +169,7 @@ export async function forceDeleteByIdsUsr(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await usrService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./usr.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }

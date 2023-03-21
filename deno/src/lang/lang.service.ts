@@ -2,13 +2,14 @@ import {
   type Query,
 } from "/gen/types.ts";
 
-import * as langDao from "/gen/lang/lang.dao.ts";
-
 /**
  * 获取语言列表
  */
 export async function getLoginLangs(): Promise<Query["getLoginLangs"]> {
-  const langs = await langDao.findAll({
+  const {
+    findAll: findAllLang,
+  } = await import("/gen/lang/lang.dao.ts");
+  const langs = await findAllLang({
     is_enabled: [ 1 ],
   });
   return langs;

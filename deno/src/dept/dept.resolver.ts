@@ -1,8 +1,9 @@
-import * as deptService from "./dept.service.ts";
-
 export async function deptLoginSelect(
   dept_id: string,
 ) {
-  const token = await deptService.deptLoginSelect(dept_id);
+  const {
+    deptLoginSelect,
+  } = await import("./dept.service.ts");
+  const token = await deptLoginSelect(dept_id);
   return token;
 }

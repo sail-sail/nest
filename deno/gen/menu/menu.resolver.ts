@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as menuService from "./menu.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await menuService.findCount(search);
+  const { findCount } = await import("./menu.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllMenu(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await menuService.findAll(search, page, sort);
+  const { findAll } = await import("./menu.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await menuService.exportExcel(search, sort);
+  const { exportExcel } = await import("./menu.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelMenu(
 export async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await menuService.findOne(search);
+  const { findOne } = await import("./menu.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneMenu(
 export async function findByIdMenu(
   id: string,
 ) {
-  const data = await menuService.findById(id);
+  const { findById } = await import("./menu.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await menuService.create(model);
+  const { create } = await import("./menu.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await menuService.updateById(id, model);
+  const { updateById } = await import("./menu.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await menuService.deleteByIds(ids);
+  const { deleteByIds } = await import("./menu.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -117,7 +123,8 @@ export async function deleteByIdsMenu(
 export async function importFileMenu(
   id: string,
 ) {
-  const data = await menuService.importFile(id);
+  const { importFile } = await import("./menu.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -130,7 +137,8 @@ export async function revertByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await menuService.revertByIds(ids);
+  const { revertByIds } = await import("./menu.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -143,7 +151,8 @@ export async function forceDeleteByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await menuService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./menu.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -151,6 +160,7 @@ export async function forceDeleteByIdsMenu(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByMenu() {
-  const data = await menuService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./menu.service.ts");
+  const data = findLastOrderBy();
   return data;
 }

@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as tenantService from "./tenant.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await tenantService.findCount(search);
+  const { findCount } = await import("./tenant.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllTenant(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await tenantService.findAll(search, page, sort);
+  const { findAll } = await import("./tenant.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await tenantService.exportExcel(search, sort);
+  const { exportExcel } = await import("./tenant.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelTenant(
 export async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await tenantService.findOne(search);
+  const { findOne } = await import("./tenant.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneTenant(
 export async function findByIdTenant(
   id: string,
 ) {
-  const data = await tenantService.findById(id);
+  const { findById } = await import("./tenant.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await tenantService.create(model);
+  const { create } = await import("./tenant.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await tenantService.updateById(id, model);
+  const { updateById } = await import("./tenant.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await tenantService.deleteByIds(ids);
+  const { deleteByIds } = await import("./tenant.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -117,7 +123,8 @@ export async function deleteByIdsTenant(
 export async function importFileTenant(
   id: string,
 ) {
-  const data = await tenantService.importFile(id);
+  const { importFile } = await import("./tenant.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -130,7 +137,8 @@ export async function revertByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await tenantService.revertByIds(ids);
+  const { revertByIds } = await import("./tenant.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -143,7 +151,8 @@ export async function forceDeleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await tenantService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./tenant.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -151,6 +160,7 @@ export async function forceDeleteByIdsTenant(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByTenant() {
-  const data = await tenantService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./tenant.service.ts");
+  const data = findLastOrderBy();
   return data;
 }

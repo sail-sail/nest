@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as roleService from "./role.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await roleService.findCount(search);
+  const { findCount } = await import("./role.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllRole(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await roleService.findAll(search, page, sort);
+  const { findAll } = await import("./role.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await roleService.exportExcel(search, sort);
+  const { exportExcel } = await import("./role.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelRole(
 export async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await roleService.findOne(search);
+  const { findOne } = await import("./role.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneRole(
 export async function findByIdRole(
   id: string,
 ) {
-  const data = await roleService.findById(id);
+  const { findById } = await import("./role.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createRole(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await roleService.create(model);
+  const { create } = await import("./role.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdRole(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await roleService.updateById(id, model);
+  const { updateById } = await import("./role.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await roleService.deleteByIds(ids);
+  const { deleteByIds } = await import("./role.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -117,7 +123,8 @@ export async function deleteByIdsRole(
 export async function importFileRole(
   id: string,
 ) {
-  const data = await roleService.importFile(id);
+  const { importFile } = await import("./role.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -130,7 +137,8 @@ export async function revertByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await roleService.revertByIds(ids);
+  const { revertByIds } = await import("./role.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -143,6 +151,7 @@ export async function forceDeleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await roleService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./role.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }

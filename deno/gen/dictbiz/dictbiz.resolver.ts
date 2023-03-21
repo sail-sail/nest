@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as dictbizService from "./dictbiz.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await dictbizService.findCount(search);
+  const { findCount } = await import("./dictbiz.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllDictbiz(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await dictbizService.findAll(search, page, sort);
+  const { findAll } = await import("./dictbiz.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await dictbizService.exportExcel(search, sort);
+  const { exportExcel } = await import("./dictbiz.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelDictbiz(
 export async function findOneDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await dictbizService.findOne(search);
+  const { findOne } = await import("./dictbiz.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneDictbiz(
 export async function findByIdDictbiz(
   id: string,
 ) {
-  const data = await dictbizService.findById(id);
+  const { findById } = await import("./dictbiz.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictbizService.create(model);
+  const { create } = await import("./dictbiz.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictbizService.updateById(id, model);
+  const { updateById } = await import("./dictbiz.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictbizService.deleteByIds(ids);
+  const { deleteByIds } = await import("./dictbiz.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -124,7 +130,8 @@ export async function lockByIdsDictbiz(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDictbiz.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const data = await dictbizService.lockByIds(ids, is_locked);
+  const { lockByIds } = await import("./dictbiz.service.ts");
+  const data = await lockByIds(ids, is_locked);
   return data;
 }
 
@@ -134,7 +141,8 @@ export async function lockByIdsDictbiz(
 export async function importFileDictbiz(
   id: string,
 ) {
-  const data = await dictbizService.importFile(id);
+  const { importFile } = await import("./dictbiz.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -147,7 +155,8 @@ export async function revertByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictbizService.revertByIds(ids);
+  const { revertByIds } = await import("./dictbiz.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -160,7 +169,8 @@ export async function forceDeleteByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictbizService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./dictbiz.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -168,6 +178,7 @@ export async function forceDeleteByIdsDictbiz(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByDictbiz() {
-  const data = await dictbizService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./dictbiz.service.ts");
+  const data = findLastOrderBy();
   return data;
 }

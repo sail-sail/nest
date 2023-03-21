@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as optionsService from "./options.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await optionsService.findCount(search);
+  const { findCount } = await import("./options.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllOptions(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await optionsService.findAll(search, page, sort);
+  const { findAll } = await import("./options.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await optionsService.exportExcel(search, sort);
+  const { exportExcel } = await import("./options.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelOptions(
 export async function findOneOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await optionsService.findOne(search);
+  const { findOne } = await import("./options.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneOptions(
 export async function findByIdOptions(
   id: string,
 ) {
-  const data = await optionsService.findById(id);
+  const { findById } = await import("./options.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await optionsService.create(model);
+  const { create } = await import("./options.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await optionsService.updateById(id, model);
+  const { updateById } = await import("./options.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await optionsService.deleteByIds(ids);
+  const { deleteByIds } = await import("./options.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -124,7 +130,8 @@ export async function lockByIdsOptions(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsOptions.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const data = await optionsService.lockByIds(ids, is_locked);
+  const { lockByIds } = await import("./options.service.ts");
+  const data = await lockByIds(ids, is_locked);
   return data;
 }
 
@@ -134,7 +141,8 @@ export async function lockByIdsOptions(
 export async function importFileOptions(
   id: string,
 ) {
-  const data = await optionsService.importFile(id);
+  const { importFile } = await import("./options.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -147,7 +155,8 @@ export async function revertByIdsOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await optionsService.revertByIds(ids);
+  const { revertByIds } = await import("./options.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -160,7 +169,8 @@ export async function forceDeleteByIdsOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await optionsService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./options.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -168,6 +178,7 @@ export async function forceDeleteByIdsOptions(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByOptions() {
-  const data = await optionsService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./options.service.ts");
+  const data = findLastOrderBy();
   return data;
 }

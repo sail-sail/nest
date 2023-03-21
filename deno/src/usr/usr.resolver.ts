@@ -2,8 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import * as usrService from "./usr.service.ts";
-
 import {
   type MutationLoginArgs,
   type Mutation,
@@ -24,16 +22,25 @@ export async function login(
   dept_id: MutationLoginArgs["dept_id"],
   lang: MutationLoginArgs["lang"],
 ): Promise<Mutation["login"]> {
+  const {
+    login,
+  } = await import("./usr.service.ts");
   const context = useContext();
   
   context.is_tran = true;
-  return await usrService.login(username, password, tenant_id, dept_id, lang);
+  return await login(username, password, tenant_id, dept_id, lang);
 }
 
 export async function getLoginInfo() {
-  return await usrService.getLoginInfo();
+  const {
+    getLoginInfo,
+  } = await import("./usr.service.ts");
+  return await getLoginInfo();
 }
 
 export async function selectLang(lang: string) {
-  return await usrService.selectLang(lang);
+  const {
+    selectLang,
+  } = await import("./usr.service.ts");
+  return await selectLang(lang);
 }

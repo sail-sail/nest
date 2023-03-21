@@ -10,7 +10,7 @@ export async function getDict(
   }
   const data: {
     getDict: Query["getDict"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($codes: [String!]!) {
         getDict(codes: $codes) {
@@ -38,7 +38,7 @@ export async function getDictbiz(
   }
   const data: {
     getDictbiz: Query["getDictbiz"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($codes: [String!]!) {
         getDictbiz(codes: $codes) {

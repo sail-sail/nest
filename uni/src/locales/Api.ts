@@ -13,7 +13,7 @@ export async function n0(
 ) {
   const res: {
     n: Query["n"];
-  } = await gqlQuery({
+  } = await query({
     query: /* GraphQL */ `
       query($langCode: String!, $routePath: String, $code: String!) {
         n(langCode: $langCode, routePath: $routePath, code: $code)

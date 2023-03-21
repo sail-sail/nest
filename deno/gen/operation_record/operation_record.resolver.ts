@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as operation_recordService from "./operation_record.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await operation_recordService.findCount(search);
+  const { findCount } = await import("./operation_record.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllOperation_record(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await operation_recordService.findAll(search, page, sort);
+  const { findAll } = await import("./operation_record.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await operation_recordService.exportExcel(search, sort);
+  const { exportExcel } = await import("./operation_record.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelOperation_record(
 export async function findOneOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await operation_recordService.findOne(search);
+  const { findOne } = await import("./operation_record.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneOperation_record(
 export async function findByIdOperation_record(
   id: string,
 ) {
-  const data = await operation_recordService.findById(id);
+  const { findById } = await import("./operation_record.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function deleteByIdsOperation_record(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await operation_recordService.deleteByIds(ids);
+  const { deleteByIds } = await import("./operation_record.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -93,7 +97,8 @@ export async function revertByIdsOperation_record(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await operation_recordService.revertByIds(ids);
+  const { revertByIds } = await import("./operation_record.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -106,6 +111,7 @@ export async function forceDeleteByIdsOperation_record(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await operation_recordService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./operation_record.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }

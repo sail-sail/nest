@@ -1,5 +1,3 @@
-import * as tenantService from "./tenant.service.ts";
-
 import {
   type QueryGetLoginTenantsArgs,
 } from "/gen/types.ts";
@@ -7,6 +5,9 @@ import {
 export async function getLoginTenants(
   host: QueryGetLoginTenantsArgs["host"],
 ) {
-  const data = await tenantService.getLoginTenants(host);
+  const {
+    getLoginTenants,
+  } = await import("./tenant.service.ts");
+  const data = await getLoginTenants(host);
   return data;
 }

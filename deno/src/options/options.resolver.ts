@@ -1,7 +1,9 @@
-import * as optionsService from "./options.service.ts";
 
 export async function getOptionsByLbl(
   lbl: string,
 ) {
-  return await optionsService.getOptionsByLbl(lbl);
+  const {
+    getOptionsByLbl,
+  } = await import("./options.service.ts");
+  return await getOptionsByLbl(lbl);
 }

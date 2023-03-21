@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as langService from "./lang.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await langService.findCount(search);
+  const { findCount } = await import("./lang.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllLang(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await langService.findAll(search, page, sort);
+  const { findAll } = await import("./lang.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await langService.exportExcel(search, sort);
+  const { exportExcel } = await import("./lang.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelLang(
 export async function findOneLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await langService.findOne(search);
+  const { findOne } = await import("./lang.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneLang(
 export async function findByIdLang(
   id: string,
 ) {
-  const data = await langService.findById(id);
+  const { findById } = await import("./lang.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createLang(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await langService.create(model);
+  const { create } = await import("./lang.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdLang(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await langService.updateById(id, model);
+  const { updateById } = await import("./lang.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await langService.deleteByIds(ids);
+  const { deleteByIds } = await import("./lang.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -117,7 +123,8 @@ export async function deleteByIdsLang(
 export async function importFileLang(
   id: string,
 ) {
-  const data = await langService.importFile(id);
+  const { importFile } = await import("./lang.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -130,7 +137,8 @@ export async function revertByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await langService.revertByIds(ids);
+  const { revertByIds } = await import("./lang.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -143,7 +151,8 @@ export async function forceDeleteByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await langService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./lang.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -151,6 +160,7 @@ export async function forceDeleteByIdsLang(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByLang() {
-  const data = await langService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./lang.service.ts");
+  const data = findLastOrderBy();
   return data;
 }

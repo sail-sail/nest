@@ -1,9 +1,3 @@
-import * as langDao from "/gen/lang/lang.dao.ts";
-
-import * as i18nDao from "/gen/i18n/i18n.dao.ts";
-
-import * as menuDao from "/gen/menu/menu.dao.ts";
-
 import {
   type I18nModel,
 } from "/gen/i18n/i18n.model.ts";
@@ -61,14 +55,24 @@ export async function nLang(
   // deno-lint-ignore no-explicit-any
   ...args: any[]
 ) {
+  const {
+    findOne: findOneLang,
+  } = await import("/gen/lang/lang.dao.ts");
+  const {
+    findOne: findOneI18n,
+  } = await import("/gen/i18n/i18n.dao.ts");
+  const {
+    findOne: findOneMenu,
+  } = await import("/gen/menu/menu.dao.ts");
+  
   let i18nLbl = code;
-  const langModel = await langDao.findOne({
+  const langModel = await findOneLang({
     code: langCode,
     is_enabled: [ 1 ],
   });
   let menu_id: string | undefined;
   if (routePath != null) {
-    const menuModel = await menuDao.findOne({
+    const menuModel = await findOneMenu({
       route_path: routePath,
       is_enabled: [ 1 ],
     });
@@ -77,20 +81,20 @@ export async function nLang(
   if (langModel) {
     let i18nModel: I18nModel | undefined
     if (menu_id) {
-      i18nModel = await i18nDao.findOne({
+      i18nModel = await findOneI18n({
         lang_id: [ langModel.id ],
         menu_id: [ menu_id ],
         code,
       });
       if (!i18nModel) {
-        i18nModel = await i18nDao.findOne({
+        i18nModel = await findOneI18n({
           lang_id: [ langModel.id ],
           menu_id: null,
           code,
         });
       }
     } else {
-      i18nModel = await i18nDao.findOne({
+      i18nModel = await findOneI18n({
         lang_id: [ langModel.id ],
         menu_id: null,
         code,

@@ -14,8 +14,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as <#=table#>Service from "./<#=table#>.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -32,7 +30,8 @@ import {
 export async function findCount<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
-  const data = await <#=table#>Service.findCount(search);
+  const { findCount } = await import("./<#=table#>.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -44,7 +43,8 @@ export async function findAll<#=tableUp#>(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await <#=table#>Service.findAll(search, page, sort);
+  const { findAll } = await import("./<#=table#>.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -55,7 +55,8 @@ export async function exportExcel<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await <#=table#>Service.exportExcel(search, sort);
+  const { exportExcel } = await import("./<#=table#>.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }<#
 if (hasSummary) {
@@ -67,7 +68,8 @@ if (hasSummary) {
 export async function findSummary<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
-  const data = await <#=table#>Service.findSummary(search);
+  const { findSummary } = await import("./<#=table#>.service.ts");
+  const data = await findSummary(search);
   return data;
 }<#
 }
@@ -79,7 +81,8 @@ export async function findSummary<#=tableUp#>(
 export async function findOne<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
-  const data = await <#=table#>Service.findOne(search);
+  const { findOne } = await import("./<#=table#>.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -89,7 +92,8 @@ export async function findOne<#=tableUp#>(
 export async function findById<#=tableUp#>(
   id: string,
 ) {
-  const data = await <#=table#>Service.findById(id);
+  const { findById } = await import("./<#=table#>.service.ts");
+  const data = await findById(id);
   return data;
 }<#
 if (opts.noAdd !== true) {
@@ -104,7 +108,8 @@ export async function create<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await <#=table#>Service.create(model);
+  const { create } = await import("./<#=table#>.service.ts");
+  const data = await create(model);
   return data;
 }<#
 }
@@ -122,7 +127,8 @@ export async function updateById<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await <#=table#>Service.updateById(id, model);
+  const { updateById } = await import("./<#=table#>.service.ts");
+  const data = await updateById(id, model);
   return data;
 }<#
 }
@@ -139,7 +145,8 @@ export async function deleteByIds<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await <#=table#>Service.deleteByIds(ids);
+  const { deleteByIds } = await import("./<#=table#>.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }<#
 }
@@ -160,7 +167,8 @@ export async function lockByIds<#=tableUp#>(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=tableUp#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const data = await <#=table#>Service.lockByIds(ids, is_locked);
+  const { lockByIds } = await import("./<#=table#>.service.ts");
+  const data = await lockByIds(ids, is_locked);
   return data;
 }<#
   }
@@ -174,7 +182,8 @@ if (opts.noAdd !== true && opts.noEdit !== true) {
 export async function importFile<#=tableUp#>(
   id: string,
 ) {
-  const data = await <#=table#>Service.importFile(id);
+  const { importFile } = await import("./<#=table#>.service.ts");
+  const data = await importFile(id);
   return data;
 }<#
 }
@@ -191,7 +200,8 @@ export async function revertByIds<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await <#=table#>Service.revertByIds(ids);
+  const { revertByIds } = await import("./<#=table#>.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -204,7 +214,8 @@ export async function forceDeleteByIds<#=tableUp#>(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await <#=table#>Service.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./<#=table#>.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }<#
 }
@@ -216,7 +227,8 @@ if (hasOrderBy) {
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderBy<#=tableUp#>() {
-  const data = await <#=table#>Service.findLastOrderBy();
+  const { findLastOrderBy } = await import("./<#=table#>.service.ts");
+  const data = findLastOrderBy();
   return data;
 }<#
 }

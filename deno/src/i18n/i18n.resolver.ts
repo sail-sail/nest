@@ -2,10 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  nLang,
-} from "./i18n.ts";
-
 /**
  * 国际化
  * @param langCode 语言编码, 例如: zh-CN
@@ -17,6 +13,7 @@ export async function n(
   routePath: string | null,
   code: string,
 ) {
+  const { nLang } = await import("./i18n.ts");
   const context = useContext();
   context.notVerifyToken = true;
   return await nLang(langCode, routePath, code);

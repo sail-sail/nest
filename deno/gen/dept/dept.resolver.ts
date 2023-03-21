@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as deptService from "./dept.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await deptService.findCount(search);
+  const { findCount } = await import("./dept.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllDept(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await deptService.findAll(search, page, sort);
+  const { findAll } = await import("./dept.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await deptService.exportExcel(search, sort);
+  const { exportExcel } = await import("./dept.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelDept(
 export async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await deptService.findOne(search);
+  const { findOne } = await import("./dept.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneDept(
 export async function findByIdDept(
   id: string,
 ) {
-  const data = await deptService.findById(id);
+  const { findById } = await import("./dept.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createDept(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await deptService.create(model);
+  const { create } = await import("./dept.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdDept(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await deptService.updateById(id, model);
+  const { updateById } = await import("./dept.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await deptService.deleteByIds(ids);
+  const { deleteByIds } = await import("./dept.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -124,7 +130,8 @@ export async function lockByIdsDept(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDept.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const data = await deptService.lockByIds(ids, is_locked);
+  const { lockByIds } = await import("./dept.service.ts");
+  const data = await lockByIds(ids, is_locked);
   return data;
 }
 
@@ -134,7 +141,8 @@ export async function lockByIdsDept(
 export async function importFileDept(
   id: string,
 ) {
-  const data = await deptService.importFile(id);
+  const { importFile } = await import("./dept.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -147,7 +155,8 @@ export async function revertByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await deptService.revertByIds(ids);
+  const { revertByIds } = await import("./dept.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -160,7 +169,8 @@ export async function forceDeleteByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await deptService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./dept.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -168,6 +178,7 @@ export async function forceDeleteByIdsDept(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByDept() {
-  const data = await deptService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./dept.service.ts");
+  const data = findLastOrderBy();
   return data;
 }

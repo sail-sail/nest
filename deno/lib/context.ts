@@ -56,8 +56,6 @@ export type ExecuteResult = {
   iterator?: any;
 }
 
-configLogger({ enable: false });
-
 /** 临时文件路径 */
 export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
 
@@ -125,6 +123,8 @@ export async function getClient(): Promise<Client> {
     const debug = await getEnv("database_debug");
     if (debug === "true") {
       configLogger({ enable: true });
+    } else {
+      configLogger({ enable: false });
     }
     opt.dateStrings = true;
     opt.bigNumberStrings = true;

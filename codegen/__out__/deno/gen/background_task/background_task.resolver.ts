@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as background_taskService from "./background_task.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await background_taskService.findCount(search);
+  const { findCount } = await import("./background_task.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllBackground_task(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await background_taskService.findAll(search, page, sort);
+  const { findAll } = await import("./background_task.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await background_taskService.exportExcel(search, sort);
+  const { exportExcel } = await import("./background_task.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelBackground_task(
 export async function findOneBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await background_taskService.findOne(search);
+  const { findOne } = await import("./background_task.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneBackground_task(
 export async function findByIdBackground_task(
   id: string,
 ) {
-  const data = await background_taskService.findById(id);
+  const { findById } = await import("./background_task.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function deleteByIdsBackground_task(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await background_taskService.deleteByIds(ids);
+  const { deleteByIds } = await import("./background_task.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -93,7 +97,8 @@ export async function revertByIdsBackground_task(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await background_taskService.revertByIds(ids);
+  const { revertByIds } = await import("./background_task.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -106,6 +111,7 @@ export async function forceDeleteByIdsBackground_task(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await background_taskService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./background_task.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }

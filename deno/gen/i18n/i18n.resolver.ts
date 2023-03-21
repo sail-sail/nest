@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as i18nService from "./i18n.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountI18n(
   search?: I18nSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await i18nService.findCount(search);
+  const { findCount } = await import("./i18n.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllI18n(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await i18nService.findAll(search, page, sort);
+  const { findAll } = await import("./i18n.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelI18n(
   search?: I18nSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await i18nService.exportExcel(search, sort);
+  const { exportExcel } = await import("./i18n.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelI18n(
 export async function findOneI18n(
   search?: I18nSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await i18nService.findOne(search);
+  const { findOne } = await import("./i18n.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneI18n(
 export async function findByIdI18n(
   id: string,
 ) {
-  const data = await i18nService.findById(id);
+  const { findById } = await import("./i18n.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createI18n(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await i18nService.create(model);
+  const { create } = await import("./i18n.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdI18n(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await i18nService.updateById(id, model);
+  const { updateById } = await import("./i18n.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsI18n(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await i18nService.deleteByIds(ids);
+  const { deleteByIds } = await import("./i18n.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -117,7 +123,8 @@ export async function deleteByIdsI18n(
 export async function importFileI18n(
   id: string,
 ) {
-  const data = await i18nService.importFile(id);
+  const { importFile } = await import("./i18n.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -130,7 +137,8 @@ export async function revertByIdsI18n(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await i18nService.revertByIds(ids);
+  const { revertByIds } = await import("./i18n.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -143,6 +151,7 @@ export async function forceDeleteByIdsI18n(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await i18nService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./i18n.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }

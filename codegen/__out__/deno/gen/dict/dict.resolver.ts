@@ -6,8 +6,6 @@ import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import * as dictService from "./dict.service.ts";
-
 import {
   type PageInput,
   type SortInput,
@@ -24,7 +22,8 @@ import {
 export async function findCountDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await dictService.findCount(search);
+  const { findCount } = await import("./dict.service.ts");
+  const data = await findCount(search);
   return data;
 }
 
@@ -36,7 +35,8 @@ export async function findAllDict(
   page?: PageInput,
   sort?: SortInput[],
 ) {
-  const data = await dictService.findAll(search, page, sort);
+  const { findAll } = await import("./dict.service.ts");
+  const data = await findAll(search, page, sort);
   return data;
 }
 
@@ -47,7 +47,8 @@ export async function exportExcelDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
-  const data = await dictService.exportExcel(search, sort);
+  const { exportExcel } = await import("./dict.service.ts");
+  const data = await exportExcel(search, sort);
   return data;
 }
 
@@ -57,7 +58,8 @@ export async function exportExcelDict(
 export async function findOneDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
 ) {
-  const data = await dictService.findOne(search);
+  const { findOne } = await import("./dict.service.ts");
+  const data = await findOne(search);
   return data;
 }
 
@@ -67,7 +69,8 @@ export async function findOneDict(
 export async function findByIdDict(
   id: string,
 ) {
-  const data = await dictService.findById(id);
+  const { findById } = await import("./dict.service.ts");
+  const data = await findById(id);
   return data;
 }
 
@@ -80,7 +83,8 @@ export async function createDict(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictService.create(model);
+  const { create } = await import("./dict.service.ts");
+  const data = await create(model);
   return data;
 }
 
@@ -94,7 +98,8 @@ export async function updateByIdDict(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictService.updateById(id, model);
+  const { updateById } = await import("./dict.service.ts");
+  const data = await updateById(id, model);
   return data;
 }
 
@@ -107,7 +112,8 @@ export async function deleteByIdsDict(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictService.deleteByIds(ids);
+  const { deleteByIds } = await import("./dict.service.ts");
+  const data = await deleteByIds(ids);
   return data;
 }
 
@@ -124,7 +130,8 @@ export async function lockByIdsDict(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDict.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const data = await dictService.lockByIds(ids, is_locked);
+  const { lockByIds } = await import("./dict.service.ts");
+  const data = await lockByIds(ids, is_locked);
   return data;
 }
 
@@ -134,7 +141,8 @@ export async function lockByIdsDict(
 export async function importFileDict(
   id: string,
 ) {
-  const data = await dictService.importFile(id);
+  const { importFile } = await import("./dict.service.ts");
+  const data = await importFile(id);
   return data;
 }
 
@@ -147,7 +155,8 @@ export async function revertByIdsDict(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictService.revertByIds(ids);
+  const { revertByIds } = await import("./dict.service.ts");
+  const data = await revertByIds(ids);
   return data;
 }
 
@@ -160,7 +169,8 @@ export async function forceDeleteByIdsDict(
   const context = useContext();
   
   context.is_tran = true;
-  const data = await dictService.forceDeleteByIds(ids);
+  const { forceDeleteByIds } = await import("./dict.service.ts");
+  const data = await forceDeleteByIds(ids);
   return data;
 }
 
@@ -168,6 +178,7 @@ export async function forceDeleteByIdsDict(
  * 查找 order_by 字段的最大值
  */
 export async function findLastOrderByDict() {
-  const data = await dictService.findLastOrderBy();
+  const { findLastOrderBy } = await import("./dict.service.ts");
+  const data = findLastOrderBy();
   return data;
 }
