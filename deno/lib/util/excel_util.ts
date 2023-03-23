@@ -3,51 +3,41 @@ import { getXLSX } from "/deps.ts";
 
 import * as tmpfileDao from "/lib/tmpfile/tmpfile.dao.ts";
 
-export async function getTemplate(
-  template: string,
-): Promise<Uint8Array | undefined> {
-  // deno-lint-ignore no-explicit-any
-  if ((window as any).process.env.NODE_ENV === "development") {
-    const tmpFn = async function(dir: string): Promise<Uint8Array | undefined> {
-      for await (const dirEntry of Deno.readDir(dir)) {
-        if (dirEntry.name === "node_modules" || dirEntry.name === "test") {
-          continue;
-        }
-        if (dirEntry.isDirectory) {
-          const buffer = await tmpFn(dir + "/" + dirEntry.name);
-          if (buffer) {
-            return buffer;
-          }
-        } else if (dirEntry.isFile) {
-          if (!dirEntry.name.endsWith(".xlsx") && !dirEntry.name.endsWith(".xlsm")) {
-            continue;
-          }
-          if (dirEntry.name === template) {
-            const buffer: Uint8Array = await Deno.readFile(dir + "/" + dirEntry.name);
-            return buffer;
-          }
-        }
-      }
-    }
-    let buffer = await tmpFn(Deno.cwd()+"/gen/");
-    if (!buffer) {
-      buffer = await tmpFn(Deno.cwd()+"/src/");
-    }
-    return buffer;
-  }
-  const buffer = await Deno.readFile(`${ Deno.cwd() }/excel_template/${ template }`);
-  return buffer;
-}
-
-// const unImportKeys = [
-//   "tenant_id",
-//   "create_usr_id",
-//   "create_time",
-//   "update_usr_id",
-//   "update_time",
-//   "is_deleted",
-//   "delete_time",
-// ];
+// export async function getTemplate(
+//   template: string,
+// ): Promise<Uint8Array | undefined> {
+//   // deno-lint-ignore no-explicit-any
+//   if ((window as any).process.env.NODE_ENV === "development") {
+//     const tmpFn = async function(dir: string): Promise<Uint8Array | undefined> {
+//       for await (const dirEntry of Deno.readDir(dir)) {
+//         if (dirEntry.name === "node_modules" || dirEntry.name === "test") {
+//           continue;
+//         }
+//         if (dirEntry.isDirectory) {
+//           const buffer = await tmpFn(dir + "/" + dirEntry.name);
+//           if (buffer) {
+//             return buffer;
+//           }
+//         } else if (dirEntry.isFile) {
+//           if (!dirEntry.name.endsWith(".xlsx") && !dirEntry.name.endsWith(".xlsm")) {
+//             continue;
+//           }
+//           if (dirEntry.name === template) {
+//             const buffer: Uint8Array = await Deno.readFile(dir + "/" + dirEntry.name);
+//             return buffer;
+//           }
+//         }
+//       }
+//     }
+//     let buffer = await tmpFn(Deno.cwd()+"/gen/");
+//     if (!buffer) {
+//       buffer = await tmpFn(Deno.cwd()+"/src/");
+//     }
+//     return buffer;
+//   }
+//   const buffer = await Deno.readFile(`${ Deno.cwd() }/excel_template/${ template }`);
+//   return buffer;
+// }
 
 /**
  * 第一行作为表头, 获得文件数据
