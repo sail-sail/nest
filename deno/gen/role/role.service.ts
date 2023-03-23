@@ -57,9 +57,10 @@ export async function findAll(
  */
 export async function findOne(
   search?: RoleSearch,
+  sort?: SortInput|SortInput[],
 ) {
   search = search || { };
-  const data = await roleDao.findOne(search);
+  const data = await roleDao.findOne(search, sort);
   return data;
 }
 

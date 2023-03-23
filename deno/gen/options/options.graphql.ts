@@ -158,7 +158,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsOptions: OptionsFieldComment!
   "根据条件查找第一条数据"
-  findOneOptions(search: OptionsSearch): OptionsModel
+  findOneOptions(search: OptionsSearch, sort: [SortInput]): OptionsModel
   "根据id查找一条数据"
   findByIdOptions(id: ID!): OptionsModel
   "查找order_by字段的最大值"

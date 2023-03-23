@@ -54,9 +54,10 @@ export async function getFieldCommentsDept() {
  */
 export async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./dept.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

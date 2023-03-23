@@ -54,9 +54,10 @@ export async function getFieldCommentsRole() {
  */
 export async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./role.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

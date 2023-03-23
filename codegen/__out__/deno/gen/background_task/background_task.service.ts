@@ -67,6 +67,7 @@ export async function findAll(
  */
 export async function findOne(
   search?: Background_TaskSearch,
+  sort?: SortInput|SortInput[],
 ) {
   search = search || { };
   
@@ -74,7 +75,7 @@ export async function findOne(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const data = await background_taskDao.findOne(search);
+  const data = await background_taskDao.findOne(search, sort);
   return data;
 }
 

@@ -147,7 +147,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsDept: DeptFieldComment!
   "根据条件查找第一条数据"
-  findOneDept(search: DeptSearch): DeptModel
+  findOneDept(search: DeptSearch, sort: [SortInput]): DeptModel
   "根据id查找一条数据"
   findByIdDept(id: ID!): DeptModel
   "查找order_by字段的最大值"

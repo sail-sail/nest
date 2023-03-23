@@ -77,9 +77,10 @@ export async function findSummary<#=tableUp#>(
  */
 export async function findOne<#=tableUp#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./<#=table#>.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

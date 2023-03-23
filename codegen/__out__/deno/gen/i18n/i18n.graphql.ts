@@ -89,7 +89,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsI18n: I18nFieldComment!
   "根据条件查找第一条数据"
-  findOneI18n(search: I18nSearch): I18nModel
+  findOneI18n(search: I18nSearch, sort: [SortInput]): I18nModel
   "根据id查找一条数据"
   findByIdI18n(id: ID!): I18nModel
 }

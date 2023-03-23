@@ -115,7 +115,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsBackground_task: Background_TaskFieldComment!
   "根据条件查找第一条数据"
-  findOneBackground_task(search: Background_TaskSearch): Background_TaskModel
+  findOneBackground_task(search: Background_TaskSearch, sort: [SortInput]): Background_TaskModel
   "根据id查找一条数据"
   findByIdBackground_task(id: ID!): Background_TaskModel
 }

@@ -110,7 +110,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsDictbiz_detail: Dictbiz_DetailFieldComment!
   "根据条件查找第一条数据"
-  findOneDictbiz_detail(search: Dictbiz_DetailSearch): Dictbiz_DetailModel
+  findOneDictbiz_detail(search: Dictbiz_DetailSearch, sort: [SortInput]): Dictbiz_DetailModel
   "根据id查找一条数据"
   findByIdDictbiz_detail(id: ID!): Dictbiz_DetailModel
   "查找order_by字段的最大值"

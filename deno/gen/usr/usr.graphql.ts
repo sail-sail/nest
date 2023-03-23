@@ -136,7 +136,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsUsr: UsrFieldComment!
   "根据条件查找第一条数据"
-  findOneUsr(search: UsrSearch): UsrModel
+  findOneUsr(search: UsrSearch, sort: [SortInput]): UsrModel
   "根据id查找一条数据"
   findByIdUsr(id: ID!): UsrModel
 }

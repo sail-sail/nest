@@ -54,9 +54,10 @@ export async function getFieldCommentsDictbiz() {
  */
 export async function findOneDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./dictbiz.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

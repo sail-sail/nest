@@ -155,7 +155,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsDict: DictFieldComment!
   "根据条件查找第一条数据"
-  findOneDict(search: DictSearch): DictModel
+  findOneDict(search: DictSearch, sort: [SortInput]): DictModel
   "根据id查找一条数据"
   findByIdDict(id: ID!): DictModel
   "查找order_by字段的最大值"

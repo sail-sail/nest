@@ -54,9 +54,10 @@ export async function getFieldCommentsUsr() {
  */
 export async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./usr.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

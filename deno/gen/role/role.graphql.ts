@@ -79,7 +79,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsRole: RoleFieldComment!
   "根据条件查找第一条数据"
-  findOneRole(search: RoleSearch): RoleModel
+  findOneRole(search: RoleSearch, sort: [SortInput]): RoleModel
   "根据id查找一条数据"
   findByIdRole(id: ID!): RoleModel
 }

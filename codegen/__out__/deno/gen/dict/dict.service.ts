@@ -57,9 +57,10 @@ export async function findAll(
  */
 export async function findOne(
   search?: DictSearch,
+  sort?: SortInput|SortInput[],
 ) {
   search = search || { };
-  const data = await dictDao.findOne(search);
+  const data = await dictDao.findOne(search, sort);
   return data;
 }
 

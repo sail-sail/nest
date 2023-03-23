@@ -54,9 +54,10 @@ export async function getFieldCommentsBackground_task() {
  */
 export async function findOneBackground_task(
   search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./background_task.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

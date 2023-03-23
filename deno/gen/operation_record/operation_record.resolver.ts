@@ -54,9 +54,10 @@ export async function getFieldCommentsOperation_record() {
  */
 export async function findOneOperation_record(
   search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./operation_record.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

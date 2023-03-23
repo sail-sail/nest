@@ -54,9 +54,10 @@ export async function getFieldCommentsI18n() {
  */
 export async function findOneI18n(
   search?: I18nSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./i18n.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

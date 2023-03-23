@@ -57,9 +57,10 @@ export async function findAll(
  */
 export async function findOne(
   search?: LangSearch,
+  sort?: SortInput|SortInput[],
 ) {
   search = search || { };
-  const data = await langDao.findOne(search);
+  const data = await langDao.findOne(search, sort);
   return data;
 }
 

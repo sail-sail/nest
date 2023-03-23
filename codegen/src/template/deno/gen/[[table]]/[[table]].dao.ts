@@ -838,7 +838,7 @@ export async function findByUnique(
   },
 ) {
   if (search0.id) {
-    const model = await findOne({ id: search0.id }, options);
+    const model = await findOne({ id: search0.id });
     return model;
   }
   const { uniqueKeys } = await getUniqueKeys();
@@ -854,7 +854,7 @@ export async function findByUnique(
     }
     (search as any)[key] = val;
   }
-  const model = await findOne(search, options);
+  const model = await findOne(search);
   return model;
 }
 
@@ -987,6 +987,7 @@ export async function findSummary(
  */
 export async function findOne(
   search?: <#=Table_Up#>Search,
+  sort?: SortInput | SortInput[],
   options?: {
   },
 ) {
@@ -994,7 +995,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const result = await findAll(search, page, undefined, options);
+  const result = await findAll(search, page, sort);
   if (result && result.length > 0) {
     return result[0];
   }
@@ -1013,7 +1014,7 @@ export async function findById(
   if (isEmpty(id)) {
     return;
   }
-  const model = await findOne({ id }, options);
+  const model = await findOne({ id });
   return model;
 }
 
@@ -1026,7 +1027,7 @@ export async function exist(
   options?: {
   },
 ) {
-  const model = await findOne(search, options);
+  const model = await findOne(search);
   const exist = !!model;
   return exist;
 }

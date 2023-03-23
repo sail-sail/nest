@@ -132,7 +132,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsOperation_record: Operation_RecordFieldComment!
   "根据条件查找第一条数据"
-  findOneOperation_record(search: Operation_RecordSearch): Operation_RecordModel
+  findOneOperation_record(search: Operation_RecordSearch, sort: [SortInput]): Operation_RecordModel
   "根据id查找一条数据"
   findByIdOperation_record(id: ID!): Operation_RecordModel
 }

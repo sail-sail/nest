@@ -57,9 +57,10 @@ export async function findAll(
  */
 export async function findOne(
   search?: MenuSearch,
+  sort?: SortInput|SortInput[],
 ) {
   search = search || { };
-  const data = await menuDao.findOne(search);
+  const data = await menuDao.findOne(search, sort);
   return data;
 }
 

@@ -54,9 +54,10 @@ export async function getFieldCommentsMenu() {
  */
 export async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./menu.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

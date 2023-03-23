@@ -54,9 +54,10 @@ export async function getFieldCommentsLang() {
  */
 export async function findOneLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./lang.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

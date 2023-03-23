@@ -119,7 +119,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsMenu: MenuFieldComment!
   "根据条件查找第一条数据"
-  findOneMenu(search: MenuSearch): MenuModel
+  findOneMenu(search: MenuSearch, sort: [SortInput]): MenuModel
   "根据id查找一条数据"
   findByIdMenu(id: ID!): MenuModel
   "查找order_by字段的最大值"

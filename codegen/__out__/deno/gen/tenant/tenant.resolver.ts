@@ -54,9 +54,10 @@ export async function getFieldCommentsTenant() {
  */
 export async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./tenant.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

@@ -54,9 +54,10 @@ export async function getFieldCommentsOptions() {
  */
 export async function findOneOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
 ) {
   const { findOne } = await import("./options.service.ts");
-  const data = await findOne(search);
+  const data = await findOne(search, sort);
   return data;
 }
 

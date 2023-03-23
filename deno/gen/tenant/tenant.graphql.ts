@@ -112,7 +112,7 @@ type Query {
   "获取字段对应的名称"
   getFieldCommentsTenant: TenantFieldComment!
   "根据条件查找第一条数据"
-  findOneTenant(search: TenantSearch): TenantModel
+  findOneTenant(search: TenantSearch, sort: [SortInput]): TenantModel
   "根据id查找一条数据"
   findByIdTenant(id: ID!): TenantModel
   "查找order_by字段的最大值"

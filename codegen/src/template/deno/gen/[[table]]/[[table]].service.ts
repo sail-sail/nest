@@ -118,6 +118,7 @@ export async function findSummary(
  */
 export async function findOne(
   search?: <#=Table_Up#>Search,
+  sort?: SortInput|SortInput[],
 ) {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
@@ -129,7 +130,7 @@ export async function findOne(
   }<#
     }
   #>
-  const data = await <#=table#>Dao.findOne(search);
+  const data = await <#=table#>Dao.findOne(search, sort);
   return data;
 }
 
