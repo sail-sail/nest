@@ -103,15 +103,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.usernameLike)) {
     whereQuery += ` and t.username like ${ args.push(sqlLike(search?.usernameLike) + "%") }`;
   }
-  if (search?.password !== undefined) {
-    whereQuery += ` and t.password = ${ args.push(search.password) }`;
-  }
-  if (search?.password === null) {
-    whereQuery += ` and t.password is null`;
-  }
-  if (isNotEmpty(search?.passwordLike)) {
-    whereQuery += ` and t.password like ${ args.push(sqlLike(search?.passwordLike) + "%") }`;
-  }
   if (search?.default_dept_id && !Array.isArray(search?.default_dept_id)) {
     search.default_dept_id = [ search.default_dept_id ];
   }

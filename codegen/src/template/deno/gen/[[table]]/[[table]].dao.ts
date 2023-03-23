@@ -194,6 +194,10 @@ async function getWhereQuery(
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
     if (selectStr) {
