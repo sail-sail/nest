@@ -41,14 +41,11 @@ export async function findAllUsr(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelUsr(
-  search?: UsrSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./usr.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsUsr() {
+  const { getFieldComments } = await import("./usr.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

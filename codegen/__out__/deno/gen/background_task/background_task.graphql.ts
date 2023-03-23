@@ -9,13 +9,13 @@ type Background_TaskModel {
   id: ID!
   "名称"
   lbl: String!
-  "状态ID"
+  "状态"
   state: String!
-  "状态名称"
+  "状态"
   _state: String
-  "类型ID"
+  "类型"
   type: String!
-  "类型名称"
+  "类型"
   _type: String
   "执行结果"
   result: String!
@@ -28,6 +28,28 @@ type Background_TaskModel {
   "备注"
   rem: String!
 }
+type Background_TaskFieldComment {
+  "名称"
+  lbl: String!
+  "状态"
+  state: String!
+  "状态"
+  _state: String!
+  "类型"
+  type: String!
+  "类型"
+  _type: String!
+  "执行结果"
+  result: String!
+  "错误信息"
+  err_msg: String!
+  "开始时间"
+  begin_time: String!
+  "结束时间"
+  end_time: String!
+  "备注"
+  rem: String!
+}
 input Background_TaskInput {
   "租户ID"
   tenant_id: String
@@ -35,13 +57,13 @@ input Background_TaskInput {
   id: ID
   "名称"
   lbl: String
-  "状态ID"
+  "状态"
   state: String
-  "状态名称"
+  "状态"
   _state: String
-  "类型ID"
+  "类型"
   type: String
-  "类型名称"
+  "类型"
   _type: String
   "执行结果"
   result: String
@@ -90,8 +112,8 @@ type Query {
   findCountBackground_task(search: Background_TaskSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllBackground_task(search: Background_TaskSearch, page: PageInput, sort: [SortInput]): [Background_TaskModel!]!
-  "根据搜索条件导出"
-  exportExcelBackground_task(search: Background_TaskSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsBackground_task: Background_TaskFieldComment!
   "根据条件查找第一条数据"
   findOneBackground_task(search: Background_TaskSearch): Background_TaskModel
   "根据id查找一条数据"

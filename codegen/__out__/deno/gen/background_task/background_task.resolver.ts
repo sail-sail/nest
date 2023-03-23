@@ -41,14 +41,11 @@ export async function findAllBackground_task(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelBackground_task(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./background_task.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsBackground_task() {
+  const { getFieldComments } = await import("./background_task.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

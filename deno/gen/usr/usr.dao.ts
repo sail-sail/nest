@@ -371,6 +371,29 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/usr");
+  const fieldComments = {
+    lbl: await n("名称"),
+    username: await n("用户名"),
+    default_dept_id: await n("默认部门"),
+    _default_dept_id: await n("默认部门"),
+    is_enabled: await n("启用"),
+    _is_enabled: await n("启用"),
+    rem: await n("备注"),
+    dept_ids: await n("拥有部门"),
+    _dept_ids: await n("拥有部门"),
+    is_locked: await n("锁定"),
+    _is_locked: await n("锁定"),
+    role_ids: await n("拥有角色"),
+    _role_ids: await n("拥有角色"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

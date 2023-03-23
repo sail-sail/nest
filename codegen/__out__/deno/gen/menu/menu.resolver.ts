@@ -41,14 +41,11 @@ export async function findAllMenu(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelMenu(
-  search?: MenuSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./menu.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsMenu() {
+  const { getFieldComments } = await import("./menu.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

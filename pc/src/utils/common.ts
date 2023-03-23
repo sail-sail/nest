@@ -57,3 +57,21 @@ export async function getDictbiz(
   const result = data.getDictbiz;
   return result;
 }
+
+/**
+ * 渲染excel模板
+ */
+export function useRenderExcel() {
+  return useWebWorkerFn(
+    async function (exlBuf: Buffer | string, _data_: any | string) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return await ejsexcel.renderExcel(exlBuf, _data_);
+    },
+    {
+      dependencies: [
+        `${ location.origin }/ejsexcel.min.js`,
+      ],
+    },
+  );
+}

@@ -41,14 +41,11 @@ export async function findAllLang(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelLang(
-  search?: LangSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./lang.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsLang() {
+  const { getFieldComments } = await import("./lang.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

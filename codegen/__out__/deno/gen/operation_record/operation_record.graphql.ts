@@ -19,18 +19,44 @@ type Operation_RecordModel {
   lbl: String!
   "备注"
   rem: String!
-  "创建人ID"
+  "创建人"
   create_usr_id: ID!
-  "创建人名称"
+  "创建人"
   _create_usr_id: String
   "创建时间"
   create_time: String
-  "更新人ID"
+  "更新人"
   update_usr_id: ID!
-  "更新人名称"
+  "更新人"
   _update_usr_id: String
   "更新时间"
   update_time: String
+}
+type Operation_RecordFieldComment {
+  "模块"
+  mod: String!
+  "模块名称"
+  mod_lbl: String!
+  "方法"
+  method: String!
+  "方法名称"
+  method_lbl: String!
+  "操作"
+  lbl: String!
+  "备注"
+  rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  _create_usr_id: String!
+  "创建时间"
+  create_time: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  _update_usr_id: String!
+  "更新时间"
+  update_time: String!
 }
 input Operation_RecordInput {
   "租户ID"
@@ -49,15 +75,15 @@ input Operation_RecordInput {
   lbl: String
   "备注"
   rem: String
-  "创建人ID"
+  "创建人"
   create_usr_id: ID
-  "创建人名称"
+  "创建人"
   _create_usr_id: String
   "创建时间"
   create_time: String
-  "更新人ID"
+  "更新人"
   update_usr_id: ID
-  "更新人名称"
+  "更新人"
   _update_usr_id: String
   "更新时间"
   update_time: String
@@ -103,8 +129,8 @@ type Query {
   findCountOperation_record(search: Operation_RecordSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllOperation_record(search: Operation_RecordSearch, page: PageInput, sort: [SortInput]): [Operation_RecordModel!]!
-  "根据搜索条件导出"
-  exportExcelOperation_record(search: Operation_RecordSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsOperation_record: Operation_RecordFieldComment!
   "根据条件查找第一条数据"
   findOneOperation_record(search: Operation_RecordSearch): Operation_RecordModel
   "根据id查找一条数据"

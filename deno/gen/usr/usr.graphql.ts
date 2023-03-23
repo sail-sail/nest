@@ -13,28 +13,58 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
-  "默认部门ID"
+  "默认部门"
   default_dept_id: ID!
-  "默认部门名称"
+  "默认部门"
   _default_dept_id: String
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String!
-  "拥有部门ID"
+  "拥有部门"
   dept_ids: [ID!]
-  "拥有部门名称"
+  "拥有部门"
   _dept_ids: [String!]
-  "锁定ID"
+  "锁定"
   is_locked: Int!
-  "锁定名称"
+  "锁定"
   _is_locked: String
-  "拥有角色ID"
+  "拥有角色"
   role_ids: [ID!]
-  "拥有角色名称"
+  "拥有角色"
   _role_ids: [String!]
+}
+type UsrFieldComment {
+  "名称"
+  lbl: String!
+  "用户名"
+  username: String!
+  "密码"
+  password: String!
+  "默认部门"
+  default_dept_id: String!
+  "默认部门"
+  _default_dept_id: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "备注"
+  rem: String!
+  "拥有部门"
+  dept_ids: String!
+  "拥有部门"
+  _dept_ids: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  _is_locked: String!
+  "拥有角色"
+  role_ids: String!
+  "拥有角色"
+  _role_ids: String!
 }
 input UsrInput {
   "租户ID"
@@ -47,27 +77,27 @@ input UsrInput {
   username: String
   "密码"
   password: String
-  "默认部门ID"
+  "默认部门"
   default_dept_id: ID
-  "默认部门名称"
+  "默认部门"
   _default_dept_id: String
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String
-  "拥有部门ID"
+  "拥有部门"
   dept_ids: [ID!]
-  "拥有部门名称"
+  "拥有部门"
   _dept_ids: [String!]
-  "锁定ID"
+  "锁定"
   is_locked: Int
-  "锁定名称"
+  "锁定"
   _is_locked: String
-  "拥有角色ID"
+  "拥有角色"
   role_ids: [ID!]
-  "拥有角色名称"
+  "拥有角色"
   _role_ids: [String!]
 }
 input UsrSearch {
@@ -108,8 +138,8 @@ type Query {
   findCountUsr(search: UsrSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput]): [UsrModel!]!
-  "根据搜索条件导出"
-  exportExcelUsr(search: UsrSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsUsr: UsrFieldComment!
   "根据条件查找第一条数据"
   findOneUsr(search: UsrSearch): UsrModel
   "根据id查找一条数据"

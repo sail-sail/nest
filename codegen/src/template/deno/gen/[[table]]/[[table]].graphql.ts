@@ -84,10 +84,45 @@ type <#=Table_Up#>Model {<#
   <#=column_name#>: <#=data_type#><#
     } else {
   #>
-  "<#=column_comment#>ID"
+  "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  "<#=column_comment#>名称"
+  "<#=column_comment#>"
   _<#=column_name#>: <#=_data_type#><#
+    }
+  }
+  #>
+}
+type <#=Table_Up#>FieldComment {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    let column_comment = column.COLUMN_COMMENT;
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_name === 'id') {
+      continue;
+    }
+  #><#
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String!<#
+    } else {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  _<#=column_name#>: String!<#
     }
   }
   #>
@@ -162,9 +197,9 @@ input <#=Table_Up#>Input {<#
   <#=column_name#>: <#=data_type#><#
     } else {
   #>
-  "<#=column_comment#>ID"
+  "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  "<#=column_comment#>名称"
+  "<#=column_comment#>"
   _<#=column_name#>: <#=_data_type#><#
     }
   }
@@ -328,8 +363,8 @@ type Query {
   findCount<#=tableUp#>(search: <#=Table_Up#>Search): Int!
   "根据搜索条件和分页查找数据"
   findAll<#=tableUp#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput]): [<#=Table_Up#>Model!]!
-  "根据搜索条件导出"
-  exportExcel<#=tableUp#>(search: <#=Table_Up#>Search, sort: [SortInput]): String!<#
+  "获取字段对应的名称"
+  getFieldComments<#=tableUp#>: <#=Table_Up#>FieldComment!<#
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"

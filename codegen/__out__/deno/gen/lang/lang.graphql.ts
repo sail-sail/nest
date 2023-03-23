@@ -13,12 +13,26 @@ type LangModel {
   lbl: String!
   "备注"
   rem: String!
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
   "排序"
   order_by: Int!
+}
+type LangFieldComment {
+  "编码"
+  code: String!
+  "名称"
+  lbl: String!
+  "备注"
+  rem: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "排序"
+  order_by: String!
 }
 input LangInput {
   "租户ID"
@@ -31,9 +45,9 @@ input LangInput {
   lbl: String
   "备注"
   rem: String
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
   "排序"
   order_by: Int
@@ -64,8 +78,8 @@ type Query {
   findCountLang(search: LangSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllLang(search: LangSearch, page: PageInput, sort: [SortInput]): [LangModel!]!
-  "根据搜索条件导出"
-  exportExcelLang(search: LangSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsLang: LangFieldComment!
   "根据条件查找第一条数据"
   findOneLang(search: LangSearch): LangModel
   "根据id查找一条数据"

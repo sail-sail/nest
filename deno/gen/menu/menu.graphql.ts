@@ -7,13 +7,13 @@ defineGraphql(menuResolver, /* GraphQL */ `
 type MenuModel {
   "ID"
   id: ID!
-  "类型ID"
+  "类型"
   type: String!
-  "类型名称"
+  "类型"
   _type: String
-  "父菜单ID"
+  "父菜单"
   menu_id: ID!
-  "父菜单名称"
+  "父菜单"
   _menu_id: String
   "名称"
   lbl: String!
@@ -21,12 +21,36 @@ type MenuModel {
   route_path: String!
   "参数"
   route_query: JSON
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
   "排序"
   order_by: Int!
+  "备注"
+  rem: String!
+}
+type MenuFieldComment {
+  "类型"
+  type: String!
+  "类型"
+  _type: String!
+  "父菜单"
+  menu_id: String!
+  "父菜单"
+  _menu_id: String!
+  "名称"
+  lbl: String!
+  "路由"
+  route_path: String!
+  "参数"
+  route_query: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
 }
@@ -35,13 +59,13 @@ input MenuInput {
   tenant_id: String
   ""
   id: ID
-  "类型ID"
+  "类型"
   type: String
-  "类型名称"
+  "类型"
   _type: String
-  "父菜单ID"
+  "父菜单"
   menu_id: ID
-  "父菜单名称"
+  "父菜单"
   _menu_id: String
   "名称"
   lbl: String
@@ -49,9 +73,9 @@ input MenuInput {
   route_path: String
   "参数"
   route_query: JSON
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
   "排序"
   order_by: Int
@@ -92,8 +116,8 @@ type Query {
   findCountMenu(search: MenuSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllMenu(search: MenuSearch, page: PageInput, sort: [SortInput]): [MenuModel!]!
-  "根据搜索条件导出"
-  exportExcelMenu(search: MenuSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsMenu: MenuFieldComment!
   "根据条件查找第一条数据"
   findOneMenu(search: MenuSearch): MenuModel
   "根据id查找一条数据"

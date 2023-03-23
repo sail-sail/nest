@@ -7,6 +7,8 @@ import {
   type Dictbiz_DetailInput,
 } from "#/types";
 
+import saveAs from "file-saver";
+
 import {
   type DictbizSearch,
 } from "#/types";
@@ -331,21 +333,43 @@ export async function getDictbizList() {
 
 /**
  * 导出Excel
- * @export exportExcel
+ * @export useExportExcel
  * @param {Dictbiz_DetailSearch} search?
  * @param {Sort[]} sort?
  */
-export async function exportExcel(
+export function useExportExcel(
   search?: Dictbiz_DetailSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data: {
-    exportExcelDictbiz_detail: Query["exportExcelDictbiz_detail"];
-  } = await query({
+  const queryStr = getQueryUrl({
     query: /* GraphQL */ `
       query($search: Dictbiz_DetailSearch, $sort: [SortInput]) {
-        exportExcelDictbiz_detail(search: $search, sort: $sort)
+        findAllDictbiz_detail(search: $search, sort: $sort) {
+          id
+          dictbiz_id
+          _dictbiz_id
+          lbl
+          val
+          order_by
+          is_enabled
+          _is_enabled
+          rem
+          is_locked
+          _is_locked
+        }
+        getFieldCommentsDictbiz_detail {
+          dictbiz_id
+          _dictbiz_id
+          lbl
+          val
+          order_by
+          is_enabled
+          _is_enabled
+          rem
+          is_locked
+          _is_locked
+        }
       }
     `,
     variables: {
@@ -353,8 +377,26 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result = data.exportExcelDictbiz_detail;
-  return result;
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const buffer = await workerFn(
+      `${ location.origin }/excel_template/dictbiz_detail.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    const blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "业务字典明细");
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
 }
 
 /**

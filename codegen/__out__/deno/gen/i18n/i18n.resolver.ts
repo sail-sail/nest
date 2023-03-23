@@ -41,14 +41,11 @@ export async function findAllI18n(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./i18n.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsI18n() {
+  const { getFieldComments } = await import("./i18n.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

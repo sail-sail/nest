@@ -50,16 +50,6 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     if (stats.isFile()) {
       if(dir.endsWith(".xlsx")) {
-        // let isExist = true;
-        // try {
-        //   await access(`${out}/${dir2}`);
-        // } catch (err) {
-        //   isExist = false;
-        // }
-        // if (isExist) {
-        //   console.log(`忽略: ${dir2}`);
-        //   return;
-        // }
 				const buffer = await readFile(fileTng);
         const fields = [ ];
         const lbls = [ ];
@@ -81,10 +71,22 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           }
           const isPassword = column.isPassword;
           if (isPassword) continue;
-          lbls.push(`<%=await _data_.n("${ column_comment }")%>`);
+          const foreignKey = column.foreignKey;
+          let lbl = ``;
+          if (lbls.length === 0) {
+            lbl += `<%const comment = _data_.data.getFieldComments${ tableUp };%>`;
+          }
+          lbl += `<%=comment.`;
+          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+            lbl += "_" + column_name;
+          } else {
+            lbl += column_name;
+          }
+          lbl += `%>`;
+          lbls.push(lbl);
           let str = "";
           if (fields.length === 0) {
-            str += "<%forRow model in _data_.models%>";
+            str += `<%forRow model in _data_.data.findAll${ tableUp }%>`;
           }
           str += "<%";
           if (data_type === "varchar") {
@@ -101,8 +103,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
             str += "=";
           }
           str += "model.";
-          const foreignKey = column.foreignKey;
-          if (foreignKey || selectList.length > 0) {
+          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
             str += "_" + column_name;
           } else {
             str += column_name;

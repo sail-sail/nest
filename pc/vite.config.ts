@@ -60,6 +60,7 @@ export default defineConfig({
           "@/utils/common": [
             "getDict",
             "getDictbiz",
+            "useRenderExcel",
           ],
         },
         {
@@ -146,6 +147,7 @@ export default defineConfig({
           "@/utils/graphql": [
             "query",
             "mutation",
+            "getQueryUrl",
           ],
           "@/utils/StringUtil": [
             "isEmpty",

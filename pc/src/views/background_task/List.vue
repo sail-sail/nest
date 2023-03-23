@@ -215,7 +215,9 @@
         <el-button
           plain
         >
-          <span>{{ ns('更多操作') }}</span>
+          <span>
+            {{ ns('更多操作') }}
+          </span>
           <el-icon>
             <ElIconArrowDown />
           </el-icon>

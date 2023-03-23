@@ -11,34 +11,68 @@ type DictModel {
   code: String!
   "名称"
   lbl: String!
-  "数据类型ID"
+  "数据类型"
   type: String!
-  "数据类型名称"
+  "数据类型"
   _type: String
   "排序"
   order_by: Int!
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String!
-  "锁定ID"
+  "锁定"
   is_locked: Int!
-  "锁定名称"
+  "锁定"
   _is_locked: String
-  "创建人ID"
+  "创建人"
   create_usr_id: ID!
-  "创建人名称"
+  "创建人"
   _create_usr_id: String
   "创建时间"
   create_time: String
-  "更新人ID"
+  "更新人"
   update_usr_id: ID!
-  "更新人名称"
+  "更新人"
   _update_usr_id: String
   "更新时间"
   update_time: String
+}
+type DictFieldComment {
+  "编码"
+  code: String!
+  "名称"
+  lbl: String!
+  "数据类型"
+  type: String!
+  "数据类型"
+  _type: String!
+  "排序"
+  order_by: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "备注"
+  rem: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  _is_locked: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  _create_usr_id: String!
+  "创建时间"
+  create_time: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  _update_usr_id: String!
+  "更新时间"
+  update_time: String!
 }
 input DictInput {
   "租户ID"
@@ -49,31 +83,31 @@ input DictInput {
   code: String
   "名称"
   lbl: String
-  "数据类型ID"
+  "数据类型"
   type: String
-  "数据类型名称"
+  "数据类型"
   _type: String
   "排序"
   order_by: Int
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String
-  "锁定ID"
+  "锁定"
   is_locked: Int
-  "锁定名称"
+  "锁定"
   _is_locked: String
-  "创建人ID"
+  "创建人"
   create_usr_id: ID
-  "创建人名称"
+  "创建人"
   _create_usr_id: String
   "创建时间"
   create_time: String
-  "更新人ID"
+  "更新人"
   update_usr_id: ID
-  "更新人名称"
+  "更新人"
   _update_usr_id: String
   "更新时间"
   update_time: String
@@ -118,8 +152,8 @@ type Query {
   findCountDict(search: DictSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllDict(search: DictSearch, page: PageInput, sort: [SortInput]): [DictModel!]!
-  "根据搜索条件导出"
-  exportExcelDict(search: DictSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsDict: DictFieldComment!
   "根据条件查找第一条数据"
   findOneDict(search: DictSearch): DictModel
   "根据id查找一条数据"

@@ -7,7 +7,6 @@ import {
   log,
   error,
   rollback,
-  useContext,
 } from "/lib/context.ts";
 
 import {
@@ -149,166 +148,205 @@ const queryCacheMap = new Map<string, {
 
 const requestIdMap = new Map<string, number>();
 
-gqlRouter.post("/graphql", async function(ctx) {
-  const request = ctx.request;
-  const body = request.body();
-  if (body.type !== "json") {
-    ctx.response.body = {
-      code: 1,
-      errMsg: "Unsupported Media Type",
-    };
+async function handleGraphql(
+  gqlObj: {
+    query: string,
+    variables?: { [key: string]: unknown; },
+  },
+) {
+  if (gqlSchema === undefined) {
+    gqlSchema = buildSchema(mergeSchema(gqlSchemaStr));
+    const schemaValidationErrors = validateSchema(gqlSchema);
+    if (schemaValidationErrors.length > 0) {
+      throw schemaValidationErrors[0];
+    }
+  }
+  const query: string = gqlObj.query;
+  const variables = gqlObj.variables;
+  // deno-lint-ignore no-explicit-any
+  let result: any;
+  let isValidationError = false;
+  try {
+    let documentInfo = queryCacheMap.get(query);
+    if (!documentInfo) {
+      try {
+        const document = parse(query);
+        const validationErrors = validate(gqlSchema!, document);
+        documentInfo = {
+          document,
+          validationErrors,
+        };
+        queryCacheMap.set(query, documentInfo);
+      } catch (syntaxError) {
+        result = {
+          errors: [ syntaxError ],
+        };
+        documentInfo = undefined;
+        queryCacheMap.delete(query);
+      }
+    }
+    const validationErrors = documentInfo?.validationErrors;
+    if (validationErrors && validationErrors.length > 0) {
+      result = {
+        errors: validationErrors,
+      };
+      isValidationError = true;
+      documentInfo = undefined;
+      queryCacheMap.delete(query);
+    }
+    const document = documentInfo?.document;
+    if (document && !result) {
+      result = await execute({
+        schema: gqlSchema!,
+        document,
+        rootValue: gqlRootValueProxy,
+        variableValues: variables,
+        // operationName: undefined,
+        // fieldResolver: undefined,
+        // typeResolver: undefined,
+      });
+    }
+    const errors = result.errors as GraphQLError[];
+    if (errors && errors.length > 0) {
+      if (errors.length === 1) {
+        const err = errors[0];
+        if (err.originalError instanceof ServiceException) {
+          result.errors = [
+            {
+              code: err.originalError.code,
+              message: err.originalError.message,
+            }
+          ];
+          if (err.originalError.message) {
+            log(err.originalError.message);
+          }
+          if (err.originalError._rollback !== false) {
+            await rollback();
+          } else {
+            await commit();
+          }
+        } else if (isValidationError) {
+          const message = errors[0].message;
+          result.errors = [
+            {
+              message,
+            }
+          ];
+          log(`GraphQL Query Error: ${ message }`);
+        } else if (err.originalError?.name === "NonErrorThrown") {
+          // deno-lint-ignore no-explicit-any
+          const message = (err.originalError as any).thrownValue;
+          result.errors = [
+            {
+              message,
+            }
+          ];
+          await rollback();
+          log(message);
+        } else {
+          error(err);
+          await rollback();
+          let msg = "";
+          const errLen = errors.length;
+          for (let i = 0; i < errLen; i++) {
+            const error: GraphQLError = errors[i];
+            msg += error.message || error.toString();
+            if (i < errLen - 1) {
+              msg += "\n";
+            }
+          }
+          result.errors = [
+            {
+              message: msg,
+            },
+          ];
+        }
+      } else {
+        await rollback();
+        let msg = "";
+        for (let i = 0; i < errors.length; i++) {
+          const error: GraphQLError = errors[i];
+          msg += error.toString() + "\n";
+        }
+        error(msg);
+      }
+    } else {
+      await commit();
+    }
+  } catch (err) {
+    error(err);
+    await rollback();
+  }
+  return result;
+}
+
+function handleRequestId(requestId?: string | null) {
+  if (!requestId) {
     return;
   }
-  const requestId = request.headers.get("Request-ID");
-  if (requestId) {
-    if (requestIdMap.has(requestId)) {
-      if (requestIdMap.get(requestId)) {
-        clearTimeout(requestIdMap.get(requestId));
-      }
-      requestIdMap.set(requestId, setTimeout(() => {
-        requestIdMap.delete(requestId);
-      }, 1000 * 60 * 2));
-      ctx.response.body = {
-        code: 1,
-        errMsg: `Request ID is duplicated: ${ requestId }`,
-      };
-      return;
+  if (requestIdMap.has(requestId)) {
+    if (requestIdMap.get(requestId)) {
+      clearTimeout(requestIdMap.get(requestId));
     }
     requestIdMap.set(requestId, setTimeout(() => {
       requestIdMap.delete(requestId);
     }, 1000 * 60 * 2));
+    throw new ServiceException(`Request ID is duplicated: ${ requestId }`, "request_id_duplicated");
   }
-  const context = useContext();
+  requestIdMap.set(requestId, setTimeout(() => {
+    requestIdMap.delete(requestId);
+  }, 1000 * 60 * 2));
+}
+
+gqlRouter.post("/graphql", async function(ctx) {
+  const request = ctx.request;
+  handleRequestId(request.headers.get("Request-ID"));
+  const response = ctx.response;
+  const body = request.body();
+  if (body.type !== "json") {
+    response.body = {
+      code: 1,
+      errMsg: "Invalid request body",
+    };
+    return;
+  }
+  const gqlObj = await body.value;
   try {
-    const gqlObj = await body.value;
-    if (gqlSchema === undefined) {
-      gqlSchema = buildSchema(mergeSchema(gqlSchemaStr));
-      const schemaValidationErrors = validateSchema(gqlSchema);
-      if (schemaValidationErrors.length > 0) {
-        throw schemaValidationErrors[0];
-      }
-    }
-    const query: string = gqlObj.query;
-    const variables = gqlObj.variables;
-    // deno-lint-ignore no-explicit-any
-    let result: any;
-    let isValidationError = false;
-    try {
-      let documentInfo = queryCacheMap.get(query);
-      if (!documentInfo) {
-        try {
-          const document = parse(query);
-          const validationErrors = validate(gqlSchema!, document);
-          documentInfo = {
-            document,
-            validationErrors,
-          };
-          queryCacheMap.set(query, documentInfo);
-        } catch (syntaxError) {
-          result = {
-            errors: [ syntaxError ],
-          };
-          documentInfo = undefined;
-          queryCacheMap.delete(query);
-        }
-      }
-      const validationErrors = documentInfo?.validationErrors;
-      if (validationErrors && validationErrors.length > 0) {
-        result = {
-          errors: validationErrors,
-        };
-        isValidationError = true;
-        documentInfo = undefined;
-        queryCacheMap.delete(query);
-      }
-      const document = documentInfo?.document;
-      if (document && !result) {
-        result = await execute({
-          schema: gqlSchema!,
-          document,
-          rootValue: gqlRootValueProxy,
-          contextValue: context,
-          variableValues: variables,
-          // operationName: undefined,
-          // fieldResolver: undefined,
-          // typeResolver: undefined,
-        });
-      }
-      const errors = result.errors as GraphQLError[];
-      if (errors && errors.length > 0) {
-        if (errors.length === 1) {
-          const err = errors[0];
-          if (err.originalError instanceof ServiceException) {
-            result.errors = [
-              {
-                code: err.originalError.code,
-                message: err.originalError.message,
-              }
-            ];
-            if (err.originalError.message) {
-              log(err.originalError.message);
-            }
-            if (err.originalError._rollback !== false) {
-              await rollback();
-            } else {
-              await commit();
-            }
-          } else if (isValidationError) {
-            const message = errors[0].message;
-            result.errors = [
-              {
-                message,
-              }
-            ];
-            log(`GraphQL Query Error: ${ message }`);
-          } else if (err.originalError?.name === "NonErrorThrown") {
-            // deno-lint-ignore no-explicit-any
-            const message = (err.originalError as any).thrownValue;
-            result.errors = [
-              {
-                message,
-              }
-            ];
-            await rollback();
-            log(message);
-          } else {
-            error(err);
-            await rollback();
-            let msg = "";
-            const errLen = errors.length;
-            for (let i = 0; i < errLen; i++) {
-              const error: GraphQLError = errors[i];
-              msg += error.message || error.toString();
-              if (i < errLen - 1) {
-                msg += "\n";
-              }
-            }
-            result.errors = [
-              {
-                message: msg,
-              },
-            ];
-          }
-        } else {
-          await rollback();
-          let msg = "";
-          for (let i = 0; i < errors.length; i++) {
-            const error: GraphQLError = errors[i];
-            msg += error.toString() + "\n";
-          }
-          error(msg);
-        }
-      } else {
-        await commit();
-      }
-    } catch (err) {
-      error(err);
-      await rollback();
-    }
-    ctx.response.body = result;
+    response.body = await handleGraphql(gqlObj);
   } catch (err) {
     error(err);
-    ctx.response.body = {
+    response.body = {
+      errors: [
+        {
+          message: err.message || err.toString(),
+        },
+      ],
+    };
+  }
+});
+
+gqlRouter.get("/graphql", async function(ctx) {
+  const request = ctx.request;
+  handleRequestId(request.headers.get("Request-ID"));
+  const response = ctx.response;
+  const query = request.url.searchParams.get("query");
+  if (!query) {
+    throw new ServiceException("graphql query can not be empty", "invalid_request_query");
+  }
+  const variablesStr = request.url.searchParams.get("variables");
+  // deno-lint-ignore no-explicit-any
+  let variables: any = undefined;
+  if (variablesStr) {
+    variables = JSON.parse(variablesStr);
+  }
+  try {
+    response.body = await handleGraphql({
+      query,
+      variables,
+    });
+  } catch (err) {
+    error(err);
+    response.body = {
       errors: [
         {
           message: err.message || err.toString(),

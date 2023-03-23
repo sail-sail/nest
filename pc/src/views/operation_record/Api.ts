@@ -7,6 +7,8 @@ import {
   type Operation_RecordInput,
 } from "#/types";
 
+import saveAs from "file-saver";
+
 import {
   type UsrSearch,
 } from "#/types";
@@ -251,21 +253,47 @@ export async function getUsrList() {
 
 /**
  * 导出Excel
- * @export exportExcel
+ * @export useExportExcel
  * @param {Operation_RecordSearch} search?
  * @param {Sort[]} sort?
  */
-export async function exportExcel(
+export function useExportExcel(
   search?: Operation_RecordSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data: {
-    exportExcelOperation_record: Query["exportExcelOperation_record"];
-  } = await query({
+  const queryStr = getQueryUrl({
     query: /* GraphQL */ `
       query($search: Operation_RecordSearch, $sort: [SortInput]) {
-        exportExcelOperation_record(search: $search, sort: $sort)
+        findAllOperation_record(search: $search, sort: $sort) {
+          id
+          mod
+          mod_lbl
+          method
+          method_lbl
+          lbl
+          rem
+          create_usr_id
+          _create_usr_id
+          create_time
+          update_usr_id
+          _update_usr_id
+          update_time
+        }
+        getFieldCommentsOperation_record {
+          mod
+          mod_lbl
+          method
+          method_lbl
+          lbl
+          rem
+          create_usr_id
+          _create_usr_id
+          create_time
+          update_usr_id
+          _update_usr_id
+          update_time
+        }
       }
     `,
     variables: {
@@ -273,6 +301,24 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result = data.exportExcelOperation_record;
-  return result;
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const buffer = await workerFn(
+      `${ location.origin }/excel_template/operation_record.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    const blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "操作记录");
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
 }

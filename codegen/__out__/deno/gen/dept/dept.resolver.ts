@@ -41,14 +41,11 @@ export async function findAllDept(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelDept(
-  search?: DeptSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./dept.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsDept() {
+  const { getFieldComments } = await import("./dept.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

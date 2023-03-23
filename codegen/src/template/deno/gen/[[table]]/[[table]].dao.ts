@@ -749,6 +749,47 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/<#=table#>");
+  const fieldComments = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      const foreignKey = column.foreignKey;
+    #><#
+      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    #>
+    <#=column_name#>: await n("<#=column_comment#>"),
+    _<#=column_name#>: await n("<#=column_comment#>"),<#
+      } else {
+    #>
+    <#=column_name#>: await n("<#=column_comment#>"),<#
+      }
+    #><#
+    }
+    #>
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

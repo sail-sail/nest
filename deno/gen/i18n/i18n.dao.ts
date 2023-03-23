@@ -256,6 +256,23 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/i18n");
+  const fieldComments = {
+    lang_id: await n("语言"),
+    _lang_id: await n("语言"),
+    menu_id: await n("菜单"),
+    _menu_id: await n("菜单"),
+    code: await n("编码"),
+    lbl: await n("名称"),
+    rem: await n("备注"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

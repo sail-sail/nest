@@ -315,6 +315,28 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/background_task");
+  const fieldComments = {
+    lbl: await n("名称"),
+    state: await n("状态"),
+    _state: await n("状态"),
+    type: await n("类型"),
+    _type: await n("类型"),
+    result: await n("执行结果"),
+    err_msg: await n("错误信息"),
+    begin_time: await n("开始时间"),
+    end_time: await n("结束时间"),
+    rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    _create_usr_id: await n("创建人"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

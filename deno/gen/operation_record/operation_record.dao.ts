@@ -303,6 +303,28 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/operation_record");
+  const fieldComments = {
+    mod: await n("模块"),
+    mod_lbl: await n("模块名称"),
+    method: await n("方法"),
+    method_lbl: await n("方法名称"),
+    lbl: await n("操作"),
+    rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    _create_usr_id: await n("创建人"),
+    create_time: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    _update_usr_id: await n("更新人"),
+    update_time: await n("更新时间"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

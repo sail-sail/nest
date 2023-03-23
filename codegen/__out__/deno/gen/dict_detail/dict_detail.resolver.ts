@@ -41,14 +41,11 @@ export async function findAllDict_detail(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelDict_detail(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./dict_detail.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsDict_detail() {
+  const { getFieldComments } = await import("./dict_detail.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

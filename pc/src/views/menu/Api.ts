@@ -7,6 +7,8 @@ import {
   type MenuInput,
 } from "#/types";
 
+import saveAs from "file-saver";
+
 import {
 } from "#/types";
 
@@ -307,21 +309,45 @@ export async function getMenuList() {
 
 /**
  * 导出Excel
- * @export exportExcel
+ * @export useExportExcel
  * @param {MenuSearch} search?
  * @param {Sort[]} sort?
  */
-export async function exportExcel(
+export function useExportExcel(
   search?: MenuSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data: {
-    exportExcelMenu: Query["exportExcelMenu"];
-  } = await query({
+  const queryStr = getQueryUrl({
     query: /* GraphQL */ `
       query($search: MenuSearch, $sort: [SortInput]) {
-        exportExcelMenu(search: $search, sort: $sort)
+        findAllMenu(search: $search, sort: $sort) {
+          id
+          type
+          _type
+          menu_id
+          _menu_id
+          lbl
+          route_path
+          route_query
+          is_enabled
+          _is_enabled
+          order_by
+          rem
+        }
+        getFieldCommentsMenu {
+          type
+          _type
+          menu_id
+          _menu_id
+          lbl
+          route_path
+          route_query
+          is_enabled
+          _is_enabled
+          order_by
+          rem
+        }
       }
     `,
     variables: {
@@ -329,8 +355,26 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result = data.exportExcelMenu;
-  return result;
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const buffer = await workerFn(
+      `${ location.origin }/excel_template/menu.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    const blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "菜单");
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
 }
 
 /**

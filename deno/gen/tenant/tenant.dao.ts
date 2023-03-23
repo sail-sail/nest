@@ -304,6 +304,26 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/tenant");
+  const fieldComments = {
+    lbl: await n("名称"),
+    host: await n("域名绑定"),
+    expiration: await n("到期日"),
+    max_usr_num: await n("最大用户数"),
+    is_enabled: await n("启用"),
+    _is_enabled: await n("启用"),
+    menu_ids: await n("菜单"),
+    _menu_ids: await n("菜单"),
+    order_by: await n("排序"),
+    rem: await n("备注"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

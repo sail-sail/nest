@@ -41,14 +41,11 @@ export async function findAllTenant(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelTenant(
-  search?: TenantSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./tenant.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsTenant() {
+  const { getFieldComments } = await import("./tenant.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

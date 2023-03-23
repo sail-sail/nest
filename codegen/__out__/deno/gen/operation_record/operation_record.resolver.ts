@@ -41,14 +41,11 @@ export async function findAllOperation_record(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelOperation_record(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./operation_record.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsOperation_record() {
+  const { getFieldComments } = await import("./operation_record.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

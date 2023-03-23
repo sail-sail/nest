@@ -229,7 +229,16 @@
         <el-button
           plain
         >
-          <span>{{ ns('更多操作') }}</span>
+          <span
+            v-if="(exportExcel.workerStatus as any) === 'RUNNING'"
+          >
+            {{ ns('正在导出') }}
+          </span>
+          <span
+            v-else
+          >
+            {{ ns('更多操作') }}
+          </span>
           <el-icon>
             <ElIconArrowDown />
           </el-icon>
@@ -241,10 +250,19 @@
           >
             
             <el-dropdown-item
+              v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
               un-justify-center
               @click="exportClk"
             >
               <span>{{ ns('导出') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-else
+              un-justify-center
+              @click="cancelExportClk"
+            >
+              <span un-text="red">{{ ns('取消导出') }}</span>
             </el-dropdown-item>
             
             <el-dropdown-item
@@ -488,7 +506,7 @@ import {
   deleteByIds,
   forceDeleteByIds,
   lockByIds,
-  exportExcel,
+  useExportExcel,
   updateById,
   importFile,
 } from "./Api";
@@ -528,12 +546,6 @@ const emit = defineEmits([
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
-
-/** 导出Excel */
-async function exportClk() {
-  const id = await exportExcel(search, [ sort ]);
-  downloadById(id);
-}
 
 /** 搜索 */
 function initSearch() {
@@ -861,6 +873,18 @@ async function sortChange(
   sort.prop = prop;
   sort.order = order;
   await dataGrid();
+}
+
+let exportExcel = $ref(useExportExcel(search, [ sort ]));
+
+/** 导出Excel */
+async function exportClk() {
+  await exportExcel.workerFn();
+}
+
+/** 取消导出Excel */
+async function cancelExportClk() {
+  exportExcel.workerTerminate();
 }
 
 /** 打开增加页面 */

@@ -7,6 +7,8 @@ import {
   type Background_TaskInput,
 } from "#/types";
 
+import saveAs from "file-saver";
+
 import {
 } from "#/types";
 
@@ -201,21 +203,43 @@ export async function forceDeleteByIds(
 
 /**
  * 导出Excel
- * @export exportExcel
+ * @export useExportExcel
  * @param {Background_TaskSearch} search?
  * @param {Sort[]} sort?
  */
-export async function exportExcel(
+export function useExportExcel(
   search?: Background_TaskSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data: {
-    exportExcelBackground_task: Query["exportExcelBackground_task"];
-  } = await query({
+  const queryStr = getQueryUrl({
     query: /* GraphQL */ `
       query($search: Background_TaskSearch, $sort: [SortInput]) {
-        exportExcelBackground_task(search: $search, sort: $sort)
+        findAllBackground_task(search: $search, sort: $sort) {
+          id
+          lbl
+          state
+          _state
+          type
+          _type
+          result
+          err_msg
+          begin_time
+          end_time
+          rem
+        }
+        getFieldCommentsBackground_task {
+          lbl
+          state
+          _state
+          type
+          _type
+          result
+          err_msg
+          begin_time
+          end_time
+          rem
+        }
       }
     `,
     variables: {
@@ -223,6 +247,24 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result = data.exportExcelBackground_task;
-  return result;
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const buffer = await workerFn(
+      `${ location.origin }/excel_template/background_task.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    const blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "后台任务");
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
 }

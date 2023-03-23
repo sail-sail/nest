@@ -7,6 +7,8 @@ import {
   type UsrInput,
 } from "#/types";
 
+import saveAs from "file-saver";
+
 import {
   type DeptSearch,
   type RoleSearch,
@@ -385,21 +387,51 @@ export async function getRoleList() {
 
 /**
  * 导出Excel
- * @export exportExcel
+ * @export useExportExcel
  * @param {UsrSearch} search?
  * @param {Sort[]} sort?
  */
-export async function exportExcel(
+export function useExportExcel(
   search?: UsrSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data: {
-    exportExcelUsr: Query["exportExcelUsr"];
-  } = await query({
+  const queryStr = getQueryUrl({
     query: /* GraphQL */ `
       query($search: UsrSearch, $sort: [SortInput]) {
-        exportExcelUsr(search: $search, sort: $sort)
+        findAllUsr(search: $search, sort: $sort) {
+          id
+          lbl
+          username
+          password
+          default_dept_id
+          _default_dept_id
+          is_enabled
+          _is_enabled
+          rem
+          dept_ids
+          _dept_ids
+          is_locked
+          _is_locked
+          role_ids
+          _role_ids
+        }
+        getFieldCommentsUsr {
+          lbl
+          username
+          password
+          default_dept_id
+          _default_dept_id
+          is_enabled
+          _is_enabled
+          rem
+          dept_ids
+          _dept_ids
+          is_locked
+          _is_locked
+          role_ids
+          _role_ids
+        }
       }
     `,
     variables: {
@@ -407,8 +439,26 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result = data.exportExcelUsr;
-  return result;
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const buffer = await workerFn(
+      `${ location.origin }/excel_template/usr.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    const blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "用户");
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
 }
 
 /**

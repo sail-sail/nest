@@ -7,6 +7,8 @@ import {
   type LangInput,
 } from "#/types";
 
+import saveAs from "file-saver";
+
 import {
 } from "#/types";
 
@@ -248,21 +250,35 @@ export async function forceDeleteByIds(
 
 /**
  * 导出Excel
- * @export exportExcel
+ * @export useExportExcel
  * @param {LangSearch} search?
  * @param {Sort[]} sort?
  */
-export async function exportExcel(
+export function useExportExcel(
   search?: LangSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const data: {
-    exportExcelLang: Query["exportExcelLang"];
-  } = await query({
+  const queryStr = getQueryUrl({
     query: /* GraphQL */ `
       query($search: LangSearch, $sort: [SortInput]) {
-        exportExcelLang(search: $search, sort: $sort)
+        findAllLang(search: $search, sort: $sort) {
+          id
+          code
+          lbl
+          rem
+          is_enabled
+          _is_enabled
+          order_by
+        }
+        getFieldCommentsLang {
+          code
+          lbl
+          rem
+          is_enabled
+          _is_enabled
+          order_by
+        }
       }
     `,
     variables: {
@@ -270,8 +286,26 @@ export async function exportExcel(
       sort,
     },
   }, opt);
-  const result = data.exportExcelLang;
-  return result;
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const buffer = await workerFn(
+      `${ location.origin }/excel_template/lang.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    const blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "语言");
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
 }
 
 /**

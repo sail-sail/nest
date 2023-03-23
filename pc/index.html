@@ -16,25 +16,5 @@
   <body>
     <div id="app" style="width: 100%;height: 100%;"></div>
     <script type="module" src="/src/main.ts"></script>
-    <script>
-      function _load() {
-        const params = new URLSearchParams(window.location.search);
-        if (params.has("__reload__")) {
-          params.delete("__reload__");
-          let searchStr = params.toString();
-          if (searchStr) {
-            searchStr = "?" + searchStr;
-          }
-          let hash = window.sessionStorage.getItem("__hash__");
-          if (hash) {
-            window.sessionStorage.removeItem("__hash__");
-          } else {
-            hash = window.location.hash;
-          }
-          window.location.href = window.location.origin + window.location.pathname + searchStr + hash;
-        }
-      }
-      _load();
-    </script>
   </body>
 </html>

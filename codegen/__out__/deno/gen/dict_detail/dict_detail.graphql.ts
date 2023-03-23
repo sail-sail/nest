@@ -7,9 +7,9 @@ defineGraphql(dict_detailResolver, /* GraphQL */ `
 type Dict_DetailModel {
   "ID"
   id: ID!
-  "系统字典ID"
+  "系统字典"
   dict_id: ID!
-  "系统字典名称"
+  "系统字典"
   _dict_id: String
   "名称"
   lbl: String!
@@ -17,25 +17,47 @@ type Dict_DetailModel {
   val: String!
   "排序"
   order_by: Int!
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String!
-  "锁定ID"
+  "锁定"
   is_locked: Int!
-  "锁定名称"
+  "锁定"
   _is_locked: String
+}
+type Dict_DetailFieldComment {
+  "系统字典"
+  dict_id: String!
+  "系统字典"
+  _dict_id: String!
+  "名称"
+  lbl: String!
+  "值"
+  val: String!
+  "排序"
+  order_by: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "备注"
+  rem: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  _is_locked: String!
 }
 input Dict_DetailInput {
   "租户ID"
   tenant_id: String
   ""
   id: ID
-  "系统字典ID"
+  "系统字典"
   dict_id: ID
-  "系统字典名称"
+  "系统字典"
   _dict_id: String
   "名称"
   lbl: String
@@ -43,15 +65,15 @@ input Dict_DetailInput {
   val: String
   "排序"
   order_by: Int
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String
-  "锁定ID"
+  "锁定"
   is_locked: Int
-  "锁定名称"
+  "锁定"
   _is_locked: String
 }
 input Dict_DetailSearch {
@@ -85,8 +107,8 @@ type Query {
   findCountDict_detail(search: Dict_DetailSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllDict_detail(search: Dict_DetailSearch, page: PageInput, sort: [SortInput]): [Dict_DetailModel!]!
-  "根据搜索条件导出"
-  exportExcelDict_detail(search: Dict_DetailSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsDict_detail: Dict_DetailFieldComment!
   "根据条件查找第一条数据"
   findOneDict_detail(search: Dict_DetailSearch): Dict_DetailModel
   "根据id查找一条数据"

@@ -343,6 +343,32 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/options");
+  const fieldComments = {
+    lbl: await n("名称"),
+    ky: await n("键"),
+    val: await n("值"),
+    order_by: await n("排序"),
+    is_enabled: await n("启用"),
+    _is_enabled: await n("启用"),
+    rem: await n("备注"),
+    is_locked: await n("锁定"),
+    _is_locked: await n("锁定"),
+    version: await n("版本号"),
+    create_usr_id: await n("创建人"),
+    _create_usr_id: await n("创建人"),
+    create_time: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    _update_usr_id: await n("更新人"),
+    update_time: await n("更新时间"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

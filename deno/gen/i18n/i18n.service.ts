@@ -1,5 +1,3 @@
-import { renderExcel } from "ejsexcel";
-
 import {
   initN,
   ns,
@@ -232,30 +230,9 @@ export async function importFile(
 }
 
 /**
- * 导出Excel
- * @param {I18nSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<string>} 临时文件id
+ * 获取字段对应的名称
  */
-export async function exportExcel(
-  search?: I18nSearch,
-  sort?: SortInput|SortInput[],
-): Promise<string> {
-  const n = initN("/i18n");
-  const models = await findAll(search, undefined, sort);
-  const buffer0 = await getTemplate(`i18n.xlsx`);
-  if (!buffer0) {
-    const msg = await ns("模板文件 {0}.xlsx 不存在", "i18n");
-    throw new ServiceException(msg);
-  }
-  const buffer = await renderExcel(buffer0, { models, n });
-  const data = await tmpfileDao.upload(
-    {
-      content: buffer,
-      name: "file",
-      originalName: `${ await ns("国际化") }.xlsx`,
-      contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    },
-  );
+export async function getFieldComments() {
+  const data = await i18nDao.getFieldComments();
   return data;
 }

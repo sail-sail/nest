@@ -11,14 +11,28 @@ type RoleModel {
   lbl: String!
   "备注"
   rem: String!
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
-  "菜单ID"
+  "菜单"
   menu_ids: [ID!]
-  "菜单名称"
+  "菜单"
   _menu_ids: [String!]
+}
+type RoleFieldComment {
+  "名称"
+  lbl: String!
+  "备注"
+  rem: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "菜单"
+  menu_ids: String!
+  "菜单"
+  _menu_ids: String!
 }
 input RoleInput {
   "租户ID"
@@ -29,13 +43,13 @@ input RoleInput {
   lbl: String
   "备注"
   rem: String
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
-  "菜单ID"
+  "菜单"
   menu_ids: [ID!]
-  "菜单名称"
+  "菜单"
   _menu_ids: [String!]
 }
 input RoleSearch {
@@ -62,8 +76,8 @@ type Query {
   findCountRole(search: RoleSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput]): [RoleModel!]!
-  "根据搜索条件导出"
-  exportExcelRole(search: RoleSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsRole: RoleFieldComment!
   "根据条件查找第一条数据"
   findOneRole(search: RoleSearch): RoleModel
   "根据id查找一条数据"

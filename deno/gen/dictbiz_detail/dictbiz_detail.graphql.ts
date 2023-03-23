@@ -7,9 +7,9 @@ defineGraphql(dictbiz_detailResolver, /* GraphQL */ `
 type Dictbiz_DetailModel {
   "ID"
   id: ID!
-  "业务字典ID"
+  "业务字典"
   dictbiz_id: ID!
-  "业务字典名称"
+  "业务字典"
   _dictbiz_id: String
   "名称"
   lbl: String!
@@ -17,25 +17,47 @@ type Dictbiz_DetailModel {
   val: String!
   "排序"
   order_by: Int!
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String!
-  "锁定ID"
+  "锁定"
   is_locked: Int!
-  "锁定名称"
+  "锁定"
   _is_locked: String
+}
+type Dictbiz_DetailFieldComment {
+  "业务字典"
+  dictbiz_id: String!
+  "业务字典"
+  _dictbiz_id: String!
+  "名称"
+  lbl: String!
+  "值"
+  val: String!
+  "排序"
+  order_by: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "备注"
+  rem: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  _is_locked: String!
 }
 input Dictbiz_DetailInput {
   "租户ID"
   tenant_id: String
   ""
   id: ID
-  "业务字典ID"
+  "业务字典"
   dictbiz_id: ID
-  "业务字典名称"
+  "业务字典"
   _dictbiz_id: String
   "名称"
   lbl: String
@@ -43,15 +65,15 @@ input Dictbiz_DetailInput {
   val: String
   "排序"
   order_by: Int
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
   "备注"
   rem: String
-  "锁定ID"
+  "锁定"
   is_locked: Int
-  "锁定名称"
+  "锁定"
   _is_locked: String
 }
 input Dictbiz_DetailSearch {
@@ -85,8 +107,8 @@ type Query {
   findCountDictbiz_detail(search: Dictbiz_DetailSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllDictbiz_detail(search: Dictbiz_DetailSearch, page: PageInput, sort: [SortInput]): [Dictbiz_DetailModel!]!
-  "根据搜索条件导出"
-  exportExcelDictbiz_detail(search: Dictbiz_DetailSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsDictbiz_detail: Dictbiz_DetailFieldComment!
   "根据条件查找第一条数据"
   findOneDictbiz_detail(search: Dictbiz_DetailSearch): Dictbiz_DetailModel
   "根据id查找一条数据"

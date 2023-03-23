@@ -254,6 +254,22 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/lang");
+  const fieldComments = {
+    code: await n("编码"),
+    lbl: await n("名称"),
+    rem: await n("备注"),
+    is_enabled: await n("启用"),
+    _is_enabled: await n("启用"),
+    order_by: await n("排序"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

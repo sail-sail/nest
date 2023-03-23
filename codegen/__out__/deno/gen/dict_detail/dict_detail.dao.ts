@@ -292,6 +292,26 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/dict_detail");
+  const fieldComments = {
+    dict_id: await n("系统字典"),
+    _dict_id: await n("系统字典"),
+    lbl: await n("名称"),
+    val: await n("值"),
+    order_by: await n("排序"),
+    is_enabled: await n("启用"),
+    _is_enabled: await n("启用"),
+    rem: await n("备注"),
+    is_locked: await n("锁定"),
+    _is_locked: await n("锁定"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{

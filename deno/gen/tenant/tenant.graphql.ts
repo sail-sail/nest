@@ -15,16 +15,38 @@ type TenantModel {
   expiration: String
   "最大用户数"
   max_usr_num: Int!
-  "启用ID"
+  "启用"
   is_enabled: Int!
-  "启用名称"
+  "启用"
   _is_enabled: String
-  "菜单ID"
+  "菜单"
   menu_ids: [ID!]
-  "菜单名称"
+  "菜单"
   _menu_ids: [String!]
   "排序"
   order_by: Int!
+  "备注"
+  rem: String!
+}
+type TenantFieldComment {
+  "名称"
+  lbl: String!
+  "域名绑定"
+  host: String!
+  "到期日"
+  expiration: String!
+  "最大用户数"
+  max_usr_num: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  _is_enabled: String!
+  "菜单"
+  menu_ids: String!
+  "菜单"
+  _menu_ids: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
 }
@@ -41,13 +63,13 @@ input TenantInput {
   expiration: String
   "最大用户数"
   max_usr_num: Int
-  "启用ID"
+  "启用"
   is_enabled: Int
-  "启用名称"
+  "启用"
   _is_enabled: String
-  "菜单ID"
+  "菜单"
   menu_ids: [ID!]
-  "菜单名称"
+  "菜单"
   _menu_ids: [String!]
   "排序"
   order_by: Int
@@ -87,8 +109,8 @@ type Query {
   findCountTenant(search: TenantSearch): Int!
   "根据搜索条件和分页查找数据"
   findAllTenant(search: TenantSearch, page: PageInput, sort: [SortInput]): [TenantModel!]!
-  "根据搜索条件导出"
-  exportExcelTenant(search: TenantSearch, sort: [SortInput]): String!
+  "获取字段对应的名称"
+  getFieldCommentsTenant: TenantFieldComment!
   "根据条件查找第一条数据"
   findOneTenant(search: TenantSearch): TenantModel
   "根据id查找一条数据"

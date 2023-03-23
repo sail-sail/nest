@@ -41,14 +41,11 @@ export async function findAllOptions(
 }
 
 /**
- * 根据搜索条件导出
+ * 获取字段对应的名称
  */
-export async function exportExcelOptions(
-  search?: OptionsSearch & { $extra?: SearchExtra[] },
-  sort?: SortInput[],
-) {
-  const { exportExcel } = await import("./options.service.ts");
-  const data = await exportExcel(search, sort);
+export async function getFieldCommentsOptions() {
+  const { getFieldComments } = await import("./options.service.ts");
+  const data = await getFieldComments();
   return data;
 }
 

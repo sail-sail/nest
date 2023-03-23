@@ -299,6 +299,27 @@ export async function findAll(
 }
 
 /**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments() {
+  const n = initN("/menu");
+  const fieldComments = {
+    type: await n("类型"),
+    _type: await n("类型"),
+    menu_id: await n("父菜单"),
+    _menu_id: await n("父菜单"),
+    lbl: await n("名称"),
+    route_path: await n("路由"),
+    route_query: await n("参数"),
+    is_enabled: await n("启用"),
+    _is_enabled: await n("启用"),
+    order_by: await n("排序"),
+    rem: await n("备注"),
+  };
+  return fieldComments;
+}
+
+/**
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{
