@@ -419,7 +419,6 @@ export function useExportExcel(
         getFieldCommentsUsr {
           lbl
           username
-          password
           default_dept_id
           _default_dept_id
           is_enabled

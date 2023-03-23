@@ -2739,8 +2739,6 @@ export type UsrFieldComment = {
   is_locked: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
-  /** 密码 */
-  password: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
   /** 拥有角色 */
@@ -2838,9 +2836,6 @@ export type UsrSearch = {
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   lblLike?: InputMaybe<Scalars['String']>;
-  /** 密码 */
-  password?: InputMaybe<Scalars['String']>;
-  passwordLike?: InputMaybe<Scalars['String']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;

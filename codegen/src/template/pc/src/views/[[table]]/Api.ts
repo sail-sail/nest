@@ -572,7 +572,11 @@ export function useExportExcel(
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
             const foreignKey = column.foreignKey;
-            if (column_name === "id") continue;
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
           #><#
             if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
           #>

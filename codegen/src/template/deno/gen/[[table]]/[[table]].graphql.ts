@@ -112,6 +112,8 @@ type <#=Table_Up#>FieldComment {<#
     if (column_name === 'id') {
       continue;
     }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
   #><#
     if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
   #>
@@ -221,6 +223,8 @@ input <#=Table_Up#>Search {
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
     const search = column.search;
     if (column_name === 'id') {
       data_type = 'ID';

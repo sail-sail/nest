@@ -41,8 +41,6 @@ type UsrFieldComment {
   lbl: String!
   "用户名"
   username: String!
-  "密码"
-  password: String!
   "默认部门"
   default_dept_id: String!
   "默认部门"
@@ -113,9 +111,6 @@ input UsrSearch {
   "用户名"
   username: String
   usernameLike: String
-  "密码"
-  password: String
-  passwordLike: String
   "默认部门"
   default_dept_id: [String]
   _default_dept_id: [String]
