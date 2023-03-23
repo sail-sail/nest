@@ -24,29 +24,6 @@ async function copyEnv() {
   await Deno.copyFile(Deno.cwd()+"/.env.prod", `${ buildDir }/.env.prod`);
 }
 
-async function excel_template() {
-  console.log("excel_template");
-  await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
-  await Deno.mkdir(`${ buildDir }/excel_template`, { recursive: true });
-  const tmpFn = async function(dir: string) {
-    for await (const dirEntry of Deno.readDir(dir)) {
-      if (dirEntry.name === "node_modules" || dirEntry.name === "test") {
-        continue;
-      }
-      if (dirEntry.isDirectory) {
-        await tmpFn(dir + "/" + dirEntry.name);
-      } else if (dirEntry.isFile) {
-        if (!dirEntry.name.endsWith(".xlsx") && !dirEntry.name.endsWith(".xlsm")) {
-          continue;
-        }
-        await Deno.copyFile(dir + "/" + dirEntry.name, `${ buildDir }/excel_template/${ dirEntry.name }`);
-      }
-    }
-  }
-  await tmpFn(Deno.cwd()+"/gen/");
-  await tmpFn(Deno.cwd()+"/src/");
-}
-
 async function gqlgen() {
   console.log("gqlgen");
   const proc = Deno.run({
@@ -78,7 +55,6 @@ async function compile() {
     }
     const allowReads = [
       ".",
-      "./excel_template",
       "./tmp",
     ];
     const allowWrites = [
@@ -256,8 +232,6 @@ for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();
   if (command === "copyEnv") {
     await copyEnv();
-  } else if (command === "excel_template") {
-    await excel_template();
   } else if (command === "gqlgen") {
     await gqlgen();
   } else if (command === "compile") {
@@ -275,7 +249,6 @@ if (commands.length === 0) {
   await Deno.remove(`${ buildDir }/`, { recursive: true });
   await Deno.mkdir(`${ buildDir }/`, { recursive: true });
   await copyEnv();
-  await excel_template();
   await gqlgen();
   await compile();
   await pc();
