@@ -61,6 +61,7 @@ export default defineConfig({
             "getDict",
             "getDictbiz",
             "useRenderExcel",
+            "saveAsExcel",
           ],
         },
         {

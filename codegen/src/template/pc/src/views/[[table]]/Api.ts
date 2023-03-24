@@ -18,8 +18,6 @@ importForeignTables.push(Table_Up);
   type <#=Table_Up#>Input,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 import {<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -514,102 +512,96 @@ export async function get<#=foreignTableUp#>List() {
 
 /**
  * 导出Excel
- * @export useExportExcel
- * @param {<#=Table_Up#>Search} search?
- * @param {Sort[]} sort?
  */
-export function useExportExcel(
-  search?: <#=Table_Up#>Search,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const queryStr = getQueryUrl({
-    query: /* GraphQL */ `
-      query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
-        findAll<#=tableUp#>(search: $search, sort: $sort) {<#
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            const column_name = column.COLUMN_NAME;
-            let column_type = column.DATA_TYPE;
-            let column_comment = column.COLUMN_COMMENT;
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.includes("[")) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
-            const foreignKey = column.foreignKey;
-          #><#
-            if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-          #>
-          <#=column_name#><#
-            } else {
-          #>
-          <#=column_name#>
-          _<#=column_name#><#
-            }
-          }
-          #>
-        }
-        getFieldComments<#=tableUp#> {<#
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            const column_name = column.COLUMN_NAME;
-            let column_type = column.DATA_TYPE;
-            let column_comment = column.COLUMN_COMMENT;
-            let selectList = [ ];
-            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-            if (selectStr) {
-              selectList = eval(`(${ selectStr })`);
-            }
-            if (column_comment.includes("[")) {
-              column_comment = column_comment.substring(0, column_comment.indexOf("["));
-            }
-            const foreignKey = column.foreignKey;
-            if (column_name === "id") {
-              continue;
-            }
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-          #><#
-            if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-          #>
-          <#=column_name#><#
-            } else {
-          #>
-          <#=column_name#>
-          _<#=column_name#><#
-            }
-          }
-          #>
-        }
-      }
-    `,
-    variables: {
-      search,
-      sort,
-    },
-  }, opt);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
-  async function workerFn2() {
+  async function workerFn2(
+    search?: <#=Table_Up#>Search,
+    sort?: Sort[],
+    opt?: GqlOpt,
+  ) {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
+          findAll<#=tableUp#>(search: $search, sort: $sort) {<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+            #><#
+              if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+            #>
+            <#=column_name#><#
+              } else {
+            #>
+            <#=column_name#>
+            _<#=column_name#><#
+              }
+            }
+            #>
+          }
+          getFieldComments<#=tableUp#> {<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+              if (column_name === "id") {
+                continue;
+              }
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+            #><#
+              if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+            #>
+            <#=column_name#><#
+              } else {
+            #>
+            <#=column_name#>
+            _<#=column_name#><#
+              }
+            }
+            #>
+          }
+        }
+      `,
+      variables: {
+        search,
+        sort,
+      },
+    }, opt);
     const buffer = await workerFn(
       `${ location.origin }/excel_template/<#=table#>.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    const blob = new Blob([ buffer ], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, "<#=table_comment#>");
+    saveAsExcel(buffer, "<#=table_comment#>");
   }
   return {
     workerFn: workerFn2,
