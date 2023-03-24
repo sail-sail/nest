@@ -7,8 +7,6 @@ import {
   type TenantInput,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 import {
   type MenuSearch,
 } from "#/types";
@@ -304,64 +302,58 @@ export async function getMenuList() {
 
 /**
  * 导出Excel
- * @export useExportExcel
- * @param {TenantSearch} search?
- * @param {Sort[]} sort?
  */
-export function useExportExcel(
-  search?: TenantSearch,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const queryStr = getQueryUrl({
-    query: /* GraphQL */ `
-      query($search: TenantSearch, $sort: [SortInput]) {
-        findAllTenant(search: $search, sort: $sort) {
-          id
-          lbl
-          host
-          expiration
-          max_usr_num
-          is_enabled
-          _is_enabled
-          menu_ids
-          _menu_ids
-          order_by
-          rem
-        }
-        getFieldCommentsTenant {
-          lbl
-          host
-          expiration
-          max_usr_num
-          is_enabled
-          _is_enabled
-          menu_ids
-          _menu_ids
-          order_by
-          rem
-        }
-      }
-    `,
-    variables: {
-      search,
-      sort,
-    },
-  }, opt);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
-  async function workerFn2() {
+  async function workerFn2(
+    search?: TenantSearch,
+    sort?: Sort[],
+    opt?: GqlOpt,
+  ) {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query($search: TenantSearch, $sort: [SortInput]) {
+          findAllTenant(search: $search, sort: $sort) {
+            id
+            lbl
+            host
+            expiration
+            max_usr_num
+            is_enabled
+            _is_enabled
+            menu_ids
+            _menu_ids
+            order_by
+            rem
+          }
+          getFieldCommentsTenant {
+            lbl
+            host
+            expiration
+            max_usr_num
+            is_enabled
+            _is_enabled
+            menu_ids
+            _menu_ids
+            order_by
+            rem
+          }
+        }
+      `,
+      variables: {
+        search,
+        sort,
+      },
+    }, opt);
     const buffer = await workerFn(
       `${ location.origin }/excel_template/tenant.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    const blob = new Blob([ buffer ], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, "租户");
+    saveAsExcel(buffer, "租户");
   }
   return {
     workerFn: workerFn2,

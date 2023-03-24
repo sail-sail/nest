@@ -848,11 +848,11 @@ async function sortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel(search, [ sort ]));
+let exportExcel = $ref(useExportExcel());
 
 /** 导出Excel */
 async function exportClk() {
-  await exportExcel.workerFn();
+  await exportExcel.workerFn(search, [ sort ]);
 }
 
 /** 取消导出Excel */

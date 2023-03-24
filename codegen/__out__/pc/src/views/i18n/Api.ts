@@ -7,8 +7,6 @@ import {
   type I18nInput,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 import {
   type LangSearch,
   type MenuSearch,
@@ -344,58 +342,52 @@ export async function getMenuList() {
 
 /**
  * 导出Excel
- * @export useExportExcel
- * @param {I18nSearch} search?
- * @param {Sort[]} sort?
  */
-export function useExportExcel(
-  search?: I18nSearch,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const queryStr = getQueryUrl({
-    query: /* GraphQL */ `
-      query($search: I18nSearch, $sort: [SortInput]) {
-        findAllI18n(search: $search, sort: $sort) {
-          id
-          lang_id
-          _lang_id
-          menu_id
-          _menu_id
-          code
-          lbl
-          rem
-        }
-        getFieldCommentsI18n {
-          lang_id
-          _lang_id
-          menu_id
-          _menu_id
-          code
-          lbl
-          rem
-        }
-      }
-    `,
-    variables: {
-      search,
-      sort,
-    },
-  }, opt);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
-  async function workerFn2() {
+  async function workerFn2(
+    search?: I18nSearch,
+    sort?: Sort[],
+    opt?: GqlOpt,
+  ) {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query($search: I18nSearch, $sort: [SortInput]) {
+          findAllI18n(search: $search, sort: $sort) {
+            id
+            lang_id
+            _lang_id
+            menu_id
+            _menu_id
+            code
+            lbl
+            rem
+          }
+          getFieldCommentsI18n {
+            lang_id
+            _lang_id
+            menu_id
+            _menu_id
+            code
+            lbl
+            rem
+          }
+        }
+      `,
+      variables: {
+        search,
+        sort,
+      },
+    }, opt);
     const buffer = await workerFn(
       `${ location.origin }/excel_template/i18n.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    const blob = new Blob([ buffer ], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, "国际化");
+    saveAsExcel(buffer, "国际化");
   }
   return {
     workerFn: workerFn2,

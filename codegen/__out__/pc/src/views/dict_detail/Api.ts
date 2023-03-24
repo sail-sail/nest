@@ -7,8 +7,6 @@ import {
   type Dict_DetailInput,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 import {
   type DictSearch,
 } from "#/types";
@@ -333,64 +331,58 @@ export async function getDictList() {
 
 /**
  * 导出Excel
- * @export useExportExcel
- * @param {Dict_DetailSearch} search?
- * @param {Sort[]} sort?
  */
-export function useExportExcel(
-  search?: Dict_DetailSearch,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const queryStr = getQueryUrl({
-    query: /* GraphQL */ `
-      query($search: Dict_DetailSearch, $sort: [SortInput]) {
-        findAllDict_detail(search: $search, sort: $sort) {
-          id
-          dict_id
-          _dict_id
-          lbl
-          val
-          order_by
-          is_enabled
-          _is_enabled
-          rem
-          is_locked
-          _is_locked
-        }
-        getFieldCommentsDict_detail {
-          dict_id
-          _dict_id
-          lbl
-          val
-          order_by
-          is_enabled
-          _is_enabled
-          rem
-          is_locked
-          _is_locked
-        }
-      }
-    `,
-    variables: {
-      search,
-      sort,
-    },
-  }, opt);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
-  async function workerFn2() {
+  async function workerFn2(
+    search?: Dict_DetailSearch,
+    sort?: Sort[],
+    opt?: GqlOpt,
+  ) {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query($search: Dict_DetailSearch, $sort: [SortInput]) {
+          findAllDict_detail(search: $search, sort: $sort) {
+            id
+            dict_id
+            _dict_id
+            lbl
+            val
+            order_by
+            is_enabled
+            _is_enabled
+            rem
+            is_locked
+            _is_locked
+          }
+          getFieldCommentsDict_detail {
+            dict_id
+            _dict_id
+            lbl
+            val
+            order_by
+            is_enabled
+            _is_enabled
+            rem
+            is_locked
+            _is_locked
+          }
+        }
+      `,
+      variables: {
+        search,
+        sort,
+      },
+    }, opt);
     const buffer = await workerFn(
       `${ location.origin }/excel_template/dict_detail.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    const blob = new Blob([ buffer ], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, "系统字典明细");
+    saveAsExcel(buffer, "系统字典明细");
   }
   return {
     workerFn: workerFn2,

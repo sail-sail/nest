@@ -130,6 +130,7 @@
     "resolveComponent": true,
     "resolveRef": true,
     "resolveUnref": true,
+    "saveAsExcel": true,
     "shallowReactive": true,
     "shallowReadonly": true,
     "shallowRef": true,

@@ -7,8 +7,6 @@ import {
   type Operation_RecordInput,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 import {
   type UsrSearch,
 } from "#/types";
@@ -253,68 +251,62 @@ export async function getUsrList() {
 
 /**
  * 导出Excel
- * @export useExportExcel
- * @param {Operation_RecordSearch} search?
- * @param {Sort[]} sort?
  */
-export function useExportExcel(
-  search?: Operation_RecordSearch,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const queryStr = getQueryUrl({
-    query: /* GraphQL */ `
-      query($search: Operation_RecordSearch, $sort: [SortInput]) {
-        findAllOperation_record(search: $search, sort: $sort) {
-          id
-          mod
-          mod_lbl
-          method
-          method_lbl
-          lbl
-          rem
-          create_usr_id
-          _create_usr_id
-          create_time
-          update_usr_id
-          _update_usr_id
-          update_time
-        }
-        getFieldCommentsOperation_record {
-          mod
-          mod_lbl
-          method
-          method_lbl
-          lbl
-          rem
-          create_usr_id
-          _create_usr_id
-          create_time
-          update_usr_id
-          _update_usr_id
-          update_time
-        }
-      }
-    `,
-    variables: {
-      search,
-      sort,
-    },
-  }, opt);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
     workerTerminate,
   } = useRenderExcel();
-  async function workerFn2() {
+  async function workerFn2(
+    search?: Operation_RecordSearch,
+    sort?: Sort[],
+    opt?: GqlOpt,
+  ) {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query($search: Operation_RecordSearch, $sort: [SortInput]) {
+          findAllOperation_record(search: $search, sort: $sort) {
+            id
+            mod
+            mod_lbl
+            method
+            method_lbl
+            lbl
+            rem
+            create_usr_id
+            _create_usr_id
+            create_time
+            update_usr_id
+            _update_usr_id
+            update_time
+          }
+          getFieldCommentsOperation_record {
+            mod
+            mod_lbl
+            method
+            method_lbl
+            lbl
+            rem
+            create_usr_id
+            _create_usr_id
+            create_time
+            update_usr_id
+            _update_usr_id
+            update_time
+          }
+        }
+      `,
+      variables: {
+        search,
+        sort,
+      },
+    }, opt);
     const buffer = await workerFn(
       `${ location.origin }/excel_template/operation_record.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    const blob = new Blob([ buffer ], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, "操作记录");
+    saveAsExcel(buffer, "操作记录");
   }
   return {
     workerFn: workerFn2,
