@@ -3,14 +3,12 @@ export { defineGraphql } from "/lib/oak/gql.ts";
 import { AsyncHooksContextManager } from "./async_hooks/AsyncHooksContextManager.ts";
 
 import {
-  connect as redisConnect,
   type Redis,
   type RedisConnectOptions,
 } from "redis";
 
 import {
-  Client,
-  configLogger,
+  type Client,
   type ClientConfig,
 } from "./mysql/mod.ts";
 
@@ -85,6 +83,9 @@ async function redisClient() {
     option.password = cache_password;
   }
   try {
+    const {
+      connect: redisConnect,
+    } = await import("redis");
     _redisClient = await redisConnect(option);
   } catch (err) {
     if (err.code === "ECONNREFUSED") {
@@ -121,6 +122,10 @@ export async function getClient(): Promise<Client> {
       }
     }
     const debug = await getEnv("database_debug");
+    const {
+      Client,
+      configLogger,
+    } = await import("./mysql/mod.ts");
     if (debug === "true") {
       configLogger({ enable: true });
     } else {

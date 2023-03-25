@@ -3,7 +3,6 @@ import {
 } from "oak";
 
 import {
-  S3,
   type S3Bucket,
 } from "S3";
 
@@ -16,6 +15,9 @@ export async function getBucket() {
   if (_bucket) {
     return _bucket;
   }
+  const {
+    S3,
+  } = await import("S3");
   const s3 = new S3({
     accessKeyID: await getEnv("tmpfile_accesskey"),
     secretKey: await getEnv("tmpfile_secretkey"),

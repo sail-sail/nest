@@ -8,16 +8,8 @@ import { ServiceException } from "/lib/exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
 import {
-  SignJWT,
-  jwtVerify,
-  decodeJwt,
   type JWTPayload,
 } from "jose/index.ts";
-
-import {
-  JWSSignatureVerificationFailed,
-  JWTExpired,
-} from "jose/util/errors.ts";
 
 import {
   getAuthorization,
@@ -55,7 +47,7 @@ export async function getAuthModel<T extends AuthModel>(
     }
   }
   if (notVerifyToken) {
-    authModel = decodeToken<T>(authorization);
+    authModel = await decodeToken<T>(authorization);
     context.cacheMap.set("authModel", authModel);
     return authModel;
   }
@@ -63,6 +55,10 @@ export async function getAuthModel<T extends AuthModel>(
     authModel = await verifyToken<T>(authorization);
     context.cacheMap.set("authModel", authModel);
   } catch (err: unknown) {
+    const {
+      JWSSignatureVerificationFailed,
+      JWTExpired,
+    } = await import("jose/util/errors.ts");
     if (err instanceof JWTExpired || err instanceof JWSSignatureVerificationFailed) {
       authModel = undefined;
       context.cacheMap.set("authModel", authModel);
@@ -94,6 +90,9 @@ export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expir
   if (!(token_timeout > 10)) {
     throw new Error("Env server_tokentimeout must larger then 10!");
   }
+  const {
+    SignJWT,
+  } = await import("jose/index.ts");
   const token = await new SignJWT(obj)
     .setExpirationTime(token_timeout+'s')
     .setProtectedHeader({ alg: "HS256" })
@@ -110,6 +109,9 @@ export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expir
  * @returns Promise<T> 验证成功后的对象
  */
 export async function verifyToken<T extends JWTPayload>(authorization :string): Promise<T> {
+  const {
+    jwtVerify,
+  } = await import("jose/index.ts");
   const { payload } = await jwtVerify(authorization, new TextEncoder().encode(SECRET_KEY));
   return <T>payload;
 }
@@ -119,7 +121,10 @@ export async function verifyToken<T extends JWTPayload>(authorization :string): 
  * @param {string} authorization
  * @returns T 验证成功后的对象
  */
-export function decodeToken<T extends JWTPayload>(authorization :string): T {
+export async function decodeToken<T extends JWTPayload>(authorization :string): Promise<T> {
+  const {
+    decodeJwt,
+  } = await import("jose/index.ts");
   const obj = <T>decodeJwt(authorization);
   return obj;
 }
@@ -130,6 +135,9 @@ export function decodeToken<T extends JWTPayload>(authorization :string): T {
  * @returns Promise<{ expires_in: number, authorization: string }> 新tokenInfo
  */
 export async function refreshToken(authorization: string): Promise<{ expires_in: number, authorization: string }> {
+  const {
+    decodeJwt,
+  } = await import("jose/index.ts");
   const obj = decodeJwt(authorization);
   if (!obj || !obj.exp) {
     throw new ServiceException("", "refresh_token_expired");
