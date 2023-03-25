@@ -31,8 +31,8 @@ export async function verifyToken<T extends AuthModel>(authorization :string): P
  * @param {string} authorization
  * @returns T 验证成功后的对象
  */
-export function decodeToken<T extends AuthModel>(authorization :string) :T {
-  return authDao.decodeToken(authorization);
+export async function decodeToken<T extends AuthModel>(authorization :string): Promise<T> {
+  return await authDao.decodeToken(authorization);
 }
 
 /**
