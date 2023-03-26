@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type LangInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -116,13 +117,13 @@ export async function deleteByIdsLang(
 }
 
 /**
- * 导入语言
+ * 批量导入
  */
-export async function importFileLang(
-  id: string,
+export async function importModelsLang(
+  models: LangInput[],
 ) {
-  const { importFile } = await import("./lang.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./lang.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

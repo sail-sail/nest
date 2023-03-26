@@ -1,15 +1,11 @@
 import {
-  initN,
   ns,
 } from "/src/i18n/i18n.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  getImportFileRows,
-} from "/lib/util/excel_util.ts";
-
-import {
+  type Operation_RecordInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -161,23 +157,12 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 导入文件
- * @param {string} id
+ * 批量导入
+ * @param {Operation_RecordInput[]} models
  */
-export async function importFile(
-  id: string,
+export async function importModels(
+  models: Operation_RecordInput[],
 ) {
-  const n = initN("/operation_record");
-  const header: { [key: string]: string } = {
-    [ await n("模块") ]: "mod",
-    [ await n("模块名称") ]: "mod_lbl",
-    [ await n("方法") ]: "method",
-    [ await n("方法名称") ]: "method_lbl",
-    [ await n("操作") ]: "lbl",
-    [ await n("备注") ]: "rem",
-  };
-  const models = await getImportFileRows(id, header);
-  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];

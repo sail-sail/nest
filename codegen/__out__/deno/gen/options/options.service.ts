@@ -1,15 +1,11 @@
 import {
-  initN,
   ns,
 } from "/src/i18n/i18n.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  getImportFileRows,
-} from "/lib/util/excel_util.ts";
-
-import {
+  type OptionsInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -200,25 +196,12 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 导入文件
- * @param {string} id
+ * 批量导入
+ * @param {OptionsInput[]} models
  */
-export async function importFile(
-  id: string,
+export async function importModels(
+  models: OptionsInput[],
 ) {
-  const n = initN("/options");
-  const header: { [key: string]: string } = {
-    [ await n("名称") ]: "lbl",
-    [ await n("键") ]: "ky",
-    [ await n("值") ]: "val",
-    [ await n("排序") ]: "order_by",
-    [ await n("启用") ]: "_is_enabled",
-    [ await n("备注") ]: "rem",
-    [ await n("锁定") ]: "_is_locked",
-    [ await n("版本号") ]: "version",
-  };
-  const models = await getImportFileRows(id, header);
-  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];

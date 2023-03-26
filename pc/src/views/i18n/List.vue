@@ -926,16 +926,24 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("语言") ]: "_lang_id",
+    [ n("菜单") ]: "_menu_id",
+    [ n("编码") ]: "code",
+    [ n("名称") ]: "lbl",
+    [ n("备注") ]: "rem",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入国际化",
+    title: "批量导入国际化",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

@@ -1015,16 +1015,27 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("名称") ]: "lbl",
+    [ n("用户名") ]: "username",
+    [ n("默认部门") ]: "_default_dept_id",
+    [ n("启用") ]: "_is_enabled",
+    [ n("备注") ]: "rem",
+    [ n("拥有部门") ]: "_dept_ids",
+    [ n("锁定") ]: "_is_locked",
+    [ n("拥有角色") ]: "_role_ids",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入用户",
+    title: "批量导入用户",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

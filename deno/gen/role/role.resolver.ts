@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type RoleInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -116,13 +117,13 @@ export async function deleteByIdsRole(
 }
 
 /**
- * 导入角色
+ * 批量导入
  */
-export async function importFileRole(
-  id: string,
+export async function importModelsRole(
+  models: RoleInput[],
 ) {
-  const { importFile } = await import("./role.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./role.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

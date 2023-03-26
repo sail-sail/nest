@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type Background_TaskInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";

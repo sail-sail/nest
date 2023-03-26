@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type TenantInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -116,13 +117,13 @@ export async function deleteByIdsTenant(
 }
 
 /**
- * 导入租户
+ * 批量导入
  */
-export async function importFileTenant(
-  id: string,
+export async function importModelsTenant(
+  models: TenantInput[],
 ) {
-  const { importFile } = await import("./tenant.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./tenant.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type MenuInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -116,13 +117,13 @@ export async function deleteByIdsMenu(
 }
 
 /**
- * 导入菜单
+ * 批量导入
  */
-export async function importFileMenu(
-  id: string,
+export async function importModelsMenu(
+  models: MenuInput[],
 ) {
-  const { importFile } = await import("./menu.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./menu.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

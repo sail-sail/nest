@@ -1166,30 +1166,30 @@ export type Mutation = {
   forceDeleteByIdsTenant: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsUsr: Scalars['Int'];
-  /** 导入文件 */
-  importFileDept?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileDict?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileDict_detail?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileDictbiz?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileDictbiz_detail?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileI18n?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileLang?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileMenu?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileOptions?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileRole?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileTenant?: Maybe<Scalars['String']>;
-  /** 导入文件 */
-  importFileUsr?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelDept?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelDict?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelDict_detail?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelDictbiz?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelDictbiz_detail?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelI18n?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelLang?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelMenu?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelOptions?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelRole?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelTenant?: Maybe<Scalars['String']>;
+  /** 批量导入 */
+  importModelUsr?: Maybe<Scalars['String']>;
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsDept: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
@@ -1467,63 +1467,63 @@ export type MutationForceDeleteByIdsUsrArgs = {
 };
 
 
-export type MutationImportFileDeptArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelDeptArgs = {
+  models: Array<DeptInput>;
 };
 
 
-export type MutationImportFileDictArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelDictArgs = {
+  models: Array<DictInput>;
 };
 
 
-export type MutationImportFileDict_DetailArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelDict_DetailArgs = {
+  models: Array<Dict_DetailInput>;
 };
 
 
-export type MutationImportFileDictbizArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelDictbizArgs = {
+  models: Array<DictbizInput>;
 };
 
 
-export type MutationImportFileDictbiz_DetailArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelDictbiz_DetailArgs = {
+  models: Array<Dictbiz_DetailInput>;
 };
 
 
-export type MutationImportFileI18nArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelI18nArgs = {
+  models: Array<I18nInput>;
 };
 
 
-export type MutationImportFileLangArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelLangArgs = {
+  models: Array<LangInput>;
 };
 
 
-export type MutationImportFileMenuArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelMenuArgs = {
+  models: Array<MenuInput>;
 };
 
 
-export type MutationImportFileOptionsArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelOptionsArgs = {
+  models: Array<OptionsInput>;
 };
 
 
-export type MutationImportFileRoleArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelRoleArgs = {
+  models: Array<RoleInput>;
 };
 
 
-export type MutationImportFileTenantArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelTenantArgs = {
+  models: Array<TenantInput>;
 };
 
 
-export type MutationImportFileUsrArgs = {
-  id: Scalars['ID'];
+export type MutationImportModelUsrArgs = {
+  models: Array<UsrInput>;
 };
 
 

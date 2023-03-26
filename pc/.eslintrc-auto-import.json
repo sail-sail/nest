@@ -75,6 +75,7 @@
     "getDict": true,
     "getDictbiz": true,
     "getDownloadUrl": true,
+    "getExcelData": true,
     "getQueryUrl": true,
     "h": true,
     "ignorableWatch": true,

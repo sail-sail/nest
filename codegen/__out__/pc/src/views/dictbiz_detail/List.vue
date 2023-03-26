@@ -952,16 +952,26 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("业务字典") ]: "_dictbiz_id",
+    [ n("名称") ]: "lbl",
+    [ n("值") ]: "val",
+    [ n("排序") ]: "order_by",
+    [ n("启用") ]: "_is_enabled",
+    [ n("备注") ]: "rem",
+    [ n("锁定") ]: "_is_locked",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入业务字典明细",
+    title: "批量导入业务字典明细",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

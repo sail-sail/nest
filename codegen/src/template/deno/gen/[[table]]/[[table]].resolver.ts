@@ -15,6 +15,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type <#=Table_Up#>Input,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -175,13 +176,13 @@ if (opts.noAdd !== true && opts.noEdit !== true) {
 #>
 
 /**
- * 导入<#=table_comment#>
+ * 批量导入
  */
-export async function importFile<#=tableUp#>(
-  id: string,
+export async function importModels<#=tableUp#>(
+  models: <#=Table_Up#>Input[],
 ) {
-  const { importFile } = await import("./<#=table#>.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./<#=table#>.service.ts");
+  const data = await importModels(models);
   return data;
 }<#
 }

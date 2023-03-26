@@ -72,6 +72,7 @@ declare global {
   const getDict: typeof import('@/utils/common')['getDict']
   const getDictbiz: typeof import('@/utils/common')['getDictbiz']
   const getDownloadUrl: typeof import('@/utils/axios')['getDownloadUrl']
+  const getExcelData: typeof import('@/utils/excel_util')['getExcelData']
   const getQueryUrl: typeof import('@/utils/graphql')['getQueryUrl']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']

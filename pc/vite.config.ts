@@ -65,6 +65,11 @@ export default defineConfig({
           ],
         },
         {
+          "@/utils/excel_util": [
+            "getExcelData",
+          ],
+        },
+        {
           "element-plus": [
             "ElButton",
             "ElInput",

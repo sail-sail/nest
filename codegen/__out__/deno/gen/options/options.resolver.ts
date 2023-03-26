@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type OptionsInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -134,13 +135,13 @@ export async function lockByIdsOptions(
 }
 
 /**
- * 导入系统选项
+ * 批量导入
  */
-export async function importFileOptions(
-  id: string,
+export async function importModelsOptions(
+  models: OptionsInput[],
 ) {
-  const { importFile } = await import("./options.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./options.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type DeptInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -134,13 +135,13 @@ export async function lockByIdsDept(
 }
 
 /**
- * 导入部门
+ * 批量导入
  */
-export async function importFileDept(
-  id: string,
+export async function importModelsDept(
+  models: DeptInput[],
 ) {
-  const { importFile } = await import("./dept.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./dept.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

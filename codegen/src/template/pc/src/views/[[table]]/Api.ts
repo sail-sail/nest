@@ -613,31 +613,30 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>
 
 /**
- * 导入文件
+ * 批量导入
  * @param {File} file
  * @export importFile
  */
 export async function importFile(
   file: File,
+  header: { [key: string]: string },
   opt?: GqlOpt,
 ) {
-  if (!file) return;
-  const id = await uploadFile(file, undefined, { type: "tmpfile" });
-  if (!id) return;
+  const models = await getExcelData(file, header);
   const data: {
-    importFile<#=tableUp#>: Mutation["importFile<#=tableUp#>"];
+    importModels<#=tableUp#>: Mutation["importModels<#=tableUp#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!) {
-        importFile<#=tableUp#>(id: $id)
+      mutation($models: [<#=Table_Up#>Input!]!) {
+        importModels<#=tableUp#>(models: $models)
       }
     `,
     variables: {
-      id,
+      models,
     },
   }, opt);
-  const result = data.importFile<#=tableUp#>;
-  return result;
+  const res = data.importModels<#=tableUp#>;
+  return res;
 }<#
 }
 #><#

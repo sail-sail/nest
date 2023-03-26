@@ -958,16 +958,27 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("类型") ]: "_type",
+    [ n("父菜单") ]: "_menu_id",
+    [ n("名称") ]: "lbl",
+    [ n("路由") ]: "route_path",
+    [ n("参数") ]: "route_query",
+    [ n("启用") ]: "_is_enabled",
+    [ n("排序") ]: "order_by",
+    [ n("备注") ]: "rem",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入菜单",
+    title: "批量导入菜单",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

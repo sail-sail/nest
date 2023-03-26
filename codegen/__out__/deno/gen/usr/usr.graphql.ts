@@ -145,8 +145,8 @@ type Mutation {
   createUsr(model: UsrInput!): ID!
   "根据id修改一条数据"
   updateByIdUsr(id: ID!, model: UsrInput!): ID!
-  "导入文件"
-  importFileUsr(id: ID!): String
+  "批量导入"
+  importModelUsr(models: [UsrInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsUsr(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

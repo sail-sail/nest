@@ -885,16 +885,23 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("名称") ]: "lbl",
+    [ n("备注") ]: "rem",
+    [ n("启用") ]: "_is_enabled",
+    [ n("菜单") ]: "_menu_ids",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入角色",
+    title: "批量导入角色",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

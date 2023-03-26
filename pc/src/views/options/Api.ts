@@ -416,31 +416,30 @@ export function useExportExcel() {
 }
 
 /**
- * 导入文件
+ * 批量导入
  * @param {File} file
  * @export importFile
  */
 export async function importFile(
   file: File,
+  header: { [key: string]: string },
   opt?: GqlOpt,
 ) {
-  if (!file) return;
-  const id = await uploadFile(file, undefined, { type: "tmpfile" });
-  if (!id) return;
+  const models = await getExcelData(file, header);
   const data: {
-    importFileOptions: Mutation["importFileOptions"];
+    importModelsOptions: Mutation["importModelsOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!) {
-        importFileOptions(id: $id)
+      mutation($models: [OptionsInput!]!) {
+        importModelsOptions(models: $models)
       }
     `,
     variables: {
-      id,
+      models,
     },
   }, opt);
-  const result = data.importFileOptions;
-  return result;
+  const res = data.importModelsOptions;
+  return res;
 }
 
 /**

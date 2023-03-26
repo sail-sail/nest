@@ -1780,16 +1780,47 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
-  const file = await uploadFileDialogRef.showDialog({
-    title: "导入<#=table_comment#>",
-  });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
+  const header: { [key: string]: string } = {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (column.noList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "version") continue;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
     }
-    await dataGrid(true);
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    let column_name2 = column_name;
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+      column_name2 = `_${ column_name }`;
+    }
+  #>
+    [ n("<#=column_comment#>") ]: "<#=column_name2#>",<#
   }
+  #>
+  };
+  const file = await uploadFileDialogRef.showDialog({
+    title: "批量导入<#=table_comment#>",
+  });
+  if (!file) {
+    return;
+  }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }<#
   }
 #><#

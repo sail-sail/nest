@@ -301,31 +301,30 @@ export function useExportExcel() {
 }
 
 /**
- * 导入文件
+ * 批量导入
  * @param {File} file
  * @export importFile
  */
 export async function importFile(
   file: File,
+  header: { [key: string]: string },
   opt?: GqlOpt,
 ) {
-  if (!file) return;
-  const id = await uploadFile(file, undefined, { type: "tmpfile" });
-  if (!id) return;
+  const models = await getExcelData(file, header);
   const data: {
-    importFileLang: Mutation["importFileLang"];
+    importModelsLang: Mutation["importModelsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!) {
-        importFileLang(id: $id)
+      mutation($models: [LangInput!]!) {
+        importModelsLang(models: $models)
       }
     `,
     variables: {
-      id,
+      models,
     },
   }, opt);
-  const result = data.importFileLang;
-  return result;
+  const res = data.importModelsLang;
+  return res;
 }
 
 /**

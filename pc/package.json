@@ -37,7 +37,8 @@
     "sortablejs": "1.15.0",
     "vue": "3.2.47",
     "vue-demi": "0.13.11",
-    "vue-router": "4.1.6"
+    "vue-router": "4.1.6",
+    "xlsx": "0.18.5"
   },
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.5.0",

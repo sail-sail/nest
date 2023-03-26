@@ -1,15 +1,11 @@
 import {
-  initN,
   ns,
 } from "/src/i18n/i18n.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  getImportFileRows,
-} from "/lib/util/excel_util.ts";
-
-import {
+  type Background_TaskInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -181,25 +177,12 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 导入文件
- * @param {string} id
+ * 批量导入
+ * @param {Background_TaskInput[]} models
  */
-export async function importFile(
-  id: string,
+export async function importModels(
+  models: Background_TaskInput[],
 ) {
-  const n = initN("/background_task");
-  const header: { [key: string]: string } = {
-    [ await n("名称") ]: "lbl",
-    [ await n("状态") ]: "_state",
-    [ await n("类型") ]: "_type",
-    [ await n("执行结果") ]: "result",
-    [ await n("错误信息") ]: "err_msg",
-    [ await n("开始时间") ]: "begin_time",
-    [ await n("结束时间") ]: "end_time",
-    [ await n("备注") ]: "rem",
-  };
-  const models = await getImportFileRows(id, header);
-  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];

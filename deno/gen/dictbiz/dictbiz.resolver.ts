@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type DictbizInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -134,13 +135,13 @@ export async function lockByIdsDictbiz(
 }
 
 /**
- * 导入业务字典
+ * 批量导入
  */
-export async function importFileDictbiz(
-  id: string,
+export async function importModelsDictbiz(
+  models: DictbizInput[],
 ) {
-  const { importFile } = await import("./dictbiz.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./dictbiz.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

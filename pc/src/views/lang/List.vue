@@ -867,16 +867,24 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("编码") ]: "code",
+    [ n("名称") ]: "lbl",
+    [ n("备注") ]: "rem",
+    [ n("启用") ]: "_is_enabled",
+    [ n("排序") ]: "order_by",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入语言",
+    title: "批量导入语言",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

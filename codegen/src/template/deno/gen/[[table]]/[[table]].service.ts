@@ -8,17 +8,13 @@ const Table_Up = tableUp.split("_").map(function(item) {
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {
-  initN,
   ns,
 } from "/src/i18n/i18n.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  getImportFileRows,
-} from "/lib/util/excel_util.ts";
-
-import {
+  type <#=Table_Up#>Input,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -313,53 +309,12 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 导入文件
- * @param {string} id
+ * 批量导入
+ * @param {<#=Table_Up#>Input[]} models
  */
-export async function importFile(
-  id: string,
+export async function importModels(
+  models: <#=Table_Up#>Input[],
 ) {
-  const n = initN("/<#=table#>");
-  const header: { [key: string]: string } = {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      if (column.noAdd || column.noEdit) continue;
-      const column_name = column.COLUMN_NAME;
-      let data_type = column.DATA_TYPE;
-      const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === "id") {
-        continue;
-      }
-    #><#
-      if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-    #>
-    [ await n("<#=column_comment#>") ]: "<#=column_name#>",<#
-      } else {
-    #>
-    [ await n("<#=column_comment#>") ]: "_<#=column_name#>",<#
-      }
-    #><#
-    }
-    #>
-  };
-  const models = await getImportFileRows(id, header);
-  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];

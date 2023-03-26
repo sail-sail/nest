@@ -968,16 +968,29 @@ async function openUploadClk() {
   if (!uploadFileDialogRef) {
     return;
   }
+  const header: { [key: string]: string } = {
+    [ n("父部门") ]: "_parent_id",
+    [ n("名称") ]: "lbl",
+    [ n("排序") ]: "order_by",
+    [ n("启用") ]: "_is_enabled",
+    [ n("备注") ]: "rem",
+    [ n("锁定") ]: "_is_locked",
+    [ n("创建人") ]: "_create_usr_id",
+    [ n("创建时间") ]: "create_time",
+    [ n("更新人") ]: "_update_usr_id",
+    [ n("更新时间") ]: "update_time",
+  };
   const file = await uploadFileDialogRef.showDialog({
-    title: "导入部门",
+    title: "批量导入部门",
   });
-  if (file) {
-    const msg = await importFile(file);
-    if (msg) {
-      MessageBox.success(msg);
-    }
-    await dataGrid(true);
+  if (!file) {
+    return;
   }
+  const msg = await importFile(file);
+  if (msg) {
+    MessageBox.success(msg);
+  }
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

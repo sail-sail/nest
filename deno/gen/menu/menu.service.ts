@@ -1,15 +1,11 @@
 import {
-  initN,
   ns,
 } from "/src/i18n/i18n.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  getImportFileRows,
-} from "/lib/util/excel_util.ts";
-
-import {
+  type MenuInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -161,25 +157,12 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 导入文件
- * @param {string} id
+ * 批量导入
+ * @param {MenuInput[]} models
  */
-export async function importFile(
-  id: string,
+export async function importModels(
+  models: MenuInput[],
 ) {
-  const n = initN("/menu");
-  const header: { [key: string]: string } = {
-    [ await n("类型") ]: "_type",
-    [ await n("父菜单") ]: "_menu_id",
-    [ await n("名称") ]: "lbl",
-    [ await n("路由") ]: "route_path",
-    [ await n("参数") ]: "route_query",
-    [ await n("启用") ]: "_is_enabled",
-    [ await n("排序") ]: "order_by",
-    [ await n("备注") ]: "rem",
-  };
-  const models = await getImportFileRows(id, header);
-  
   let succNum = 0;
   let failNum = 0;
   const failErrMsgs: string[] = [ ];

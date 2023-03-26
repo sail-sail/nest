@@ -406,8 +406,8 @@ type Mutation {<#
   #><#
   if (opts.noAdd !== true && opts.noEdit !== true) {
   #>
-  "导入文件"
-  importFile<#=tableUp#>(id: ID!): String<#
+  "批量导入"
+  importModel<#=tableUp#>(models: [<#=Table_Up#>Input!]!): String<#
   }
   #><#
   if (opts.noDelete !== true) {

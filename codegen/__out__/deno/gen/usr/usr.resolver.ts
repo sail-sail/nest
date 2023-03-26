@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type UsrInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -134,13 +135,13 @@ export async function lockByIdsUsr(
 }
 
 /**
- * 导入用户
+ * 批量导入
  */
-export async function importFileUsr(
-  id: string,
+export async function importModelsUsr(
+  models: UsrInput[],
 ) {
-  const { importFile } = await import("./usr.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./usr.service.ts");
+  const data = await importModels(models);
   return data;
 }
 

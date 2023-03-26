@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type I18nInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -116,13 +117,13 @@ export async function deleteByIdsI18n(
 }
 
 /**
- * 导入国际化
+ * 批量导入
  */
-export async function importFileI18n(
-  id: string,
+export async function importModelsI18n(
+  models: I18nInput[],
 ) {
-  const { importFile } = await import("./i18n.service.ts");
-  const data = await importFile(id);
+  const { importModels } = await import("./i18n.service.ts");
+  const data = await importModels(models);
   return data;
 }
 
