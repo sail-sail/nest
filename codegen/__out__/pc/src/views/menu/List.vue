@@ -133,10 +133,12 @@
       </el-form-item>
       
       <el-form-item
-        label=""
+        label=" "
         un-self-start
         un-flex="~ nowrap"
-        un-min="w-45"
+        un-w="full"
+        un-p="l-1"
+        un-box-border
       >
         
         <el-button
