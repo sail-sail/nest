@@ -384,6 +384,9 @@ body .el-input-number.is-without-controls .el-input__inner {
 .el-form .el-form-item__label {
   padding-right: 4px;
 }
+.el-form div.el-form-item__label {
+  padding-right: 1px;
+}
 .el-form-item__content:has(.el-select-v2) {
   padding-left: 4px;
   .el-form-item__error {
