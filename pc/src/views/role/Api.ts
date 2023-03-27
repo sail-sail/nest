@@ -348,15 +348,13 @@ export function useExportExcel() {
 
 /**
  * 批量导入
- * @param {File} file
- * @export importFile
+ * @param {RoleInput[]} models
+ * @export importModels
  */
-export async function importFile(
-  file: File,
-  header: { [key: string]: string },
+export async function importModels(
+  models: RoleInput[],
   opt?: GqlOpt,
 ) {
-  const models = await getExcelData(file, header);
   const data: {
     importModelsRole: Mutation["importModelsRole"];
   } = await mutation({

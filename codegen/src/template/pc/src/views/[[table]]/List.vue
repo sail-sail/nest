@@ -422,7 +422,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             
             <el-dropdown-item
               un-justify-center
-              @click="openUploadClk"
+              @click="importExcelClk"
             >
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item><#
@@ -915,7 +915,7 @@ import {
   #><#
     if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
-  importFile,<#
+  importModels,<#
     }
   #><#
     if (hasSummary) {
@@ -927,6 +927,7 @@ import {
 
 import {
   type <#=Table_Up#>Model,
+  type <#=Table_Up#>Input,
   type <#=Table_Up#>Search,<#
 {
 const foreignTableUpArr = [ ];
@@ -1776,7 +1777,7 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 /**
  * 弹出导入窗口
 */
-async function openUploadClk() {
+async function importExcelClk() {
   if (!uploadFileDialogRef) {
     return;
   }
@@ -1816,7 +1817,8 @@ async function openUploadClk() {
   if (!file) {
     return;
   }
-  const msg = await importFile(file);
+  const models = await getExcelData<<#=Table_Up#>Input>(file, header);
+  const msg = await importModels(models);
   if (msg) {
     MessageBox.success(msg);
   }

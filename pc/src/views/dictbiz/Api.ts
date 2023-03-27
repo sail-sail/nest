@@ -417,15 +417,13 @@ export function useExportExcel() {
 
 /**
  * 批量导入
- * @param {File} file
- * @export importFile
+ * @param {DictbizInput[]} models
+ * @export importModels
  */
-export async function importFile(
-  file: File,
-  header: { [key: string]: string },
+export async function importModels(
+  models: DictbizInput[],
   opt?: GqlOpt,
 ) {
-  const models = await getExcelData(file, header);
   const data: {
     importModelsDictbiz: Mutation["importModelsDictbiz"];
   } = await mutation({

@@ -452,6 +452,7 @@ import {
 
 import {
   type Operation_RecordModel,
+  type Operation_RecordInput,
   type Operation_RecordSearch,
   type UsrModel,
 } from "#/types";

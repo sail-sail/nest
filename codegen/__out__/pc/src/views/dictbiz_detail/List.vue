@@ -267,7 +267,7 @@
             
             <el-dropdown-item
               un-justify-center
-              @click="openUploadClk"
+              @click="importExcelClk"
             >
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
@@ -508,11 +508,12 @@ import {
   lockByIds,
   useExportExcel,
   updateById,
-  importFile,
+  importModels,
 } from "./Api";
 
 import {
   type Dictbiz_DetailModel,
+  type Dictbiz_DetailInput,
   type Dictbiz_DetailSearch,
   type DictbizModel,
 } from "#/types";
@@ -948,7 +949,7 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 /**
  * 弹出导入窗口
 */
-async function openUploadClk() {
+async function importExcelClk() {
   if (!uploadFileDialogRef) {
     return;
   }
@@ -967,7 +968,8 @@ async function openUploadClk() {
   if (!file) {
     return;
   }
-  const msg = await importFile(file);
+  const models = await getExcelData<Dictbiz_DetailInput>(file, header);
+  const msg = await importModels(models);
   if (msg) {
     MessageBox.success(msg);
   }

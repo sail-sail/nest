@@ -614,15 +614,13 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 
 /**
  * 批量导入
- * @param {File} file
- * @export importFile
+ * @param {<#=Table_Up#>Input[]} models
+ * @export importModels
  */
-export async function importFile(
-  file: File,
-  header: { [key: string]: string },
+export async function importModels(
+  models: <#=Table_Up#>Input[],
   opt?: GqlOpt,
 ) {
-  const models = await getExcelData(file, header);
   const data: {
     importModels<#=tableUp#>: Mutation["importModels<#=tableUp#>"];
   } = await mutation({
