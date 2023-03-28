@@ -1,0 +1,12 @@
+{
+  "files.exclude": {
+    "target": true,
+    "Cargo.lock": true
+  },
+  "search.exclude": {
+    "target": true,
+    "Cargo.lock": true
+  },
+  "deno.enable": false,
+  "files.eol": "\n"
+}

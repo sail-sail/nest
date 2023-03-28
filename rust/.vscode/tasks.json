@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cargo",
+			"command": "build",
+			"args": [],
+			"problemMatcher": { "base": "$rustc", "owner": "build", "source": "build" },
+			"label": "build",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "hide": true,
+      "promptOnClose": false
+		},
+		{
+			"type": "cargo",
+			"command": "doc --no-deps",
+			"args": [],
+			"problemMatcher": { "base": "$rustc", "owner": "doc", "source": "doc" },
+			"label": "doc"
+		}
+	]
+}
