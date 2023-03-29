@@ -3,7 +3,6 @@ mod common;
 use async_graphql::{
   http::{playground_source, GraphQLPlaygroundConfig},
   EmptyMutation, EmptySubscription, Request, Response, Schema,
-  Object, Context as GqlContext,
 };
 use poem::{
   get, post, handler,
@@ -12,30 +11,16 @@ use poem::{
   EndpointExt, IntoResponse, Route, Server,
 };
 
-struct QueryRoot;
-
-type QueryRootSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
-
-#[Object]
-impl QueryRoot {
-  
-  async fn hello<'a>(
-    &self,
-    // ctx: &GqlContext<'a>,
-  ) -> &str {
-    return "aaa".into();
-  }
-  
-}
+use crate::common::context::{QuerySchema, Query};
 
 #[handler]
-async fn graphql_handler(schema: Data<&QueryRootSchema>, req: Json<Request>) -> Json<Response> {
+async fn graphql_handler(schema: Data<&QuerySchema>, req: Json<Request>) -> Json<Response> {
   Json(schema.execute(req.0).await)
 }
 
 #[handler]
 fn graphql_playground() -> impl IntoResponse {
-  Html(playground_source(GraphQLPlaygroundConfig::new("/").with_header("a", "bbb")))
+  Html(playground_source(GraphQLPlaygroundConfig::new("/graphql").with_header("a", "bbb")))
 }
 
 #[tokio::main]
@@ -45,7 +30,7 @@ async fn main() -> Result<(), std::io::Error> {
   }
   tracing_subscriber::fmt::init();
 
-  let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+  let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
     .finish();
   
   if cfg!(debug_assertions) {
@@ -54,13 +39,13 @@ async fn main() -> Result<(), std::io::Error> {
   }
 
   let app = Route::new()
-    .at("/", get(graphql_playground))
+    .at("/graphiql", get(graphql_playground))
     .at("/graphql", post(graphql_handler))
     .data(schema);
 
-  println!("Playground: http://localhost:3000");
+  println!("Playground: http://localhost:4000");
 
-  Server::new(TcpListener::bind("127.0.0.1:3000"))
+  Server::new(TcpListener::bind("127.0.0.1:4000"))
     .run(app)
     .await
 }
