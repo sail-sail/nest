@@ -11,7 +11,7 @@ use poem::{
   EndpointExt, IntoResponse, Route, Server,
 };
 
-use crate::common::context::{QuerySchema, Query};
+use crate::common::gql::query_root::{QuerySchema, Query};
 
 #[handler]
 async fn graphql_handler(schema: Data<&QuerySchema>, req: Json<Request>) -> Json<Response> {
@@ -37,15 +37,15 @@ async fn main() -> Result<(), std::io::Error> {
     // println!("{}", &schema.sdl());
     println!("{}", "---------------------------");
   }
-
+  
   let app = Route::new()
     .at("/graphiql", get(graphql_playground))
     .at("/graphql", post(graphql_handler))
     .data(schema);
 
-  println!("Playground: http://localhost:4000");
+  println!("Playground: http://localhost:3000");
 
-  Server::new(TcpListener::bind("127.0.0.1:4000"))
+  Server::new(TcpListener::bind("127.0.0.1:3000"))
     .run(app)
     .await
 }
