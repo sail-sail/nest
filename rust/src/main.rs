@@ -1,5 +1,13 @@
+#![forbid(unsafe_code)]
+
+#[macro_use]
+extern crate dotenv_codegen;
+
 mod common;
 
+use std::num::ParseIntError;
+
+use sqlx::mysql::MySqlPoolOptions;
 use async_graphql::{
   http::{playground_source, GraphQLPlaygroundConfig},
   EmptyMutation, EmptySubscription, Request, Response, Schema,
@@ -10,6 +18,9 @@ use poem::{
   web::{Data, Html, Json},
   EndpointExt, IntoResponse, Route, Server,
 };
+
+use dotenv::dotenv;
+use tracing::info;
 
 use crate::common::gql::query_root::{QuerySchema, Query};
 
@@ -25,12 +36,33 @@ fn graphql_playground() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+  dotenv().ok();
   if std::env::var_os("RUST_LOG").is_none() {
-    std::env::set_var("RUST_LOG", "poem=debug");
+    std::env::set_var("RUST_LOG", "rust=info");
   }
   tracing_subscriber::fmt::init();
+  
+  let database_hostname = dotenv!("database_hostname");
+  let database_port = dotenv!("database_port");
+  let database_username = dotenv!("database_username");
+  let database_password = dotenv!("database_password");
+  let database_database = dotenv!("database_database");
+  let database_pool_size = dotenv!("database_pool_size");
+  let default_pool_size: u32 = 10;
+  let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
+  let database_pool_size = database_pool_size.or_else(|_| Ok::<u32, ParseIntError>(default_pool_size)).unwrap();
+  let mysql_url = format!("mysql://{database_username}:{database_password}@{database_hostname}:{database_port}/{database_database}");
+  
+  // info!("mysql_url: {}", &mysql_url);
+  
+  let pool = MySqlPoolOptions::new()
+    .max_connections(database_pool_size)
+    .connect(&mysql_url)
+    .await
+    .unwrap();
 
   let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
+    .data(pool)
     .finish();
   
   if cfg!(debug_assertions) {
