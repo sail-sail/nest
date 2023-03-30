@@ -18,3 +18,4 @@ slab = "0.4.4"
 chrono = "0.4.24"
 lazy_static = "1.4.0"
 anyhow = "1.0.70"
+sqlx = { version = "0.6.3", features=["runtime-tokio-rustls", "mysql", "uuid", "chrono", "time", "bigdecimal", "decimal", "json"] }
