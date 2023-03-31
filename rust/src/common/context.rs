@@ -106,7 +106,9 @@ impl<'a> ReqContext<'a> {
   }
   
   /// 带参数执行查询
-  pub async fn execute_with<T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>>(
+  pub async fn execute_with<
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
+  >(
     &mut self,
     sql: &'a str,
     args: Vec<T>,
@@ -153,4 +155,17 @@ impl<'a> ReqContext<'a> {
     Ok(rows_affected)
   }
   
+  /// 带参数执行查询
+  pub async fn query<
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
+    R: sqlx::decode::Decode<'a, sqlx::MySql>,
+  >(
+    &mut self,
+    sql: &'a str,
+    args: Vec<T>,
+  ) -> Result<Vec<R>> {
+    let mut res: Vec<R> = Vec::new();
+    Ok(res)
+  }
+     
 }
