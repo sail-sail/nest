@@ -59,6 +59,10 @@ async fn main() -> Result<(), std::io::Error> {
   
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
+    // .after_connect(|conn, _meta| Box::pin(async move {
+    //   sqlx::query("SET NAMES utf8mb4;").execute(conn).await?;
+    //   Ok(())
+    // }))
     .connect_lazy_with(
       MySqlConnectOptions::new()
         .host(&database_hostname)

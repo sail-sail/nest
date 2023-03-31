@@ -2,7 +2,7 @@ use anyhow::{Ok, Result};
 use chrono::{Local, DateTime};
 
 use async_graphql::Context;
-use sqlx::{Pool, MySql, Transaction, Executor, Execute, Statement};
+use sqlx::{Pool, MySql, Transaction, Executor, Execute};
 use tracing::{info, error};
 
 pub struct ReqContext<'a> {
@@ -156,15 +156,186 @@ impl<'a> ReqContext<'a> {
   }
   
   /// 带参数执行查询
-  pub async fn query<
+  pub async fn query_with<
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
-    R: sqlx::decode::Decode<'a, sqlx::MySql>,
+    R,
   >(
     &mut self,
     sql: &'a str,
     args: Vec<T>,
-  ) -> Result<Vec<R>> {
-    let mut res: Vec<R> = Vec::new();
+  ) -> Result<Vec<R>>
+  where
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
+  {
+    if self.is_tran {
+      if self.tran.is_none() {
+        self.begin_tran().await?;
+      }
+      let mut query = sqlx::query_as::<_, R>(sql);
+      for arg in args {
+        query = query.bind(arg);
+      }
+      info!("{} {}", self.req_id, sql);
+      let tran = self.tran.as_mut().unwrap();
+      let res = query.fetch_all(tran).await
+        .map_err(|e| {
+          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          error!("{}", err_msg);
+          anyhow::anyhow!(err_msg)
+        })?;
+      return Ok(res);
+    }
+    let mut query = sqlx::query_as::<_, R>(sql);
+    for arg in args {
+      query = query.bind(arg);
+    }
+    info!("{} {}", self.req_id, sql);
+    let pool = self.gql_ctx.data::<Pool<MySql>>()
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.message);
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    let res = query.fetch_all(pool).await
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    Ok(res)
+  }
+  
+  /// 执行查询
+  pub async fn query<
+    R,
+  >(
+    &mut self,
+    sql: &'a str,
+  ) -> Result<Vec<R>>
+  where
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
+  {
+    if self.is_tran {
+      if self.tran.is_none() {
+        self.begin_tran().await?;
+      }
+      let query = sqlx::query_as::<_, R>(sql);
+      info!("{} {}", self.req_id, sql);
+      let tran = self.tran.as_mut().unwrap();
+      let res = query.fetch_all(tran).await
+        .map_err(|e| {
+          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          error!("{}", err_msg);
+          anyhow::anyhow!(err_msg)
+        })?;
+      return Ok(res);
+    }
+    let query = sqlx::query_as::<_, R>(sql);
+    info!("{} {}", self.req_id, sql);
+    let pool = self.gql_ctx.data::<Pool<MySql>>()
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.message);
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    let res = query.fetch_all(pool).await
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    Ok(res)
+  }
+  
+  /// 带参数查询一条数据
+  pub async fn query_one_with<
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
+    R,
+  >(
+    &mut self,
+    sql: &'a str,
+    args: Vec<T>,
+  ) -> Result<R>
+  where
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
+  {
+    if self.is_tran {
+      if self.tran.is_none() {
+        self.begin_tran().await?;
+      }
+      let mut query = sqlx::query_as::<_, R>(sql);
+      for arg in args {
+        query = query.bind(arg);
+      }
+      info!("{} {}", self.req_id, sql);
+      let tran = self.tran.as_mut().unwrap();
+      let res = query.fetch_one(tran).await
+        .map_err(|e| {
+          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          error!("{}", err_msg);
+          anyhow::anyhow!(err_msg)
+        })?;
+      return Ok(res);
+    }
+    let mut query = sqlx::query_as::<_, R>(sql);
+    for arg in args {
+      query = query.bind(arg);
+    }
+    info!("{} {}", self.req_id, sql);
+    let pool = self.gql_ctx.data::<Pool<MySql>>()
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.message);
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    let res = query.fetch_one(pool).await
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    Ok(res)
+  }
+  
+  /// 查询一条数据
+  pub async fn query_one<
+    R,
+  >(
+    &mut self,
+    sql: &'a str,
+  ) -> Result<R>
+  where
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
+  {
+    if self.is_tran {
+      if self.tran.is_none() {
+        self.begin_tran().await?;
+      }
+      let query = sqlx::query_as::<_, R>(sql);
+      info!("{} {}", self.req_id, sql);
+      let tran = self.tran.as_mut().unwrap();
+      let res = query.fetch_one(tran).await
+        .map_err(|e| {
+          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          error!("{}", err_msg);
+          anyhow::anyhow!(err_msg)
+        })?;
+      return Ok(res);
+    }
+    let query = sqlx::query_as::<_, R>(sql);
+    info!("{} {}", self.req_id, sql);
+    let pool = self.gql_ctx.data::<Pool<MySql>>()
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.message);
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
+    let res = query.fetch_one(pool).await
+      .map_err(|e| {
+        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        error!("{}", err_msg);
+        anyhow::anyhow!(err_msg)
+      })?;
     Ok(res)
   }
      
