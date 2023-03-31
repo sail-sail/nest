@@ -7,7 +7,7 @@ mod common;
 
 use std::num::ParseIntError;
 
-use sqlx::mysql::MySqlPoolOptions;
+use sqlx::mysql::{MySqlPoolOptions, MySqlConnectOptions};
 use async_graphql::{
   http::{playground_source, GraphQLPlaygroundConfig},
   EmptyMutation, EmptySubscription, Request, Response, Schema,
@@ -44,6 +44,8 @@ async fn main() -> Result<(), std::io::Error> {
   
   let database_hostname = dotenv!("database_hostname");
   let database_port = dotenv!("database_port");
+  let database_port: Result<u16, ParseIntError> = database_port.parse();
+  let database_port = database_port.or_else(|_| Ok::<u16, ParseIntError>(3306)).unwrap();
   let database_username = dotenv!("database_username");
   let database_password = dotenv!("database_password");
   let database_database = dotenv!("database_database");
@@ -51,15 +53,20 @@ async fn main() -> Result<(), std::io::Error> {
   let default_pool_size: u32 = 10;
   let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
   let database_pool_size = database_pool_size.or_else(|_| Ok::<u32, ParseIntError>(default_pool_size)).unwrap();
-  let mysql_url = format!("mysql://{database_username}:{database_password}@{database_hostname}:{database_port}/{database_database}");
+  // let mysql_url = format!("mysql://{database_username}:{database_password}@{database_hostname}:{database_port}/{database_database}");
   
   // info!("mysql_url: {}", &mysql_url);
   
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
-    .connect(&mysql_url)
-    .await
-    .unwrap();
+    .connect_lazy_with(
+      MySqlConnectOptions::new()
+        .host(&database_hostname)
+        .port(database_port)
+        .username(&database_username)
+        .password(&database_password)
+        .database(&database_database)
+    );
 
   let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
     .data(pool)
