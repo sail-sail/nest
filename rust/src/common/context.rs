@@ -156,15 +156,13 @@ impl<'a> ReqContext<'a> {
   }
   
   /// 带参数执行查询
-  pub async fn query_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
-    R,
-  >(
+  pub async fn query_with<T, R>(
     &mut self,
     sql: &'a str,
     args: Vec<T>,
   ) -> Result<Vec<R>>
   where
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     if self.is_tran {
@@ -206,9 +204,7 @@ impl<'a> ReqContext<'a> {
   }
   
   /// 执行查询
-  pub async fn query<
-    R,
-  >(
+  pub async fn query<R>(
     &mut self,
     sql: &'a str,
   ) -> Result<Vec<R>>
@@ -248,15 +244,13 @@ impl<'a> ReqContext<'a> {
   }
   
   /// 带参数查询一条数据
-  pub async fn query_one_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
-    R,
-  >(
+  pub async fn query_one_with<T, R>(
     &mut self,
     sql: &'a str,
     args: Vec<T>,
   ) -> Result<R>
   where
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     if self.is_tran {
@@ -298,9 +292,7 @@ impl<'a> ReqContext<'a> {
   }
   
   /// 查询一条数据
-  pub async fn query_one<
-    R,
-  >(
+  pub async fn query_one<R>(
     &mut self,
     sql: &'a str,
   ) -> Result<R>
