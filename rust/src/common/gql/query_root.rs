@@ -12,8 +12,7 @@ pub struct Query;
 
 pub type QuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
 
-#[derive(SimpleObject)]
-#[derive(sqlx::FromRow)]
+#[derive(sqlx::FromRow, SimpleObject)]
 struct Usr { username: String, id: String }
 
 #[Object]
@@ -25,14 +24,16 @@ impl Query {
   ) -> Result<Vec<Usr>> {
     let mut ctx = ReqContext::new(gql_ctx.to_owned());
     
-    let res = ctx.query::<Usr>("#
+    let vec = vec![ "1" ];
+    
+    let res = ctx.query_with::<_, Usr>("#
       select
         *
       from
         usr
       where
         id != ?
-    #").await?;
+    #", vec).await?;
     
     // tokio::time::sleep(std::time::Duration::from_millis(500)).await;
     Ok(res)
