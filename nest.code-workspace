@@ -5,10 +5,6 @@
       "deno": true
     },
     {
-      "path": "./rust",
-      "deno": false
-    },
-    {
       "path": "./pc",
       "deno": false
     },
