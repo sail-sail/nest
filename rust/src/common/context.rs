@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Display};
+
 use anyhow::{Ok, Result};
 use chrono::{Local, DateTime};
 
@@ -15,6 +17,26 @@ pub struct ReqContext<'a> {
   pub cache_key1s: Vec<String>,
   
   pub tran: Option<Transaction<'a, MySql>>,
+  
+}
+
+#[derive(Debug)]
+pub struct QueryArgs<'a, T>
+where
+  T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug,
+{
+  
+  value: &'a Vec<T>,
+  
+}
+
+pub struct QueryOptions {
+  
+  /** 是否打印sql语句 */
+  pub is_debug: Option<bool>,
+  
+  /** 是否开启事务 */
+  pub is_tran: Option<bool>,
   
 }
 
@@ -107,7 +129,7 @@ impl<'a> ReqContext<'a> {
   
   /// 带参数执行查询
   pub async fn execute_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Display + Debug,
   >(
     &mut self,
     sql: &'a str,
@@ -117,12 +139,19 @@ impl<'a> ReqContext<'a> {
       if self.tran.is_none() {
         self.begin_tran().await?;
       }
+      let mut debug_args = vec![];
       let mut query = sqlx::query(sql);
       for arg in args {
+        debug_args.push(format!("{:?}", arg.to_string()));
         query = query.bind(arg);
       }
-      let debug_sql = query.sql();
-      info!("{} {}", self.req_id, debug_sql);
+      {
+        let mut debug_sql = query.sql().to_string();
+        for debug_arg in debug_args {
+          debug_sql = debug_sql.replace("?", &debug_arg);
+        }
+        info!("{} {}", self.req_id, debug_sql);
+      }
       let tran = self.tran.as_mut().unwrap();
       let res = tran.execute(query).await
         .map_err(|e| {
@@ -160,11 +189,18 @@ impl<'a> ReqContext<'a> {
     &mut self,
     sql: &'a str,
     args: Vec<T>,
+    options: Option<QueryOptions>,
   ) -> Result<Vec<R>>
   where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Display + Debug,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
+    let mut is_debug = true;
+    if let Some(query_options) = options {
+      if let Some(is_debug0) = query_options.is_debug {
+        is_debug = is_debug0;
+      }
+    }
     if self.is_tran {
       if self.tran.is_none() {
         self.begin_tran().await?;
@@ -184,10 +220,22 @@ impl<'a> ReqContext<'a> {
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(sql);
-    for arg in args {
-      query = query.bind(arg);
+    if is_debug {
+      let mut debug_args = vec![];
+      for arg in args {
+        debug_args.push(format!("'{}'", arg.to_string()));
+        query = query.bind(arg);
+      }
+      let mut debug_sql = query.sql().to_string();
+      for debug_arg in debug_args {
+        debug_sql = debug_sql.replace("?", &debug_arg);
+      }
+      info!("{} {}", self.req_id, debug_sql);
+    } else {
+      for arg in args {
+        query = query.bind(arg);
+      }
     }
-    info!("{} {}", self.req_id, sql);
     let pool = self.gql_ctx.data::<Pool<MySql>>()
       .map_err(|e| {
         let err_msg = format!("{} {}", self.req_id, e.message);
@@ -250,7 +298,7 @@ impl<'a> ReqContext<'a> {
     args: Vec<T>,
   ) -> Result<R>
   where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     if self.is_tran {
@@ -272,10 +320,18 @@ impl<'a> ReqContext<'a> {
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(sql);
+    let mut debug_args = vec![];
     for arg in args {
+      debug_args.push(format!("{:?}", arg.to_string()));
       query = query.bind(arg);
     }
-    info!("{} {}", self.req_id, sql);
+    {
+      let mut debug_sql = query.sql().to_string();
+      for debug_arg in debug_args {
+        debug_sql = debug_sql.replace("?", &debug_arg);
+      }
+      info!("{} {}", self.req_id, debug_sql);
+    }
     let pool = self.gql_ctx.data::<Pool<MySql>>()
       .map_err(|e| {
         let err_msg = format!("{} {}", self.req_id, e.message);
