@@ -33,7 +33,7 @@ impl Query {
         usr
       where
         id != ?
-    #", vec).await?;
+    #", vec, None).await?;
     
     // tokio::time::sleep(std::time::Duration::from_millis(500)).await;
     Ok(res)
