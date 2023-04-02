@@ -154,7 +154,7 @@ async function compile() {
       cmds = cmds.concat([ "--target", target ]);
     }
     const server_title = await getEnv("server_title") || "start";
-    cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "-e=prod" ]);
+    cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "--", "-e=prod" ]);
     console.log(cmds.join(" "));
     const proc = Deno.run({
       cmd: cmds,
