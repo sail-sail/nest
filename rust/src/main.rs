@@ -4,6 +4,7 @@
 extern crate dotenv_codegen;
 
 mod common;
+mod gen;
 
 use std::num::ParseIntError;
 
