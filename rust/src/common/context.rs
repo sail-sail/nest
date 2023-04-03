@@ -36,7 +36,27 @@ pub struct QueryOptions {
   pub is_debug: Option<bool>,
   
   /** 是否开启事务 */
-  pub is_tran: Option<bool>,
+  is_tran: Option<bool>,
+  
+}
+
+impl QueryOptions {
+  
+  pub fn new(
+    is_tran: Option<bool>,
+  ) -> QueryOptions {
+    QueryOptions {
+      is_debug: Some(true),
+      is_tran,
+    }
+  }
+  
+  pub fn get_is_tran(&self) -> bool {
+    if let Some(is_tran) = self.is_tran {
+      return is_tran;
+    }
+    return false;
+  }
   
 }
 
@@ -44,57 +64,64 @@ impl<'a> ReqContext<'a> {
   
   pub fn new(
     gql_ctx: Context<'a>,
+    is_tran: bool,
   ) -> ReqContext {
     let now: DateTime<Local> = Local::now();
     let req_id = now.timestamp_millis().to_string();
     ReqContext {
       gql_ctx,
-      is_tran: false,
+      is_tran,
       req_id,
       cache_key1s: Vec::new(),
       tran: None,
     }
   }
   
+  // pub fn get_is_tran(&self) -> bool {
+  //   return self.is_tran;
+  // }
+  
   /// 开启事务
-  pub async fn begin_tran(&mut self) -> Result<()> {
+  pub async fn begin(&mut self) -> Result<()> {
     if self.tran.is_some() {
       return Ok(());
     }
     let pool = self.gql_ctx.data::<Pool<MySql>>()
       .map_err(|e| anyhow::anyhow!(e.message))?;
+    info!("{} begin;", self.req_id);
     let tran = pool.begin().await?;
     self.tran = Some(tran);
     Ok(())
   }
   
   /// 提交事务
-  pub async fn commit_tran(mut self) -> Result<()> {
+  pub async fn commit(mut self) -> Result<()> {
     if let Some(tran) = self.tran {
       self.tran = None;
-      info!("{} commit", self.req_id);
+      info!("{} commit;", self.req_id);
       tran.commit().await?;
     }
     Ok(())
   }
   
   /// 回滚事务
-  pub async fn rollback_tran(mut self) -> Result<()> {
+  pub async fn rollback(mut self) -> Result<()> {
     if let Some(tran) = self.tran {
       self.tran = None;
+      info!("{} rollback;", self.req_id);
       tran.rollback().await?;
     }
     Ok(())
   }
   
   /// 执行查询
-  pub async fn execute<T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql>>(
+  pub async fn execute(
     &mut self,
     sql: &'a str,
   ) -> Result<u64> {
     if self.is_tran {
       if self.tran.is_none() {
-        self.begin_tran().await?;
+        self.begin().await?;
       }
       let query = sqlx::query(sql);
       let debug_sql = query.sql();
@@ -129,7 +156,7 @@ impl<'a> ReqContext<'a> {
   
   /// 带参数执行查询
   pub async fn execute_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Display + Debug,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Display,
   >(
     &mut self,
     sql: &'a str,
@@ -137,7 +164,7 @@ impl<'a> ReqContext<'a> {
   ) -> Result<u64> {
     if self.is_tran {
       if self.tran.is_none() {
-        self.begin_tran().await?;
+        self.begin().await?;
       }
       let mut debug_args = vec![];
       let mut query = sqlx::query(sql);
@@ -196,14 +223,23 @@ impl<'a> ReqContext<'a> {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     let mut is_debug = true;
+    let mut is_tran = false;
     if let Some(query_options) = options {
       if let Some(is_debug0) = query_options.is_debug {
         is_debug = is_debug0;
       }
+      if let Some(is_tran0) = query_options.is_tran {
+        is_tran = is_tran0;
+      } else {
+        is_tran = self.is_tran;
+      }
+    } else {
+      is_tran = self.is_tran;
     }
-    if self.is_tran {
+    
+    if is_tran {
       if self.tran.is_none() {
-        self.begin_tran().await?;
+        self.begin().await?;
       }
       let mut query = sqlx::query_as::<_, R>(sql);
       for arg in args {
@@ -261,7 +297,7 @@ impl<'a> ReqContext<'a> {
   {
     if self.is_tran {
       if self.tran.is_none() {
-        self.begin_tran().await?;
+        self.begin().await?;
       }
       let query = sqlx::query_as::<_, R>(sql);
       info!("{} {}", self.req_id, sql);
@@ -303,7 +339,7 @@ impl<'a> ReqContext<'a> {
   {
     if self.is_tran {
       if self.tran.is_none() {
-        self.begin_tran().await?;
+        self.begin().await?;
       }
       let mut query = sqlx::query_as::<_, R>(sql);
       for arg in args {
@@ -357,7 +393,7 @@ impl<'a> ReqContext<'a> {
   {
     if self.is_tran {
       if self.tran.is_none() {
-        self.begin_tran().await?;
+        self.begin().await?;
       }
       let query = sqlx::query_as::<_, R>(sql);
       info!("{} {}", self.req_id, sql);

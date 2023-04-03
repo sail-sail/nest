@@ -1,19 +1,18 @@
 use anyhow::{Ok, Result};
 
 use async_graphql::{
-  Context, Enum, Interface, Object, OutputType,
-  EmptyMutation, EmptySubscription, Request, Response, Schema, ErrorExtensions, FieldResult, SimpleObject,
+  Context, Object, OutputType,
+  EmptyMutation, EmptySubscription, Request, Response, Schema, SimpleObject,
 };
-use tracing::info;
+use tracing::{info, error};
 
 use crate::common::context::ReqContext;
+use crate::gen::usr::usr_model::UsrModel;
+use crate::gen::usr::usr_service;
 
 pub struct Query;
 
 pub type QuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
-
-#[derive(sqlx::FromRow, SimpleObject)]
-struct Usr { username: String, id: String }
 
 #[Object]
 impl Query {
@@ -21,22 +20,19 @@ impl Query {
   async fn hello(
     &self,
     gql_ctx: &Context<'_>,
-  ) -> Result<Vec<Usr>> {
-    let mut ctx = ReqContext::new(gql_ctx.to_owned());
+  ) -> Result<Vec<UsrModel>> {
+    let mut ctx = ReqContext::new(gql_ctx.to_owned(), true);
     
-    let vec = vec![ "1" ];
+    let res = usr_service::hello(&mut ctx).await;
     
-    let res = ctx.query_with::<_, Usr>("#
-      select
-        *
-      from
-        usr
-      where
-        id != ?
-    #", vec, None).await?;
+    if let Err(e) = res {
+      ctx.rollback().await?;
+      return Err(e);
+    }
+    ctx.commit().await?;
     
     // tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-    Ok(res)
+    Ok(res.unwrap())
   }
   
 }
