@@ -21,7 +21,6 @@ use poem::{
 };
 
 use dotenv::dotenv;
-use tracing::info;
 
 use crate::common::gql::query_root::{QuerySchema, Query};
 
@@ -73,9 +72,11 @@ async fn main() -> Result<(), std::io::Error> {
         .database(&database_database)
     );
 
-  let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
-    .data(pool)
-    .finish();
+  let schema = Schema::build(
+    Query::default(),
+    EmptyMutation,
+    EmptySubscription
+  ).data(pool).finish();
   
   if cfg!(debug_assertions) {
     // println!("{}", &schema.sdl());
