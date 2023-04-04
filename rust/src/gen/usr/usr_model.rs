@@ -1,10 +1,5 @@
-use sqlx::{
-  FromRow,
-};
-
-use async_graphql::{
-  SimpleObject,
-};
+use sqlx::FromRow;
+use async_graphql::SimpleObject;
 
 #[derive(FromRow, SimpleObject)]
 pub struct UsrModel {
