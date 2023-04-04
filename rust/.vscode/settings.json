@@ -1,11 +1,13 @@
 {
   "files.exclude": {
     "target": true,
-    "Cargo.lock": true
+    "Cargo.lock": true,
+    ".cargo": true
   },
   "search.exclude": {
     "target": true,
-    "Cargo.lock": true
+    "Cargo.lock": true,
+    ".cargo": true
   },
   "deno.enable": false,
   "files.eol": "\n"

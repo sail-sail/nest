@@ -6,21 +6,9 @@
   "configurations": [
     {
       "name": "rust",
-      "type": "cppdbg",
+      "type": "cppvsdbg",
       "request": "attach",
-      // "request": "launch",
-      // "preLaunchTask": "build",
-      // "cwd": "${workspaceFolder}",
-      // "environment": [ { "name": "RUST_BACKTRACE", "value": "1" } ],
-      "program": "${workspaceFolder}/target/debug/${workspaceFolderBasename}.exe",
-      "windows": {
-        "name": "rust",
-        "type": "cppvsdbg",
-        "request": "attach",
-        // "request": "launch",
-        "program": "${workspaceFolder}/target/debug/${workspaceFolderBasename}.exe"
-      },
-      // "args": [],
+      "processId": "${command:pickProcess}"
     }
   ]
 }
