@@ -24,4 +24,3 @@ dotenv = "0.15.0"
 dotenv_codegen = "0.15.0"
 rust-s3 = { version = "0.32.3", features = ["tokio", "tokio-native-tls", "tokio-stream", "with-tokio", "no-verify-ssl"] }
 async-trait = "0.1.68"
-async-drop-guard = "0.0.6"
