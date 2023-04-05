@@ -36,32 +36,32 @@ async fn get_where_query<'a>(
 ) -> Result<String> {
   let mut where_query = String::from("");
   {
-    let mut is_deleted = "0".to_owned();
-    if let Some(search) = search {
-      if let Some(is_deleted0) = search.is_deleted {
-        is_deleted = is_deleted0.to_string();
-      }
-    }
-    where_query += &format!(" t.is_deleted = {}", args.push(is_deleted));
+    let is_deleted = search
+      .and_then(|item| item.is_deleted)
+      .unwrap_or(0);
+    where_query += &format!(" t.is_deleted = {}", args.push(is_deleted.into()));
   }
   {
-    let mut tenant_id: Option<String> = None;
-    if let Some(search) = search {
-      tenant_id = search.tenant_id.to_owned();
-    }
-    if tenant_id.is_none() {
-      let auth_model = get_auth_model(ctx).await?;
-      if let Some(auth_model) = auth_model {
-        tenant_id = auth_model.tenant_id;
+    let tenant_id = {
+      let tenant_id = search
+        .and_then(|item| item.tenant_id.to_owned());
+      if tenant_id.is_some() {
+        tenant_id
+      } else {
+        let auth_model = get_auth_model(ctx).await?;
+        if let Some(auth_model) = auth_model {
+          auth_model.tenant_id
+        } else {
+          None
+        }
       }
-    }
+    };
     if let Some(tenant_id) = tenant_id {
       if !tenant_id.is_empty() && tenant_id != "-" {
-        where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id));
+        where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
       }
     }
   }
-  print!("where_query: {:?}", search);
   Ok(where_query)
 }
 
@@ -79,18 +79,45 @@ pub async fn find_all<'a>(
   let method = "findAll";
   
   let mut args = QueryArgs::new();
-  let from_query = format!(" from {} t ", table);
+  let from_query = format!(" {} t ", table);
   let where_query = get_where_query(ctx, &mut args, search).await?;
   let order_by_query = get_order_by_query(sort);
+  
+  // 分页
+  let mut page_query = String::from("");
+  if let Some(page) = page {
+    let pg_size = page.pg_size;
+    if let Some(pg_size) = pg_size {
+      let pg_offset = page.pg_offset.unwrap_or(0);
+      page_query = format!(" limit {}, {} ", pg_offset, pg_size);
+    }
+  }
+  
   let sql = format!("#
     select
       t.*
     from
       {from_query}
     where
-      {where_query}{order_by_query}
+      {where_query}{order_by_query}{page_query}
   #");
-  Ok(vec![])
+  
+  let sql: &'a mut str = Box::leak(sql.into_boxed_str()).into();
+  
+  // 缓存
+  let cache_key1 = format!("dao.sql.{}", table);
+  let cache_key2 = serde_json::json!({
+    "sql": &sql,
+    "args": &args.value,
+  });
+  
+  let res = ctx.query_with::<_, UsrModel>(
+    sql,
+    args.value,
+    None, // TODO
+  ).await?;
+  
+  Ok(res)
 }
 
 #[cfg(test)]
