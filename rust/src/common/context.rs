@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Display};
+use std::{fmt::{Debug, Display}, collections::HashMap};
 
 use anyhow::{Ok, Result};
 use chrono::{Local, DateTime};
@@ -11,22 +11,36 @@ pub struct Ctx<'a> {
   
   pub gql_ctx: Context<'a>,
   
-  pub is_tran: bool,
+  is_tran: bool,
   pub req_id: String,
   
   pub cache_key1s: Vec<String>,
   
   pub tran: Option<Transaction<'a, MySql>>,
   
+  /**
+   * 缓存map
+   *   auth_model: AuthModel
+   *   tenant_id: "usr_tenant_id_" + usr_id
+   */
+  pub cache_map: HashMap<String, String>,
+  
+  pub not_verify_token: bool,
+  
 }
 
 #[derive(Debug)]
-pub struct QueryArgs<'a, T>
-where
-  T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug,
-{
+pub struct QueryArgs {
   
-  value: &'a Vec<T>,
+  value: Vec<String>,
+}
+
+impl QueryArgs {
+  
+  pub fn push(&mut self, arg: String) -> String {
+    let _ = &mut self.value.push(arg);
+    String::from("?")
+  }
   
 }
 
@@ -36,20 +50,15 @@ pub struct QueryOptions {
   pub is_debug: Option<bool>,
   
   /** 是否开启事务 */
-  is_tran: Option<bool>,
+  pub is_tran: Option<bool>,
+  
+  pub cache_key1: Option<String>,
+  
+  pub cache_key2: Option<String>,
   
 }
 
 impl QueryOptions {
-  
-  pub fn new(
-    is_tran: Option<bool>,
-  ) -> QueryOptions {
-    QueryOptions {
-      is_debug: Some(true),
-      is_tran,
-    }
-  }
   
   #[inline]
   pub fn get_is_tran(&self) -> Option<bool> {
@@ -86,6 +95,8 @@ impl<'a> Ctx<'a> {
       req_id,
       cache_key1s: Vec::new(),
       tran: None,
+      cache_map: HashMap::new(),
+      not_verify_token: false,
     }
   }
   
@@ -177,7 +188,7 @@ impl<'a> Ctx<'a> {
   
   /// 带参数执行查询
   pub async fn execute_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Display,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug,
   >(
     &mut self,
     sql: &'a str,
@@ -190,7 +201,7 @@ impl<'a> Ctx<'a> {
       let mut debug_args = vec![];
       let mut query = sqlx::query(sql);
       for arg in args {
-        debug_args.push(format!("{:?}", arg.to_string()));
+        debug_args.push(format!("{:?}", arg));
         query = query.bind(arg);
       }
       {
@@ -240,7 +251,7 @@ impl<'a> Ctx<'a> {
     options: Option<QueryOptions>,
   ) -> Result<Vec<R>>
   where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Display + Debug,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Debug,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     let mut is_debug = true;
@@ -262,7 +273,7 @@ impl<'a> Ctx<'a> {
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
-          debug_args.push(format!("'{}'", arg.to_string()));
+          debug_args.push(format!("'{:?}'", arg));
           query = query.bind(arg);
         }
         let mut debug_sql = query.sql().to_string();
@@ -288,7 +299,7 @@ impl<'a> Ctx<'a> {
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
-        debug_args.push(format!("'{}'", arg.to_string()));
+        debug_args.push(format!("'{:?}'", arg));
         query = query.bind(arg);
       }
       let mut debug_sql = query.sql().to_string();
@@ -378,7 +389,7 @@ impl<'a> Ctx<'a> {
     options: Option<QueryOptions>,
   ) -> Result<R>
   where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
+    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Debug,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     let mut is_debug = true;
@@ -400,7 +411,7 @@ impl<'a> Ctx<'a> {
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
-          debug_args.push(format!("'{}'", arg.to_string()));
+          debug_args.push(format!("'{:?}'", arg));
           query = query.bind(arg);
         }
         let mut debug_sql = query.sql().to_string();
@@ -426,7 +437,7 @@ impl<'a> Ctx<'a> {
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
-        debug_args.push(format!("'{}'", arg.to_string()));
+        debug_args.push(format!("'{:?}'", arg));
         query = query.bind(arg);
       }
       let mut debug_sql = query.sql().to_string();

@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 serde_json = "1.0.68"
-serde = { version = "1.0.140", features = ["derive"] }
+serde = { version = "1.0.159", features = ["derive"] }
 mime = "0.3.16"
 futures-util = "0.3.21"
 tracing = "0.1.37"
@@ -24,3 +24,16 @@ dotenv = "0.15.0"
 dotenv_codegen = "0.15.0"
 rust-s3 = { version = "0.32.3", features = ["tokio", "tokio-native-tls", "tokio-stream", "with-tokio", "no-verify-ssl"] }
 async-trait = "0.1.68"
+imstr = { version = "0.1.0", features = ["serde"] }
+jwt = "0.16.0"
+sha2 = "0.10.6"
+hmac = { version = "0.12.1", features = ["reset"] }
+protobuf = "3.2.0"
+hex-literal = "0.4.0"
+hex = "0.4.3"
+base64 = "0.21.0"
+utf8_slice = "1.0.0"
+
+[build.dependencies]
+protobuf = "3.2.0"
+protobuf-codegen = "3.2.0"

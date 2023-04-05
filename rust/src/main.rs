@@ -5,6 +5,7 @@ extern crate dotenv_codegen;
 
 mod common;
 mod gen;
+mod src;
 
 use std::num::ParseIntError;
 
@@ -25,12 +26,23 @@ use dotenv::dotenv;
 use crate::common::gql::query_root::{QuerySchema, Query};
 
 #[handler]
-async fn graphql_handler(schema: Data<&QuerySchema>, req: Json<Request>) -> Json<Response> {
-  Json(schema.execute(req.0).await)
+async fn graphql_handler(
+  schema: Data<&QuerySchema>,
+  data: Json<Request>,
+  req: &poem::Request,
+) -> Json<Response> {
+  let mut gql_req = data.0;
+  if let Some(authorization) = req.header("authorization") {
+    gql_req = gql_req.data(common::auth::auth_model::AuthInfo {
+      token: Some(authorization.to_owned()),
+    });
+  }
+  Json(schema.execute(gql_req).await)
 }
 
 #[handler]
-fn graphql_playground() -> impl IntoResponse {
+fn graphql_playground(
+) -> impl IntoResponse {
   Html(playground_source(GraphQLPlaygroundConfig::new("/graphql").with_header("a", "bbb")))
 }
 
@@ -57,6 +69,8 @@ async fn main() -> Result<(), std::io::Error> {
   
   // info!("mysql_url: {}", &mysql_url);
   
+  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<i64>().unwrap();
+  
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
     // .after_connect(|conn, _meta| Box::pin(async move {
@@ -76,7 +90,9 @@ async fn main() -> Result<(), std::io::Error> {
     Query::default(),
     EmptyMutation,
     EmptySubscription
-  ).data(pool).finish();
+  ).data(pool)
+    .data(common::auth::auth_model::ServerTokentimeout(server_tokentimeout))
+    .finish();
   
   if cfg!(debug_assertions) {
     // println!("{}", &schema.sdl());
