@@ -1,4 +1,5 @@
-use std::{fmt::{Debug, Display}, collections::HashMap};
+use std::fmt::Debug;
+use std::collections::HashMap;
 
 use anyhow::{Ok, Result};
 use chrono::{Local, DateTime};
@@ -6,6 +7,8 @@ use chrono::{Local, DateTime};
 use async_graphql::Context;
 use sqlx::{Pool, MySql, Transaction, Executor, Execute};
 use tracing::{info, error};
+
+use super::gql::model::SortInput;
 
 pub struct Ctx<'a> {
   
@@ -37,8 +40,14 @@ pub struct QueryArgs {
 
 impl QueryArgs {
   
-  pub fn push(&mut self, arg: String) -> String {
-    let _ = &mut self.value.push(arg);
+  pub fn new() -> QueryArgs {
+    QueryArgs {
+      value: Vec::new(),
+    }
+  }
+  
+  pub fn push(&mut self, arg: impl AsRef<str>) -> String {
+    let _ = &mut self.value.push(arg.as_ref().to_owned());
     String::from("?")
   }
   
@@ -551,4 +560,59 @@ impl<'a> Ctx<'a> {
     Ok(res)
   }
      
+}
+
+/**
+ * 转义sql语句中的字段
+ */
+pub fn escape_id(mut val: String) -> String {
+  val = val.replace("`", "``");
+  val = val.replace(".", "`.`");
+  val = val.trim().lines().map(|part| {
+    part.trim().split_inclusive(char::is_whitespace)
+      .filter(|part| !part.trim().is_empty())
+      .map(|item| item.trim())
+      .collect()
+  }).collect::<Vec<String>>().join("");
+  val
+}
+
+/**
+ * 转义sql语句中的值
+ */
+pub fn escape(mut val: String) -> String {
+  val = val.replace("`", "``");
+  val = val.replace("'", "''");
+  val = val.trim().lines().map(|part| {
+    part.trim().split_inclusive(char::is_whitespace)
+      .filter(|part| !part.trim().is_empty())
+      .map(|item| item.trim())
+      .collect()
+  }).collect::<Vec<String>>().join("");
+  val
+}
+
+/**
+ * 获取sql语句中order_by的部分
+ */
+pub fn get_order_by_query(
+  sort: Option<Vec<SortInput>>,
+) -> String {
+  let mut sort = sort.unwrap_or(vec![]);
+  sort = sort.into_iter()
+    .filter(|item| item.prop.is_empty())
+    .collect();
+  let mut order_by_query = String::from("");
+  for item in sort {
+    let prop = item.prop;
+    let order = item.order;
+    if !order_by_query.is_empty() {
+      order_by_query += ",";
+    }
+    order_by_query += &format!(" {} {}", escape_id(prop), escape(order));
+  }
+  if !order_by_query.is_empty() {
+    order_by_query = " order by".to_owned() + &order_by_query;
+  }
+  order_by_query
 }
