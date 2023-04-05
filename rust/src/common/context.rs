@@ -150,14 +150,28 @@ impl<'a> Ctx<'a> {
   pub async fn execute(
     &mut self,
     sql: &'a str,
+    options: Option<QueryOptions>,
   ) -> Result<u64> {
-    if self.is_tran {
+    let mut is_debug = true;
+    let mut is_tran = self.is_tran;
+    if let Some(query_options) = options {
+      if let Some(is_debug0) = query_options.is_debug {
+        is_debug = is_debug0;
+      }
+      if let Some(is_tran0) = query_options.get_is_tran() {
+        is_tran = is_tran0;
+      }
+    }
+    
+    if is_tran {
       if self.tran.is_none() {
         self.begin().await?;
       }
       let query = sqlx::query(sql);
-      let debug_sql = query.sql();
-      info!("{} {}", self.req_id, debug_sql);
+      if is_debug {
+        let debug_sql = query.sql();
+        info!("{} {}", self.req_id, debug_sql);
+      }
       let tran = self.tran.as_mut().unwrap();
       let res = tran.execute(query).await
         .map_err(|e| {
@@ -168,8 +182,10 @@ impl<'a> Ctx<'a> {
       return Ok(rows_affected);
     }
     let query = sqlx::query(sql);
-    let debug_sql = query.sql();
-    info!("{} {}", self.req_id, debug_sql);
+    if is_debug {
+      let debug_sql = query.sql();
+      info!("{} {}", self.req_id, debug_sql);
+    }
     let pool = self.gql_ctx.data::<Pool<MySql>>()
       .map_err(|e| {
         let err_msg = format!("{} {}", self.req_id, e.message);
@@ -193,23 +209,39 @@ impl<'a> Ctx<'a> {
     &mut self,
     sql: &'a str,
     args: Vec<T>,
+    options: Option<QueryOptions>,
   ) -> Result<u64> {
-    if self.is_tran {
+    let mut is_debug = true;
+    let mut is_tran = self.is_tran;
+    if let Some(query_options) = options {
+      if let Some(is_debug0) = query_options.is_debug {
+        is_debug = is_debug0;
+      }
+      if let Some(is_tran0) = query_options.get_is_tran() {
+        is_tran = is_tran0;
+      }
+    }
+    
+    if is_tran {
       if self.tran.is_none() {
         self.begin().await?;
       }
-      let mut debug_args = vec![];
       let mut query = sqlx::query(sql);
-      for arg in args {
-        debug_args.push(format!("{:?}", arg));
-        query = query.bind(arg);
-      }
-      {
+      if is_debug {
+        let mut debug_args = vec![];
+        for arg in args {
+          debug_args.push(format!("'{:?}'", arg));
+          query = query.bind(arg);
+        }
         let mut debug_sql = query.sql().to_string();
         for debug_arg in debug_args {
           debug_sql = debug_sql.replace("?", &debug_arg);
         }
         info!("{} {}", self.req_id, debug_sql);
+      } else {
+        for arg in args {
+          query = query.bind(arg);
+        }
       }
       let tran = self.tran.as_mut().unwrap();
       let res = tran.execute(query).await
