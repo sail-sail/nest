@@ -3,7 +3,7 @@ use std::fmt::{Display, Debug};
 use anyhow::{Ok, Result, anyhow};
 use tracing::info;
 
-use crate::common::context::{Ctx, QueryArgs};
+use crate::common::context::{Ctx, QueryArgs, QueryOptions, get_order_by_query};
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::common::auth::auth_dao::get_auth_model;
 
@@ -65,13 +65,32 @@ async fn get_where_query<'a>(
   Ok(where_query)
 }
 
+/**
+ * 根据搜索条件和分页查找数据
+ */
 pub async fn find_all<'a>(
   ctx: &mut Ctx<'a>,
   search: Option<&UsrSearch>,
   page: Option<&PageInput>,
-  sort: Option<&Vec<SortInput>>,
-) -> Result<String> {
-  Ok("".to_owned())
+  sort: Option<Vec<SortInput>>,
+  options: Option<QueryOptions>,
+) -> Result<Vec<UsrModel>> {
+  let table = "usr";
+  let method = "findAll";
+  
+  let mut args = QueryArgs::new();
+  let from_query = format!(" from {} t ", table);
+  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let order_by_query = get_order_by_query(sort);
+  let sql = format!("#
+    select
+      t.*
+    from
+      {from_query}
+    where
+      {where_query}{order_by_query}
+  #");
+  Ok(vec![])
 }
 
 #[cfg(test)]
