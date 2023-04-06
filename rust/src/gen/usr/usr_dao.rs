@@ -3,7 +3,7 @@ use std::fmt::{Display, Debug};
 use anyhow::{Ok, Result, anyhow};
 use tracing::info;
 
-use crate::common::context::{Ctx, QueryArgs, QueryOptions, get_order_by_query};
+use crate::common::context::{Ctx, QueryArgs, Options, get_order_by_query};
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::common::auth::auth_dao::get_auth_model;
 
@@ -65,25 +65,62 @@ async fn get_where_query<'a>(
   Ok(where_query)
 }
 
-/**
- * 根据搜索条件和分页查找数据
- */
-pub async fn find_all<'a>(
-  ctx: &mut Ctx<'a>,
-  search: Option<&UsrSearch>,
-  page: Option<&PageInput>,
-  sort: Option<Vec<SortInput>>,
-  options: Option<QueryOptions>,
-) -> Result<Vec<UsrModel>> {
-  let table = "usr";
-  let method = "findAll";
-  
-  let mut args = QueryArgs::new();
-  let from_query = format!(" {} t ", table);
-  let where_query = get_where_query(ctx, &mut args, search).await?;
-  let order_by_query = get_order_by_query(sort);
-  
-  // 分页
+fn get_from_query() -> String {
+  let from_query = "#
+    usr t
+    left join dept _default_dept_id
+      on _default_dept_id.id = t.default_dept_id
+    left join usr_dept
+      on usr_dept.usr_id = t.id
+      and usr_dept.is_deleted = 0
+    left join dept
+      on usr_dept.dept_id = dept.id
+      and dept.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(dept.id) dept_ids,
+        json_arrayagg(dept.lbl) _dept_ids,
+        usr.id usr_id
+      from usr_dept
+      inner join dept
+        on dept.id = usr_dept.dept_id
+        and dept.is_deleted = 0
+      inner join usr
+        on usr.id = usr_dept.usr_id
+        and usr.is_deleted = 0
+      where
+      usr_dept.is_deleted = 0
+      group by usr_id
+    ) _dept
+      on _dept.usr_id = t.id
+    left join usr_role
+      on usr_role.usr_id = t.id
+      and usr_role.is_deleted = 0
+    left join role
+      on usr_role.role_id = role.id
+      and role.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(role.id) role_ids,
+        json_arrayagg(role.lbl) _role_ids,
+        usr.id usr_id
+      from usr_role
+      inner join role
+        on role.id = usr_role.role_id
+        and role.is_deleted = 0
+      inner join usr
+        on usr.id = usr_role.usr_id
+        and usr.is_deleted = 0
+      where
+      usr_role.is_deleted = 0
+      group by usr_id
+    ) _role
+      on _role.usr_id = t.id
+  #";
+  from_query.to_owned()
+}
+
+fn get_page_query(page: Option<&PageInput>) -> String {
   let mut page_query = String::from("");
   if let Some(page) = page {
     let pg_size = page.pg_size;
@@ -92,6 +129,28 @@ pub async fn find_all<'a>(
       page_query = format!(" limit {}, {} ", pg_offset, pg_size);
     }
   }
+  page_query
+}
+
+/**
+ * 根据搜索条件和分页查找数据
+ */
+pub async fn find_all<'a>(
+  ctx: &mut Ctx<'a>,
+  search: Option<&UsrSearch>,
+  page: Option<&PageInput>,
+  sort: Option<Vec<SortInput>>,
+  options0: Option<Options>,
+) -> Result<Vec<UsrModel>> {
+  let table = "usr";
+  let method = "findAll";
+  
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query();
+  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let order_by_query = get_order_by_query(sort);
+  let page_query = get_page_query(page);
   
   let sql = format!("#
     select
@@ -104,28 +163,23 @@ pub async fn find_all<'a>(
   
   let sql: &'a mut str = Box::leak(sql.into_boxed_str()).into();
   
-  // 缓存
-  let cache_key1 = format!("dao.sql.{}", table);
-  let cache_key2 = serde_json::json!({
+  let mut options = Options::new();
+  if options0.is_some() {
+    options.is_debug = options0.unwrap().is_debug;
+  }
+  
+  options.cache_key1 = Some(format!("dao.sql.{}", table));
+  
+  options.cache_key2 = Some(serde_json::json!({
     "sql": &sql,
     "args": &args.value,
-  });
+  }).to_string());
   
   let res = ctx.query_with::<_, UsrModel>(
     sql,
     args.value,
-    None, // TODO
+    Some(options),
   ).await?;
   
   Ok(res)
-}
-
-#[cfg(test)]
-mod test {
-  
-  #[test]
-  fn test() {
-    
-  }
-  
 }

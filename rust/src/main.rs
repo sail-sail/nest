@@ -1,6 +1,9 @@
 #![forbid(unsafe_code)]
 
 #[macro_use]
+extern crate derive_new;
+
+#[macro_use]
 extern crate dotenv_codegen;
 
 mod common;
