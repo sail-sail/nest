@@ -54,21 +54,26 @@ impl QueryArgs {
   
 }
 
-pub struct QueryOptions {
+#[derive(Default, new, Clone)]
+pub struct Options {
   
   /** 是否打印sql语句 */
-  pub is_debug: Option<bool>,
+  #[new(value = "true")]
+  pub is_debug: bool,
   
   /** 是否开启事务 */
+  #[new(default)]
   pub is_tran: Option<bool>,
   
+  #[new(default)]
   pub cache_key1: Option<String>,
   
+  #[new(default)]
   pub cache_key2: Option<String>,
   
 }
 
-impl QueryOptions {
+impl Options {
   
   #[inline]
   pub fn get_is_tran(&self) -> Option<bool> {
@@ -160,15 +165,13 @@ impl<'a> Ctx<'a> {
   pub async fn execute(
     &mut self,
     sql: &'a str,
-    options: Option<QueryOptions>,
+    options: Option<Options>,
   ) -> Result<u64> {
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
-    if let Some(query_options) = options {
-      if let Some(is_debug0) = query_options.is_debug {
-        is_debug = is_debug0;
-      }
-      if let Some(is_tran0) = query_options.get_is_tran() {
+    if let Some(options) = options {
+      is_debug = options.is_debug;
+      if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
     }
@@ -219,15 +222,13 @@ impl<'a> Ctx<'a> {
     &mut self,
     sql: &'a str,
     args: Vec<T>,
-    options: Option<QueryOptions>,
+    options: Option<Options>,
   ) -> Result<u64> {
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
-    if let Some(query_options) = options {
-      if let Some(is_debug0) = query_options.is_debug {
-        is_debug = is_debug0;
-      }
-      if let Some(is_tran0) = query_options.get_is_tran() {
+    if let Some(options) = options {
+      is_debug = options.is_debug;
+      if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
     }
@@ -290,7 +291,7 @@ impl<'a> Ctx<'a> {
     &mut self,
     sql: &'a str,
     args: Vec<T>,
-    options: Option<QueryOptions>,
+    options: Option<Options>,
   ) -> Result<Vec<R>>
   where
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
@@ -298,11 +299,9 @@ impl<'a> Ctx<'a> {
   {
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
-    if let Some(query_options) = options {
-      if let Some(is_debug0) = query_options.is_debug {
-        is_debug = is_debug0;
-      }
-      if let Some(is_tran0) = query_options.get_is_tran() {
+    if let Some(options) = options {
+      is_debug = options.is_debug;
+      if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
     }
@@ -375,18 +374,16 @@ impl<'a> Ctx<'a> {
   pub async fn query<R>(
     &mut self,
     sql: &'a str,
-    options: Option<QueryOptions>,
+    options: Option<Options>,
   ) -> Result<Vec<R>>
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
-    if let Some(query_options) = options {
-      if let Some(is_debug0) = query_options.is_debug {
-        is_debug = is_debug0;
-      }
-      if let Some(is_tran0) = query_options.get_is_tran() {
+    if let Some(options) = options {
+      is_debug = options.is_debug;
+      if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
     }
@@ -432,7 +429,7 @@ impl<'a> Ctx<'a> {
     &mut self,
     sql: &'a str,
     args: Vec<T>,
-    options: Option<QueryOptions>,
+    options: Option<Options>,
   ) -> Result<R>
   where
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
@@ -440,11 +437,9 @@ impl<'a> Ctx<'a> {
   {
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
-    if let Some(query_options) = options {
-      if let Some(is_debug0) = query_options.is_debug {
-        is_debug = is_debug0;
-      }
-      if let Some(is_tran0) = query_options.get_is_tran() {
+    if let Some(options) = options {
+      is_debug = options.is_debug;
+      if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
     }
@@ -517,18 +512,16 @@ impl<'a> Ctx<'a> {
   pub async fn query_one<R>(
     &mut self,
     sql: &'a str,
-    options: Option<QueryOptions>,
+    options: Option<Options>,
   ) -> Result<R>
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + std::marker::Send + Unpin,
   {
     let mut is_debug = true;
     let mut is_tran = self.is_tran;
-    if let Some(query_options) = options {
-      if let Some(is_debug0) = query_options.is_debug {
-        is_debug = is_debug0;
-      }
-      if let Some(is_tran0) = query_options.get_is_tran() {
+    if let Some(options) = options {
+      is_debug = options.is_debug;
+      if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
     }
@@ -621,7 +614,7 @@ pub fn get_order_by_query(
     order_by_query += &format!(" {} {}", escape_id(prop), escape(order));
   }
   if !order_by_query.is_empty() {
-    order_by_query = " order by".to_owned() + &order_by_query;
+    order_by_query = " order by".to_owned() + order_by_query.as_ref();
   }
   order_by_query
 }
