@@ -1,7 +1,7 @@
 import { gitDiffOut } from "../lib/codegen";
 
 async function exec() {
-  await gitDiffOut();
+  // await gitDiffOut(); TODO
 }
 
 (async function() {

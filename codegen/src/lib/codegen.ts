@@ -32,12 +32,16 @@ let graphqlHasChanged = false;
 
 export async function codegen(context: Context, schema: TablesConfigItem) {
   const opts = schema.opts;
-  let { tableUp, table, table_comment, defaultSort, hasTenant_id, cache } = opts;
+  let { table, table_comment, defaultSort, hasTenant_id, cache } = opts;
   const columns = schema.columns;
   const formatMsg = formatMsg0;
   const uniqueID = uniqueID0;
   const isEmpty = isEmpty0;
   console.log(`${chalk.gray("生成表:")} ${chalk.green(table)}`);
+  const mod = table.substring(0, table.indexOf("_"));
+  const mod_slash_table = table.replace("_", "/");
+  table = table.substring(table.indexOf("_") + 1);
+  const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
   async function treeDir(dir: string, writeFnArr: Function[]) {
 		if(dir.endsWith(".bak")) return;
     const dir2 = dir.replace(new RegExp("\\[\\[([\\s\\S]*?)\\]\\]","gm"), function(str) {
@@ -124,9 +128,6 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
         }
         return;
       }
-      if (dir.startsWith("/nest/")) {
-        return;
-      }
       if (dir === "/deno/gen/graphql.ts") {
         return;
       }
@@ -143,44 +144,20 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       }
       let htmlStr = includeFtl(await readFile(fileTng ,"utf8"), "<#", "#>");
       try {
-        if(basename(dir2).startsWith("--")) {
-          const dir3 = dirname(dir2) + "/" + basename(dir2).replace("--", "");
-          let isExist = true;
-          try {
-            await access(`${out}/${dir3}`, fs_constants.R_OK);
-          } catch (errTmp) {
-            isExist = false;
+        let str2 = eval(htmlStr);
+        let str0: string;
+        try {
+          str0 = await readFile(`${out}/${dir2}`, "utf8");
+        } catch (err) {
+        }
+        if (!str0 || str0 !== str2) {
+          if (dir2.endsWith(".graphql.ts")) {
+            graphqlHasChanged = true;
           }
-          if(!isExist) {
-            let str2 = eval(htmlStr);
-            let str0: string;
-            try {
-              str0 = await readFile(`${out}/${dir3}`, "utf8");
-            } catch (err) {
-            }
-            if (!str0 || str2 !== str0) {
-              writeFnArr.push(async function() {
-                await writeFile(`${out}/${dir3}`, str2);
-                console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir3}`))}`);
-              });
-            }
-          }
-        } else {
-          let str2 = eval(htmlStr);
-          let str0: string;
-          try {
-            str0 = await readFile(`${out}/${dir2}`, "utf8");
-          } catch (err) {
-          }
-          if (!str0 || str0 !== str2) {
-            if (dir2.endsWith(".graphql.ts")) {
-              graphqlHasChanged = true;
-            }
-            writeFnArr.push(async function() {
-              await writeFile(`${out}/${dir2}`, str2);
-              console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
-            });
-          }
+          writeFnArr.push(async function() {
+            await writeFile(`${out}/${dir2}`, str2);
+            console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
+          });
         }
         try {
           await unlink(`${ projectPh }/error.js`);

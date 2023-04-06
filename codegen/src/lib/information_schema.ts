@@ -82,7 +82,7 @@ async function getSchema0(
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
   const records2: TableCloumn[] = [ ];
-  if (!tables[table_name].columns) {
+  if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
   }
   const idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "id");
@@ -120,13 +120,14 @@ async function getSchema0(
 export async function getSchema(
   context: Context,
   table_name: string,
+  table_names: string[],
 ): Promise<TablesConfigItem> {
   const records = await getSchema0(context, table_name);
   tables[table_name] = tables[table_name] || { opts: { }, columns: [ ] };
   tables[table_name].columns = tables[table_name].columns || [ ];
   tables[table_name].opts = tables[table_name].opts || { };
   tables[table_name].opts.table = table_name;
-  tables[table_name].opts.tableUp = table_name.substring(0,1).toUpperCase() + table_name.substring(1);
+  // tables[table_name].opts.tableUp = table_name.substring(0,1).toUpperCase() + table_name.substring(1);
   tables[table_name].opts.table_comment = await getTableComment(context, table_name);
   const hasTenant_id = records.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
   tables[table_name].opts.hasTenant_id = hasTenant_id;
@@ -185,6 +186,9 @@ export async function getSchema(
           record.foreignKey.table = table2;
         }
       }
+      record.foreignKey.table = table_names.find((item) => {
+        return item.substring(item.indexOf("_") + 1) === record.foreignKey.table;
+      });
       if (!record.foreignKey.lbl) {
         const records = await getSchema0(context, record.foreignKey.table);
         if (records.some((item) => item.COLUMN_NAME === "lbl")) {
@@ -197,6 +201,10 @@ export async function getSchema(
       if (!record.foreignKey.column) {
         record.foreignKey.column = "id";
       }
+      const mod_slash_table = record.foreignKey.table.replace("_", "/");
+      record.foreignKey.mod_slash_table = mod_slash_table;
+      record.foreignKey.mod = record.foreignKey.table.substring(0, record.foreignKey.table.indexOf("_"));
+      record.foreignKey.table = record.foreignKey.table.substring(record.foreignKey.table.indexOf("_") + 1);
     }
     if (record.COLUMN_NAME === "lbl") {
       if (!column) {
@@ -235,13 +243,25 @@ export async function getSchema(
     if (!column.foreignKey) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
         const table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_ids".length);
-        const defaultSort = tables[table2]?.opts?.defaultSort;
-        column.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: true, type: "many2many", defaultSort };
-        column.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
+        const table2_name = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table2);
+        if (!table2_name) {
+          throw new Error(`table2_name not found: ${ table2 }`);
+        }
+        const mod2 = table2_name.substring(0, table2_name.indexOf("_"));
+        const defaultSort = tables[table2_name]?.opts?.defaultSort;
+        column.foreignKey = { mod: mod2, table: table2, column: "id", lbl: "lbl", multiple: true, type: "many2many", defaultSort };
+        const table = table_name.substring(table_name.indexOf("_") + 1);
+        const mod = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table)?.substring(0, table_name.indexOf("_"));
+        column.many2many = { mod, table: `${ table }_${ table2 }`, column1: `${ table }_id`, column2: `${ table2 }_id` };
       } else if (column.COLUMN_NAME.endsWith("_id")) {
         const table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_id".length);
-        const defaultSort = tables[table2]?.opts?.defaultSort;
-        column.foreignKey = { table: table2, column: "id", lbl: "lbl", multiple: false, defaultSort };
+        const table2_name = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table2);
+        if (!table2_name) {
+          throw new Error(`table2_name not found: ${ table2 }`);
+        }
+        const mod2 = table2_name.substring(0, table_name.indexOf("_"));
+        const defaultSort = tables[table2_name]?.opts?.defaultSort;
+        column.foreignKey = { mod: mod2, table: table2, column: "id", lbl: "lbl", multiple: false, defaultSort };
       }
     }
     if (column.foreignKey && !column.foreignKey.table) {
@@ -251,7 +271,9 @@ export async function getSchema(
       } else if (column.COLUMN_NAME.endsWith("_id")) {
         table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_id".length);
       }
+      const mod2 = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table2)?.substring(0, table_name.indexOf("_"));
       column.foreignKey.table = table2;
+      column.foreignKey.mod = mod2;
     }
     if (column.foreignKey && !column.foreignKey.type) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
@@ -259,14 +281,18 @@ export async function getSchema(
       }
     }
     if (column.COLUMN_NAME.endsWith("_ids") && !column.many2many) {
+      const table = table_name.substring(table_name.indexOf("_") + 1);
       const table2 = column.foreignKey.table;
-      column.many2many = { table: `${ table_name }_${ table2 }`, column1: `${ table_name }_id`, column2: `${ table2 }_id` };
+      const mod = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table)?.substring(0, table_name.indexOf("_"));
+      column.many2many = { mod, table: `${ table }_${ table2 }`, column1: `${ table }_id`, column2: `${ table2 }_id` };
     }
     if (column.many2many && !column.many2many.table) {
-      column.many2many.table = `${ table_name }_${ column.foreignKey.table }`;
+      const table = table_name.substring(table_name.indexOf("_") + 1);
+      column.many2many.table = `${ table }_${ column.foreignKey.table }`;
     }
     if (column.many2many && !column.many2many.column1) {
-      column.many2many.column1 = `${ table_name }_id`;
+      const table = table_name.substring(table_name.indexOf("_") + 1);
+      column.many2many.column1 = `${ table }_id`;
     }
     if (column.many2many && !column.many2many.column2) {
       column.many2many.column2 = `${ column.foreignKey.table }_id`;
@@ -286,6 +312,14 @@ export async function getSchema(
     }
     if (column.foreignKey && !column.foreignKey.defaultSort) {
       column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
+    }
+    if (column.foreignTabs) {
+      for (let i = 0; i < column.foreignTabs.length; i++) {
+        const foreignTab = column.foreignTabs[i];
+        if (!foreignTab.mod_slash_table) {
+          foreignTab.mod_slash_table = `${ foreignTab.mod }/${ foreignTab.table }`;
+        }
+      }
     }
     columns.push({
       ...column,
