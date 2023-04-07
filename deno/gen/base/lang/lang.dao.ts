@@ -861,7 +861,7 @@ export async function findLastOrderBy(
     select
       t.order_by order_by
     from
-      lang t
+      base_lang t
   `;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();

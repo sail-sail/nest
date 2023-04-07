@@ -991,7 +991,7 @@ export async function findLastOrderBy(
     select
       t.order_by order_by
     from
-      tenant t
+      base_tenant t
   `;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();

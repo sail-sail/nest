@@ -1162,7 +1162,7 @@ export async function findLastOrderBy(
     select
       t.order_by order_by
     from
-      dept t
+      base_dept t
   `;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();

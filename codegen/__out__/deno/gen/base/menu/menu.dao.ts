@@ -988,7 +988,7 @@ export async function findLastOrderBy(
     select
       t.order_by order_by
     from
-      menu t
+      base_menu t
   `;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();

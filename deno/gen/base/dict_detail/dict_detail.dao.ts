@@ -1039,7 +1039,7 @@ export async function findLastOrderBy(
     select
       t.order_by order_by
     from
-      dict_detail t
+      base_dict_detail t
   `;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
