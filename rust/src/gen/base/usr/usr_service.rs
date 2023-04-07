@@ -4,7 +4,7 @@ use tracing::info;
 use crate::common::context::Ctx;
 
 use super::usr_model::UsrModel;
-use crate::gen::usr::usr_dao;
+use crate::gen::base::usr::usr_dao;
 
 pub async fn hello<'a>(
   ctx: &mut Ctx<'a>,

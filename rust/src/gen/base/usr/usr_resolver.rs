@@ -9,8 +9,8 @@ use async_graphql::{
 
 use crate::common::context::Ctx;
 
-use crate::gen::usr::usr_model::UsrModel;
-use crate::gen::usr::usr_service;
+use crate::gen::base::usr::usr_model::UsrModel;
+use crate::gen::base::usr::usr_service;
 
 #[derive(Default)]
 pub struct UsrQuery;
