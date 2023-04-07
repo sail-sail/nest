@@ -2,7 +2,7 @@ import { defineConfig } from "../config";
 
 export default defineConfig({
   // 角色
-  role: {
+  base_role: {
     opts: {
       cache: true,
       unique: [ "lbl" ],
@@ -37,7 +37,7 @@ export default defineConfig({
     ],
   },
   // 租户
-  tenant: {
+  base_tenant: {
     opts: {
       cache: true,
       unique: [ "lbl" ],
@@ -88,7 +88,7 @@ export default defineConfig({
     ],
   },
   // 用户
-  usr: {
+  base_usr: {
     opts: {
       cache: true,
       ignoreCodegen: false,
@@ -161,7 +161,7 @@ export default defineConfig({
     ],
   },
   // 菜单
-  menu: {
+  base_menu: {
     opts: {
       cache: true,
       unique: [ "menu_id", "lbl" ],
@@ -222,13 +222,13 @@ export default defineConfig({
       },
     ]
   },
-  // permit: {
+  // base_permit: {
   //   opts: {
   //     cache: true,
   //     unique: [ "menu_id", "lbl" ],
   //   },
   // },
-  background_task: {
+  base_background_task: {
     opts: {
       noAdd: true,
       noEdit: true,
@@ -293,7 +293,7 @@ export default defineConfig({
     ]
   },
   // 语言
-  lang: {
+  base_lang: {
     opts: {
       cache: true,
       unique: [ "code" ],
@@ -327,7 +327,7 @@ export default defineConfig({
     ],
   },
   // 国际化
-  i18n: {
+  base_i18n: {
     opts: {
       cache: true,
       unique: [ "lang_id", "menu_id", "code" ],
@@ -371,7 +371,7 @@ export default defineConfig({
     ],
   },
   // 系统选项
-  options: {
+  base_options: {
     opts: {
       cache: true,
       unique: [ "ky" ],
@@ -456,7 +456,7 @@ export default defineConfig({
     ],
   },
   // 操作记录
-  operation_record: {
+  base_operation_record: {
     opts: {
       noAdd: true,
       noEdit: true,
@@ -532,7 +532,7 @@ export default defineConfig({
     ],
   },
   // 部门
-  dept: {
+  base_dept: {
     opts: {
       cache: true,
       unique: [ "lbl" ],
@@ -617,7 +617,7 @@ export default defineConfig({
     ],
   },
   // 系统字典
-  dict: {
+  base_dict: {
     opts: {
       cache: true,
       unique: [ "code" ],
@@ -635,6 +635,7 @@ export default defineConfig({
         width: 240,
         foreignTabs: [
           {
+            mod: "base",
             table: "dict_detail",
             label: "系统字典",
             column: "dict_id",
@@ -713,7 +714,7 @@ export default defineConfig({
     ],
   },
   // 系统字典明细
-  dict_detail: {
+  base_dict_detail: {
     opts: {
       cache: true,
       unique: [ "dict_id", "lbl" ],
@@ -766,7 +767,7 @@ export default defineConfig({
     ],
   },
   // 业务字典
-  dictbiz: {
+  base_dictbiz: {
     opts: {
       cache: true,
       unique: [ "code" ],
@@ -784,6 +785,7 @@ export default defineConfig({
         width: 240,
         foreignTabs: [
           {
+            mod: "base",
             table: "dictbiz_detail",
             label: "业务字典",
             column: "dictbiz_id",
@@ -861,7 +863,7 @@ export default defineConfig({
     ],
   },
   // 业务字典明细
-  dictbiz_detail: {
+  base_dictbiz_detail: {
     opts: {
       cache: true,
       unique: [ "dictbiz_id", "lbl" ],

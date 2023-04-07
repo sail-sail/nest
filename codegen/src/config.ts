@@ -231,6 +231,18 @@ export interface TableCloumn {
      * 外键关联表名
      * @type {string}
      */
+    mod?: string,
+    
+    /**
+     * 外键关联表名
+     * @type {string}
+     */
+    mod_slash_table?: string,
+    
+    /**
+     * 外键关联表名
+     * @type {string}
+     */
     table?: string,
     
     /**
@@ -282,6 +294,8 @@ export interface TableCloumn {
   },
   
   foreignTabs?: {
+    mod: string;
+    mod_slash_table?: string;
     table: string;
     label: string;
     column: string;
@@ -297,6 +311,11 @@ export interface TableCloumn {
    * @memberof TableCloumn
    */
   many2many?: {
+    
+    /**
+     * table模块名
+     */
+    mod: string,
     
     /**
      * 多对多右边的表名

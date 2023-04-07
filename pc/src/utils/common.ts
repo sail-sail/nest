@@ -66,9 +66,14 @@ export async function getDictbiz(
 export function useRenderExcel() {
   return useWebWorkerFn(
     async function (exlBuf: Buffer | string, _data_: any | string) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return await ejsexcel.renderExcel(exlBuf, _data_);
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return await ejsexcel.renderExcel(exlBuf, _data_);
+      } catch (err) {
+        console.error("useRenderExcel", exlBuf);
+        throw err;
+      }
     },
     {
       dependencies: [
