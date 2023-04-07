@@ -1,2 +1,2 @@
 pub mod gen_query;
-pub mod usr;
+pub mod base;
