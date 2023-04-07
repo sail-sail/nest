@@ -486,6 +486,7 @@ export async function initListI18ns() {
     "还原 {0} 条数据成功",
     "请输入",
     "请选择",
+    "导出失败",
   ];
   await initSysI18ns(codes);
 }

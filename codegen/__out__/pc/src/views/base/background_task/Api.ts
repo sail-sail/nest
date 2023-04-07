@@ -203,6 +203,11 @@ export async function forceDeleteByIds(
  * 导出Excel
  */
 export function useExportExcel() {
+  const route = useRoute();
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(route.path);
   const {
     workerFn,
     workerStatus,
@@ -248,11 +253,16 @@ export function useExportExcel() {
         sort,
       },
     }, opt);
-    const buffer = await workerFn(
-      `${ location.origin }/excel_template/background_task.xlsx`,
-      `${ location.origin }${ queryStr }`,
-    );
-    saveAsExcel(buffer, "后台任务");
+    try {
+      const buffer = await workerFn(
+        `${ location.origin }/excel_template/base/background_task.xlsx`,
+        `${ location.origin }${ queryStr }`,
+      );
+      saveAsExcel(buffer, await nAsync("后台任务"));
+    } catch (err) {
+      ElMessage.error(await nsAsync("导出失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,

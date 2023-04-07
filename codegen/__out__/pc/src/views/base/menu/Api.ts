@@ -309,6 +309,11 @@ export async function getMenuList() {
  * 导出Excel
  */
 export function useExportExcel() {
+  const route = useRoute();
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(route.path);
   const {
     workerFn,
     workerStatus,
@@ -356,11 +361,16 @@ export function useExportExcel() {
         sort,
       },
     }, opt);
-    const buffer = await workerFn(
-      `${ location.origin }/excel_template/menu.xlsx`,
-      `${ location.origin }${ queryStr }`,
-    );
-    saveAsExcel(buffer, "菜单");
+    try {
+      const buffer = await workerFn(
+        `${ location.origin }/excel_template/base/menu.xlsx`,
+        `${ location.origin }${ queryStr }`,
+      );
+      saveAsExcel(buffer, await nAsync("菜单"));
+    } catch (err) {
+      ElMessage.error(await nsAsync("导出失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,

@@ -387,6 +387,11 @@ export async function getRoleList() {
  * 导出Excel
  */
 export function useExportExcel() {
+  const route = useRoute();
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(route.path);
   const {
     workerFn,
     workerStatus,
@@ -439,11 +444,16 @@ export function useExportExcel() {
         sort,
       },
     }, opt);
-    const buffer = await workerFn(
-      `${ location.origin }/excel_template/usr.xlsx`,
-      `${ location.origin }${ queryStr }`,
-    );
-    saveAsExcel(buffer, "用户");
+    try {
+      const buffer = await workerFn(
+        `${ location.origin }/excel_template/base/usr.xlsx`,
+        `${ location.origin }${ queryStr }`,
+      );
+      saveAsExcel(buffer, await nAsync("用户"));
+    } catch (err) {
+      ElMessage.error(await nsAsync("导出失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,

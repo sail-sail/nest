@@ -333,6 +333,11 @@ export async function getDictList() {
  * 导出Excel
  */
 export function useExportExcel() {
+  const route = useRoute();
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(route.path);
   const {
     workerFn,
     workerStatus,
@@ -378,11 +383,16 @@ export function useExportExcel() {
         sort,
       },
     }, opt);
-    const buffer = await workerFn(
-      `${ location.origin }/excel_template/dict_detail.xlsx`,
-      `${ location.origin }${ queryStr }`,
-    );
-    saveAsExcel(buffer, "系统字典明细");
+    try {
+      const buffer = await workerFn(
+        `${ location.origin }/excel_template/base/dict_detail.xlsx`,
+        `${ location.origin }${ queryStr }`,
+      );
+      saveAsExcel(buffer, await nAsync("系统字典明细"));
+    } catch (err) {
+      ElMessage.error(await nsAsync("导出失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,

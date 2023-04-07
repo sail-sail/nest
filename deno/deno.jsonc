@@ -7,7 +7,12 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "lib": [
-      "esnext"
+      "esnext",
+      "deno",
+      "deno.window"
+    ],
+    "types": [
+      "typings/types.ts"
     ]
   },
   "tasks": {

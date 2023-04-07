@@ -514,6 +514,11 @@ export async function get<#=foreignTableUp#>List() {
  * 导出Excel
  */
 export function useExportExcel() {
+  const route = useRoute();
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(route.path);
   const {
     workerFn,
     workerStatus,
@@ -597,11 +602,16 @@ export function useExportExcel() {
         sort,
       },
     }, opt);
-    const buffer = await workerFn(
-      `${ location.origin }/excel_template/<#=table#>.xlsx`,
-      `${ location.origin }${ queryStr }`,
-    );
-    saveAsExcel(buffer, "<#=table_comment#>");
+    try {
+      const buffer = await workerFn(
+        `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
+        `${ location.origin }${ queryStr }`,
+      );
+      saveAsExcel(buffer, await nAsync("<#=table_comment#>"));
+    } catch (err) {
+      ElMessage.error(await nsAsync("导出失败"));
+      throw err;
+    }
   }
   return {
     workerFn: workerFn2,
