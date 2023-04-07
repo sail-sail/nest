@@ -221,8 +221,8 @@ export async function updateById(
   #>
   
   {
-    const optionsSrcDao = await import("/src/options/options.dao.ts");
-    await optionsSrcDao.updateI18n_version();
+    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
+    await optionsDaoSrc.updateI18n_version();
   }<#
   }
   #>
@@ -258,8 +258,8 @@ export async function deleteByIds(
   #>
   
   {
-    const optionsSrcDao = await import("/src/options/options.dao.ts");
-    await optionsSrcDao.updateI18n_version();
+    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
+    await optionsDaoSrc.updateI18n_version();
   }<#
   }
   #>
@@ -346,8 +346,8 @@ export async function importModels(
   #>
   
   if (succNum > 0) {
-    const optionsSrcDao = await import("/src/options/options.dao.ts");
-    await optionsSrcDao.updateI18n_version();
+    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
+    await optionsDaoSrc.updateI18n_version();
   }<#
   }
   #>

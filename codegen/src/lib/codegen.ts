@@ -42,6 +42,17 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
   const mod_slash_table = table.replace("_", "/");
   table = table.substring(table.indexOf("_") + 1);
   const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+  
+  let optTables = tables;
+  const result = await context.conn.query(`
+    select
+      t.TABLE_NAME
+      ,t.TABLE_COMMENT
+    from information_schema.TABLES t
+    where t.table_schema = (select database())
+  `);
+  const records: any = result[0];
+  
   async function treeDir(dir: string, writeFnArr: Function[]) {
 		if(dir.endsWith(".bak")) return;
     const dir2 = dir.replace(new RegExp("\\[\\[([\\s\\S]*?)\\]\\]","gm"), function(str) {

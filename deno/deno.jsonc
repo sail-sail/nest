@@ -8,11 +8,11 @@
     "noUnusedParameters": false,
     "lib": [
       "esnext",
-      "deno",
-      "deno.window"
+      "deno.window",
+      "deno.ns"
     ],
     "types": [
-      "typings/types.ts"
+      "./typings/types.ts"
     ]
   },
   "tasks": {

@@ -1,6 +1,6 @@
 import {
   type Mutation,
-} from "/gen/base/types.ts"
+} from "/gen/types.ts"
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
