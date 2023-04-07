@@ -159,7 +159,7 @@ type Mutation {
   "根据id修改一条数据"
   updateByIdDept(id: ID!, model: DeptInput!): ID!
   "批量导入"
-  importModelDept(models: [DeptInput!]!): String
+  importModelsDept(models: [DeptInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsDept(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

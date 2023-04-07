@@ -167,7 +167,7 @@ type Mutation {
   "根据id修改一条数据"
   updateByIdDict(id: ID!, model: DictInput!): ID!
   "批量导入"
-  importModelDict(models: [DictInput!]!): String
+  importModelsDict(models: [DictInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsDict(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

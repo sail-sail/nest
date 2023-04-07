@@ -124,7 +124,7 @@ type Mutation {
   "根据id修改一条数据"
   updateByIdTenant(id: ID!, model: TenantInput!): ID!
   "批量导入"
-  importModelTenant(models: [TenantInput!]!): String
+  importModelsTenant(models: [TenantInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsTenant(ids: [ID!]!): Int!
   "根据 ids 还原数据"

@@ -407,7 +407,7 @@ type Mutation {<#
   if (opts.noAdd !== true && opts.noEdit !== true) {
   #>
   "批量导入"
-  importModel<#=tableUp#>(models: [<#=Table_Up#>Input!]!): String<#
+  importModels<#=tableUp#>(models: [<#=Table_Up#>Input!]!): String<#
   }
   #><#
   if (opts.noDelete !== true) {
