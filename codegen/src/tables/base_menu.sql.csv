@@ -1,0 +1,14 @@
+id,type,menu_id,lbl,route_path,route_query,is_enabled,order_by
+6ZeQOSTtRpGy+467HJZuBw,pc,,系统管理,,NULL,1,100
+LiRTLUICQA2SRlJgYoNmnA,pc,6ZeQOSTtRpGy+467HJZuBw,菜单,/base/menu,NULL,1,1000
+1oTQS2N4TsKhvk7Rnq4hAg,pc,6ZeQOSTtRpGy+467HJZuBw,角色,/base/role,NULL,1,1001
+TO8DBpthSvG2/XDWOwAqtA,pc,6ZeQOSTtRpGy+467HJZuBw,租户,/base/tenant,NULL,1,10031
+AE6NzvHDQ3CSMdhPlSHCdg,pc,6ZeQOSTtRpGy+467HJZuBw,用户,/base/usr,NULL,1,10041
+9mMZgzvwTNWB8glB+h4KFg,pc,6ZeQOSTtRpGy+467HJZuBw,后台任务,/base/background_task,NULL,1,10043
+K2mq1MJTRdeqyP7f9oFTIQ,pc,6ZeQOSTtRpGy+467HJZuBw,系统选项,/base/options,NULL,1,10045
+ecLh8jMSQgi3N1qWaWgdsA,pc,6ZeQOSTtRpGy+467HJZuBw,操作记录,/base/operation_record,NULL,1,10047
+L+1jMngoQImVmBCHnhcz8A,pc,6ZeQOSTtRpGy+467HJZuBw,部门,/base/dept,NULL,1,10049
+UVFbKnOJRfelRv93YtbqBQ,pc,6ZeQOSTtRpGy+467HJZuBw,系统字典,/base/dict,NULL,1,10051
+HTt8ThGSRO2Gisb0ym4XbA,pc,6ZeQOSTtRpGy+467HJZuBw,业务字典,/base/dictbiz,NULL,1,10053
+avUSu4oaRnuqAAZ5zXxX9g,pc,6ZeQOSTtRpGy+467HJZuBw,语言,/base/lang,NULL,1,10054
+5lhD4VfTQs2vzkZUx8U+ew,pc,6ZeQOSTtRpGy+467HJZuBw,国际化,/base/i18n,NULL,1,10055

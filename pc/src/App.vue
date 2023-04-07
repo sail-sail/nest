@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import locale from "@/locales";
-import Background_taskListDialog from "./views/background_task/ListDialog.vue";
+import Background_taskListDialog from "./views/base/background_task/ListDialog.vue";
 
 import Login from "./layout/Login.vue";
 

@@ -75,6 +75,13 @@ export function useI18n(routePath?: string | null) {
       }
       return getLbl(lang, code, routePath, ...args);
     },
+    nAsync(code: string, ...args: any[]) {
+      if (routePath === undefined) {
+        const route = useRoute();
+        routePath = route.path;
+      }
+      return getLblAsync(lang, code, routePath, ...args);
+    },
     initI18ns(
       codes: string[],
     ) {
@@ -86,6 +93,9 @@ export function useI18n(routePath?: string | null) {
     },
     ns(code: string, ...args: any[]) {
       return getLbl(lang, code, "", ...args);
+    },
+    nsAsync(code: string, ...args: any[]) {
+      return getLblAsync(lang, code, "", ...args);
     },
     initSysI18ns(
       codes: string[],
@@ -155,4 +165,31 @@ function getLbl(
     })();
   }
   return i18nLblRef.value;
+}
+
+async function getLblAsync(
+  lang: string,
+  code: string,
+  routePath: string | null,
+  ...args: any[]
+) {
+  initI18nLblsLang();
+  if (!i18nLblsLang) {
+    return "";
+  }
+  const i18nLbls = i18nLblsLang[lang];
+  const key = `${ routePath } ${ code }`;
+  let i18nLbl: string = i18nLbls[key];
+  if (i18nLbl) {
+    i18nLbl = setLblArgs(i18nLbl, args);
+    return i18nLbl;
+  }
+  let i18nLblRef = setLblArgs(code, args);
+  // 如果 i18nLbl 不存在, 则到服务器获取, 获取之后再缓存到本地
+  if (!i18nLbls[key]) {
+    i18nLbls[key] = await n0(lang, routePath, code, { notLoading: true });
+    localStorage.setItem(`i18nLblsLang`, JSON.stringify(i18nLblsLang));
+    i18nLblRef = setLblArgs(i18nLbls[key], args);
+  }
+  return i18nLblRef;
 }

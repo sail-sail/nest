@@ -14,7 +14,7 @@ import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import * as usrDaoSrc from "/src/usr/usr.dao.ts";
+import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
 import {
   type AuthModel,
@@ -74,9 +74,10 @@ export async function many2manyUpdate(
   model: { [key: string]: any },
   column_name: string,
   many: {
-    table: string,
-    column1: string,
-    column2: string,
+    mod: string;
+    table: string;
+    column1: string;
+    column2: string;
   },
 ) {
   const column2Ids: string[] = model[column_name];
@@ -99,7 +100,7 @@ export async function many2manyUpdate(
         t.${ escapeId(many.column1) } column1Id,
         t.${ escapeId(many.column2) } column2Id,
         t.is_deleted
-      from ${ escapeId(many.table) } t
+      from ${ escapeId(many.mod + "_" +many.table) } t
       where
         t.${ escapeId(many.column1) } = ?
     `, [ model.id ]);
@@ -108,7 +109,7 @@ export async function many2manyUpdate(
       if (column2Ids.includes(model.column2Id) && model.is_deleted === 1) {
         const sql = /*sql*/ `
           update
-            ${ escapeId(many.table) }
+            ${ escapeId(many.mod + "_" + many.table) }
           set
             is_deleted = 0
             ,delete_time = ?
@@ -119,7 +120,7 @@ export async function many2manyUpdate(
       } else if (!column2Ids.includes(model.column2Id) && model.is_deleted === 0) {
         const sql = /*sql*/ `
           update
-            ${ escapeId(many.table) }
+            ${ escapeId(many.mod + "_" + many.table) }
           set
             is_deleted = 1
             ,delete_time = ?
@@ -137,7 +138,7 @@ export async function many2manyUpdate(
     {
       const args = [ ];
       let sql = /*sql*/ `
-        insert into ${ many.table }(
+        insert into ${ many.mod }_${ many.table }(
           id
           ,create_time
       `;

@@ -17,20 +17,25 @@ async function dropTable(
 }
 
 export async function coderemove(context: Context, table_name: string) {
-  console.log(`删除: ${ out }/deno/gen/${ table_name }/`);
-  await rm(`${ out }/deno/gen/${ table_name }/`, { force: true, recursive: true });
+  const mod_slash_table = table_name.replace(/_/gm, "/");
   
-  console.log(`删除: ${ out }/pc/src/views/${ table_name }/`);
-  await rm(`${ out }/pc/src/views/${ table_name }/`, { force: true, recursive: true });
+  console.log(`删除: ${ out }/deno/gen/${ mod_slash_table }/`);
+  await rm(`${ out }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
   
-  console.log(`删除: ${ projectPh }/deno/gen/${ table_name }/`);
-  await rm(`${ projectPh }/deno/gen/${ table_name }/`, { force: true, recursive: true });
+  console.log(`删除: ${ out }/pc/src/views/${ mod_slash_table }/`);
+  await rm(`${ out }/pc/src/views/${ mod_slash_table }/`, { force: true, recursive: true });
   
-  console.log(`删除: ${ projectPh }/pc/src/views/${ table_name }/`);
-  await rm(`${ projectPh }/pc/src/views/${ table_name }/`, { force: true, recursive: true });
+  console.log(`删除: ${ out }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
+  await rm(`${ out }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
   
-  console.log(`删除: ${ buildPh }/deno/gen/${ table_name }/`);
-  await rm(`${ buildPh }/deno/gen/${ table_name }/`, { force: true, recursive: true });
+  console.log(`删除: ${ projectPh }/deno/gen/${ mod_slash_table }/`);
+  await rm(`${ projectPh }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
+  
+  console.log(`删除: ${ projectPh }/pc/src/views/${ mod_slash_table }/`);
+  await rm(`${ projectPh }/pc/src/views/${ mod_slash_table }/`, { force: true, recursive: true });
+  
+  console.log(`删除: ${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
+  await rm(`${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
   
   console.log(`删除表: ${ table_name }`);
   await dropTable(context, table_name);
