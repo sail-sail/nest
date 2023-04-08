@@ -19,7 +19,7 @@ pub async fn hello<'a>(
       select
         *
       from
-        usr
+        base_usr
       where
         id != ?
     #",
@@ -67,52 +67,52 @@ async fn get_where_query<'a>(
 
 fn get_from_query() -> String {
   let from_query = "#
-    usr t
-    left join dept _default_dept_id
+    base_usr t
+    left join base_dept _default_dept_id
       on _default_dept_id.id = t.default_dept_id
-    left join usr_dept
-      on usr_dept.usr_id = t.id
-      and usr_dept.is_deleted = 0
-    left join dept
-      on usr_dept.dept_id = dept.id
-      and dept.is_deleted = 0
+    left join base_usr_dept
+      on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = 0
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted = 0
     left join (
       select
-        json_arrayagg(dept.id) dept_ids,
-        json_arrayagg(dept.lbl) _dept_ids,
-        usr.id usr_id
-      from usr_dept
-      inner join dept
-        on dept.id = usr_dept.dept_id
-        and dept.is_deleted = 0
-      inner join usr
-        on usr.id = usr_dept.usr_id
-        and usr.is_deleted = 0
+        json_arrayagg(base_dept.id) dept_ids,
+        json_arrayagg(base_dept.lbl) _dept_ids,
+        base_usr.id usr_id
+      from base_usr_dept
+      inner join base_dept
+        on base_dept.id = base_usr_dept.dept_id
+        and base_dept.is_deleted = 0
+      inner join base_usr
+        on base_usr.id = base_usr_dept.usr_id
+        and base_usr.is_deleted = 0
       where
-      usr_dept.is_deleted = 0
+      base_usr_dept.is_deleted = 0
       group by usr_id
     ) _dept
       on _dept.usr_id = t.id
-    left join usr_role
-      on usr_role.usr_id = t.id
-      and usr_role.is_deleted = 0
-    left join role
-      on usr_role.role_id = role.id
-      and role.is_deleted = 0
+    left join base_usr_role
+      on base_usr_role.usr_id = t.id
+      and base_usr_role.is_deleted = 0
+    left join base_role
+      on base_usr_role.role_id = base_role.id
+      and base_role.is_deleted = 0
     left join (
       select
-        json_arrayagg(role.id) role_ids,
-        json_arrayagg(role.lbl) _role_ids,
-        usr.id usr_id
-      from usr_role
-      inner join role
-        on role.id = usr_role.role_id
-        and role.is_deleted = 0
-      inner join usr
-        on usr.id = usr_role.usr_id
-        and usr.is_deleted = 0
+        json_arrayagg(base_role.id) role_ids,
+        json_arrayagg(base_role.lbl) _role_ids,
+        base_usr.id usr_id
+      from base_usr_role
+      inner join base_role
+        on base_role.id = base_usr_role.role_id
+        and base_role.is_deleted = 0
+      inner join base_usr
+        on base_usr.id = base_usr_role.usr_id
+        and base_usr.is_deleted = 0
       where
-      usr_role.is_deleted = 0
+      base_usr_role.is_deleted = 0
       group by usr_id
     ) _role
       on _role.usr_id = t.id
@@ -142,7 +142,7 @@ pub async fn find_all<'a>(
   sort: Option<Vec<SortInput>>,
   options0: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
-  let table = "usr";
+  let table = "base_usr";
   let method = "findAll";
   
   let mut args = QueryArgs::new();

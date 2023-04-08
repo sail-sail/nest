@@ -182,8 +182,7 @@ impl<'a> Ctx<'a> {
       }
       let query = sqlx::query(sql);
       if is_debug {
-        let debug_sql = query.sql();
-        info!("{} {}", self.req_id, debug_sql);
+        info!("{} {}", self.req_id, sql);
       }
       let tran = self.tran.as_mut().unwrap();
       let res = tran.execute(query).await
@@ -196,8 +195,7 @@ impl<'a> Ctx<'a> {
     }
     let query = sqlx::query(sql);
     if is_debug {
-      let debug_sql = query.sql();
-      info!("{} {}", self.req_id, debug_sql);
+      info!("{} {}", self.req_id, sql);
     }
     let pool = self.gql_ctx.data::<Pool<MySql>>()
       .map_err(|e| {
@@ -244,7 +242,7 @@ impl<'a> Ctx<'a> {
           debug_args.push(format!("'{}'", arg));
           query = query.bind(arg);
         }
-        let mut debug_sql = query.sql().to_string();
+        let mut debug_sql = sql.to_string();
         for debug_arg in debug_args {
           debug_sql = debug_sql.replace("?", &debug_arg);
         }
@@ -265,11 +263,22 @@ impl<'a> Ctx<'a> {
       return Ok(rows_affected);
     }
     let mut query = sqlx::query(sql);
-    for arg in args {
-      query = query.bind(arg);
+    if is_debug {
+      let mut debug_args = vec![];
+      for arg in args {
+        debug_args.push(format!("'{}'", arg));
+        query = query.bind(arg);
+      }
+      let mut debug_sql = sql.to_string();
+      for debug_arg in debug_args {
+        debug_sql = debug_sql.replace("?", &debug_arg);
+      }
+      info!("{} {}", self.req_id, debug_sql);
+    } else {
+      for arg in args {
+        query = query.bind(arg);
+      }
     }
-    let debug_sql = query.sql();
-    info!("{} {}", self.req_id, debug_sql);
     let pool = self.gql_ctx.data::<Pool<MySql>>()
       .map_err(|e| {
         let err_msg = format!("{} {}", self.req_id, e.message);
@@ -317,10 +326,12 @@ impl<'a> Ctx<'a> {
           debug_args.push(format!("'{}'", arg));
           query = query.bind(arg);
         }
-        let mut debug_sql = query.sql().to_string();
+        let mut debug_sql = sql.to_string();
         for debug_arg in debug_args {
           debug_sql = debug_sql.replace("?", &debug_arg);
         }
+        // let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+        // debug_sql = sqlformat::format(debug_sql.as_str(), &query_params, sqlformat::FormatOptions::default());
         info!("{} {}", self.req_id, debug_sql);
       } else {
         for arg in args {
@@ -455,7 +466,7 @@ impl<'a> Ctx<'a> {
           debug_args.push(format!("'{}'", arg));
           query = query.bind(arg);
         }
-        let mut debug_sql = query.sql().to_string();
+        let mut debug_sql = sql.to_string();
         for debug_arg in debug_args {
           debug_sql = debug_sql.replace("?", &debug_arg);
         }
@@ -482,7 +493,7 @@ impl<'a> Ctx<'a> {
         debug_args.push(format!("'{}'", arg));
         query = query.bind(arg);
       }
-      let mut debug_sql = query.sql().to_string();
+      let mut debug_sql = sql.to_string();
       for debug_arg in debug_args {
         debug_sql = debug_sql.replace("?", &debug_arg);
       }
