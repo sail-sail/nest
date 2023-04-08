@@ -14,40 +14,18 @@ use std::num::ParseIntError;
 
 use sqlx::mysql::{MySqlPoolOptions, MySqlConnectOptions};
 use async_graphql::{
-  http::{playground_source, GraphQLPlaygroundConfig},
-  EmptyMutation, EmptySubscription, Request, Response, Schema,
+  EmptyMutation, EmptySubscription, Schema,
 };
 use poem::{
-  get, post, handler,
+  get, post,
   listener::TcpListener,
-  web::{Data, Html, Json},
-  EndpointExt, IntoResponse, Route, Server,
+  EndpointExt, Route, Server,
 };
 
 use dotenv::dotenv;
+use tracing::info;
 
-use crate::common::gql::query_root::{QuerySchema, Query};
-
-#[handler]
-async fn graphql_handler(
-  schema: Data<&QuerySchema>,
-  data: Json<Request>,
-  req: &poem::Request,
-) -> Json<Response> {
-  let mut gql_req = data.0;
-  if let Some(authorization) = req.header("authorization") {
-    gql_req = gql_req.data(common::auth::auth_model::AuthInfo {
-      token: Some(authorization.to_owned()),
-    });
-  }
-  Json(schema.execute(gql_req).await)
-}
-
-#[handler]
-fn graphql_playground(
-) -> impl IntoResponse {
-  Html(playground_source(GraphQLPlaygroundConfig::new("/graphql").with_header("a", "bbb")))
-}
+use crate::common::gql::query_root::Query;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -68,11 +46,11 @@ async fn main() -> Result<(), std::io::Error> {
   let default_pool_size: u32 = 10;
   let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
   let database_pool_size = database_pool_size.or_else(|_| Ok::<u32, ParseIntError>(default_pool_size)).unwrap();
-  // let mysql_url = format!("mysql://{database_username}:{database_password}@{database_hostname}:{database_port}/{database_database}");
+  let mysql_url = format!("mysql://{database_username}:xxxxx@{database_hostname}:{database_port}/{database_database}");
   
-  // info!("mysql_url: {}", &mysql_url);
+  info!("mysql_url: {}", &mysql_url);
   
-  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<i64>().unwrap();
+  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<i64>().unwrap_or(3600);
   
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
@@ -88,12 +66,25 @@ async fn main() -> Result<(), std::io::Error> {
         .password(&database_password)
         .database(&database_database)
     );
+    
+  // redis cache
+  let cache_hostname = dotenv!("cache_hostname");
+  let cache_port = dotenv!("cache_port");
+  let cache_db = dotenv!("cache_db");
+  let manager = redis::Client::open(
+    format!("redis://{}:{}/{}", cache_hostname, cache_port, cache_db)
+  ).unwrap();
+  let cache_pool: r2d2::Pool<redis::Client>  = r2d2::Pool::builder()
+    .build(manager)
+    .unwrap();
+  
 
   let schema = Schema::build(
     Query::default(),
     EmptyMutation,
     EmptySubscription
   ).data(pool)
+    .data(cache_pool.clone())
     .data(common::auth::auth_model::ServerTokentimeout(server_tokentimeout))
     .finish();
   
@@ -102,14 +93,25 @@ async fn main() -> Result<(), std::io::Error> {
     println!("{}", "---------------------------");
   }
   
-  let app = Route::new()
-    .at("/graphiql", get(graphql_playground))
-    .at("/graphql", post(graphql_handler))
+  let app = {
+    let mut app = Route::new();
+    if cfg!(debug_assertions) {
+      app = app.at("/graphiql", get(common::gql::gql_router::graphql_playground));
+    }
+    app = app.at("/graphql", post(common::gql::gql_router::graphql_handler));
+    app = app.at("/api/oss/upload", post(common::oss::oss_router::upload));
+    app = app.at("/api/oss/download/:filename", get(common::oss::oss_router::download));
+    app
+  };
+  let app = app.data(cache_pool)
     .data(schema);
-
-  println!("Playground: http://localhost:3000");
-
-  Server::new(TcpListener::bind("127.0.0.1:3000"))
+  
+  let server_port = dotenv!("server_port");
+  let server_host = dotenv!("server_host");
+  
+  info!("app started: {}", server_port);
+  
+  Server::new(TcpListener::bind(format!("{server_host}:{server_port}")))
     .run(app)
     .await
 }

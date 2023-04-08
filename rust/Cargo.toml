@@ -36,6 +36,10 @@ utf8_slice = "1.0.0"
 derive-new = "0.5.9"
 redis = { version = "0.23.0", features = ["r2d2", "tokio-comp"] }
 r2d2 = "0.8.10"
+reqwest = { version = "0.11.16", features = ["__tls", "default-tls", "hyper-tls", "native-tls-crate", "tokio-native-tls", "json", "serde_json", "multipart"] }
+encoding_rs = "0.8.32"
+urlencoding = "2.1.2"
+sqlformat = "0.2.1"
 
 [build.dependencies]
 protobuf = "3.2.0"

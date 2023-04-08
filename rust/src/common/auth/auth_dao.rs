@@ -1,6 +1,5 @@
 use anyhow::{Ok, Result, anyhow};
 use sha2::Digest;
-use tracing::info;
 
 use jwt::{VerifyWithKey, SignWithKey};
 
@@ -31,10 +30,7 @@ pub async fn get_auth_model<'a>(
     return Ok(None);
   }
   let token = token.unwrap();
-  let token = token.replace("Bearer ", "");
-  info!("getAuthModel.token: {}", token);
-  let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
-  let mut auth_model: AuthModel = VerifyWithKey::verify_with_key(token.as_str(), &key)?;
+  let mut auth_model: AuthModel = get_auth_model_by_token(token)?;
   if ctx.not_verify_token {
     return Ok(Some(auth_model));
   }
@@ -47,10 +43,31 @@ pub async fn get_auth_model<'a>(
     }
     auth_model.exp = now_sec + server_tokentimeout;
     ctx.cache_map.insert("auth_model".to_owned(), serde_json::to_string(&auth_model)?);
-    let token = String::from("Bearer ") + SignWithKey::sign_with_key(auth_model, &key)?.as_str();
+    let token = get_token_by_auth_model(auth_model)?;
     gql_ctx.insert_http_header("authorization", token);
   }
   Ok(None)
+}
+
+fn get_auth_model_by_token(
+  token: impl AsRef<str>,
+) -> Result<AuthModel> {
+  let token = token.as_ref().replace("Bearer ", "");
+  let mut token: &str = token.as_ref();
+  if token.starts_with("Bearer ") {
+    token = utf8_slice::from(token, 7);
+  }
+  let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
+  let auth_model: AuthModel = VerifyWithKey::verify_with_key(token, &key)?;
+  Ok(auth_model)
+}
+
+fn get_token_by_auth_model(
+  auth_model: AuthModel,
+) -> Result<String> {
+  let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
+  let token = String::from("Bearer ") + SignWithKey::sign_with_key(auth_model, &key)?.as_str();
+  Ok(token)
 }
 
 pub fn get_password(str: impl AsRef<str>) -> Result<String> {
@@ -79,6 +96,8 @@ mod test {
   use jwt::{VerifyWithKey, SignWithKey};
   use sha2::Sha256;
 
+  use crate::common::auth::{auth_dao::get_auth_model_by_token};
+
   use super::get_password;
   
   #[derive(serde::Deserialize, serde::Serialize, Debug)]
@@ -105,6 +124,13 @@ mod test {
   fn test_get_password() {
     let str = get_password("a").unwrap();
     assert!(str == "RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A");
+  }
+  
+  #[test]
+  fn test_get_auth_model_by_token() {
+    let test_authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjlMbW5xaExJVHpLc2tGTy9sY1hScUEiLCJkZXB0X2lkIjoiUi9WSFcwa3pSeEs5dEc4bUlITWRiUSIsImxhbmciOiJ6aC1jbiIsImV4cCI6MTY4MTAwMDE5OX0.V3LQksf-D50OzvlFO5r-xZ-FwFxah-tSvJ0abN6Vl0E";
+    let auth_model = get_auth_model_by_token(test_authorization);
+    println!("{:?}", auth_model);
   }
   
 }
