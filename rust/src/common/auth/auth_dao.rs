@@ -11,8 +11,8 @@ use hmac::Mac;
 use chrono::prelude::Local;
 use base64::{engine::general_purpose, Engine};
 
-pub async fn get_auth_model<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn get_auth_model(
+  ctx: &mut Ctx<'_>,
 ) -> Result<Option<AuthModel>> {
   if ctx.cache_map.contains_key("auth_model") {
     let auth_model: AuthModel = serde_json::from_str(ctx.cache_map.get("auth_model").unwrap())?;
@@ -35,7 +35,7 @@ pub async fn get_auth_model<'a>(
     return Ok(Some(auth_model));
   }
   let now = Local::now();
-  let server_tokentimeout = gql_ctx.data::<ServerTokentimeout>().unwrap().0;
+  let server_tokentimeout = gql_ctx.data::<ServerTokentimeout>().unwrap();
   let now_sec = now.timestamp_millis() / 1000;
   if now_sec - server_tokentimeout > auth_model.exp {
     if now_sec - server_tokentimeout * 2 > auth_model.exp {
