@@ -29,8 +29,8 @@ pub async fn hello<'a>(
   Ok(res)
 }
 
-async fn get_where_query<'a>(
-  ctx: &mut Ctx<'a>,
+async fn get_where_query(
+  ctx: &mut Ctx<'_>,
   args: &mut QueryArgs,
   search: Option<&UsrSearch>,
 ) -> Result<String> {

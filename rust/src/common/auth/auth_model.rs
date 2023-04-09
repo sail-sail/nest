@@ -16,4 +16,4 @@ pub struct AuthInfo {
   pub token: Option<String>
 }
 
-pub struct ServerTokentimeout(pub i64);
+pub type ServerTokentimeout = i64;

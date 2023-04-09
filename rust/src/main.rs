@@ -25,7 +25,8 @@ use poem::{
 use dotenv::dotenv;
 use tracing::info;
 
-use crate::common::gql::query_root::Query;
+use crate::common::oss::oss_dao;
+use crate::common::{gql::query_root::Query, auth::auth_model::ServerTokentimeout};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -50,7 +51,7 @@ async fn main() -> Result<(), std::io::Error> {
   
   info!("mysql_url: {}", &mysql_url);
   
-  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<i64>().unwrap_or(3600);
+  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<ServerTokentimeout>().unwrap_or(3600);
   
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
@@ -78,14 +79,16 @@ async fn main() -> Result<(), std::io::Error> {
     .build(manager)
     .unwrap();
   
-
+  // oss
+  oss_dao::create_bucket(&oss_dao::new_bucket().unwrap()).await.unwrap();
+  
   let schema = Schema::build(
     Query::default(),
     EmptyMutation,
     EmptySubscription
   ).data(pool)
     .data(cache_pool.clone())
-    .data(common::auth::auth_model::ServerTokentimeout(server_tokentimeout))
+    .data(server_tokentimeout)
     .finish();
   
   if cfg!(debug_assertions) {
