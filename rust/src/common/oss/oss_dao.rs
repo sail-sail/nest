@@ -1,4 +1,4 @@
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use s3::request_trait::Request;
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::Reqwest;

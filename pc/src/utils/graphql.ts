@@ -324,7 +324,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     exception = errors?.[0];
   }
   if (exception) {
-    const code = exception.code;
+    const code = exception.code || exception.message;
     const usrStore = useUsrStore();
     if (code === "refresh_token_expired") {
       usrStore.logout();

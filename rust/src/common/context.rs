@@ -3,8 +3,10 @@ use std::collections::HashMap;
 
 use anyhow::{Ok, Result};
 use chrono::{Local, DateTime};
+use base64::{engine::general_purpose, Engine};
 
 use async_graphql::Context;
+use serde::{Deserialize, Serialize};
 use sqlx::{Pool, MySql, Transaction, Executor, Execute};
 use tracing::{info, error};
 
@@ -628,4 +630,21 @@ pub fn get_order_by_query(
     order_by_query = " order by".to_owned() + order_by_query.as_ref();
   }
   order_by_query
+}
+
+pub fn get_short_uuid() -> String {
+  let uuid = uuid::Uuid::new_v4();
+  let uuid = uuid.to_string();
+  let uuid = uuid.replace("-", "");
+  // base64编码
+  let uuid = general_purpose::STANDARD.encode(uuid);
+  // 切割字符串22位
+  let uuid = utf8_slice::from(&uuid, 22);
+  uuid.to_owned()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SrvErr {
+  pub code: String,
+  pub message: String,
 }
