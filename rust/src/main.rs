@@ -6,6 +6,9 @@ extern crate derive_new;
 #[macro_use]
 extern crate dotenv_codegen;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod common;
 mod gen;
 mod src;
@@ -26,7 +29,7 @@ use dotenv::dotenv;
 use tracing::info;
 
 use crate::common::oss::oss_dao;
-use crate::common::{gql::query_root::Query, auth::auth_model::ServerTokentimeout};
+use crate::common::{gql::query_root::Query};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -36,36 +39,6 @@ async fn main() -> Result<(), std::io::Error> {
   }
   tracing_subscriber::fmt::init();
   
-  let database_hostname = dotenv!("database_hostname");
-  let database_port = dotenv!("database_port");
-  let database_port: Result<u16, ParseIntError> = database_port.parse();
-  let database_port = database_port.or_else(|_| Ok::<u16, ParseIntError>(3306)).unwrap();
-  let database_username = dotenv!("database_username");
-  let database_password = dotenv!("database_password");
-  let database_database = dotenv!("database_database");
-  let database_pool_size = dotenv!("database_pool_size");
-  let default_pool_size: u32 = 10;
-  let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
-  let database_pool_size = database_pool_size.or_else(|_| Ok::<u32, ParseIntError>(default_pool_size)).unwrap();
-  let mysql_url = format!("mysql://{database_username}:xxxxx@{database_hostname}:{database_port}/{database_database}");
-  
-  info!("mysql_url: {}", &mysql_url);
-  
-  let pool = MySqlPoolOptions::new()
-    .max_connections(database_pool_size)
-    // .after_connect(|conn, _meta| Box::pin(async move {
-    //   sqlx::query("SET NAMES utf8mb4;").execute(conn).await?;
-    //   Ok(())
-    // }))
-    .connect_lazy_with(
-      MySqlConnectOptions::new()
-        .host(&database_hostname)
-        .port(database_port)
-        .username(&database_username)
-        .password(&database_password)
-        .database(&database_database)
-    );
-    
   // redis cache
   let cache_hostname = dotenv!("cache_hostname");
   let cache_port = dotenv!("cache_port");
@@ -89,7 +62,7 @@ async fn main() -> Result<(), std::io::Error> {
     Query::default(),
     EmptyMutation,
     EmptySubscription
-  ).data(pool)
+  )
     .data(cache_pool.clone())
     .finish();
   
