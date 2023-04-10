@@ -8,6 +8,8 @@ use async_graphql::{
   Request, Response,
 };
 
+use crate::common::auth::auth_model::{AUTHORIZATION, AuthToken};
+
 use crate::common::gql::query_root::QuerySchema;
 
 #[handler]
@@ -17,12 +19,11 @@ pub async fn graphql_handler(
   req: &poem::Request,
 ) -> Json<Response> {
   let mut gql_req = data.0;
-  if let Some(authorization) = req.header("authorization") {
-    gql_req = gql_req.data(
-      crate::common::auth::auth_model::AuthInfo {
-        token: Some(authorization.to_owned()),
-      },
-    );
+  match req.header(AUTHORIZATION).map(ToString::to_string) {
+    None => { },
+    Some(auth_token) => {
+      gql_req = gql_req.data::<AuthToken>(auth_token);
+    },
   }
   Json(schema.execute(gql_req).await)
 }

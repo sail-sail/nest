@@ -1,16 +1,15 @@
 use std::fmt::{Display, Debug};
 
-use anyhow::{Ok, Result, anyhow};
+use anyhow::{Result, anyhow};
 use tracing::info;
 
-use crate::common::context::{Ctx, QueryArgs, Options, get_order_by_query};
+use crate::common::context::{Ctx, CtxImpl, QueryArgs, Options, get_order_by_query};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::common::auth::auth_dao::get_auth_model;
 
 use super::usr_model::{UsrModel, UsrSearch};
 
 pub async fn hello<'a>(
-  ctx: &mut Ctx<'a>,
+  ctx: &mut CtxImpl<'a>,
 ) -> Result<Vec<UsrModel>> {
   let vec = vec![ "1" ];
   
@@ -30,7 +29,7 @@ pub async fn hello<'a>(
 }
 
 async fn get_where_query(
-  ctx: &mut Ctx<'_>,
+  ctx: &mut impl Ctx<'_>,
   args: &mut QueryArgs,
   search: Option<&UsrSearch>,
 ) -> Result<String> {
@@ -48,7 +47,7 @@ async fn get_where_query(
       if tenant_id.is_some() {
         tenant_id
       } else {
-        let auth_model = get_auth_model(ctx, None).await?;
+        let auth_model = ctx.get_auth_model()?;
         if let Some(auth_model) = auth_model {
           auth_model.tenant_id
         } else {
@@ -136,7 +135,7 @@ fn get_page_query(page: Option<&PageInput>) -> String {
  * 根据搜索条件和分页查找数据
  */
 pub async fn find_all<'a>(
-  ctx: &mut Ctx<'a>,
+  ctx: &mut impl Ctx<'a>,
   search: Option<&UsrSearch>,
   page: Option<&PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -161,7 +160,7 @@ pub async fn find_all<'a>(
       {where_query}{order_by_query}{page_query}
   #");
   
-  let sql: &'a mut str = Box::leak(sql.into_boxed_str()).into();
+  let sql: &'a str = Box::leak(sql.into_boxed_str());
   
   let mut options = Options::new();
   if options0.is_some() {

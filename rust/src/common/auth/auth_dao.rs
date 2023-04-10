@@ -1,67 +1,14 @@
-use anyhow::{Ok, Result, anyhow};
+use anyhow::Result;
 use sha2::Digest;
 
 use jwt::{VerifyWithKey, SignWithKey};
 
-use crate::common::context::Ctx;
-
-use super::auth_model::{ServerTokentimeout, AuthModel, AuthInfo, SECRET_KEY};
+use super::auth_model::{AuthModel, SECRET_KEY};
 use hmac::Mac;
 
-use chrono::prelude::Local;
 use base64::{engine::general_purpose, Engine};
 
-pub async fn get_auth_model(
-  ctx: &mut Ctx<'_>,
-  not_verify_token: Option<bool>,
-) -> Result<Option<AuthModel>> {
-  let not_verify_token = {
-    if let Some(not_verify_token) = not_verify_token {
-      not_verify_token
-    } else {
-      ctx.not_verify_token
-    }
-  };
-  if ctx.cache_map.contains_key("auth_model") {
-    let auth_model: AuthModel = serde_json::from_str(ctx.cache_map.get("auth_model").unwrap())?;
-    return Ok(Some(auth_model));
-  }
-  // 获取请求头中的 authorization
-  let gql_ctx = &ctx.gql_ctx;
-  let mut token: Option<&str> = None;
-  if let Some(auth_info) = gql_ctx.data_opt::<AuthInfo>() {
-    if let Some(token0) = &auth_info.token {
-      token = Some(token0);
-    }
-  }
-  if token.is_none() {
-    if !not_verify_token {
-      return Err(anyhow!("token_empty"));
-    }
-    return Ok(None);
-  }
-  let token = token.unwrap();
-  let mut auth_model: AuthModel = get_auth_model_by_token(token)?;
-  if not_verify_token {
-    ctx.cache_map.insert("auth_model".to_owned(), serde_json::to_string(&auth_model)?);
-    return Ok(Some(auth_model));
-  }
-  let now = Local::now();
-  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<ServerTokentimeout>().unwrap_or(3600);
-  let now_sec = now.timestamp_millis() / 1000;
-  if now_sec - server_tokentimeout > auth_model.exp {
-    if now_sec - server_tokentimeout * 2 > auth_model.exp {
-      return Err(anyhow!("refresh_token_expired"));
-    }
-    auth_model.exp = now_sec + server_tokentimeout;
-    ctx.cache_map.insert("auth_model".to_owned(), serde_json::to_string(&auth_model)?);
-    let token = get_token_by_auth_model(auth_model)?;
-    gql_ctx.insert_http_header("authorization", token);
-  }
-  Ok(None)
-}
-
-fn get_auth_model_by_token(
+pub fn get_auth_model_by_token(
   token: impl AsRef<str>,
 ) -> Result<AuthModel> {
   let token = token.as_ref().replace("Bearer ", "");
@@ -74,11 +21,11 @@ fn get_auth_model_by_token(
   Ok(auth_model)
 }
 
-fn get_token_by_auth_model(
-  auth_model: AuthModel,
+pub fn get_token_by_auth_model(
+  auth_model: &AuthModel,
 ) -> Result<String> {
   let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
-  let token = String::from("Bearer ") + SignWithKey::sign_with_key(auth_model, &key)?.as_str();
+  let token = String::from("Bearer ") + SignWithKey::sign_with_key(&auth_model, &key)?.as_str();
   Ok(token)
 }
 
