@@ -48,7 +48,7 @@ async fn get_where_query(
       if tenant_id.is_some() {
         tenant_id
       } else {
-        let auth_model = get_auth_model(ctx).await?;
+        let auth_model = get_auth_model(ctx, None).await?;
         if let Some(auth_model) = auth_model {
           auth_model.tenant_id
         } else {

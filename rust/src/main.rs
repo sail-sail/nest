@@ -51,8 +51,6 @@ async fn main() -> Result<(), std::io::Error> {
   
   info!("mysql_url: {}", &mysql_url);
   
-  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<ServerTokentimeout>().unwrap_or(3600);
-  
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
     // .after_connect(|conn, _meta| Box::pin(async move {
@@ -80,7 +78,12 @@ async fn main() -> Result<(), std::io::Error> {
     .unwrap();
   
   // oss
-  oss_dao::create_bucket(&oss_dao::new_bucket().unwrap()).await.unwrap();
+  match oss_dao::create_bucket(&oss_dao::new_bucket().unwrap()).await {
+    Ok(_) => {
+    },
+    Err(_e) => {
+    }
+  }
   
   let schema = Schema::build(
     Query::default(),
@@ -88,7 +91,6 @@ async fn main() -> Result<(), std::io::Error> {
     EmptySubscription
   ).data(pool)
     .data(cache_pool.clone())
-    .data(server_tokentimeout)
     .finish();
   
   if cfg!(debug_assertions) {

@@ -13,7 +13,15 @@ use base64::{engine::general_purpose, Engine};
 
 pub async fn get_auth_model(
   ctx: &mut Ctx<'_>,
+  not_verify_token: Option<bool>,
 ) -> Result<Option<AuthModel>> {
+  let not_verify_token = {
+    if let Some(not_verify_token) = not_verify_token {
+      not_verify_token
+    } else {
+      ctx.not_verify_token
+    }
+  };
   if ctx.cache_map.contains_key("auth_model") {
     let auth_model: AuthModel = serde_json::from_str(ctx.cache_map.get("auth_model").unwrap())?;
     return Ok(Some(auth_model));
@@ -27,15 +35,19 @@ pub async fn get_auth_model(
     }
   }
   if token.is_none() {
+    if !not_verify_token {
+      return Err(anyhow!("token_empty"));
+    }
     return Ok(None);
   }
   let token = token.unwrap();
   let mut auth_model: AuthModel = get_auth_model_by_token(token)?;
-  if ctx.not_verify_token {
+  if not_verify_token {
+    ctx.cache_map.insert("auth_model".to_owned(), serde_json::to_string(&auth_model)?);
     return Ok(Some(auth_model));
   }
   let now = Local::now();
-  let server_tokentimeout = gql_ctx.data::<ServerTokentimeout>().unwrap();
+  let server_tokentimeout = dotenv!("server_tokentimeout").parse::<ServerTokentimeout>().unwrap_or(3600);
   let now_sec = now.timestamp_millis() / 1000;
   if now_sec - server_tokentimeout > auth_model.exp {
     if now_sec - server_tokentimeout * 2 > auth_model.exp {
