@@ -1,4 +1,5 @@
 use anyhow::{Result, anyhow};
+use poem::http::{HeaderName, HeaderValue};
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 
@@ -11,7 +12,7 @@ use sqlx::{Pool, MySql, Transaction, Executor};
 use tracing::{info, error};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
-use super::auth::auth_model::AuthModel;
+use super::auth::auth_model::{AuthModel, AUTHORIZATION};
 use super::gql::model::SortInput;
 
 lazy_static! {
@@ -53,158 +54,40 @@ fn init_db_pool() -> Result<Pool<MySql>> {
 }
 
 #[async_trait]
-pub trait Ctx<'a> {
+pub trait Ctx<'a>: Send + Sized {
   
   fn get_not_verify_token(&self) -> bool;
   
   fn get_is_tran(&self) -> bool;
   
-  fn set_is_tran(self, is_tran: bool) -> Self;
+  fn set_is_tran(&mut self, is_tran: bool);
   
   fn get_req_id(&self) -> &str;
   
-  fn get_auth_model(&mut self) -> Result<Option<AuthModel>>;
+  fn get_auth_model_impl(&self) -> &Option<AuthModel>;
   
-  fn verify_auth_token(&mut self) -> Result<Option<String>>;
+  fn set_auth_model_impl(&mut self, auth_model: Option<AuthModel>);
   
-  fn set_auth_token(self, auth_token: Option<String>) -> Self;
+  fn set_auth_token(&mut self, auth_token: Option<String>);
   
   fn get_auth_token(&self) -> Option<String>;
   
-  fn get_tran(&self) -> Option<&Transaction<'a, MySql>>;
+  fn get_tran(&mut self) -> Option<&mut Transaction<'a, MySql>>;
   
-  fn set_tran(self, tran: Transaction<'a, MySql>) -> Self;
+  fn get_tran_owned(self) -> Option<Transaction<'a, MySql>>;
   
-  fn get_server_tokentimeout(&self) -> i64;
+  fn set_tran(&mut self, tran: Transaction<'a, MySql>);
   
-  /// 开启事务
-  async fn begin(&mut self) -> Result<()>;
+  fn get_now(&self) -> DateTime<Local>;
   
-  /// 提交事务
-  async fn commit(mut self) -> Result<()>;
-  
-  /// 回滚事务
-  async fn rollback(mut self) -> Result<()>;
-  
-  /// 返回前端数据
-  async fn ok<T>(self, res: Result<T>) -> Result<T>
-  where
-    T: Send,
-  ;
-  
-  /// 执行查询
-  async fn execute(
-    &mut self,
-    sql: &'a str,
-    options: Option<Options>,
-  ) -> Result<u64>;
-  
-  async fn execute_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-  >(
-    &mut self,
-    sql: &'a str,
-    args: Vec<T>,
-    options: Option<Options>,
-  ) -> Result<u64>;
-  
-  /// 带参数执行查询
-  async fn query_with<T, R>(
-    &mut self,
-    sql: &'a str,
-    args: Vec<T>,
-    options: Option<Options>,
-  ) -> Result<Vec<R>>
-  where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  ;
-  
-  /// 执行查询
-  async fn query<R>(
-    &mut self,
-    sql: &'a str,
-    options: Option<Options>,
-  ) -> Result<Vec<R>>
-  where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  ;
-  
-  /// 带参数查询一条数据
-  async fn query_one_with<T, R>(
-    &mut self,
-    sql: &'a str,
-    args: Vec<T>,
-    options: Option<Options>,
-  ) -> Result<R>
-  where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  ;
-  
-  /// 查询一条数据
-  async fn query_one<R>(
-    &mut self,
-    sql: &'a str,
-    options: Option<Options>,
-  ) -> Result<R>
-  where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  ;
-  
-}
-
-#[async_trait]
-impl<'a> Ctx<'a> for CtxImpl<'a> {
-  
-  fn get_not_verify_token(&self) -> bool {
-    self.not_verify_token
-  }
-  
-  fn get_is_tran(&self) -> bool {
-    self.is_tran
-  }
-  
-  fn set_is_tran(self, is_tran: bool) -> Self {
-    let mut self_mut = self;
-    self_mut.is_tran = is_tran;
-    if is_tran {
-      info!("{} is_tran", &self_mut.req_id);
-    }
-    self_mut
-  }
-  
-  fn get_req_id(&self) -> &str {
-    &self.req_id
-  }
-  
-  /// 校验token是否已经过期
-  fn verify_auth_token(&mut self) -> Result<Option<String>> {
-    let auth_token = self.get_auth_token();
-    if auth_token.is_none() {
-      return Err(anyhow!("token_empty"));
-    }
-    let auth_token = auth_token.unwrap();
-    let mut auth_model = get_auth_model_by_token(auth_token)?;
-    let now = Local::now();
-    let server_tokentimeout = self.get_server_tokentimeout();
-    let now_sec = now.timestamp_millis() / 1000;
-    if now_sec - server_tokentimeout > auth_model.exp {
-      if now_sec - server_tokentimeout * 2 > auth_model.exp {
-        return Err(anyhow!("refresh_token_expired"));
-      }
-      auth_model.exp = now_sec + server_tokentimeout;
-      let auth_token = get_token_by_auth_model(&auth_model)?;
-      self.auth_model = Some(auth_model);
-      return Ok(Some(auth_token));
-    }
-    Ok(None)
+  fn get_server_tokentimeout(&self) -> i64 {
+    SERVER_TOKEN_TIMEOUT.to_owned()
   }
   
   fn get_auth_model(
     &mut self,
   ) -> Result<Option<AuthModel>> {
-    let auth_model = &self.auth_model;
+    let auth_model = self.get_auth_model_impl();
     if auth_model.is_some() {
       return Ok(auth_model.to_owned());
     }
@@ -214,50 +97,29 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     let auth_token = auth_token.unwrap();
     let auth_model = get_auth_model_by_token(auth_token)?;
-    self.auth_model = Some(auth_model.to_owned());
+    self.set_auth_model_impl(Some(auth_model.to_owned()));
     Ok(Some(auth_model))
-  }
-  
-  fn set_auth_token(self, auth_token: Option<String>) -> Self {
-    let mut self_mut = self;
-    self_mut.auth_token = auth_token;
-    self_mut
-  }
-  
-  fn get_auth_token(&self) -> Option<String> {
-    self.auth_token.clone()
-  }
-  
-  fn get_tran(&self) -> Option<&Transaction<'a, MySql>> {
-    self.tran.as_ref()
-  }
-  
-  fn set_tran(self, tran: Transaction<'a, MySql>) -> Self {
-    let mut self_mut = self;
-    self_mut.tran = Some(tran);
-    self_mut
-  }
-  
-  fn get_server_tokentimeout(&self) -> i64 {
-    SERVER_TOKEN_TIMEOUT.to_owned()
   }
   
   /// 开启事务
   async fn begin(&mut self) -> Result<()> {
-    if self.tran.is_some() {
+    if self.get_tran().is_some() {
       return Ok(());
     }
-    info!("{} begin;", self.req_id);
+    info!("{} begin;", self.get_req_id());
     let tran = DB_POOL.clone().begin().await?;
-    self.tran = Some(tran);
+    self.set_tran(tran);
     Ok(())
   }
   
   /// 提交事务
   async fn commit(mut self) -> Result<()> {
-    let tran = self.tran.take();
+    if self.get_is_tran() {
+      let req_id = self.get_req_id();
+      info!("{} commit;", req_id);
+    }
+    let tran = self.get_tran_owned();
     if let Some(tran) = tran {
-      info!("{} commit;", self.req_id);
       tran.commit().await?;
     }
     Ok(())
@@ -265,9 +127,12 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
   
   /// 回滚事务
   async fn rollback(mut self) -> Result<()> {
-    let tran = self.tran.take();
+    if self.get_is_tran() {
+      let req_id = self.get_req_id();
+      info!("{} rollback;", req_id);
+    }
+    let tran = self.get_tran_owned();
     if let Some(tran) = tran {
-      info!("{} rollback;", self.req_id);
       tran.rollback().await?;
     }
     Ok(())
@@ -292,7 +157,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     options: Option<Options>,
   ) -> Result<u64> {
     let mut is_debug = true;
-    let mut is_tran = self.is_tran;
+    let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -301,17 +166,17 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     
     if is_tran {
-      if self.tran.is_none() {
+      if self.get_tran().is_none() {
         self.begin().await?;
       }
       let query = sqlx::query(sql);
       if is_debug {
-        info!("{} {}", self.req_id, sql);
+        info!("{} {}", self.get_req_id(), sql);
       }
-      let tran = self.tran.as_mut().unwrap();
+      let tran = self.get_tran().unwrap();
       let res = tran.execute(query).await
         .map_err(|e| {
-          error!("{} {:?}", self.req_id, e);
+          error!("{} {:?}", self.get_req_id(), e);
           anyhow::anyhow!("{:?}", e)
         })?;
       let rows_affected = res.rows_affected();
@@ -319,11 +184,11 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     let query = sqlx::query(sql);
     if is_debug {
-      info!("{} {}", self.req_id, sql);
+      info!("{} {}", self.get_req_id(), sql);
     }
     let res = query.execute(&DB_POOL.clone()).await
       .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
@@ -341,7 +206,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     options: Option<Options>,
   ) -> Result<u64> {
     let mut is_debug = true;
-    let mut is_tran = self.is_tran;
+    let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -350,7 +215,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     
     if is_tran {
-      if self.tran.is_none() {
+      if self.get_tran().is_none() {
         self.begin().await?;
       }
       let mut query = sqlx::query(sql);
@@ -364,16 +229,16 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
         for debug_arg in debug_args {
           debug_sql = debug_sql.replace("?", &debug_arg);
         }
-        info!("{} {}", self.req_id, debug_sql);
+        info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
           query = query.bind(arg);
         }
       }
-      let tran = self.tran.as_mut().unwrap();
+      let tran = self.get_tran().unwrap();
       let res = tran.execute(query).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -391,7 +256,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
       for debug_arg in debug_args {
         debug_sql = debug_sql.replace("?", &debug_arg);
       }
-      info!("{} {}", self.req_id, debug_sql);
+      info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
         query = query.bind(arg);
@@ -399,7 +264,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     let res = query.execute(&DB_POOL.clone()).await
       .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
@@ -419,7 +284,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
     let mut is_debug = true;
-    let mut is_tran = self.is_tran;
+    let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -428,7 +293,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     
     if is_tran {
-      if self.tran.is_none() {
+      if self.get_tran().is_none() {
         self.begin().await?;
       }
       let mut query = sqlx::query_as::<_, R>(sql);
@@ -444,16 +309,16 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
         }
         // let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
         // debug_sql = sqlformat::format(debug_sql.as_str(), &query_params, sqlformat::FormatOptions::default());
-        info!("{} {}", self.req_id, debug_sql);
+        info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
           query = query.bind(arg);
         }
       }
-      let tran = self.tran.as_mut().unwrap();
+      let tran = self.get_tran().unwrap();
       let res = query.fetch_all(tran).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -471,7 +336,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
       for debug_arg in debug_args {
         debug_sql = debug_sql.replace("?", &debug_arg);
       }
-      info!("{} {}", self.req_id, debug_sql);
+      info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
         query = query.bind(arg);
@@ -479,7 +344,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     let res = query.fetch_all(&DB_POOL.clone()).await
       .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
@@ -497,7 +362,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
     let mut is_debug = true;
-    let mut is_tran = self.is_tran;
+    let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -506,17 +371,17 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     
     if is_tran {
-      if self.tran.is_none() {
+      if self.get_tran().is_none() {
         self.begin().await?;
       }
       let query = sqlx::query_as::<_, R>(sql);
       if is_debug {
-        info!("{} {}", self.req_id, sql);
+        info!("{} {}", self.get_req_id(), sql);
       }
-      let tran = self.tran.as_mut().unwrap();
+      let tran = self.get_tran().unwrap();
       let res = query.fetch_all(tran).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -524,10 +389,10 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
       return Ok(res);
     }
     let query = sqlx::query_as::<_, R>(sql);
-    info!("{} {}", self.req_id, sql);
+    info!("{} {}", self.get_req_id(), sql);
     let res = query.fetch_all(&DB_POOL.clone()).await
       .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
@@ -547,7 +412,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
     let mut is_debug = true;
-    let mut is_tran = self.is_tran;
+    let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -556,7 +421,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     
     if is_tran {
-      if self.tran.is_none() {
+      if self.get_tran().is_none() {
         self.begin().await?;
       }
       let mut query = sqlx::query_as::<_, R>(sql);
@@ -570,16 +435,16 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
         for debug_arg in debug_args {
           debug_sql = debug_sql.replace("?", &debug_arg);
         }
-        info!("{} {}", self.req_id, debug_sql);
+        info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
           query = query.bind(arg);
         }
       }
-      let tran = self.tran.as_mut().unwrap();
+      let tran = self.get_tran().unwrap();
       let res = query.fetch_one(tran).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -597,7 +462,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
       for debug_arg in debug_args {
         debug_sql = debug_sql.replace("?", &debug_arg);
       }
-      info!("{} {}", self.req_id, debug_sql);
+      info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
         query = query.bind(arg);
@@ -605,7 +470,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     let res = query.fetch_one(&DB_POOL.clone()).await
       .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
@@ -623,7 +488,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
     let mut is_debug = true;
-    let mut is_tran = self.is_tran;
+    let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -632,15 +497,15 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     
     if is_tran {
-      if self.tran.is_none() {
+      if self.get_tran().is_none() {
         self.begin().await?;
       }
       let query = sqlx::query_as::<_, R>(sql);
-      info!("{} {}", self.req_id, sql);
-      let tran = self.tran.as_mut().unwrap();
+      info!("{} {}", self.get_req_id(), sql);
+      let tran = self.get_tran().unwrap();
       let res = query.fetch_one(tran).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -649,16 +514,106 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     }
     let query = sqlx::query_as::<_, R>(sql);
     if is_debug {
-      info!("{} {}", self.req_id, sql);
+      info!("{} {}", self.get_req_id(), sql);
     }
     let res = query.fetch_one(&DB_POOL.clone()).await
       .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
+        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
     drop(sql);
     Ok(res)
+  }
+  
+  fn insert_auth_header(&self) -> Result<()>;
+  
+  /// 校验token是否已经过期
+  fn auth(mut self) -> Result<Self> {
+    let auth_token = self.get_auth_token();
+    if auth_token.is_none() {
+      return Err(anyhow!("token_empty"));
+    }
+    let auth_token = auth_token.unwrap();
+    let mut auth_model = get_auth_model_by_token(auth_token)?;
+    let now = self.get_now();
+    let server_tokentimeout = self.get_server_tokentimeout();
+    let now_sec = now.timestamp_millis() / 1000;
+    if now_sec - server_tokentimeout > auth_model.exp {
+      if now_sec - server_tokentimeout * 2 > auth_model.exp {
+        return Err(anyhow!("refresh_token_expired"));
+      }
+      auth_model.exp = now_sec + server_tokentimeout;
+      let auth_token = get_token_by_auth_model(&auth_model)?;
+      self.set_auth_model_impl(Some(auth_model));
+      self.insert_auth_header()?;
+      self.set_auth_token(Some(auth_token));
+      return Ok(self);
+    }
+    Ok(self)
+  }
+  
+}
+
+#[async_trait]
+impl<'a> Ctx<'a> for CtxImpl<'a> {
+  
+  fn get_not_verify_token(&self) -> bool {
+    self.not_verify_token
+  }
+  
+  fn get_is_tran(&self) -> bool {
+    self.is_tran
+  }
+  
+  fn set_is_tran(&mut self, is_tran: bool) {
+    self.is_tran = is_tran;
+  }
+  
+  fn get_req_id(&self) -> &str {
+    &self.req_id
+  }
+  
+  fn set_auth_model_impl(&mut self, auth_model: Option<AuthModel>) {
+    self.auth_model = auth_model;
+  }
+  
+  fn get_auth_model_impl(&self) -> &Option<AuthModel> {
+    &self.auth_model
+  }
+  
+  fn set_auth_token(&mut self, auth_token: Option<String>) {
+    self.auth_token = auth_token;
+  }
+  
+  fn insert_auth_header(&self) -> Result<()> {
+    let auth_token = self.get_auth_token();
+    if auth_token.is_none() {
+      return Ok(());
+    }
+    let auth_token = auth_token.unwrap();
+    self.gql_ctx.insert_http_header(AUTHORIZATION.parse::<HeaderName>()?, auth_token.parse::<HeaderValue>()?);
+    Ok(())
+  }
+  
+  fn get_auth_token(&self) -> Option<String> {
+    self.auth_token.clone()
+  }
+  
+  fn get_tran(&mut self) -> Option<&mut Transaction<'a, MySql>> {
+    self.tran.as_mut()
+  }
+  
+  fn get_tran_owned(self) -> Option<Transaction<'a, MySql>> {
+    self.tran
+  }
+  
+  fn set_tran(&mut self, tran: Transaction<'a, MySql>) {
+    self.tran = Some(tran);
+  }
+  
+  fn get_now(&self) -> DateTime<Local> {
+    self.now
   }
   
 }
@@ -676,6 +631,10 @@ pub struct CtxImpl<'a> {
   auth_model: Option<AuthModel>,
   
   auth_token: Option<String>,
+  
+  gql_ctx: &'a async_graphql::Context<'a>,
+  
+  now: DateTime<Local>,
   
 }
 
@@ -729,448 +688,48 @@ impl Options {
   
 }
 
-impl<'a> Drop for CtxImpl<'a> {
+// impl<'a> Drop for CtxImpl<'a> {
   
-  fn drop(&mut self) {
-    if (&(self.tran)).is_some() {
-      error!("{} drop; tran is not none", self.req_id);
-    }
-  }
+//   fn drop(&mut self) {
+//     if (&(self.tran)).is_some() {
+//       error!("{} drop; tran is not none", self.req_id);
+//     }
+//   }
   
-}
+// }
 
 impl<'a> CtxImpl<'a> {
   
-  pub fn new() -> CtxImpl<'a> {
+  pub fn new(
+    gql_ctx: &'a async_graphql::Context<'a>,
+  ) -> CtxImpl<'a> {
     let now: DateTime<Local> = Local::now();
     let req_id = now.timestamp_millis().to_string();
-    CtxImpl {
+    let mut ctx = CtxImpl {
       is_tran: false,
       req_id,
       tran: None,
       auth_model: None,
       not_verify_token: false,
       auth_token: None,
-    }
+      gql_ctx,
+      now,
+    };
+    ctx.set_auth_token(
+      gql_ctx.data_opt::<super::auth::auth_model::AuthToken>()
+        .map(ToString::to_string)
+    );
+    ctx
   }
   
-  /// 开启事务
-  pub async fn begin(&mut self) -> Result<()> {
-    if self.tran.is_some() {
-      return Ok(());
-    }
-    info!("{} begin;", self.req_id);
-    let pool = DB_POOL.clone();
-    let tran = pool.begin().await?;
-    self.tran = Some(tran);
-    Ok(())
+  pub fn with_tran(
+    gql_ctx: &'a async_graphql::Context<'a>,
+  ) -> CtxImpl<'a> {
+    let mut ctx = CtxImpl::new(gql_ctx);
+    ctx.set_is_tran(true);
+    ctx
   }
   
-  /// 提交事务
-  pub async fn commit(mut self) -> Result<()> {
-    let tran = self.tran.take();
-    if let Some(tran) = tran {
-      info!("{} commit;", self.req_id);
-      tran.commit().await?;
-    }
-    Ok(())
-  }
-  
-  /// 回滚事务
-  pub async fn rollback(mut self) -> Result<()> {
-    let tran = self.tran.take();
-    if let Some(tran) = tran {
-      info!("{} rollback;", self.req_id);
-      tran.rollback().await?;
-    }
-    Ok(())
-  }
-  
-  pub async fn ok<T>(self, res: Result<T>) -> Result<T> {
-    if let Err(e) = res {
-      self.rollback().await?;
-      return Err(e);
-    }
-    self.commit().await?;
-    res
-  }
-  
-  /// 执行查询
-  pub async fn execute(
-    &mut self,
-    sql: &'a str,
-    options: Option<Options>,
-  ) -> Result<u64> {
-    let mut is_debug = true;
-    let mut is_tran = self.is_tran;
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.tran.is_none() {
-        self.begin().await?;
-      }
-      let query = sqlx::query(sql);
-      if is_debug {
-        info!("{} {}", self.req_id, sql);
-      }
-      let tran = self.tran.as_mut().unwrap();
-      let res = tran.execute(query).await
-        .map_err(|e| {
-          error!("{} {:?}", self.req_id, e);
-          anyhow::anyhow!("{:?}", e)
-        })?;
-      let rows_affected = res.rows_affected();
-      return Ok(rows_affected);
-    }
-    let query = sqlx::query(sql);
-    if is_debug {
-      info!("{} {}", self.req_id, sql);
-    }
-    let res = query.execute(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    let rows_affected = res.rows_affected();
-    Ok(rows_affected)
-  }
-  
-  /// 带参数执行查询
-  pub async fn execute_with<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-  >(
-    &mut self,
-    sql: &'a str,
-    args: Vec<T>,
-    options: Option<Options>,
-  ) -> Result<u64> {
-    let mut is_debug = true;
-    let mut is_tran = self.is_tran;
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.tran.is_none() {
-        self.begin().await?;
-      }
-      let mut query = sqlx::query(sql);
-      if is_debug {
-        let mut debug_args = vec![];
-        for arg in args {
-          debug_args.push(format!("'{}'", arg));
-          query = query.bind(arg);
-        }
-        let mut debug_sql = sql.to_string();
-        for debug_arg in debug_args {
-          debug_sql = debug_sql.replace("?", &debug_arg);
-        }
-        info!("{} {}", self.req_id, debug_sql);
-      } else {
-        for arg in args {
-          query = query.bind(arg);
-        }
-      }
-      let tran = self.tran.as_mut().unwrap();
-      let res = tran.execute(query).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      let rows_affected = res.rows_affected();
-      return Ok(rows_affected);
-    }
-    let mut query = sqlx::query(sql);
-    if is_debug {
-      let mut debug_args = vec![];
-      for arg in args {
-        debug_args.push(format!("'{}'", arg));
-        query = query.bind(arg);
-      }
-      let mut debug_sql = sql.to_string();
-      for debug_arg in debug_args {
-        debug_sql = debug_sql.replace("?", &debug_arg);
-      }
-      info!("{} {}", self.req_id, debug_sql);
-    } else {
-      for arg in args {
-        query = query.bind(arg);
-      }
-    }
-    let res = query.execute(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    let rows_affected = res.rows_affected();
-    Ok(rows_affected)
-  }
-  
-  /// 带参数执行查询
-  pub async fn query_with<T, R>(
-    &mut self,
-    sql: &'a str,
-    args: Vec<T>,
-    options: Option<Options>,
-  ) -> Result<Vec<R>>
-  where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  {
-    let mut is_debug = true;
-    let mut is_tran = self.is_tran;
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.tran.is_none() {
-        self.begin().await?;
-      }
-      let mut query = sqlx::query_as::<_, R>(sql);
-      if is_debug {
-        let mut debug_args = vec![];
-        for arg in args {
-          debug_args.push(format!("'{}'", arg));
-          query = query.bind(arg);
-        }
-        let mut debug_sql = sql.to_string();
-        for debug_arg in debug_args {
-          debug_sql = debug_sql.replace("?", &debug_arg);
-        }
-        // let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-        // debug_sql = sqlformat::format(debug_sql.as_str(), &query_params, sqlformat::FormatOptions::default());
-        info!("{} {}", self.req_id, debug_sql);
-      } else {
-        for arg in args {
-          query = query.bind(arg);
-        }
-      }
-      let tran = self.tran.as_mut().unwrap();
-      let res = query.fetch_all(tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      drop(sql);
-      return Ok(res);
-    }
-    let mut query = sqlx::query_as::<_, R>(sql);
-    if is_debug {
-      let mut debug_args = vec![];
-      for arg in args {
-        debug_args.push(format!("'{}'", arg));
-        query = query.bind(arg);
-      }
-      let mut debug_sql = sql.to_string();
-      for debug_arg in debug_args {
-        debug_sql = debug_sql.replace("?", &debug_arg);
-      }
-      info!("{} {}", self.req_id, debug_sql);
-    } else {
-      for arg in args {
-        query = query.bind(arg);
-      }
-    }
-    let res = query.fetch_all(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    drop(sql);
-    Ok(res)
-  }
-  
-  /// 执行查询
-  pub async fn query<R>(
-    &mut self,
-    sql: &'a str,
-    options: Option<Options>,
-  ) -> Result<Vec<R>>
-  where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  {
-    let mut is_debug = true;
-    let mut is_tran = self.is_tran;
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.tran.is_none() {
-        self.begin().await?;
-      }
-      let query = sqlx::query_as::<_, R>(sql);
-      if is_debug {
-        info!("{} {}", self.req_id, sql);
-      }
-      let tran = self.tran.as_mut().unwrap();
-      let res = query.fetch_all(tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      drop(sql);
-      return Ok(res);
-    }
-    let query = sqlx::query_as::<_, R>(sql);
-    info!("{} {}", self.req_id, sql);
-    let res = query.fetch_all(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    drop(sql);
-    Ok(res)
-  }
-  
-  /// 带参数查询一条数据
-  pub async fn query_one_with<T, R>(
-    &mut self,
-    sql: &'a str,
-    args: Vec<T>,
-    options: Option<Options>,
-  ) -> Result<R>
-  where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  {
-    let mut is_debug = true;
-    let mut is_tran = self.is_tran;
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.tran.is_none() {
-        self.begin().await?;
-      }
-      let mut query = sqlx::query_as::<_, R>(sql);
-      if is_debug {
-        let mut debug_args = vec![];
-        for arg in args {
-          debug_args.push(format!("'{}'", arg));
-          query = query.bind(arg);
-        }
-        let mut debug_sql = sql.to_string();
-        for debug_arg in debug_args {
-          debug_sql = debug_sql.replace("?", &debug_arg);
-        }
-        info!("{} {}", self.req_id, debug_sql);
-      } else {
-        for arg in args {
-          query = query.bind(arg);
-        }
-      }
-      let tran = self.tran.as_mut().unwrap();
-      let res = query.fetch_one(tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      drop(sql);
-      return Ok(res);
-    }
-    let mut query = sqlx::query_as::<_, R>(sql);
-    if is_debug {
-      let mut debug_args = vec![];
-      for arg in args {
-        debug_args.push(format!("'{}'", arg));
-        query = query.bind(arg);
-      }
-      let mut debug_sql = sql.to_string();
-      for debug_arg in debug_args {
-        debug_sql = debug_sql.replace("?", &debug_arg);
-      }
-      info!("{} {}", self.req_id, debug_sql);
-    } else {
-      for arg in args {
-        query = query.bind(arg);
-      }
-    }
-    let res = query.fetch_one(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    drop(sql);
-    Ok(res)
-  }
-  
-  /// 查询一条数据
-  pub async fn query_one<R>(
-    &mut self,
-    sql: &'a str,
-    options: Option<Options>,
-  ) -> Result<R>
-  where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  {
-    let mut is_debug = true;
-    let mut is_tran = self.is_tran;
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.tran.is_none() {
-        self.begin().await?;
-      }
-      let query = sqlx::query_as::<_, R>(sql);
-      info!("{} {}", self.req_id, sql);
-      let tran = self.tran.as_mut().unwrap();
-      let res = query.fetch_one(tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.req_id, e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      drop(sql);
-      return Ok(res);
-    }
-    let query = sqlx::query_as::<_, R>(sql);
-    if is_debug {
-      info!("{} {}", self.req_id, sql);
-    }
-    let res = query.fetch_one(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.req_id, e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    drop(sql);
-    Ok(res)
-  }
-   
 }
 
 /**
