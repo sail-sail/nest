@@ -48,8 +48,16 @@ pub async fn del_cache(
 ) -> Result<()> {
   info!("del_cache: {}", cache_key1);
   let mut conn = CACHE_POOL.get().await?;
-  let _: () = redis::cmd("DEL")
+  let _ = redis::cmd("DEL")
     .arg(&[cache_key1])
+    .query_async(&mut conn).await?;
+  Ok(())
+}
+
+pub async fn flash_db() -> Result<()> {
+  info!("flash_db");
+  let mut conn = CACHE_POOL.get().await?;
+  let _ = redis::cmd("FLUSHDB")
     .query_async(&mut conn).await?;
   Ok(())
 }
@@ -74,6 +82,12 @@ mod tests {
   #[tokio::test]
   async fn test_del_cache() -> Result<()> {
     del_cache("test").await?;
+    Ok(())
+  }
+  
+  #[tokio::test]
+  async fn test_flash_db() -> Result<()> {
+    flash_db().await?;
     Ok(())
   }
   
