@@ -7,3 +7,5 @@ pnpm-lock.yaml
 
 /target
 /Cargo.lock
+
+src/common/gql/schema.graphql

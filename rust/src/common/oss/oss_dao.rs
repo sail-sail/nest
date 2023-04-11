@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, Ok};
 use s3::request_trait::Request;
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::Reqwest;
@@ -13,7 +13,12 @@ pub struct StatObject {
   pub etag: Option<String>,
 }
 
-pub async fn create_bucket(
+pub async fn init() -> Result<()> {
+  create_bucket(&new_bucket()?).await?;
+  Ok(())
+}
+
+async fn create_bucket(
   bucket: &Bucket,
 ) -> Result<()> {
   let mut config = BucketConfiguration::default();
@@ -23,7 +28,7 @@ pub async fn create_bucket(
   Ok(())
 }
 
-pub fn new_bucket() -> Result<OssBucket> {
+fn new_bucket() -> Result<OssBucket> {
   let bucket_name = dotenv!("oss_bucket");
   let endpoint = dotenv!("oss_endpoint").to_owned();
   let accesskey = dotenv!("oss_accesskey");

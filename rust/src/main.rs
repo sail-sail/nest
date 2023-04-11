@@ -25,8 +25,8 @@ use poem::{
 use dotenv::dotenv;
 use tracing::info;
 
-// use crate::common::oss::oss_dao;
-use crate::common::gql::query_root::Query;
+use crate::common::oss::oss_dao;
+use crate::common::gql::query_root::{Query, QuerySchema};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -37,14 +37,14 @@ async fn main() -> Result<(), std::io::Error> {
   tracing_subscriber::fmt::init();
   
   // oss
-  // match oss_dao::create_bucket(&oss_dao::new_bucket().unwrap()).await {
-  //   Ok(_) => {
-  //   },
-  //   Err(_e) => {
-  //   }
-  // }
+  tokio::spawn(async move {
+    match oss_dao::init().await {
+      Ok(_) => {},
+      Err(_) => {},
+    };
+  });
   
-  let schema = Schema::build(
+  let schema: QuerySchema = Schema::build(
     Query::default(),
     EmptyMutation,
     EmptySubscription
@@ -52,8 +52,19 @@ async fn main() -> Result<(), std::io::Error> {
     .finish();
   
   if cfg!(debug_assertions) {
-    // println!("{}", &schema.sdl());
-    println!("{}", "---------------------------");
+    let file = "src/common/gql/schema.graphql";
+    let schema = schema.sdl();
+    let old_schema = {
+      if std::path::Path::new(file).exists() {
+        std::fs::read_to_string(file).unwrap()
+      } else {
+        "".to_string()
+      }
+    };
+    if old_schema != schema {
+      info!("write graphql schema");
+      std::fs::write(file, &schema)?;
+    }
   }
   
   let app = {
