@@ -1,15 +1,15 @@
-use std::fmt::{Display, Debug};
+use serde_json::json;
 
 use anyhow::{Result, anyhow};
 use tracing::info;
 
-use crate::common::context::{Ctx, CtxImpl, QueryArgs, Options, get_order_by_query};
+use crate::common::context::{CtxTrait, Ctx, QueryArgs, Options, get_order_by_query};
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::usr_model::{UsrModel, UsrSearch};
 
 pub async fn hello<'a>(
-  ctx: &mut CtxImpl<'a>,
+  ctx: &mut Ctx<'a>,
 ) -> Result<Vec<UsrModel>> {
   let vec = vec![ "1" ];
   
@@ -29,7 +29,7 @@ pub async fn hello<'a>(
 }
 
 async fn get_where_query(
-  ctx: &mut impl Ctx<'_>,
+  ctx: &mut impl CtxTrait<'_>,
   args: &mut QueryArgs,
   search: Option<&UsrSearch>,
 ) -> Result<String> {
@@ -135,11 +135,11 @@ fn get_page_query(page: Option<&PageInput>) -> String {
  * 根据搜索条件和分页查找数据
  */
 pub async fn find_all<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut impl CtxTrait<'a>,
   search: Option<&UsrSearch>,
   page: Option<&PageInput>,
   sort: Option<Vec<SortInput>>,
-  options0: Option<Options>,
+  options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
   let table = "base_usr";
   let method = "findAll";
@@ -162,14 +162,11 @@ pub async fn find_all<'a>(
   
   let sql: &'a str = Box::leak(sql.into_boxed_str());
   
-  let mut options = Options::new();
-  if options0.is_some() {
-    options.is_debug = options0.unwrap().is_debug;
-  }
+  let mut options = Options::from(options);
   
   options.cache_key1 = Some(format!("dao.sql.{}", table));
   
-  options.cache_key2 = Some(serde_json::json!({
+  options.cache_key2 = Some(json!({
     "sql": &sql,
     "args": &args.value,
   }).to_string());

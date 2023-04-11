@@ -13,9 +13,6 @@ mod common;
 mod gen;
 mod src;
 
-use std::num::ParseIntError;
-
-use sqlx::mysql::{MySqlPoolOptions, MySqlConnectOptions};
 use async_graphql::{
   EmptyMutation, EmptySubscription, Schema,
 };
@@ -28,8 +25,8 @@ use poem::{
 use dotenv::dotenv;
 use tracing::info;
 
-use crate::common::oss::oss_dao;
-use crate::common::{gql::query_root::Query};
+// use crate::common::oss::oss_dao;
+use crate::common::gql::query_root::Query;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -39,31 +36,19 @@ async fn main() -> Result<(), std::io::Error> {
   }
   tracing_subscriber::fmt::init();
   
-  // redis cache
-  let cache_hostname = dotenv!("cache_hostname");
-  let cache_port = dotenv!("cache_port");
-  let cache_db = dotenv!("cache_db");
-  let manager = redis::Client::open(
-    format!("redis://{}:{}/{}", cache_hostname, cache_port, cache_db)
-  ).unwrap();
-  let cache_pool: r2d2::Pool<redis::Client>  = r2d2::Pool::builder()
-    .build(manager)
-    .unwrap();
-  
   // oss
-  match oss_dao::create_bucket(&oss_dao::new_bucket().unwrap()).await {
-    Ok(_) => {
-    },
-    Err(_e) => {
-    }
-  }
+  // match oss_dao::create_bucket(&oss_dao::new_bucket().unwrap()).await {
+  //   Ok(_) => {
+  //   },
+  //   Err(_e) => {
+  //   }
+  // }
   
   let schema = Schema::build(
     Query::default(),
     EmptyMutation,
     EmptySubscription
   )
-    .data(cache_pool.clone())
     .finish();
   
   if cfg!(debug_assertions) {
@@ -81,8 +66,9 @@ async fn main() -> Result<(), std::io::Error> {
     app = app.at("/api/oss/download/:filename", get(common::oss::oss_router::download));
     app
   };
-  let app = app.data(cache_pool)
-    .data(schema);
+  let app = app
+    .data(schema)
+    ;
   
   let server_port = dotenv!("server_port");
   let server_host = dotenv!("server_host");
