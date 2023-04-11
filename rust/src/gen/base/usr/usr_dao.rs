@@ -28,7 +28,7 @@ pub async fn hello<'a>(
   Ok(res)
 }
 
-async fn get_where_query<'a>(
+fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<UsrSearch>,
@@ -135,7 +135,7 @@ pub async fn find_all<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(ctx, &mut args, search)?;
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
