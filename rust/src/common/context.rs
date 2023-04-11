@@ -54,7 +54,7 @@ fn init_db_pool() -> Result<Pool<MySql>> {
 }
 
 #[async_trait]
-pub trait Ctx<'a>: Send + Sized {
+pub trait CtxTrait<'a>: Send + Sized {
   
   fn get_not_verify_token(&self) -> bool;
   
@@ -556,7 +556,7 @@ pub trait Ctx<'a>: Send + Sized {
 }
 
 #[async_trait]
-impl<'a> Ctx<'a> for CtxImpl<'a> {
+impl<'a> CtxTrait<'a> for Ctx<'a> {
   
   fn get_not_verify_token(&self) -> bool {
     self.not_verify_token
@@ -618,7 +618,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
   
 }
 
-pub struct CtxImpl<'a> {
+pub struct Ctx<'a> {
   
   is_tran: bool,
   
@@ -667,7 +667,9 @@ pub struct Options {
   #[new(value = "true")]
   pub is_debug: bool,
   
-  /** 是否开启事务 */
+  /**
+   * 指定当前函数的sql是否开启事务
+   */
   #[new(default)]
   pub is_tran: Option<bool>,
   
@@ -680,6 +682,13 @@ pub struct Options {
 }
 
 impl Options {
+  
+  pub fn from(options: Option<Options>) -> Options {
+    if options.is_none() {
+      return Options::new();
+    }
+    options.unwrap()
+  }
   
   #[inline]
   pub fn get_is_tran(&self) -> Option<bool> {
@@ -698,14 +707,14 @@ impl Options {
   
 // }
 
-impl<'a> CtxImpl<'a> {
+impl<'a> Ctx<'a> {
   
   pub fn new(
     gql_ctx: &'a async_graphql::Context<'a>,
-  ) -> CtxImpl<'a> {
+  ) -> Ctx<'a> {
     let now: DateTime<Local> = Local::now();
     let req_id = now.timestamp_millis().to_string();
-    let mut ctx = CtxImpl {
+    let mut ctx = Ctx {
       is_tran: false,
       req_id,
       tran: None,
@@ -724,8 +733,8 @@ impl<'a> CtxImpl<'a> {
   
   pub fn with_tran(
     gql_ctx: &'a async_graphql::Context<'a>,
-  ) -> CtxImpl<'a> {
-    let mut ctx = CtxImpl::new(gql_ctx);
+  ) -> Ctx<'a> {
+    let mut ctx = Ctx::new(gql_ctx);
     ctx.set_is_tran(true);
     ctx
   }
