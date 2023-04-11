@@ -31,18 +31,18 @@ pub async fn hello<'a>(
 async fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
-  search: Option<&UsrSearch>,
+  search: Option<UsrSearch>,
 ) -> Result<String> {
   let mut where_query = String::from("");
   {
-    let is_deleted = search
+    let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
       .unwrap_or(0);
     where_query += &format!(" t.is_deleted = {}", args.push(is_deleted.into()));
   }
   {
     let tenant_id = {
-      let tenant_id = search
+      let tenant_id = search.as_ref()
         .and_then(|item| item.tenant_id.to_owned());
       if tenant_id.is_some() {
         tenant_id
@@ -124,8 +124,8 @@ fn get_from_query() -> String {
  */
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<&UsrSearch>,
-  page: Option<&PageInput>,
+  search: Option<UsrSearch>,
+  page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {

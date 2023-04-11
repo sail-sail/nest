@@ -3,14 +3,19 @@ use tracing::info;
 
 use crate::common::context::Ctx;
 
-use super::usr_model::UsrModel;
-use crate::gen::base::usr::usr_dao;
+use super::usr_model::{UsrModel, UsrSearch};
+use super::usr_dao;
 
 pub async fn hello<'a>(
   ctx: &mut impl Ctx<'a>,
 ) -> Result<Vec<UsrModel>> {
   
-  let res = usr_dao::find_all(ctx, None, None, None, None).await?;
+  let search = UsrSearch {
+    is_deleted: 1.into(),
+    ..Default::default()
+  }.into();
+  
+  let res = usr_dao::find_all(ctx, search, None, None, None).await?;
   
   Ok(res)
 }

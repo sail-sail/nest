@@ -767,7 +767,8 @@ impl<'a> CtxImpl<'a> {
 /**
  * 转义sql语句中的字段
  */
-pub fn escape_id(mut val: String) -> String {
+pub fn escape_id(val: impl AsRef<str>) -> String {
+  let mut val = val.as_ref().to_owned();
   val = val.replace("`", "``");
   val = val.replace(".", "`.`");
   val = val.trim().lines().map(|part| {
@@ -782,7 +783,8 @@ pub fn escape_id(mut val: String) -> String {
 /**
  * 转义sql语句中的值
  */
-pub fn escape(mut val: String) -> String {
+pub fn escape(val: impl AsRef<str>) -> String {
+  let mut val = val.as_ref().to_owned();
   val = val.replace("`", "``");
   val = val.replace("'", "''");
   val = val.trim().lines().map(|part| {
@@ -797,7 +799,7 @@ pub fn escape(mut val: String) -> String {
 /**
  * 获取 sql 语句中 limit 的部分
  */
-pub fn get_page_query(page: Option<&PageInput>) -> String {
+pub fn get_page_query(page: Option<PageInput>) -> String {
   let mut page_query = String::from("");
   if let Some(page) = page {
     let pg_size = page.pg_size;
@@ -815,10 +817,12 @@ pub fn get_page_query(page: Option<&PageInput>) -> String {
 pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
 ) -> String {
-  let mut sort = sort.unwrap_or(vec![]);
-  sort = sort.into_iter()
+  if sort.is_none() {
+    return String::from("");
+  }
+  let sort = sort.unwrap().into_iter()
     .filter(|item| item.prop.is_empty())
-    .collect();
+    .collect::<Vec<SortInput>>();
   let mut order_by_query = String::from("");
   for item in sort {
     let prop = item.prop;
