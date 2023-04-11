@@ -5,6 +5,7 @@ use tracing::info;
 
 use crate::common::context::{Ctx, CtxImpl, QueryArgs, Options, get_order_by_query, get_page_query};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::common::util::string::is_empty;
 
 use super::usr_model::{UsrModel, UsrSearch};
 
@@ -44,21 +45,17 @@ fn get_where_query<'a>(
     let tenant_id = {
       let tenant_id = search.as_ref()
         .and_then(|item| item.tenant_id.to_owned());
-      if tenant_id.is_some() {
-        tenant_id
-      } else {
-        let auth_model = ctx.get_auth_model()?;
-        if let Some(auth_model) = auth_model {
-          auth_model.tenant_id
-        } else {
-          None
+      if is_empty(&tenant_id) {
+        match ctx.get_auth_model()? {
+          Some(item) => item.tenant_id,
+          None => None,
         }
+      } else {
+        tenant_id
       }
     };
-    if let Some(tenant_id) = tenant_id {
-      if !tenant_id.is_empty() && tenant_id != "-" {
-        where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
-      }
+    if !is_empty(&tenant_id) && tenant_id != "-".to_owned().into() {
+      where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
     }
   }
   Ok(where_query)
