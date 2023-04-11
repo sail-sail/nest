@@ -3,13 +3,13 @@ use serde_json::json;
 use anyhow::{Result, anyhow};
 use tracing::info;
 
-use crate::common::context::{CtxTrait, Ctx, QueryArgs, Options, get_order_by_query};
+use crate::common::context::{Ctx, CtxImpl, QueryArgs, Options, get_order_by_query, get_page_query};
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::usr_model::{UsrModel, UsrSearch};
 
 pub async fn hello<'a>(
-  ctx: &mut Ctx<'a>,
+  ctx: &mut CtxImpl<'a>,
 ) -> Result<Vec<UsrModel>> {
   let vec = vec![ "1" ];
   
@@ -21,15 +21,15 @@ pub async fn hello<'a>(
         base_usr
       where
         id != ?
-    #",
+    #".to_owned(),
     vec,
     None,
   ).await?;
   Ok(res)
 }
 
-async fn get_where_query(
-  ctx: &mut impl CtxTrait<'_>,
+async fn get_where_query<'a>(
+  ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<&UsrSearch>,
 ) -> Result<String> {
@@ -119,30 +119,18 @@ fn get_from_query() -> String {
   from_query.to_owned()
 }
 
-fn get_page_query(page: Option<&PageInput>) -> String {
-  let mut page_query = String::from("");
-  if let Some(page) = page {
-    let pg_size = page.pg_size;
-    if let Some(pg_size) = pg_size {
-      let pg_offset = page.pg_offset.unwrap_or(0);
-      page_query = format!(" limit {}, {} ", pg_offset, pg_size);
-    }
-  }
-  page_query
-}
-
 /**
  * 根据搜索条件和分页查找数据
  */
 pub async fn find_all<'a>(
-  ctx: &mut impl CtxTrait<'a>,
+  ctx: &mut impl Ctx<'a>,
   search: Option<&UsrSearch>,
   page: Option<&PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
   let table = "base_usr";
-  let method = "findAll";
+  let _method = "findAll";
   
   let mut args = QueryArgs::new();
   
@@ -160,21 +148,18 @@ pub async fn find_all<'a>(
       {where_query}{order_by_query}{page_query}
   #");
   
-  let sql: &'a str = Box::leak(sql.into_boxed_str());
+  let args = args.value;
   
-  let mut options = Options::from(options);
+  let options = Options::from(options);
   
-  options.cache_key1 = Some(format!("dao.sql.{}", table));
+  let options = options.set_cache_key(table, &sql, &args);
   
-  options.cache_key2 = Some(json!({
-    "sql": &sql,
-    "args": &args.value,
-  }).to_string());
+  let options = options.into();
   
-  let res = ctx.query_with::<_, UsrModel>(
+  let res: Vec<UsrModel> = ctx.query_with(
     sql,
-    args.value,
-    Some(options),
+    args,
+    options,
   ).await?;
   
   Ok(res)
