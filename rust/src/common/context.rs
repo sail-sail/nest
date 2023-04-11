@@ -1,5 +1,6 @@
 use anyhow::{Result, anyhow};
 use poem::http::{HeaderName, HeaderValue};
+use serde_json::json;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 
@@ -13,7 +14,7 @@ use tracing::{info, error};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
-use super::gql::model::SortInput;
+use super::gql::model::{SortInput, PageInput};
 
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = dotenv!("server_tokentimeout").parse::<i64>().unwrap_or(3600);
@@ -54,7 +55,7 @@ fn init_db_pool() -> Result<Pool<MySql>> {
 }
 
 #[async_trait]
-pub trait CtxTrait<'a>: Send + Sized {
+pub trait Ctx<'a>: Send + Sized {
   
   fn get_not_verify_token(&self) -> bool;
   
@@ -153,9 +154,11 @@ pub trait CtxTrait<'a>: Send + Sized {
   /// 执行查询
   async fn execute(
     &mut self,
-    sql: &'a str,
+    sql: String,
     options: Option<Options>,
   ) -> Result<u64> {
+    let sql: &'a str = Box::leak(sql.into_boxed_str());
+    
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
@@ -201,10 +204,12 @@ pub trait CtxTrait<'a>: Send + Sized {
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
   >(
     &mut self,
-    sql: &'a str,
+    sql: String,
     args: Vec<T>,
     options: Option<Options>,
   ) -> Result<u64> {
+    let sql: &'a str = Box::leak(sql.into_boxed_str());
+    
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
@@ -275,7 +280,7 @@ pub trait CtxTrait<'a>: Send + Sized {
   /// 带参数执行查询
   async fn query_with<T, R>(
     &mut self,
-    sql: &'a str,
+    sql: String,
     args: Vec<T>,
     options: Option<Options>,
   ) -> Result<Vec<R>>
@@ -283,6 +288,8 @@ pub trait CtxTrait<'a>: Send + Sized {
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
+    let sql: &'a str = Box::leak(sql.into_boxed_str());
+    
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
@@ -355,12 +362,14 @@ pub trait CtxTrait<'a>: Send + Sized {
   /// 执行查询
   async fn query<R>(
     &mut self,
-    sql: &'a str,
+    sql: String,
     options: Option<Options>,
   ) -> Result<Vec<R>>
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
+    let sql: &'a str = Box::leak(sql.into_boxed_str());
+    
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
@@ -403,7 +412,7 @@ pub trait CtxTrait<'a>: Send + Sized {
   /// 带参数查询一条数据
   async fn query_one_with<T, R>(
     &mut self,
-    sql: &'a str,
+    sql: String,
     args: Vec<T>,
     options: Option<Options>,
   ) -> Result<R>
@@ -411,6 +420,8 @@ pub trait CtxTrait<'a>: Send + Sized {
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
+    let sql: &'a str = Box::leak(sql.into_boxed_str());
+    
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
@@ -481,12 +492,14 @@ pub trait CtxTrait<'a>: Send + Sized {
   /// 查询一条数据
   async fn query_one<R>(
     &mut self,
-    sql: &'a str,
+    sql: String,
     options: Option<Options>,
   ) -> Result<R>
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
   {
+    let sql: &'a str = Box::leak(sql.into_boxed_str());
+    
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options {
@@ -556,7 +569,7 @@ pub trait CtxTrait<'a>: Send + Sized {
 }
 
 #[async_trait]
-impl<'a> CtxTrait<'a> for Ctx<'a> {
+impl<'a> Ctx<'a> for CtxImpl<'a> {
   
   fn get_not_verify_token(&self) -> bool {
     self.not_verify_token
@@ -618,7 +631,7 @@ impl<'a> CtxTrait<'a> for Ctx<'a> {
   
 }
 
-pub struct Ctx<'a> {
+pub struct CtxImpl<'a> {
   
   is_tran: bool,
   
@@ -690,6 +703,16 @@ impl Options {
     options.unwrap()
   }
   
+  pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<serde_json::Value>) -> Self {
+    let mut self_ = self;
+    self_.cache_key1 = format!("dao.sql.{}", table).into();
+    self_.cache_key2 = json!({
+      "sql": &sql,
+      "args": &args,
+    }).to_string().into();
+    self_
+  }
+  
   #[inline]
   pub fn get_is_tran(&self) -> Option<bool> {
     self.is_tran
@@ -707,14 +730,14 @@ impl Options {
   
 // }
 
-impl<'a> Ctx<'a> {
+impl<'a> CtxImpl<'a> {
   
   pub fn new(
     gql_ctx: &'a async_graphql::Context<'a>,
-  ) -> Ctx<'a> {
+  ) -> CtxImpl<'a> {
     let now: DateTime<Local> = Local::now();
     let req_id = now.timestamp_millis().to_string();
-    let mut ctx = Ctx {
+    let mut ctx = CtxImpl {
       is_tran: false,
       req_id,
       tran: None,
@@ -733,8 +756,8 @@ impl<'a> Ctx<'a> {
   
   pub fn with_tran(
     gql_ctx: &'a async_graphql::Context<'a>,
-  ) -> Ctx<'a> {
-    let mut ctx = Ctx::new(gql_ctx);
+  ) -> CtxImpl<'a> {
+    let mut ctx = CtxImpl::new(gql_ctx);
     ctx.set_is_tran(true);
     ctx
   }
@@ -772,7 +795,22 @@ pub fn escape(mut val: String) -> String {
 }
 
 /**
- * 获取sql语句中order_by的部分
+ * 获取 sql 语句中 limit 的部分
+ */
+pub fn get_page_query(page: Option<&PageInput>) -> String {
+  let mut page_query = String::from("");
+  if let Some(page) = page {
+    let pg_size = page.pg_size;
+    if let Some(pg_size) = pg_size {
+      let pg_offset = page.pg_offset.unwrap_or(0);
+      page_query = format!(" limit {}, {} ", pg_offset, pg_size);
+    }
+  }
+  page_query
+}
+
+/**
+ * 获取 sql 语句中 order by 的部分
  */
 pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
