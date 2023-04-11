@@ -1,13 +1,13 @@
 use sqlx::FromRow;
 use async_graphql::{SimpleObject, InputObject};
 
-#[derive(FromRow, SimpleObject, Debug)]
+#[derive(FromRow, SimpleObject, Debug, Default)]
 pub struct UsrModel {
   id: String,
   username: String,
 }
 
-#[derive(SimpleObject, InputObject, Debug)]
+#[derive(InputObject, Debug, Default)]
 pub struct UsrSearch {
   pub id: Option<String>,
   pub username: Option<String>,
