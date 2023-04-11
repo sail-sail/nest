@@ -18,6 +18,7 @@
     "swellaby.vscode-rust-test-adapter",
     "hdevalke.rust-test-lens",
     "vadimcn.vscode-lldb",
-    "ms-vscode.cpptools"
+    "ms-vscode.cpptools",
+    "caponetto.vscode-diff-viewer"
   ]
 }
