@@ -51,7 +51,8 @@ async fn main() -> Result<(), std::io::Error> {
   )
     .finish();
   
-  if cfg!(debug_assertions) {
+  #[cfg(debug_assertions)]
+  {
     let file = "src/common/gql/schema.graphql";
     let schema = schema.sdl();
     let old_schema = {
@@ -69,7 +70,8 @@ async fn main() -> Result<(), std::io::Error> {
   
   let app = {
     let mut app = Route::new();
-    if cfg!(debug_assertions) {
+    #[cfg(debug_assertions)]
+    {
       app = app.at("/graphiql", get(common::gql::gql_router::graphql_playground));
     }
     app = app.at("/graphql", post(common::gql::gql_router::graphql_handler));
