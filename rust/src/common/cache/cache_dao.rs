@@ -76,6 +76,24 @@ pub async fn del_cache(
   Ok(())
 }
 
+pub async fn del_caches(
+  del_cache_key1s: &Vec<String>,
+) -> Result<()> {
+  if CACHE_POOL.is_none() {
+    return Ok(());
+  }
+  info!("del_caches: {:?}", del_cache_key1s);
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
+  let mut pipe: redis::Pipeline = redis::pipe();
+  let mut pipe = pipe.atomic();
+  for del_cache_key1 in del_cache_key1s {
+    pipe = pipe.cmd("DEL").arg(&[del_cache_key1]).ignore();
+  }
+  let _ = pipe.query_async(&mut conn).await?;
+  Ok(())
+}
+
 pub async fn flash_db() -> Result<()> {
   if CACHE_POOL.is_none() {
     return Ok(());

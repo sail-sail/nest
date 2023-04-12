@@ -1,7 +1,8 @@
+use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 use async_graphql::{SimpleObject, InputObject};
 
-#[derive(FromRow, SimpleObject, Debug, Default)]
+#[derive(FromRow, SimpleObject, Debug, Default, Serialize, Deserialize)]
 pub struct UsrModel {
   id: String,
   username: String,

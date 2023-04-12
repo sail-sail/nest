@@ -1,5 +1,6 @@
 use anyhow::{Result, anyhow};
 use poem::http::{HeaderName, HeaderValue};
+use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
@@ -14,6 +15,7 @@ use tracing::{info, error};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
+use super::cache::cache_dao::{get_cache, set_cache, del_caches};
 use super::gql::model::{SortInput, PageInput};
 
 lazy_static! {
@@ -127,12 +129,10 @@ pub trait Ctx<'a>: Send + Sized {
   
   /// 提交事务
   async fn commit(mut self) -> Result<()> {
-    if self.get_is_tran() {
-      let req_id = self.get_req_id();
-      info!("{} commit;", req_id);
-    }
+    let req_id = self.get_req_id().to_owned();
     let tran = self.get_tran_owned();
     if let Some(tran) = tran {
+      info!("{} commit;", req_id);
       tran.commit().await?;
     }
     Ok(())
@@ -140,12 +140,10 @@ pub trait Ctx<'a>: Send + Sized {
   
   /// 回滚事务
   async fn rollback(mut self) -> Result<()> {
-    if self.get_is_tran() {
-      let req_id = self.get_req_id();
-      info!("{} rollback;", req_id);
-    }
+    let req_id = self.get_req_id().to_owned();
     let tran = self.get_tran_owned();
     if let Some(tran) = tran {
+      info!("{} rollback;", req_id);
       tran.rollback().await?;
     }
     Ok(())
@@ -176,7 +174,7 @@ pub trait Ctx<'a>: Send + Sized {
     
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
-    if let Some(options) = options {
+    if let Some(options) = &options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
@@ -191,13 +189,11 @@ pub trait Ctx<'a>: Send + Sized {
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
-          debug_args.push(format!("'{}'", arg));
+          debug_args.push(arg.to_string());
           query = query.bind(arg);
         }
-        let mut debug_sql = sql.to_string();
-        for debug_arg in debug_args {
-          debug_sql = debug_sql.replace("?", &debug_arg);
-        }
+        let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+        let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
@@ -212,19 +208,24 @@ pub trait Ctx<'a>: Send + Sized {
           anyhow::anyhow!(err_msg)
         })?;
       let rows_affected = res.rows_affected();
+      if rows_affected > 0 {
+        if let Some(options) = &options {
+          if let Some(del_cache_key1s) = &options.del_cache_key1s {
+            del_caches(del_cache_key1s).await?;
+          }
+        }
+      }
       return Ok(rows_affected);
     }
     let mut query = sqlx::query(sql);
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
-        debug_args.push(format!("'{}'", arg));
+        debug_args.push(arg.to_string());
         query = query.bind(arg);
       }
-      let mut debug_sql = sql.to_string();
-      for debug_arg in debug_args {
-        debug_sql = debug_sql.replace("?", &debug_arg);
-      }
+      let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+      let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
@@ -238,6 +239,13 @@ pub trait Ctx<'a>: Send + Sized {
         anyhow::anyhow!(err_msg)
       })?;
     let rows_affected = res.rows_affected();
+    if rows_affected > 0 {
+      if let Some(options) = &options {
+        if let Some(del_cache_key1s) = &options.del_cache_key1s {
+          del_caches(del_cache_key1s).await?;
+        }
+      }
+    }
     Ok(rows_affected)
   }
   
@@ -250,13 +258,26 @@ pub trait Ctx<'a>: Send + Sized {
   ) -> Result<Vec<R>>
   where
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
   {
+    if let Some(options) = &options {
+      if options.cache_key1.is_some() && options.cache_key2.is_some() {
+        let cache_key1 = options.cache_key1.as_ref().unwrap();
+        let cache_key2 = options.cache_key2.as_ref().unwrap();
+        let str = get_cache(cache_key1, cache_key2).await?;
+        if str.is_some() {
+          let str = str.unwrap();
+          let res: Vec<R> = serde_json::from_str(&str)?;
+          return Ok(res);
+        }
+      }
+    }
+    
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
-    if let Some(options) = options {
+    if let Some(options) = options.as_ref() {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
@@ -271,15 +292,11 @@ pub trait Ctx<'a>: Send + Sized {
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
-          debug_args.push(format!("'{}'", arg));
+          debug_args.push(arg.to_string());
           query = query.bind(arg);
         }
-        let mut debug_sql = sql.to_string();
-        for debug_arg in debug_args {
-          debug_sql = debug_sql.replace("?", &debug_arg);
-        }
-        // let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-        // debug_sql = sqlformat::format(debug_sql.as_str(), &query_params, sqlformat::FormatOptions::default());
+        let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+        let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
@@ -293,20 +310,26 @@ pub trait Ctx<'a>: Send + Sized {
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
-      drop(sql);
+      
+      if let Some(options) = &options {
+        if options.cache_key1.is_some() && options.cache_key2.is_some() {
+          let cache_key1 = options.cache_key1.as_ref().unwrap();
+          let cache_key2 = options.cache_key2.as_ref().unwrap();
+          let str = serde_json::to_string(&res)?;
+          set_cache(cache_key1, cache_key2, &str).await?;
+        }
+      }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(sql);
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
-        debug_args.push(format!("'{}'", arg));
+        debug_args.push(arg.to_string());
         query = query.bind(arg);
       }
-      let mut debug_sql = sql.to_string();
-      for debug_arg in debug_args {
-        debug_sql = debug_sql.replace("?", &debug_arg);
-      }
+      let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+      let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
@@ -319,7 +342,14 @@ pub trait Ctx<'a>: Send + Sized {
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
-    drop(sql);
+    if let Some(options) = &options {
+      if options.cache_key1.is_some() && options.cache_key2.is_some() {
+        let cache_key1 = options.cache_key1.as_ref().unwrap();
+        let cache_key2 = options.cache_key2.as_ref().unwrap();
+        let str = serde_json::to_string(&res)?;
+        set_cache(cache_key1, cache_key2, &str).await?;
+      }
+    }
     Ok(res)
   }
   
@@ -332,13 +362,26 @@ pub trait Ctx<'a>: Send + Sized {
   ) -> Result<R>
   where
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
   {
+    if let Some(options) = &options {
+      if options.cache_key1.is_some() && options.cache_key2.is_some() {
+        let cache_key1 = options.cache_key1.as_ref().unwrap();
+        let cache_key2 = options.cache_key2.as_ref().unwrap();
+        let str = get_cache(cache_key1, cache_key2).await?;
+        if str.is_some() {
+          let str = str.unwrap();
+          let res: R = serde_json::from_str(&str)?;
+          return Ok(res);
+        }
+      }
+    }
+    
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
     let mut is_debug = true;
     let mut is_tran = self.get_is_tran();
-    if let Some(options) = options {
+    if let Some(options) = &options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
@@ -353,13 +396,11 @@ pub trait Ctx<'a>: Send + Sized {
       if is_debug {
         let mut debug_args = vec![];
         for arg in args {
-          debug_args.push(format!("'{}'", arg));
+          debug_args.push(arg.to_string());
           query = query.bind(arg);
         }
-        let mut debug_sql = sql.to_string();
-        for debug_arg in debug_args {
-          debug_sql = debug_sql.replace("?", &debug_arg);
-        }
+        let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+        let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
@@ -373,20 +414,25 @@ pub trait Ctx<'a>: Send + Sized {
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
-      drop(sql);
+      if let Some(options) = &options {
+        if options.cache_key1.is_some() && options.cache_key2.is_some() {
+          let cache_key1 = options.cache_key1.as_ref().unwrap();
+          let cache_key2 = options.cache_key2.as_ref().unwrap();
+          let str = serde_json::to_string(&res)?;
+          set_cache(cache_key1, cache_key2, &str).await?;
+        }
+      }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(sql);
     if is_debug {
       let mut debug_args = vec![];
       for arg in args {
-        debug_args.push(format!("'{}'", arg));
+        debug_args.push(arg.to_string());
         query = query.bind(arg);
       }
-      let mut debug_sql = sql.to_string();
-      for debug_arg in debug_args {
-        debug_sql = debug_sql.replace("?", &debug_arg);
-      }
+      let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
+      let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
@@ -399,7 +445,14 @@ pub trait Ctx<'a>: Send + Sized {
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
-    drop(sql);
+    if let Some(options) = &options {
+      if options.cache_key1.is_some() && options.cache_key2.is_some() {
+        let cache_key1 = options.cache_key1.as_ref().unwrap();
+        let cache_key2 = options.cache_key2.as_ref().unwrap();
+        let str = serde_json::to_string(&res)?;
+        set_cache(cache_key1, cache_key2, &str).await?;
+      }
+    }
     Ok(res)
   }
   
@@ -524,7 +577,7 @@ pub struct CtxImpl<'a> {
 #[derive(Debug)]
 pub struct QueryArgs {
   
-  pub value: Vec<serde_json::Value>,
+  pub value: Vec<String>,
   
 }
 
@@ -536,8 +589,8 @@ impl QueryArgs {
     }
   }
   
-  pub fn push(&mut self, arg: serde_json::Value) -> String {
-    let _ = &mut self.value.push(arg);
+  pub fn push(&mut self, arg: impl AsRef<str>) -> String {
+    let _ = &mut self.value.push(arg.as_ref().to_owned());
     String::from("?")
   }
   
@@ -562,6 +615,9 @@ pub struct Options {
   #[new(default)]
   pub cache_key2: Option<String>,
   
+  #[new(default)]
+  pub del_cache_key1s: Option<Vec<String>>,
+  
 }
 
 impl Options {
@@ -573,13 +629,25 @@ impl Options {
     options.unwrap()
   }
   
-  pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<serde_json::Value>) -> Self {
+  pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<String>) -> Self {
     let mut self_ = self;
     self_.cache_key1 = format!("dao.sql.{}", table).into();
     self_.cache_key2 = json!({
       "sql": &sql,
       "args": &args,
     }).to_string().into();
+    self_
+  }
+  
+  pub fn set_del_cache_key1s(self, tables: Vec<&str>) -> Self {
+    let mut self_ = self;
+    self_.del_cache_key1s = tables.into_iter()
+      .map(|table|
+        format!("dao.sql.{}", table)
+      )
+      .collect::<Vec<String>>()
+      .into()
+      ;
     self_
   }
   
