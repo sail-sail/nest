@@ -3,9 +3,13 @@ use serde_json::json;
 use anyhow::{Result, anyhow};
 use tracing::info;
 
+use crate::common::util::string::{
+  is_empty_opt,
+  trim_opt,
+};
+
 use crate::common::context::{Ctx, CtxImpl, QueryArgs, Options, get_order_by_query, get_page_query};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::common::util::string::is_empty;
 
 use super::usr_model::{UsrModel, UsrSearch};
 
@@ -14,7 +18,7 @@ pub async fn hello<'a>(
 ) -> Result<Vec<UsrModel>> {
   let vec = vec![ "1" ];
   
-  let res = ctx.query_with::<_, UsrModel>(
+  let res = ctx.query::<_, UsrModel>(
     r#"
       select
         *
@@ -34,7 +38,7 @@ fn get_where_query<'a>(
   args: &mut QueryArgs,
   search: Option<UsrSearch>,
 ) -> String {
-  let mut where_query = String::from("");
+  let mut where_query = String::with_capacity(2048);
   {
     let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
@@ -43,18 +47,20 @@ fn get_where_query<'a>(
   }
   {
     let tenant_id = {
-      let tenant_id = search.as_ref()
-        .and_then(|item| item.tenant_id.to_owned());
-      if is_empty(&tenant_id) {
-        match ctx.get_auth_model() {
-          Some(item) => item.tenant_id,
-          None => None,
-        }
-      } else {
-        tenant_id
-      }
+      let tenant_id = match &search {
+        Some(item) => &item.tenant_id,
+        None => &None,
+      };
+      let tenant_id = match trim_opt(&tenant_id) {
+        None => ctx.get_auth_tenant_id(),
+        Some(item) => match item.as_str() {
+          "-" => None,
+          _ => item.into(),
+        },
+      };
+      tenant_id
     };
-    if !is_empty(&tenant_id) && tenant_id != "-".to_owned().into() {
+    if tenant_id.is_some() {
       where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
     }
   }
@@ -151,7 +157,7 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
-  let res: Vec<UsrModel> = ctx.query_with(
+  let res: Vec<UsrModel> = ctx.query(
     sql,
     args,
     options,
