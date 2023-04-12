@@ -107,6 +107,13 @@ pub trait Ctx<'a>: Send + Sized {
     auth_model.into()
   }
   
+  fn get_auth_tenant_id(&mut self) -> Option<String> {
+    match self.get_auth_model() {
+      Some(item) => item.tenant_id,
+      None => None,
+    }
+  }
+  
   /// 开启事务
   async fn begin(&mut self) -> Result<()> {
     if self.get_tran().is_some() {
@@ -156,56 +163,8 @@ pub trait Ctx<'a>: Send + Sized {
     res
   }
   
-  /// 执行查询
-  async fn execute(
-    &mut self,
-    sql: String,
-    options: Option<Options>,
-  ) -> Result<u64> {
-    let sql: &'a str = Box::leak(sql.into_boxed_str());
-    
-    let mut is_debug = true;
-    let mut is_tran = self.get_is_tran();
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.get_tran().is_none() {
-        self.begin().await?;
-      }
-      let query = sqlx::query(sql);
-      if is_debug {
-        info!("{} {}", self.get_req_id(), sql);
-      }
-      let tran = self.get_tran().unwrap();
-      let res = tran.execute(query).await
-        .map_err(|e| {
-          error!("{} {:?}", self.get_req_id(), e);
-          anyhow::anyhow!("{:?}", e)
-        })?;
-      let rows_affected = res.rows_affected();
-      return Ok(rows_affected);
-    }
-    let query = sqlx::query(sql);
-    if is_debug {
-      info!("{} {}", self.get_req_id(), sql);
-    }
-    let res = query.execute(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    let rows_affected = res.rows_affected();
-    Ok(rows_affected)
-  }
-  
   /// 带参数执行查询
-  async fn execute_with<
+  async fn execute<
     T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
   >(
     &mut self,
@@ -283,7 +242,7 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 带参数执行查询
-  async fn query_with<T, R>(
+  async fn query<T, R>(
     &mut self,
     sql: String,
     args: Vec<T>,
@@ -364,58 +323,8 @@ pub trait Ctx<'a>: Send + Sized {
     Ok(res)
   }
   
-  /// 执行查询
-  async fn query<R>(
-    &mut self,
-    sql: String,
-    options: Option<Options>,
-  ) -> Result<Vec<R>>
-  where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  {
-    let sql: &'a str = Box::leak(sql.into_boxed_str());
-    
-    let mut is_debug = true;
-    let mut is_tran = self.get_is_tran();
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.get_tran().is_none() {
-        self.begin().await?;
-      }
-      let query = sqlx::query_as::<_, R>(sql);
-      if is_debug {
-        info!("{} {}", self.get_req_id(), sql);
-      }
-      let tran = self.get_tran().unwrap();
-      let res = query.fetch_all(tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      drop(sql);
-      return Ok(res);
-    }
-    let query = sqlx::query_as::<_, R>(sql);
-    info!("{} {}", self.get_req_id(), sql);
-    let res = query.fetch_all(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    drop(sql);
-    Ok(res)
-  }
-  
   /// 带参数查询一条数据
-  async fn query_one_with<T, R>(
+  async fn query_one<T, R>(
     &mut self,
     sql: String,
     args: Vec<T>,
@@ -483,56 +392,6 @@ pub trait Ctx<'a>: Send + Sized {
       for arg in args {
         query = query.bind(arg);
       }
-    }
-    let res = query.fetch_one(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
-    drop(sql);
-    Ok(res)
-  }
-  
-  /// 查询一条数据
-  async fn query_one<R>(
-    &mut self,
-    sql: String,
-    options: Option<Options>,
-  ) -> Result<R>
-  where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin,
-  {
-    let sql: &'a str = Box::leak(sql.into_boxed_str());
-    
-    let mut is_debug = true;
-    let mut is_tran = self.get_is_tran();
-    if let Some(options) = options {
-      is_debug = options.is_debug;
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    }
-    
-    if is_tran {
-      if self.get_tran().is_none() {
-        self.begin().await?;
-      }
-      let query = sqlx::query_as::<_, R>(sql);
-      info!("{} {}", self.get_req_id(), sql);
-      let tran = self.get_tran().unwrap();
-      let res = query.fetch_one(tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
-      drop(sql);
-      return Ok(res);
-    }
-    let query = sqlx::query_as::<_, R>(sql);
-    if is_debug {
-      info!("{} {}", self.get_req_id(), sql);
     }
     let res = query.fetch_one(&DB_POOL.clone()).await
       .map_err(|e| {
@@ -811,7 +670,7 @@ pub fn escape(val: impl AsRef<str>) -> String {
  * 获取 sql 语句中 limit 的部分
  */
 pub fn get_page_query(page: Option<PageInput>) -> String {
-  let mut page_query = String::from("");
+  let mut page_query = String::with_capacity(32);
   if let Some(page) = page {
     let pg_size = page.pg_size;
     if let Some(pg_size) = pg_size {
@@ -829,12 +688,12 @@ pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
 ) -> String {
   if sort.is_none() {
-    return String::from("");
+    return String::new();
   }
   let sort = sort.unwrap().into_iter()
     .filter(|item| item.prop.is_empty())
     .collect::<Vec<SortInput>>();
-  let mut order_by_query = String::from("");
+  let mut order_by_query = String::with_capacity(128);
   for item in sort {
     let prop = item.prop;
     let order = item.order;
