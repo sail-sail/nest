@@ -11,7 +11,7 @@ pub async fn hello<'a>(
 ) -> Result<Vec<UsrModel>> {
   
   let search = UsrSearch {
-    is_deleted: 1.into(),
+    is_deleted: 0.into(),
     ..Default::default()
   }.into();
   

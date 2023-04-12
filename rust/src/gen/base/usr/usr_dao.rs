@@ -43,7 +43,7 @@ fn get_where_query<'a>(
     let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
       .unwrap_or(0);
-    where_query += &format!(" t.is_deleted = {}", args.push(is_deleted.into()));
+    where_query += &format!(" t.is_deleted = {}", args.push(is_deleted.to_string()));
   }
   {
     let tenant_id = {
@@ -60,8 +60,8 @@ fn get_where_query<'a>(
       };
       tenant_id
     };
-    if tenant_id.is_some() {
-      where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
+    if let Some(tenant_id) = tenant_id {
+      where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id));
     }
   }
   where_query
