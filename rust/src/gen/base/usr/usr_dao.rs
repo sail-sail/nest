@@ -33,7 +33,7 @@ fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<UsrSearch>,
-) -> Result<String> {
+) -> String {
   let mut where_query = String::from("");
   {
     let is_deleted = search.as_ref()
@@ -58,10 +58,10 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
     }
   }
-  Ok(where_query)
+  where_query
 }
 
-fn get_from_query() -> String {
+fn get_from_query() -> &'static str {
   let from_query = r#"base_usr t
     left join base_dept _default_dept_id
       on _default_dept_id.id = t.default_dept_id
@@ -111,7 +111,7 @@ fn get_from_query() -> String {
       group by usr_id
     ) _role
       on _role.usr_id = t.id"#;
-  from_query.to_owned()
+  from_query
 }
 
 /**
@@ -130,7 +130,7 @@ pub async fn find_all<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search)?;
+  let where_query = get_where_query(ctx, &mut args, search);
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
