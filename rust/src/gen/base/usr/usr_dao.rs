@@ -38,7 +38,7 @@ fn get_where_query<'a>(
   args: &mut QueryArgs,
   search: Option<UsrSearch>,
 ) -> String {
-  let mut where_query = String::with_capacity(2048);
+  let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
