@@ -4,27 +4,41 @@ use deadpool_redis::{redis, Config, Runtime, Pool};
 use tracing::info;
 
 lazy_static! {
-  static ref CACHE_POOL: Pool = init_cache_pool();
+  static ref CACHE_POOL: Option<Pool> = init_cache_pool();
 }
 
-fn init_cache_pool() -> Pool {
+fn init_cache_pool() -> Option<Pool> {
+  let cache_enable = {
+    let cache_enable = dotenv!("cache_enable");
+    match cache_enable.trim().to_lowercase().as_str() {
+      "false" => false,
+      _ => true,
+    }
+  };
+  if !cache_enable {
+    return None;
+  }
   let cache_hostname = dotenv!("cache_hostname");
   let cache_port = dotenv!("cache_port");
   let cache_db = dotenv!("cache_db");
   let cfg = Config::from_url(
     format!("redis://{}:{}/{}", cache_hostname, cache_port, cache_db)
   );
-  let cache_pool = cfg.create_pool(
+  let cache_pool: Pool = cfg.create_pool(
     Some(Runtime::Tokio1),
   ).unwrap();
-  cache_pool
+  cache_pool.into()
 }
 
 pub async fn get_cache(
   cache_key1: &str,
   cache_key2: &str,
 ) -> Result<Option<String>> {
-  let mut conn = CACHE_POOL.get().await?;
+  if CACHE_POOL.is_none() {
+    return Ok(None);
+  }
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
   let value: Option<String> = redis::cmd("HGET")
     .arg(&[cache_key1, cache_key2])
     .query_async(&mut conn).await?;
@@ -36,7 +50,11 @@ pub async fn set_cache(
   cache_key2: &str,
   cache_value: &str,
 ) -> Result<()> {
-  let mut conn = CACHE_POOL.get().await?;
+  if CACHE_POOL.is_none() {
+    return Ok(());
+  }
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
   let _: () = redis::cmd("HSET")
     .arg(&[cache_key1, cache_key2, cache_value])
     .query_async(&mut conn).await?;
@@ -46,8 +64,12 @@ pub async fn set_cache(
 pub async fn del_cache(
   cache_key1: &str,
 ) -> Result<()> {
+  if CACHE_POOL.is_none() {
+    return Ok(());
+  }
   info!("del_cache: {}", cache_key1);
-  let mut conn = CACHE_POOL.get().await?;
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
   let _ = redis::cmd("DEL")
     .arg(&[cache_key1])
     .query_async(&mut conn).await?;
@@ -55,8 +77,12 @@ pub async fn del_cache(
 }
 
 pub async fn flash_db() -> Result<()> {
+  if CACHE_POOL.is_none() {
+    return Ok(());
+  }
   info!("flash_db");
-  let mut conn = CACHE_POOL.get().await?;
+  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let mut conn = cache_pool.get().await?;
   let _ = redis::cmd("FLUSHDB")
     .query_async(&mut conn).await?;
   Ok(())
