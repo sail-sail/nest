@@ -15,14 +15,14 @@ pub async fn hello<'a>(
   let vec = vec![ "1" ];
   
   let res = ctx.query_with::<_, UsrModel>(
-    "#
+    r#"
       select
         *
       from
         base_usr
       where
         id != ?
-    #".to_owned(),
+    "#.to_owned(),
     vec,
     None,
   ).await?;
@@ -62,8 +62,7 @@ fn get_where_query<'a>(
 }
 
 fn get_from_query() -> String {
-  let from_query = "#
-    base_usr t
+  let from_query = r#"base_usr t
     left join base_dept _default_dept_id
       on _default_dept_id.id = t.default_dept_id
     left join base_usr_dept
@@ -111,8 +110,7 @@ fn get_from_query() -> String {
       base_usr_role.is_deleted = 0
       group by usr_id
     ) _role
-      on _role.usr_id = t.id
-  #";
+      on _role.usr_id = t.id"#;
   from_query.to_owned()
 }
 
@@ -136,14 +134,14 @@ pub async fn find_all<'a>(
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
-  let sql = format!("#
+  let sql = format!(r#"
     select
       t.*
     from
       {from_query}
     where
       {where_query}{order_by_query}{page_query}
-  #");
+  "#);
   
   let args = args.value;
   
