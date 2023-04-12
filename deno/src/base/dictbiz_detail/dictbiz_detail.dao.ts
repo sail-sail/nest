@@ -37,7 +37,7 @@ export async function getDictbiz(
     from
       base_dictbiz_detail t
     inner join base_dictbiz
-      on t.dictbiz_id = dictbiz.id
+      on t.dictbiz_id = base_dictbiz.id
       and base_dictbiz.is_deleted = 0
       and base_dictbiz.is_enabled = 1
     where

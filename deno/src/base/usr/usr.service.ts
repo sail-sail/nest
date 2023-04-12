@@ -65,6 +65,7 @@ export async function login(
   const { authorization } = await authService.createToken({
     id: model.id,
     dept_id,
+    tenant_id,
     lang,
   });
   return {
@@ -117,8 +118,7 @@ export async function selectLang(lang: string) {
     throw await ns("未登录");
   }
   const { authorization } = await authService.createToken({
-    id: authModel.id,
-    dept_id: authModel.dept_id,
+    ...authModel,
     lang,
   });
   return authorization;
