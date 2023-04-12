@@ -87,19 +87,24 @@ pub trait Ctx<'a>: Send + Sized {
   
   fn get_auth_model(
     &mut self,
-  ) -> Result<Option<AuthModel>> {
+  ) -> Option<AuthModel> {
     let auth_model = self.get_auth_model_impl();
     if auth_model.is_some() {
-      return Ok(auth_model.to_owned());
+      return auth_model.to_owned();
     }
     let auth_token = self.get_auth_token();
     if auth_token.is_none() {
-      return Ok(None);
+      return None;
     }
     let auth_token = auth_token.unwrap();
-    let auth_model = get_auth_model_by_token(auth_token)?;
-    self.set_auth_model_impl(Some(auth_model.to_owned()));
-    Ok(Some(auth_model))
+    let auth_model = get_auth_model_by_token(auth_token);
+    if auth_model.is_err() {
+      error!("{}", auth_model.err().unwrap());
+      return None;
+    }
+    let auth_model = auth_model.unwrap();
+    self.set_auth_model_impl(auth_model.to_owned().into());
+    auth_model.into()
   }
   
   /// 开启事务
@@ -108,7 +113,7 @@ pub trait Ctx<'a>: Send + Sized {
       return Ok(());
     }
     info!("{} begin;", self.get_req_id());
-    let tran = DB_POOL.clone().begin().await?;
+    let tran = DB_POOL.clone().begin().await.unwrap();
     self.set_tran(tran);
     Ok(())
   }
@@ -548,7 +553,13 @@ pub trait Ctx<'a>: Send + Sized {
       return Err(anyhow!("token_empty"));
     }
     let auth_token = auth_token.unwrap();
-    let mut auth_model = get_auth_model_by_token(auth_token)?;
+    let mut auth_model = match get_auth_model_by_token(auth_token) {
+      Ok(item) => item,
+      Err(e) => {
+        error!("{}", e.to_string());
+        return Err(anyhow!("refresh_token_expired"));
+      },
+    };
     let now = self.get_now();
     let server_tokentimeout = self.get_server_tokentimeout();
     let now_sec = now.timestamp_millis() / 1000;

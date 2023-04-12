@@ -46,7 +46,7 @@ fn get_where_query<'a>(
       let tenant_id = search.as_ref()
         .and_then(|item| item.tenant_id.to_owned());
       if is_empty(&tenant_id) {
-        match ctx.get_auth_model()? {
+        match ctx.get_auth_model() {
           Some(item) => item.tenant_id,
           None => None,
         }
