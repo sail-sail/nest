@@ -17,7 +17,7 @@ pub async fn put_object<S: AsRef<str>>(
 
 pub async fn head_object(
   path: &str,
-) -> Result<StatObject> {
+) -> Result<Option<StatObject>> {
   let res = oss_dao::head_object(path).await?;
   Ok(res)
 }
