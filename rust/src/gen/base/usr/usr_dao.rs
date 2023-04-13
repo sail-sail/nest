@@ -165,3 +165,13 @@ pub async fn find_all<'a>(
   
   Ok(res)
 }
+
+#[cfg(test)]
+mod test {
+  
+  #[tokio::test]
+  async fn test_str() {
+    println!("{}", file!());
+  }
+  
+}
