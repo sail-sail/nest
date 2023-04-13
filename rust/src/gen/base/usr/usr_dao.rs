@@ -143,6 +143,11 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
+      ,_default_dept_id.lbl _default_dept_id
+      ,max(dept_ids) dept_ids
+      ,max(_dept_ids) _dept_ids
+      ,max(role_ids) role_ids
+      ,max(_role_ids) _role_ids
     from
       {from_query}
     where

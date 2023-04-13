@@ -1,4 +1,3 @@
-
 use anyhow::Result;
 use async_graphql::{Context, Object};
 

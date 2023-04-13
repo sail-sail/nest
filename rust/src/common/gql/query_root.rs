@@ -5,7 +5,8 @@ use async_graphql::{
 
 #[derive(MergedObject, Default)]
 pub struct Query(
-  crate::gen::Resolver,
+  crate::gen::GenResolver,
+  crate::src::SrcResolver,
 );
 
 pub type QuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
