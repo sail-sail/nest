@@ -217,7 +217,7 @@ export async function findCount(
   options?: {
   },
 ): Promise<number> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -257,7 +257,7 @@ export async function findAll(
   options?: {
   },
 ) {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "findAll";
   
   const args = new QueryArgs();
@@ -494,7 +494,7 @@ export async function exist(
 export async function existById(
   id?: string | null,
 ) {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "existById";
   
   if (isEmpty(id)) {
@@ -542,7 +542,7 @@ export async function create(
     uniqueType?: "ignore" | "throw" | "update";
   },
 ): Promise<string> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "create";
   
   const oldModel = await findByUnique(model, options);
@@ -667,7 +667,7 @@ export async function updateTenantById(
   options?: {
   },
 ): Promise<number> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "updateTenantById";
   
   const tenantExist = await tenantDao.existById(tenant_id);
@@ -678,7 +678,7 @@ export async function updateTenantById(
   const args = new QueryArgs();
   const sql = /*sql*/ `
     update
-      operation_record
+      base_operation_record
     set
       update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
@@ -709,7 +709,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw" | "create";
   },
 ): Promise<string> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "updateById";
   
   if (!id || !model) {
@@ -804,7 +804,7 @@ export async function deleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
@@ -846,7 +846,7 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -883,7 +883,7 @@ export async function forceDeleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "operation_record";
+  const table = "base_operation_record";
   const method = "create";
   
   if (!ids || !ids.length) {

@@ -378,7 +378,7 @@ export async function findCount(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -429,7 +429,7 @@ export async function findAll(
   options?: {
   },
 ) {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "findAll";
   
   const args = new QueryArgs();
@@ -941,7 +941,7 @@ export async function findSummary(
   options?: {
   },
 ): Promise<<#=Table_Up#>Summary> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "findSummary";<#
   const findSummaryColumns = [ ];
   for (let i = 0; i < columns.length; i++) {
@@ -1043,7 +1043,7 @@ export async function exist(
 export async function existById(
   id?: string | null,
 ) {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "existById";
   
   if (isEmpty(id)) {
@@ -1102,7 +1102,7 @@ export async function create(
     uniqueType?: "ignore" | "throw" | "update";
   },
 ): Promise<string> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "create";<#
   if (hasDict) {
   #>
@@ -1540,7 +1540,7 @@ if (cache) {
  * 删除缓存
  */
 export async function delCache() {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "delCache";
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -1596,7 +1596,7 @@ export async function updateTenantById(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "updateTenantById";
   
   const tenantExist = await tenantDao.existById(tenant_id);
@@ -1607,7 +1607,7 @@ export async function updateTenantById(
   const args = new QueryArgs();
   const sql = /*sql*/ `
     update
-      <#=table#>
+      <#=mod#>_<#=table#>
     set
       update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
@@ -1644,7 +1644,7 @@ export async function updateDeptById(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "updateDeptById";
   
   const deptExist = await deptDao.existById(dept_id);
@@ -1655,7 +1655,7 @@ export async function updateDeptById(
   const args = new QueryArgs();
   const sql = /*sql*/ `
     update
-      <#=table#>
+      <#=mod#>_<#=table#>
     set
       update_time = ${ args.push(reqDate()) },
       dept_id = ${ args.push(dept_id) }
@@ -1710,7 +1710,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw" | "create";
   },
 ): Promise<string> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
   if (!id || !model) {
@@ -2106,7 +2106,7 @@ export async function deleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
@@ -2187,7 +2187,7 @@ export async function lockByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "lockByIds";
   
   if (!ids || !ids.length) {
@@ -2237,7 +2237,7 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -2279,7 +2279,7 @@ export async function forceDeleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -2333,7 +2333,7 @@ export async function findLastOrderBy(
   options?: {
   },
 ): Promise<number> {
-  const table = "<#=table#>";
+  const table = "<#=mod#>_<#=table#>";
   const method = "findLastOrderBy";
   
   let sql = /*sql*/ `

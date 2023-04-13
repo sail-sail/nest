@@ -166,7 +166,7 @@ export async function findCount(
   options?: {
   },
 ): Promise<number> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -209,7 +209,7 @@ export async function findAll(
   options?: {
   },
 ) {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "findAll";
   
   const args = new QueryArgs();
@@ -485,7 +485,7 @@ export async function exist(
 export async function existById(
   id?: string | null,
 ) {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "existById";
   
   if (isEmpty(id)) {
@@ -536,7 +536,7 @@ export async function create(
     uniqueType?: "ignore" | "throw" | "update";
   },
 ): Promise<string> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "create";
   
   const [
@@ -663,7 +663,7 @@ export async function create(
  * 删除缓存
  */
 export async function delCache() {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "delCache";
   
   const cacheKey1 = `dao.sql.${ table }`;
@@ -698,7 +698,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw" | "create";
   },
 ): Promise<string> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "updateById";
   
   if (!id || !model) {
@@ -831,7 +831,7 @@ export async function deleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
@@ -902,7 +902,7 @@ export async function lockByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "lockByIds";
   
   if (!ids || !ids.length) {
@@ -946,7 +946,7 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -984,7 +984,7 @@ export async function forceDeleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -1032,7 +1032,7 @@ export async function findLastOrderBy(
   options?: {
   },
 ): Promise<number> {
-  const table = "dict_detail";
+  const table = "base_dict_detail";
   const method = "findLastOrderBy";
   
   let sql = /*sql*/ `
