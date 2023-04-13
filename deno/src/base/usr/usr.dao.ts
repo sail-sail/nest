@@ -78,13 +78,14 @@ export async function getTenant_idByWx_usr() {
     select
       t.id,
       t.tenant_id
-    from base_wx_usr t
+    from wx_wx_usr t
     where
       t.id = ${ args.push(wx_usr_id) }
     limit 1
   `;
   interface Result {
-    tenant_id?: string;
+    id: string;
+    tenant_id: string;
   }
   const model = await queryOne<Result>(
     sql,
@@ -107,19 +108,9 @@ export async function getTenant_id(
 ): Promise<string | undefined> {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
-  if (!usr_id) {
-    const authModel = await authDao.getAuthModel(notVerifyToken);
-    if (!authModel) {
-      return;
-    }
-    usr_id = authModel.id;
-  }
-  let tenant_id: string | undefined;
-  if (usr_id) {
-    tenant_id = context.cacheMap.get("usr_tenant_id_" + usr_id);
-    if (tenant_id) {
-      return tenant_id;
-    }
+  const authModel = await authDao.getAuthModel(notVerifyToken);
+  let tenant_id = authModel?.tenant_id;
+  if (!tenant_id && usr_id) {
     const args = new QueryArgs();
     const sql = /*sql*/`
       select
@@ -141,9 +132,6 @@ export async function getTenant_id(
       },
     );
     tenant_id = model?.tenant_id;
-    if (tenant_id) {
-      context.cacheMap.set("usr_tenant_id_" + usr_id, tenant_id);
-    }
   }
   if (!tenant_id) {
     tenant_id = await getTenant_idByWx_usr();
