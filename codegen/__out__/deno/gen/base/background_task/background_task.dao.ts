@@ -196,7 +196,7 @@ export async function findCount(
   options?: {
   },
 ): Promise<number> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -236,7 +236,7 @@ export async function findAll(
   options?: {
   },
 ) {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "findAll";
   
   const args = new QueryArgs();
@@ -506,7 +506,7 @@ export async function exist(
 export async function existById(
   id?: string | null,
 ) {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "existById";
   
   if (isEmpty(id)) {
@@ -554,7 +554,7 @@ export async function create(
     uniqueType?: "ignore" | "throw" | "update";
   },
 ): Promise<string> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "create";
   
   const [
@@ -704,7 +704,7 @@ export async function updateTenantById(
   options?: {
   },
 ): Promise<number> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "updateTenantById";
   
   const tenantExist = await tenantDao.existById(tenant_id);
@@ -715,7 +715,7 @@ export async function updateTenantById(
   const args = new QueryArgs();
   const sql = /*sql*/ `
     update
-      background_task
+      base_background_task
     set
       update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
@@ -746,7 +746,7 @@ export async function updateById(
     uniqueType?: "ignore" | "throw" | "create";
   },
 ): Promise<string> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "updateById";
   
   if (!id || !model) {
@@ -877,7 +877,7 @@ export async function deleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
@@ -919,7 +919,7 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "create";
   
   if (!ids || !ids.length) {
@@ -956,7 +956,7 @@ export async function forceDeleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "background_task";
+  const table = "base_background_task";
   const method = "create";
   
   if (!ids || !ids.length) {
