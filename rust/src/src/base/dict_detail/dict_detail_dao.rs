@@ -6,7 +6,7 @@ use super::dict_detail_model::DictModel;
 
 pub async fn get_dict<'a>(
   ctx: &mut impl Ctx<'a>,
-  codes: Vec<String>,
+  codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<DictModel>> {
   if codes.is_empty() {
     return Ok(vec![]);
@@ -18,7 +18,7 @@ pub async fn get_dict<'a>(
   
   let code = {
     let mut code = "".to_owned();
-    for item in &codes {
+    for item in codes {
       code += &format!("{},", args.push(&item));
     }
     code = code.trim_end_matches(",").to_owned();
@@ -65,7 +65,7 @@ pub async fn get_dict<'a>(
   for code in codes {
     let mut item: Vec<DictModel> = vec![];
     for d in &res {
-      if d.code == code {
+      if d.code == code.as_ref() {
         item.push(d.clone());
       }
     }

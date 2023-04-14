@@ -4,8 +4,9 @@ use async_graphql::{SimpleObject, InputObject};
 
 #[derive(FromRow, SimpleObject, Debug, Default, Serialize, Deserialize)]
 pub struct UsrModel {
-  id: String,
-  username: String,
+  pub id: String,
+  pub username: String,
+  pub password: String,
 }
 
 #[derive(InputObject, Debug, Default)]
