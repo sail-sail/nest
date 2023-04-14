@@ -11,7 +11,7 @@ use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
 use sqlx::{Pool, MySql, Transaction, Executor};
-use tracing::{info, error};
+use tracing::{info, error, event_enabled, Level};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -172,7 +172,7 @@ pub trait Ctx<'a>: Send + Sized {
   ) -> Result<u64> {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
-    let mut is_debug = true;
+    let mut is_debug = event_enabled!(Level::INFO);
     let mut is_tran = self.get_is_tran();
     if let Some(options) = &options {
       is_debug = options.is_debug;
@@ -192,8 +192,10 @@ pub trait Ctx<'a>: Send + Sized {
           debug_args.push(arg.to_string());
           query = query.bind(arg);
         }
-        let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-        let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
+        let mut debug_sql = sql.to_string();
+        for arg in debug_args {
+          debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+        }
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
@@ -224,8 +226,10 @@ pub trait Ctx<'a>: Send + Sized {
         debug_args.push(arg.to_string());
         query = query.bind(arg);
       }
-      let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-      let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
+      let mut debug_sql = sql.to_string();
+      for arg in debug_args {
+        debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+      }
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
@@ -275,7 +279,7 @@ pub trait Ctx<'a>: Send + Sized {
     
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
-    let mut is_debug = true;
+    let mut is_debug = event_enabled!(Level::INFO);
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options.as_ref() {
       is_debug = options.is_debug;
@@ -295,8 +299,10 @@ pub trait Ctx<'a>: Send + Sized {
           debug_args.push(arg.to_string());
           query = query.bind(arg);
         }
-        let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-        let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
+        let mut debug_sql = sql.to_string();
+        for arg in debug_args {
+          debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+        }
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
@@ -328,8 +334,10 @@ pub trait Ctx<'a>: Send + Sized {
         debug_args.push(arg.to_string());
         query = query.bind(arg);
       }
-      let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-      let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
+      let mut debug_sql = sql.to_string();
+      for arg in debug_args {
+        debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+      }
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
@@ -715,7 +723,7 @@ pub fn escape_id(val: impl AsRef<str>) -> String {
       .map(|item| item.trim())
       .collect()
   }).collect::<Vec<String>>().join("");
-  val
+  format!("`{}`", val)
 }
 
 /**
@@ -785,4 +793,35 @@ pub fn get_short_uuid() -> String {
   // 切割字符串22位
   let uuid = utf8_slice::from(&uuid, 22);
   uuid.to_owned()
+}
+
+#[cfg(test)]
+mod tests {
+  
+  use super::*;
+  
+  #[test]
+  fn test_get_short_uuid() {
+    let uuid = get_short_uuid();
+    println!("{}", uuid);
+  }
+  
+  #[test]
+  fn test_escape_id() {
+    let val = "a.b.c";
+    let val = escape_id(val);
+    println!("{}", val);
+  }
+  
+  #[test]
+  fn test_debug_sql() {
+    let debug_args = vec!["a", "b"];
+    let sql = "select * from `a`.`b` where a = ? and b = ?";
+    let mut debug_sql = sql.to_string();
+    for arg in debug_args {
+      debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+    }
+    println!("{}", debug_sql);
+  }
+  
 }
