@@ -1,15 +1,19 @@
-use serde_json::json;
+use anyhow::Result;
 
-use anyhow::{Result, anyhow};
-use tracing::info;
+use crate::common::util::string::trim_opt;
 
-use crate::common::util::string::{
-  is_empty_opt,
-  trim_opt,
+use crate::common::context::{
+  Ctx,
+  CtxImpl,
+  QueryArgs,
+  Options,
+  get_order_by_query,
+  get_page_query,
 };
 
-use crate::common::context::{Ctx, CtxImpl, QueryArgs, Options, get_order_by_query, get_page_query};
 use crate::common::gql::model::{PageInput, SortInput};
+
+use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::usr_model::{UsrModel, UsrSearch};
 
@@ -162,11 +166,25 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
-  let res: Vec<UsrModel> = ctx.query(
+  let mut res: Vec<UsrModel> = ctx.query(
     sql,
     args,
     options,
   ).await?;
+  
+  let dict_vec = get_dict(ctx, &vec![
+    "is_enabled",
+    "is_locked",
+  ]).await?;
+  
+  let is_enabled_dict = &dict_vec[0];
+  let is_locked_dict = &dict_vec[1];
+  
+  for model in &mut res {
+    
+    model.password = "".to_owned();
+    
+  }
   
   Ok(res)
 }
