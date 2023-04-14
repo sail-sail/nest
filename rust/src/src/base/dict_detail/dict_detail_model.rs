@@ -14,7 +14,6 @@ use sqlx::FromRow;
 pub struct DictModel {
   pub id: String,
   pub code: String,
-  pub name: String,
   pub r#type: String,
   pub lbl: String,
   pub val: String,

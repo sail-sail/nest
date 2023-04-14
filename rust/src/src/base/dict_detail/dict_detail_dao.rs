@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::common::context::{Ctx, QueryArgs, escape, Options};
+use crate::common::context::{Ctx, QueryArgs, Options};
 
 use super::dict_detail_model::DictModel;
 
@@ -12,14 +12,14 @@ pub async fn get_dict<'a>(
     return Ok(vec![]);
   }
   
-  let table = "base_dict_detail";
+  let table = "base_dict";
   
-  let args = QueryArgs::new();
+  let mut args = QueryArgs::new();
   
   let code = {
     let mut code = "".to_owned();
     for item in &codes {
-      code += &format!("'{}',", escape(item));
+      code += &format!("{},", args.push(&item));
     }
     code = code.trim_end_matches(",").to_owned();
     code
