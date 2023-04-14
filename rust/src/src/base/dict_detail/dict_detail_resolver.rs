@@ -16,7 +16,7 @@ impl DictDetailResolver {
     &self,
     ctx: &Context<'a>,
     codes: Vec<String>,
-  ) -> Result<Vec<DictModel>> {
+  ) -> Result<Vec<Vec<DictModel>>> {
     let mut ctx = CtxImpl::new(&ctx);
     let res = dict_detail_service::get_dict(&mut ctx, &codes).await;
     ctx.ok(res).await

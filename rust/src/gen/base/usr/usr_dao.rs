@@ -4,7 +4,6 @@ use crate::common::util::string::trim_opt;
 
 use crate::common::context::{
   Ctx,
-  CtxImpl,
   QueryArgs,
   Options,
   get_order_by_query,
@@ -15,27 +14,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
-use super::usr_model::{UsrModel, UsrSearch};
-
-pub async fn hello<'a>(
-  ctx: &mut CtxImpl<'a>,
-) -> Result<Vec<UsrModel>> {
-  let vec = vec![ "1" ];
-  
-  let res = ctx.query::<_, UsrModel>(
-    r#"
-      select
-        *
-      from
-        base_usr
-      where
-        id != ?
-    "#.to_owned(),
-    vec,
-    None,
-  ).await?;
-  Ok(res)
-}
+use super::usr_model::*;
 
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -124,9 +103,7 @@ fn get_from_query() -> &'static str {
   from_query
 }
 
-/**
- * 根据搜索条件和分页查找数据
- */
+/// 根据搜索条件和分页查找数据
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<UsrSearch>,
@@ -182,19 +159,47 @@ pub async fn find_all<'a>(
   
   for model in &mut res {
     
+    // 密码
     model.password = "".to_owned();
+    
+    // 启用
+    model._is_enabled = {
+      is_enabled_dict.iter()
+        .find(|item| item.code == model.is_enabled.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // 锁定
+    model._is_locked = {
+      is_locked_dict.iter()
+        .find(|item| item.code == model.is_locked.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_locked.to_string())
+    };
     
   }
   
   Ok(res)
 }
 
-#[cfg(test)]
-mod test {
-  
-  #[tokio::test]
-  async fn test_str() {
-    println!("{}", file!());
-  }
-  
+/// 获取字段对应的国家化后的名称
+pub async fn get_field_comments() -> Result<UsrFieldComment> {
+  let field_comments = UsrFieldComment {
+    username: "用户名".to_owned(),
+    password: "密码".to_owned(),
+    is_enabled: "启用".to_owned(),
+    _is_enabled: "启用".to_owned(),
+    is_locked: "锁定".to_owned(),
+    _is_locked: "锁定".to_owned(),
+  };
+  Ok(field_comments)
+}
+
+/// 获得表的唯一字段名列表
+pub fn get_unique_keys() -> Vec<&'static str> {
+  let unique_keys = vec![
+    "username",
+  ];
+  unique_keys
 }
