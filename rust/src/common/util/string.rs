@@ -29,3 +29,8 @@ pub fn trim_opt(s: &Option<String>) -> Option<String> {
     None
   }
 }
+
+pub fn sql_like(s: &str) -> String {
+  s.replace("%", "\\%")
+    .replace("_", "\\_")
+}

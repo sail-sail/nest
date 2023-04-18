@@ -1,12 +1,14 @@
 use anyhow::{Result, anyhow};
 use poem::http::{HeaderName, HeaderValue};
+use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
+use uuid::Uuid;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 
 use async_trait::async_trait;
-use chrono::{Local, DateTime};
+use chrono::{Local, DateTime, NaiveDate, NaiveTime};
 use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
@@ -116,6 +118,13 @@ pub trait Ctx<'a>: Send + Sized {
     }
   }
   
+  fn get_auth_dept_id(&mut self) -> Option<String> {
+    match self.get_auth_model() {
+      Some(item) => item.dept_id,
+      None => None,
+    }
+  }
+  
   /// 开启事务
   async fn begin(&mut self) -> Result<()> {
     if self.get_tran().is_some() {
@@ -162,12 +171,10 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 带参数执行查询
-  async fn execute<
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
-  >(
+  async fn execute(
     &mut self,
     sql: String,
-    args: Vec<T>,
+    args: Vec<ArgType>,
     options: Option<Options>,
   ) -> Result<u64> {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
@@ -190,7 +197,41 @@ pub trait Ctx<'a>: Send + Sized {
         let mut debug_args = vec![];
         for arg in args {
           debug_args.push(arg.to_string());
-          query = query.bind(arg);
+          match arg {
+            ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+          }
         }
         let mut debug_sql = sql.to_string();
         for arg in debug_args {
@@ -199,7 +240,41 @@ pub trait Ctx<'a>: Send + Sized {
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
-          query = query.bind(arg);
+          match arg {
+            ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+          }
         }
       }
       let tran = self.get_tran().unwrap();
@@ -224,7 +299,41 @@ pub trait Ctx<'a>: Send + Sized {
       let mut debug_args = vec![];
       for arg in args {
         debug_args.push(arg.to_string());
-        query = query.bind(arg);
+        match arg {
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Int(s) => {
+            query = query.bind(s);
+          }
+          ArgType::BigInt(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Float(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+        }
       }
       let mut debug_sql = sql.to_string();
       for arg in debug_args {
@@ -233,7 +342,41 @@ pub trait Ctx<'a>: Send + Sized {
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
-        query = query.bind(arg);
+        match arg {
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Int(s) => {
+            query = query.bind(s);
+          }
+          ArgType::BigInt(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Float(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+        }
       }
     }
     let res = query.execute(&DB_POOL.clone()).await
@@ -254,14 +397,14 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 带参数执行查询
-  async fn query<T, R>(
+  async fn query<R>(
     &mut self,
     sql: String,
-    args: Vec<T>,
+    args: Vec<ArgType>,
     options: Option<Options>,
   ) -> Result<Vec<R>>
   where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
+    // T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
   {
     if let Some(options) = &options {
@@ -297,7 +440,41 @@ pub trait Ctx<'a>: Send + Sized {
         let mut debug_args = vec![];
         for arg in args {
           debug_args.push(arg.to_string());
-          query = query.bind(arg);
+          match arg {
+            ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+          }
         }
         let mut debug_sql = sql.to_string();
         for arg in debug_args {
@@ -306,7 +483,41 @@ pub trait Ctx<'a>: Send + Sized {
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
-          query = query.bind(arg);
+          match arg {
+            ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+          }
         }
       }
       let tran = self.get_tran().unwrap();
@@ -332,7 +543,41 @@ pub trait Ctx<'a>: Send + Sized {
       let mut debug_args = vec![];
       for arg in args {
         debug_args.push(arg.to_string());
-        query = query.bind(arg);
+        match arg {
+          ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+        }
       }
       let mut debug_sql = sql.to_string();
       for arg in debug_args {
@@ -341,7 +586,41 @@ pub trait Ctx<'a>: Send + Sized {
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
-        query = query.bind(arg);
+        match arg {
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Int(s) => {
+            query = query.bind(s);
+          }
+          ArgType::BigInt(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Float(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+        }
       }
     }
     let res = query.fetch_all(&DB_POOL.clone()).await
@@ -582,10 +861,43 @@ pub struct CtxImpl<'a> {
   
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ArgType {
+  String(String),
+  Int(i32),
+  BigInt(i64),
+  Float(f32),
+  Decimal(Decimal),
+  Bool(u8),
+  Date(NaiveDate),
+  DateTime(DateTime<Local>),
+  Time(NaiveTime),
+  Json(serde_json::Value),
+  Uuid(Uuid),
+}
+
+impl Display for ArgType {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      ArgType::String(value) => write!(f, "{}", value),
+      ArgType::Int(value) => write!(f, "{}", value),
+      ArgType::BigInt(value) => write!(f, "{}", value),
+      ArgType::Float(value) => write!(f, "{}", value),
+      ArgType::Decimal(value) => write!(f, "{}", value),
+      ArgType::Bool(value) => write!(f, "{}", value),
+      ArgType::Date(value) => write!(f, "{}", value.format("%Y-%m-%d")),
+      ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
+      ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
+      ArgType::Json(value) => write!(f, "{}", value),
+      ArgType::Uuid(value) => write!(f, "{}", value),
+    }
+  }
+}
+
 #[derive(Debug)]
 pub struct QueryArgs {
   
-  pub value: Vec<String>,
+  pub value: Vec<ArgType>,
   
 }
 
@@ -597,11 +909,97 @@ impl QueryArgs {
     }
   }
   
-  pub fn push(&mut self, arg: impl AsRef<str>) -> String {
-    let _ = &mut self.value.push(arg.as_ref().to_owned());
+  pub fn push(&mut self, arg: ArgType) -> String {
+    let _ = &mut self.value.push(arg);
     String::from("?")
   }
   
+}
+
+impl From<QueryArgs> for Vec<ArgType> {
+  fn from(args: QueryArgs) -> Self {
+    args.value
+  }
+}
+
+impl From<Vec<ArgType>> for QueryArgs {
+  fn from(args: Vec<ArgType>) -> Self {
+    QueryArgs {
+      value: args,
+    }
+  }
+}
+
+impl From<String> for ArgType {
+  fn from(value: String) -> Self {
+    ArgType::String(value)
+  }
+}
+
+impl From<&str> for ArgType {
+  fn from(value: &str) -> Self {
+    ArgType::String(value.to_string())
+  }
+}
+
+impl From<i32> for ArgType {
+  fn from(value: i32) -> Self {
+    ArgType::Int(value)
+  }
+}
+
+impl From<i64> for ArgType {
+  fn from(value: i64) -> Self {
+    ArgType::BigInt(value)
+  }
+}
+
+impl From<f32> for ArgType {
+  fn from(value: f32) -> Self {
+    ArgType::Float(value)
+  }
+}
+
+impl From<Decimal> for ArgType {
+  fn from(value: Decimal) -> Self {
+    ArgType::Decimal(value)
+  }
+}
+
+impl From<u8> for ArgType {
+  fn from(value: u8) -> Self {
+    ArgType::Bool(value)
+  }
+}
+
+impl From<NaiveDate> for ArgType {
+  fn from(value: NaiveDate) -> Self {
+    ArgType::Date(value)
+  }
+}
+
+impl From<DateTime<Local>> for ArgType {
+  fn from(value: DateTime<Local>) -> Self {
+    ArgType::DateTime(value)
+  }
+}
+
+impl From<NaiveTime> for ArgType {
+  fn from(value: NaiveTime) -> Self {
+    ArgType::Time(value)
+  }
+}
+
+impl From<serde_json::Value> for ArgType {
+  fn from(value: serde_json::Value) -> Self {
+    ArgType::Json(value)
+  }
+}
+
+impl From<Uuid> for ArgType {
+  fn from(value: Uuid) -> Self {
+    ArgType::Uuid(value)
+  }
 }
 
 #[derive(Default, new, Clone)]
@@ -637,12 +1035,12 @@ impl Options {
     options.unwrap()
   }
   
-  pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<String>) -> Self {
+  pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<ArgType>) -> Self {
     let mut self_ = self;
     self_.cache_key1 = format!("dao.sql.{}", table).into();
     self_.cache_key2 = json!({
       "sql": &sql,
-      "args": &args,
+      "args": json!(args),
     }).to_string().into();
     self_
   }
