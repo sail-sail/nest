@@ -80,16 +80,16 @@ async function getWhereQuery(
     search.menu_id = [ search.menu_id ];
   }
   if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and _menu_id.id in ${ args.push(search.menu_id) }`;
+    whereQuery += ` and menu_id_lbl.id in ${ args.push(search.menu_id) }`;
   }
   if (search?.menu_id === null) {
-    whereQuery += ` and _menu_id.id is null`;
+    whereQuery += ` and menu_id_lbl.id is null`;
   }
-  if (search?._menu_id && !Array.isArray(search?._menu_id)) {
-    search._menu_id = [ search._menu_id ];
+  if (search?.menu_id_lbl && !Array.isArray(search?.menu_id_lbl)) {
+    search.menu_id_lbl = [ search.menu_id_lbl ];
   }
-  if (search?._menu_id && search._menu_id?.length > 0) {
-    whereQuery += ` and _menu_id in ${ args.push(search._menu_id) }`;
+  if (search?.menu_id_lbl && search.menu_id_lbl?.length > 0) {
+    whereQuery += ` and menu_id_lbl in ${ args.push(search.menu_id_lbl) }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -157,8 +157,8 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_menu t
-    left join base_menu _menu_id
-      on _menu_id.id = t.menu_id
+    left join base_menu menu_id_lbl
+      on menu_id_lbl.id = t.menu_id
   `;
   return fromQuery;
 }
@@ -222,7 +222,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_menu_id.lbl _menu_id
+      ,menu_id_lbl.lbl menu_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -275,24 +275,24 @@ export async function findAll(
     const model = result[i];
     
     // 类型
-    let _type = model.type;
+    let type_lbl = model.type;
     if (!isEmpty(model.type)) {
       const dictItem = typeDict.find((dictItem) => dictItem.val === model.type);
       if (dictItem) {
-        _type = dictItem.lbl;
+        type_lbl = dictItem.lbl;
       }
     }
-    model._type = _type;
+    model.type_lbl = type_lbl;
     
     // 启用
-    let _is_enabled = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
-        _is_enabled = dictItem.lbl;
+        is_enabled_lbl = dictItem.lbl;
       }
     }
-    model._is_enabled = _is_enabled;
+    model.is_enabled_lbl = is_enabled_lbl;
   }
   
   return result;
@@ -305,14 +305,14 @@ export async function getFieldComments() {
   const n = initN("/menu");
   const fieldComments = {
     type: await n("类型"),
-    _type: await n("类型"),
+    type_lbl: await n("类型"),
     menu_id: await n("父菜单"),
-    _menu_id: await n("父菜单"),
+    menu_id_lbl: await n("父菜单"),
     lbl: await n("名称"),
     route_path: await n("路由"),
     route_query: await n("参数"),
     is_enabled: await n("启用"),
-    _is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
   };
@@ -557,25 +557,25 @@ export async function create(
   
   
   // 类型
-  if (isNotEmpty(model._type) && model.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === model._type)?.val;
+  if (isNotEmpty(model.type_lbl) && model.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === model.type_lbl)?.val;
     if (val !== undefined) {
       model.type = val;
     }
   }
   
   // 父菜单
-  if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
-    model._menu_id = String(model._menu_id).trim();
-    const menuModel = await findOne({ lbl: model._menu_id });
+  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
+    model.menu_id_lbl = String(model.menu_id_lbl).trim();
+    const menuModel = await findOne({ lbl: model.menu_id_lbl });
     if (menuModel) {
       model.menu_id = menuModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
@@ -608,28 +608,28 @@ export async function create(
     }
   }
   if (model.type !== undefined) {
-    sql += `,\`type\``;
+    sql += `,type`;
   }
   if (model.menu_id !== undefined) {
-    sql += `,\`menu_id\``;
+    sql += `,menu_id`;
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.route_path !== undefined) {
-    sql += `,\`route_path\``;
+    sql += `,route_path`;
   }
   if (model.route_query !== undefined) {
-    sql += `,\`route_query\``;
+    sql += `,route_query`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+    sql += `,is_enabled`;
   }
   if (model.order_by !== undefined) {
-    sql += `,\`order_by\``;
+    sql += `,order_by`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -728,25 +728,25 @@ export async function updateById(
   ]);
   
   // 类型
-  if (isNotEmpty(model._type) && model.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === model._type)?.val;
+  if (isNotEmpty(model.type_lbl) && model.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === model.type_lbl)?.val;
     if (val !== undefined) {
       model.type = val;
     }
   }
   
   // 父菜单
-  if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
-    model._menu_id = String(model._menu_id).trim();
-    const menuModel = await findOne({ lbl: model._menu_id });
+  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
+    model.menu_id_lbl = String(model.menu_id_lbl).trim();
+    const menuModel = await findOne({ lbl: model.menu_id_lbl });
     if (menuModel) {
       model.menu_id = menuModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
@@ -774,49 +774,49 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.type !== undefined) {
     if (model.type != oldModel?.type) {
-      sql += `\`type\` = ${ args.push(model.type) },`;
+      sql += `type = ${ args.push(model.type) },`;
       updateFldNum++;
     }
   }
   if (model.menu_id !== undefined) {
     if (model.menu_id != oldModel?.menu_id) {
-      sql += `\`menu_id\` = ${ args.push(model.menu_id) },`;
+      sql += `menu_id = ${ args.push(model.menu_id) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.route_path !== undefined) {
     if (model.route_path != oldModel?.route_path) {
-      sql += `\`route_path\` = ${ args.push(model.route_path) },`;
+      sql += `route_path = ${ args.push(model.route_path) },`;
       updateFldNum++;
     }
   }
   if (model.route_query !== undefined) {
     if (model.route_query != oldModel?.route_query) {
-      sql += `\`route_query\` = ${ args.push(model.route_query) },`;
+      sql += `route_query = ${ args.push(model.route_query) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `\`order_by\` = ${ args.push(model.order_by) },`;
+      sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }

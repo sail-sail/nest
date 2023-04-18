@@ -87,7 +87,7 @@ type <#=Table_Up#>Model {<#
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
-  _<#=column_name#>: <#=_data_type#><#
+  <#=column_name#>_lbl: <#=_data_type#><#
     }
   }
   #>
@@ -124,7 +124,7 @@ type <#=Table_Up#>FieldComment {<#
   "<#=column_comment#>"
   <#=column_name#>: String!
   "<#=column_comment#>"
-  _<#=column_name#>: String!<#
+  <#=column_name#>_lbl: String!<#
     }
   }
   #>
@@ -202,7 +202,7 @@ input <#=Table_Up#>Input {<#
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
-  _<#=column_name#>: <#=_data_type#><#
+  <#=column_name#>_lbl: <#=_data_type#><#
     }
   }
   #>
@@ -294,7 +294,7 @@ input <#=Table_Up#>Search {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  _<#=column_name#>: <#=data_type#><#
+  <#=column_name#>_lbl: <#=data_type#><#
     } else if (selectList && selectList.length > 0) {
   #>
   "<#=column_comment#>"

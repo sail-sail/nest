@@ -452,7 +452,7 @@
           </template>
           
           <!-- 创建人 -->
-          <template v-else-if="'_create_usr_id' === col.prop">
+          <template v-else-if="'create_usr_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -470,7 +470,7 @@
           </template>
           
           <!-- 更新人 -->
-          <template v-else-if="'_update_usr_id' === col.prop">
+          <template v-else-if="'update_usr_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -623,10 +623,10 @@ const props = defineProps<{
   is_locked?: string|string[]; // 锁定
   version?: string; // 版本号
   create_usr_id?: string|string[]; // 创建人
-  _create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
   create_time?: string; // 创建时间
   update_usr_id?: string|string[]; // 更新人
-  _update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
   update_time?: string; // 更新时间
 }>();
 
@@ -635,14 +635,14 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   order_by: "number",
   is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_enabled_lbl: "string[]",
   is_locked: "number[]",
-  _is_locked: "string[]",
+  is_locked_lbl: "string[]",
   version: "number",
   create_usr_id: "string[]",
-  _create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
-  _update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -805,7 +805,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "启用",
-      prop: "_is_enabled",
+      prop: "is_enabled_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -821,7 +821,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "锁定",
-      prop: "_is_locked",
+      prop: "is_locked_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -829,7 +829,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "创建人",
-      prop: "_create_usr_id",
+      prop: "create_usr_id_lbl",
       width: 100,
       align: "center",
       headerAlign: "center",
@@ -845,7 +845,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "更新人",
-      prop: "_update_usr_id",
+      prop: "update_usr_id_lbl",
       width: 100,
       align: "center",
       headerAlign: "center",

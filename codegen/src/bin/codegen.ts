@@ -14,12 +14,13 @@ import {
 import tables from "../tables/tables";
 import { gitDiffOut } from "../lib/codegen";
 
-async function exec(context: Context, table_names: string[]) {
-  if (!table_names) {
-    table_names = (await getAllTables(context)).map((item: any) => item.TABLE_NAME);
+async function exec(context: Context, table_names0: string[]) {
+  let table_names: string[] = (await getAllTables(context)).map((item: any) => item.TABLE_NAME);
+  if (!table_names0) {
+    table_names0 = table_names;
   }
-  for (let i = 0; i < table_names.length; i++) {
-    const table_name = table_names[i];
+  for (let i = 0; i < table_names0.length; i++) {
+    const table_name = table_names0[i];
     if (!tables[table_name]) continue;
     const schema = await getSchema(context, table_name, table_names);
     if (schema.opts.ignoreCodegen) continue;

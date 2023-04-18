@@ -86,7 +86,7 @@ export async function findAll(
             } else {
           #>
           <#=column_name#>
-          _<#=column_name#><#
+          <#=column_name#>_lbl<#
             }
           }
           #>
@@ -297,7 +297,7 @@ export async function findById(
             } else {
           #>
           <#=column_name#>
-          _<#=column_name#><#
+          <#=column_name#>_lbl<#
             }
           }
           #>
@@ -556,7 +556,7 @@ export function useExportExcel() {
               } else {
             #>
             <#=column_name#>
-            _<#=column_name#><#
+            <#=column_name#>_lbl<#
               }
             }
             #>
@@ -590,7 +590,7 @@ export function useExportExcel() {
               } else {
             #>
             <#=column_name#>
-            _<#=column_name#><#
+            <#=column_name#>_lbl<#
               }
             }
             #>

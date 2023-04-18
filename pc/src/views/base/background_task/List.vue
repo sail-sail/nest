@@ -533,9 +533,9 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   state: "string[]",
-  _state: "string[]",
+  state_lbl: "string[]",
   type: "string[]",
-  _type: "string[]",
+  type_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -673,7 +673,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "状态",
-      prop: "_state",
+      prop: "state_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -681,7 +681,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "类型",
-      prop: "_type",
+      prop: "type_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

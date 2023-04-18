@@ -10,7 +10,7 @@ type Dictbiz_DetailModel {
   "业务字典"
   dictbiz_id: ID!
   "业务字典"
-  _dictbiz_id: String
+  dictbiz_id_lbl: String
   "名称"
   lbl: String!
   "值"
@@ -20,19 +20,19 @@ type Dictbiz_DetailModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
 }
 type Dictbiz_DetailFieldComment {
   "业务字典"
   dictbiz_id: String!
   "业务字典"
-  _dictbiz_id: String!
+  dictbiz_id_lbl: String!
   "名称"
   lbl: String!
   "值"
@@ -42,13 +42,13 @@ type Dictbiz_DetailFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "备注"
   rem: String!
   "锁定"
   is_locked: String!
   "锁定"
-  _is_locked: String!
+  is_locked_lbl: String!
 }
 input Dictbiz_DetailInput {
   "租户ID"
@@ -58,7 +58,7 @@ input Dictbiz_DetailInput {
   "业务字典"
   dictbiz_id: ID
   "业务字典"
-  _dictbiz_id: String
+  dictbiz_id_lbl: String
   "名称"
   lbl: String
   "值"
@@ -68,13 +68,13 @@ input Dictbiz_DetailInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String
   "锁定"
   is_locked: Int
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
 }
 input Dictbiz_DetailSearch {
   "是否已删除"
@@ -85,7 +85,7 @@ input Dictbiz_DetailSearch {
   id: ID
   "业务字典"
   dictbiz_id: [String]
-  _dictbiz_id: [String]
+  dictbiz_id_lbl: [String]
   "名称"
   lbl: String
   lblLike: String

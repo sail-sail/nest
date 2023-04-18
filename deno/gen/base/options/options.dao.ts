@@ -140,16 +140,16 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id && search?.create_usr_id.length > 0) {
-    whereQuery += ` and _create_usr_id.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id === null) {
-    whereQuery += ` and _create_usr_id.id is null`;
+    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?._create_usr_id && !Array.isArray(search?._create_usr_id)) {
-    search._create_usr_id = [ search._create_usr_id ];
+  if (search?.create_usr_id_lbl && !Array.isArray(search?.create_usr_id_lbl)) {
+    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
-  if (search?._create_usr_id && search._create_usr_id?.length > 0) {
-    whereQuery += ` and _create_usr_id in ${ args.push(search._create_usr_id) }`;
+  if (search?.create_usr_id_lbl && search.create_usr_id_lbl?.length > 0) {
+    whereQuery += ` and create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.create_time && search?.create_time?.length > 0) {
     if (search.create_time[0] != null) {
@@ -163,16 +163,16 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id && search?.update_usr_id.length > 0) {
-    whereQuery += ` and _update_usr_id.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id === null) {
-    whereQuery += ` and _update_usr_id.id is null`;
+    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?._update_usr_id && !Array.isArray(search?._update_usr_id)) {
-    search._update_usr_id = [ search._update_usr_id ];
+  if (search?.update_usr_id_lbl && !Array.isArray(search?.update_usr_id_lbl)) {
+    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
-  if (search?._update_usr_id && search._update_usr_id?.length > 0) {
-    whereQuery += ` and _update_usr_id in ${ args.push(search._update_usr_id) }`;
+  if (search?.update_usr_id_lbl && search.update_usr_id_lbl?.length > 0) {
+    whereQuery += ` and update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time && search?.update_time?.length > 0) {
     if (search.update_time[0] != null) {
@@ -198,10 +198,10 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_options t
-    left join base_usr _create_usr_id
-      on _create_usr_id.id = t.create_usr_id
-    left join base_usr _update_usr_id
-      on _update_usr_id.id = t.update_usr_id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -265,8 +265,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_create_usr_id.lbl _create_usr_id
-      ,_update_usr_id.lbl _update_usr_id
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -319,24 +319,24 @@ export async function findAll(
     const model = result[i];
     
     // 启用
-    let _is_enabled = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
-        _is_enabled = dictItem.lbl;
+        is_enabled_lbl = dictItem.lbl;
       }
     }
-    model._is_enabled = _is_enabled;
+    model.is_enabled_lbl = is_enabled_lbl;
     
     // 锁定
-    let _is_locked = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked.toString();
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
-        _is_locked = dictItem.lbl;
+        is_locked_lbl = dictItem.lbl;
       }
     }
-    model._is_locked = _is_locked;
+    model.is_locked_lbl = is_locked_lbl;
   }
   
   return result;
@@ -353,16 +353,16 @@ export async function getFieldComments() {
     val: await n("值"),
     order_by: await n("排序"),
     is_enabled: await n("启用"),
-    _is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     rem: await n("备注"),
     is_locked: await n("锁定"),
-    _is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     version: await n("版本号"),
     create_usr_id: await n("创建人"),
-    _create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
     update_usr_id: await n("更新人"),
-    _update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
   };
   return fieldComments;
@@ -604,16 +604,16 @@ export async function create(
   
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
@@ -646,34 +646,34 @@ export async function create(
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.ky !== undefined) {
-    sql += `,\`ky\``;
+    sql += `,ky`;
   }
   if (model.val !== undefined) {
-    sql += `,\`val\``;
+    sql += `,val`;
   }
   if (model.order_by !== undefined) {
-    sql += `,\`order_by\``;
+    sql += `,order_by`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+    sql += `,is_enabled`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   if (model.is_locked !== undefined) {
-    sql += `,\`is_locked\``;
+    sql += `,is_locked`;
   }
   if (model.version !== undefined) {
-    sql += `,\`version\``;
+    sql += `,version`;
   }
   if (model.update_usr_id !== undefined) {
-    sql += `,\`update_usr_id\``;
+    sql += `,update_usr_id`;
   }
   if (model.update_time !== undefined) {
-    sql += `,\`update_time\``;
+    sql += `,update_time`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -791,16 +791,16 @@ export async function updateById(
   ]);
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
@@ -828,49 +828,49 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.ky !== undefined) {
     if (model.ky != oldModel?.ky) {
-      sql += `\`ky\` = ${ args.push(model.ky) },`;
+      sql += `ky = ${ args.push(model.ky) },`;
       updateFldNum++;
     }
   }
   if (model.val !== undefined) {
     if (model.val != oldModel?.val) {
-      sql += `\`val\` = ${ args.push(model.val) },`;
+      sql += `val = ${ args.push(model.val) },`;
       updateFldNum++;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `\`order_by\` = ${ args.push(model.order_by) },`;
+      sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_locked !== undefined) {
     if (model.is_locked != oldModel?.is_locked) {
-      sql += `\`is_locked\` = ${ args.push(model.is_locked) },`;
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }
   if (model.version !== undefined) {
     if (model.version != oldModel?.version) {
-      sql += `\`version\` = ${ args.push(model.version) },`;
+      sql += `version = ${ args.push(model.version) },`;
       updateFldNum++;
     }
   }

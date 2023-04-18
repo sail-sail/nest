@@ -293,6 +293,7 @@ export async function gitDiffOut() {
   const diffFile = "__test__.diff";
   const diffStr = `git diff --full-index ./* > ${projectPh}/${ diffFile }`;
   console.log(diffStr);
+  shelljs.cd(projectPh);
   shelljs.exec(diffStr);
   let str = await readFile(`${ projectPh }/${ diffFile }`, "utf8");
   if (!isEmpty0(str)) {

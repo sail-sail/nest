@@ -396,7 +396,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-else-if="'_menu_id' === col.prop">
+          <template v-else-if="'menu_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -586,7 +586,7 @@ const props = defineProps<{
   id?: string; // ID
   type?: string|string[]; // 类型
   menu_id?: string|string[]; // 父菜单
-  _menu_id?: string|string[]; // 父菜单
+  menu_id_lbl?: string|string[]; // 父菜单
   lbl?: string; // 名称
   lblLike?: string; // 名称
   route_path?: string; // 路由
@@ -603,11 +603,11 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   type: "string[]",
-  _type: "string[]",
+  type_lbl: "string[]",
   menu_id: "string[]",
-  _menu_id: "string[]",
+  menu_id_lbl: "string[]",
   is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_enabled_lbl: "string[]",
   order_by: "number",
 };
 
@@ -738,7 +738,7 @@ function getTableColumns(): ColumnType[] {
   return [
     {
       label: "类型",
-      prop: "_type",
+      prop: "type_lbl",
       width: 100,
       align: "center",
       headerAlign: "center",
@@ -746,7 +746,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "父菜单",
-      prop: "_menu_id",
+      prop: "menu_id_lbl",
       width: 140,
       sortable: "custom",
       align: "center",
@@ -777,7 +777,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "启用",
-      prop: "_is_enabled",
+      prop: "is_enabled_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",

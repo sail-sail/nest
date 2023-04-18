@@ -35,7 +35,7 @@ export async function findAll(
           lbl
           rem
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           order_by
         }
       }
@@ -155,7 +155,7 @@ export async function findById(
           lbl
           rem
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           order_by
         }
       }
@@ -274,7 +274,7 @@ export function useExportExcel() {
             lbl
             rem
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             order_by
           }
           getFieldCommentsLang {
@@ -282,7 +282,7 @@ export function useExportExcel() {
             lbl
             rem
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             order_by
           }
         }
