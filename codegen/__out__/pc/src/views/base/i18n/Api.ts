@@ -34,9 +34,9 @@ export async function findAll(
         findAllI18n(search: $search, page: $page, sort: $sort) {
           id
           lang_id
-          _lang_id
+          lang_id_lbl
           menu_id
-          _menu_id
+          menu_id_lbl
           code
           lbl
           rem
@@ -155,9 +155,9 @@ export async function findById(
         findByIdI18n(id: $id) {
           id
           lang_id
-          _lang_id
+          lang_id_lbl
           menu_id
-          _menu_id
+          menu_id_lbl
           code
           lbl
           rem
@@ -365,18 +365,18 @@ export function useExportExcel() {
           findAllI18n(search: $search, sort: $sort) {
             id
             lang_id
-            _lang_id
+            lang_id_lbl
             menu_id
-            _menu_id
+            menu_id_lbl
             code
             lbl
             rem
           }
           getFieldCommentsI18n {
             lang_id
-            _lang_id
+            lang_id_lbl
             menu_id
-            _menu_id
+            menu_id_lbl
             code
             lbl
             rem

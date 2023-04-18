@@ -15,10 +15,6 @@ export type Scalars = {
 
 export type Background_TaskFieldComment = {
   __typename?: 'Background_TaskFieldComment';
-  /** 状态 */
-  _state: Scalars['String'];
-  /** 类型 */
-  _type: Scalars['String'];
   /** 开始时间 */
   begin_time: Scalars['String'];
   /** 结束时间 */
@@ -33,15 +29,15 @@ export type Background_TaskFieldComment = {
   result: Scalars['String'];
   /** 状态 */
   state: Scalars['String'];
+  /** 状态 */
+  state_lbl: Scalars['String'];
   /** 类型 */
   type: Scalars['String'];
+  /** 类型 */
+  type_lbl: Scalars['String'];
 };
 
 export type Background_TaskInput = {
-  /** 状态 */
-  _state?: InputMaybe<Scalars['String']>;
-  /** 类型 */
-  _type?: InputMaybe<Scalars['String']>;
   /** 开始时间 */
   begin_time?: InputMaybe<Scalars['String']>;
   /** 结束时间 */
@@ -57,18 +53,18 @@ export type Background_TaskInput = {
   result?: InputMaybe<Scalars['String']>;
   /** 状态 */
   state?: InputMaybe<Scalars['String']>;
+  /** 状态 */
+  state_lbl?: InputMaybe<Scalars['String']>;
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 类型 */
   type?: InputMaybe<Scalars['String']>;
+  /** 类型 */
+  type_lbl?: InputMaybe<Scalars['String']>;
 };
 
 export type Background_TaskModel = {
   __typename?: 'Background_TaskModel';
-  /** 状态 */
-  _state?: Maybe<Scalars['String']>;
-  /** 类型 */
-  _type?: Maybe<Scalars['String']>;
   /** 开始时间 */
   begin_time?: Maybe<Scalars['String']>;
   /** 结束时间 */
@@ -85,16 +81,20 @@ export type Background_TaskModel = {
   result: Scalars['String'];
   /** 状态 */
   state: Scalars['String'];
+  /** 状态 */
+  state_lbl?: Maybe<Scalars['String']>;
   /** 类型 */
   type: Scalars['String'];
+  /** 类型 */
+  type_lbl?: Maybe<Scalars['String']>;
 };
 
 export type Background_TaskSearch = {
-  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 开始时间 */
   begin_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  create_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 结束时间 */
   end_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 错误信息 */
@@ -123,64 +123,62 @@ export type Background_TaskSearch = {
 
 export type DeptFieldComment = {
   __typename?: 'DeptFieldComment';
-  /** 创建人 */
-  _create_usr_id: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 父部门 */
-  _parent_id: Scalars['String'];
-  /** 更新人 */
-  _update_usr_id: Scalars['String'];
   /** 创建时间 */
   create_time: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['String'];
+  /** 创建人 */
+  create_usr_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
   order_by: Scalars['String'];
   /** 父部门 */
   parent_id: Scalars['String'];
+  /** 父部门 */
+  parent_id_lbl: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
   /** 更新时间 */
   update_time: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['String'];
+  /** 更新人 */
+  update_usr_id_lbl: Scalars['String'];
 };
 
 export type DeptInput = {
-  /** 创建人 */
-  _create_usr_id?: InputMaybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 父部门 */
-  _parent_id?: InputMaybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: InputMaybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 创建人 */
+  create_usr_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
   order_by?: InputMaybe<Scalars['Int']>;
   /** 父部门 */
   parent_id?: InputMaybe<Scalars['ID']>;
+  /** 父部门 */
+  parent_id_lbl?: InputMaybe<Scalars['String']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   /** 租户ID */
@@ -189,52 +187,52 @@ export type DeptInput = {
   update_time?: InputMaybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 更新人 */
+  update_usr_id_lbl?: InputMaybe<Scalars['String']>;
 };
 
 export type DeptModel = {
   __typename?: 'DeptModel';
-  /** 创建人 */
-  _create_usr_id?: Maybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 父部门 */
-  _parent_id?: Maybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: Maybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: Maybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
+  /** 创建人 */
+  create_usr_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
   order_by: Scalars['Int'];
   /** 父部门 */
   parent_id: Scalars['ID'];
+  /** 父部门 */
+  parent_id_lbl?: Maybe<Scalars['String']>;
   /** 备注 */
   rem: Scalars['String'];
   /** 更新时间 */
   update_time?: Maybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
+  /** 更新人 */
+  update_usr_id_lbl?: Maybe<Scalars['String']>;
 };
 
 export type DeptSearch = {
-  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _parent_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建时间 */
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  create_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -252,6 +250,7 @@ export type DeptSearch = {
   order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 父部门 */
   parent_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  parent_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;
@@ -259,30 +258,27 @@ export type DeptSearch = {
   update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type DictFieldComment = {
   __typename?: 'DictFieldComment';
-  /** 创建人 */
-  _create_usr_id: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 数据类型 */
-  _type: Scalars['String'];
-  /** 更新人 */
-  _update_usr_id: Scalars['String'];
   /** 编码 */
   code: Scalars['String'];
   /** 创建时间 */
   create_time: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['String'];
+  /** 创建人 */
+  create_usr_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -291,34 +287,34 @@ export type DictFieldComment = {
   rem: Scalars['String'];
   /** 数据类型 */
   type: Scalars['String'];
+  /** 数据类型 */
+  type_lbl: Scalars['String'];
   /** 更新时间 */
   update_time: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['String'];
+  /** 更新人 */
+  update_usr_id_lbl: Scalars['String'];
 };
 
 export type DictInput = {
-  /** 创建人 */
-  _create_usr_id?: InputMaybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 数据类型 */
-  _type?: InputMaybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: InputMaybe<Scalars['String']>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: InputMaybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 创建人 */
+  create_usr_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
@@ -329,36 +325,36 @@ export type DictInput = {
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 数据类型 */
   type?: InputMaybe<Scalars['String']>;
+  /** 数据类型 */
+  type_lbl?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
   update_time?: InputMaybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 更新人 */
+  update_usr_id_lbl?: InputMaybe<Scalars['String']>;
 };
 
 export type DictModel = {
   __typename?: 'DictModel';
-  /** 创建人 */
-  _create_usr_id?: Maybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 数据类型 */
-  _type?: Maybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: Maybe<Scalars['String']>;
   /** 编码 */
   code: Scalars['String'];
   /** 创建时间 */
   create_time?: Maybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
+  /** 创建人 */
+  create_usr_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -367,15 +363,17 @@ export type DictModel = {
   rem: Scalars['String'];
   /** 数据类型 */
   type: Scalars['String'];
+  /** 数据类型 */
+  type_lbl?: Maybe<Scalars['String']>;
   /** 更新时间 */
   update_time?: Maybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
+  /** 更新人 */
+  update_usr_id_lbl?: Maybe<Scalars['String']>;
 };
 
 export type DictSearch = {
-  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   codeLike?: InputMaybe<Scalars['String']>;
@@ -383,6 +381,7 @@ export type DictSearch = {
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  create_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -407,22 +406,23 @@ export type DictSearch = {
   update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type Dict_DetailFieldComment = {
   __typename?: 'Dict_DetailFieldComment';
   /** 系统字典 */
-  _dict_id: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 系统字典 */
   dict_id: Scalars['String'];
+  /** 系统字典 */
+  dict_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -435,18 +435,18 @@ export type Dict_DetailFieldComment = {
 
 export type Dict_DetailInput = {
   /** 系统字典 */
-  _dict_id?: InputMaybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 系统字典 */
   dict_id?: InputMaybe<Scalars['ID']>;
+  /** 系统字典 */
+  dict_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
@@ -462,19 +462,19 @@ export type Dict_DetailInput = {
 export type Dict_DetailModel = {
   __typename?: 'Dict_DetailModel';
   /** 系统字典 */
-  _dict_id?: Maybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 系统字典 */
   dict_id: Scalars['ID'];
+  /** 系统字典 */
+  dict_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -486,9 +486,9 @@ export type Dict_DetailModel = {
 };
 
 export type Dict_DetailSearch = {
-  _dict_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 系统字典 */
   dict_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  dict_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -514,26 +514,22 @@ export type Dict_DetailSearch = {
 
 export type DictbizFieldComment = {
   __typename?: 'DictbizFieldComment';
-  /** 创建人 */
-  _create_usr_id: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 数据类型 */
-  _type: Scalars['String'];
-  /** 更新人 */
-  _update_usr_id: Scalars['String'];
   /** 编码 */
   code: Scalars['String'];
   /** 创建时间 */
   create_time: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['String'];
+  /** 创建人 */
+  create_usr_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -542,34 +538,34 @@ export type DictbizFieldComment = {
   rem: Scalars['String'];
   /** 数据类型 */
   type: Scalars['String'];
+  /** 数据类型 */
+  type_lbl: Scalars['String'];
   /** 更新时间 */
   update_time: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['String'];
+  /** 更新人 */
+  update_usr_id_lbl: Scalars['String'];
 };
 
 export type DictbizInput = {
-  /** 创建人 */
-  _create_usr_id?: InputMaybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 数据类型 */
-  _type?: InputMaybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: InputMaybe<Scalars['String']>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: InputMaybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 创建人 */
+  create_usr_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
@@ -580,36 +576,36 @@ export type DictbizInput = {
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 数据类型 */
   type?: InputMaybe<Scalars['String']>;
+  /** 数据类型 */
+  type_lbl?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
   update_time?: InputMaybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 更新人 */
+  update_usr_id_lbl?: InputMaybe<Scalars['String']>;
 };
 
 export type DictbizModel = {
   __typename?: 'DictbizModel';
-  /** 创建人 */
-  _create_usr_id?: Maybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 数据类型 */
-  _type?: Maybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: Maybe<Scalars['String']>;
   /** 编码 */
   code: Scalars['String'];
   /** 创建时间 */
   create_time?: Maybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
+  /** 创建人 */
+  create_usr_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -618,15 +614,17 @@ export type DictbizModel = {
   rem: Scalars['String'];
   /** 数据类型 */
   type: Scalars['String'];
+  /** 数据类型 */
+  type_lbl?: Maybe<Scalars['String']>;
   /** 更新时间 */
   update_time?: Maybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
+  /** 更新人 */
+  update_usr_id_lbl?: Maybe<Scalars['String']>;
 };
 
 export type DictbizSearch = {
-  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   codeLike?: InputMaybe<Scalars['String']>;
@@ -634,6 +632,7 @@ export type DictbizSearch = {
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  create_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -658,22 +657,23 @@ export type DictbizSearch = {
   update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type Dictbiz_DetailFieldComment = {
   __typename?: 'Dictbiz_DetailFieldComment';
   /** 业务字典 */
-  _dictbiz_id: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 业务字典 */
   dictbiz_id: Scalars['String'];
+  /** 业务字典 */
+  dictbiz_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -686,18 +686,18 @@ export type Dictbiz_DetailFieldComment = {
 
 export type Dictbiz_DetailInput = {
   /** 业务字典 */
-  _dictbiz_id?: InputMaybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 业务字典 */
   dictbiz_id?: InputMaybe<Scalars['ID']>;
+  /** 业务字典 */
+  dictbiz_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
@@ -713,19 +713,19 @@ export type Dictbiz_DetailInput = {
 export type Dictbiz_DetailModel = {
   __typename?: 'Dictbiz_DetailModel';
   /** 业务字典 */
-  _dictbiz_id?: Maybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 业务字典 */
   dictbiz_id: Scalars['ID'];
+  /** 业务字典 */
+  dictbiz_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -737,9 +737,9 @@ export type Dictbiz_DetailModel = {
 };
 
 export type Dictbiz_DetailSearch = {
-  _dictbiz_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 业务字典 */
   dictbiz_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  dictbiz_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -810,36 +810,36 @@ export type GetMenus = {
 
 export type I18nFieldComment = {
   __typename?: 'I18nFieldComment';
-  /** 语言 */
-  _lang_id: Scalars['String'];
-  /** 菜单 */
-  _menu_id: Scalars['String'];
   /** 编码 */
   code: Scalars['String'];
   /** 语言 */
   lang_id: Scalars['String'];
+  /** 语言 */
+  lang_id_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 菜单 */
   menu_id: Scalars['String'];
+  /** 菜单 */
+  menu_id_lbl: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
 };
 
 export type I18nInput = {
-  /** 语言 */
-  _lang_id?: InputMaybe<Scalars['String']>;
-  /** 菜单 */
-  _menu_id?: InputMaybe<Scalars['String']>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 语言 */
   lang_id?: InputMaybe<Scalars['ID']>;
+  /** 语言 */
+  lang_id_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 菜单 */
   menu_id?: InputMaybe<Scalars['ID']>;
+  /** 菜单 */
+  menu_id_lbl?: InputMaybe<Scalars['String']>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   /** 租户ID */
@@ -848,27 +848,25 @@ export type I18nInput = {
 
 export type I18nModel = {
   __typename?: 'I18nModel';
-  /** 语言 */
-  _lang_id?: Maybe<Scalars['String']>;
-  /** 菜单 */
-  _menu_id?: Maybe<Scalars['String']>;
   /** 编码 */
   code: Scalars['String'];
   /** ID */
   id: Scalars['ID'];
   /** 语言 */
   lang_id: Scalars['ID'];
+  /** 语言 */
+  lang_id_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 菜单 */
   menu_id: Scalars['ID'];
+  /** 菜单 */
+  menu_id_lbl?: Maybe<Scalars['String']>;
   /** 备注 */
   rem: Scalars['String'];
 };
 
 export type I18nSearch = {
-  _lang_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   codeLike?: InputMaybe<Scalars['String']>;
@@ -880,11 +878,13 @@ export type I18nSearch = {
   is_deleted?: InputMaybe<Scalars['Int']>;
   /** 语言 */
   lang_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  lang_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   lblLike?: InputMaybe<Scalars['String']>;
   /** 菜单 */
   menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  menu_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;
@@ -892,12 +892,12 @@ export type I18nSearch = {
 
 export type LangFieldComment = {
   __typename?: 'LangFieldComment';
-  /** 启用 */
-  _is_enabled: Scalars['String'];
   /** 编码 */
   code: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -907,13 +907,13 @@ export type LangFieldComment = {
 };
 
 export type LangInput = {
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
@@ -926,14 +926,14 @@ export type LangInput = {
 
 export type LangModel = {
   __typename?: 'LangModel';
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
   /** 编码 */
   code: Scalars['String'];
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 排序 */
@@ -973,17 +973,15 @@ export type LoginModel = {
 export type MenuFieldComment = {
   __typename?: 'MenuFieldComment';
   /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 父菜单 */
-  _menu_id: Scalars['String'];
-  /** 类型 */
-  _type: Scalars['String'];
-  /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 父菜单 */
   menu_id: Scalars['String'];
+  /** 父菜单 */
+  menu_id_lbl: Scalars['String'];
   /** 排序 */
   order_by: Scalars['String'];
   /** 备注 */
@@ -994,22 +992,22 @@ export type MenuFieldComment = {
   route_query: Scalars['String'];
   /** 类型 */
   type: Scalars['String'];
+  /** 类型 */
+  type_lbl: Scalars['String'];
 };
 
 export type MenuInput = {
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 父菜单 */
-  _menu_id?: InputMaybe<Scalars['String']>;
-  /** 类型 */
-  _type?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 父菜单 */
   menu_id?: InputMaybe<Scalars['ID']>;
+  /** 父菜单 */
+  menu_id_lbl?: InputMaybe<Scalars['String']>;
   /** 排序 */
   order_by?: InputMaybe<Scalars['Int']>;
   /** 备注 */
@@ -1022,24 +1020,24 @@ export type MenuInput = {
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 类型 */
   type?: InputMaybe<Scalars['String']>;
+  /** 类型 */
+  type_lbl?: InputMaybe<Scalars['String']>;
 };
 
 export type MenuModel = {
   __typename?: 'MenuModel';
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 父菜单 */
-  _menu_id?: Maybe<Scalars['String']>;
-  /** 类型 */
-  _type?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 父菜单 */
   menu_id: Scalars['ID'];
+  /** 父菜单 */
+  menu_id_lbl?: Maybe<Scalars['String']>;
   /** 排序 */
   order_by: Scalars['Int'];
   /** 备注 */
@@ -1050,10 +1048,11 @@ export type MenuModel = {
   route_query?: Maybe<Scalars['JSON']>;
   /** 类型 */
   type: Scalars['String'];
+  /** 类型 */
+  type_lbl?: Maybe<Scalars['String']>;
 };
 
 export type MenuSearch = {
-  _menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -1067,6 +1066,7 @@ export type MenuSearch = {
   lblLike?: InputMaybe<Scalars['String']>;
   /** 父菜单 */
   menu_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  menu_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 排序 */
   order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 备注 */
@@ -1726,14 +1726,12 @@ export type MutationUpdateByIdUsrArgs = {
 
 export type Operation_RecordFieldComment = {
   __typename?: 'Operation_RecordFieldComment';
-  /** 创建人 */
-  _create_usr_id: Scalars['String'];
-  /** 更新人 */
-  _update_usr_id: Scalars['String'];
   /** 创建时间 */
   create_time: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['String'];
+  /** 创建人 */
+  create_usr_id_lbl: Scalars['String'];
   /** 操作 */
   lbl: Scalars['String'];
   /** 方法 */
@@ -1750,17 +1748,17 @@ export type Operation_RecordFieldComment = {
   update_time: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['String'];
+  /** 更新人 */
+  update_usr_id_lbl: Scalars['String'];
 };
 
 export type Operation_RecordInput = {
-  /** 创建人 */
-  _create_usr_id?: InputMaybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: InputMaybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 创建人 */
+  create_usr_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 操作 */
   lbl?: InputMaybe<Scalars['String']>;
@@ -1780,18 +1778,18 @@ export type Operation_RecordInput = {
   update_time?: InputMaybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 更新人 */
+  update_usr_id_lbl?: InputMaybe<Scalars['String']>;
 };
 
 export type Operation_RecordModel = {
   __typename?: 'Operation_RecordModel';
-  /** 创建人 */
-  _create_usr_id?: Maybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: Maybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: Maybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
+  /** 创建人 */
+  create_usr_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 操作 */
@@ -1810,15 +1808,16 @@ export type Operation_RecordModel = {
   update_time?: Maybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
+  /** 更新人 */
+  update_usr_id_lbl?: Maybe<Scalars['String']>;
 };
 
 export type Operation_RecordSearch = {
-  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建时间 */
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  create_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -1847,26 +1846,25 @@ export type Operation_RecordSearch = {
   update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type OptionsFieldComment = {
   __typename?: 'OptionsFieldComment';
-  /** 创建人 */
-  _create_usr_id: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 更新人 */
-  _update_usr_id: Scalars['String'];
   /** 创建时间 */
   create_time: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['String'];
+  /** 创建人 */
+  create_usr_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 键 */
   ky: Scalars['String'];
   /** 名称 */
@@ -1879,6 +1877,8 @@ export type OptionsFieldComment = {
   update_time: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['String'];
+  /** 更新人 */
+  update_usr_id_lbl: Scalars['String'];
   /** 值 */
   val: Scalars['String'];
   /** 版本号 */
@@ -1886,23 +1886,21 @@ export type OptionsFieldComment = {
 };
 
 export type OptionsInput = {
-  /** 创建人 */
-  _create_usr_id?: InputMaybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: InputMaybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 创建人 */
+  create_usr_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 键 */
   ky?: InputMaybe<Scalars['String']>;
   /** 名称 */
@@ -1917,6 +1915,8 @@ export type OptionsInput = {
   update_time?: InputMaybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 更新人 */
+  update_usr_id_lbl?: InputMaybe<Scalars['String']>;
   /** 值 */
   val?: InputMaybe<Scalars['String']>;
   /** 版本号 */
@@ -1925,24 +1925,22 @@ export type OptionsInput = {
 
 export type OptionsModel = {
   __typename?: 'OptionsModel';
-  /** 创建人 */
-  _create_usr_id?: Maybe<Scalars['String']>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 更新人 */
-  _update_usr_id?: Maybe<Scalars['String']>;
   /** 创建时间 */
   create_time?: Maybe<Scalars['String']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
+  /** 创建人 */
+  create_usr_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 键 */
   ky: Scalars['String'];
   /** 名称 */
@@ -1955,6 +1953,8 @@ export type OptionsModel = {
   update_time?: Maybe<Scalars['String']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
+  /** 更新人 */
+  update_usr_id_lbl?: Maybe<Scalars['String']>;
   /** 值 */
   val: Scalars['String'];
   /** 版本号 */
@@ -1962,12 +1962,11 @@ export type OptionsModel = {
 };
 
 export type OptionsSearch = {
-  _create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建时间 */
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  create_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -1993,6 +1992,7 @@ export type OptionsSearch = {
   update_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 值 */
   val?: InputMaybe<Scalars['String']>;
   valLike?: InputMaybe<Scalars['String']>;
@@ -2544,31 +2544,31 @@ export type QueryNArgs = {
 export type RoleFieldComment = {
   __typename?: 'RoleFieldComment';
   /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 菜单 */
-  _menu_ids: Scalars['String'];
-  /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 菜单 */
   menu_ids: Scalars['String'];
+  /** 菜单 */
+  menu_ids_lbl: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
 };
 
 export type RoleInput = {
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 菜单 */
-  _menu_ids?: InputMaybe<Array<Scalars['String']>>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 菜单 */
   menu_ids?: InputMaybe<Array<Scalars['ID']>>;
+  /** 菜单 */
+  menu_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   /** 租户ID */
@@ -2577,24 +2577,23 @@ export type RoleInput = {
 
 export type RoleModel = {
   __typename?: 'RoleModel';
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 菜单 */
-  _menu_ids?: Maybe<Array<Scalars['String']>>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 菜单 */
   menu_ids?: Maybe<Array<Scalars['ID']>>;
+  /** 菜单 */
+  menu_ids_lbl?: Maybe<Array<Scalars['String']>>;
   /** 备注 */
   rem: Scalars['String'];
 };
 
 export type RoleSearch = {
-  _menu_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -2608,6 +2607,7 @@ export type RoleSearch = {
   lblLike?: InputMaybe<Scalars['String']>;
   /** 菜单 */
   menu_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  menu_ids_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
   remLike?: InputMaybe<Scalars['String']>;
@@ -2628,22 +2628,22 @@ export enum SortOrderEnum {
 
 export type TenantFieldComment = {
   __typename?: 'TenantFieldComment';
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 菜单 */
-  _menu_ids: Scalars['String'];
   /** 到期日 */
   expiration: Scalars['String'];
   /** 域名绑定 */
   host: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 最大用户数 */
   max_usr_num: Scalars['String'];
   /** 菜单 */
   menu_ids: Scalars['String'];
+  /** 菜单 */
+  menu_ids_lbl: Scalars['String'];
   /** 排序 */
   order_by: Scalars['String'];
   /** 备注 */
@@ -2651,10 +2651,6 @@ export type TenantFieldComment = {
 };
 
 export type TenantInput = {
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 菜单 */
-  _menu_ids?: InputMaybe<Array<Scalars['String']>>;
   /** 到期日 */
   expiration?: InputMaybe<Scalars['String']>;
   /** 域名绑定 */
@@ -2662,12 +2658,16 @@ export type TenantInput = {
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 最大用户数 */
   max_usr_num?: InputMaybe<Scalars['Int']>;
   /** 菜单 */
   menu_ids?: InputMaybe<Array<Scalars['ID']>>;
+  /** 菜单 */
+  menu_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 排序 */
   order_by?: InputMaybe<Scalars['Int']>;
   /** 备注 */
@@ -2678,10 +2678,6 @@ export type TenantInput = {
 
 export type TenantModel = {
   __typename?: 'TenantModel';
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 菜单 */
-  _menu_ids?: Maybe<Array<Scalars['String']>>;
   /** 到期日 */
   expiration?: Maybe<Scalars['String']>;
   /** 域名绑定 */
@@ -2690,12 +2686,16 @@ export type TenantModel = {
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 最大用户数 */
   max_usr_num: Scalars['Int'];
   /** 菜单 */
   menu_ids?: Maybe<Array<Scalars['ID']>>;
+  /** 菜单 */
+  menu_ids_lbl?: Maybe<Array<Scalars['String']>>;
   /** 排序 */
   order_by: Scalars['Int'];
   /** 备注 */
@@ -2703,7 +2703,6 @@ export type TenantModel = {
 };
 
 export type TenantSearch = {
-  _menu_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 到期日 */
   expiration?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 域名绑定 */
@@ -2724,6 +2723,7 @@ export type TenantSearch = {
   max_usr_num?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 菜单 */
   menu_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  menu_ids_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 排序 */
   order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   /** 备注 */
@@ -2734,53 +2734,51 @@ export type TenantSearch = {
 export type UsrFieldComment = {
   __typename?: 'UsrFieldComment';
   /** 默认部门 */
-  _default_dept_id: Scalars['String'];
-  /** 拥有部门 */
-  _dept_ids: Scalars['String'];
-  /** 启用 */
-  _is_enabled: Scalars['String'];
-  /** 锁定 */
-  _is_locked: Scalars['String'];
-  /** 拥有角色 */
-  _role_ids: Scalars['String'];
-  /** 默认部门 */
   default_dept_id: Scalars['String'];
+  /** 默认部门 */
+  default_dept_id_lbl: Scalars['String'];
   /** 拥有部门 */
   dept_ids: Scalars['String'];
+  /** 拥有部门 */
+  dept_ids_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
   /** 锁定 */
   is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
   /** 名称 */
   lbl: Scalars['String'];
   /** 备注 */
   rem: Scalars['String'];
   /** 拥有角色 */
   role_ids: Scalars['String'];
+  /** 拥有角色 */
+  role_ids_lbl: Scalars['String'];
   /** 用户名 */
   username: Scalars['String'];
 };
 
 export type UsrInput = {
   /** 默认部门 */
-  _default_dept_id?: InputMaybe<Scalars['String']>;
-  /** 拥有部门 */
-  _dept_ids?: InputMaybe<Array<Scalars['String']>>;
-  /** 启用 */
-  _is_enabled?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: InputMaybe<Scalars['String']>;
-  /** 拥有角色 */
-  _role_ids?: InputMaybe<Array<Scalars['String']>>;
-  /** 默认部门 */
   default_dept_id?: InputMaybe<Scalars['ID']>;
+  /** 默认部门 */
+  default_dept_id_lbl?: InputMaybe<Scalars['String']>;
   /** 拥有部门 */
   dept_ids?: InputMaybe<Array<Scalars['ID']>>;
+  /** 拥有部门 */
+  dept_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
   /** 锁定 */
   is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   /** 密码 */
@@ -2789,6 +2787,8 @@ export type UsrInput = {
   rem?: InputMaybe<Scalars['String']>;
   /** 拥有角色 */
   role_ids?: InputMaybe<Array<Scalars['ID']>>;
+  /** 拥有角色 */
+  role_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 用户名 */
@@ -2798,25 +2798,23 @@ export type UsrInput = {
 export type UsrModel = {
   __typename?: 'UsrModel';
   /** 默认部门 */
-  _default_dept_id?: Maybe<Scalars['String']>;
-  /** 拥有部门 */
-  _dept_ids?: Maybe<Array<Scalars['String']>>;
-  /** 启用 */
-  _is_enabled?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  _is_locked?: Maybe<Scalars['String']>;
-  /** 拥有角色 */
-  _role_ids?: Maybe<Array<Scalars['String']>>;
-  /** 默认部门 */
   default_dept_id: Scalars['ID'];
+  /** 默认部门 */
+  default_dept_id_lbl?: Maybe<Scalars['String']>;
   /** 拥有部门 */
   dept_ids?: Maybe<Array<Scalars['ID']>>;
+  /** 拥有部门 */
+  dept_ids_lbl?: Maybe<Array<Scalars['String']>>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
   is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
   /** 锁定 */
   is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
   /** 名称 */
   lbl: Scalars['String'];
   /** 密码 */
@@ -2825,18 +2823,19 @@ export type UsrModel = {
   rem: Scalars['String'];
   /** 拥有角色 */
   role_ids?: Maybe<Array<Scalars['ID']>>;
+  /** 拥有角色 */
+  role_ids_lbl?: Maybe<Array<Scalars['String']>>;
   /** 用户名 */
   username: Scalars['String'];
 };
 
 export type UsrSearch = {
-  _default_dept_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _dept_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  _role_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 默认部门 */
   default_dept_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  default_dept_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 拥有部门 */
   dept_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  dept_ids_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -2855,6 +2854,7 @@ export type UsrSearch = {
   remLike?: InputMaybe<Scalars['String']>;
   /** 拥有角色 */
   role_ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  role_ids_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 用户名 */
   username?: InputMaybe<Scalars['String']>;
   usernameLike?: InputMaybe<Scalars['String']>;

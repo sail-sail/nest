@@ -107,16 +107,16 @@ async function getWhereQuery(
     search.default_dept_id = [ search.default_dept_id ];
   }
   if (search?.default_dept_id && search?.default_dept_id.length > 0) {
-    whereQuery += ` and _default_dept_id.id in ${ args.push(search.default_dept_id) }`;
+    whereQuery += ` and default_dept_id_lbl.id in ${ args.push(search.default_dept_id) }`;
   }
   if (search?.default_dept_id === null) {
-    whereQuery += ` and _default_dept_id.id is null`;
+    whereQuery += ` and default_dept_id_lbl.id is null`;
   }
-  if (search?._default_dept_id && !Array.isArray(search?._default_dept_id)) {
-    search._default_dept_id = [ search._default_dept_id ];
+  if (search?.default_dept_id_lbl && !Array.isArray(search?.default_dept_id_lbl)) {
+    search.default_dept_id_lbl = [ search.default_dept_id_lbl ];
   }
-  if (search?._default_dept_id && search._default_dept_id?.length > 0) {
-    whereQuery += ` and _default_dept_id in ${ args.push(search._default_dept_id) }`;
+  if (search?.default_dept_id_lbl && search.default_dept_id_lbl?.length > 0) {
+    whereQuery += ` and default_dept_id_lbl in ${ args.push(search.default_dept_id_lbl) }`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -173,51 +173,51 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_usr t
-    left join base_dept _default_dept_id
-      on _default_dept_id.id = t.default_dept_id
-    left join \`base_usr_dept\`
-      on \`base_usr_dept\`.usr_id = t.id
-      and \`base_usr_dept\`.is_deleted = 0
-    left join \`base_dept\`
-      on \`base_usr_dept\`.dept_id = base_dept.id
+    left join base_dept default_dept_id_lbl
+      on default_dept_id_lbl.id = t.default_dept_id
+    left join base_usr_dept
+      on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = 0
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
       and base_dept.is_deleted = 0
     left join (
       select
         json_arrayagg(base_dept.id) dept_ids,
-        json_arrayagg(base_dept.lbl) _dept_ids,
+        json_arrayagg(base_dept.lbl) dept_ids_lbl,
         base_usr.id usr_id
-      from \`base_usr_dept\`
+      from base_usr_dept
       inner join base_dept
-        on base_dept.id = \`base_usr_dept\`.dept_id
+        on base_dept.id = base_usr_dept.dept_id
         and base_dept.is_deleted = 0
       inner join base_usr
-        on base_usr.id = \`base_usr_dept\`.usr_id
+        on base_usr.id = base_usr_dept.usr_id
         and base_usr.is_deleted = 0
       where
-      \`base_usr_dept\`.is_deleted = 0
+      base_usr_dept.is_deleted = 0
       group by usr_id
     ) _dept
       on _dept.usr_id = t.id
-    left join \`base_usr_role\`
-      on \`base_usr_role\`.usr_id = t.id
-      and \`base_usr_role\`.is_deleted = 0
-    left join \`base_role\`
-      on \`base_usr_role\`.role_id = base_role.id
+    left join base_usr_role
+      on base_usr_role.usr_id = t.id
+      and base_usr_role.is_deleted = 0
+    left join base_role
+      on base_usr_role.role_id = base_role.id
       and base_role.is_deleted = 0
     left join (
       select
         json_arrayagg(base_role.id) role_ids,
-        json_arrayagg(base_role.lbl) _role_ids,
+        json_arrayagg(base_role.lbl) role_ids_lbl,
         base_usr.id usr_id
-      from \`base_usr_role\`
+      from base_usr_role
       inner join base_role
-        on base_role.id = \`base_usr_role\`.role_id
+        on base_role.id = base_usr_role.role_id
         and base_role.is_deleted = 0
       inner join base_usr
-        on base_usr.id = \`base_usr_role\`.usr_id
+        on base_usr.id = base_usr_role.usr_id
         and base_usr.is_deleted = 0
       where
-      \`base_usr_role\`.is_deleted = 0
+      base_usr_role.is_deleted = 0
       group by usr_id
     ) _role
       on _role.usr_id = t.id
@@ -284,11 +284,11 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_default_dept_id.lbl _default_dept_id
+      ,default_dept_id_lbl.lbl default_dept_id_lbl
       ,max(dept_ids) dept_ids
-      ,max(_dept_ids) _dept_ids
+      ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
-      ,max(_role_ids) _role_ids
+      ,max(role_ids_lbl) role_ids_lbl
     from
       ${ getFromQuery() }
     where
@@ -338,24 +338,24 @@ export async function findAll(
     model.password = "";
     
     // 启用
-    let _is_enabled = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
-        _is_enabled = dictItem.lbl;
+        is_enabled_lbl = dictItem.lbl;
       }
     }
-    model._is_enabled = _is_enabled;
+    model.is_enabled_lbl = is_enabled_lbl;
     
     // 锁定
-    let _is_locked = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked.toString();
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
-        _is_locked = dictItem.lbl;
+        is_locked_lbl = dictItem.lbl;
       }
     }
-    model._is_locked = _is_locked;
+    model.is_locked_lbl = is_locked_lbl;
   }
   
   return result;
@@ -370,16 +370,16 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     username: await n("用户名"),
     default_dept_id: await n("默认部门"),
-    _default_dept_id: await n("默认部门"),
+    default_dept_id_lbl: await n("默认部门"),
     is_enabled: await n("启用"),
-    _is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     rem: await n("备注"),
     dept_ids: await n("拥有部门"),
-    _dept_ids: await n("拥有部门"),
+    dept_ids_lbl: await n("拥有部门"),
     is_locked: await n("锁定"),
-    _is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     role_ids: await n("拥有角色"),
-    _role_ids: await n("拥有角色"),
+    role_ids_lbl: await n("拥有角色"),
   };
   return fieldComments;
 }
@@ -620,28 +620,28 @@ export async function create(
   
   
   // 默认部门
-  if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {
-    model._default_dept_id = String(model._default_dept_id).trim();
-    const deptModel = await deptDao.findOne({ lbl: model._default_dept_id });
+  if (isNotEmpty(model.default_dept_id_lbl) && model.default_dept_id === undefined) {
+    model.default_dept_id_lbl = String(model.default_dept_id_lbl).trim();
+    const deptModel = await deptDao.findOne({ lbl: model.default_dept_id_lbl });
     if (deptModel) {
       model.default_dept_id = deptModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 拥有部门
-  if (!model.dept_ids && model._dept_ids) {
-    if (typeof model._dept_ids === "string" || model._dept_ids instanceof String) {
-      model._dept_ids = model._dept_ids.split(",");
+  if (!model.dept_ids && model.dept_ids_lbl) {
+    if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
+      model.dept_ids_lbl = model.dept_ids_lbl.split(",");
     }
-    model._dept_ids = model._dept_ids.map((item: string) => item.trim());
+    model.dept_ids_lbl = model.dept_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -649,7 +649,7 @@ export async function create(
       from
         dept t
       where
-        t.lbl in ${ args.push(model._dept_ids) }
+        t.lbl in ${ args.push(model.dept_ids_lbl) }
     `;
     interface Result {
       id: string;
@@ -659,19 +659,19 @@ export async function create(
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
   }
   
   // 拥有角色
-  if (!model.role_ids && model._role_ids) {
-    if (typeof model._role_ids === "string" || model._role_ids instanceof String) {
-      model._role_ids = model._role_ids.split(",");
+  if (!model.role_ids && model.role_ids_lbl) {
+    if (typeof model.role_ids_lbl === "string" || model.role_ids_lbl instanceof String) {
+      model.role_ids_lbl = model.role_ids_lbl.split(",");
     }
-    model._role_ids = model._role_ids.map((item: string) => item.trim());
+    model.role_ids_lbl = model.role_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -679,7 +679,7 @@ export async function create(
       from
         role t
       where
-        t.lbl in ${ args.push(model._role_ids) }
+        t.lbl in ${ args.push(model.role_ids_lbl) }
     `;
     interface Result {
       id: string;
@@ -724,25 +724,25 @@ export async function create(
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.username !== undefined) {
-    sql += `,\`username\``;
+    sql += `,username`;
   }
   if (isNotEmpty(model.password)) {
-    sql += `,\`password\``;
+    sql += `,password`;
   }
   if (model.default_dept_id !== undefined) {
-    sql += `,\`default_dept_id\``;
+    sql += `,default_dept_id`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+    sql += `,is_enabled`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   if (model.is_locked !== undefined) {
-    sql += `,\`is_locked\``;
+    sql += `,is_locked`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
@@ -899,28 +899,28 @@ export async function updateById(
   }
   
   // 默认部门
-  if (isNotEmpty(model._default_dept_id) && model.default_dept_id === undefined) {
-    model._default_dept_id = String(model._default_dept_id).trim();
-    const deptModel = await deptDao.findOne({ lbl: model._default_dept_id });
+  if (isNotEmpty(model.default_dept_id_lbl) && model.default_dept_id === undefined) {
+    model.default_dept_id_lbl = String(model.default_dept_id_lbl).trim();
+    const deptModel = await deptDao.findOne({ lbl: model.default_dept_id_lbl });
     if (deptModel) {
       model.default_dept_id = deptModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
 
   // 拥有部门
-  if (!model.dept_ids && model._dept_ids) {
-    if (typeof model._dept_ids === "string" || model._dept_ids instanceof String) {
-      model._dept_ids = model._dept_ids.split(",");
+  if (!model.dept_ids && model.dept_ids_lbl) {
+    if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
+      model.dept_ids_lbl = model.dept_ids_lbl.split(",");
     }
-    model._dept_ids = model._dept_ids.map((item: string) => item.trim());
+    model.dept_ids_lbl = model.dept_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -928,7 +928,7 @@ export async function updateById(
       from
         dept t
       where
-        t.lbl in ${ args.push(model._dept_ids) }
+        t.lbl in ${ args.push(model.dept_ids_lbl) }
     `;
     interface Result {
       id: string;
@@ -938,19 +938,19 @@ export async function updateById(
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
   }
 
   // 拥有角色
-  if (!model.role_ids && model._role_ids) {
-    if (typeof model._role_ids === "string" || model._role_ids instanceof String) {
-      model._role_ids = model._role_ids.split(",");
+  if (!model.role_ids && model.role_ids_lbl) {
+    if (typeof model.role_ids_lbl === "string" || model.role_ids_lbl instanceof String) {
+      model.role_ids_lbl = model.role_ids_lbl.split(",");
     }
-    model._role_ids = model._role_ids.map((item: string) => item.trim());
+    model.role_ids_lbl = model.role_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -958,7 +958,7 @@ export async function updateById(
       from
         role t
       where
-        t.lbl in ${ args.push(model._role_ids) }
+        t.lbl in ${ args.push(model.role_ids_lbl) }
     `;
     interface Result {
       id: string;
@@ -989,13 +989,13 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.username !== undefined) {
     if (model.username != oldModel?.username) {
-      sql += `\`username\` = ${ args.push(model.username) },`;
+      sql += `username = ${ args.push(model.username) },`;
       updateFldNum++;
     }
   }
@@ -1006,25 +1006,25 @@ export async function updateById(
   }
   if (model.default_dept_id !== undefined) {
     if (model.default_dept_id != oldModel?.default_dept_id) {
-      sql += `\`default_dept_id\` = ${ args.push(model.default_dept_id) },`;
+      sql += `default_dept_id = ${ args.push(model.default_dept_id) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_locked !== undefined) {
     if (model.is_locked != oldModel?.is_locked) {
-      sql += `\`is_locked\` = ${ args.push(model.is_locked) },`;
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }

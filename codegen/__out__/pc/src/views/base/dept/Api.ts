@@ -33,19 +33,19 @@ export async function findAll(
         findAllDept(search: $search, page: $page, sort: $sort) {
           id
           parent_id
-          _parent_id
+          parent_id_lbl
           lbl
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -162,19 +162,19 @@ export async function findById(
         findByIdDept(id: $id) {
           id
           parent_id
-          _parent_id
+          parent_id_lbl
           lbl
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -409,36 +409,36 @@ export function useExportExcel() {
           findAllDept(search: $search, sort: $sort) {
             id
             parent_id
-            _parent_id
+            parent_id_lbl
             lbl
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
           getFieldCommentsDept {
             parent_id
-            _parent_id
+            parent_id_lbl
             lbl
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
         }

@@ -10,11 +10,11 @@ type I18nModel {
   "语言"
   lang_id: ID!
   "语言"
-  _lang_id: String
+  lang_id_lbl: String
   "菜单"
   menu_id: ID!
   "菜单"
-  _menu_id: String
+  menu_id_lbl: String
   "编码"
   code: String!
   "名称"
@@ -26,11 +26,11 @@ type I18nFieldComment {
   "语言"
   lang_id: String!
   "语言"
-  _lang_id: String!
+  lang_id_lbl: String!
   "菜单"
   menu_id: String!
   "菜单"
-  _menu_id: String!
+  menu_id_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -46,11 +46,11 @@ input I18nInput {
   "语言"
   lang_id: ID
   "语言"
-  _lang_id: String
+  lang_id_lbl: String
   "菜单"
   menu_id: ID
   "菜单"
-  _menu_id: String
+  menu_id_lbl: String
   "编码"
   code: String
   "名称"
@@ -67,10 +67,10 @@ input I18nSearch {
   id: ID
   "语言"
   lang_id: [String]
-  _lang_id: [String]
+  lang_id_lbl: [String]
   "菜单"
   menu_id: [String]
-  _menu_id: [String]
+  menu_id_lbl: [String]
   "编码"
   code: String
   codeLike: String

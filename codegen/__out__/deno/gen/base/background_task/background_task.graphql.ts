@@ -12,11 +12,11 @@ type Background_TaskModel {
   "状态"
   state: String!
   "状态"
-  _state: String
+  state_lbl: String
   "类型"
   type: String!
   "类型"
-  _type: String
+  type_lbl: String
   "执行结果"
   result: String!
   "错误信息"
@@ -34,11 +34,11 @@ type Background_TaskFieldComment {
   "状态"
   state: String!
   "状态"
-  _state: String!
+  state_lbl: String!
   "类型"
   type: String!
   "类型"
-  _type: String!
+  type_lbl: String!
   "执行结果"
   result: String!
   "错误信息"
@@ -60,11 +60,11 @@ input Background_TaskInput {
   "状态"
   state: String
   "状态"
-  _state: String
+  state_lbl: String
   "类型"
   type: String
   "类型"
-  _type: String
+  type_lbl: String
   "执行结果"
   result: String
   "错误信息"
@@ -105,7 +105,7 @@ input Background_TaskSearch {
   remLike: String
   "创建人"
   create_usr_id: [String]
-  _create_usr_id: [String]
+  create_usr_id_lbl: [String]
 }
 type Query {
   "根据条件查找据数总数"

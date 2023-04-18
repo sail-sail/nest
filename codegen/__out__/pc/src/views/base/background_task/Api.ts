@@ -33,9 +33,9 @@ export async function findAll(
           id
           lbl
           state
-          _state
+          state_lbl
           type
-          _type
+          type_lbl
           result
           err_msg
           begin_time
@@ -102,9 +102,9 @@ export async function findById(
           id
           lbl
           state
-          _state
+          state_lbl
           type
-          _type
+          type_lbl
           result
           err_msg
           begin_time
@@ -225,9 +225,9 @@ export function useExportExcel() {
             id
             lbl
             state
-            _state
+            state_lbl
             type
-            _type
+            type_lbl
             result
             err_msg
             begin_time
@@ -237,9 +237,9 @@ export function useExportExcel() {
           getFieldCommentsBackground_task {
             lbl
             state
-            _state
+            state_lbl
             type
-            _type
+            type_lbl
             result
             err_msg
             begin_time

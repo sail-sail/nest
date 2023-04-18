@@ -325,7 +325,7 @@ async function showDialog(
         ...data,
         id: undefined,
         is_locked: undefined,
-        _is_locked: undefined,
+        is_locked_lbl: undefined,
       };
     }
   } else if (action === "edit") {

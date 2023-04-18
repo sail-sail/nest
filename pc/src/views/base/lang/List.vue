@@ -539,7 +539,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_enabled_lbl: "string[]",
   order_by: "number",
 };
 
@@ -694,7 +694,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "启用",
-      prop: "_is_enabled",
+      prop: "is_enabled_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
