@@ -15,12 +15,12 @@
       class="dialog_title"
     >
       <div class="title_lbl">
-        <span class="dialogTitle_span">{{ dialogTitle || " " }}</span>
+        <span class="title_span">{{ dialogTitle || " " }}</span>
       </div>
       <ElIconFullScreen
         class="full_but"
         @click="setFullscreen"
-      />
+      ></ElIconFullScreen>
     </div>
   </template>
   <div
@@ -36,7 +36,7 @@
       <div
         un-justify-end
         un-items-end
-        un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_330px)]"
+        un-grid="~ rows-[auto] cols-[repeat(1,minmax(min-content,max-content)_280px)]"
         un-gap="x-[16px] y-[16px]"
         un-place-content-center
       >
@@ -57,7 +57,7 @@
         >
           <div
             un-w="full"
-            un-h="[220px]"
+            un-h="[200px]"
             un-border="[#ccc] dashed"
             un-rounded="[6px]"
             un-cursor-pointer
@@ -76,14 +76,17 @@
               </span>
             </template>
             <template v-else>
-              <el-icon>
+              <el-icon
+                size="48px"
+                color="#ccc"
+              >
                 <ElIconPlus />
               </el-icon>
             </template>
           </div>
         </div>
         
-        <template v-if="false">
+        <template v-if="template">
           <label
             un-m="l-[3px]"
             un-text-right
@@ -91,31 +94,34 @@
             un-whitespace-nowrap
             un-after="content-[quoted::]"
           >
-            <span>模板下载</span>
+            <span>导入模板</span>
           </label>
           <div
             un-w="full"
             un-justify-start
           >
-            <el-button
-              plain
+            <el-link
+              un-m="l-1"
               type="primary"
+              :href="template"
+              download="客户导入.xlsx"
             >
-              导入模板下载
-            </el-button>
+              点击下载导入模板
+            </el-link>
           </div>
         </template>
         
       </div>
     </div>
     <div
-      un-p="t-[10px] b-[20px]"
+      un-p="t-[10px] b-5"
       un-flex="~"
       un-justify-center
       un-items-center
     >
       
       <el-button
+        plain
         @click="cancelClk"
       >
         <template #icon>
@@ -125,6 +131,7 @@
       </el-button>
       
       <el-button
+        plain
         type="primary"
         :disabled="!fileInfo.name"
         @click="confirmClk"
@@ -132,7 +139,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>确定导入</span>
+        <span>确定</span>
       </el-button>
       
     </div>
@@ -140,17 +147,21 @@
   <input
     ref="fileRef"
     type="file"
+    
     un-display-none
+    
     @change="inputChg"
   />
 </el-dialog>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let dialogTitle = $ref("导入");
 let dialogVisible = $ref(false);
+
+let template = $ref("");
 
 let fileRef = $ref<HTMLInputElement>();
 
@@ -160,11 +171,19 @@ let fileInfo = $ref({
   size: 0,
 });
 
-let onCloseResolve = function(_value?: File) { };
+let onCloseResolve = function(value?: File) { };
 
-async function showDialog(arg?: { title?: string }) {
+async function showDialog(
+  arg?: {
+    title?: string,
+    template?: string,
+  },
+) {
   if (arg) {
     dialogTitle = arg.title || "导入";
+  }
+  if (arg?.template) {
+    template = arg.template;
   }
   fileInfo = {
     name: "",
@@ -173,13 +192,10 @@ async function showDialog(arg?: { title?: string }) {
   dialogVisible = true;
   if (fileRef) {
     fileRef.value = "";
-    fileRef.click();
   } else {
     nextTick(() => {
-      console.log(fileRef);
       if (fileRef) {
         fileRef.value = "";
-        fileRef.click();
       }
     });
   }
