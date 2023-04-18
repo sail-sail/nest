@@ -2,10 +2,10 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, QueryArgs, Options};
 
-use super::dict_detail_model::DictModel;
+use super::dictbiz_detail_model::DictModel;
 
 /// 获取业务字典
-pub async fn get_dict<'a>(
+pub async fn get_dictbiz<'a>(
   ctx: &mut impl Ctx<'a>,
   codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<Vec<DictModel>>> {
