@@ -16,25 +16,25 @@ type UsrModel {
   "默认部门"
   default_dept_id: ID!
   "默认部门"
-  _default_dept_id: String
+  default_dept_id_lbl: String
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String!
   "拥有部门"
   dept_ids: [ID!]
   "拥有部门"
-  _dept_ids: [String!]
+  dept_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
   "拥有角色"
   role_ids: [ID!]
   "拥有角色"
-  _role_ids: [String!]
+  role_ids_lbl: [String!]
 }
 type UsrFieldComment {
   "名称"
@@ -44,25 +44,25 @@ type UsrFieldComment {
   "默认部门"
   default_dept_id: String!
   "默认部门"
-  _default_dept_id: String!
+  default_dept_id_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "备注"
   rem: String!
   "拥有部门"
   dept_ids: String!
   "拥有部门"
-  _dept_ids: String!
+  dept_ids_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
-  _is_locked: String!
+  is_locked_lbl: String!
   "拥有角色"
   role_ids: String!
   "拥有角色"
-  _role_ids: String!
+  role_ids_lbl: String!
 }
 input UsrInput {
   "租户ID"
@@ -78,25 +78,25 @@ input UsrInput {
   "默认部门"
   default_dept_id: ID
   "默认部门"
-  _default_dept_id: String
+  default_dept_id_lbl: String
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String
   "拥有部门"
   dept_ids: [ID!]
   "拥有部门"
-  _dept_ids: [String!]
+  dept_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
   "拥有角色"
   role_ids: [ID!]
   "拥有角色"
-  _role_ids: [String!]
+  role_ids_lbl: [String!]
 }
 input UsrSearch {
   "是否已删除"
@@ -113,7 +113,7 @@ input UsrSearch {
   usernameLike: String
   "默认部门"
   default_dept_id: [String]
-  _default_dept_id: [String]
+  default_dept_id_lbl: [String]
   "启用"
   is_enabled: [Int]
   "备注"
@@ -121,12 +121,12 @@ input UsrSearch {
   remLike: String
   "拥有部门"
   dept_ids: [String]
-  _dept_ids: [String]
+  dept_ids_lbl: [String]
   "锁定"
   is_locked: [Int]
   "拥有角色"
   role_ids: [String]
-  _role_ids: [String]
+  role_ids_lbl: [String]
 }
 type Query {
   "根据条件查找据数总数"

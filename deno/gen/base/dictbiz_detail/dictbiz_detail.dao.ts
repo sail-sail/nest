@@ -89,16 +89,16 @@ async function getWhereQuery(
     search.dictbiz_id = [ search.dictbiz_id ];
   }
   if (search?.dictbiz_id && search?.dictbiz_id.length > 0) {
-    whereQuery += ` and _dictbiz_id.id in ${ args.push(search.dictbiz_id) }`;
+    whereQuery += ` and dictbiz_id_lbl.id in ${ args.push(search.dictbiz_id) }`;
   }
   if (search?.dictbiz_id === null) {
-    whereQuery += ` and _dictbiz_id.id is null`;
+    whereQuery += ` and dictbiz_id_lbl.id is null`;
   }
-  if (search?._dictbiz_id && !Array.isArray(search?._dictbiz_id)) {
-    search._dictbiz_id = [ search._dictbiz_id ];
+  if (search?.dictbiz_id_lbl && !Array.isArray(search?.dictbiz_id_lbl)) {
+    search.dictbiz_id_lbl = [ search.dictbiz_id_lbl ];
   }
-  if (search?._dictbiz_id && search._dictbiz_id?.length > 0) {
-    whereQuery += ` and _dictbiz_id in ${ args.push(search._dictbiz_id) }`;
+  if (search?.dictbiz_id_lbl && search.dictbiz_id_lbl?.length > 0) {
+    whereQuery += ` and dictbiz_id_lbl in ${ args.push(search.dictbiz_id_lbl) }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -163,8 +163,8 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_dictbiz_detail t
-    left join base_dictbiz _dictbiz_id
-      on _dictbiz_id.id = t.dictbiz_id
+    left join base_dictbiz dictbiz_id_lbl
+      on dictbiz_id_lbl.id = t.dictbiz_id
   `;
   return fromQuery;
 }
@@ -228,7 +228,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_dictbiz_id.lbl _dictbiz_id
+      ,dictbiz_id_lbl.lbl dictbiz_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -281,24 +281,24 @@ export async function findAll(
     const model = result[i];
     
     // 启用
-    let _is_enabled = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
-        _is_enabled = dictItem.lbl;
+        is_enabled_lbl = dictItem.lbl;
       }
     }
-    model._is_enabled = _is_enabled;
+    model.is_enabled_lbl = is_enabled_lbl;
     
     // 锁定
-    let _is_locked = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked.toString();
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
-        _is_locked = dictItem.lbl;
+        is_locked_lbl = dictItem.lbl;
       }
     }
-    model._is_locked = _is_locked;
+    model.is_locked_lbl = is_locked_lbl;
   }
   
   return result;
@@ -311,15 +311,15 @@ export async function getFieldComments() {
   const n = initN("/dictbiz_detail");
   const fieldComments = {
     dictbiz_id: await n("业务字典"),
-    _dictbiz_id: await n("业务字典"),
+    dictbiz_id_lbl: await n("业务字典"),
     lbl: await n("名称"),
     val: await n("值"),
     order_by: await n("排序"),
     is_enabled: await n("启用"),
-    _is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     rem: await n("备注"),
     is_locked: await n("锁定"),
-    _is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
   };
   return fieldComments;
 }
@@ -562,25 +562,25 @@ export async function create(
   
   
   // 业务字典
-  if (isNotEmpty(model._dictbiz_id) && model.dictbiz_id === undefined) {
-    model._dictbiz_id = String(model._dictbiz_id).trim();
-    const dictbizModel = await dictbizDao.findOne({ lbl: model._dictbiz_id });
+  if (isNotEmpty(model.dictbiz_id_lbl) && model.dictbiz_id === undefined) {
+    model.dictbiz_id_lbl = String(model.dictbiz_id_lbl).trim();
+    const dictbizModel = await dictbizDao.findOne({ lbl: model.dictbiz_id_lbl });
     if (dictbizModel) {
       model.dictbiz_id = dictbizModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
@@ -622,25 +622,25 @@ export async function create(
     }
   }
   if (model.dictbiz_id !== undefined) {
-    sql += `,\`dictbiz_id\``;
+    sql += `,dictbiz_id`;
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.val !== undefined) {
-    sql += `,\`val\``;
+    sql += `,val`;
   }
   if (model.order_by !== undefined) {
-    sql += `,\`order_by\``;
+    sql += `,order_by`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+    sql += `,is_enabled`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   if (model.is_locked !== undefined) {
-    sql += `,\`is_locked\``;
+    sql += `,is_locked`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
@@ -789,25 +789,25 @@ export async function updateById(
   }
   
   // 业务字典
-  if (isNotEmpty(model._dictbiz_id) && model.dictbiz_id === undefined) {
-    model._dictbiz_id = String(model._dictbiz_id).trim();
-    const dictbizModel = await dictbizDao.findOne({ lbl: model._dictbiz_id });
+  if (isNotEmpty(model.dictbiz_id_lbl) && model.dictbiz_id === undefined) {
+    model.dictbiz_id_lbl = String(model.dictbiz_id_lbl).trim();
+    const dictbizModel = await dictbizDao.findOne({ lbl: model.dictbiz_id_lbl });
     if (dictbizModel) {
       model.dictbiz_id = dictbizModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
@@ -835,43 +835,43 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.dictbiz_id !== undefined) {
     if (model.dictbiz_id != oldModel?.dictbiz_id) {
-      sql += `\`dictbiz_id\` = ${ args.push(model.dictbiz_id) },`;
+      sql += `dictbiz_id = ${ args.push(model.dictbiz_id) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.val !== undefined) {
     if (model.val != oldModel?.val) {
-      sql += `\`val\` = ${ args.push(model.val) },`;
+      sql += `val = ${ args.push(model.val) },`;
       updateFldNum++;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `\`order_by\` = ${ args.push(model.order_by) },`;
+      sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_locked !== undefined) {
     if (model.is_locked != oldModel?.is_locked) {
-      sql += `\`is_locked\` = ${ args.push(model.is_locked) },`;
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }

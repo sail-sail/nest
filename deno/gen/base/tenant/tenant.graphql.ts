@@ -18,11 +18,11 @@ type TenantModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "菜单"
   menu_ids: [ID!]
   "菜单"
-  _menu_ids: [String!]
+  menu_ids_lbl: [String!]
   "排序"
   order_by: Int!
   "备注"
@@ -40,11 +40,11 @@ type TenantFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "菜单"
   menu_ids: String!
   "菜单"
-  _menu_ids: String!
+  menu_ids_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -66,11 +66,11 @@ input TenantInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "菜单"
   menu_ids: [ID!]
   "菜单"
-  _menu_ids: [String!]
+  menu_ids_lbl: [String!]
   "排序"
   order_by: Int
   "备注"
@@ -97,7 +97,7 @@ input TenantSearch {
   is_enabled: [Int]
   "菜单"
   menu_ids: [String]
-  _menu_ids: [String]
+  menu_ids_lbl: [String]
   "排序"
   order_by: [Int]
   "备注"

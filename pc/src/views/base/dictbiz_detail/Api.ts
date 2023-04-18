@@ -33,15 +33,15 @@ export async function findAll(
         findAllDictbiz_detail(search: $search, page: $page, sort: $sort) {
           id
           dictbiz_id
-          _dictbiz_id
+          dictbiz_id_lbl
           lbl
           val
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
         }
       }
     `,
@@ -157,15 +157,15 @@ export async function findById(
         findByIdDictbiz_detail(id: $id) {
           id
           dictbiz_id
-          _dictbiz_id
+          dictbiz_id_lbl
           lbl
           val
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
         }
       }
     `,
@@ -354,27 +354,27 @@ export function useExportExcel() {
           findAllDictbiz_detail(search: $search, sort: $sort) {
             id
             dictbiz_id
-            _dictbiz_id
+            dictbiz_id_lbl
             lbl
             val
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
           }
           getFieldCommentsDictbiz_detail {
             dictbiz_id
-            _dictbiz_id
+            dictbiz_id_lbl
             lbl
             val
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
           }
         }
       `,

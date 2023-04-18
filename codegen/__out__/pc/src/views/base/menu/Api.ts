@@ -32,14 +32,14 @@ export async function findAll(
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
           type
-          _type
+          type_lbl
           menu_id
-          _menu_id
+          menu_id_lbl
           lbl
           route_path
           route_query
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           order_by
           rem
         }
@@ -158,14 +158,14 @@ export async function findById(
         findByIdMenu(id: $id) {
           id
           type
-          _type
+          type_lbl
           menu_id
-          _menu_id
+          menu_id_lbl
           lbl
           route_path
           route_query
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           order_by
           rem
         }
@@ -330,27 +330,27 @@ export function useExportExcel() {
           findAllMenu(search: $search, sort: $sort) {
             id
             type
-            _type
+            type_lbl
             menu_id
-            _menu_id
+            menu_id_lbl
             lbl
             route_path
             route_query
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             order_by
             rem
           }
           getFieldCommentsMenu {
             type
-            _type
+            type_lbl
             menu_id
-            _menu_id
+            menu_id_lbl
             lbl
             route_path
             route_query
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             order_by
             rem
           }

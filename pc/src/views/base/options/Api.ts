@@ -37,16 +37,16 @@ export async function findAll(
           val
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
           version
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -167,16 +167,16 @@ export async function findById(
           val
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
           version
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -370,16 +370,16 @@ export function useExportExcel() {
             val
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
             version
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
           getFieldCommentsOptions {
@@ -388,16 +388,16 @@ export function useExportExcel() {
             val
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
             version
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
         }

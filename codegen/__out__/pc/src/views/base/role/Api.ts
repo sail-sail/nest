@@ -35,9 +35,9 @@ export async function findAll(
           lbl
           rem
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           menu_ids
-          _menu_ids
+          menu_ids_lbl
         }
       }
     `,
@@ -155,9 +155,9 @@ export async function findById(
           lbl
           rem
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           menu_ids
-          _menu_ids
+          menu_ids_lbl
         }
       }
     `,
@@ -319,17 +319,17 @@ export function useExportExcel() {
             lbl
             rem
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             menu_ids
-            _menu_ids
+            menu_ids_lbl
           }
           getFieldCommentsRole {
             lbl
             rem
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             menu_ids
-            _menu_ids
+            menu_ids_lbl
           }
         }
       `,

@@ -408,7 +408,7 @@
         >
           
           <!-- 语言 -->
-          <template v-if="'_lang_id' === col.prop">
+          <template v-if="'lang_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -417,7 +417,7 @@
           </template>
           
           <!-- 菜单 -->
-          <template v-else-if="'_menu_id' === col.prop">
+          <template v-else-if="'menu_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -583,9 +583,9 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   lang_id?: string|string[]; // 语言
-  _lang_id?: string|string[]; // 语言
+  lang_id_lbl?: string|string[]; // 语言
   menu_id?: string|string[]; // 菜单
-  _menu_id?: string|string[]; // 菜单
+  menu_id_lbl?: string|string[]; // 菜单
   code?: string; // 编码
   codeLike?: string; // 编码
   lbl?: string; // 名称
@@ -598,9 +598,9 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   lang_id: "string[]",
-  _lang_id: "string[]",
+  lang_id_lbl: "string[]",
   menu_id: "string[]",
-  _menu_id: "string[]",
+  menu_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -730,7 +730,7 @@ function getTableColumns(): ColumnType[] {
   return [
     {
       label: "语言",
-      prop: "_lang_id",
+      prop: "lang_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -738,7 +738,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "菜单",
-      prop: "_menu_id",
+      prop: "menu_id_lbl",
       width: 160,
       align: "left",
       headerAlign: "center",

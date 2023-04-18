@@ -16,7 +16,7 @@ type LangModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "排序"
   order_by: Int!
 }
@@ -30,7 +30,7 @@ type LangFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "排序"
   order_by: String!
 }
@@ -48,7 +48,7 @@ input LangInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "排序"
   order_by: Int
 }

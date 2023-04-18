@@ -14,11 +14,11 @@ type RoleModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "菜单"
   menu_ids: [ID!]
   "菜单"
-  _menu_ids: [String!]
+  menu_ids_lbl: [String!]
 }
 type RoleFieldComment {
   "名称"
@@ -28,11 +28,11 @@ type RoleFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "菜单"
   menu_ids: String!
   "菜单"
-  _menu_ids: String!
+  menu_ids_lbl: String!
 }
 input RoleInput {
   "租户ID"
@@ -46,11 +46,11 @@ input RoleInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "菜单"
   menu_ids: [ID!]
   "菜单"
-  _menu_ids: [String!]
+  menu_ids_lbl: [String!]
 }
 input RoleSearch {
   "是否已删除"
@@ -69,7 +69,7 @@ input RoleSearch {
   is_enabled: [Int]
   "菜单"
   menu_ids: [String]
-  _menu_ids: [String]
+  menu_ids_lbl: [String]
 }
 type Query {
   "根据条件查找据数总数"

@@ -440,7 +440,7 @@
           </template>
           
           <!-- 默认部门 -->
-          <template v-else-if="'_default_dept_id' === col.prop">
+          <template v-else-if="'default_dept_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -467,7 +467,7 @@
           </template>
           
           <!-- 拥有部门 -->
-          <template v-else-if="'_dept_ids' === col.prop">
+          <template v-else-if="'dept_ids_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -490,7 +490,7 @@
           </template>
           
           <!-- 拥有角色 -->
-          <template v-else-if="'_role_ids' === col.prop">
+          <template v-else-if="'role_ids_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -641,30 +641,30 @@ const props = defineProps<{
   password?: string; // 密码
   passwordLike?: string; // 密码
   default_dept_id?: string|string[]; // 默认部门
-  _default_dept_id?: string|string[]; // 默认部门
+  default_dept_id_lbl?: string|string[]; // 默认部门
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   remLike?: string; // 备注
   dept_ids?: string|string[]; // 拥有部门
-  _dept_ids?: string|string[]; // 拥有部门
+  dept_ids_lbl?: string|string[]; // 拥有部门
   is_locked?: string|string[]; // 锁定
   role_ids?: string|string[]; // 拥有角色
-  _role_ids?: string|string[]; // 拥有角色
+  role_ids_lbl?: string|string[]; // 拥有角色
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   default_dept_id: "string[]",
-  _default_dept_id: "string[]",
+  default_dept_id_lbl: "string[]",
   is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_enabled_lbl: "string[]",
   dept_ids: "string[]",
-  _dept_ids: "string[]",
+  dept_ids_lbl: "string[]",
   is_locked: "number[]",
-  _is_locked: "string[]",
+  is_locked_lbl: "string[]",
   role_ids: "string[]",
-  _role_ids: "string[]",
+  role_ids_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -812,7 +812,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "默认部门",
-      prop: "_default_dept_id",
+      prop: "default_dept_id_lbl",
       width: 140,
       align: "center",
       headerAlign: "center",
@@ -820,7 +820,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "启用",
-      prop: "_is_enabled",
+      prop: "is_enabled_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -836,7 +836,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "拥有部门",
-      prop: "_dept_ids",
+      prop: "dept_ids_lbl",
       width: 140,
       align: "center",
       headerAlign: "center",
@@ -844,14 +844,14 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "锁定",
-      prop: "_is_locked",
+      prop: "is_locked_lbl",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
       label: "拥有角色",
-      prop: "_role_ids",
+      prop: "role_ids_lbl",
       width: 140,
       align: "center",
       headerAlign: "center",

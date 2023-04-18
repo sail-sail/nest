@@ -76,16 +76,16 @@ async function getWhereQuery(
     search.dict_id = [ search.dict_id ];
   }
   if (search?.dict_id && search?.dict_id.length > 0) {
-    whereQuery += ` and _dict_id.id in ${ args.push(search.dict_id) }`;
+    whereQuery += ` and dict_id_lbl.id in ${ args.push(search.dict_id) }`;
   }
   if (search?.dict_id === null) {
-    whereQuery += ` and _dict_id.id is null`;
+    whereQuery += ` and dict_id_lbl.id is null`;
   }
-  if (search?._dict_id && !Array.isArray(search?._dict_id)) {
-    search._dict_id = [ search._dict_id ];
+  if (search?.dict_id_lbl && !Array.isArray(search?.dict_id_lbl)) {
+    search.dict_id_lbl = [ search.dict_id_lbl ];
   }
-  if (search?._dict_id && search._dict_id?.length > 0) {
-    whereQuery += ` and _dict_id in ${ args.push(search._dict_id) }`;
+  if (search?.dict_id_lbl && search.dict_id_lbl?.length > 0) {
+    whereQuery += ` and dict_id_lbl in ${ args.push(search.dict_id_lbl) }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -150,8 +150,8 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_dict_detail t
-    left join base_dict _dict_id
-      on _dict_id.id = t.dict_id
+    left join base_dict dict_id_lbl
+      on dict_id_lbl.id = t.dict_id
   `;
   return fromQuery;
 }
@@ -215,7 +215,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_dict_id.lbl _dict_id
+      ,dict_id_lbl.lbl dict_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -268,24 +268,24 @@ export async function findAll(
     const model = result[i];
     
     // 启用
-    let _is_enabled = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
-        _is_enabled = dictItem.lbl;
+        is_enabled_lbl = dictItem.lbl;
       }
     }
-    model._is_enabled = _is_enabled;
+    model.is_enabled_lbl = is_enabled_lbl;
     
     // 锁定
-    let _is_locked = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked.toString();
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
-        _is_locked = dictItem.lbl;
+        is_locked_lbl = dictItem.lbl;
       }
     }
-    model._is_locked = _is_locked;
+    model.is_locked_lbl = is_locked_lbl;
   }
   
   return result;
@@ -298,15 +298,15 @@ export async function getFieldComments() {
   const n = initN("/dict_detail");
   const fieldComments = {
     dict_id: await n("系统字典"),
-    _dict_id: await n("系统字典"),
+    dict_id_lbl: await n("系统字典"),
     lbl: await n("名称"),
     val: await n("值"),
     order_by: await n("排序"),
     is_enabled: await n("启用"),
-    _is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     rem: await n("备注"),
     is_locked: await n("锁定"),
-    _is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
   };
   return fieldComments;
 }
@@ -549,25 +549,25 @@ export async function create(
   
   
   // 系统字典
-  if (isNotEmpty(model._dict_id) && model.dict_id === undefined) {
-    model._dict_id = String(model._dict_id).trim();
-    const dictModel = await dictDao.findOne({ lbl: model._dict_id });
+  if (isNotEmpty(model.dict_id_lbl) && model.dict_id === undefined) {
+    model.dict_id_lbl = String(model.dict_id_lbl).trim();
+    const dictModel = await dictDao.findOne({ lbl: model.dict_id_lbl });
     if (dictModel) {
       model.dict_id = dictModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
@@ -600,25 +600,25 @@ export async function create(
     }
   }
   if (model.dict_id !== undefined) {
-    sql += `,\`dict_id\``;
+    sql += `,dict_id`;
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.val !== undefined) {
-    sql += `,\`val\``;
+    sql += `,val`;
   }
   if (model.order_by !== undefined) {
-    sql += `,\`order_by\``;
+    sql += `,order_by`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+    sql += `,is_enabled`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   if (model.is_locked !== undefined) {
-    sql += `,\`is_locked\``;
+    sql += `,is_locked`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -714,25 +714,25 @@ export async function updateById(
   ]);
   
   // 系统字典
-  if (isNotEmpty(model._dict_id) && model.dict_id === undefined) {
-    model._dict_id = String(model._dict_id).trim();
-    const dictModel = await dictDao.findOne({ lbl: model._dict_id });
+  if (isNotEmpty(model.dict_id_lbl) && model.dict_id === undefined) {
+    model.dict_id_lbl = String(model.dict_id_lbl).trim();
+    const dictModel = await dictDao.findOne({ lbl: model.dict_id_lbl });
     if (dictModel) {
       model.dict_id = dictModel.id;
     }
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 锁定
-  if (isNotEmpty(model._is_locked) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model._is_locked)?.val;
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
     }
@@ -760,43 +760,43 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.dict_id !== undefined) {
     if (model.dict_id != oldModel?.dict_id) {
-      sql += `\`dict_id\` = ${ args.push(model.dict_id) },`;
+      sql += `dict_id = ${ args.push(model.dict_id) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.val !== undefined) {
     if (model.val != oldModel?.val) {
-      sql += `\`val\` = ${ args.push(model.val) },`;
+      sql += `val = ${ args.push(model.val) },`;
       updateFldNum++;
     }
   }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel?.order_by) {
-      sql += `\`order_by\` = ${ args.push(model.order_by) },`;
+      sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_locked !== undefined) {
     if (model.is_locked != oldModel?.is_locked) {
-      sql += `\`is_locked\` = ${ args.push(model.is_locked) },`;
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }

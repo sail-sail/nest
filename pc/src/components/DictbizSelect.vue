@@ -18,7 +18,7 @@
   <template
     v-for="(item, key, index) in $slots"
     :key="index"
-    v-slot:[key]
+    #[key]
   >
     <slot :name="key"></slot>
   </template>

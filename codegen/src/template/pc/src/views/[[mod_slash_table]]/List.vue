@@ -679,7 +679,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'_<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -702,7 +702,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'_<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1162,7 +1162,7 @@ const props = defineProps<{
     if (foreignKey) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>
-  _<#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+  <#=column_name#>_lbl?: <#=data_type#>;<#=column_comment#><#
     } else if (selectList && selectList.length > 0) {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
@@ -1217,15 +1217,15 @@ const builtInSearchType: { [key: string]: string } = {
     if (foreignKey) {
   #>
   <#=column_name#>: "string[]",
-  _<#=column_name#>: "string[]",<#
+  <#=column_name#>_lbl: "string[]",<#
     } else if ((selectList && selectList.length > 0 || column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "number[]",
-  _<#=column_name#>: "string[]",<#
+  <#=column_name#>_lbl: "string[]",<#
     } else if ((selectList && selectList.length > 0 || column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "string[]",
-  _<#=column_name#>: "string[]",<#
+  <#=column_name#>_lbl: "string[]",<#
     } else if ([ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE)) {
   #>
   <#=column_name#>: "number",<#
@@ -1517,7 +1517,7 @@ function getTableColumns(): ColumnType[] {
     #>
     {
       label: "<#=column_comment#>",
-      prop: "_<#=column_name#>",<#
+      prop: "<#=column_name#>_lbl",<#
       if (column.width) {
       #>
       width: <#=column.width#>,<#

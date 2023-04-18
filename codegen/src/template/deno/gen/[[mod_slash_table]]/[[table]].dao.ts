@@ -217,18 +217,18 @@ async function getWhereQuery(
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
-    whereQuery += ` and _<#=column_name#>.id in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and <#=column_name#>_lbl.id in ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#> === null) {
-    whereQuery += ` and _<#=column_name#>.id is null`;
+    whereQuery += ` and <#=column_name#>_lbl.id is null`;
   }<#
     if (foreignKey.lbl) {
   #>
-  if (search?._<#=column_name#> && !Array.isArray(search?._<#=column_name#>)) {
-    search._<#=column_name#> = [ search._<#=column_name#> ];
+  if (search?.<#=column_name#>_lbl && !Array.isArray(search?.<#=column_name#>_lbl)) {
+    search.<#=column_name#>_lbl = [ search.<#=column_name#>_lbl ];
   }
-  if (search?._<#=column_name#> && search._<#=column_name#>?.length > 0) {
-    whereQuery += ` and _<#=column_name#> in ${ args.push(search._<#=column_name#>) }`;
+  if (search?.<#=column_name#>_lbl && search.<#=column_name#>_lbl?.length > 0) {
+    whereQuery += ` and <#=column_name#>_lbl in ${ args.push(search.<#=column_name#>_lbl) }`;
   }<#
     }
   #><#
@@ -329,37 +329,37 @@ function getFromQuery() {
     #><#
       if (foreignKey && foreignKey.type === "many2many") {
     #>
-    left join \\`<#=many2many.mod#>_<#=many2many.table#>\\`
-      on \\`<#=many2many.mod#>_<#=many2many.table#>\\`.<#=many2many.column1#> = t.id
-      and \\`<#=many2many.mod#>_<#=many2many.table#>\\`.is_deleted = 0
-    left join \\`<#=foreignKey.mod#>_<#=foreignTable#>\\`
-      on \\`<#=many2many.mod#>_<#=many2many.table#>\\`.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
+    left join <#=many2many.mod#>_<#=many2many.table#>
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+    left join <#=foreignKey.mod#>_<#=foreignTable#>
+      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
       and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
     left join (
       select
         json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
           if (foreignKey.lbl) {
         #>
-        json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) _<#=column_name#>,<#
+        json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
           }
         #>
         <#=mod#>_<#=table#>.id <#=many2many.column1#>
-      from \\`<#=foreignKey.mod#>_<#=many2many.table#>\\`
+      from <#=foreignKey.mod#>_<#=many2many.table#>
       inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
-        on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = \\`<#=many2many.mod#>_<#=many2many.table#>\\`.<#=many2many.column2#>
+        on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
         and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
-        on <#=mod#>_<#=table#>.id = \\`<#=many2many.mod#>_<#=many2many.table#>\\`.<#=many2many.column1#>
+        on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
         and <#=mod#>_<#=table#>.is_deleted = 0
       where
-      \\`<#=many2many.mod#>_<#=many2many.table#>\\`.is_deleted = 0
+      <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#> _<#=column_name#>
-      on _<#=column_name#>.<#=foreignKey.column#> = t.<#=column_name#><#
+    left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl
+      on <#=column_name#>_lbl.<#=foreignKey.column#> = t.<#=column_name#><#
       }
     #><#
     }
@@ -450,10 +450,10 @@ export async function findAll(
         if (foreignKey && foreignKey.type === "many2many") {
       #>
       ,max(<#=column_name#>) <#=column_name#>
-      ,max(_<#=column_name#>) _<#=column_name#><#
+      ,max(<#=column_name#>_lbl) <#=column_name#>_lbl<#
       } else if (foreignKey && !foreignKey.multiple && foreignKey.lbl) {
       #>
-      ,_<#=column_name#>.<#=foreignKey.lbl#> _<#=column_name#><#
+      ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
         }
       #><#
       }
@@ -700,7 +700,7 @@ export async function findAll(
       } else if (selectList.length > 0) {
     #>
     // <#=column_comment#>
-    let _<#=column_name#> = "";
+    let <#=column_name#>_lbl = "";
     <#
     for (let i = 0; i < selectList.length; i++) {
       const item = selectList[i];
@@ -712,37 +712,37 @@ export async function findAll(
         value = value.toString();
       }
     #><#=i>0?" else ":""#>if (model.<#=column_name#> === <#=value#>) {
-      _<#=column_name#> = "<#=label#>";
+      <#=column_name#>_lbl = "<#=label#>";
     }<#
     }
     #> else {
-      _<#=column_name#> = String(model.<#=column_name#>);
+      <#=column_name#>_lbl = String(model.<#=column_name#>);
     }
-    model._<#=column_name#> = _<#=column_name#>;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
     // <#=column_comment#>
-    let _<#=column_name#> = model.<#=column_name#>;
+    let <#=column_name#>_lbl = model.<#=column_name#>;
     if (!isEmpty(model.<#=column_name#>)) {
       const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>);
       if (dictItem) {
-        _<#=column_name#> = dictItem.lbl;
+        <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model._<#=column_name#> = _<#=column_name#>;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
       } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
     // <#=column_comment#>
-    let _<#=column_name#> = model.<#=column_name#>.toString();
+    let <#=column_name#>_lbl = model.<#=column_name#>.toString();
     if (model.<#=column_name#> !== undefined && model.<#=column_name#> !== null) {
       const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
       if (dictItem) {
-        _<#=column_name#> = dictItem.lbl;
+        <#=column_name#>_lbl = dictItem.lbl;
       }
     }
-    model._<#=column_name#> = _<#=column_name#>;<#
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
       }
     #><#
     }
@@ -781,7 +781,7 @@ export async function getFieldComments() {
       if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
     #>
     <#=column_name#>: await n("<#=column_comment#>"),
-    _<#=column_name#>: await n("<#=column_comment#>"),<#
+    <#=column_name#>_lbl: await n("<#=column_comment#>"),<#
       } else {
     #>
     <#=column_name#>: await n("<#=column_comment#>"),<#
@@ -1235,8 +1235,8 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    model._<#=column_name#> = String(model._<#=column_name#>).trim();<#
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();<#
       for (let i = 0; i < selectList.length; i++) {
         const item = selectList[i];
         let value = item.value;
@@ -1246,7 +1246,7 @@ export async function create(
         } else if (typeof(value) === "number") {
           value = value.toString();
         }
-    #><#=i>0?" else ":"\n      "#>if (model._<#=column_name#> === "<#=label#>") {
+    #><#=i>0?" else ":"\n      "#>if (model.<#=column_name#>_lbl === "<#=label#>") {
       model.<#=column_name#> = <#=value#>;
     }<#
       }
@@ -1256,8 +1256,8 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
       model.<#=column_name#> = val;
     }
@@ -1266,8 +1266,8 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
       model.<#=column_name#> = Number(val);
     }
@@ -1280,9 +1280,9 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    model._<#=column_name#> = String(model._<#=column_name#>).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model._<#=column_name#> });
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model.<#=column_name#>_lbl });
     if (<#=foreignTable#>Model) {
       model.<#=column_name#> = <#=foreignTable#>Model.id;
     }
@@ -1291,11 +1291,11 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (!model.<#=column_name#> && model._<#=column_name#>) {
-    if (typeof model._<#=column_name#> === "string" || model._<#=column_name#> instanceof String) {
-      model._<#=column_name#> = model._<#=column_name#>.split(",");
+  if (!model.<#=column_name#> && model.<#=column_name#>_lbl) {
+    if (typeof model.<#=column_name#>_lbl === "string" || model.<#=column_name#>_lbl instanceof String) {
+      model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.split(",");
     }
-    model._<#=column_name#> = model._<#=column_name#>.map((item: string) => item.trim());
+    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -1303,7 +1303,7 @@ export async function create(
       from
         <#=foreignTable#> t
       where
-        t.<#=foreignKey.lbl#> in ${ args.push(model._<#=column_name#>) }
+        t.<#=foreignKey.lbl#> in ${ args.push(model.<#=column_name#>_lbl) }
     `;
     interface Result {
       id: string;
@@ -1389,24 +1389,24 @@ export async function create(
     if (column.isPassword) {
   #>
   if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,\\`<#=column_name#>\\``;
+    sql += `,<#=column_name#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,\\`<#=column_name#>\\``;
+    sql += `,<#=column_name#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,\\`<#=column_name#>\\``;
+    sql += `,<#=column_name#>`;
   }<#
     } else {
   #>
   if (model.<#=column_name#> !== undefined) {
-    sql += `,\\`<#=column_name#>\\``;
+    sql += `,<#=column_name#>`;
   }<#
     }
   #><#
@@ -1864,8 +1864,8 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    model._<#=column_name#> = String(model._<#=column_name#>).trim();<#
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();<#
       for (let i = 0; i < selectList.length; i++) {
         const item = selectList[i];
         let value = item.value;
@@ -1875,7 +1875,7 @@ export async function updateById(
         } else if (typeof(value) === "number") {
           value = value.toString();
         }
-    #><#=i>0?" else ":"\n      "#>if (model._<#=column_name#> === "<#=label#>") {
+    #><#=i>0?" else ":"\n      "#>if (model.<#=column_name#>_lbl === "<#=label#>") {
       model.<#=column_name#> = <#=value#>;
     }<#
       }
@@ -1885,8 +1885,8 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
       model.<#=column_name#> = val;
     }
@@ -1895,8 +1895,8 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model._<#=column_name#>)?.val;
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
       model.<#=column_name#> = Number(val);
     }
@@ -1909,9 +1909,9 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model._<#=column_name#>) && model.<#=column_name#> === undefined) {
-    model._<#=column_name#> = String(model._<#=column_name#>).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model._<#=column_name#> });
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model.<#=column_name#>_lbl });
     if (<#=foreignTable#>Model) {
       model.<#=column_name#> = <#=foreignTable#>Model.id;
     }
@@ -1920,11 +1920,11 @@ export async function updateById(
   #>
 
   // <#=column_comment#>
-  if (!model.<#=column_name#> && model._<#=column_name#>) {
-    if (typeof model._<#=column_name#> === "string" || model._<#=column_name#> instanceof String) {
-      model._<#=column_name#> = model._<#=column_name#>.split(",");
+  if (!model.<#=column_name#> && model.<#=column_name#>_lbl) {
+    if (typeof model.<#=column_name#>_lbl === "string" || model.<#=column_name#>_lbl instanceof String) {
+      model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.split(",");
     }
-    model._<#=column_name#> = model._<#=column_name#>.map((item: string) => item.trim());
+    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -1932,7 +1932,7 @@ export async function updateById(
       from
         <#=foreignTable#> t
       where
-        t.<#=foreignKey.lbl#> in ${ args.push(model._<#=column_name#>) }
+        t.<#=foreignKey.lbl#> in ${ args.push(model.<#=column_name#>_lbl) }
     `;
     interface Result {
       id: string;
@@ -2001,7 +2001,7 @@ export async function updateById(
       model.<#=column_name#> = null;
     }
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) },`;
+      sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2011,7 +2011,7 @@ export async function updateById(
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) },`;
+      sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2019,7 +2019,7 @@ export async function updateById(
   #>
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
-      sql += `\\`<#=column_name#>\\` = ${ args.push(model.<#=column_name#>) },`;
+      sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#

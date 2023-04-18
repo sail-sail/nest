@@ -10,6 +10,9 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
+  :model-value="modelValue"
+  @update:model-value="modelValueUpdate"
+  @clear="clearClk"
   v-bind="$attrs"
   @keyup.enter.stop
   :loading="!inited"
@@ -34,6 +37,10 @@ import {
 
 const usrStore = useUsrStore();
 
+let emit = defineEmits<{
+  (e: "update:modelValue", value: string): void,
+}>();
+
 let inited = $ref(false);
 
 type OptionsMap = (item: any) => OptionType;
@@ -46,6 +53,7 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
+    modelValue: string;
     options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
   }>(),
   {
@@ -59,8 +67,28 @@ const props = withDefaults(
     pinyinFilterable: true,
     height: 300,
     options4SelectV2: () => [ ],
+    modelValue: "",
   },
 );
+
+let modelValue = $ref(props.modelValue);
+
+function modelValueUpdate(value: string) {
+  modelValue = value;
+  emit("update:modelValue", modelValue);
+}
+
+watch(
+  () => props.modelValue,
+  () => {
+    modelValue = props.modelValue;
+  },
+);
+
+function clearClk() {
+  modelValue = "";
+  emit("update:modelValue", modelValue);
+}
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
 

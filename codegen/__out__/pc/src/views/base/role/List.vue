@@ -396,7 +396,7 @@
           </template>
           
           <!-- 菜单 -->
-          <template v-else-if="'_menu_ids' === col.prop">
+          <template v-else-if="'menu_ids_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -558,16 +558,16 @@ const props = defineProps<{
   remLike?: string; // 备注
   is_enabled?: string|string[]; // 启用
   menu_ids?: string|string[]; // 菜单
-  _menu_ids?: string|string[]; // 菜单
+  menu_ids_lbl?: string|string[]; // 菜单
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_enabled_lbl: "string[]",
   menu_ids: "string[]",
-  _menu_ids: "string[]",
+  menu_ids_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -713,7 +713,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "启用",
-      prop: "_is_enabled",
+      prop: "is_enabled_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -721,7 +721,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "菜单",
-      prop: "_menu_ids",
+      prop: "menu_ids_lbl",
       minWidth: 50,
       align: "center",
       headerAlign: "center",

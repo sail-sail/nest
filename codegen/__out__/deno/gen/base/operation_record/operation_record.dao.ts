@@ -141,16 +141,16 @@ async function getWhereQuery(
     search.create_usr_id = [ search.create_usr_id ];
   }
   if (search?.create_usr_id && search?.create_usr_id.length > 0) {
-    whereQuery += ` and _create_usr_id.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id === null) {
-    whereQuery += ` and _create_usr_id.id is null`;
+    whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?._create_usr_id && !Array.isArray(search?._create_usr_id)) {
-    search._create_usr_id = [ search._create_usr_id ];
+  if (search?.create_usr_id_lbl && !Array.isArray(search?.create_usr_id_lbl)) {
+    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
-  if (search?._create_usr_id && search._create_usr_id?.length > 0) {
-    whereQuery += ` and _create_usr_id in ${ args.push(search._create_usr_id) }`;
+  if (search?.create_usr_id_lbl && search.create_usr_id_lbl?.length > 0) {
+    whereQuery += ` and create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.create_time && search?.create_time?.length > 0) {
     if (search.create_time[0] != null) {
@@ -164,16 +164,16 @@ async function getWhereQuery(
     search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id && search?.update_usr_id.length > 0) {
-    whereQuery += ` and _update_usr_id.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id === null) {
-    whereQuery += ` and _update_usr_id.id is null`;
+    whereQuery += ` and update_usr_id_lbl.id is null`;
   }
-  if (search?._update_usr_id && !Array.isArray(search?._update_usr_id)) {
-    search._update_usr_id = [ search._update_usr_id ];
+  if (search?.update_usr_id_lbl && !Array.isArray(search?.update_usr_id_lbl)) {
+    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
-  if (search?._update_usr_id && search._update_usr_id?.length > 0) {
-    whereQuery += ` and _update_usr_id in ${ args.push(search._update_usr_id) }`;
+  if (search?.update_usr_id_lbl && search.update_usr_id_lbl?.length > 0) {
+    whereQuery += ` and update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time && search?.update_time?.length > 0) {
     if (search.update_time[0] != null) {
@@ -199,10 +199,10 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_operation_record t
-    left join base_usr _create_usr_id
-      on _create_usr_id.id = t.create_usr_id
-    left join base_usr _update_usr_id
-      on _update_usr_id.id = t.update_usr_id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -263,8 +263,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_create_usr_id.lbl _create_usr_id
-      ,_update_usr_id.lbl _update_usr_id
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -315,10 +315,10 @@ export async function getFieldComments() {
     lbl: await n("操作"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
-    _create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
     update_usr_id: await n("更新人"),
-    _update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
   };
   return fieldComments;
@@ -581,28 +581,28 @@ export async function create(
     }
   }
   if (model.mod !== undefined) {
-    sql += `,\`mod\``;
+    sql += `,mod`;
   }
   if (model.mod_lbl !== undefined) {
-    sql += `,\`mod_lbl\``;
+    sql += `,mod_lbl`;
   }
   if (model.method !== undefined) {
-    sql += `,\`method\``;
+    sql += `,method`;
   }
   if (model.method_lbl !== undefined) {
-    sql += `,\`method_lbl\``;
+    sql += `,method_lbl`;
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   if (model.update_usr_id !== undefined) {
-    sql += `,\`update_usr_id\``;
+    sql += `,update_usr_id`;
   }
   if (model.update_time !== undefined) {
-    sql += `,\`update_time\``;
+    sql += `,update_time`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
@@ -743,37 +743,37 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.mod !== undefined) {
     if (model.mod != oldModel?.mod) {
-      sql += `\`mod\` = ${ args.push(model.mod) },`;
+      sql += `mod = ${ args.push(model.mod) },`;
       updateFldNum++;
     }
   }
   if (model.mod_lbl !== undefined) {
     if (model.mod_lbl != oldModel?.mod_lbl) {
-      sql += `\`mod_lbl\` = ${ args.push(model.mod_lbl) },`;
+      sql += `mod_lbl = ${ args.push(model.mod_lbl) },`;
       updateFldNum++;
     }
   }
   if (model.method !== undefined) {
     if (model.method != oldModel?.method) {
-      sql += `\`method\` = ${ args.push(model.method) },`;
+      sql += `method = ${ args.push(model.method) },`;
       updateFldNum++;
     }
   }
   if (model.method_lbl !== undefined) {
     if (model.method_lbl != oldModel?.method_lbl) {
-      sql += `\`method_lbl\` = ${ args.push(model.method_lbl) },`;
+      sql += `method_lbl = ${ args.push(model.method_lbl) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }

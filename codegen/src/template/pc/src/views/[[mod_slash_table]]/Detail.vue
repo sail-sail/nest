@@ -681,7 +681,7 @@ async function showDialog(
         if (hasLocked) {
         #>
         is_locked: undefined,
-        _is_locked: undefined,<#
+        is_locked_lbl: undefined,<#
         }
         #>
       };

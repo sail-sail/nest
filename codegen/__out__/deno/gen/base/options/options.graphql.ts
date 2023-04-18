@@ -18,25 +18,25 @@ type OptionsModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
   "版本号"
   version: Int!
   "创建人"
   create_usr_id: ID!
   "创建人"
-  _create_usr_id: String
+  create_usr_id_lbl: String
   "创建时间"
   create_time: String
   "更新人"
   update_usr_id: ID!
   "更新人"
-  _update_usr_id: String
+  update_usr_id_lbl: String
   "更新时间"
   update_time: String
 }
@@ -52,25 +52,25 @@ type OptionsFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "备注"
   rem: String!
   "锁定"
   is_locked: String!
   "锁定"
-  _is_locked: String!
+  is_locked_lbl: String!
   "版本号"
   version: String!
   "创建人"
   create_usr_id: String!
   "创建人"
-  _create_usr_id: String!
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "更新人"
   update_usr_id: String!
   "更新人"
-  _update_usr_id: String!
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
 }
@@ -90,25 +90,25 @@ input OptionsInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String
   "锁定"
   is_locked: Int
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
   "版本号"
   version: Int
   "创建人"
   create_usr_id: ID
   "创建人"
-  _create_usr_id: String
+  create_usr_id_lbl: String
   "创建时间"
   create_time: String
   "更新人"
   update_usr_id: ID
   "更新人"
-  _update_usr_id: String
+  update_usr_id_lbl: String
   "更新时间"
   update_time: String
 }
@@ -141,12 +141,12 @@ input OptionsSearch {
   version: [Int]
   "创建人"
   create_usr_id: [String]
-  _create_usr_id: [String]
+  create_usr_id_lbl: [String]
   "创建时间"
   create_time: [String]
   "更新人"
   update_usr_id: [String]
-  _update_usr_id: [String]
+  update_usr_id_lbl: [String]
   "更新时间"
   update_time: [String]
 }

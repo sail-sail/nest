@@ -132,26 +132,26 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_role t
-    left join \`base_role_menu\`
-      on \`base_role_menu\`.role_id = t.id
-      and \`base_role_menu\`.is_deleted = 0
-    left join \`base_menu\`
-      on \`base_role_menu\`.menu_id = base_menu.id
+    left join base_role_menu
+      on base_role_menu.role_id = t.id
+      and base_role_menu.is_deleted = 0
+    left join base_menu
+      on base_role_menu.menu_id = base_menu.id
       and base_menu.is_deleted = 0
     left join (
       select
         json_arrayagg(base_menu.id) menu_ids,
-        json_arrayagg(base_menu.lbl) _menu_ids,
+        json_arrayagg(base_menu.lbl) menu_ids_lbl,
         base_role.id role_id
-      from \`base_role_menu\`
+      from base_role_menu
       inner join base_menu
-        on base_menu.id = \`base_role_menu\`.menu_id
+        on base_menu.id = base_role_menu.menu_id
         and base_menu.is_deleted = 0
       inner join base_role
-        on base_role.id = \`base_role_menu\`.role_id
+        on base_role.id = base_role_menu.role_id
         and base_role.is_deleted = 0
       where
-      \`base_role_menu\`.is_deleted = 0
+      base_role_menu.is_deleted = 0
       group by role_id
     ) _menu
       on _menu.role_id = t.id
@@ -219,7 +219,7 @@ export async function findAll(
   let sql = /*sql*/ `
     select t.*
       ,max(menu_ids) menu_ids
-      ,max(_menu_ids) _menu_ids
+      ,max(menu_ids_lbl) menu_ids_lbl
     from
       ${ getFromQuery() }
     where
@@ -265,14 +265,14 @@ export async function findAll(
     const model = result[i];
     
     // 启用
-    let _is_enabled = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
-        _is_enabled = dictItem.lbl;
+        is_enabled_lbl = dictItem.lbl;
       }
     }
-    model._is_enabled = _is_enabled;
+    model.is_enabled_lbl = is_enabled_lbl;
   }
   
   return result;
@@ -287,9 +287,9 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     rem: await n("备注"),
     is_enabled: await n("启用"),
-    _is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     menu_ids: await n("菜单"),
-    _menu_ids: await n("菜单"),
+    menu_ids_lbl: await n("菜单"),
   };
   return fieldComments;
 }
@@ -528,19 +528,19 @@ export async function create(
   
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
   
   // 菜单
-  if (!model.menu_ids && model._menu_ids) {
-    if (typeof model._menu_ids === "string" || model._menu_ids instanceof String) {
-      model._menu_ids = model._menu_ids.split(",");
+  if (!model.menu_ids && model.menu_ids_lbl) {
+    if (typeof model.menu_ids_lbl === "string" || model.menu_ids_lbl instanceof String) {
+      model.menu_ids_lbl = model.menu_ids_lbl.split(",");
     }
-    model._menu_ids = model._menu_ids.map((item: string) => item.trim());
+    model.menu_ids_lbl = model.menu_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -548,7 +548,7 @@ export async function create(
       from
         menu t
       where
-        t.lbl in ${ args.push(model._menu_ids) }
+        t.lbl in ${ args.push(model.menu_ids_lbl) }
     `;
     interface Result {
       id: string;
@@ -593,13 +593,13 @@ export async function create(
     }
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   if (model.is_enabled !== undefined) {
-    sql += `,\`is_enabled\``;
+    sql += `,is_enabled`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
@@ -737,19 +737,19 @@ export async function updateById(
   }
   
   // 启用
-  if (isNotEmpty(model._is_enabled) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model._is_enabled)?.val;
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
   }
 
   // 菜单
-  if (!model.menu_ids && model._menu_ids) {
-    if (typeof model._menu_ids === "string" || model._menu_ids instanceof String) {
-      model._menu_ids = model._menu_ids.split(",");
+  if (!model.menu_ids && model.menu_ids_lbl) {
+    if (typeof model.menu_ids_lbl === "string" || model.menu_ids_lbl instanceof String) {
+      model.menu_ids_lbl = model.menu_ids_lbl.split(",");
     }
-    model._menu_ids = model._menu_ids.map((item: string) => item.trim());
+    model.menu_ids_lbl = model.menu_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -757,7 +757,7 @@ export async function updateById(
       from
         menu t
       where
-        t.lbl in ${ args.push(model._menu_ids) }
+        t.lbl in ${ args.push(model.menu_ids_lbl) }
     `;
     interface Result {
       id: string;
@@ -788,19 +788,19 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel?.is_enabled) {
-      sql += `\`is_enabled\` = ${ args.push(model.is_enabled) },`;
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }

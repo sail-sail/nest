@@ -39,10 +39,10 @@ export async function findAll(
           lbl
           rem
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -110,10 +110,10 @@ export async function findById(
           lbl
           rem
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -280,10 +280,10 @@ export function useExportExcel() {
             lbl
             rem
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
           getFieldCommentsOperation_record {
@@ -294,10 +294,10 @@ export function useExportExcel() {
             lbl
             rem
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
         }

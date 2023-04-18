@@ -10,11 +10,11 @@ type MenuModel {
   "类型"
   type: String!
   "类型"
-  _type: String
+  type_lbl: String
   "父菜单"
   menu_id: ID!
   "父菜单"
-  _menu_id: String
+  menu_id_lbl: String
   "名称"
   lbl: String!
   "路由"
@@ -24,7 +24,7 @@ type MenuModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "排序"
   order_by: Int!
   "备注"
@@ -34,11 +34,11 @@ type MenuFieldComment {
   "类型"
   type: String!
   "类型"
-  _type: String!
+  type_lbl: String!
   "父菜单"
   menu_id: String!
   "父菜单"
-  _menu_id: String!
+  menu_id_lbl: String!
   "名称"
   lbl: String!
   "路由"
@@ -48,7 +48,7 @@ type MenuFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -62,11 +62,11 @@ input MenuInput {
   "类型"
   type: String
   "类型"
-  _type: String
+  type_lbl: String
   "父菜单"
   menu_id: ID
   "父菜单"
-  _menu_id: String
+  menu_id_lbl: String
   "名称"
   lbl: String
   "路由"
@@ -76,7 +76,7 @@ input MenuInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "排序"
   order_by: Int
   "备注"
@@ -93,7 +93,7 @@ input MenuSearch {
   type: [String]
   "父菜单"
   menu_id: [String]
-  _menu_id: [String]
+  menu_id_lbl: [String]
   "名称"
   lbl: String
   lblLike: String

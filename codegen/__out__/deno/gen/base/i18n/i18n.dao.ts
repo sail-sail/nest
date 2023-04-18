@@ -76,31 +76,31 @@ async function getWhereQuery(
     search.lang_id = [ search.lang_id ];
   }
   if (search?.lang_id && search?.lang_id.length > 0) {
-    whereQuery += ` and _lang_id.id in ${ args.push(search.lang_id) }`;
+    whereQuery += ` and lang_id_lbl.id in ${ args.push(search.lang_id) }`;
   }
   if (search?.lang_id === null) {
-    whereQuery += ` and _lang_id.id is null`;
+    whereQuery += ` and lang_id_lbl.id is null`;
   }
-  if (search?._lang_id && !Array.isArray(search?._lang_id)) {
-    search._lang_id = [ search._lang_id ];
+  if (search?.lang_id_lbl && !Array.isArray(search?.lang_id_lbl)) {
+    search.lang_id_lbl = [ search.lang_id_lbl ];
   }
-  if (search?._lang_id && search._lang_id?.length > 0) {
-    whereQuery += ` and _lang_id in ${ args.push(search._lang_id) }`;
+  if (search?.lang_id_lbl && search.lang_id_lbl?.length > 0) {
+    whereQuery += ` and lang_id_lbl in ${ args.push(search.lang_id_lbl) }`;
   }
   if (search?.menu_id && !Array.isArray(search?.menu_id)) {
     search.menu_id = [ search.menu_id ];
   }
   if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and _menu_id.id in ${ args.push(search.menu_id) }`;
+    whereQuery += ` and menu_id_lbl.id in ${ args.push(search.menu_id) }`;
   }
   if (search?.menu_id === null) {
-    whereQuery += ` and _menu_id.id is null`;
+    whereQuery += ` and menu_id_lbl.id is null`;
   }
-  if (search?._menu_id && !Array.isArray(search?._menu_id)) {
-    search._menu_id = [ search._menu_id ];
+  if (search?.menu_id_lbl && !Array.isArray(search?.menu_id_lbl)) {
+    search.menu_id_lbl = [ search.menu_id_lbl ];
   }
-  if (search?._menu_id && search._menu_id?.length > 0) {
-    whereQuery += ` and _menu_id in ${ args.push(search._menu_id) }`;
+  if (search?.menu_id_lbl && search.menu_id_lbl?.length > 0) {
+    whereQuery += ` and menu_id_lbl in ${ args.push(search.menu_id_lbl) }`;
   }
   if (search?.code !== undefined) {
     whereQuery += ` and t.code = ${ args.push(search.code) }`;
@@ -145,10 +145,10 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_i18n t
-    left join base_lang _lang_id
-      on _lang_id.id = t.lang_id
-    left join base_menu _menu_id
-      on _menu_id.id = t.menu_id
+    left join base_lang lang_id_lbl
+      on lang_id_lbl.id = t.lang_id
+    left join base_menu menu_id_lbl
+      on menu_id_lbl.id = t.menu_id
   `;
   return fromQuery;
 }
@@ -212,8 +212,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,_lang_id.lbl _lang_id
-      ,_menu_id.lbl _menu_id
+      ,lang_id_lbl.lbl lang_id_lbl
+      ,menu_id_lbl.lbl menu_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -262,9 +262,9 @@ export async function getFieldComments() {
   const n = initN("/i18n");
   const fieldComments = {
     lang_id: await n("语言"),
-    _lang_id: await n("语言"),
+    lang_id_lbl: await n("语言"),
     menu_id: await n("菜单"),
-    _menu_id: await n("菜单"),
+    menu_id_lbl: await n("菜单"),
     code: await n("编码"),
     lbl: await n("名称"),
     rem: await n("备注"),
@@ -503,18 +503,18 @@ export async function create(
   const method = "create";
   
   // 语言
-  if (isNotEmpty(model._lang_id) && model.lang_id === undefined) {
-    model._lang_id = String(model._lang_id).trim();
-    const langModel = await langDao.findOne({ lbl: model._lang_id });
+  if (isNotEmpty(model.lang_id_lbl) && model.lang_id === undefined) {
+    model.lang_id_lbl = String(model.lang_id_lbl).trim();
+    const langModel = await langDao.findOne({ lbl: model.lang_id_lbl });
     if (langModel) {
       model.lang_id = langModel.id;
     }
   }
   
   // 菜单
-  if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
-    model._menu_id = String(model._menu_id).trim();
-    const menuModel = await menuDao.findOne({ lbl: model._menu_id });
+  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
+    model.menu_id_lbl = String(model.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: model.menu_id_lbl });
     if (menuModel) {
       model.menu_id = menuModel.id;
     }
@@ -547,19 +547,19 @@ export async function create(
     }
   }
   if (model.lang_id !== undefined) {
-    sql += `,\`lang_id\``;
+    sql += `,lang_id`;
   }
   if (model.menu_id !== undefined) {
-    sql += `,\`menu_id\``;
+    sql += `,menu_id`;
   }
   if (model.code !== undefined) {
-    sql += `,\`code\``;
+    sql += `,code`;
   }
   if (model.lbl !== undefined) {
-    sql += `,\`lbl\``;
+    sql += `,lbl`;
   }
   if (model.rem !== undefined) {
-    sql += `,\`rem\``;
+    sql += `,rem`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -642,18 +642,18 @@ export async function updateById(
   }
   
   // 语言
-  if (isNotEmpty(model._lang_id) && model.lang_id === undefined) {
-    model._lang_id = String(model._lang_id).trim();
-    const langModel = await langDao.findOne({ lbl: model._lang_id });
+  if (isNotEmpty(model.lang_id_lbl) && model.lang_id === undefined) {
+    model.lang_id_lbl = String(model.lang_id_lbl).trim();
+    const langModel = await langDao.findOne({ lbl: model.lang_id_lbl });
     if (langModel) {
       model.lang_id = langModel.id;
     }
   }
   
   // 菜单
-  if (isNotEmpty(model._menu_id) && model.menu_id === undefined) {
-    model._menu_id = String(model._menu_id).trim();
-    const menuModel = await menuDao.findOne({ lbl: model._menu_id });
+  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
+    model.menu_id_lbl = String(model.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: model.menu_id_lbl });
     if (menuModel) {
       model.menu_id = menuModel.id;
     }
@@ -681,31 +681,31 @@ export async function updateById(
   let updateFldNum = 0;
   if (model.lang_id !== undefined) {
     if (model.lang_id != oldModel?.lang_id) {
-      sql += `\`lang_id\` = ${ args.push(model.lang_id) },`;
+      sql += `lang_id = ${ args.push(model.lang_id) },`;
       updateFldNum++;
     }
   }
   if (model.menu_id !== undefined) {
     if (model.menu_id != oldModel?.menu_id) {
-      sql += `\`menu_id\` = ${ args.push(model.menu_id) },`;
+      sql += `menu_id = ${ args.push(model.menu_id) },`;
       updateFldNum++;
     }
   }
   if (model.code !== undefined) {
     if (model.code != oldModel?.code) {
-      sql += `\`code\` = ${ args.push(model.code) },`;
+      sql += `code = ${ args.push(model.code) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
-      sql += `\`lbl\` = ${ args.push(model.lbl) },`;
+      sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
     if (model.rem != oldModel?.rem) {
-      sql += `\`rem\` = ${ args.push(model.rem) },`;
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }

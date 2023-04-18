@@ -398,7 +398,7 @@
         >
           
           <!-- 业务字典 -->
-          <template v-if="'_dictbiz_id' === col.prop">
+          <template v-if="'dictbiz_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -589,7 +589,7 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   dictbiz_id?: string|string[]; // 业务字典
-  _dictbiz_id?: string|string[]; // 业务字典
+  dictbiz_id_lbl?: string|string[]; // 业务字典
   lbl?: string; // 名称
   lblLike?: string; // 名称
   val?: string; // 值
@@ -605,12 +605,12 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   ids: "string[]",
   dictbiz_id: "string[]",
-  _dictbiz_id: "string[]",
+  dictbiz_id_lbl: "string[]",
   order_by: "number",
   is_enabled: "number[]",
-  _is_enabled: "string[]",
+  is_enabled_lbl: "string[]",
   is_locked: "number[]",
-  _is_locked: "string[]",
+  is_locked_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -740,7 +740,7 @@ function getTableColumns(): ColumnType[] {
   return [
     {
       label: "业务字典",
-      prop: "_dictbiz_id",
+      prop: "dictbiz_id_lbl",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -773,7 +773,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "启用",
-      prop: "_is_enabled",
+      prop: "is_enabled_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -788,7 +788,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "锁定",
-      prop: "_is_locked",
+      prop: "is_locked_lbl",
       width: 100,
       align: "center",
       headerAlign: "center",

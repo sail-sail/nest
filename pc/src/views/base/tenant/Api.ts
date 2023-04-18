@@ -37,9 +37,9 @@ export async function findAll(
           expiration
           max_usr_num
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           menu_ids
-          _menu_ids
+          menu_ids_lbl
           order_by
           rem
         }
@@ -161,9 +161,9 @@ export async function findById(
           expiration
           max_usr_num
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           menu_ids
-          _menu_ids
+          menu_ids_lbl
           order_by
           rem
         }
@@ -329,9 +329,9 @@ export function useExportExcel() {
             expiration
             max_usr_num
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             menu_ids
-            _menu_ids
+            menu_ids_lbl
             order_by
             rem
           }
@@ -341,9 +341,9 @@ export function useExportExcel() {
             expiration
             max_usr_num
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             menu_ids
-            _menu_ids
+            menu_ids_lbl
             order_by
             rem
           }

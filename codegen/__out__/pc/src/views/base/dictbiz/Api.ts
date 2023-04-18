@@ -35,18 +35,18 @@ export async function findAll(
           code
           lbl
           type
-          _type
+          type_lbl
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -165,18 +165,18 @@ export async function findById(
           code
           lbl
           type
-          _type
+          type_lbl
           order_by
           is_enabled
-          _is_enabled
+          is_enabled_lbl
           rem
           is_locked
-          _is_locked
+          is_locked_lbl
           create_usr_id
-          _create_usr_id
+          create_usr_id_lbl
           create_time
           update_usr_id
-          _update_usr_id
+          update_usr_id_lbl
           update_time
         }
       }
@@ -368,36 +368,36 @@ export function useExportExcel() {
             code
             lbl
             type
-            _type
+            type_lbl
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
           getFieldCommentsDictbiz {
             code
             lbl
             type
-            _type
+            type_lbl
             order_by
             is_enabled
-            _is_enabled
+            is_enabled_lbl
             rem
             is_locked
-            _is_locked
+            is_locked_lbl
             create_usr_id
-            _create_usr_id
+            create_usr_id_lbl
             create_time
             update_usr_id
-            _update_usr_id
+            update_usr_id_lbl
             update_time
           }
         }

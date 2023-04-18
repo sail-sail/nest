@@ -22,13 +22,13 @@ type Operation_RecordModel {
   "创建人"
   create_usr_id: ID!
   "创建人"
-  _create_usr_id: String
+  create_usr_id_lbl: String
   "创建时间"
   create_time: String
   "更新人"
   update_usr_id: ID!
   "更新人"
-  _update_usr_id: String
+  update_usr_id_lbl: String
   "更新时间"
   update_time: String
 }
@@ -48,13 +48,13 @@ type Operation_RecordFieldComment {
   "创建人"
   create_usr_id: String!
   "创建人"
-  _create_usr_id: String!
+  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "更新人"
   update_usr_id: String!
   "更新人"
-  _update_usr_id: String!
+  update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
 }
@@ -78,13 +78,13 @@ input Operation_RecordInput {
   "创建人"
   create_usr_id: ID
   "创建人"
-  _create_usr_id: String
+  create_usr_id_lbl: String
   "创建时间"
   create_time: String
   "更新人"
   update_usr_id: ID
   "更新人"
-  _update_usr_id: String
+  update_usr_id_lbl: String
   "更新时间"
   update_time: String
 }
@@ -115,12 +115,12 @@ input Operation_RecordSearch {
   remLike: String
   "创建人"
   create_usr_id: [String]
-  _create_usr_id: [String]
+  create_usr_id_lbl: [String]
   "创建时间"
   create_time: [String]
   "更新人"
   update_usr_id: [String]
-  _update_usr_id: [String]
+  update_usr_id_lbl: [String]
   "更新时间"
   update_time: [String]
 }

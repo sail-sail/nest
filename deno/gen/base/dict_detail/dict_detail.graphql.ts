@@ -10,7 +10,7 @@ type Dict_DetailModel {
   "系统字典"
   dict_id: ID!
   "系统字典"
-  _dict_id: String
+  dict_id_lbl: String
   "名称"
   lbl: String!
   "值"
@@ -20,19 +20,19 @@ type Dict_DetailModel {
   "启用"
   is_enabled: Int!
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
 }
 type Dict_DetailFieldComment {
   "系统字典"
   dict_id: String!
   "系统字典"
-  _dict_id: String!
+  dict_id_lbl: String!
   "名称"
   lbl: String!
   "值"
@@ -42,13 +42,13 @@ type Dict_DetailFieldComment {
   "启用"
   is_enabled: String!
   "启用"
-  _is_enabled: String!
+  is_enabled_lbl: String!
   "备注"
   rem: String!
   "锁定"
   is_locked: String!
   "锁定"
-  _is_locked: String!
+  is_locked_lbl: String!
 }
 input Dict_DetailInput {
   "租户ID"
@@ -58,7 +58,7 @@ input Dict_DetailInput {
   "系统字典"
   dict_id: ID
   "系统字典"
-  _dict_id: String
+  dict_id_lbl: String
   "名称"
   lbl: String
   "值"
@@ -68,13 +68,13 @@ input Dict_DetailInput {
   "启用"
   is_enabled: Int
   "启用"
-  _is_enabled: String
+  is_enabled_lbl: String
   "备注"
   rem: String
   "锁定"
   is_locked: Int
   "锁定"
-  _is_locked: String
+  is_locked_lbl: String
 }
 input Dict_DetailSearch {
   "是否已删除"
@@ -85,7 +85,7 @@ input Dict_DetailSearch {
   id: ID
   "系统字典"
   dict_id: [String]
-  _dict_id: [String]
+  dict_id_lbl: [String]
   "名称"
   lbl: String
   lblLike: String
