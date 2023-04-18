@@ -38,43 +38,33 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // ID
     let id: String = row.try_get("id")?;
     let id: ID = id.into();
-    
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    
     // 用户名
     let username: String = row.try_get("username")?;
-    
     // 密码
     let password: String = row.try_get("password")?;
-    
     // 默认部门
     let default_dept_id: String = row.try_get("default_dept_id")?;
     let default_dept_id_lbl: String = default_dept_id.to_string();
-    
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    
     // 备注
     let rem: String = row.try_get("rem")?;
-    
     // 拥有部门
     let dept_ids: sqlx::types::Json<Vec<String>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.0;
     let dept_ids_lbl: sqlx::types::Json<Vec<String>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.0;
-    
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
-    
     // 拥有角色
     let role_ids: sqlx::types::Json<Vec<String>> = row.try_get("role_ids")?;
     let role_ids = role_ids.0;
     let role_ids_lbl: sqlx::types::Json<Vec<String>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.0;
-    
     
     let model = Self {
       id,

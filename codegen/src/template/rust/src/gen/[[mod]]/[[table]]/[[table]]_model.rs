@@ -140,8 +140,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#>
     let <#=column_name#>: String = row.try_get("<#=column_name#>")?;<#
       }
-    #>
-    <#
+    #><#
     }
     #>
     
