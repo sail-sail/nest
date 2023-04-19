@@ -23,6 +23,12 @@ use super::gql::model::{SortInput, PageInput};
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = dotenv!("server_tokentimeout").parse::<i64>().unwrap_or(3600);
   static ref DB_POOL: Pool<MySql> = init_db_pool().unwrap();
+  static ref IS_DEBUG: bool = init_debug();
+}
+
+fn init_debug() -> bool {
+  let is_debug = event_enabled!(Level::INFO);
+  is_debug
 }
 
 fn init_db_pool() -> Result<Pool<MySql>> {
@@ -179,7 +185,7 @@ pub trait Ctx<'a>: Send + Sized {
   ) -> Result<u64> {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
-    let mut is_debug = event_enabled!(Level::INFO);
+    let mut is_debug: bool = IS_DEBUG.clone();
     let mut is_tran = self.get_is_tran();
     if let Some(options) = &options {
       is_debug = options.is_debug;
@@ -422,7 +428,7 @@ pub trait Ctx<'a>: Send + Sized {
     
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
-    let mut is_debug = event_enabled!(Level::INFO);
+    let mut is_debug: bool = IS_DEBUG.clone();
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options.as_ref() {
       is_debug = options.is_debug;
