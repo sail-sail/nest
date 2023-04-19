@@ -38,7 +38,8 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 
 export function useSelect<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
-    tableSelectable: ((row: T, index?: number) => boolean) | undefined,
+    tableSelectable?: ((row: T, index?: number) => boolean),
+    isRadio?: boolean,
   },
 ) {
   
@@ -111,17 +112,26 @@ export function useSelect<T>(
       if (list.length === 0) {
         selectedIds = [ ];
       } else {
-        for (let i = 0; i < list.length; i++) {
-          const item = list[i];
-          if (!selectedIds.includes(item.id)) {
-            selectedIds.push(item.id);
+        if (opts?.isRadio) {
+          tableRef.value?.clearSelection();
+          selectedIds = [ list[0].id ];
+        } else {
+          for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            if (!selectedIds.includes(item.id)) {
+              selectedIds.push(item.id);
+            }
           }
         }
       }
     } else {
       if (list.includes(row)) {
         if (!selectedIds.includes(row.id)) {
-          selectedIds = [ ...selectedIds, row.id ];
+          if (opts?.isRadio) {
+            selectedIds = [ row.id ];
+          } else {
+            selectedIds = [ ...selectedIds, row.id ];
+          }
         }
       } else {
         if (selectedIds.includes(row.id)) {
@@ -149,10 +159,14 @@ export function useSelect<T>(
       if (selectedIds.includes(row.id)) {
         selectedIds = selectedIds.filter((id) => id !== row.id);
       } else {
-        selectedIds = [
-          ...selectedIds,
-          row.id,
-        ];
+        if (!opts?.isRadio) {
+          selectedIds = [
+            ...selectedIds,
+            row.id,
+          ];
+        } else {
+          selectedIds = [ row.id ];
+        }
       }
     } else {
       if (!row) {
