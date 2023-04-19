@@ -6,6 +6,7 @@ use crate::common::context::{
   Ctx,
   QueryArgs,
   Options,
+  CountModel,
   get_order_by_query,
   get_page_query,
 };
@@ -364,6 +365,53 @@ pub async fn find_all<'a>(
   }
   
   Ok(res)
+}
+
+pub async fn find_count<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<UsrSearch>,
+  options: Option<Options>,
+) -> Result<i64> {
+  let table = "base_usr";
+  let _method = "find_count";
+  
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query();
+  let where_query = get_where_query(ctx, &mut args, search);
+  
+  let sql = format!(r#"
+    select
+      count(1) total
+    from
+      (
+        select
+          1
+        from
+          {from_query}
+        where
+          {where_query}
+        group by t.id
+      ) t
+  "#);
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = options.into();
+  
+  let res: CountModel = ctx.query_one(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  let total = res.total;
+  
+  Ok(total)
 }
 
 /// 获取字段对应的国家化后的名称

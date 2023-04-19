@@ -57,3 +57,19 @@ pub async fn find_all<'a>(
   
   Ok(res)
 }
+
+/// 根据搜索条件查找总数
+pub async fn find_count<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
+) -> Result<i64> {
+  
+  let res = <#=table#>_dao::find_count(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
