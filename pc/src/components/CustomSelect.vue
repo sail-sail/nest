@@ -38,7 +38,7 @@ import {
 const usrStore = useUsrStore();
 
 let emit = defineEmits<{
-  (e: "update:modelValue", value: string): void,
+  (e: "update:modelValue", value?: string | string[] | null): void,
 }>();
 
 let inited = $ref(false);
@@ -53,7 +53,7 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
-    modelValue: string;
+    modelValue?: string | string[] | null;
     options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
   }>(),
   {
@@ -67,13 +67,13 @@ const props = withDefaults(
     pinyinFilterable: true,
     height: 300,
     options4SelectV2: () => [ ],
-    modelValue: "",
+    modelValue: undefined,
   },
 );
 
 let modelValue = $ref(props.modelValue);
 
-function modelValueUpdate(value: string) {
+function modelValueUpdate(value?: string | string[] | null) {
   modelValue = value;
   emit("update:modelValue", modelValue);
 }
