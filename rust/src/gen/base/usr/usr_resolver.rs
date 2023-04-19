@@ -35,4 +35,21 @@ impl UsrResolver {
     ctx.ok(res).await
   }
   
+  /// 根据搜索条件查找总数
+  async fn find_count_usr<'a>(
+    &self,
+    ctx: &Context<'a>,
+    search: Option<UsrSearch>,
+  ) -> Result<i64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = usr_service::find_count(
+      &mut ctx,
+      search,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
 }

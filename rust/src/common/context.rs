@@ -1,4 +1,5 @@
 use anyhow::{Result, anyhow};
+use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
@@ -12,7 +13,7 @@ use chrono::{Local, DateTime, NaiveDate, NaiveTime};
 use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
-use sqlx::{Pool, MySql, Transaction, Executor};
+use sqlx::{Pool, MySql, Transaction, Executor, FromRow};
 use tracing::{info, error, event_enabled, Level};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
@@ -237,7 +238,7 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-          }
+          };
         }
         let mut debug_sql = sql.to_string();
         for arg in debug_args {
@@ -280,7 +281,7 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-          }
+          };
         }
       }
       let tran = self.get_tran().unwrap();
@@ -339,7 +340,7 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-        }
+        };
       }
       let mut debug_sql = sql.to_string();
       for arg in debug_args {
@@ -382,7 +383,7 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-        }
+        };
       }
     }
     let res = query.execute(&DB_POOL.clone()).await
@@ -480,7 +481,7 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-          }
+          };
         }
         let mut debug_sql = sql.to_string();
         for arg in debug_args {
@@ -523,7 +524,7 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::Uuid(s) => {
               query = query.bind(s);
             }
-          }
+          };
         }
       }
       let tran = self.get_tran().unwrap();
@@ -551,39 +552,39 @@ pub trait Ctx<'a>: Send + Sized {
         debug_args.push(arg.to_string());
         match arg {
           ArgType::String(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Int(s) => {
-              query = query.bind(s);
-            }
-            ArgType::BigInt(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Float(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Decimal(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Bool(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Date(s) => {
-              query = query.bind(s);
-            }
-            ArgType::DateTime(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Time(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Json(s) => {
-              query = query.bind(s);
-            }
-            ArgType::Uuid(s) => {
-              query = query.bind(s);
-            }
-        }
+            query = query.bind(s);
+          }
+          ArgType::Int(s) => {
+            query = query.bind(s);
+          }
+          ArgType::BigInt(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Float(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+        };
       }
       let mut debug_sql = sql.to_string();
       for arg in debug_args {
@@ -626,7 +627,7 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::Uuid(s) => {
             query = query.bind(s);
           }
-        }
+        };
       }
     }
     let res = query.fetch_all(&DB_POOL.clone()).await
@@ -647,14 +648,13 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 带参数查询一条数据
-  async fn query_one<T, R>(
+  async fn query_one<R>(
     &mut self,
     sql: String,
-    args: Vec<T>,
+    args: Vec<ArgType>,
     options: Option<Options>,
   ) -> Result<R>
   where
-    T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
   {
     if let Some(options) = &options {
@@ -690,14 +690,82 @@ pub trait Ctx<'a>: Send + Sized {
         let mut debug_args = vec![];
         for arg in args {
           debug_args.push(arg.to_string());
-          query = query.bind(arg);
+          match arg {
+            ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+          };
         }
         let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
         let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
-          query = query.bind(arg);
+          match arg {
+            ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Int(s) => {
+              query = query.bind(s);
+            }
+            ArgType::BigInt(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Float(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Decimal(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Bool(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Date(s) => {
+              query = query.bind(s);
+            }
+            ArgType::DateTime(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Time(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Json(s) => {
+              query = query.bind(s);
+            }
+            ArgType::Uuid(s) => {
+              query = query.bind(s);
+            }
+          };
         }
       }
       let tran = self.get_tran().unwrap();
@@ -722,14 +790,82 @@ pub trait Ctx<'a>: Send + Sized {
       let mut debug_args = vec![];
       for arg in args {
         debug_args.push(arg.to_string());
-        query = query.bind(arg);
+        match arg {
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Int(s) => {
+            query = query.bind(s);
+          }
+          ArgType::BigInt(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Float(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+        };
       }
       let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
       let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
-        query = query.bind(arg);
+        match arg {
+          ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Int(s) => {
+            query = query.bind(s);
+          }
+          ArgType::BigInt(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Float(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Decimal(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Bool(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Date(s) => {
+            query = query.bind(s);
+          }
+          ArgType::DateTime(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Time(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Json(s) => {
+            query = query.bind(s);
+          }
+          ArgType::Uuid(s) => {
+            query = query.bind(s);
+          }
+        };
       }
     }
     let res = query.fetch_one(&DB_POOL.clone()).await
@@ -864,6 +1000,13 @@ pub struct CtxImpl<'a> {
   gql_ctx: &'a async_graphql::Context<'a>,
   
   now: DateTime<Local>,
+  
+}
+
+#[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
+pub struct CountModel {
+  
+  pub total: i64,
   
 }
 
