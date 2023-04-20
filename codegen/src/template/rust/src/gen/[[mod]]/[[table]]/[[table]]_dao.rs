@@ -62,7 +62,7 @@ use super::<#=table#>_model::*;
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
-  search: Option<UsrSearch>,
+  search: Option<<#=tableUP#>Search>,
 ) -> String {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
@@ -402,8 +402,8 @@ pub async fn find_all<'a>(
     from
       {from_query}
     where
-      {where_query}{order_by_query}{page_query}
-    group by t.id
+      {where_query}
+    group by t.id{order_by_query}{page_query}
   "#);
   
   let args = args.into();
@@ -418,7 +418,7 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
-  let mut res: Vec<UsrModel> = ctx.query(
+  let mut res: Vec<<#=tableUP#>Model> = ctx.query(
     sql,
     args,
     options,
@@ -680,4 +680,30 @@ pub fn get_unique_keys() -> Vec<&'static str> {
     #>
   ];
   unique_keys
+}
+
+/// 根据条件查找第一条数据
+pub async fn find_one<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<<#=tableUP#>Search>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  let page = PageInput {
+    pg_offset: 0.into(),
+    pg_size: 1.into(),
+  }.into();
+  
+  let res = find_all(
+    ctx,
+    search,
+    page,
+    sort,
+    options,
+  ).await?;
+  
+  let model: Option<<#=tableUP#>Model> = res.into_iter().next();
+  
+  Ok(model)
 }

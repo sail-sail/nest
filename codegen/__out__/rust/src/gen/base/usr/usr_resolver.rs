@@ -52,4 +52,23 @@ impl UsrResolver {
     ctx.ok(res).await
   }
   
+  /// 根据条件查找第一条数据
+  pub async fn find_one_usr<'a>(
+    &self,
+    ctx: &Context<'a>,
+    search: Option<UsrSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<Option<UsrModel>> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let model = usr_service::find_one(
+      &mut ctx,
+      search,
+      sort,
+      None,
+    ).await;
+    
+    ctx.ok(model).await
+  }
+  
 }

@@ -73,3 +73,22 @@ pub async fn find_count<'a>(
   
   Ok(res)
 }
+
+/// 根据条件查找第一条数据
+pub async fn find_one<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<<#=tableUP#>Search>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<<#=tableUP#>Model>> {
+    
+  let model = <#=table#>_dao::find_one(
+    ctx,
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
