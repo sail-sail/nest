@@ -41,3 +41,22 @@ pub async fn find_count<'a>(
   
   Ok(res)
 }
+
+/// 根据条件查找第一条数据
+pub async fn find_one<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<UsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<UsrModel>> {
+    
+  let model = usr_dao::find_one(
+    ctx,
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+

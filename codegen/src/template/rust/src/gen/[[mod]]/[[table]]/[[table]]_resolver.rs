@@ -71,7 +71,7 @@ impl <#=tableUP#>Resolver {
   async fn find_count_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
-    search: Option<UsrSearch>,
+    search: Option<<#=tableUP#>Search>,
   ) -> Result<i64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
@@ -82,6 +82,25 @@ impl <#=tableUP#>Resolver {
     ).await;
     
     ctx.ok(res).await
+  }
+  
+  /// 根据条件查找第一条数据
+  pub async fn find_one_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    search: Option<<#=tableUP#>Search>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<Option<<#=tableUP#>Model>> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let model = <#=table#>_service::find_one(
+      &mut ctx,
+      search,
+      sort,
+      None,
+    ).await;
+    
+    ctx.ok(model).await
   }
   
 }
