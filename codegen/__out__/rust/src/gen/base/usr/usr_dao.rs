@@ -403,13 +403,16 @@ pub async fn find_count<'a>(
   
   let options = options.into();
   
-  let res: CountModel = ctx.query_one(
+  let res: Option<CountModel> = ctx.query_one(
     sql,
     args,
     options,
   ).await?;
   
-  let total = res.total;
+  let total = res
+    .map(|item| item.total)
+    .unwrap_or_default()
+    ;
   
   Ok(total)
 }

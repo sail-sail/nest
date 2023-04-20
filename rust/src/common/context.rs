@@ -18,7 +18,7 @@ use tracing::{info, error, event_enabled, Level};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
-use super::cache::cache_dao::{get_cache, set_cache, del_caches};
+use super::cache::cache_dao::{get_cache, set_cache, del_caches, del_cache};
 use super::gql::model::{SortInput, PageInput};
 
 lazy_static! {
@@ -411,7 +411,6 @@ pub trait Ctx<'a>: Send + Sized {
     options: Option<Options>,
   ) -> Result<Vec<R>>
   where
-    // T: 'a + Send + sqlx::encode::Encode<'a, sqlx::MySql> + sqlx::Type<sqlx::MySql> + Debug + Display,
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
   {
     if let Some(options) = &options {
@@ -421,8 +420,15 @@ pub trait Ctx<'a>: Send + Sized {
         let str = get_cache(cache_key1, cache_key2).await?;
         if str.is_some() {
           let str = str.unwrap();
-          let res: Vec<R> = serde_json::from_str(&str)?;
-          return Ok(res);
+          let res2: Vec<R>;
+          let res = serde_json::from_str::<Vec<R>>(&str);
+          if let Ok(res) = res {
+            res2 = res;
+          } else {
+            res2 = vec![];
+            del_cache(cache_key1).await?;
+          }
+          return Ok(res2);
         }
       }
     }
@@ -653,9 +659,9 @@ pub trait Ctx<'a>: Send + Sized {
     sql: String,
     args: Vec<ArgType>,
     options: Option<Options>,
-  ) -> Result<R>
+  ) -> Result<Option<R>>
   where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug + Sync,
   {
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -664,8 +670,15 @@ pub trait Ctx<'a>: Send + Sized {
         let str = get_cache(cache_key1, cache_key2).await?;
         if str.is_some() {
           let str = str.unwrap();
-          let res: R = serde_json::from_str(&str)?;
-          return Ok(res);
+          let res2: Option<R>;
+          let res = serde_json::from_str::<R>(&str);
+          if let Ok(res) = res {
+            res2 = res.into();
+          } else {
+            res2 = None;
+            del_cache(cache_key1).await?;
+          }
+          return Ok(res2);
         }
       }
     }
@@ -769,18 +782,20 @@ pub trait Ctx<'a>: Send + Sized {
         }
       }
       let tran = self.get_tran().unwrap();
-      let res = query.fetch_one(tran).await
+      let res = query.fetch_optional(tran).await
         .map_err(|e| {
           let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
-      if let Some(options) = &options {
-        if options.cache_key1.is_some() && options.cache_key2.is_some() {
-          let cache_key1 = options.cache_key1.as_ref().unwrap();
-          let cache_key2 = options.cache_key2.as_ref().unwrap();
-          let str = serde_json::to_string(&res)?;
-          set_cache(cache_key1, cache_key2, &str).await?;
+      if let Some(res) = &res {
+        if let Some(options) = &options {
+          if options.cache_key1.is_some() && options.cache_key2.is_some() {
+            let cache_key1 = options.cache_key1.as_ref().unwrap();
+            let cache_key2 = options.cache_key2.as_ref().unwrap();
+            let str = serde_json::to_string(res)?;
+            set_cache(cache_key1, cache_key2, &str).await?;
+          }
         }
       }
       return Ok(res);
@@ -868,18 +883,20 @@ pub trait Ctx<'a>: Send + Sized {
         };
       }
     }
-    let res = query.fetch_one(&DB_POOL.clone()).await
+    let res = query.fetch_optional(&DB_POOL.clone()).await
       .map_err(|e| {
         let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
         error!("{}", err_msg);
         anyhow::anyhow!(err_msg)
       })?;
-    if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
-        let str = serde_json::to_string(&res)?;
-        set_cache(cache_key1, cache_key2, &str).await?;
+    if let Some(res) = &res {
+      if let Some(options) = &options {
+        if options.cache_key1.is_some() && options.cache_key2.is_some() {
+          let cache_key1 = options.cache_key1.as_ref().unwrap();
+          let cache_key2 = options.cache_key2.as_ref().unwrap();
+          let str = serde_json::to_string(res)?;
+          set_cache(cache_key1, cache_key2, &str).await?;
+        }
       }
     }
     Ok(res)
