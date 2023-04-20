@@ -1027,7 +1027,7 @@ pub struct CountModel {
   
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum ArgType {
   String(String),
   Int(i32),
@@ -1040,6 +1040,27 @@ pub enum ArgType {
   Time(NaiveTime),
   Json(serde_json::Value),
   Uuid(Uuid),
+}
+
+impl Serialize for ArgType {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+      S: serde::Serializer,
+  {
+    match self {
+      ArgType::String(value) => serializer.serialize_str(value),
+      ArgType::Int(value) => serializer.serialize_i32(*value),
+      ArgType::BigInt(value) => serializer.serialize_i64(*value),
+      ArgType::Float(value) => serializer.serialize_f32(*value),
+      ArgType::Decimal(value) => serializer.serialize_str(&value.to_string()),
+      ArgType::Bool(value) => serializer.serialize_u8(*value),
+      ArgType::Date(value) => serializer.serialize_str(&value.format("%Y-%m-%d").to_string()),
+      ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
+      ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
+      ArgType::Json(value) => serializer.serialize_str(&value.to_string()),
+      ArgType::Uuid(value) => serializer.serialize_str(&value.to_string()),
+    }
+  }
 }
 
 impl Display for ArgType {
@@ -1204,10 +1225,7 @@ impl Options {
   pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<ArgType>) -> Self {
     let mut self_ = self;
     self_.cache_key1 = format!("dao.sql.{}", table).into();
-    self_.cache_key2 = json!({
-      "sql": &sql,
-      "args": json!(args),
-    }).to_string().into();
+    self_.cache_key2 = json!([ &sql, args ]).to_string().into();
     self_
   }
   
