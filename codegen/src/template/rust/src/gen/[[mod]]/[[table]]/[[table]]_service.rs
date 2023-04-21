@@ -92,3 +92,18 @@ pub async fn find_one<'a>(
   Ok(model)
 }
 
+/// 根据ID查找第一条数据
+pub async fn find_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  let model = <#=table#>_dao::find_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
