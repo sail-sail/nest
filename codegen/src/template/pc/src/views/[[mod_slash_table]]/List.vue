@@ -1806,7 +1806,7 @@ async function importExcelClk() {
     const foreignKey = column.foreignKey;
     let column_name2 = column_name;
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
-      column_name2 = `_${ column_name }`;
+      column_name2 = `${column_name}_lbl`;
     }
   #>
     [ n("<#=column_comment#>") ]: "<#=column_name2#>",<#

@@ -962,12 +962,12 @@ async function importExcelClk() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("类型") ]: "_type",
-    [ n("父菜单") ]: "_menu_id",
+    [ n("类型") ]: "type_lbl",
+    [ n("父菜单") ]: "menu_id_lbl",
     [ n("名称") ]: "lbl",
     [ n("路由") ]: "route_path",
     [ n("参数") ]: "route_query",
-    [ n("启用") ]: "_is_enabled",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
   };
