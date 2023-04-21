@@ -1021,12 +1021,12 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("用户名") ]: "username",
-    [ n("默认部门") ]: "_default_dept_id",
-    [ n("启用") ]: "_is_enabled",
+    [ n("默认部门") ]: "default_dept_id_lbl",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("备注") ]: "rem",
-    [ n("拥有部门") ]: "_dept_ids",
-    [ n("锁定") ]: "_is_locked",
-    [ n("拥有角色") ]: "_role_ids",
+    [ n("拥有部门") ]: "dept_ids_lbl",
+    [ n("锁定") ]: "is_locked_lbl",
+    [ n("拥有角色") ]: "role_ids_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入用户",
