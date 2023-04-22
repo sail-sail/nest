@@ -1025,12 +1025,12 @@ async function importExcelClk() {
     [ n("键") ]: "ky",
     [ n("值") ]: "val",
     [ n("排序") ]: "order_by",
-    [ n("启用") ]: "_is_enabled",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("备注") ]: "rem",
-    [ n("锁定") ]: "_is_locked",
-    [ n("创建人") ]: "_create_usr_id",
+    [ n("锁定") ]: "is_locked_lbl",
+    [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time",
-    [ n("更新人") ]: "_update_usr_id",
+    [ n("更新人") ]: "update_usr_id_lbl",
     [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({

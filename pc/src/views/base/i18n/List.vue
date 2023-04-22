@@ -930,8 +930,8 @@ async function importExcelClk() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("语言") ]: "_lang_id",
-    [ n("菜单") ]: "_menu_id",
+    [ n("语言") ]: "lang_id_lbl",
+    [ n("菜单") ]: "menu_id_lbl",
     [ n("编码") ]: "code",
     [ n("名称") ]: "lbl",
     [ n("备注") ]: "rem",

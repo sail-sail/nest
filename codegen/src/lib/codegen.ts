@@ -93,7 +93,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           }
           lbl += `<%=comment.`;
           if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
-            lbl += "_" + column_name;
+            lbl += column_name + "_lbl";
           } else {
             lbl += column_name;
           }
@@ -119,7 +119,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           }
           str += "model.";
           if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
-            str += "_" + column_name;
+            str += column_name + "_lbl";
           } else {
             str += column_name;
           }

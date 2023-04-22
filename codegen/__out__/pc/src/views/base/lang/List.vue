@@ -874,7 +874,7 @@ async function importExcelClk() {
     [ n("编码") ]: "code",
     [ n("名称") ]: "lbl",
     [ n("备注") ]: "rem",
-    [ n("启用") ]: "_is_enabled",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
   };
   const file = await uploadFileDialogRef.showDialog({

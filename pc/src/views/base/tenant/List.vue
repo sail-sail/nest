@@ -969,8 +969,8 @@ async function importExcelClk() {
     [ n("域名绑定") ]: "host",
     [ n("到期日") ]: "expiration",
     [ n("最大用户数") ]: "max_usr_num",
-    [ n("启用") ]: "_is_enabled",
-    [ n("菜单") ]: "_menu_ids",
+    [ n("启用") ]: "is_enabled_lbl",
+    [ n("菜单") ]: "menu_ids_lbl",
     [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
   };
