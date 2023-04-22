@@ -891,8 +891,8 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("备注") ]: "rem",
-    [ n("启用") ]: "_is_enabled",
-    [ n("菜单") ]: "_menu_ids",
+    [ n("启用") ]: "is_enabled_lbl",
+    [ n("菜单") ]: "menu_ids_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入角色",

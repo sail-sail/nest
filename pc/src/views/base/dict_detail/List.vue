@@ -957,13 +957,13 @@ async function importExcelClk() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("系统字典") ]: "_dict_id",
+    [ n("系统字典") ]: "dict_id_lbl",
     [ n("名称") ]: "lbl",
     [ n("值") ]: "val",
     [ n("排序") ]: "order_by",
-    [ n("启用") ]: "_is_enabled",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("备注") ]: "rem",
-    [ n("锁定") ]: "_is_locked",
+    [ n("锁定") ]: "is_locked_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入系统字典明细",
