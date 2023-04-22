@@ -71,4 +71,21 @@ impl UsrResolver {
     ctx.ok(model).await
   }
   
+  /// 根据ID查找第一条数据
+  pub async fn find_by_id_usr<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<Option<UsrModel>> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let model = usr_service::find_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(model).await
+  }
+  
 }

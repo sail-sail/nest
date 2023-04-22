@@ -60,3 +60,18 @@ pub async fn find_one<'a>(
   Ok(model)
 }
 
+/// 根据ID查找第一条数据
+pub async fn find_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<Option<UsrModel>> {
+  
+  let model = usr_dao::find_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
