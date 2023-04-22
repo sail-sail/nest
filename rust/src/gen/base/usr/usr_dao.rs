@@ -470,3 +470,25 @@ pub async fn find_one<'a>(
   
   Ok(model)
 }
+
+/// 根据ID查找第一条数据
+pub async fn find_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<Option<UsrModel>> {
+  
+  let search = UsrSearch {
+    id: Some(id),
+    ..Default::default()
+  }.into();
+  
+  let res = find_one(
+    ctx,
+    search,
+    None,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
