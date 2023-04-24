@@ -1,14 +1,19 @@
 use anyhow::Result;
 
+use crate::common::auth::auth_dao::get_password;
 use crate::common::util::string::*;
+use crate::common::util::dao::*;
 
 use crate::common::context::{
   Ctx,
   QueryArgs,
   Options,
   CountModel,
+  get_short_uuid,
   get_order_by_query,
   get_page_query,
+  UniqueType,
+  SrvErr,
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
@@ -147,7 +152,7 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_enabled: Vec<String> = match &search {
+    let is_enabled: Vec<u8> = match &search {
       Some(item) => item.is_enabled.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -197,7 +202,7 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_locked: Vec<String> = match &search {
+    let is_locked: Vec<u8> = match &search {
       Some(item) => item.is_locked.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -491,4 +496,273 @@ pub async fn find_by_id<'a>(
   ).await?;
   
   Ok(res)
+}
+
+/// 通过唯一约束获得一行数据
+pub async fn find_by_unique<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: UsrSearch,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<UsrModel>> {
+  
+  if search.id.is_none() {
+    if
+      search.lbl.is_none()
+    {
+      return Ok(None);
+    }
+  }
+  
+  let search = UsrSearch {
+    id: search.id,
+    lbl: search.lbl,
+    ..Default::default()
+  }.into();
+  
+  let model = find_one(
+    ctx,
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
+/// 根据唯一约束对比对象是否相等
+pub fn equals_by_unique(
+  input: UsrInput,
+  model: UsrModel,
+) -> bool {
+  if input.id.is_some() {
+    return input.id.unwrap() == model.id;
+  }
+  if
+    input.lbl != model.lbl.into()
+  {
+    return false;
+  }
+  true
+}
+
+/// 通过唯一约束检查数据是否已经存在
+pub async fn check_by_unique<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: UsrInput,
+  model: UsrModel,
+  unique_type: UniqueType,
+) -> Result<Option<String>> {
+  let is_equals = equals_by_unique(
+    input,
+    model,
+  );
+  if !is_equals {
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Ignore {
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Update {
+    // TODO
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Throw {
+    let field_comments = get_field_comments().await?;
+    let err_msg: String = format!(
+      "{} 已经存在",
+      field_comments.lbl,
+    );
+    return Err(SrvErr::msg(err_msg).into());
+  }
+  Ok(None)
+}
+
+pub async fn set_id_by_lbl<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: UsrInput,
+) -> Result<UsrInput> {
+  let mut input = input;
+  
+  let dict_vec = get_dict(ctx, &vec![
+    "is_enabled",
+    "is_locked",
+  ]).await?;
+  
+  let is_enabled_dict = &dict_vec[0];
+  let is_locked_dict = &dict_vec[1];
+  
+  if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
+    input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+  }
+  
+  Ok(input)
+}
+
+/// 创建数据
+pub async fn create<'a>(
+  ctx: &mut impl Ctx<'a>,
+  mut input: UsrInput,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  let table = "base_usr";
+  let _method = "create";
+  
+  let now = ctx.get_now();
+  
+  input = set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
+  let old_model = find_by_unique(
+    ctx,
+    input.clone().into(),
+    None,
+    None,
+  ).await?;
+  
+  if old_model.is_some() {
+    let id = check_by_unique(
+      ctx,
+      input.clone().into(),
+      old_model.unwrap(),
+      UniqueType::Throw,
+    ).await?;
+    match id {
+      Some(id) => return Ok(id),
+      None => {},
+    }
+  }
+  
+  let id = get_short_uuid();
+  
+  if input.id.is_none() {
+    input.id = Some(id.clone().into());
+  }
+  
+  let mut args = QueryArgs::new();
+  
+  let mut sql_fields = "id,create_time".to_owned();
+  
+  let mut sql_values = "?,?".to_owned();
+  
+  args.push(id.clone().into());
+  args.push(now.into());
+  
+  
+  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+    sql_fields += ",tenant_id";
+    sql_values += "?";
+    args.push(tenant_id.into());
+  }
+  
+  if let Some(auth_model) = ctx.get_auth_model() {
+    let usr_id = auth_model.id;
+    sql_fields += ",create_usr_id";
+    sql_values += ",?";
+    args.push(usr_id.into());
+  }
+  
+  if let Some(lbl) = input.lbl {
+    sql_fields += ",lbl";
+    sql_values += ",?";
+    args.push(lbl.into());
+  }
+  
+  if let Some(username) = input.username {
+    sql_fields += ",username";
+    sql_values += ",?";
+    args.push(username.into());
+  }
+  
+  if let Some(password) = input.password {
+    sql_fields += ",password";
+    sql_values += ",?";
+    args.push(get_password(&password)?.into());
+  }
+  
+  if let Some(default_dept_id) = input.default_dept_id {
+    sql_fields += ",default_dept_id";
+    sql_values += ",?";
+    args.push(default_dept_id.into());
+  }
+  
+  if let Some(is_enabled) = input.is_enabled {
+    sql_fields += ",is_enabled";
+    sql_values += ",?";
+    args.push(is_enabled.into());
+  }
+  
+  if let Some(rem) = input.rem {
+    sql_fields += ",rem";
+    sql_values += ",?";
+    args.push(rem.into());
+  }
+  
+  if let Some(is_locked) = input.is_locked {
+    sql_fields += ",is_locked";
+    sql_values += ",?";
+    args.push(is_locked.into());
+  }
+  
+  let sql = format!(
+    "insert into {} ({}) values ({})",
+    table,
+    sql_fields,
+    sql_values,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  if num != 1 {
+    return Err(SrvErr::msg("创建失败".to_owned()).into());
+  }
+  
+  // 拥有部门
+  if let Some(dept_ids) = input.dept_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      dept_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "usr_dept",
+        column1: "usr_id",
+        column2: "dept_id",
+      },
+    ).await?;
+  }
+  
+  // 拥有角色
+  if let Some(role_ids) = input.role_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      role_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "usr_role",
+        column1: "usr_id",
+        column2: "role_id",
+      },
+    ).await?;
+  }
+  
+  Ok(id)
 }

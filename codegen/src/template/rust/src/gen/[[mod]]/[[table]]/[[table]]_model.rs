@@ -33,24 +33,24 @@ pub struct <#=tableUP#>Model {<#
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = "String";
-    } else if (column.DATA_TYPE === 'varchar') {
+    } else if (data_type === 'varchar') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'date') {
+    } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
-    } else if (column.DATA_TYPE === 'datetime') {
+    } else if (data_type === 'datetime') {
       _data_type = "chrono::NaiveDateTime";
-    } else if (column.DATA_TYPE === 'time') {
+    } else if (data_type === 'time') {
       _data_type = "chrono::NaiveTime";
-    } else if (column.DATA_TYPE === 'int') {
+    } else if (data_type === 'int') {
       _data_type = 'i64';
-    } else if (column.DATA_TYPE === 'json') {
+    } else if (data_type === 'json') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'text') {
+    } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'tinyint') {
+    } else if (data_type === 'tinyint') {
       _data_type = 'u8';
-    } else if (column.DATA_TYPE === 'decimal') {
-      _data_type = 'String';
+    } else if (data_type === 'decimal') {
+      _data_type = "rust_decimal::Decimal";
     }
   #><#
     if (column_name === "id") {
@@ -251,14 +251,16 @@ pub struct <#=tableUP#>Search {
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const isPassword = column.isPassword;
     let _data_type = "String";
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey) {
       _data_type = "Vec<String>";
     } else if (column.DATA_TYPE === 'varchar') {
       _data_type = 'String';
     } else if (column.DATA_TYPE === 'date') {
-      _data_type = 'String';
+      _data_type = "Vec<chrono::NaiveDate>";
     } else if (column.DATA_TYPE === 'datetime') {
-      _data_type = 'String';
+      _data_type = "Vec<chrono::NaiveDateTime>";
+    } else if (column.DATA_TYPE === 'time') {
+      _data_type = "Vec<chrono::NaiveTime>";
     } else if (column.DATA_TYPE === 'int') {
       _data_type = "Vec<i64>";
     } else if (column.DATA_TYPE === 'json') {
@@ -268,7 +270,7 @@ pub struct <#=tableUP#>Search {
     } else if (column.DATA_TYPE === 'tinyint') {
       _data_type = "Vec<u8>";
     } else if (column.DATA_TYPE === 'decimal') {
-      _data_type = 'String';
+      _data_type = "Vec<rust_decimal::Decimal>";
     }
   #><#
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
@@ -283,4 +285,132 @@ pub struct <#=tableUP#>Search {
   #><#
   }
   #>
+}
+
+#[derive(FromModel, InputObject, Debug, Default, Clone)]
+pub struct <#=tableUP#>Input {
+  pub id: Option<ID>,<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const isPassword = column.isPassword;
+    let _data_type = "String";
+    if (foreignKey) {
+      _data_type = "String";
+    } else if (data_type === 'varchar') {
+      _data_type = 'String';
+    } else if (data_type === 'date') {
+      _data_type = "chrono::NaiveDate";
+    } else if (data_type === 'datetime') {
+      _data_type = "chrono::NaiveDateTime";
+    } else if (data_type === 'int') {
+      _data_type = "i64";
+    } else if (data_type === 'json') {
+      _data_type = 'String';
+    } else if (data_type === 'text') {
+      _data_type = 'String';
+    } else if (data_type === 'tinyint') {
+      _data_type = "u8";
+    } else if (data_type === 'decimal') {
+      _data_type = "rust_decimal::Decimal";
+    }
+    if (column_name === "id") {
+      _data_type = "ID";
+    }
+  #><#
+    if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+  #>
+  // <#=column_comment#>
+  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name#>_lbl: Option<Vec<String>>,<#
+  } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+  #>
+  // <#=column_comment#>
+  pub <#=column_name#>: Option<<#=_data_type#>>,
+  pub <#=column_name#>_lbl: Option<String>,<#
+  } else {
+  #>
+  // <#=column_comment#>
+  pub <#=column_name#>: Option<<#=_data_type#>>,<#
+  }
+  #><#
+  }
+  #>
+}
+
+impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
+  fn from(input: <#=tableUP#>Input) -> Self {
+    Self {
+      id: input.id.map(|x| x.into()),
+      ids: None,
+      tenant_id: None,
+      is_deleted: None,<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.isVirtual) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === 'id') continue;
+        let data_type = column.DATA_TYPE;
+        let column_type = column.DATA_TYPE;
+        let column_comment = column.COLUMN_COMMENT || "";
+        let selectList = [ ];
+        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+        if (selectStr) {
+          selectList = eval(`(${ selectStr })`);
+        }
+        if (column_comment.indexOf("[") !== -1) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const isPassword = column.isPassword;
+        if (column_name === "id") {
+          continue;
+        }
+      #><#
+      if (foreignKey && foreignKey.multiple) {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>,<#
+      } else if (foreignKey && !foreignKey.multiple) {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
+      } else if (["tinyint"].includes(data_type)) {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
+      } else if (["date","datetime","time","int","decimal"].includes(data_type)) {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x, x]),<#
+      } else {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>,<#
+      }
+      #><#
+      }
+      #>
+    }
+  }
 }

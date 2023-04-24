@@ -1027,6 +1027,46 @@ pub struct CountModel {
   
 }
 
+/// "ignore" | "throw" | "update" = "throw"
+#[allow(dead_code)]
+#[derive(PartialEq, Clone)]
+pub enum UniqueType {
+  Ignore,
+  Throw,
+  Update,
+}
+
+#[derive(Debug)]
+pub struct SrvErr {
+  #[allow(dead_code)]
+  code: Option<String>,
+  msg: String,
+}
+
+impl SrvErr {
+  pub fn msg(msg: String) -> Self {
+    SrvErr {
+      code: None,
+      msg,
+    }
+  }
+  #[allow(dead_code)]
+  pub fn new(code: String, msg: String) -> Self {
+    SrvErr {
+      code: Some(code),
+      msg,
+    }
+  }
+}
+
+impl std::error::Error for SrvErr { }
+
+impl std::fmt::Display for SrvErr {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "{}", self.msg)
+  }
+}
+
 #[derive(Debug, Clone)]
 pub enum ArgType {
   String(String),
@@ -1210,6 +1250,9 @@ pub struct Options {
   
   #[new(default)]
   pub del_cache_key1s: Option<Vec<String>>,
+  
+  #[new(default)]
+  pub unique_type: Option<UniqueType>,
   
 }
 

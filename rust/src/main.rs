@@ -9,6 +9,9 @@ extern crate dotenv_codegen;
 #[macro_use]
 extern crate lazy_static;
 
+#[macro_use]
+extern crate app_macro;
+
 mod common;
 mod gen;
 mod src;

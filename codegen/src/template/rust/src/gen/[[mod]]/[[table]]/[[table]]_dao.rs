@@ -32,15 +32,20 @@ const hasDictbiz = columns.some((column) => {
 });
 #>use anyhow::Result;
 
+use crate::common::auth::auth_dao::get_password;
 use crate::common::util::string::*;
+use crate::common::util::dao::*;
 
 use crate::common::context::{
   Ctx,
   QueryArgs,
   Options,
   CountModel,
+  get_short_uuid,
   get_order_by_query,
   get_page_query,
+  UniqueType,
+  SrvErr,
 };
 
 use crate::common::gql::model::{PageInput, SortInput};<#
@@ -173,6 +178,32 @@ fn get_where_query<'a>(
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    let is_nullable = column.IS_NULLABLE === "YES";
+    let _data_type = "String";
+    if (foreignKey && foreignKey.multiple) {
+      _data_type = "Vec<String>";
+      is_nullable = true;
+    } else if (foreignKey && !foreignKey.multiple) {
+      _data_type = "String";
+    } else if (column.DATA_TYPE === 'varchar') {
+      _data_type = 'String';
+    } else if (column.DATA_TYPE === 'date') {
+      _data_type = "chrono::NaiveDate";
+    } else if (column.DATA_TYPE === 'datetime') {
+      _data_type = "chrono::NaiveDateTime";
+    } else if (column.DATA_TYPE === 'time') {
+      _data_type = "chrono::NaiveTime";
+    } else if (column.DATA_TYPE === 'int') {
+      _data_type = 'i64';
+    } else if (column.DATA_TYPE === 'json') {
+      _data_type = 'String';
+    } else if (column.DATA_TYPE === 'text') {
+      _data_type = 'String';
+    } else if (column.DATA_TYPE === 'tinyint') {
+      _data_type = 'u8';
+    } else if (column.DATA_TYPE === 'decimal') {
+      _data_type = 'String';
+    }
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
@@ -215,7 +246,7 @@ fn get_where_query<'a>(
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
   #>
   {
-    let <#=column_name#>: Vec<String> = match &search {
+    let <#=column_name#>: Vec<<#=_data_type#>> = match &search {
       Some(item) => item.<#=column_name#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -728,4 +759,417 @@ pub async fn find_by_id<'a>(
   ).await?;
   
   Ok(res)
+}
+
+/// 通过唯一约束获得一行数据
+pub async fn find_by_unique<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: <#=tableUP#>Search,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  if search.id.is_none() {
+    if<#
+    for (let i = 0; i < (opts.unique || []).length; i++) {
+      const uniqueKey = opts.unique[i];
+    #>
+      search.<#=uniqueKey#>.is_none()<#
+      if (i !== (opts.unique || []).length - 1) {
+      #> ||<#
+      }
+      #><#
+    }
+    #>
+    {
+      return Ok(None);
+    }
+  }
+  
+  let search = <#=tableUP#>Search {
+    id: search.id,<#
+    for (let i = 0; i < (opts.unique || []).length; i++) {
+      const uniqueKey = opts.unique[i];
+    #>
+    <#=uniqueKey#>: search.<#=uniqueKey#>,<#
+    }
+    #>
+    ..Default::default()
+  }.into();
+  
+  let model = find_one(
+    ctx,
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
+/// 根据唯一约束对比对象是否相等
+pub fn equals_by_unique(
+  input: <#=tableUP#>Input,
+  model: <#=tableUP#>Model,
+) -> bool {
+  if input.id.is_some() {
+    return input.id.unwrap() == model.id;
+  }
+  if<#
+    for (let i = 0; i < (opts.unique || []).length; i++) {
+      const uniqueKey = opts.unique[i];
+    #>
+    input.<#=uniqueKey#> != model.<#=uniqueKey#>.into()<#
+      if (i !== (opts.unique || []).length - 1) {
+      #> ||<#
+      }
+      #><#
+    }
+    #>
+  {
+    return false;
+  }
+  true
+}
+
+/// 通过唯一约束检查数据是否已经存在
+pub async fn check_by_unique<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: <#=tableUP#>Input,
+  model: <#=tableUP#>Model,
+  unique_type: UniqueType,
+) -> Result<Option<String>> {
+  let is_equals = equals_by_unique(
+    input,
+    model,
+  );
+  if !is_equals {
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Ignore {
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Update {
+    // TODO
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Throw {
+    let field_comments = get_field_comments().await?;
+    let err_msg: String = format!(
+      "{} 已经存在",<#
+      for (let i = 0; i < (opts.unique || []).length; i++) {
+        const uniqueKey = opts.unique[i];
+      #>
+      field_comments.<#=uniqueKey#>,<#
+      }
+      #>
+    );
+    return Err(SrvErr::msg(err_msg).into());
+  }
+  Ok(None)
+}
+
+pub async fn set_id_by_lbl<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: <#=tableUP#>Input,
+) -> Result<<#=tableUP#>Input> {
+  let mut input = input;<#
+    if (hasDict) {
+  #>
+  
+  let dict_vec = get_dict(ctx, &vec![<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (!column.dict) continue;
+  #>
+    "<#=column.dict#>",<#
+  }
+  #>
+  ]).await?;
+  <#
+  let dictNum = 0;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (!column.dict) continue;
+  #>
+  let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];<#
+    dictNum++;
+  }
+  #><#
+    }
+  #><#
+    if (hasDictbiz) {
+  #>
+  let dictbiz_vec = get_dictbiz(ctx, &vec![<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (!column.dictbiz) continue;
+  #>
+    "<#=column.dictbiz#>",<#
+  }
+  #>
+  ]).await?;
+  <#
+  let dictBizNum = 0;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (!column.dictbiz) continue;
+  #>
+  let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];<#
+  dictBizNum++;
+  }
+  #><#
+    }
+  #>
+  
+  if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
+    input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+  }
+  
+  Ok(input)
+}
+
+/// 创建数据
+pub async fn create<'a>(
+  ctx: &mut impl Ctx<'a>,
+  mut input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "create";
+  
+  let now = ctx.get_now();
+  
+  input = set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
+  let old_model = find_by_unique(
+    ctx,
+    input.clone().into(),
+    None,
+    None,
+  ).await?;
+  
+  if old_model.is_some() {
+    let id = check_by_unique(
+      ctx,
+      input.clone().into(),
+      old_model.unwrap(),
+      UniqueType::Throw,
+    ).await?;
+    match id {
+      Some(id) => return Ok(id),
+      None => {},
+    }
+  }
+  
+  let id = get_short_uuid();
+  
+  if input.id.is_none() {
+    input.id = Some(id.clone().into());
+  }
+  
+  let mut args = QueryArgs::new();
+  
+  let mut sql_fields = "id,create_time".to_owned();
+  
+  let mut sql_values = "?,?".to_owned();
+  
+  args.push(id.clone().into());
+  args.push(now.into());
+  <#
+  if (hasTenant_id) {
+  #>
+  
+  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+    sql_fields += ",tenant_id";
+    sql_values += "?";
+    args.push(tenant_id.into());
+  }<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  if let Some(dept_id) = ctx.get_auth_dept_id() {
+    sql_fields += ",dept_id";
+    sql_values += ",?";
+    args.push(dept_id.into());
+  }<#
+  }
+  #>
+  
+  if let Some(auth_model) = ctx.get_auth_model() {
+    let usr_id = auth_model.id;
+    sql_fields += ",create_usr_id";
+    sql_values += ",?";
+    args.push(usr_id.into());
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+  #><#
+    if (column.isPassword) {
+  #>
+  
+  if let Some(<#=column_name#>) = input.<#=column_name#> {
+    sql_fields += ",<#=column_name#>";
+    sql_values += ",?";
+    args.push(get_password(&<#=column_name#>)?.into());
+  }<#
+    } else if (foreignKey && foreignKey.type === "json") {
+  #><#
+    } else if (foreignKey && foreignKey.type === "many2many") {
+  #><#
+    } else {
+  #>
+  
+  if let Some(<#=column_name#>) = input.<#=column_name#> {
+    sql_fields += ",<#=column_name#>";
+    sql_values += ",?";
+    args.push(<#=column_name#>.into());
+  }<#
+    }
+  #><#
+  }
+  #>
+  
+  let sql = format!(
+    "insert into {} ({}) values ({})",
+    table,
+    sql_fields,
+    sql_values,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);<#
+  if (cache) {
+  #>
+  
+  let options = options.set_cache_key(table, &sql, &args);<#
+  }
+  #>
+  
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  if num != 1 {
+    return Err(SrvErr::msg("创建失败".to_owned()).into());
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+  #><#
+  if (foreignKey && foreignKey.type === "many2many") {
+  #>
+  
+  // <#=column_comment#>
+  if let Some(<#=column_name#>) = input.<#=column_name#> {
+    many2many_update(
+      ctx,
+      id.clone(),
+      <#=column_name#>.clone(),
+      ManyOpts {
+        r#mod: "<#=many2many.mod#>",
+        table: "<#=many2many.table#>",
+        column1: "<#=many2many.column1#>",
+        column2: "<#=many2many.column2#>",
+      },
+    ).await?;
+  }<#
+  }
+  #><#
+  }
+  #>
+  
+  Ok(id)
 }
