@@ -128,13 +128,70 @@ pub struct UsrSearch {
   /// 默认部门
   pub default_dept_id: Option<Vec<String>>,
   /// 启用
-  pub is_enabled: Option<Vec<String>>,
+  pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
   /// 锁定
-  pub is_locked: Option<Vec<String>>,
+  pub is_locked: Option<Vec<u8>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
+}
+
+#[derive(FromModel, InputObject, Debug, Default, Clone)]
+pub struct UsrInput {
+  pub id: Option<ID>,
+  // 名称
+  pub lbl: Option<String>,
+  // 用户名
+  pub username: Option<String>,
+  // 密码
+  pub password: Option<String>,
+  // 默认部门
+  pub default_dept_id: Option<String>,
+  pub default_dept_id_lbl: Option<String>,
+  // 启用
+  pub is_enabled: Option<u8>,
+  pub is_enabled_lbl: Option<String>,
+  // 备注
+  pub rem: Option<String>,
+  // 拥有部门
+  pub dept_ids: Option<Vec<String>>,
+  pub dept_ids_lbl: Option<Vec<String>>,
+  // 锁定
+  pub is_locked: Option<u8>,
+  pub is_locked_lbl: Option<String>,
+  // 拥有角色
+  pub role_ids: Option<Vec<String>>,
+  pub role_ids_lbl: Option<Vec<String>>,
+}
+
+impl From<UsrInput> for UsrSearch {
+  fn from(input: UsrInput) -> Self {
+    Self {
+      id: input.id.map(|x| x.into()),
+      ids: None,
+      tenant_id: None,
+      is_deleted: None,
+      // 名称
+      lbl: input.lbl,
+      // 用户名
+      username: input.username,
+      // 密码
+      password: input.password,
+      // 默认部门
+      default_dept_id: input.default_dept_id.map(|x| vec![x]),
+      // 启用
+      is_enabled: input.is_enabled.map(|x| vec![x]),
+      // 备注
+      rem: input.rem,
+      // 拥有部门
+      dept_ids: input.dept_ids,
+      // 锁定
+      is_locked: input.is_locked.map(|x| vec![x]),
+      // 拥有角色
+      role_ids: input.role_ids,
+    }
+  }
 }

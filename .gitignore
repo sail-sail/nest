@@ -17,3 +17,6 @@ codegening.txt
 /rust/target
 /rust/Cargo.lock
 /rust/src/common/gql/schema.graphql
+
+/app_macro/target
+/app_macro/Cargo.lock
