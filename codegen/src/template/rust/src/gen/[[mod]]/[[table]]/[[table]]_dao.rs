@@ -41,11 +41,11 @@ use crate::common::context::{
   QueryArgs,
   Options,
   CountModel,
+  UniqueType,
+  SrvErr,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
-  UniqueType,
-  SrvErr,
 };
 
 use crate::common::gql::model::{PageInput, SortInput};<#
@@ -159,7 +159,7 @@ fn get_where_query<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -185,23 +185,23 @@ fn get_where_query<'a>(
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = "String";
-    } else if (column.DATA_TYPE === 'varchar') {
+    } else if (data_type === 'varchar') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'date') {
-      _data_type = "chrono::NaiveDate";
-    } else if (column.DATA_TYPE === 'datetime') {
-      _data_type = "chrono::NaiveDateTime";
-    } else if (column.DATA_TYPE === 'time') {
-      _data_type = "chrono::NaiveTime";
-    } else if (column.DATA_TYPE === 'int') {
+    } else if (data_type === 'date') {
+      _data_type = "String";
+    } else if (data_type === 'datetime') {
+      _data_type = "String";
+    } else if (data_type === 'time') {
+      _data_type = "String";
+    } else if (data_type === 'int') {
       _data_type = 'i64';
-    } else if (column.DATA_TYPE === 'json') {
+    } else if (data_type === 'json') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'text') {
+    } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'tinyint') {
+    } else if (data_type === 'tinyint') {
       _data_type = 'u8';
-    } else if (column.DATA_TYPE === 'decimal') {
+    } else if (data_type === 'decimal') {
       _data_type = 'String';
     }
   #><#
@@ -276,18 +276,18 @@ fn get_where_query<'a>(
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   {
-    let <#=column_name#>: &Vec<Option<i64>> = match &search {
-      Some(item) => item.<#=column_name#>.unwrap(),
-      None => &vec![],
+    let <#=column_name#>: Vec<Option<<#=_data_type#>>> = match &search {
+      Some(item) => item.<#=column_name#>.clone().unwrap(),
+      None => vec![],
     };
-    let <#=column_name#>_gt: Option<i64> = match &<#=column_name#>.len() {
+    let <#=column_name#>_gt: Option<<#=_data_type#>> = match &<#=column_name#>.len() {
       0 => None,
-      _ => <#=column_name#>[0],
+      _ => <#=column_name#>[0].clone(),
     };
-    let <#=column_name#>_lt: Option<i64> = match &<#=column_name#>.len() {
+    let <#=column_name#>_lt: Option<<#=_data_type#>> = match &<#=column_name#>.len() {
       0 => None,
       1 => None,
-      _ => <#=column_name#>[1],
+      _ => <#=column_name#>[1].clone(),
     };
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
       where_query += &format!(" and t.<#=column_name#> >= {}", args.push(<#=column_name#>_gt.into()));
@@ -554,7 +554,7 @@ pub async fn find_all<'a>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
+      const column_name = rustKeyEscape(column.COLUMN_NAME);
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -668,7 +668,7 @@ pub async fn get_field_comments() -> Result<<#=tableUP#>FieldComment> {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
+      const column_name = rustKeyEscape(column.COLUMN_NAME);
       if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -767,7 +767,9 @@ pub async fn find_by_unique<'a>(
   search: <#=tableUP#>Search,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<<#=tableUP#>Model>> {
+) -> Result<Option<<#=tableUP#>Model>> {<#
+  if (opts.unique && opts.unique.length > 0) {
+  #>
   
   if search.id.is_none() {
     if<#
@@ -804,7 +806,10 @@ pub async fn find_by_unique<'a>(
     options,
   ).await?;
   
-  Ok(model)
+  Ok(model)<#
+  }
+  #>
+  Ok(None)
 }
 
 /// 根据唯一约束对比对象是否相等
@@ -814,13 +819,15 @@ pub fn equals_by_unique(
 ) -> bool {
   if input.id.is_some() {
     return input.id.unwrap() == model.id;
-  }
+  }<#
+  if (opts.unique && opts.unique.length > 0) {
+  #>
   if<#
-    for (let i = 0; i < (opts.unique || []).length; i++) {
+    for (let i = 0; i < opts.unique.length; i++) {
       const uniqueKey = opts.unique[i];
     #>
     input.<#=uniqueKey#> != model.<#=uniqueKey#>.into()<#
-      if (i !== (opts.unique || []).length - 1) {
+      if (i !== opts.unique.length - 1) {
       #> ||<#
       }
       #><#
@@ -829,7 +836,10 @@ pub fn equals_by_unique(
   {
     return false;
   }
-  true
+  true<#
+  }
+  #>
+  false
 }
 
 /// 通过唯一约束检查数据是否已经存在
@@ -838,7 +848,9 @@ pub async fn check_by_unique<'a>(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
   unique_type: UniqueType,
-) -> Result<Option<String>> {
+) -> Result<Option<String>> {<#
+  if (opts.unique && opts.unique.length > 0) {
+  #>
   let is_equals = equals_by_unique(
     input,
     model,
@@ -865,7 +877,9 @@ pub async fn check_by_unique<'a>(
       #>
     );
     return Err(SrvErr::msg(err_msg).into());
+  }<#
   }
+  #>
   Ok(None)
 }
 
@@ -970,11 +984,11 @@ pub async fn set_id_by_lbl<'a>(
     }
   #>
   
-  if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-    input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-  }
+  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
+  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+  //     item.trim().to_owned()
+  //   );
+  // }
   
   Ok(input)
 }
@@ -1062,7 +1076,7 @@ pub async fn create<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
@@ -1080,6 +1094,7 @@ pub async fn create<'a>(
     if (column.isPassword) {
   #>
   
+  // <#=column_comment#>
   if let Some(<#=column_name#>) = input.<#=column_name#> {
     sql_fields += ",<#=column_name#>";
     sql_values += ",?";
@@ -1092,6 +1107,7 @@ pub async fn create<'a>(
     } else {
   #>
   
+  // <#=column_comment#>
   if let Some(<#=column_name#>) = input.<#=column_name#> {
     sql_fields += ",<#=column_name#>";
     sql_values += ",?";
@@ -1134,7 +1150,7 @@ pub async fn create<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;

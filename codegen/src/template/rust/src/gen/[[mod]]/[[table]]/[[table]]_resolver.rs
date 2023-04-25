@@ -36,15 +36,15 @@ use async_graphql::{Context, Object};
 use crate::common::context::{CtxImpl, Ctx};
 use crate::common::gql::model::{PageInput, SortInput};
 
-use super::<#=table#>_model::{<#=tableUP#>Model, <#=tableUP#>Search};
+use super::<#=table#>_model::*;
 use super::<#=table#>_service;
 
 
 #[derive(Default)]
-pub struct <#=tableUP#>Resolver;
+pub struct <#=tableUP#>Query;
 
 #[Object]
-impl <#=tableUP#>Resolver {
+impl <#=tableUP#>Query {
   
   /// 根据搜索条件和分页查找数据
   async fn find_all_<#=table#><'a>(
@@ -54,7 +54,7 @@ impl <#=tableUP#>Resolver {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let res = <#=table#>_service::find_all(
       &mut ctx,
@@ -73,7 +73,7 @@ impl <#=tableUP#>Resolver {
     ctx: &Context<'a>,
     search: Option<<#=tableUP#>Search>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let res = <#=table#>_service::find_count(
       &mut ctx,
@@ -91,7 +91,7 @@ impl <#=tableUP#>Resolver {
     search: Option<<#=tableUP#>Search>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let model = <#=table#>_service::find_one(
       &mut ctx,
@@ -109,7 +109,7 @@ impl <#=tableUP#>Resolver {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let model = <#=table#>_service::find_by_id(
       &mut ctx,
@@ -118,6 +118,31 @@ impl <#=tableUP#>Resolver {
     ).await;
     
     ctx.ok(model).await
+  }
+  
+}
+
+#[derive(Default)]
+pub struct <#=tableUP#>Mutation;
+
+#[Object]
+impl <#=tableUP#>Mutation {
+  
+  /// 创建数据
+  pub async fn create_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    input: <#=tableUP#>Input,
+  ) -> Result<String> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let id = <#=table#>_service::create(
+      &mut ctx,
+      input,
+      None,
+    ).await;
+    
+    ctx.ok(id).await
   }
   
 }

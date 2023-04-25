@@ -12,7 +12,7 @@ pub struct <#=tableUP#>Model {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -36,11 +36,11 @@ pub struct <#=tableUP#>Model {<#
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "chrono::NaiveDate";
+      _data_type = "String";
     } else if (data_type === 'datetime') {
-      _data_type = "chrono::NaiveDateTime";
+      _data_type = "String";
     } else if (data_type === 'time') {
-      _data_type = "chrono::NaiveTime";
+      _data_type = "String";
     } else if (data_type === 'int') {
       _data_type = 'i64';
     } else if (data_type === 'json') {
@@ -92,7 +92,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -148,7 +148,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
+      const column_name = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -185,11 +185,13 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   }
 }
 
+#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -223,6 +225,7 @@ pub struct <#=tableUP#>FieldComment {<#
 }
 
 #[derive(InputObject, Debug, Default)]
+#[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
@@ -233,7 +236,7 @@ pub struct <#=tableUP#>Search {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -256,21 +259,21 @@ pub struct <#=tableUP#>Search {
     } else if (column.DATA_TYPE === 'varchar') {
       _data_type = 'String';
     } else if (column.DATA_TYPE === 'date') {
-      _data_type = "Vec<chrono::NaiveDate>";
+      _data_type = "Vec<Option<String>>";
     } else if (column.DATA_TYPE === 'datetime') {
-      _data_type = "Vec<chrono::NaiveDateTime>";
+      _data_type = "Vec<Option<String>>";
     } else if (column.DATA_TYPE === 'time') {
-      _data_type = "Vec<chrono::NaiveTime>";
+      _data_type = "Vec<Option<String>>";
     } else if (column.DATA_TYPE === 'int') {
-      _data_type = "Vec<i64>";
+      _data_type = "Vec<Option<i64>>";
     } else if (column.DATA_TYPE === 'json') {
       _data_type = 'String';
     } else if (column.DATA_TYPE === 'text') {
       _data_type = 'String';
     } else if (column.DATA_TYPE === 'tinyint') {
-      _data_type = "Vec<u8>";
+      _data_type = "Vec<Option<u8>>";
     } else if (column.DATA_TYPE === 'decimal') {
-      _data_type = "Vec<rust_decimal::Decimal>";
+      _data_type = "Vec<Option<rust_decimal::Decimal>>";
     }
   #><#
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
@@ -288,13 +291,14 @@ pub struct <#=tableUP#>Search {
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {
   pub id: Option<ID>,<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
@@ -317,9 +321,9 @@ pub struct <#=tableUP#>Input {
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "chrono::NaiveDate";
+      _data_type = "String";
     } else if (data_type === 'datetime') {
-      _data_type = "chrono::NaiveDateTime";
+      _data_type = "String";
     } else if (data_type === 'int') {
       _data_type = "i64";
     } else if (data_type === 'json') {
@@ -366,7 +370,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
         if (column.isVirtual) continue;
-        const column_name = column.COLUMN_NAME;
+        const column_name = rustKeyEscape(column.COLUMN_NAME);
         if (column_name === 'id') continue;
         let data_type = column.DATA_TYPE;
         let column_type = column.DATA_TYPE;
@@ -394,15 +398,15 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       } else if (foreignKey && !foreignKey.multiple) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
       } else if (["tinyint"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
       } else if (["date","datetime","time","int","decimal"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x, x]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.clone().into(), x.clone().into()]),<#
       } else {
       #>
       // <#=column_comment#>

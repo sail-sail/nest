@@ -9,11 +9,11 @@ use crate::common::context::{
   QueryArgs,
   Options,
   CountModel,
+  UniqueType,
+  SrvErr,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
-  UniqueType,
-  SrvErr,
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
@@ -667,42 +667,49 @@ pub async fn create<'a>(
     args.push(usr_id.into());
   }
   
+  // 名称
   if let Some(lbl) = input.lbl {
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
   }
   
+  // 用户名
   if let Some(username) = input.username {
     sql_fields += ",username";
     sql_values += ",?";
     args.push(username.into());
   }
   
+  // 密码
   if let Some(password) = input.password {
     sql_fields += ",password";
     sql_values += ",?";
     args.push(get_password(&password)?.into());
   }
   
+  // 默认部门
   if let Some(default_dept_id) = input.default_dept_id {
     sql_fields += ",default_dept_id";
     sql_values += ",?";
     args.push(default_dept_id.into());
   }
   
+  // 启用
   if let Some(is_enabled) = input.is_enabled {
     sql_fields += ",is_enabled";
     sql_values += ",?";
     args.push(is_enabled.into());
   }
   
+  // 备注
   if let Some(rem) = input.rem {
     sql_fields += ",rem";
     sql_values += ",?";
     args.push(rem.into());
   }
   
+  // 锁定
   if let Some(is_locked) = input.is_locked {
     sql_fields += ",is_locked";
     sql_values += ",?";

@@ -1,12 +1,18 @@
 use async_graphql::{
   MergedObject,
-  EmptyMutation, EmptySubscription, Schema,
+  EmptySubscription, Schema,
 };
 
 #[derive(MergedObject, Default)]
 pub struct Query(
-  crate::gen::GenResolver,
-  crate::src::SrcResolver,
+  crate::gen::GenQuery,
+  crate::src::SrcQuery,
 );
 
-pub type QuerySchema = Schema<Query, EmptyMutation, EmptySubscription>;
+#[derive(MergedObject, Default)]
+pub struct Mutation(
+  crate::gen::GenMutation,
+  // crate::src::SrcMutation,
+);
+
+pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
