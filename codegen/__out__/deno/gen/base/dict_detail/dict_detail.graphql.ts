@@ -4,7 +4,7 @@ import * as dict_detailResolver from "./dict_detail.resolver.ts";
 
 defineGraphql(dict_detailResolver, /* GraphQL */ `
 
-type Dict_DetailModel {
+type DictDetailModel {
   "ID"
   id: ID!
   "系统字典"
@@ -28,7 +28,7 @@ type Dict_DetailModel {
   "锁定"
   is_locked_lbl: String
 }
-type Dict_DetailFieldComment {
+type DictDetailFieldComment {
   "系统字典"
   dict_id: String!
   "系统字典"
@@ -50,7 +50,7 @@ type Dict_DetailFieldComment {
   "锁定"
   is_locked_lbl: String!
 }
-input Dict_DetailInput {
+input DictDetailInput {
   "租户ID"
   tenant_id: String
   ""
@@ -76,7 +76,7 @@ input Dict_DetailInput {
   "锁定"
   is_locked_lbl: String
 }
-input Dict_DetailSearch {
+input DictDetailSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -104,25 +104,25 @@ input Dict_DetailSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountDict_detail(search: Dict_DetailSearch): Int!
+  findCountDict_detail(search: DictDetailSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllDict_detail(search: Dict_DetailSearch, page: PageInput, sort: [SortInput]): [Dict_DetailModel!]!
+  findAllDict_detail(search: DictDetailSearch, page: PageInput, sort: [SortInput]): [DictDetailModel!]!
   "获取字段对应的名称"
-  getFieldCommentsDict_detail: Dict_DetailFieldComment!
+  getFieldCommentsDict_detail: DictDetailFieldComment!
   "根据条件查找第一条数据"
-  findOneDict_detail(search: Dict_DetailSearch, sort: [SortInput]): Dict_DetailModel
+  findOneDict_detail(search: DictDetailSearch, sort: [SortInput]): DictDetailModel
   "根据id查找一条数据"
-  findByIdDict_detail(id: ID!): Dict_DetailModel
+  findByIdDict_detail(id: ID!): DictDetailModel
   "查找order_by字段的最大值"
   findLastOrderByDict_detail: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDict_detail(model: Dict_DetailInput!): ID!
+  createDict_detail(model: DictDetailInput!): ID!
   "根据id修改一条数据"
-  updateByIdDict_detail(id: ID!, model: Dict_DetailInput!): ID!
+  updateByIdDict_detail(id: ID!, model: DictDetailInput!): ID!
   "批量导入"
-  importModelsDict_detail(models: [Dict_DetailInput!]!): String
+  importModelsDict_detail(models: [DictDetailInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsDict_detail(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

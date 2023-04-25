@@ -2,9 +2,9 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type Dict_DetailModel,
-  type Dict_DetailSearch,
-  type Dict_DetailInput,
+  type DictDetailModel,
+  type DictDetailSearch,
+  type DictDetailInput,
 } from "#/types";
 
 import {
@@ -14,13 +14,13 @@ import {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {Dict_DetailSearch} search?
+ * @param {DictDetailSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: Dict_DetailSearch,
+  search?: DictDetailSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -29,7 +29,7 @@ export async function findAll(
     findAllDict_detail: Query["findAllDict_detail"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Dict_DetailSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDict_detail(search: $search, page: $page, sort: $sort) {
           id
           dict_id
@@ -61,18 +61,18 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {Dict_DetailSearch} search?
+ * @param {DictDetailSearch} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: Dict_DetailSearch,
+  search?: DictDetailSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findCountDict_detail: Query["findCountDict_detail"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Dict_DetailSearch) {
+      query($search: DictDetailSearch) {
         findCountDict_detail(search: $search)
       }
     `,
@@ -87,18 +87,18 @@ export async function findCount(
 /**
  * 创建一条数据
  * @export create
- * @param {Dict_DetailInput} model
+ * @param {DictDetailInput} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: Dict_DetailInput,
+  model: DictDetailInput,
   opt?: GqlOpt,
 ) {
   const data: {
     createDict_detail: Mutation["createDict_detail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: Dict_DetailInput!) {
+      mutation($model: DictDetailInput!) {
         createDict_detail(model: $model)
       }
     `,
@@ -114,19 +114,19 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
- * @param {Dict_DetailInput} model
+ * @param {DictDetailInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: Dict_DetailInput,
+  model: DictDetailInput,
   opt?: GqlOpt,
 ) {
   const data: {
     updateByIdDict_detail: Mutation["updateByIdDict_detail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: Dict_DetailInput!) {
+      mutation($id: ID!, $model: DictDetailInput!) {
         updateByIdDict_detail(id: $id, model: $model)
       }
     `,
@@ -344,13 +344,13 @@ export function useExportExcel() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: Dict_DetailSearch,
+    search?: DictDetailSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: Dict_DetailSearch, $sort: [SortInput]) {
+        query($search: DictDetailSearch, $sort: [SortInput]) {
           findAllDict_detail(search: $search, sort: $sort) {
             id
             dict_id
@@ -403,18 +403,18 @@ export function useExportExcel() {
 
 /**
  * 批量导入
- * @param {Dict_DetailInput[]} models
+ * @param {DictDetailInput[]} models
  * @export importModels
  */
 export async function importModels(
-  models: Dict_DetailInput[],
+  models: DictDetailInput[],
   opt?: GqlOpt,
 ) {
   const data: {
     importModelsDict_detail: Mutation["importModelsDict_detail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($models: [Dict_DetailInput!]!) {
+      mutation($models: [DictDetailInput!]!) {
         importModelsDict_detail(models: $models)
       }
     `,

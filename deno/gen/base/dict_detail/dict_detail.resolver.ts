@@ -7,21 +7,21 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type Dict_DetailInput,
+  type DictDetailInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Dict_DetailModel,
-  type Dict_DetailSearch,
+  type DictDetailModel,
+  type DictDetailSearch,
 } from "./dict_detail.model.ts";
 
 /**
  * 根据条件查找据数总数
  */
 export async function findCountDict_detail(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: DictDetailSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./dict_detail.service.ts");
   const data = await findCount(search);
@@ -32,7 +32,7 @@ export async function findCountDict_detail(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllDict_detail(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: DictDetailSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
@@ -54,7 +54,7 @@ export async function getFieldCommentsDict_detail() {
  * 根据条件查找第一条数据
  */
 export async function findOneDict_detail(
-  search?: Dict_DetailSearch & { $extra?: SearchExtra[] },
+  search?: DictDetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./dict_detail.service.ts");
@@ -77,7 +77,7 @@ export async function findByIdDict_detail(
  * 创建一条数据
  */
 export async function createDict_detail(
-  model: Dict_DetailModel,
+  model: DictDetailModel,
 ) {
   const context = useContext();
   
@@ -92,7 +92,7 @@ export async function createDict_detail(
  */
 export async function updateByIdDict_detail(
   id: string,
-  model: Dict_DetailModel,
+  model: DictDetailModel,
 ) {
   const context = useContext();
   
@@ -138,7 +138,7 @@ export async function lockByIdsDict_detail(
  * 批量导入
  */
 export async function importModelsDict_detail(
-  models: Dict_DetailInput[],
+  models: DictDetailInput[],
 ) {
   const { importModels } = await import("./dict_detail.service.ts");
   const data = await importModels(models);

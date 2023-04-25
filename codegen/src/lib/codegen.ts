@@ -30,6 +30,17 @@ console.log(`${chalk.gray("工程路径:")} ${chalk.blue(projectPh)}`);
 // 是否有graphql文件内容发生改变
 let graphqlHasChanged = false;
 
+const rustKeys = [
+  "as", "async", "await", "break", "const", "continue", "crate", "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return", "Self", "self", "static", "struct", "super", "trait", "true", "type", "union", "unsafe", "use", "where", "while", "abstract", "become", "box", "do", "final", "macro", "override", "priv", "try", "typeof", "unsized", "virtual", "yield"
+];
+
+function rustKeyEscape(key: string) {
+  if (rustKeys.includes(key)) {
+    return "r#" + key;
+  }
+  return key;
+}
+
 export async function codegen(context: Context, schema: TablesConfigItem) {
   const opts = schema.opts;
   let { table, table_comment, defaultSort, hasTenant_id, cache } = opts;

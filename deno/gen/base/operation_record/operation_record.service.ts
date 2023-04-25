@@ -5,25 +5,25 @@ import {
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  type Operation_RecordInput,
+  type OperationRecordInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Operation_RecordModel,
-  type Operation_RecordSearch,
+  type OperationRecordModel,
+  type OperationRecordSearch,
 } from "./operation_record.model.ts";
 
 import * as operation_recordDao from "./operation_record.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {Operation_RecordSearch} search? 搜索条件
+ * @param {OperationRecordSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
 ): Promise<number> {
   search = search || { };
   const data = await operation_recordDao.findCount(search);
@@ -32,27 +32,27 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {Operation_RecordSearch} search? 搜索条件
+ * @param {OperationRecordSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<Operation_RecordModel[]>} 
+ * @return {Promise<OperationRecordModel[]>} 
  */
 export async function findAll(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<Operation_RecordModel[]> {
+): Promise<OperationRecordModel[]> {
   search = search || { };
-  const data: Operation_RecordModel[] = await operation_recordDao.findAll(search, page, sort);
+  const data: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort);
   return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Operation_RecordSearch} search? 搜索条件
+ * @param {OperationRecordSearch} search? 搜索条件
  */
 export async function findOne(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   sort?: SortInput|SortInput[],
 ) {
   search = search || { };
@@ -73,10 +73,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Operation_RecordSearch} search? 搜索条件
+ * @param {OperationRecordSearch} search? 搜索条件
  */
 export async function exist(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
 ) {
   search = search || { };
   const data = await operation_recordDao.exist(search);
@@ -96,11 +96,11 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {Operation_RecordModel} model
+ * @param {OperationRecordModel} model
  * @return {Promise<string>} id
  */
 export async function create(
-  model: Operation_RecordModel,
+  model: OperationRecordModel,
 ): Promise<string> {
   const data = await operation_recordDao.create(model);
   return data;
@@ -109,12 +109,12 @@ export async function create(
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {Operation_RecordModel} model
+ * @param {OperationRecordModel} model
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: Operation_RecordModel,
+  model: OperationRecordModel,
 ): Promise<string> {
   const data = await operation_recordDao.updateById(id, model);
   return data;
@@ -158,10 +158,10 @@ export async function forceDeleteByIds(
 
 /**
  * 批量导入
- * @param {Operation_RecordInput[]} models
+ * @param {OperationRecordInput[]} models
  */
 export async function importModels(
-  models: Operation_RecordInput[],
+  models: OperationRecordInput[],
 ) {
   let succNum = 0;
   let failNum = 0;

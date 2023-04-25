@@ -514,9 +514,9 @@ import {
 } from "./Api";
 
 import {
-  type Dict_DetailModel,
-  type Dict_DetailInput,
-  type Dict_DetailSearch,
+  type DictDetailModel,
+  type DictDetailInput,
+  type DictDetailSearch,
   type DictModel,
 } from "#/types";
 
@@ -555,7 +555,7 @@ function initSearch() {
   return {
     is_deleted: 0,
     dict_id: [ ],
-  } as Dict_DetailSearch;
+  } as DictDetailSearch;
 }
 
 let search = $ref(initSearch());
@@ -639,7 +639,7 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as Dict_DetailSearch;
+  return Object.fromEntries(entries) as unknown as DictDetailSearch;
 });
 
 /** 内置变量 */
@@ -669,7 +669,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as Dict_DetailModel;
+  return Object.fromEntries(entries) as unknown as DictDetailModel;
 });
 
 /** 分页功能 */
@@ -678,7 +678,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<Dict_DetailModel>(dataGrid));
+} = $(usePage<DictDetailModel>(dataGrid));
 
 /** 表格选择功能 */
 let {
@@ -688,7 +688,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<Dict_DetailModel>($$(tableRef)));
+} = $(useSelect<DictDetailModel>($$(tableRef)));
 
 watch(
   () => selectedIds,
@@ -734,7 +734,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<Dict_DetailModel[]>([ ]);
+let tableData = $ref<DictDetailModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
@@ -818,7 +818,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<Dict_DetailModel>(
+} = $(useTableColumns<DictDetailModel>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -871,7 +871,7 @@ let sort: Sort = $ref({
 
 /** 排序 */
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<Dict_DetailModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<DictDetailModel> } & Sort,
 ) {
   sort.prop = prop;
   sort.order = order;
@@ -971,7 +971,7 @@ async function importExcelClk() {
   if (!file) {
     return;
   }
-  const models = await getExcelData<Dict_DetailInput>(file, header);
+  const models = await getExcelData<DictDetailInput>(file, header);
   const msg = await importModels(models);
   if (msg) {
     MessageBox.success(msg);

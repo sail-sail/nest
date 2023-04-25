@@ -216,7 +216,7 @@ import {
 } from "./Api";
 
 import {
-  type Background_TaskInput,
+  type BackgroundTaskInput,
 } from "#/types";
 
 import {
@@ -245,7 +245,7 @@ type DialogAction = "add" | "copy" | "edit";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
-} as Background_TaskInput);
+} as BackgroundTaskInput);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -291,11 +291,11 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<Background_TaskInput>();
+let builtInModel = $ref<BackgroundTaskInput>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: Background_TaskInput = {
+  const defaultInput: BackgroundTaskInput = {
   };
   return defaultInput;
 }
@@ -306,7 +306,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: Background_TaskInput;
+    builtInModel?: BackgroundTaskInput;
     model?: {
       id?: string;
       ids?: string[];

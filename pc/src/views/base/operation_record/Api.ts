@@ -2,9 +2,9 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type Operation_RecordModel,
-  type Operation_RecordSearch,
-  type Operation_RecordInput,
+  type OperationRecordModel,
+  type OperationRecordSearch,
+  type OperationRecordInput,
 } from "#/types";
 
 import {
@@ -14,13 +14,13 @@ import {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {Operation_RecordSearch} search?
+ * @param {OperationRecordSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -29,7 +29,7 @@ export async function findAll(
     findAllOperation_record: Query["findAllOperation_record"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Operation_RecordSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput]) {
         findAllOperation_record(search: $search, page: $page, sort: $sort) {
           id
           mod
@@ -63,18 +63,18 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {Operation_RecordSearch} search?
+ * @param {OperationRecordSearch} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findCountOperation_record: Query["findCountOperation_record"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Operation_RecordSearch) {
+      query($search: OperationRecordSearch) {
         findCountOperation_record(search: $search)
       }
     `,
@@ -264,13 +264,13 @@ export function useExportExcel() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: Operation_RecordSearch,
+    search?: OperationRecordSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: Operation_RecordSearch, $sort: [SortInput]) {
+        query($search: OperationRecordSearch, $sort: [SortInput]) {
           findAllOperation_record(search: $search, sort: $sort) {
             id
             mod

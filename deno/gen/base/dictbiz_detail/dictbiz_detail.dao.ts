@@ -53,15 +53,15 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type Dictbiz_DetailModel,
-  type Dictbiz_DetailSearch,
+  type DictbizDetailModel,
+  type DictbizDetailSearch,
 } from "./dictbiz_detail.model.ts";
 
 import * as dictbizDao from "/gen/base/dictbiz/dictbiz.dao.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   options?: {
   },
 ) {
@@ -171,11 +171,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { Dictbiz_DetailSearch } search?
+ * @param { DictbizDetailSearch } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   options?: {
   },
 ): Promise<number> {
@@ -212,11 +212,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Dictbiz_DetailSearch} search? 搜索条件
+ * @param {DictbizDetailSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -267,7 +267,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await query<Dictbiz_DetailModel>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<DictbizDetailModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
     is_enabledDict, // 启用
@@ -328,11 +328,11 @@ export async function getFieldComments() {
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof Dictbiz_DetailModel)[];
+  uniqueKeys: (keyof DictbizDetailModel)[];
   uniqueComments: { [key: string]: string };
 }> {
   const n = initN("/i18n");
-  const uniqueKeys: (keyof Dictbiz_DetailModel)[] = [
+  const uniqueKeys: (keyof DictbizDetailModel)[] = [
     "dictbiz_id",
     "lbl",
   ];
@@ -345,10 +345,10 @@ export async function getUniqueKeys(): Promise<{
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Dictbiz_DetailSearch | PartialNull<Dictbiz_DetailModel>} search0
+ * @param {DictbizDetailSearch | PartialNull<DictbizDetailModel>} search0
  */
 export async function findByUnique(
-  search0: Dictbiz_DetailSearch | PartialNull<Dictbiz_DetailModel>,
+  search0: DictbizDetailSearch | PartialNull<DictbizDetailModel>,
   options?: {
   },
 ) {
@@ -360,7 +360,7 @@ export async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: Dictbiz_DetailSearch = { };
+  const search: DictbizDetailSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -375,13 +375,13 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {Dictbiz_DetailModel} oldModel
- * @param {PartialNull<Dictbiz_DetailModel>} model
+ * @param {DictbizDetailModel} oldModel
+ * @param {PartialNull<DictbizDetailModel>} model
  * @return {boolean}
  */
 export async function equalsByUnique(
-  oldModel: Dictbiz_DetailModel,
-  model: PartialNull<Dictbiz_DetailModel>,
+  oldModel: DictbizDetailModel,
+  model: PartialNull<DictbizDetailModel>,
 ): Promise<boolean> {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = await getUniqueKeys();
@@ -401,14 +401,14 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<Dictbiz_DetailModel>} model
- * @param {Dictbiz_DetailModel} oldModel
+ * @param {PartialNull<DictbizDetailModel>} model
+ * @param {DictbizDetailModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<Dictbiz_DetailModel>,
-  oldModel: Dictbiz_DetailModel,
+  model: PartialNull<DictbizDetailModel>,
+  oldModel: DictbizDetailModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
@@ -442,10 +442,10 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Dictbiz_DetailSearch} search?
+ * @param {DictbizDetailSearch} search?
  */
 export async function findOne(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   sort?: SortInput | SortInput[],
   options?: {
   },
@@ -479,10 +479,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Dictbiz_DetailSearch} search?
+ * @param {DictbizDetailSearch} search?
  */
 export async function exist(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   options?: {
   },
 ) {
@@ -534,7 +534,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<Dictbiz_DetailModel>} model
+ * @param {PartialNull<DictbizDetailModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -544,7 +544,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<Dictbiz_DetailModel>,
+  model: PartialNull<DictbizDetailModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -752,7 +752,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<Dictbiz_DetailModel>} model
+ * @param {PartialNull<DictbizDetailModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -763,7 +763,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: PartialNull<Dictbiz_DetailModel>,
+  model: PartialNull<DictbizDetailModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

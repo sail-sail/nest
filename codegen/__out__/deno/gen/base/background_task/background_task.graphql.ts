@@ -4,7 +4,7 @@ import * as background_taskResolver from "./background_task.resolver.ts";
 
 defineGraphql(background_taskResolver, /* GraphQL */ `
 
-type Background_TaskModel {
+type BackgroundTaskModel {
   "ID"
   id: ID!
   "名称"
@@ -28,7 +28,7 @@ type Background_TaskModel {
   "备注"
   rem: String!
 }
-type Background_TaskFieldComment {
+type BackgroundTaskFieldComment {
   "名称"
   lbl: String!
   "状态"
@@ -50,7 +50,7 @@ type Background_TaskFieldComment {
   "备注"
   rem: String!
 }
-input Background_TaskInput {
+input BackgroundTaskInput {
   "租户ID"
   tenant_id: String
   ""
@@ -76,7 +76,7 @@ input Background_TaskInput {
   "备注"
   rem: String
 }
-input Background_TaskSearch {
+input BackgroundTaskSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -109,15 +109,15 @@ input Background_TaskSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountBackground_task(search: Background_TaskSearch): Int!
+  findCountBackground_task(search: BackgroundTaskSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllBackground_task(search: Background_TaskSearch, page: PageInput, sort: [SortInput]): [Background_TaskModel!]!
+  findAllBackground_task(search: BackgroundTaskSearch, page: PageInput, sort: [SortInput]): [BackgroundTaskModel!]!
   "获取字段对应的名称"
-  getFieldCommentsBackground_task: Background_TaskFieldComment!
+  getFieldCommentsBackground_task: BackgroundTaskFieldComment!
   "根据条件查找第一条数据"
-  findOneBackground_task(search: Background_TaskSearch, sort: [SortInput]): Background_TaskModel
+  findOneBackground_task(search: BackgroundTaskSearch, sort: [SortInput]): BackgroundTaskModel
   "根据id查找一条数据"
-  findByIdBackground_task(id: ID!): Background_TaskModel
+  findByIdBackground_task(id: ID!): BackgroundTaskModel
 }
 type Mutation {
   "根据 ids 删除数据"

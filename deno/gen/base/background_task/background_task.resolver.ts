@@ -7,21 +7,21 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type Background_TaskInput,
+  type BackgroundTaskInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Background_TaskModel,
-  type Background_TaskSearch,
+  type BackgroundTaskModel,
+  type BackgroundTaskSearch,
 } from "./background_task.model.ts";
 
 /**
  * 根据条件查找据数总数
  */
 export async function findCountBackground_task(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./background_task.service.ts");
   const data = await findCount(search);
@@ -32,7 +32,7 @@ export async function findCountBackground_task(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllBackground_task(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
@@ -54,7 +54,7 @@ export async function getFieldCommentsBackground_task() {
  * 根据条件查找第一条数据
  */
 export async function findOneBackground_task(
-  search?: Background_TaskSearch & { $extra?: SearchExtra[] },
+  search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./background_task.service.ts");

@@ -176,7 +176,7 @@ import {
 } from "./Api";
 
 import {
-  type Operation_RecordInput,
+  type OperationRecordInput,
   type UsrModel,
 } from "#/types";
 
@@ -206,7 +206,7 @@ type DialogAction = "add" | "copy" | "edit";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
-} as Operation_RecordInput);
+} as OperationRecordInput);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -234,11 +234,11 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<Operation_RecordInput>();
+let builtInModel = $ref<OperationRecordInput>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: Operation_RecordInput = {
+  const defaultInput: OperationRecordInput = {
   };
   return defaultInput;
 }
@@ -249,7 +249,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: Operation_RecordInput;
+    builtInModel?: OperationRecordInput;
     model?: {
       id?: string;
       ids?: string[];

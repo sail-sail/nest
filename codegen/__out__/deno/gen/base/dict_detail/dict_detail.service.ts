@@ -5,25 +5,25 @@ import {
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  type Dict_DetailInput,
+  type DictDetailInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Dict_DetailModel,
-  type Dict_DetailSearch,
+  type DictDetailModel,
+  type DictDetailSearch,
 } from "./dict_detail.model.ts";
 
 import * as dict_detailDao from "./dict_detail.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {Dict_DetailSearch} search? 搜索条件
+ * @param {DictDetailSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: Dict_DetailSearch,
+  search?: DictDetailSearch,
 ): Promise<number> {
   search = search || { };
   const data = await dict_detailDao.findCount(search);
@@ -32,27 +32,27 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {Dict_DetailSearch} search? 搜索条件
+ * @param {DictDetailSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<Dict_DetailModel[]>} 
+ * @return {Promise<DictDetailModel[]>} 
  */
 export async function findAll(
-  search?: Dict_DetailSearch,
+  search?: DictDetailSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<Dict_DetailModel[]> {
+): Promise<DictDetailModel[]> {
   search = search || { };
-  const data: Dict_DetailModel[] = await dict_detailDao.findAll(search, page, sort);
+  const data: DictDetailModel[] = await dict_detailDao.findAll(search, page, sort);
   return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Dict_DetailSearch} search? 搜索条件
+ * @param {DictDetailSearch} search? 搜索条件
  */
 export async function findOne(
-  search?: Dict_DetailSearch,
+  search?: DictDetailSearch,
   sort?: SortInput|SortInput[],
 ) {
   search = search || { };
@@ -73,10 +73,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Dict_DetailSearch} search? 搜索条件
+ * @param {DictDetailSearch} search? 搜索条件
  */
 export async function exist(
-  search?: Dict_DetailSearch,
+  search?: DictDetailSearch,
 ) {
   search = search || { };
   const data = await dict_detailDao.exist(search);
@@ -96,11 +96,11 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {Dict_DetailModel} model
+ * @param {DictDetailModel} model
  * @return {Promise<string>} id
  */
 export async function create(
-  model: Dict_DetailModel,
+  model: DictDetailModel,
 ): Promise<string> {
   const data = await dict_detailDao.create(model);
   return data;
@@ -109,12 +109,12 @@ export async function create(
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {Dict_DetailModel} model
+ * @param {DictDetailModel} model
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: Dict_DetailModel,
+  model: DictDetailModel,
 ): Promise<string> {
   
   const is_locked = await dict_detailDao.getIs_lockedById(id);
@@ -189,10 +189,10 @@ export async function forceDeleteByIds(
 
 /**
  * 批量导入
- * @param {Dict_DetailInput[]} models
+ * @param {DictDetailInput[]} models
  */
 export async function importModels(
-  models: Dict_DetailInput[],
+  models: DictDetailInput[],
 ) {
   let succNum = 0;
   let failNum = 0;

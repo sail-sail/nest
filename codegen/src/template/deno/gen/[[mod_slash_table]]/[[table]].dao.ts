@@ -6,7 +6,7 @@ const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
-}).join("_");
+}).join("");
 const hasDict = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;

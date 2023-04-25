@@ -4,7 +4,7 @@ import * as dictbiz_detailResolver from "./dictbiz_detail.resolver.ts";
 
 defineGraphql(dictbiz_detailResolver, /* GraphQL */ `
 
-type Dictbiz_DetailModel {
+type DictbizDetailModel {
   "ID"
   id: ID!
   "业务字典"
@@ -28,7 +28,7 @@ type Dictbiz_DetailModel {
   "锁定"
   is_locked_lbl: String
 }
-type Dictbiz_DetailFieldComment {
+type DictbizDetailFieldComment {
   "业务字典"
   dictbiz_id: String!
   "业务字典"
@@ -50,7 +50,7 @@ type Dictbiz_DetailFieldComment {
   "锁定"
   is_locked_lbl: String!
 }
-input Dictbiz_DetailInput {
+input DictbizDetailInput {
   "租户ID"
   tenant_id: String
   ""
@@ -76,7 +76,7 @@ input Dictbiz_DetailInput {
   "锁定"
   is_locked_lbl: String
 }
-input Dictbiz_DetailSearch {
+input DictbizDetailSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -104,25 +104,25 @@ input Dictbiz_DetailSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountDictbiz_detail(search: Dictbiz_DetailSearch): Int!
+  findCountDictbiz_detail(search: DictbizDetailSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllDictbiz_detail(search: Dictbiz_DetailSearch, page: PageInput, sort: [SortInput]): [Dictbiz_DetailModel!]!
+  findAllDictbiz_detail(search: DictbizDetailSearch, page: PageInput, sort: [SortInput]): [DictbizDetailModel!]!
   "获取字段对应的名称"
-  getFieldCommentsDictbiz_detail: Dictbiz_DetailFieldComment!
+  getFieldCommentsDictbiz_detail: DictbizDetailFieldComment!
   "根据条件查找第一条数据"
-  findOneDictbiz_detail(search: Dictbiz_DetailSearch, sort: [SortInput]): Dictbiz_DetailModel
+  findOneDictbiz_detail(search: DictbizDetailSearch, sort: [SortInput]): DictbizDetailModel
   "根据id查找一条数据"
-  findByIdDictbiz_detail(id: ID!): Dictbiz_DetailModel
+  findByIdDictbiz_detail(id: ID!): DictbizDetailModel
   "查找order_by字段的最大值"
   findLastOrderByDictbiz_detail: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDictbiz_detail(model: Dictbiz_DetailInput!): ID!
+  createDictbiz_detail(model: DictbizDetailInput!): ID!
   "根据id修改一条数据"
-  updateByIdDictbiz_detail(id: ID!, model: Dictbiz_DetailInput!): ID!
+  updateByIdDictbiz_detail(id: ID!, model: DictbizDetailInput!): ID!
   "批量导入"
-  importModelsDictbiz_detail(models: [Dictbiz_DetailInput!]!): String
+  importModelsDictbiz_detail(models: [DictbizDetailInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsDictbiz_detail(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

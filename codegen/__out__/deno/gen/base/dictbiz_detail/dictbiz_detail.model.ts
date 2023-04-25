@@ -3,16 +3,16 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type Dictbiz_DetailModel as Dictbiz_DetailModelType,
-  type Dictbiz_DetailSearch as Dictbiz_DetailSearchType,
+  type DictbizDetailModel as DictbizDetailModelType,
+  type DictbizDetailSearch as DictbizDetailSearchType,
 } from "/gen/types.ts";
 
-export interface Dictbiz_DetailSearch extends Dictbiz_DetailSearchType {
+export interface DictbizDetailSearch extends DictbizDetailSearchType {
   tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
 
-export interface Dictbiz_DetailModel extends Dictbiz_DetailModelType {
+export interface DictbizDetailModel extends DictbizDetailModelType {
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
