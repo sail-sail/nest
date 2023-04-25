@@ -592,11 +592,11 @@ pub async fn set_id_by_lbl<'a>(
   let is_enabled_dict = &dict_vec[0];
   let is_locked_dict = &dict_vec[1];
   
-  if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-    input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-  }
+  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
+  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+  //     item.trim().to_owned()
+  //   );
+  // }
   
   Ok(input)
 }

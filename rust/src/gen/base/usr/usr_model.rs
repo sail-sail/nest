@@ -185,15 +185,15 @@ impl From<UsrInput> for UsrSearch {
       // 密码
       password: input.password,
       // 默认部门
-      default_dept_id: input.default_dept_id.map(|x| vec![x]),
+      default_dept_id: input.default_dept_id.map(|x| vec![x.into()]),
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x]),
+      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 备注
       rem: input.rem,
       // 拥有部门
       dept_ids: input.dept_ids,
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x]),
+      is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 拥有角色
       role_ids: input.role_ids,
     }

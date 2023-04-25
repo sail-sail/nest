@@ -271,7 +271,7 @@ pub struct <#=tableUP#>Search {
     } else if (column.DATA_TYPE === 'text') {
       _data_type = 'String';
     } else if (column.DATA_TYPE === 'tinyint') {
-      _data_type = "Vec<Option<u8>>";
+      _data_type = "Vec<u8>";
     } else if (column.DATA_TYPE === 'decimal') {
       _data_type = "Vec<Option<rust_decimal::Decimal>>";
     }
