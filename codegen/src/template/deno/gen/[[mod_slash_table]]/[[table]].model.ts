@@ -5,7 +5,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
-}).join("_");
+}).join("");
 #>import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";

@@ -3,16 +3,16 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type Background_TaskModel as Background_TaskModelType,
-  type Background_TaskSearch as Background_TaskSearchType,
+  type BackgroundTaskModel as BackgroundTaskModelType,
+  type BackgroundTaskSearch as BackgroundTaskSearchType,
 } from "/gen/types.ts";
 
-export interface Background_TaskSearch extends Background_TaskSearchType {
+export interface BackgroundTaskSearch extends BackgroundTaskSearchType {
   tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
 
-export interface Background_TaskModel extends Background_TaskModelType {
+export interface BackgroundTaskModel extends BackgroundTaskModelType {
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;

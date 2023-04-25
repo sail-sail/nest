@@ -2,9 +2,9 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type Background_TaskModel,
-  type Background_TaskSearch,
-  type Background_TaskInput,
+  type BackgroundTaskModel,
+  type BackgroundTaskSearch,
+  type BackgroundTaskInput,
 } from "#/types";
 
 import {
@@ -13,13 +13,13 @@ import {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {Background_TaskSearch} search?
+ * @param {BackgroundTaskSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: Background_TaskSearch,
+  search?: BackgroundTaskSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -28,7 +28,7 @@ export async function findAll(
     findAllBackground_task: Query["findAllBackground_task"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Background_TaskSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -60,18 +60,18 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {Background_TaskSearch} search?
+ * @param {BackgroundTaskSearch} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: Background_TaskSearch,
+  search?: BackgroundTaskSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findCountBackground_task: Query["findCountBackground_task"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Background_TaskSearch) {
+      query($search: BackgroundTaskSearch) {
         findCountBackground_task(search: $search)
       }
     `,
@@ -214,13 +214,13 @@ export function useExportExcel() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: Background_TaskSearch,
+    search?: BackgroundTaskSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: Background_TaskSearch, $sort: [SortInput]) {
+        query($search: BackgroundTaskSearch, $sort: [SortInput]) {
           findAllBackground_task(search: $search, sort: $sort) {
             id
             lbl

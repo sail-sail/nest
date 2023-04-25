@@ -453,9 +453,9 @@ import {
 } from "./Api";
 
 import {
-  type Operation_RecordModel,
-  type Operation_RecordInput,
-  type Operation_RecordSearch,
+  type OperationRecordModel,
+  type OperationRecordInput,
+  type OperationRecordSearch,
   type UsrModel,
 } from "#/types";
 
@@ -489,7 +489,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
-  } as Operation_RecordSearch;
+  } as OperationRecordSearch;
 }
 
 let search = $ref(initSearch());
@@ -577,7 +577,7 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as Operation_RecordSearch;
+  return Object.fromEntries(entries) as unknown as OperationRecordSearch;
 });
 
 /** 内置变量 */
@@ -607,7 +607,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as Operation_RecordModel;
+  return Object.fromEntries(entries) as unknown as OperationRecordModel;
 });
 
 /** 分页功能 */
@@ -616,7 +616,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<Operation_RecordModel>(dataGrid));
+} = $(usePage<OperationRecordModel>(dataGrid));
 
 /** 表格选择功能 */
 let {
@@ -626,7 +626,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<Operation_RecordModel>($$(tableRef)));
+} = $(useSelect<OperationRecordModel>($$(tableRef)));
 
 watch(
   () => selectedIds,
@@ -672,7 +672,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<Operation_RecordModel[]>([ ]);
+let tableData = $ref<OperationRecordModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
@@ -763,7 +763,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<Operation_RecordModel>(
+} = $(useTableColumns<OperationRecordModel>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -816,7 +816,7 @@ let sort: Sort = $ref({
 
 /** 排序 */
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<Operation_RecordModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<OperationRecordModel> } & Sort,
 ) {
   sort.prop = prop;
   sort.order = order;

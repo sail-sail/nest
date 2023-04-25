@@ -13,8 +13,8 @@ export type Scalars = {
   JSON: any;
 };
 
-export type Background_TaskFieldComment = {
-  __typename?: 'Background_TaskFieldComment';
+export type BackgroundTaskFieldComment = {
+  __typename?: 'BackgroundTaskFieldComment';
   /** 开始时间 */
   begin_time: Scalars['String'];
   /** 结束时间 */
@@ -37,7 +37,7 @@ export type Background_TaskFieldComment = {
   type_lbl: Scalars['String'];
 };
 
-export type Background_TaskInput = {
+export type BackgroundTaskInput = {
   /** 开始时间 */
   begin_time?: InputMaybe<Scalars['String']>;
   /** 结束时间 */
@@ -63,8 +63,8 @@ export type Background_TaskInput = {
   type_lbl?: InputMaybe<Scalars['String']>;
 };
 
-export type Background_TaskModel = {
-  __typename?: 'Background_TaskModel';
+export type BackgroundTaskModel = {
+  __typename?: 'BackgroundTaskModel';
   /** 开始时间 */
   begin_time?: Maybe<Scalars['String']>;
   /** 结束时间 */
@@ -89,7 +89,7 @@ export type Background_TaskModel = {
   type_lbl?: Maybe<Scalars['String']>;
 };
 
-export type Background_TaskSearch = {
+export type BackgroundTaskSearch = {
   /** 开始时间 */
   begin_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
@@ -261,6 +261,109 @@ export type DeptSearch = {
   update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
+export type DictDetailFieldComment = {
+  __typename?: 'DictDetailFieldComment';
+  /** 系统字典 */
+  dict_id: Scalars['String'];
+  /** 系统字典 */
+  dict_id_lbl: Scalars['String'];
+  /** 启用 */
+  is_enabled: Scalars['String'];
+  /** 启用 */
+  is_enabled_lbl: Scalars['String'];
+  /** 锁定 */
+  is_locked: Scalars['String'];
+  /** 锁定 */
+  is_locked_lbl: Scalars['String'];
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['String'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 值 */
+  val: Scalars['String'];
+};
+
+export type DictDetailInput = {
+  /** 系统字典 */
+  dict_id?: InputMaybe<Scalars['ID']>;
+  /** 系统字典 */
+  dict_id_lbl?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled_lbl?: InputMaybe<Scalars['String']>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Scalars['Int']>;
+  /** 锁定 */
+  is_locked_lbl?: InputMaybe<Scalars['String']>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Scalars['Int']>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  /** 租户ID */
+  tenant_id?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  val?: InputMaybe<Scalars['String']>;
+};
+
+export type DictDetailModel = {
+  __typename?: 'DictDetailModel';
+  /** 系统字典 */
+  dict_id: Scalars['ID'];
+  /** 系统字典 */
+  dict_id_lbl?: Maybe<Scalars['String']>;
+  /** ID */
+  id: Scalars['ID'];
+  /** 启用 */
+  is_enabled: Scalars['Int'];
+  /** 启用 */
+  is_enabled_lbl?: Maybe<Scalars['String']>;
+  /** 锁定 */
+  is_locked: Scalars['Int'];
+  /** 锁定 */
+  is_locked_lbl?: Maybe<Scalars['String']>;
+  /** 名称 */
+  lbl: Scalars['String'];
+  /** 排序 */
+  order_by: Scalars['Int'];
+  /** 备注 */
+  rem: Scalars['String'];
+  /** 值 */
+  val: Scalars['String'];
+};
+
+export type DictDetailSearch = {
+  /** 系统字典 */
+  dict_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  dict_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** ID */
+  id?: InputMaybe<Scalars['ID']>;
+  /** ID列表 */
+  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  /** 是否已删除 */
+  is_deleted?: InputMaybe<Scalars['Int']>;
+  /** 启用 */
+  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 锁定 */
+  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 名称 */
+  lbl?: InputMaybe<Scalars['String']>;
+  lblLike?: InputMaybe<Scalars['String']>;
+  /** 排序 */
+  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  /** 备注 */
+  rem?: InputMaybe<Scalars['String']>;
+  remLike?: InputMaybe<Scalars['String']>;
+  /** 值 */
+  val?: InputMaybe<Scalars['String']>;
+  valLike?: InputMaybe<Scalars['String']>;
+};
+
 export type DictFieldComment = {
   __typename?: 'DictFieldComment';
   /** 编码 */
@@ -409,12 +512,12 @@ export type DictSearch = {
   update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type Dict_DetailFieldComment = {
-  __typename?: 'Dict_DetailFieldComment';
-  /** 系统字典 */
-  dict_id: Scalars['String'];
-  /** 系统字典 */
-  dict_id_lbl: Scalars['String'];
+export type DictbizDetailFieldComment = {
+  __typename?: 'DictbizDetailFieldComment';
+  /** 业务字典 */
+  dictbiz_id: Scalars['String'];
+  /** 业务字典 */
+  dictbiz_id_lbl: Scalars['String'];
   /** 启用 */
   is_enabled: Scalars['String'];
   /** 启用 */
@@ -433,11 +536,11 @@ export type Dict_DetailFieldComment = {
   val: Scalars['String'];
 };
 
-export type Dict_DetailInput = {
-  /** 系统字典 */
-  dict_id?: InputMaybe<Scalars['ID']>;
-  /** 系统字典 */
-  dict_id_lbl?: InputMaybe<Scalars['String']>;
+export type DictbizDetailInput = {
+  /** 业务字典 */
+  dictbiz_id?: InputMaybe<Scalars['ID']>;
+  /** 业务字典 */
+  dictbiz_id_lbl?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   /** 启用 */
   is_enabled?: InputMaybe<Scalars['Int']>;
@@ -459,12 +562,12 @@ export type Dict_DetailInput = {
   val?: InputMaybe<Scalars['String']>;
 };
 
-export type Dict_DetailModel = {
-  __typename?: 'Dict_DetailModel';
-  /** 系统字典 */
-  dict_id: Scalars['ID'];
-  /** 系统字典 */
-  dict_id_lbl?: Maybe<Scalars['String']>;
+export type DictbizDetailModel = {
+  __typename?: 'DictbizDetailModel';
+  /** 业务字典 */
+  dictbiz_id: Scalars['ID'];
+  /** 业务字典 */
+  dictbiz_id_lbl?: Maybe<Scalars['String']>;
   /** ID */
   id: Scalars['ID'];
   /** 启用 */
@@ -485,10 +588,10 @@ export type Dict_DetailModel = {
   val: Scalars['String'];
 };
 
-export type Dict_DetailSearch = {
-  /** 系统字典 */
-  dict_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  dict_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+export type DictbizDetailSearch = {
+  /** 业务字典 */
+  dictbiz_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  dictbiz_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
   /** ID列表 */
@@ -658,109 +761,6 @@ export type DictbizSearch = {
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   update_usr_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-};
-
-export type Dictbiz_DetailFieldComment = {
-  __typename?: 'Dictbiz_DetailFieldComment';
-  /** 业务字典 */
-  dictbiz_id: Scalars['String'];
-  /** 业务字典 */
-  dictbiz_id_lbl: Scalars['String'];
-  /** 启用 */
-  is_enabled: Scalars['String'];
-  /** 启用 */
-  is_enabled_lbl: Scalars['String'];
-  /** 锁定 */
-  is_locked: Scalars['String'];
-  /** 锁定 */
-  is_locked_lbl: Scalars['String'];
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 排序 */
-  order_by: Scalars['String'];
-  /** 备注 */
-  rem: Scalars['String'];
-  /** 值 */
-  val: Scalars['String'];
-};
-
-export type Dictbiz_DetailInput = {
-  /** 业务字典 */
-  dictbiz_id?: InputMaybe<Scalars['ID']>;
-  /** 业务字典 */
-  dictbiz_id_lbl?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['ID']>;
-  /** 启用 */
-  is_enabled?: InputMaybe<Scalars['Int']>;
-  /** 启用 */
-  is_enabled_lbl?: InputMaybe<Scalars['String']>;
-  /** 锁定 */
-  is_locked?: InputMaybe<Scalars['Int']>;
-  /** 锁定 */
-  is_locked_lbl?: InputMaybe<Scalars['String']>;
-  /** 名称 */
-  lbl?: InputMaybe<Scalars['String']>;
-  /** 排序 */
-  order_by?: InputMaybe<Scalars['Int']>;
-  /** 备注 */
-  rem?: InputMaybe<Scalars['String']>;
-  /** 租户ID */
-  tenant_id?: InputMaybe<Scalars['String']>;
-  /** 值 */
-  val?: InputMaybe<Scalars['String']>;
-};
-
-export type Dictbiz_DetailModel = {
-  __typename?: 'Dictbiz_DetailModel';
-  /** 业务字典 */
-  dictbiz_id: Scalars['ID'];
-  /** 业务字典 */
-  dictbiz_id_lbl?: Maybe<Scalars['String']>;
-  /** ID */
-  id: Scalars['ID'];
-  /** 启用 */
-  is_enabled: Scalars['Int'];
-  /** 启用 */
-  is_enabled_lbl?: Maybe<Scalars['String']>;
-  /** 锁定 */
-  is_locked: Scalars['Int'];
-  /** 锁定 */
-  is_locked_lbl?: Maybe<Scalars['String']>;
-  /** 名称 */
-  lbl: Scalars['String'];
-  /** 排序 */
-  order_by: Scalars['Int'];
-  /** 备注 */
-  rem: Scalars['String'];
-  /** 值 */
-  val: Scalars['String'];
-};
-
-export type Dictbiz_DetailSearch = {
-  /** 业务字典 */
-  dictbiz_id?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  dictbiz_id_lbl?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** ID */
-  id?: InputMaybe<Scalars['ID']>;
-  /** ID列表 */
-  ids?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  /** 是否已删除 */
-  is_deleted?: InputMaybe<Scalars['Int']>;
-  /** 启用 */
-  is_enabled?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  /** 锁定 */
-  is_locked?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  /** 名称 */
-  lbl?: InputMaybe<Scalars['String']>;
-  lblLike?: InputMaybe<Scalars['String']>;
-  /** 排序 */
-  order_by?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  /** 备注 */
-  rem?: InputMaybe<Scalars['String']>;
-  remLike?: InputMaybe<Scalars['String']>;
-  /** 值 */
-  val?: InputMaybe<Scalars['String']>;
-  valLike?: InputMaybe<Scalars['String']>;
 };
 
 export type GetDict = {
@@ -1273,7 +1273,7 @@ export type MutationCreateDictArgs = {
 
 
 export type MutationCreateDict_DetailArgs = {
-  model: Dict_DetailInput;
+  model: DictDetailInput;
 };
 
 
@@ -1283,7 +1283,7 @@ export type MutationCreateDictbizArgs = {
 
 
 export type MutationCreateDictbiz_DetailArgs = {
-  model: Dictbiz_DetailInput;
+  model: DictbizDetailInput;
 };
 
 
@@ -1478,7 +1478,7 @@ export type MutationImportModelsDictArgs = {
 
 
 export type MutationImportModelsDict_DetailArgs = {
-  models: Array<Dict_DetailInput>;
+  models: Array<DictDetailInput>;
 };
 
 
@@ -1488,7 +1488,7 @@ export type MutationImportModelsDictbizArgs = {
 
 
 export type MutationImportModelsDictbiz_DetailArgs = {
-  models: Array<Dictbiz_DetailInput>;
+  models: Array<DictbizDetailInput>;
 };
 
 
@@ -1667,7 +1667,7 @@ export type MutationUpdateByIdDictArgs = {
 
 export type MutationUpdateByIdDict_DetailArgs = {
   id: Scalars['ID'];
-  model: Dict_DetailInput;
+  model: DictDetailInput;
 };
 
 
@@ -1679,7 +1679,7 @@ export type MutationUpdateByIdDictbizArgs = {
 
 export type MutationUpdateByIdDictbiz_DetailArgs = {
   id: Scalars['ID'];
-  model: Dictbiz_DetailInput;
+  model: DictbizDetailInput;
 };
 
 
@@ -1724,8 +1724,8 @@ export type MutationUpdateByIdUsrArgs = {
   model: UsrInput;
 };
 
-export type Operation_RecordFieldComment = {
-  __typename?: 'Operation_RecordFieldComment';
+export type OperationRecordFieldComment = {
+  __typename?: 'OperationRecordFieldComment';
   /** 创建时间 */
   create_time: Scalars['String'];
   /** 创建人 */
@@ -1752,7 +1752,7 @@ export type Operation_RecordFieldComment = {
   update_usr_id_lbl: Scalars['String'];
 };
 
-export type Operation_RecordInput = {
+export type OperationRecordInput = {
   /** 创建时间 */
   create_time?: InputMaybe<Scalars['String']>;
   /** 创建人 */
@@ -1782,8 +1782,8 @@ export type Operation_RecordInput = {
   update_usr_id_lbl?: InputMaybe<Scalars['String']>;
 };
 
-export type Operation_RecordModel = {
-  __typename?: 'Operation_RecordModel';
+export type OperationRecordModel = {
+  __typename?: 'OperationRecordModel';
   /** 创建时间 */
   create_time?: Maybe<Scalars['String']>;
   /** 创建人 */
@@ -1812,7 +1812,7 @@ export type Operation_RecordModel = {
   update_usr_id_lbl?: Maybe<Scalars['String']>;
 };
 
-export type Operation_RecordSearch = {
+export type OperationRecordSearch = {
   /** 创建时间 */
   create_time?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** 创建人 */
@@ -2012,17 +2012,17 @@ export type Query = {
   __typename?: 'Query';
   _version?: Maybe<Scalars['String']>;
   /** 根据搜索条件和分页查找数据 */
-  findAllBackground_task: Array<Background_TaskModel>;
+  findAllBackground_task: Array<BackgroundTaskModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDept: Array<DeptModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDict: Array<DictModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllDict_detail: Array<Dict_DetailModel>;
+  findAllDict_detail: Array<DictDetailModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDictbiz: Array<DictbizModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllDictbiz_detail: Array<Dictbiz_DetailModel>;
+  findAllDictbiz_detail: Array<DictbizDetailModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllI18n: Array<I18nModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -2030,7 +2030,7 @@ export type Query = {
   /** 根据搜索条件和分页查找数据 */
   findAllMenu: Array<MenuModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllOperation_record: Array<Operation_RecordModel>;
+  findAllOperation_record: Array<OperationRecordModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllOptions: Array<OptionsModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -2040,17 +2040,17 @@ export type Query = {
   /** 根据搜索条件和分页查找数据 */
   findAllUsr: Array<UsrModel>;
   /** 根据id查找一条数据 */
-  findByIdBackground_task?: Maybe<Background_TaskModel>;
+  findByIdBackground_task?: Maybe<BackgroundTaskModel>;
   /** 根据id查找一条数据 */
   findByIdDept?: Maybe<DeptModel>;
   /** 根据id查找一条数据 */
   findByIdDict?: Maybe<DictModel>;
   /** 根据id查找一条数据 */
-  findByIdDict_detail?: Maybe<Dict_DetailModel>;
+  findByIdDict_detail?: Maybe<DictDetailModel>;
   /** 根据id查找一条数据 */
   findByIdDictbiz?: Maybe<DictbizModel>;
   /** 根据id查找一条数据 */
-  findByIdDictbiz_detail?: Maybe<Dictbiz_DetailModel>;
+  findByIdDictbiz_detail?: Maybe<DictbizDetailModel>;
   /** 根据id查找一条数据 */
   findByIdI18n?: Maybe<I18nModel>;
   /** 根据id查找一条数据 */
@@ -2058,7 +2058,7 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdMenu?: Maybe<MenuModel>;
   /** 根据id查找一条数据 */
-  findByIdOperation_record?: Maybe<Operation_RecordModel>;
+  findByIdOperation_record?: Maybe<OperationRecordModel>;
   /** 根据id查找一条数据 */
   findByIdOptions?: Maybe<OptionsModel>;
   /** 根据id查找一条数据 */
@@ -2114,17 +2114,17 @@ export type Query = {
   /** 查找order_by字段的最大值 */
   findLastOrderByTenant: Scalars['Int'];
   /** 根据条件查找第一条数据 */
-  findOneBackground_task?: Maybe<Background_TaskModel>;
+  findOneBackground_task?: Maybe<BackgroundTaskModel>;
   /** 根据条件查找第一条数据 */
   findOneDept?: Maybe<DeptModel>;
   /** 根据条件查找第一条数据 */
   findOneDict?: Maybe<DictModel>;
   /** 根据条件查找第一条数据 */
-  findOneDict_detail?: Maybe<Dict_DetailModel>;
+  findOneDict_detail?: Maybe<DictDetailModel>;
   /** 根据条件查找第一条数据 */
   findOneDictbiz?: Maybe<DictbizModel>;
   /** 根据条件查找第一条数据 */
-  findOneDictbiz_detail?: Maybe<Dictbiz_DetailModel>;
+  findOneDictbiz_detail?: Maybe<DictbizDetailModel>;
   /** 根据条件查找第一条数据 */
   findOneI18n?: Maybe<I18nModel>;
   /** 根据条件查找第一条数据 */
@@ -2132,7 +2132,7 @@ export type Query = {
   /** 根据条件查找第一条数据 */
   findOneMenu?: Maybe<MenuModel>;
   /** 根据条件查找第一条数据 */
-  findOneOperation_record?: Maybe<Operation_RecordModel>;
+  findOneOperation_record?: Maybe<OperationRecordModel>;
   /** 根据条件查找第一条数据 */
   findOneOptions?: Maybe<OptionsModel>;
   /** 根据条件查找第一条数据 */
@@ -2146,17 +2146,17 @@ export type Query = {
   /** 获取业务字典列表 */
   getDictbiz: Array<Array<GetDict>>;
   /** 获取字段对应的名称 */
-  getFieldCommentsBackground_task: Background_TaskFieldComment;
+  getFieldCommentsBackground_task: BackgroundTaskFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsDept: DeptFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsDict: DictFieldComment;
   /** 获取字段对应的名称 */
-  getFieldCommentsDict_detail: Dict_DetailFieldComment;
+  getFieldCommentsDict_detail: DictDetailFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsDictbiz: DictbizFieldComment;
   /** 获取字段对应的名称 */
-  getFieldCommentsDictbiz_detail: Dictbiz_DetailFieldComment;
+  getFieldCommentsDictbiz_detail: DictbizDetailFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsI18n: I18nFieldComment;
   /** 获取字段对应的名称 */
@@ -2164,7 +2164,7 @@ export type Query = {
   /** 获取字段对应的名称 */
   getFieldCommentsMenu: MenuFieldComment;
   /** 获取字段对应的名称 */
-  getFieldCommentsOperation_record: Operation_RecordFieldComment;
+  getFieldCommentsOperation_record: OperationRecordFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsOptions: OptionsFieldComment;
   /** 获取字段对应的名称 */
@@ -2190,7 +2190,7 @@ export type Query = {
 
 export type QueryFindAllBackground_TaskArgs = {
   page?: InputMaybe<PageInput>;
-  search?: InputMaybe<Background_TaskSearch>;
+  search?: InputMaybe<BackgroundTaskSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2211,7 +2211,7 @@ export type QueryFindAllDictArgs = {
 
 export type QueryFindAllDict_DetailArgs = {
   page?: InputMaybe<PageInput>;
-  search?: InputMaybe<Dict_DetailSearch>;
+  search?: InputMaybe<DictDetailSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2225,7 +2225,7 @@ export type QueryFindAllDictbizArgs = {
 
 export type QueryFindAllDictbiz_DetailArgs = {
   page?: InputMaybe<PageInput>;
-  search?: InputMaybe<Dictbiz_DetailSearch>;
+  search?: InputMaybe<DictbizDetailSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2253,7 +2253,7 @@ export type QueryFindAllMenuArgs = {
 
 export type QueryFindAllOperation_RecordArgs = {
   page?: InputMaybe<PageInput>;
-  search?: InputMaybe<Operation_RecordSearch>;
+  search?: InputMaybe<OperationRecordSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2357,7 +2357,7 @@ export type QueryFindByIdUsrArgs = {
 
 
 export type QueryFindCountBackground_TaskArgs = {
-  search?: InputMaybe<Background_TaskSearch>;
+  search?: InputMaybe<BackgroundTaskSearch>;
 };
 
 
@@ -2372,7 +2372,7 @@ export type QueryFindCountDictArgs = {
 
 
 export type QueryFindCountDict_DetailArgs = {
-  search?: InputMaybe<Dict_DetailSearch>;
+  search?: InputMaybe<DictDetailSearch>;
 };
 
 
@@ -2382,7 +2382,7 @@ export type QueryFindCountDictbizArgs = {
 
 
 export type QueryFindCountDictbiz_DetailArgs = {
-  search?: InputMaybe<Dictbiz_DetailSearch>;
+  search?: InputMaybe<DictbizDetailSearch>;
 };
 
 
@@ -2402,7 +2402,7 @@ export type QueryFindCountMenuArgs = {
 
 
 export type QueryFindCountOperation_RecordArgs = {
-  search?: InputMaybe<Operation_RecordSearch>;
+  search?: InputMaybe<OperationRecordSearch>;
 };
 
 
@@ -2427,7 +2427,7 @@ export type QueryFindCountUsrArgs = {
 
 
 export type QueryFindOneBackground_TaskArgs = {
-  search?: InputMaybe<Background_TaskSearch>;
+  search?: InputMaybe<BackgroundTaskSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2445,7 +2445,7 @@ export type QueryFindOneDictArgs = {
 
 
 export type QueryFindOneDict_DetailArgs = {
-  search?: InputMaybe<Dict_DetailSearch>;
+  search?: InputMaybe<DictDetailSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2457,7 +2457,7 @@ export type QueryFindOneDictbizArgs = {
 
 
 export type QueryFindOneDictbiz_DetailArgs = {
-  search?: InputMaybe<Dictbiz_DetailSearch>;
+  search?: InputMaybe<DictbizDetailSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 
@@ -2481,7 +2481,7 @@ export type QueryFindOneMenuArgs = {
 
 
 export type QueryFindOneOperation_RecordArgs = {
-  search?: InputMaybe<Operation_RecordSearch>;
+  search?: InputMaybe<OperationRecordSearch>;
   sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
 };
 

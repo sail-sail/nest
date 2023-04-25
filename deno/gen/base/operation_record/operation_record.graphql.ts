@@ -4,7 +4,7 @@ import * as operation_recordResolver from "./operation_record.resolver.ts";
 
 defineGraphql(operation_recordResolver, /* GraphQL */ `
 
-type Operation_RecordModel {
+type OperationRecordModel {
   "ID"
   id: ID!
   "模块"
@@ -32,7 +32,7 @@ type Operation_RecordModel {
   "更新时间"
   update_time: String
 }
-type Operation_RecordFieldComment {
+type OperationRecordFieldComment {
   "模块"
   mod: String!
   "模块名称"
@@ -58,7 +58,7 @@ type Operation_RecordFieldComment {
   "更新时间"
   update_time: String!
 }
-input Operation_RecordInput {
+input OperationRecordInput {
   "租户ID"
   tenant_id: String
   ""
@@ -88,7 +88,7 @@ input Operation_RecordInput {
   "更新时间"
   update_time: String
 }
-input Operation_RecordSearch {
+input OperationRecordSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -126,15 +126,15 @@ input Operation_RecordSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountOperation_record(search: Operation_RecordSearch): Int!
+  findCountOperation_record(search: OperationRecordSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllOperation_record(search: Operation_RecordSearch, page: PageInput, sort: [SortInput]): [Operation_RecordModel!]!
+  findAllOperation_record(search: OperationRecordSearch, page: PageInput, sort: [SortInput]): [OperationRecordModel!]!
   "获取字段对应的名称"
-  getFieldCommentsOperation_record: Operation_RecordFieldComment!
+  getFieldCommentsOperation_record: OperationRecordFieldComment!
   "根据条件查找第一条数据"
-  findOneOperation_record(search: Operation_RecordSearch, sort: [SortInput]): Operation_RecordModel
+  findOneOperation_record(search: OperationRecordSearch, sort: [SortInput]): OperationRecordModel
   "根据id查找一条数据"
-  findByIdOperation_record(id: ID!): Operation_RecordModel
+  findByIdOperation_record(id: ID!): OperationRecordModel
 }
 type Mutation {
   "根据 ids 删除数据"
