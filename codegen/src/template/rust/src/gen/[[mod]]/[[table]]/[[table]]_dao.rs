@@ -807,9 +807,11 @@ pub async fn find_by_unique<'a>(
   ).await?;
   
   Ok(model)<#
+  } else {
+  #>
+  Ok(None)<#
   }
   #>
-  Ok(None)
 }
 
 /// 根据唯一约束对比对象是否相等
@@ -837,9 +839,11 @@ pub fn equals_by_unique(
     return false;
   }
   true<#
+  } else {
+  #>
+  false<#
   }
   #>
-  false
 }
 
 /// 通过唯一约束检查数据是否已经存在
