@@ -3,7 +3,7 @@ use anyhow::Result;
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
 
-use super::usr_model::{UsrModel, UsrSearch};
+use super::usr_model::*;
 use super::usr_dao;
 
 /// 根据搜索条件和分页查找数据
@@ -74,4 +74,20 @@ pub async fn find_by_id<'a>(
   ).await?;
   
   Ok(model)
+}
+
+/// 创建数据
+pub async fn create<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: UsrInput,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  let id = usr_dao::create(
+    ctx,
+    input,
+    options,
+  ).await?;
+  
+  Ok(id)
 }

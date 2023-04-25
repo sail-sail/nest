@@ -35,7 +35,7 @@ const hasDictbiz = columns.some((column) => {
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
 
-use super::<#=table#>_model::{<#=tableUP#>Model, <#=tableUP#>Search};
+use super::<#=table#>_model::*;
 use super::<#=table#>_dao;
 
 /// 根据搜索条件和分页查找数据
@@ -106,4 +106,20 @@ pub async fn find_by_id<'a>(
   ).await?;
   
   Ok(model)
+}
+
+/// 创建数据
+pub async fn create<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  let id = <#=table#>_dao::create(
+    ctx,
+    input,
+    options,
+  ).await?;
+  
+  Ok(id)
 }

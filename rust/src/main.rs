@@ -17,7 +17,7 @@ mod gen;
 mod src;
 
 use async_graphql::{
-  EmptyMutation, EmptySubscription, Schema,
+  EmptySubscription, Schema,
 };
 use poem::{
   get, post,
@@ -29,7 +29,7 @@ use dotenv::dotenv;
 use tracing::info;
 
 use crate::common::oss::oss_dao;
-use crate::common::gql::query_root::{Query, QuerySchema};
+use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -49,7 +49,7 @@ async fn main() -> Result<(), std::io::Error> {
   
   let schema: QuerySchema = Schema::build(
     Query::default(),
-    EmptyMutation,
+    Mutation::default(),
     EmptySubscription
   )
     .finish();

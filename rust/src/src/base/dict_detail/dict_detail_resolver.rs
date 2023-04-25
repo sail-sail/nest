@@ -7,10 +7,10 @@ use super::dict_detail_model::DictModel;
 use super::dict_detail_service;
 
 #[derive(Default)]
-pub struct DictDetailResolver;
+pub struct DictDetailQuery;
 
 #[Object]
-impl DictDetailResolver {
+impl DictDetailQuery {
   
   async fn get_dict<'a>(
     &self,

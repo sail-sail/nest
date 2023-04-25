@@ -88,6 +88,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
   }
 }
 
+#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[graphql(rename_fields = "snake_case")]
 pub struct UsrFieldComment {
   /// 名称
   pub lbl: String,
@@ -113,6 +115,7 @@ pub struct UsrFieldComment {
 }
 
 #[derive(InputObject, Debug, Default)]
+#[graphql(rename_fields = "snake_case")]
 pub struct UsrSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
@@ -140,6 +143,7 @@ pub struct UsrSearch {
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
   pub id: Option<ID>,
   // 名称

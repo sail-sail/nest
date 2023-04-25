@@ -1,0 +1,14 @@
+pub mod background_task;
+pub mod dept;
+pub mod dict;
+pub mod dict_detail;
+pub mod dictbiz;
+pub mod dictbiz_detail;
+pub mod i18n;
+pub mod lang;
+pub mod menu;
+pub mod operation_record;
+pub mod options;
+pub mod role;
+pub mod tenant;
+pub mod usr;
