@@ -5,25 +5,25 @@ import {
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  type Background_TaskInput,
+  type BackgroundTaskInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Background_TaskModel,
-  type Background_TaskSearch,
+  type BackgroundTaskModel,
+  type BackgroundTaskSearch,
 } from "./background_task.model.ts";
 
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {BackgroundTaskSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: Background_TaskSearch,
+  search?: BackgroundTaskSearch,
 ): Promise<number> {
   search = search || { };
   
@@ -37,32 +37,32 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {BackgroundTaskSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<Background_TaskModel[]>} 
+ * @return {Promise<BackgroundTaskModel[]>} 
  */
 export async function findAll(
-  search?: Background_TaskSearch,
+  search?: BackgroundTaskSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<Background_TaskModel[]> {
+): Promise<BackgroundTaskModel[]> {
   search = search || { };
   
   const authModel = await authDao.getAuthModel();
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const data: Background_TaskModel[] = await background_taskDao.findAll(search, page, sort);
+  const data: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
   return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {BackgroundTaskSearch} search? 搜索条件
  */
 export async function findOne(
-  search?: Background_TaskSearch,
+  search?: BackgroundTaskSearch,
   sort?: SortInput|SortInput[],
 ) {
   search = search || { };
@@ -88,10 +88,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Background_TaskSearch} search? 搜索条件
+ * @param {BackgroundTaskSearch} search? 搜索条件
  */
 export async function exist(
-  search?: Background_TaskSearch,
+  search?: BackgroundTaskSearch,
 ) {
   search = search || { };
   
@@ -116,11 +116,11 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {Background_TaskModel} model
+ * @param {BackgroundTaskModel} model
  * @return {Promise<string>} id
  */
 export async function create(
-  model: Background_TaskModel,
+  model: BackgroundTaskModel,
 ): Promise<string> {
   const data = await background_taskDao.create(model);
   return data;
@@ -129,12 +129,12 @@ export async function create(
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {Background_TaskModel} model
+ * @param {BackgroundTaskModel} model
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: Background_TaskModel,
+  model: BackgroundTaskModel,
 ): Promise<string> {
   const data = await background_taskDao.updateById(id, model);
   return data;
@@ -178,10 +178,10 @@ export async function forceDeleteByIds(
 
 /**
  * 批量导入
- * @param {Background_TaskInput[]} models
+ * @param {BackgroundTaskInput[]} models
  */
 export async function importModels(
-  models: Background_TaskInput[],
+  models: BackgroundTaskInput[],
 ) {
   let succNum = 0;
   let failNum = 0;

@@ -447,9 +447,9 @@ import {
 } from "./Api";
 
 import {
-  type Background_TaskModel,
-  type Background_TaskInput,
-  type Background_TaskSearch,
+  type BackgroundTaskModel,
+  type BackgroundTaskInput,
+  type BackgroundTaskSearch,
 } from "#/types";
 
 defineOptions({
@@ -482,7 +482,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
-  } as Background_TaskSearch;
+  } as BackgroundTaskSearch;
 }
 
 let search = $ref(initSearch());
@@ -564,7 +564,7 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as Background_TaskSearch;
+  return Object.fromEntries(entries) as unknown as BackgroundTaskSearch;
 });
 
 /** 内置变量 */
@@ -594,7 +594,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as Background_TaskModel;
+  return Object.fromEntries(entries) as unknown as BackgroundTaskModel;
 });
 
 /** 分页功能 */
@@ -603,7 +603,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<Background_TaskModel>(dataGrid));
+} = $(usePage<BackgroundTaskModel>(dataGrid));
 
 /** 表格选择功能 */
 let {
@@ -613,7 +613,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<Background_TaskModel>($$(tableRef)));
+} = $(useSelect<BackgroundTaskModel>($$(tableRef)));
 
 watch(
   () => selectedIds,
@@ -659,7 +659,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<Background_TaskModel[]>([ ]);
+let tableData = $ref<BackgroundTaskModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
@@ -752,7 +752,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<Background_TaskModel>(
+} = $(useTableColumns<BackgroundTaskModel>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -805,7 +805,7 @@ let sort: Sort = $ref({
 
 /** 排序 */
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<Background_TaskModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<BackgroundTaskModel> } & Sort,
 ) {
   sort.prop = prop;
   sort.order = order;

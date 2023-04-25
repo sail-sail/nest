@@ -5,25 +5,25 @@ import {
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  type Dictbiz_DetailInput,
+  type DictbizDetailInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Dictbiz_DetailModel,
-  type Dictbiz_DetailSearch,
+  type DictbizDetailModel,
+  type DictbizDetailSearch,
 } from "./dictbiz_detail.model.ts";
 
 import * as dictbiz_detailDao from "./dictbiz_detail.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {Dictbiz_DetailSearch} search? 搜索条件
+ * @param {DictbizDetailSearch} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
 ): Promise<number> {
   search = search || { };
   const data = await dictbiz_detailDao.findCount(search);
@@ -32,27 +32,27 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {Dictbiz_DetailSearch} search? 搜索条件
+ * @param {DictbizDetailSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<Dictbiz_DetailModel[]>} 
+ * @return {Promise<DictbizDetailModel[]>} 
  */
 export async function findAll(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<Dictbiz_DetailModel[]> {
+): Promise<DictbizDetailModel[]> {
   search = search || { };
-  const data: Dictbiz_DetailModel[] = await dictbiz_detailDao.findAll(search, page, sort);
+  const data: DictbizDetailModel[] = await dictbiz_detailDao.findAll(search, page, sort);
   return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {Dictbiz_DetailSearch} search? 搜索条件
+ * @param {DictbizDetailSearch} search? 搜索条件
  */
 export async function findOne(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   sort?: SortInput|SortInput[],
 ) {
   search = search || { };
@@ -73,10 +73,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Dictbiz_DetailSearch} search? 搜索条件
+ * @param {DictbizDetailSearch} search? 搜索条件
  */
 export async function exist(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
 ) {
   search = search || { };
   const data = await dictbiz_detailDao.exist(search);
@@ -96,11 +96,11 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {Dictbiz_DetailModel} model
+ * @param {DictbizDetailModel} model
  * @return {Promise<string>} id
  */
 export async function create(
-  model: Dictbiz_DetailModel,
+  model: DictbizDetailModel,
 ): Promise<string> {
   const data = await dictbiz_detailDao.create(model);
   return data;
@@ -109,12 +109,12 @@ export async function create(
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {Dictbiz_DetailModel} model
+ * @param {DictbizDetailModel} model
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: Dictbiz_DetailModel,
+  model: DictbizDetailModel,
 ): Promise<string> {
   
   const is_locked = await dictbiz_detailDao.getIs_lockedById(id);
@@ -189,10 +189,10 @@ export async function forceDeleteByIds(
 
 /**
  * 批量导入
- * @param {Dictbiz_DetailInput[]} models
+ * @param {DictbizDetailInput[]} models
  */
 export async function importModels(
-  models: Dictbiz_DetailInput[],
+  models: DictbizDetailInput[],
 ) {
   let succNum = 0;
   let failNum = 0;

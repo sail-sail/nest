@@ -7,21 +7,21 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type Operation_RecordInput,
+  type OperationRecordInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Operation_RecordModel,
-  type Operation_RecordSearch,
+  type OperationRecordModel,
+  type OperationRecordSearch,
 } from "./operation_record.model.ts";
 
 /**
  * 根据条件查找据数总数
  */
 export async function findCountOperation_record(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: OperationRecordSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./operation_record.service.ts");
   const data = await findCount(search);
@@ -32,7 +32,7 @@ export async function findCountOperation_record(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllOperation_record(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
@@ -54,7 +54,7 @@ export async function getFieldCommentsOperation_record() {
  * 根据条件查找第一条数据
  */
 export async function findOneOperation_record(
-  search?: Operation_RecordSearch & { $extra?: SearchExtra[] },
+  search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./operation_record.service.ts");

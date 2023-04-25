@@ -2,9 +2,9 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type Dictbiz_DetailModel,
-  type Dictbiz_DetailSearch,
-  type Dictbiz_DetailInput,
+  type DictbizDetailModel,
+  type DictbizDetailSearch,
+  type DictbizDetailInput,
 } from "#/types";
 
 import {
@@ -14,13 +14,13 @@ import {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {Dictbiz_DetailSearch} search?
+ * @param {DictbizDetailSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -29,7 +29,7 @@ export async function findAll(
     findAllDictbiz_detail: Query["findAllDictbiz_detail"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Dictbiz_DetailSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput]) {
         findAllDictbiz_detail(search: $search, page: $page, sort: $sort) {
           id
           dictbiz_id
@@ -61,18 +61,18 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {Dictbiz_DetailSearch} search?
+ * @param {DictbizDetailSearch} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: Dictbiz_DetailSearch,
+  search?: DictbizDetailSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findCountDictbiz_detail: Query["findCountDictbiz_detail"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: Dictbiz_DetailSearch) {
+      query($search: DictbizDetailSearch) {
         findCountDictbiz_detail(search: $search)
       }
     `,
@@ -87,18 +87,18 @@ export async function findCount(
 /**
  * 创建一条数据
  * @export create
- * @param {Dictbiz_DetailInput} model
+ * @param {DictbizDetailInput} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: Dictbiz_DetailInput,
+  model: DictbizDetailInput,
   opt?: GqlOpt,
 ) {
   const data: {
     createDictbiz_detail: Mutation["createDictbiz_detail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: Dictbiz_DetailInput!) {
+      mutation($model: DictbizDetailInput!) {
         createDictbiz_detail(model: $model)
       }
     `,
@@ -114,19 +114,19 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
- * @param {Dictbiz_DetailInput} model
+ * @param {DictbizDetailInput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: Dictbiz_DetailInput,
+  model: DictbizDetailInput,
   opt?: GqlOpt,
 ) {
   const data: {
     updateByIdDictbiz_detail: Mutation["updateByIdDictbiz_detail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: Dictbiz_DetailInput!) {
+      mutation($id: ID!, $model: DictbizDetailInput!) {
         updateByIdDictbiz_detail(id: $id, model: $model)
       }
     `,
@@ -344,13 +344,13 @@ export function useExportExcel() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: Dictbiz_DetailSearch,
+    search?: DictbizDetailSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: Dictbiz_DetailSearch, $sort: [SortInput]) {
+        query($search: DictbizDetailSearch, $sort: [SortInput]) {
           findAllDictbiz_detail(search: $search, sort: $sort) {
             id
             dictbiz_id
@@ -403,18 +403,18 @@ export function useExportExcel() {
 
 /**
  * 批量导入
- * @param {Dictbiz_DetailInput[]} models
+ * @param {DictbizDetailInput[]} models
  * @export importModels
  */
 export async function importModels(
-  models: Dictbiz_DetailInput[],
+  models: DictbizDetailInput[],
   opt?: GqlOpt,
 ) {
   const data: {
     importModelsDictbiz_detail: Mutation["importModelsDictbiz_detail"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($models: [Dictbiz_DetailInput!]!) {
+      mutation($models: [DictbizDetailInput!]!) {
         importModelsDictbiz_detail(models: $models)
       }
     `,

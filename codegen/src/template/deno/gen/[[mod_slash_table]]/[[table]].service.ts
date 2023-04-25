@@ -4,7 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
-}).join("_");
+}).join("");
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {

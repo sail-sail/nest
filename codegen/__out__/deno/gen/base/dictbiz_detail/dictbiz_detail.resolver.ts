@@ -7,21 +7,21 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type Dictbiz_DetailInput,
+  type DictbizDetailInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type Dictbiz_DetailModel,
-  type Dictbiz_DetailSearch,
+  type DictbizDetailModel,
+  type DictbizDetailSearch,
 } from "./dictbiz_detail.model.ts";
 
 /**
  * 根据条件查找据数总数
  */
 export async function findCountDictbiz_detail(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./dictbiz_detail.service.ts");
   const data = await findCount(search);
@@ -32,7 +32,7 @@ export async function findCountDictbiz_detail(
  * 根据搜索条件和分页查找数据
  */
 export async function findAllDictbiz_detail(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
@@ -54,7 +54,7 @@ export async function getFieldCommentsDictbiz_detail() {
  * 根据条件查找第一条数据
  */
 export async function findOneDictbiz_detail(
-  search?: Dictbiz_DetailSearch & { $extra?: SearchExtra[] },
+  search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./dictbiz_detail.service.ts");
@@ -77,7 +77,7 @@ export async function findByIdDictbiz_detail(
  * 创建一条数据
  */
 export async function createDictbiz_detail(
-  model: Dictbiz_DetailModel,
+  model: DictbizDetailModel,
 ) {
   const context = useContext();
   
@@ -92,7 +92,7 @@ export async function createDictbiz_detail(
  */
 export async function updateByIdDictbiz_detail(
   id: string,
-  model: Dictbiz_DetailModel,
+  model: DictbizDetailModel,
 ) {
   const context = useContext();
   
@@ -138,7 +138,7 @@ export async function lockByIdsDictbiz_detail(
  * 批量导入
  */
 export async function importModelsDictbiz_detail(
-  models: Dictbiz_DetailInput[],
+  models: DictbizDetailInput[],
 ) {
   const { importModels } = await import("./dictbiz_detail.service.ts");
   const data = await importModels(models);

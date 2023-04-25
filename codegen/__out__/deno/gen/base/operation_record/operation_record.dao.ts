@@ -51,15 +51,15 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type Operation_RecordModel,
-  type Operation_RecordSearch,
+  type OperationRecordModel,
+  type OperationRecordSearch,
 } from "./operation_record.model.ts";
 
 import * as usrDao from "/gen/base/usr/usr.dao.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   options?: {
   },
 ) {
@@ -209,11 +209,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { Operation_RecordSearch } search?
+ * @param { OperationRecordSearch } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   options?: {
   },
 ): Promise<number> {
@@ -247,11 +247,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {Operation_RecordSearch} search? 搜索条件
+ * @param {OperationRecordSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -294,7 +294,7 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  let result = await query<Operation_RecordModel>(sql, args);
+  let result = await query<OperationRecordModel>(sql, args);
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -328,11 +328,11 @@ export async function getFieldComments() {
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof Operation_RecordModel)[];
+  uniqueKeys: (keyof OperationRecordModel)[];
   uniqueComments: { [key: string]: string };
 }> {
   const n = initN("/i18n");
-  const uniqueKeys: (keyof Operation_RecordModel)[] = [
+  const uniqueKeys: (keyof OperationRecordModel)[] = [
   ];
   const uniqueComments = {
   };
@@ -341,10 +341,10 @@ export async function getUniqueKeys(): Promise<{
 
 /**
  * 通过唯一约束获得一行数据
- * @param {Operation_RecordSearch | PartialNull<Operation_RecordModel>} search0
+ * @param {OperationRecordSearch | PartialNull<OperationRecordModel>} search0
  */
 export async function findByUnique(
-  search0: Operation_RecordSearch | PartialNull<Operation_RecordModel>,
+  search0: OperationRecordSearch | PartialNull<OperationRecordModel>,
   options?: {
   },
 ) {
@@ -356,7 +356,7 @@ export async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: Operation_RecordSearch = { };
+  const search: OperationRecordSearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -371,13 +371,13 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {Operation_RecordModel} oldModel
- * @param {PartialNull<Operation_RecordModel>} model
+ * @param {OperationRecordModel} oldModel
+ * @param {PartialNull<OperationRecordModel>} model
  * @return {boolean}
  */
 export async function equalsByUnique(
-  oldModel: Operation_RecordModel,
-  model: PartialNull<Operation_RecordModel>,
+  oldModel: OperationRecordModel,
+  model: PartialNull<OperationRecordModel>,
 ): Promise<boolean> {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = await getUniqueKeys();
@@ -397,14 +397,14 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<Operation_RecordModel>} model
- * @param {Operation_RecordModel} oldModel
+ * @param {PartialNull<OperationRecordModel>} model
+ * @param {OperationRecordModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<Operation_RecordModel>,
-  oldModel: Operation_RecordModel,
+  model: PartialNull<OperationRecordModel>,
+  oldModel: OperationRecordModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
@@ -438,10 +438,10 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {Operation_RecordSearch} search?
+ * @param {OperationRecordSearch} search?
  */
 export async function findOne(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   sort?: SortInput | SortInput[],
   options?: {
   },
@@ -475,10 +475,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {Operation_RecordSearch} search?
+ * @param {OperationRecordSearch} search?
  */
 export async function exist(
-  search?: Operation_RecordSearch,
+  search?: OperationRecordSearch,
   options?: {
   },
 ) {
@@ -527,7 +527,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<Operation_RecordModel>} model
+ * @param {PartialNull<OperationRecordModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -537,7 +537,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<Operation_RecordModel>,
+  model: PartialNull<OperationRecordModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -693,7 +693,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<Operation_RecordModel>} model
+ * @param {PartialNull<OperationRecordModel>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -704,7 +704,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: PartialNull<Operation_RecordModel>,
+  model: PartialNull<OperationRecordModel>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

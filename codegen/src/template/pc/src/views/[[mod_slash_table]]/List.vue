@@ -3,7 +3,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
-}).join("_");
+}).join("");
 const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);

@@ -205,7 +205,7 @@ import {
 } from "./Api";
 
 import {
-  type Dictbiz_DetailInput,
+  type DictbizDetailInput,
   type DictbizModel,
 } from "#/types";
 
@@ -236,7 +236,7 @@ type DialogAction = "add" | "copy" | "edit";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
-} as Dictbiz_DetailInput);
+} as DictbizDetailInput);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -282,11 +282,11 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<Dictbiz_DetailInput>();
+let builtInModel = $ref<DictbizDetailInput>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: Dictbiz_DetailInput = {
+  const defaultInput: DictbizDetailInput = {
     order_by: 1,
     is_enabled: 1,
     is_locked: 0,
@@ -300,7 +300,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: Dictbiz_DetailInput;
+    builtInModel?: DictbizDetailInput;
     model?: {
       id?: string;
       ids?: string[];
