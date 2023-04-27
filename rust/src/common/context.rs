@@ -1027,6 +1027,13 @@ pub struct CountModel {
   
 }
 
+#[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
+pub struct OrderByModel {
+  
+  pub order_by: i64,
+  
+}
+
 /// "ignore" | "throw" | "update" = "throw"
 #[allow(dead_code)]
 #[derive(PartialEq, Clone)]

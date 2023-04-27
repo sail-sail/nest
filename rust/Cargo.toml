@@ -57,6 +57,7 @@ time = "0.3.20"
 rust_decimal = "1.29.1"
 enum_dispatch = "0.3.11"
 pin-project-lite = "0.2.9"
+rayon = "1.7.0"
 
 [build.dependencies]
 protobuf = "3.2.0"

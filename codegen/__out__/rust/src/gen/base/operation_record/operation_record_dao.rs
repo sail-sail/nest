@@ -1,6 +1,6 @@
 use anyhow::Result;
+use tracing::info;
 
-use crate::common::auth::auth_dao::get_password;
 use crate::common::util::string::*;
 use crate::common::util::dao::*;
 
@@ -292,6 +292,8 @@ pub async fn find_all<'a>(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordModel>> {
+  
+  #[allow(unused_variables)]
   let table = "base_operation_record";
   let _method = "find_all";
   
@@ -338,6 +340,8 @@ pub async fn find_count<'a>(
   search: Option<OperationRecordSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
+  
+  #[allow(unused_variables)]
   let table = "base_operation_record";
   let _method = "find_count";
   
@@ -382,6 +386,7 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
+#[allow(unused_variables)]
 pub async fn get_field_comments() -> Result<OperationRecordFieldComment> {
   let field_comments = OperationRecordFieldComment {
     r#mod: "模块".to_owned(),
@@ -401,6 +406,7 @@ pub async fn get_field_comments() -> Result<OperationRecordFieldComment> {
 }
 
 /// 获得表的唯一字段名列表
+#[allow(unused_variables)]
 pub fn get_unique_keys() -> Vec<&'static str> {
   let unique_keys = vec![
   ];
@@ -456,6 +462,7 @@ pub async fn find_by_id<'a>(
 }
 
 /// 通过唯一约束获得一行数据
+#[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
   search: OperationRecordSearch,
@@ -466,7 +473,8 @@ pub async fn find_by_unique<'a>(
 }
 
 /// 根据唯一约束对比对象是否相等
-pub fn equals_by_unique(
+#[allow(unused_variables)]
+fn equals_by_unique(
   input: OperationRecordInput,
   model: OperationRecordModel,
 ) -> bool {
@@ -477,6 +485,7 @@ pub fn equals_by_unique(
 }
 
 /// 通过唯一约束检查数据是否已经存在
+#[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
   input: OperationRecordInput,
@@ -566,56 +575,48 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(usr_id.into());
   }
-  
   // 模块
   if let Some(r#mod) = input.r#mod {
-    sql_fields += ",r#mod";
+    sql_fields += ",mod";
     sql_values += ",?";
     args.push(r#mod.into());
   }
-  
   // 模块名称
   if let Some(mod_lbl) = input.mod_lbl {
     sql_fields += ",mod_lbl";
     sql_values += ",?";
     args.push(mod_lbl.into());
   }
-  
   // 方法
   if let Some(method) = input.method {
     sql_fields += ",method";
     sql_values += ",?";
     args.push(method.into());
   }
-  
   // 方法名称
   if let Some(method_lbl) = input.method_lbl {
     sql_fields += ",method_lbl";
     sql_values += ",?";
     args.push(method_lbl.into());
   }
-  
   // 操作
   if let Some(lbl) = input.lbl {
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
   }
-  
   // 备注
   if let Some(rem) = input.rem {
     sql_fields += ",rem";
     sql_values += ",?";
     args.push(rem.into());
   }
-  
   // 更新人
   if let Some(update_usr_id) = input.update_usr_id {
     sql_fields += ",update_usr_id";
     sql_values += ",?";
     args.push(update_usr_id.into());
   }
-  
   // 更新时间
   if let Some(update_time) = input.update_time {
     sql_fields += ",update_time";
@@ -647,4 +648,269 @@ pub async fn create<'a>(
   }
   
   Ok(id)
+}
+
+/// 根据id修改租户id
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = "base_operation_record";
+  let _method = "update_tenant_by_id";
+  
+  let mut args = QueryArgs::new();
+  
+  let sql_fields = "tenant_id = ?,update_time = ?";
+  args.push(tenant_id.into());
+  args.push(ctx.get_now().into());
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {}",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据id修改数据
+pub async fn update_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  mut input: OperationRecordInput,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  input = set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
+  let table = "base_operation_record";
+  let _method = "update_by_id";
+  
+  let now = ctx.get_now();
+  
+  let mut args = QueryArgs::new();
+  
+  let mut sql_fields = "update_time = ?".to_owned();
+  args.push(now.into());
+  
+  let mut field_num: usize = 0;
+  // 模块
+  if let Some(r#mod) = input.r#mod {
+    field_num += 1;
+    sql_fields += ",mod = ?";
+    args.push(r#mod.into());
+  }
+  // 模块名称
+  if let Some(mod_lbl) = input.mod_lbl {
+    field_num += 1;
+    sql_fields += ",mod_lbl = ?";
+    args.push(mod_lbl.into());
+  }
+  // 方法
+  if let Some(method) = input.method {
+    field_num += 1;
+    sql_fields += ",method = ?";
+    args.push(method.into());
+  }
+  // 方法名称
+  if let Some(method_lbl) = input.method_lbl {
+    field_num += 1;
+    sql_fields += ",method_lbl = ?";
+    args.push(method_lbl.into());
+  }
+  // 操作
+  if let Some(lbl) = input.lbl {
+    field_num += 1;
+    sql_fields += ",lbl = ?";
+    args.push(lbl.into());
+  }
+  // 备注
+  if let Some(rem) = input.rem {
+    field_num += 1;
+    sql_fields += ",rem = ?";
+    args.push(rem.into());
+  }
+  
+  if field_num == 0 {
+    return Ok(0);
+  }
+  
+  if let Some(auth_model) = ctx.get_auth_model() {
+    let usr_id = auth_model.id;
+    sql_fields += ",update_usr_id = ?";
+    args.push(usr_id.into());
+  }
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {} limit 1",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 获取外键关联表, 第一个是主表
+fn get_foreign_tables() -> Vec<&'static str> {
+  let table = "base_operation_record";
+  vec![
+    table,
+    "usr",
+  ]
+}
+
+/// 根据 ids 删除数据
+pub async fn delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "base_operation_record";
+  let _method = "delete_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_deleted=1,delete_time=? where id=? limit 1",
+      table,
+    );
+    
+    args.push(ctx.get_now().into());
+    args.push(id.into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}
+
+/// 根据 ids 还原数据
+pub async fn revert_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "base_operation_record";
+  let _method = "revert_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_deleted=0 where id=? limit 1",
+      table,
+    );
+    
+    args.push(id.into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}
+
+/// 根据 ids 彻底删除数据
+pub async fn force_delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "base_operation_record";
+  let _method = "force_delete_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    
+    let model = find_by_id(ctx, id.clone(), None).await?;
+    info!("force_delete_by_ids: {:?}", model);
+    
+    if model.is_none() {
+      continue;
+    }
+    
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "delete from {} set where id=? and is_deleted = 1 limit 1",
+      table,
+    );
+    
+    args.push(id.into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
 }
