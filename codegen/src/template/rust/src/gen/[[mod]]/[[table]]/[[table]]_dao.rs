@@ -31,8 +31,13 @@ const hasDictbiz = columns.some((column) => {
   return column.dictbiz;
 });
 #>use anyhow::Result;
-
-use crate::common::auth::auth_dao::get_password;
+use tracing::info;
+<#
+if (hasPassword) {
+#>
+use crate::common::auth::auth_dao::get_password;<#
+}
+#>
 use crate::common::util::string::*;
 use crate::common::util::dao::*;
 
@@ -394,6 +399,8 @@ pub async fn find_all<'a>(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
+  
+  #[allow(unused_variables)]
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_all";
   
@@ -613,6 +620,8 @@ pub async fn find_count<'a>(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<i64> {
+  
+  #[allow(unused_variables)]
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_count";
   
@@ -663,6 +672,7 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
+#[allow(unused_variables)]
 pub async fn get_field_comments() -> Result<<#=tableUP#>FieldComment> {
   let field_comments = <#=tableUP#>FieldComment {<#
     for (let i = 0; i < columns.length; i++) {
@@ -701,6 +711,7 @@ pub async fn get_field_comments() -> Result<<#=tableUP#>FieldComment> {
 }
 
 /// 获得表的唯一字段名列表
+#[allow(unused_variables)]
 pub fn get_unique_keys() -> Vec<&'static str> {
   let unique_keys = vec![<#
     for (let i = 0; i < (opts.unique || []).length; i++) {
@@ -762,6 +773,7 @@ pub async fn find_by_id<'a>(
 }
 
 /// 通过唯一约束获得一行数据
+#[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
   search: <#=tableUP#>Search,
@@ -815,7 +827,8 @@ pub async fn find_by_unique<'a>(
 }
 
 /// 根据唯一约束对比对象是否相等
-pub fn equals_by_unique(
+#[allow(unused_variables)]
+fn equals_by_unique(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
 ) -> bool {
@@ -847,6 +860,7 @@ pub fn equals_by_unique(
 }
 
 /// 通过唯一约束检查数据是否已经存在
+#[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
   input: <#=tableUP#>Input,
@@ -1080,7 +1094,8 @@ pub async fn create<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
@@ -1097,12 +1112,11 @@ pub async fn create<'a>(
   #><#
     if (column.isPassword) {
   #>
-  
   // <#=column_comment#>
-  if let Some(<#=column_name#>) = input.<#=column_name#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     sql_fields += ",<#=column_name#>";
     sql_values += ",?";
-    args.push(get_password(&<#=column_name#>)?.into());
+    args.push(get_password(&<#=column_name_rust#>)?.into());
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #><#
@@ -1110,12 +1124,11 @@ pub async fn create<'a>(
   #><#
     } else {
   #>
-  
   // <#=column_comment#>
-  if let Some(<#=column_name#>) = input.<#=column_name#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     sql_fields += ",<#=column_name#>";
     sql_values += ",?";
-    args.push(<#=column_name#>.into());
+    args.push(<#=column_name_rust#>.into());
   }<#
     }
   #><#
@@ -1135,7 +1148,7 @@ pub async fn create<'a>(
   if (cache) {
   #>
   
-  let options = options.set_cache_key(table, &sql, &args);<#
+  let options = options.set_del_cache_key1s(get_foreign_tables());<#
   }
   #>
   
@@ -1192,4 +1205,585 @@ pub async fn create<'a>(
   #>
   
   Ok(id)
+}<#
+if (hasTenant_id) {
+#>
+
+/// 根据id修改租户id
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "update_tenant_by_id";
+  
+  let mut args = QueryArgs::new();
+  
+  let sql_fields = "tenant_id = ?,update_time = ?";
+  args.push(tenant_id.into());
+  args.push(ctx.get_now().into());
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {}",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
 }
+#><#
+if (hasDeptId) {
+#>
+
+/// 根据id修改部门id
+pub async fn update_dept_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  dept_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "update_dept_by_id";
+  
+  let mut args = QueryArgs::new();
+  
+  let sql_fields = "dept_id = ?,update_time = ?";
+  args.push(dept_id.into());
+  args.push(ctx.get_now().into());
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {}",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#><#
+if (hasVersion) {
+#>
+
+pub async fn get_version_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+) -> Result<Option<i64>> {
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "get_version_by_id";
+  
+  let model = find_by_id(ctx, id, None).await?;
+  
+  if let Some(model) = model {
+    return Ok(model.version.into());
+  }
+  
+  Ok(0.into())
+}<#
+}
+#>
+
+/// 根据id修改数据
+pub async fn update_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  mut input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  input = set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "update_by_id";
+  
+  let now = ctx.get_now();
+  
+  let mut args = QueryArgs::new();
+  
+  let mut sql_fields = "update_time = ?".to_owned();
+  args.push(now.into());
+  
+  let mut field_num: usize = 0;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+  #><#
+    if (column.isPassword) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    field_num += 1;
+    sql_fields += ",<#=column_name#> = ?";
+    args.push(get_password(&<#=column_name_rust#>)?.into());
+  }<#
+    } else if (foreignKey && foreignKey.type === "json") {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    field_num += 1;
+    sql_fields += ",<#=column_name#> = ?";
+    args.push(<#=column_name_rust#>.into());
+  }<#
+    } else if (foreignKey && foreignKey.type === "many2many") {
+  #><#
+    } else {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    field_num += 1;
+    sql_fields += ",<#=column_name#> = ?";
+    args.push(<#=column_name_rust#>.into());
+  }<#
+  }
+  #><#
+  }
+  #>
+  
+  if field_num == 0 {
+    return Ok(0);
+  }<#
+  if (hasVersion) {
+  #>if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    if version > 0 {
+      let version2 = get_version_by_id(ctx, id.clone()).await?;
+      if let Some(version2) = version2 {
+        if version2 > version {
+          return Err(SrvErr::msg("数据已被修改，请刷新后重试".into()).into());
+        }
+      }
+      sql_fields += ",version = ?";
+      args.push((version + 1).into());
+    }
+  }<#
+  }
+  #>
+  
+  if let Some(auth_model) = ctx.get_auth_model() {
+    let usr_id = auth_model.id;
+    sql_fields += ",update_usr_id = ?";
+    args.push(usr_id.into());
+  }
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {} limit 1",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);<#
+  if (cache) {
+  #>
+  
+  let options = options.set_del_cache_key1s(get_foreign_tables());<#
+  }
+  #>
+  
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+  #><#
+  if (foreignKey && foreignKey.type === "many2many") {
+  #>
+  
+  // <#=column_comment#>
+  if let Some(<#=column_name#>) = input.<#=column_name#> {
+    many2many_update(
+      ctx,
+      id.clone(),
+      <#=column_name#>.clone(),
+      ManyOpts {
+        r#mod: "<#=many2many.mod#>",
+        table: "<#=many2many.table#>",
+        column1: "<#=many2many.column1#>",
+        column2: "<#=many2many.column2#>",
+      },
+    ).await?;
+  }<#
+  }
+  #><#
+  }
+  #>
+  
+  Ok(num)
+}
+
+/// 获取外键关联表, 第一个是主表
+fn get_foreign_tables() -> Vec<&'static str> {
+  let table = "<#=mod#>_<#=table#>";
+  vec![
+    table,<#
+    let foreign_tableArr = [ ];
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      if (!foreignKey) continue;
+      const foreignTable = foreignKey.table;
+      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+    #><#
+      if (foreignKey && foreignKey.type === "many2many") {
+        if (foreign_tableArr.includes(many2many.table)) {
+          continue;
+        } else {
+          foreign_tableArr.push(many2many.table);
+        }
+        if (foreign_tableArr.includes(foreignTable)) {
+          continue;
+        } else {
+          foreign_tableArr.push(foreignTable);
+        }
+    #>
+    "<#=many2many.table#>",
+    "<#=foreignTable#>",<#
+    } else if (foreignKey && !foreignKey.multiple) {
+      if (foreign_tableArr.includes(foreignTable)) {
+        continue;
+      } else {
+        foreign_tableArr.push(foreignTable);
+      }
+    #>
+    "<#=foreignTable#>",<#
+    }
+    #><#
+    }
+    #>
+  ]
+}
+
+/// 根据 ids 删除数据
+pub async fn delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "delete_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_deleted=1,delete_time=? where id=? limit 1",
+      table,
+    );
+    
+    args.push(ctx.get_now().into());
+    args.push(id.into());
+    
+    let args = args.into();<#
+    if (cache) {
+    #>
+    
+    let options = options.set_del_cache_key1s(get_foreign_tables());<#
+    }
+    #>
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}<#
+if (hasLocked) {
+#>
+
+/// 根据 ID 查找是否已锁定
+/// 已锁定的记录不能修改和删除
+/// 记录不存在则返回 false
+pub async fn get_is_locked_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+) -> Result<bool> {
+  
+  let model = find_by_id(ctx, id, None).await?;
+  
+  let is_locked = {
+    if let Some(model) = model {
+      model.is_locked == 1
+    } else {
+      false
+    }
+  };
+  
+  Ok(is_locked)
+}
+
+pub async fn lock_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "lock_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_locked=1 where id=? limit 1",
+      table,
+    );
+    
+    args.push(id.into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}<#
+}
+#>
+
+/// 根据 ids 还原数据
+pub async fn revert_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "revert_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_deleted=0 where id=? limit 1",
+      table,
+    );
+    
+    args.push(id.into());
+    
+    let args = args.into();<#
+    if (cache) {
+    #>
+    
+    let options = options.set_del_cache_key1s(get_foreign_tables());<#
+    }
+    #>
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}
+
+/// 根据 ids 彻底删除数据
+pub async fn force_delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "force_delete_by_ids";
+  
+  let options = Options::from(options);
+  
+  let mut num = 0;
+  for id in ids {
+    
+    let model = find_by_id(ctx, id.clone(), None).await?;
+    info!("force_delete_by_ids: {:?}", model);
+    
+    if model.is_none() {
+      continue;
+    }
+    
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "delete from {} set where id=? and is_deleted = 1 limit 1",
+      table,
+    );
+    
+    args.push(id.into());
+    
+    let args = args.into();<#
+    if (cache) {
+    #>
+    
+    let options = options.set_del_cache_key1s(get_foreign_tables());<#
+    }
+    #>
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}<#
+if (hasOrderBy) {
+#>
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by<'a>() -> Result<i64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "find_last_order_by";
+  
+  let mut args = QueryArgs::new();
+  let mut sql_where = "".to_owned();
+  
+  sql_where += "t.is_deleted = 0";<#
+  if (hasTenant_id) {
+  #>
+  
+  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+    sql_where += " and t.tenant_id = ?";
+    args.push(tenant_id.into());
+  }<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  if let Some(dept_id) = ctx.get_auth_dept_id() {
+    sql_where += " and t.dept_id = ?";
+    args.push(dept_id.into());
+  }<#
+  }
+  #>
+  
+  let sql = format!(
+    "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",
+    table,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let model = ctx.query_one::<OrderByModel>(
+    sql,
+    args,
+    None,
+  ).await?;
+  
+  let order_by = {
+    if let Some(model) = model {
+      model.order_by
+    } else {
+      0
+    }
+  };
+  
+  Ok(order_by)
+}<#
+}
+#>
