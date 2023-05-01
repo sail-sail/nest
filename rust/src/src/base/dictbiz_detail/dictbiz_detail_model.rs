@@ -11,7 +11,7 @@ use sqlx::FromRow;
   Deserialize,
   Clone,
 )]
-pub struct DictModel {
+pub struct GetDictbiz {
   pub id: String,
   pub code: String,
   pub r#type: String,

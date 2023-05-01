@@ -2,13 +2,13 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, QueryArgs, Options};
 
-use super::dictbiz_detail_model::DictModel;
+use super::dictbiz_detail_model::GetDictbiz;
 
 /// 获取业务字典
 pub async fn get_dictbiz<'a>(
   ctx: &mut impl Ctx<'a>,
   codes: &Vec<impl AsRef<str>>,
-) -> Result<Vec<Vec<DictModel>>> {
+) -> Result<Vec<Vec<GetDictbiz>>> {
   if codes.is_empty() {
     return Ok(vec![]);
   }
@@ -55,16 +55,16 @@ pub async fn get_dictbiz<'a>(
   
   let options = options.into();
   
-  let res: Vec<DictModel> = ctx.query(
+  let res: Vec<GetDictbiz> = ctx.query(
     sql,
     args,
     options,
   ).await?;
   
-  let mut data: Vec<Vec<DictModel>> = vec![];
+  let mut data: Vec<Vec<GetDictbiz>> = vec![];
   
   for code in codes {
-    let mut item: Vec<DictModel> = vec![];
+    let mut item: Vec<GetDictbiz> = vec![];
     for d in &res {
       if d.code == code.as_ref() {
         item.push(d.clone());

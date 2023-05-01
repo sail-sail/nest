@@ -19,17 +19,16 @@ mime = "0.3.16"
 futures-util = "0.3.21"
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16" }
-tokio = { version = "1.17.0", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.28.0", features = ["rt-multi-thread", "macros"] }
 poem = { version = "1.3.55", features = ["server", "multipart", "native-tls", "tempfile", "anyhow", "embed"] }
 async-graphql = { version = "5.0.7", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz"] }
-slab = "0.4.4"
+slab = "0.4.8"
 chrono = { version = "0.4.24", features = ["serde"] }
 lazy_static = "1.4.0"
-anyhow = "1.0.70"
+anyhow = "1.0.71"
 sqlx = { version = "0.6.3", features = ["runtime-tokio-native-tls", "mysql", "uuid", "chrono", "time", "bigdecimal", "decimal", "json"] }
 dotenv = "0.15.0"
-dotenv_codegen = "0.15.0"
-rust-s3 = { version = "0.32.3", features = ["tokio", "tokio-native-tls", "tokio-stream", "with-tokio", "no-verify-ssl"] }
+rust-s3 = { version = "0.33.0", features = ["tokio", "tokio-native-tls", "tokio-stream", "with-tokio", "no-verify-ssl"] }
 async-trait = "0.1.68"
 imstr = { version = "0.1.0", features = ["serde"] }
 jwt = "0.16.0"
@@ -41,7 +40,7 @@ hex = "0.4.3"
 base64 = "0.21.0"
 utf8_slice = "1.0.0"
 derive-new = "0.5.9"
-reqwest = { version = "0.11.16", features = ["__tls", "default-tls", "hyper-tls", "native-tls-crate", "tokio-native-tls", "json", "serde_json", "multipart"] }
+reqwest = { version = "0.11.17", features = ["__tls", "default-tls", "hyper-tls", "native-tls-crate", "tokio-native-tls", "json", "serde_json", "multipart"] }
 encoding_rs = "0.8.32"
 urlencoding = "2.1.2"
 sqlformat = "0.2.1"
@@ -49,7 +48,7 @@ smallvec = { version = "1.10.0", features = ["union", "serde"] }
 downcast-rs = "1.2.0"
 uuid = { version = "1.3.1", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.9.5"
-deadpool-redis = "0.11.1"
+deadpool-redis = "0.12.0"
 pin-project = "1.0.12"
 decimal = "2.1.0"
 bigdecimal = "0.3.0"
@@ -58,6 +57,7 @@ rust_decimal = "1.29.1"
 enum_dispatch = "0.3.11"
 pin-project-lite = "0.2.9"
 rayon = "1.7.0"
+regex = "1.8.1"
 
 [build.dependencies]
 protobuf = "3.2.0"

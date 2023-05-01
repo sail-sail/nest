@@ -9,10 +9,10 @@ use super::operation_record_service;
 
 
 #[derive(Default)]
-pub struct OperationRecordQuery;
+pub struct OperationRecordGenQuery;
 
 #[Object]
-impl OperationRecordQuery {
+impl OperationRecordGenQuery {
   
   /// 根据搜索条件和分页查找数据
   async fn find_all_operation_record<'a>(
@@ -91,10 +91,10 @@ impl OperationRecordQuery {
 }
 
 #[derive(Default)]
-pub struct OperationRecordMutation;
+pub struct OperationRecordGenMutation;
 
 #[Object]
-impl OperationRecordMutation {
+impl OperationRecordGenMutation {
   
   /// 创建数据
   pub async fn create_operation_record<'a>(
@@ -111,6 +111,95 @@ impl OperationRecordMutation {
     ).await;
     
     ctx.ok(id).await
+  }
+  
+  /// 根据id修改租户id
+  pub async fn update_tenant_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    tenant_id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = operation_record_service::update_tenant_by_id(
+      &mut ctx,
+      id,
+      tenant_id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据id修改数据
+  pub async fn update_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    input: OperationRecordInput,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = operation_record_service::update_by_id(
+      &mut ctx,
+      id,
+      input,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 删除数据
+  pub async fn delete_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = operation_record_service::delete_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 还原数据
+  pub async fn revert_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = operation_record_service::revert_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 彻底删除数据
+  pub async fn force_delete_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = operation_record_service::force_delete_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
   }
   
 }

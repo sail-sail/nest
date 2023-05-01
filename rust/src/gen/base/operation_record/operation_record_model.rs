@@ -128,10 +128,12 @@ pub struct OperationRecordSearch {
   pub rem: Option<String>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
+  pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<Option<String>>>,
   /// 更新人
   pub update_usr_id: Option<Vec<String>>,
+  pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<Option<String>>>,
 }
@@ -191,6 +193,7 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      ..Default::default()
     }
   }
 }

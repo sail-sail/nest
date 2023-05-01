@@ -12,7 +12,7 @@ pub struct Query(
 #[derive(MergedObject, Default)]
 pub struct Mutation(
   crate::gen::GenMutation,
-  // crate::src::SrcMutation,
+  crate::src::SrcMutation,
 );
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;

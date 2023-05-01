@@ -1,3 +1,8 @@
-pub mod usr;
+pub mod dept;
 pub mod dict_detail;
 pub mod dictbiz_detail;
+pub mod i18n;
+pub mod lang;
+pub mod usr;
+pub mod menu;
+pub mod options;

@@ -2,7 +2,6 @@ use anyhow::Result;
 use tracing::info;
 
 use crate::common::util::string::*;
-use crate::common::util::dao::*;
 
 use crate::common::context::{
   Ctx,
@@ -214,6 +213,15 @@ fn get_where_query<'a>(
     }
   }
   {
+    let create_usr_id_is_null: bool = match &search {
+      Some(item) => item.create_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if create_usr_id_is_null {
+      where_query += &format!(" and create_usr_id_lbl.id is null");
+    }
+  }
+  {
     let create_time: Vec<Option<String>> = match &search {
       Some(item) => item.create_time.clone().unwrap(),
       None => vec![],
@@ -249,6 +257,15 @@ fn get_where_query<'a>(
         item
       };
       where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += &format!(" and update_usr_id_lbl.id is null");
     }
   }
   {
@@ -328,6 +345,7 @@ pub async fn find_all<'a>(
     options,
   ).await?;
   
+  #[allow(unused_assignments)]
   for model in &mut res {
     
   }
@@ -386,7 +404,7 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
-#[allow(unused_variables)]
+#[allow(dead_code)]
 pub async fn get_field_comments() -> Result<OperationRecordFieldComment> {
   let field_comments = OperationRecordFieldComment {
     r#mod: "模块".to_owned(),
@@ -406,7 +424,7 @@ pub async fn get_field_comments() -> Result<OperationRecordFieldComment> {
 }
 
 /// 获得表的唯一字段名列表
-#[allow(unused_variables)]
+#[allow(dead_code)]
 pub fn get_unique_keys() -> Vec<&'static str> {
   let unique_keys = vec![
   ];
@@ -473,7 +491,7 @@ pub async fn find_by_unique<'a>(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(unused_variables)]
+#[allow(dead_code)]
 fn equals_by_unique(
   input: OperationRecordInput,
   model: OperationRecordModel,
@@ -762,7 +780,7 @@ pub async fn update_by_id<'a>(
   }
   
   let sql_where = "id = ?";
-  args.push(id.into());
+  args.push(id.clone().into());
   
   let sql = format!(
     "update {} set {} where {} limit 1",
@@ -787,6 +805,7 @@ pub async fn update_by_id<'a>(
 }
 
 /// 获取外键关联表, 第一个是主表
+#[allow(dead_code)]
 fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_operation_record";
   vec![
@@ -821,7 +840,9 @@ pub async fn delete_by_ids<'a>(
     
     let args = args.into();
     
-    let options = options.clone().into();
+    let options = options.clone();
+    
+    let options = options.into();
     
     num += ctx.execute(
       sql,
@@ -858,7 +879,9 @@ pub async fn revert_by_ids<'a>(
     
     let args = args.into();
     
-    let options = options.clone().into();
+    let options = options.clone();
+    
+    let options = options.into();
     
     num += ctx.execute(
       sql,
@@ -903,7 +926,9 @@ pub async fn force_delete_by_ids<'a>(
     
     let args = args.into();
     
-    let options = options.clone().into();
+    let options = options.clone();
+    
+    let options = options.into();
     
     num += ctx.execute(
       sql,

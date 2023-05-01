@@ -4,6 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -38,8 +39,12 @@ if (hasPassword) {
 use crate::common::auth::auth_dao::get_password;<#
 }
 #>
-use crate::common::util::string::*;
-use crate::common::util::dao::*;
+use crate::common::util::string::*;<#
+if (hasMany2many) {
+#>
+use crate::common::util::dao::{many2many_update, ManyOpts};<#
+}
+#>
 
 use crate::common::context::{
   Ctx,
@@ -47,7 +52,12 @@ use crate::common::context::{
   Options,
   CountModel,
   UniqueType,
-  SrvErr,
+  SrvErr,<#
+  if (hasOrderBy) {
+  #>
+  OrderByModel,<#
+  }
+  #>
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -228,6 +238,15 @@ fn get_where_query<'a>(
       };
       where_query += &format!(" and <#=column_name#>_lbl.id in ({})", arg);
     }
+  }
+  {
+    let <#=column_name#>_is_null: bool = match &search {
+      Some(item) => item.<#=column_name#>_is_null.unwrap_or(false),
+      None => false,
+    };
+    if <#=column_name#>_is_null {
+      where_query += &format!(" and <#=column_name#>_lbl.id is null");
+    }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
@@ -246,6 +265,15 @@ fn get_where_query<'a>(
         item
       };
       where_query += &format!(" and <#=foreignKey.table#>.id in ({})", arg);
+    }
+  }
+  {
+    let <#=column_name#>_is_null: bool = match &search {
+      Some(item) => item.<#=column_name#>_is_null.unwrap_or(false),
+      None => false,
+    };
+    if <#=column_name#>_is_null {
+      where_query += &format!(" and <#=column_name#>_lbl.id is null");
     }
   }<#
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
@@ -557,6 +585,7 @@ pub async fn find_all<'a>(
     }
   #>
   
+  #[allow(unused_assignments)]
   for model in &mut res {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -672,7 +701,7 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
-#[allow(unused_variables)]
+#[allow(dead_code)]
 pub async fn get_field_comments() -> Result<<#=tableUP#>FieldComment> {
   let field_comments = <#=tableUP#>FieldComment {<#
     for (let i = 0; i < columns.length; i++) {
@@ -711,7 +740,7 @@ pub async fn get_field_comments() -> Result<<#=tableUP#>FieldComment> {
 }
 
 /// 获得表的唯一字段名列表
-#[allow(unused_variables)]
+#[allow(dead_code)]
 pub fn get_unique_keys() -> Vec<&'static str> {
   let unique_keys = vec![<#
     for (let i = 0; i < (opts.unique || []).length; i++) {
@@ -827,7 +856,7 @@ pub async fn find_by_unique<'a>(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(unused_variables)]
+#[allow(dead_code)]
 fn equals_by_unique(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
@@ -886,7 +915,16 @@ pub async fn check_by_unique<'a>(
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments().await?;
     let err_msg: String = format!(
-      "{} 已经存在",<#
+      "<#
+      for (let i = 0; i < (opts.unique || []).length; i++) {
+        const uniqueKey = opts.unique[i];
+      #>{}<#
+        if (i !== (opts.unique || []).length - 1) {
+      #>, <#
+        }
+      #><#
+      }
+      #> 已经存在",<#
       for (let i = 0; i < (opts.unique || []).length; i++) {
         const uniqueKey = opts.unique[i];
       #>
@@ -1167,7 +1205,8 @@ pub async fn create<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
@@ -1186,11 +1225,11 @@ pub async fn create<'a>(
   #>
   
   // <#=column_comment#>
-  if let Some(<#=column_name#>) = input.<#=column_name#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     many2many_update(
       ctx,
       id.clone(),
-      <#=column_name#>.clone(),
+      <#=column_name_rust#>.clone(),
       ManyOpts {
         r#mod: "<#=many2many.mod#>",
         table: "<#=many2many.table#>",
@@ -1392,7 +1431,7 @@ pub async fn update_by_id<'a>(
     return Ok(0);
   }<#
   if (hasVersion) {
-  #>if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+  #>if let Some(version) = input.version {
     if version > 0 {
       let version2 = get_version_by_id(ctx, id.clone()).await?;
       if let Some(version2) = version2 {
@@ -1414,7 +1453,7 @@ pub async fn update_by_id<'a>(
   }
   
   let sql_where = "id = ?";
-  args.push(id.into());
+  args.push(id.clone().into());
   
   let sql = format!(
     "update {} set {} where {} limit 1",
@@ -1444,7 +1483,8 @@ pub async fn update_by_id<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
@@ -1463,11 +1503,11 @@ pub async fn update_by_id<'a>(
   #>
   
   // <#=column_comment#>
-  if let Some(<#=column_name#>) = input.<#=column_name#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     many2many_update(
       ctx,
       id.clone(),
-      <#=column_name#>.clone(),
+      <#=column_name_rust#>.clone(),
       ManyOpts {
         r#mod: "<#=many2many.mod#>",
         table: "<#=many2many.table#>",
@@ -1485,6 +1525,7 @@ pub async fn update_by_id<'a>(
 }
 
 /// 获取外键关联表, 第一个是主表
+#[allow(dead_code)]
 fn get_foreign_tables() -> Vec<&'static str> {
   let table = "<#=mod#>_<#=table#>";
   vec![
@@ -1555,7 +1596,9 @@ pub async fn delete_by_ids<'a>(
     args.push(ctx.get_now().into());
     args.push(id.into());
     
-    let args = args.into();<#
+    let args = args.into();
+    
+    let options = options.clone();<#
     if (cache) {
     #>
     
@@ -1563,7 +1606,7 @@ pub async fn delete_by_ids<'a>(
     }
     #>
     
-    let options = options.clone().into();
+    let options = options.into();
     
     num += ctx.execute(
       sql,
@@ -1659,7 +1702,9 @@ pub async fn revert_by_ids<'a>(
     
     args.push(id.into());
     
-    let args = args.into();<#
+    let args = args.into();
+    
+    let options = options.clone();<#
     if (cache) {
     #>
     
@@ -1667,7 +1712,7 @@ pub async fn revert_by_ids<'a>(
     }
     #>
     
-    let options = options.clone().into();
+    let options = options.into();
     
     num += ctx.execute(
       sql,
@@ -1710,7 +1755,9 @@ pub async fn force_delete_by_ids<'a>(
     
     args.push(id.into());
     
-    let args = args.into();<#
+    let args = args.into();
+    
+    let options = options.clone();<#
     if (cache) {
     #>
     
@@ -1718,7 +1765,7 @@ pub async fn force_delete_by_ids<'a>(
     }
     #>
     
-    let options = options.clone().into();
+    let options = options.into();
     
     num += ctx.execute(
       sql,
@@ -1733,7 +1780,9 @@ if (hasOrderBy) {
 #>
 
 /// 查找 order_by 字段的最大值
-pub async fn find_last_order_by<'a>() -> Result<i64> {
+pub async fn find_last_order_by<'a>(
+  ctx: &mut impl Ctx<'a>,
+) -> Result<i64> {
   
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_last_order_by";

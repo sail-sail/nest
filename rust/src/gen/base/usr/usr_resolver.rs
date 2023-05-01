@@ -9,10 +9,10 @@ use super::usr_service;
 
 
 #[derive(Default)]
-pub struct UsrQuery;
+pub struct UsrGenQuery;
 
 #[Object]
-impl UsrQuery {
+impl UsrGenQuery {
   
   /// 根据搜索条件和分页查找数据
   async fn find_all_usr<'a>(
@@ -91,10 +91,10 @@ impl UsrQuery {
 }
 
 #[derive(Default)]
-pub struct UsrMutation;
+pub struct UsrGenMutation;
 
 #[Object]
-impl UsrMutation {
+impl UsrGenMutation {
   
   /// 创建数据
   pub async fn create_usr<'a>(
@@ -111,6 +111,95 @@ impl UsrMutation {
     ).await;
     
     ctx.ok(id).await
+  }
+  
+  /// 根据id修改租户id
+  pub async fn update_tenant_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    tenant_id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = usr_service::update_tenant_by_id(
+      &mut ctx,
+      id,
+      tenant_id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据id修改数据
+  pub async fn update_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    input: UsrInput,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = usr_service::update_by_id(
+      &mut ctx,
+      id,
+      input,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 删除数据
+  pub async fn delete_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = usr_service::delete_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 还原数据
+  pub async fn revert_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = usr_service::revert_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 彻底删除数据
+  pub async fn force_delete_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = usr_service::force_delete_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
   }
   
 }
