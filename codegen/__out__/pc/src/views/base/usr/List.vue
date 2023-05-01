@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -41,13 +41,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.usernameLike == null && builtInSearch?.username == null">
+      <template v-if="builtInSearch?.username_like == null && builtInSearch?.username == null">
         <el-form-item
           :label="n('用户名')"
-          prop="usernameLike"
+          prop="username_like"
         >
           <el-input
-            v-model="search.usernameLike"
+            v-model="search.username_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
             clearable
@@ -64,8 +64,7 @@
           <CustomSelect
             :set="search.dept_ids = search.dept_ids || [ ]"
             un-w="full"
-            :model-value="search.dept_ids"
-            @update:model-value="search.dept_ids = $event"
+            v-model="search.dept_ids"
             :method="getDeptList"
             :options-map="((item: DeptModel) => {
               return {
@@ -88,8 +87,7 @@
           <CustomSelect
             :set="search.role_ids = search.role_ids || [ ]"
             un-w="full"
-            :model-value="search.role_ids"
-            @update:model-value="search.role_ids = $event"
+            v-model="search.role_ids"
             :method="getRoleList"
             :options-map="((item: RoleModel) => {
               return {
@@ -635,16 +633,16 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   username?: string; // 用户名
-  usernameLike?: string; // 用户名
+  username_like?: string; // 用户名
   password?: string; // 密码
-  passwordLike?: string; // 密码
+  password_like?: string; // 密码
   default_dept_id?: string|string[]; // 默认部门
   default_dept_id_lbl?: string|string[]; // 默认部门
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   dept_ids?: string|string[]; // 拥有部门
   dept_ids_lbl?: string|string[]; // 拥有部门
   is_locked?: string|string[]; // 锁定

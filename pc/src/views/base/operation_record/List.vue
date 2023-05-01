@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.mod_lblLike == null && builtInSearch?.mod_lbl == null">
+      <template v-if="builtInSearch?.mod_lbl_like == null && builtInSearch?.mod_lbl == null">
         <el-form-item
           :label="n('模块名称')"
-          prop="mod_lblLike"
+          prop="mod_lbl_like"
         >
           <el-input
-            v-model="search.mod_lblLike"
+            v-model="search.mod_lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
             clearable
@@ -41,13 +41,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.method_lblLike == null && builtInSearch?.method_lbl == null">
+      <template v-if="builtInSearch?.method_lbl_like == null && builtInSearch?.method_lbl == null">
         <el-form-item
           :label="n('方法名称')"
-          prop="method_lblLike"
+          prop="method_lbl_like"
         >
           <el-input
-            v-model="search.method_lblLike"
+            v-model="search.method_lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
             clearable
@@ -56,13 +56,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('操作')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('操作') }`"
             clearable
@@ -523,17 +523,17 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   mod?: string; // 模块
-  modLike?: string; // 模块
+  mod_like?: string; // 模块
   mod_lbl?: string; // 模块名称
-  mod_lblLike?: string; // 模块名称
+  mod_lbl_like?: string; // 模块名称
   method?: string; // 方法
-  methodLike?: string; // 方法
+  method_like?: string; // 方法
   method_lbl?: string; // 方法名称
-  method_lblLike?: string; // 方法名称
+  method_lbl_like?: string; // 方法名称
   lbl?: string; // 操作
-  lblLike?: string; // 操作
+  lbl_like?: string; // 操作
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人
   create_time?: string; // 创建时间

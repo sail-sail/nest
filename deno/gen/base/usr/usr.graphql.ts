@@ -107,26 +107,26 @@ input UsrSearch {
   id: ID
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "用户名"
   username: String
-  usernameLike: String
+  username_like: String
   "默认部门"
-  default_dept_id: [String]
-  default_dept_id_lbl: [String]
+  default_dept_id: [String!]
+  default_dept_id_lbl: [String!]
   "启用"
-  is_enabled: [Int]
+  is_enabled: [Int!]
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
   "拥有部门"
-  dept_ids: [String]
-  dept_ids_lbl: [String]
+  dept_ids: [String!]
+  dept_ids_lbl: [String!]
   "锁定"
-  is_locked: [Int]
+  is_locked: [Int!]
   "拥有角色"
-  role_ids: [String]
-  role_ids_lbl: [String]
+  role_ids: [String!]
+  role_ids_lbl: [String!]
 }
 type Query {
   "根据条件查找据数总数"

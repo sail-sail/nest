@@ -43,7 +43,7 @@ export async function findLoginUsr(
   return result;
 }
 
-export async function getDept_idsById(
+export async function getDeptIdsById(
   id: string,
 ) {
   const args = new QueryArgs();

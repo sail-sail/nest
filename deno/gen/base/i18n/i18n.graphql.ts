@@ -66,20 +66,20 @@ input I18nSearch {
   "ID"
   id: ID
   "语言"
-  lang_id: [String]
-  lang_id_lbl: [String]
+  lang_id: [String!]
+  lang_id_lbl: [String!]
   "菜单"
-  menu_id: [String]
-  menu_id_lbl: [String]
+  menu_id: [String!]
+  menu_id_lbl: [String!]
   "编码"
   code: String
-  codeLike: String
+  code_like: String
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
 }
 type Query {
   "根据条件查找据数总数"

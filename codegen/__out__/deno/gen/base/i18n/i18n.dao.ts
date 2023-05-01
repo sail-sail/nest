@@ -108,8 +108,8 @@ async function getWhereQuery(
   if (search?.code === null) {
     whereQuery += ` and t.code is null`;
   }
-  if (isNotEmpty(search?.codeLike)) {
-    whereQuery += ` and t.code like ${ args.push(sqlLike(search?.codeLike) + "%") }`;
+  if (isNotEmpty(search?.code_like)) {
+    whereQuery += ` and t.code like ${ args.push(sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -117,8 +117,8 @@ async function getWhereQuery(
   if (search?.lbl === null) {
     whereQuery += ` and t.lbl is null`;
   }
-  if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -126,8 +126,8 @@ async function getWhereQuery(
   if (search?.rem === null) {
     whereQuery += ` and t.rem is null`;
   }
-  if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;

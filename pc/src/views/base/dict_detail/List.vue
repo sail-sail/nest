@@ -34,8 +34,7 @@
           <CustomSelect
             :set="search.dict_id = search.dict_id || [ ]"
             un-w="full"
-            :model-value="search.dict_id"
-            @update:model-value="search.dict_id = $event"
+            v-model="search.dict_id"
             :method="getDictList"
             :options-map="((item: DictModel) => {
               return {
@@ -50,13 +49,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -65,13 +64,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.valLike == null && builtInSearch?.val == null">
+      <template v-if="builtInSearch?.val_like == null && builtInSearch?.val == null">
         <el-form-item
           :label="n('值')"
-          prop="valLike"
+          prop="val_like"
         >
           <el-input
-            v-model="search.valLike"
+            v-model="search.val_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('值') }`"
             clearable
@@ -591,13 +590,13 @@ const props = defineProps<{
   dict_id?: string|string[]; // 系统字典
   dict_id_lbl?: string|string[]; // 系统字典
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   val?: string; // 值
-  valLike?: string; // 值
+  val_like?: string; // 值
   order_by?: string; // 排序
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   is_locked?: string|string[]; // 锁定
 }>();
 

@@ -238,10 +238,10 @@ async function getWhereQuery(
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
-    whereQuery += ` and <#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#> === null) {
-    whereQuery += ` and <#=foreignKey.table#>.id is null`;
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
   }<#
     }
   #><#
@@ -292,8 +292,8 @@ async function getWhereQuery(
   if (search?.<#=column_name#> === null) {
     whereQuery += ` and t.<#=column_name#> is null`;
   }
-  if (isNotEmpty(search?.<#=column_name#>Like)) {
-    whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>Like) + "%") }`;
+  if (isNotEmpty(search?.<#=column_name#>_like)) {
+    whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>_like) + "%") }`;
   }<#
     }
   #><#

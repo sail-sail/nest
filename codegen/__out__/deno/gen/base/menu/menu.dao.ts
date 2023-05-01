@@ -97,8 +97,8 @@ async function getWhereQuery(
   if (search?.lbl === null) {
     whereQuery += ` and t.lbl is null`;
   }
-  if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.route_path !== undefined) {
     whereQuery += ` and t.route_path = ${ args.push(search.route_path) }`;
@@ -106,8 +106,8 @@ async function getWhereQuery(
   if (search?.route_path === null) {
     whereQuery += ` and t.route_path is null`;
   }
-  if (isNotEmpty(search?.route_pathLike)) {
-    whereQuery += ` and t.route_path like ${ args.push(sqlLike(search?.route_pathLike) + "%") }`;
+  if (isNotEmpty(search?.route_path_like)) {
+    whereQuery += ` and t.route_path like ${ args.push(sqlLike(search?.route_path_like) + "%") }`;
   }
   if (search?.route_query !== undefined) {
     whereQuery += ` and t.route_query = ${ args.push(search.route_query) }`;
@@ -115,8 +115,8 @@ async function getWhereQuery(
   if (search?.route_query === null) {
     whereQuery += ` and t.route_query is null`;
   }
-  if (isNotEmpty(search?.route_queryLike)) {
-    whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_queryLike) + "%") }`;
+  if (isNotEmpty(search?.route_query_like)) {
+    whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_query_like) + "%") }`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -138,8 +138,8 @@ async function getWhereQuery(
   if (search?.rem === null) {
     whereQuery += ` and t.rem is null`;
   }
-  if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;

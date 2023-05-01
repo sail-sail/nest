@@ -91,8 +91,8 @@ async function getWhereQuery(
   if (search?.lbl === null) {
     whereQuery += ` and t.lbl is null`;
   }
-  if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.username !== undefined) {
     whereQuery += ` and t.username = ${ args.push(search.username) }`;
@@ -100,8 +100,8 @@ async function getWhereQuery(
   if (search?.username === null) {
     whereQuery += ` and t.username is null`;
   }
-  if (isNotEmpty(search?.usernameLike)) {
-    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.usernameLike) + "%") }`;
+  if (isNotEmpty(search?.username_like)) {
+    whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
   }
   if (search?.default_dept_id && !Array.isArray(search?.default_dept_id)) {
     search.default_dept_id = [ search.default_dept_id ];
@@ -130,17 +130,17 @@ async function getWhereQuery(
   if (search?.rem === null) {
     whereQuery += ` and t.rem is null`;
   }
-  if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
     search.dept_ids = [ search.dept_ids ];
   }
   if (search?.dept_ids && search?.dept_ids.length > 0) {
-    whereQuery += ` and dept.id in ${ args.push(search.dept_ids) }`;
+    whereQuery += ` and base_dept.id in ${ args.push(search.dept_ids) }`;
   }
   if (search?.dept_ids === null) {
-    whereQuery += ` and dept.id is null`;
+    whereQuery += ` and base_dept.id is null`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -152,10 +152,10 @@ async function getWhereQuery(
     search.role_ids = [ search.role_ids ];
   }
   if (search?.role_ids && search?.role_ids.length > 0) {
-    whereQuery += ` and role.id in ${ args.push(search.role_ids) }`;
+    whereQuery += ` and base_role.id in ${ args.push(search.role_ids) }`;
   }
   if (search?.role_ids === null) {
-    whereQuery += ` and role.id is null`;
+    whereQuery += ` and base_role.id is null`;
   }
   if (search?.$extra) {
     const extras = search.$extra;

@@ -61,15 +61,15 @@ input RoleSearch {
   id: ID
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
   "启用"
-  is_enabled: [Int]
+  is_enabled: [Int!]
   "菜单"
-  menu_ids: [String]
-  menu_ids_lbl: [String]
+  menu_ids: [String!]
+  menu_ids_lbl: [String!]
 }
 type Query {
   "根据条件查找据数总数"

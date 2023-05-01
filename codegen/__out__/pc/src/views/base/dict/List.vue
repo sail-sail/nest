@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.codeLike == null && builtInSearch?.code == null">
+      <template v-if="builtInSearch?.code_like == null && builtInSearch?.code == null">
         <el-form-item
           :label="n('编码')"
-          prop="codeLike"
+          prop="code_like"
         >
           <el-input
-            v-model="search.codeLike"
+            v-model="search.code_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('编码') }`"
             clearable
@@ -41,13 +41,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -609,14 +609,14 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   code?: string; // 编码
-  codeLike?: string; // 编码
+  code_like?: string; // 编码
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   type?: string|string[]; // 数据类型
   order_by?: string; // 排序
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   is_locked?: string|string[]; // 锁定
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人

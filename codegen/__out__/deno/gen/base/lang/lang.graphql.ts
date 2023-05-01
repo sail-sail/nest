@@ -61,17 +61,17 @@ input LangSearch {
   id: ID
   "编码"
   code: String
-  codeLike: String
+  code_like: String
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
   "启用"
-  is_enabled: [Int]
+  is_enabled: [Int!]
   "排序"
-  order_by: [Int]
+  order_by: [Int!]
 }
 type Query {
   "根据条件查找据数总数"
