@@ -146,6 +146,9 @@ async function getWhereQuery(
   if (search?.create_usr_id === null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
   if (search?.create_usr_id_lbl && !Array.isArray(search?.create_usr_id_lbl)) {
     search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
@@ -167,6 +170,9 @@ async function getWhereQuery(
     whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id === null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
   }
   if (search?.update_usr_id_lbl && !Array.isArray(search?.update_usr_id_lbl)) {

@@ -94,6 +94,7 @@ input MenuSearch {
   "父菜单"
   menu_id: [String!]
   menu_id_lbl: [String!]
+  menu_id_is_null: Boolean
   "名称"
   lbl: String
   lbl_like: String

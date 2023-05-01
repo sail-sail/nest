@@ -221,6 +221,9 @@ async function getWhereQuery(
   }
   if (search?.<#=column_name#> === null) {
     whereQuery += ` and <#=column_name#>_lbl.id is null`;
+  }
+  if (search?.<#=column_name#>_is_null) {
+    whereQuery += ` and <#=column_name#>_lbl.id is null`;
   }<#
     if (foreignKey.lbl) {
   #>
@@ -241,6 +244,9 @@ async function getWhereQuery(
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#> === null) {
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
+  }
+  if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
   }<#
     }

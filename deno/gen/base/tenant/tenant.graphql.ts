@@ -98,6 +98,7 @@ input TenantSearch {
   "菜单"
   menu_ids: [String!]
   menu_ids_lbl: [String!]
+  menu_ids_is_null: Boolean
   "排序"
   order_by: [Int!]
   "备注"

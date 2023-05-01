@@ -106,6 +106,7 @@ input BackgroundTaskSearch {
   "创建人"
   create_usr_id: [String!]
   create_usr_id_lbl: [String!]
+  create_usr_id_is_null: Boolean
 }
 type Query {
   "根据条件查找据数总数"
