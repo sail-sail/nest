@@ -4,9 +4,6 @@
 extern crate derive_new;
 
 #[macro_use]
-extern crate dotenv_codegen;
-
-#[macro_use]
 extern crate lazy_static;
 
 #[macro_use]
@@ -16,6 +13,7 @@ mod common;
 mod gen;
 mod src;
 
+use std::env;
 use async_graphql::{
   EmptySubscription, Schema,
 };
@@ -67,7 +65,12 @@ async fn main() -> Result<(), std::io::Error> {
     };
     if old_schema != schema {
       info!("write graphql schema");
-      std::fs::write(file, &schema)?;
+      match std::fs::write(file, &schema) {
+        Ok(_) => {},
+        Err(e) => {
+          info!("write graphql schema error: {}", e);
+        },
+      }
     }
   }
   
@@ -88,8 +91,8 @@ async fn main() -> Result<(), std::io::Error> {
     .data(schema)
     ;
   
-  let server_port = dotenv!("server_port");
-  let server_host = dotenv!("server_host");
+  let server_port = env::var("server_port").unwrap_or("4001".to_owned());
+  let server_host = env::var("server_host").unwrap_or("127.0.0.1".to_owned());
   
   info!("app started: {}", server_port);
   

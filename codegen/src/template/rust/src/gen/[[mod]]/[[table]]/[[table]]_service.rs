@@ -122,4 +122,114 @@ pub async fn create<'a>(
   ).await?;
   
   Ok(id)
+}<#
+if (hasTenant_id) {
+#>
+
+/// 根据id修改租户id
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::update_tenant_by_id(
+    ctx,
+    id,
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#><#
+if (hasDeptId) {
+#>
+
+/// 根据id修改部门id
+pub async fn update_dept_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  dept_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::update_dept_by_id(
+    ctx,
+    id,
+    dept_id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#>
+
+/// 根据id修改数据
+pub async fn update_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::update_by_id(
+    ctx,
+    id,
+    input,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据 ids 删除数据
+pub async fn delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::delete_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据 ids 还原数据
+pub async fn revert_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::revert_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据 ids 彻底删除数据
+pub async fn force_delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::force_delete_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;
+  
+  Ok(num)
 }

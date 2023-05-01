@@ -1,3 +1,5 @@
+use tracing::error;
+
 use poem::{
   handler, IntoResponse, Response,
   web::{Data, Html, Json},
@@ -28,9 +30,15 @@ pub async fn graphql_handler(
     },
   }
   let gql_res = schema.execute(gql_req).await;
+  // if gql_res.is_err() {
+  //   for err in &gql_res.errors {
+  //     error!("{}", err);
+  //   }
+  // }
   let data = match serde_json::to_vec(&gql_res) {
     Ok(data) => data,
     Err(err) => {
+      error!("{}", err);
       return Response::builder()
         .status(StatusCode::INTERNAL_SERVER_ERROR)
         .body(err.to_string())

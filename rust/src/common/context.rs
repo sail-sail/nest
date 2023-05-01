@@ -1,3 +1,5 @@
+use std::env;
+use tracing::{info, error, event_enabled, Level};
 use anyhow::{Result, anyhow};
 use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
@@ -14,7 +16,6 @@ use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
 use sqlx::{Pool, MySql, Transaction, Executor, FromRow};
-use tracing::{info, error, event_enabled, Level};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -22,7 +23,9 @@ use super::cache::cache_dao::{get_cache, set_cache, del_caches, del_cache};
 use super::gql::model::{SortInput, PageInput};
 
 lazy_static! {
-  static ref SERVER_TOKEN_TIMEOUT: i64 = dotenv!("server_tokentimeout").parse::<i64>().unwrap_or(3600);
+  static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
+    .parse::<i64>()
+    .unwrap_or(3600);
   static ref DB_POOL: Pool<MySql> = init_db_pool().unwrap();
   static ref IS_DEBUG: bool = init_debug();
 }
@@ -33,18 +36,18 @@ fn init_debug() -> bool {
 }
 
 fn init_db_pool() -> Result<Pool<MySql>> {
-  let database_hostname = dotenv!("database_hostname");
-  let database_port = dotenv!("database_port");
+  let database_hostname = env::var("database_hostname").unwrap_or("localhost".to_owned());
+  let database_port = env::var("database_port").unwrap_or("3306".to_owned());
   let database_port: Result<u16, ParseIntError> = database_port.parse();
   let database_port = database_port.or_else(|_| Ok::<u16, ParseIntError>(3306)).unwrap();
-  let database_username = dotenv!("database_username");
-  let database_password = dotenv!("database_password");
-  let database_database = dotenv!("database_database");
-  let database_pool_size = dotenv!("database_pool_size");
+  let database_username = env::var("database_username").unwrap_or("root".to_owned());
+  let database_password = env::var("database_password").unwrap_or_default();
+  let database_database = env::var("database_database").unwrap_or_default();
+  let database_pool_size = env::var("database_pool_size").unwrap_or("10".to_owned());
   let default_pool_size: u32 = 10;
   let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
   let database_pool_size = database_pool_size.or_else(|_| Ok::<u32, ParseIntError>(default_pool_size)).unwrap();
-  let mysql_url = format!("mysql://{database_username}:xxxxx@{database_hostname}:{database_port}/{database_database}");
+  let mysql_url = format!("mysql://{database_username}:xxx@{database_hostname}:{database_port}/{database_database}");
   
   info!("mysql_url: {}", &mysql_url);
   
@@ -132,6 +135,13 @@ pub trait Ctx<'a>: Send + Sized {
     }
   }
   
+  fn get_auth_lang(&mut self) -> Option<String> {
+    match self.get_auth_model() {
+      Some(item) => item.lang,
+      None => None,
+    }
+  }
+  
   /// 开启事务
   async fn begin(&mut self) -> Result<()> {
     if self.get_tran().is_some() {
@@ -170,7 +180,9 @@ pub trait Ctx<'a>: Send + Sized {
     T: Send,
   {
     if let Err(e) = res {
+      let req_id = self.get_req_id().to_owned();
       self.rollback().await?;
+      error!("{} {}", req_id, e);
       return Err(e);
     }
     self.commit().await?;

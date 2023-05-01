@@ -130,16 +130,19 @@ pub struct UsrSearch {
   pub password: Option<String>,
   /// 默认部门
   pub default_dept_id: Option<Vec<String>>,
+  pub default_dept_id_is_null: Option<bool>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
+  pub dept_ids_is_null: Option<bool>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
+  pub role_ids_is_null: Option<bool>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -196,6 +199,7 @@ impl From<UsrInput> for UsrSearch {
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 拥有角色
       role_ids: input.role_ids,
+      ..Default::default()
     }
   }
 }

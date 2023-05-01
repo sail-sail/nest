@@ -1,7 +1,6 @@
+use std::env;
 use anyhow::Result;
-use s3::request_trait::Request;
-use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
-use s3::request::Reqwest;
+use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command, request::{tokio_backend::Reqwest, Request}};
 
 pub type OssBucket = Bucket;
 
@@ -24,25 +23,25 @@ async fn create_bucket(
 ) -> Result<()> {
   let mut config = BucketConfiguration::default();
   config.set_region("us-east-1".parse()?);
-  let request = Reqwest::new(bucket, "", Command::CreateBucket { config });
+  let request = Reqwest::new(bucket, "", Command::CreateBucket { config })?;
   let _ = request.response_data(false).await?;
   Ok(())
 }
 
 fn new_bucket() -> Result<OssBucket> {
-  let bucket_name = dotenv!("oss_bucket");
-  let endpoint = dotenv!("oss_endpoint").to_owned();
-  let accesskey = dotenv!("oss_accesskey");
-  let secretkey = dotenv!("oss_secretkey");
+  let bucket_name = env::var("oss_bucket")?;
+  let endpoint = env::var("oss_endpoint").unwrap_or("http://localhost:9000".to_owned());
+  let accesskey = env::var("oss_accesskey").unwrap_or_default();
+  let secretkey = env::var("oss_secretkey").unwrap_or_default();
   let credentials = Credentials::new(
-    Some(accesskey),
-    Some(secretkey),
+    Some(&accesskey),
+    Some(&secretkey),
     None,
     None,
     None,
   )?;
   let bucket =  Bucket::new(
-    bucket_name,
+    &bucket_name,
     Region::Custom {
       region: "us-east-1".parse()?,
       endpoint: endpoint.clone(),

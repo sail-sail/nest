@@ -41,10 +41,10 @@ use super::<#=table#>_service;
 
 
 #[derive(Default)]
-pub struct <#=tableUP#>Query;
+pub struct <#=tableUP#>GenQuery;
 
 #[Object]
-impl <#=tableUP#>Query {
+impl <#=tableUP#>GenQuery {
   
   /// 根据搜索条件和分页查找数据
   async fn find_all_<#=table#><'a>(
@@ -123,10 +123,10 @@ impl <#=tableUP#>Query {
 }
 
 #[derive(Default)]
-pub struct <#=tableUP#>Mutation;
+pub struct <#=tableUP#>GenMutation;
 
 #[Object]
-impl <#=tableUP#>Mutation {
+impl <#=tableUP#>GenMutation {
   
   /// 创建数据
   pub async fn create_<#=table#><'a>(
@@ -143,6 +143,122 @@ impl <#=tableUP#>Mutation {
     ).await;
     
     ctx.ok(id).await
+  }<#
+  if (hasTenant_id) {
+  #>
+  
+  /// 根据id修改租户id
+  pub async fn update_tenant_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    tenant_id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::update_tenant_by_id(
+      &mut ctx,
+      id,
+      tenant_id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
+  }
+  #><#
+  if (hasDeptId) {
+  #>
+  
+  /// 根据id修改部门id
+  pub async fn update_dept_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    dept_id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::update_dept_by_id(
+      &mut ctx,
+      id,
+      dept_id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
+  }
+  #>
+  
+  /// 根据id修改数据
+  pub async fn update_by_id<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    input: <#=tableUP#>Input,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::update_by_id(
+      &mut ctx,
+      id,
+      input,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 删除数据
+  pub async fn delete_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::delete_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 还原数据
+  pub async fn revert_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::revert_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 彻底删除数据
+  pub async fn force_delete_by_ids<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::force_delete_by_ids(
+      &mut ctx,
+      ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
   }
   
 }

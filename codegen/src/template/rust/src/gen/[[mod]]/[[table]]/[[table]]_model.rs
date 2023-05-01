@@ -107,6 +107,31 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     const isPassword = column.isPassword;
     const foreignKey = column.foreignKey;
     let is_nullable = column.IS_NULLABLE === "YES";
+    let _data_type = "String";
+    if (foreignKey && foreignKey.multiple) {
+      _data_type = "Vec<String>";
+      is_nullable = true;
+    } else if (foreignKey && !foreignKey.multiple) {
+      _data_type = "String";
+    } else if (data_type === 'varchar') {
+      _data_type = 'String';
+    } else if (data_type === 'date') {
+      _data_type = "String";
+    } else if (data_type === 'datetime') {
+      _data_type = "String";
+    } else if (data_type === 'time') {
+      _data_type = "String";
+    } else if (data_type === 'int') {
+      _data_type = 'i64';
+    } else if (data_type === 'json') {
+      _data_type = 'String';
+    } else if (data_type === 'text') {
+      _data_type = 'String';
+    } else if (data_type === 'tinyint') {
+      _data_type = 'u8';
+    } else if (data_type === 'decimal') {
+      _data_type = "rust_decimal::Decimal";
+    }
     #><#
       if (column_name === "id") {
     #>
@@ -133,12 +158,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (selectList.length > 0 || column.dict || column.dictbiz) {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: String = <#=column_name#>.to_string();<#
       } else {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: String = row.try_get("<#=column_name#>")?;<#
+    let <#=column_name#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
       }
     #><#
     }
@@ -253,30 +278,52 @@ pub struct <#=tableUP#>Search {
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const isPassword = column.isPassword;
+    let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
-    if (foreignKey) {
-      _data_type = "Vec<String>";
-    } else if (column.DATA_TYPE === 'varchar') {
+    if (foreignKey && foreignKey.multiple) {
+      _data_type = "String";
+      is_nullable = true;
+    } else if (foreignKey && !foreignKey.multiple) {
+      _data_type = "String";
+    } else if (data_type === 'varchar') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'date') {
-      _data_type = "Vec<Option<String>>";
-    } else if (column.DATA_TYPE === 'datetime') {
-      _data_type = "Vec<Option<String>>";
-    } else if (column.DATA_TYPE === 'time') {
-      _data_type = "Vec<Option<String>>";
-    } else if (column.DATA_TYPE === 'int') {
-      _data_type = "Vec<Option<i64>>";
-    } else if (column.DATA_TYPE === 'json') {
+    } else if (data_type === 'date') {
+      _data_type = "String";
+    } else if (data_type === 'datetime') {
+      _data_type = "String";
+    } else if (data_type === 'time') {
+      _data_type = "String";
+    } else if (data_type === 'int') {
+      _data_type = 'i64';
+    } else if (data_type === 'json') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'text') {
+    } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (column.DATA_TYPE === 'tinyint') {
-      _data_type = "Vec<u8>";
-    } else if (column.DATA_TYPE === 'decimal') {
-      _data_type = "Vec<Option<rust_decimal::Decimal>>";
+    } else if (data_type === 'tinyint') {
+      _data_type = 'u8';
+    } else if (data_type === 'decimal') {
+      _data_type = 'String';
     }
   #><#
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey && foreignKey.type !== "many2many") {
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name#>_is_null: Option<bool>,<#
+    } else if (foreignKey && foreignKey.type === "many2many") {
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name#>_is_null: Option<bool>,<#
+    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,<#
+    } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name#>: Option<Vec<Option<<#=_data_type#>>>>,<#
+    } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: Option<<#=_data_type#>>,<#
@@ -399,6 +446,10 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
+        } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
       } else if (["tinyint"].includes(data_type)) {
       #>
       // <#=column_comment#>
@@ -415,6 +466,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       #><#
       }
       #>
+      ..Default::default()
     }
   }
 }

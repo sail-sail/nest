@@ -1,3 +1,4 @@
+use std::env;
 use anyhow::Result;
 
 use deadpool_redis::{redis, Config, Runtime, Pool};
@@ -9,7 +10,7 @@ lazy_static! {
 
 fn init_cache_pool() -> Option<Pool> {
   let cache_enable = {
-    let cache_enable = dotenv!("cache_enable");
+    let cache_enable = env::var("cache_enable").unwrap_or("true".to_owned());
     match cache_enable.trim().to_lowercase().as_str() {
       "false" => false,
       _ => true,
@@ -18,12 +19,12 @@ fn init_cache_pool() -> Option<Pool> {
   if !cache_enable {
     return None;
   }
-  let cache_hostname = dotenv!("cache_hostname");
-  let cache_port = dotenv!("cache_port");
-  let cache_db = dotenv!("cache_db");
-  let cfg = Config::from_url(
-    format!("redis://{}:{}/{}", cache_hostname, cache_port, cache_db)
-  );
+  let cache_hostname = env::var("cache_hostname").unwrap_or("127.0.0.1".to_owned());
+  let cache_port = env::var("cache_port").unwrap_or("6379".to_owned());
+  let cache_db = env::var("cache_db").unwrap_or("0".to_owned());
+  let url = format!("redis://{}:{}/{}", cache_hostname, cache_port, cache_db);
+  info!("cache: {}", &url);
+  let cfg = Config::from_url(url);
   let cache_pool: Pool = cfg.create_pool(
     Some(Runtime::Tokio1),
   ).unwrap();
