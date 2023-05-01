@@ -320,7 +320,7 @@ input <#=Table_Up#>Search {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  <#=column_name#>Like: <#=data_type#><#
+  <#=column_name#>_like: <#=data_type#><#
     }
   #><#
   }

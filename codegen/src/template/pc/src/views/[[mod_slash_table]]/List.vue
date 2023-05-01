@@ -184,13 +184,13 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else {
       #>
-      <template v-if="builtInSearch?.<#=column_name#>Like == null && builtInSearch?.<#=column_name#> == null">
+      <template v-if="builtInSearch?.<#=column_name#>_like == null && builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
-          prop="<#=column_name#>Like"
+          prop="<#=column_name#>_like"
         >
           <el-input
-            v-model="search.<#=column_name#>Like"
+            v-model="search.<#=column_name#>_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
             clearable
@@ -1178,7 +1178,7 @@ const props = defineProps<{
     } else {
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#>
-  <#=column_name#>Like?: <#=data_type#>;<#=column_comment#><#
+  <#=column_name#>_like?: <#=data_type#>;<#=column_comment#><#
     }
   #><#
   }
