@@ -119,6 +119,9 @@ async function getWhereQuery(
   if (search?.menu_ids === null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.menu_ids_is_null) {
+    whereQuery += ` and base_menu.id is null`;
+  }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;

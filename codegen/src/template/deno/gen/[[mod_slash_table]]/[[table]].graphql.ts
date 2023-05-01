@@ -294,7 +294,8 @@ input <#=Table_Up#>Search {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  <#=column_name#>_lbl: <#=data_type#><#
+  <#=column_name#>_lbl: <#=data_type#>
+  <#=column_name#>_is_null: Boolean<#
     } else if (selectList && selectList.length > 0) {
   #>
   "<#=column_comment#>"

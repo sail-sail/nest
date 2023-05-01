@@ -86,6 +86,7 @@ input DictDetailSearch {
   "系统字典"
   dict_id: [String!]
   dict_id_lbl: [String!]
+  dict_id_is_null: Boolean
   "名称"
   lbl: String
   lbl_like: String

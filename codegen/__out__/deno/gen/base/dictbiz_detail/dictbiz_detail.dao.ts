@@ -94,6 +94,9 @@ async function getWhereQuery(
   if (search?.dictbiz_id === null) {
     whereQuery += ` and dictbiz_id_lbl.id is null`;
   }
+  if (search?.dictbiz_id_is_null) {
+    whereQuery += ` and dictbiz_id_lbl.id is null`;
+  }
   if (search?.dictbiz_id_lbl && !Array.isArray(search?.dictbiz_id_lbl)) {
     search.dictbiz_id_lbl = [ search.dictbiz_id_lbl ];
   }

@@ -68,9 +68,11 @@ input I18nSearch {
   "语言"
   lang_id: [String!]
   lang_id_lbl: [String!]
+  lang_id_is_null: Boolean
   "菜单"
   menu_id: [String!]
   menu_id_lbl: [String!]
+  menu_id_is_null: Boolean
   "编码"
   code: String
   code_like: String

@@ -86,6 +86,7 @@ input DictbizDetailSearch {
   "业务字典"
   dictbiz_id: [String!]
   dictbiz_id_lbl: [String!]
+  dictbiz_id_is_null: Boolean
   "名称"
   lbl: String
   lbl_like: String

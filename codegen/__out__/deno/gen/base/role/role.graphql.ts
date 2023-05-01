@@ -70,6 +70,7 @@ input RoleSearch {
   "菜单"
   menu_ids: [String!]
   menu_ids_lbl: [String!]
+  menu_ids_is_null: Boolean
 }
 type Query {
   "根据条件查找据数总数"

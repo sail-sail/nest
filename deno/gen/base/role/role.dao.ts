@@ -116,6 +116,9 @@ async function getWhereQuery(
   if (search?.menu_ids === null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.menu_ids_is_null) {
+    whereQuery += ` and base_menu.id is null`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {

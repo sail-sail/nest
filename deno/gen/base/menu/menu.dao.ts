@@ -85,6 +85,9 @@ async function getWhereQuery(
   if (search?.menu_id === null) {
     whereQuery += ` and menu_id_lbl.id is null`;
   }
+  if (search?.menu_id_is_null) {
+    whereQuery += ` and menu_id_lbl.id is null`;
+  }
   if (search?.menu_id_lbl && !Array.isArray(search?.menu_id_lbl)) {
     search.menu_id_lbl = [ search.menu_id_lbl ];
   }

@@ -112,6 +112,9 @@ async function getWhereQuery(
   if (search?.default_dept_id === null) {
     whereQuery += ` and default_dept_id_lbl.id is null`;
   }
+  if (search?.default_dept_id_is_null) {
+    whereQuery += ` and default_dept_id_lbl.id is null`;
+  }
   if (search?.default_dept_id_lbl && !Array.isArray(search?.default_dept_id_lbl)) {
     search.default_dept_id_lbl = [ search.default_dept_id_lbl ];
   }
@@ -142,6 +145,9 @@ async function getWhereQuery(
   if (search?.dept_ids === null) {
     whereQuery += ` and base_dept.id is null`;
   }
+  if (search?.dept_ids_is_null) {
+    whereQuery += ` and base_dept.id is null`;
+  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -155,6 +161,9 @@ async function getWhereQuery(
     whereQuery += ` and base_role.id in ${ args.push(search.role_ids) }`;
   }
   if (search?.role_ids === null) {
+    whereQuery += ` and base_role.id is null`;
+  }
+  if (search?.role_ids_is_null) {
     whereQuery += ` and base_role.id is null`;
   }
   if (search?.$extra) {
