@@ -84,23 +84,23 @@ pub struct LangSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
-  pub order_by: Option<Vec<Option<i64>>>,
+  pub order_by: Option<Vec<i64>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangInput {
   pub id: Option<ID>,
-  // 编码
+  /// 编码
   pub code: Option<String>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 排序
+  /// 排序
   pub order_by: Option<i64>,
 }
 

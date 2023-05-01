@@ -107,16 +107,16 @@ pub struct TenantSearch {
   /// 域名绑定
   pub host: Option<String>,
   /// 到期日
-  pub expiration: Option<Vec<Option<String>>>,
+  pub expiration: Option<Vec<String>>,
   /// 最大用户数
-  pub max_usr_num: Option<Vec<Option<i64>>>,
+  pub max_usr_num: Option<Vec<i64>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 菜单
   pub menu_ids: Option<Vec<String>>,
   pub menu_ids_is_null: Option<bool>,
   /// 排序
-  pub order_by: Option<Vec<Option<i64>>>,
+  pub order_by: Option<Vec<i64>>,
   /// 备注
   pub rem: Option<String>,
 }
@@ -125,23 +125,23 @@ pub struct TenantSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantInput {
   pub id: Option<ID>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 域名绑定
+  /// 域名绑定
   pub host: Option<String>,
-  // 到期日
+  /// 到期日
   pub expiration: Option<String>,
-  // 最大用户数
+  /// 最大用户数
   pub max_usr_num: Option<i64>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 菜单
+  /// 菜单
   pub menu_ids: Option<Vec<String>>,
   pub menu_ids_lbl: Option<Vec<String>>,
-  // 排序
+  /// 排序
   pub order_by: Option<i64>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
 }
 

@@ -122,9 +122,9 @@ pub struct BackgroundTaskSearch {
   /// 错误信息
   pub err_msg: Option<String>,
   /// 开始时间
-  pub begin_time: Option<Vec<Option<String>>>,
+  pub begin_time: Option<Vec<String>>,
   /// 结束时间
-  pub end_time: Option<Vec<Option<String>>>,
+  pub end_time: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -136,25 +136,25 @@ pub struct BackgroundTaskSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
   pub id: Option<ID>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 状态
+  /// 状态
   pub state: Option<String>,
   pub state_lbl: Option<String>,
-  // 类型
+  /// 类型
   pub r#type: Option<String>,
   pub r#type_lbl: Option<String>,
-  // 执行结果
+  /// 执行结果
   pub result: Option<String>,
-  // 错误信息
+  /// 错误信息
   pub err_msg: Option<String>,
-  // 开始时间
+  /// 开始时间
   pub begin_time: Option<String>,
-  // 结束时间
+  /// 结束时间
   pub end_time: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
-  // 创建人
+  /// 创建人
   pub create_usr_id: Option<String>,
   pub create_usr_id_lbl: Option<String>,
 }

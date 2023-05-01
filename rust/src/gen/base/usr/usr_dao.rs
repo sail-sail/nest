@@ -208,7 +208,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and dept.id in ({})", arg);
+      where_query += &format!(" and base_dept.id in ({})", arg);
     }
   }
   {
@@ -251,7 +251,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and role.id in ({})", arg);
+      where_query += &format!(" and base_role.id in ({})", arg);
     }
   }
   {

@@ -264,7 +264,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and <#=foreignKey.table#>.id in ({})", arg);
+      where_query += &format!(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ({})", arg);
     }
   }
   {
@@ -309,18 +309,18 @@ fn get_where_query<'a>(
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   {
-    let <#=column_name#>: Vec<Option<<#=_data_type#>>> = match &search {
+    let <#=column_name#>: Vec<<#=_data_type#>> = match &search {
       Some(item) => item.<#=column_name#>.clone().unwrap(),
       None => vec![],
     };
     let <#=column_name#>_gt: Option<<#=_data_type#>> = match &<#=column_name#>.len() {
       0 => None,
-      _ => <#=column_name#>[0].clone(),
+      _ => <#=column_name#>[0].clone().into(),
     };
     let <#=column_name#>_lt: Option<<#=_data_type#>> = match &<#=column_name#>.len() {
       0 => None,
       1 => None,
-      _ => <#=column_name#>[1].clone(),
+      _ => <#=column_name#>[1].clone().into(),
     };
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
       where_query += &format!(" and t.<#=column_name#> >= {}", args.push(<#=column_name#>_gt.into()));

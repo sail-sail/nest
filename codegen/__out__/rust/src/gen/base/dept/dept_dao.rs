@@ -145,18 +145,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<Option<i64>> = match &search {
+    let order_by: Vec<i64> = match &search {
       Some(item) => item.order_by.clone().unwrap(),
       None => vec![],
     };
     let order_by_gt: Option<i64> = match &order_by.len() {
       0 => None,
-      _ => order_by[0].clone(),
+      _ => order_by[0].clone().into(),
     };
     let order_by_lt: Option<i64> = match &order_by.len() {
       0 => None,
       1 => None,
-      _ => order_by[1].clone(),
+      _ => order_by[1].clone().into(),
     };
     if let Some(order_by_gt) = order_by_gt {
       where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
@@ -242,18 +242,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let create_time: Vec<Option<String>> = match &search {
+    let create_time: Vec<String> = match &search {
       Some(item) => item.create_time.clone().unwrap(),
       None => vec![],
     };
     let create_time_gt: Option<String> = match &create_time.len() {
       0 => None,
-      _ => create_time[0].clone(),
+      _ => create_time[0].clone().into(),
     };
     let create_time_lt: Option<String> = match &create_time.len() {
       0 => None,
       1 => None,
-      _ => create_time[1].clone(),
+      _ => create_time[1].clone().into(),
     };
     if let Some(create_time_gt) = create_time_gt {
       where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
@@ -289,18 +289,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let update_time: Vec<Option<String>> = match &search {
+    let update_time: Vec<String> = match &search {
       Some(item) => item.update_time.clone().unwrap(),
       None => vec![],
     };
     let update_time_gt: Option<String> = match &update_time.len() {
       0 => None,
-      _ => update_time[0].clone(),
+      _ => update_time[0].clone().into(),
     };
     let update_time_lt: Option<String> = match &update_time.len() {
       0 => None,
       1 => None,
-      _ => update_time[1].clone(),
+      _ => update_time[1].clone().into(),
     };
     if let Some(update_time_gt) = update_time_gt {
       where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));

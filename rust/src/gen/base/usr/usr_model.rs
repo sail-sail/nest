@@ -149,27 +149,27 @@ pub struct UsrSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
   pub id: Option<ID>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 用户名
+  /// 用户名
   pub username: Option<String>,
-  // 密码
+  /// 密码
   pub password: Option<String>,
-  // 默认部门
+  /// 默认部门
   pub default_dept_id: Option<String>,
   pub default_dept_id_lbl: Option<String>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
-  // 拥有部门
+  /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
   pub dept_ids_lbl: Option<Vec<String>>,
-  // 锁定
+  /// 锁定
   pub is_locked: Option<u8>,
   pub is_locked_lbl: Option<String>,
-  // 拥有角色
+  /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   pub role_ids_lbl: Option<Vec<String>>,
 }

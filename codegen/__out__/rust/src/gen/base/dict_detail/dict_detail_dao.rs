@@ -142,18 +142,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<Option<i64>> = match &search {
+    let order_by: Vec<i64> = match &search {
       Some(item) => item.order_by.clone().unwrap(),
       None => vec![],
     };
     let order_by_gt: Option<i64> = match &order_by.len() {
       0 => None,
-      _ => order_by[0].clone(),
+      _ => order_by[0].clone().into(),
     };
     let order_by_lt: Option<i64> = match &order_by.len() {
       0 => None,
       1 => None,
-      _ => order_by[1].clone(),
+      _ => order_by[1].clone().into(),
     };
     if let Some(order_by_gt) = order_by_gt {
       where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));

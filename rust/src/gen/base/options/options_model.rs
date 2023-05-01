@@ -143,7 +143,7 @@ pub struct OptionsSearch {
   /// 值
   pub val: Option<String>,
   /// 排序
-  pub order_by: Option<Vec<Option<i64>>>,
+  pub order_by: Option<Vec<i64>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
@@ -151,50 +151,50 @@ pub struct OptionsSearch {
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 版本号
-  pub version: Option<Vec<Option<i64>>>,
+  pub version: Option<Vec<i64>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
-  pub create_time: Option<Vec<Option<String>>>,
+  pub create_time: Option<Vec<String>>,
   /// 更新人
   pub update_usr_id: Option<Vec<String>>,
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
-  pub update_time: Option<Vec<Option<String>>>,
+  pub update_time: Option<Vec<String>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsInput {
   pub id: Option<ID>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 键
+  /// 键
   pub ky: Option<String>,
-  // 值
+  /// 值
   pub val: Option<String>,
-  // 排序
+  /// 排序
   pub order_by: Option<i64>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
-  // 锁定
+  /// 锁定
   pub is_locked: Option<u8>,
   pub is_locked_lbl: Option<String>,
-  // 版本号
+  /// 版本号
   pub version: Option<i64>,
-  // 创建人
+  /// 创建人
   pub create_usr_id: Option<String>,
   pub create_usr_id_lbl: Option<String>,
-  // 创建时间
+  /// 创建时间
   pub create_time: Option<String>,
-  // 更新人
+  /// 更新人
   pub update_usr_id: Option<String>,
   pub update_usr_id_lbl: Option<String>,
-  // 更新时间
+  /// 更新时间
   pub update_time: Option<String>,
 }
 
