@@ -52,8 +52,7 @@
           <CustomSelect
             :set="search.menu_id = search.menu_id || [ ]"
             un-w="full"
-            :model-value="search.menu_id"
-            @update:model-value="search.menu_id = $event"
+            v-model="search.menu_id"
             :method="getMenuList"
             :options-map="((item: MenuModel) => {
               return {
@@ -68,13 +67,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -588,15 +587,15 @@ const props = defineProps<{
   menu_id?: string|string[]; // 父菜单
   menu_id_lbl?: string|string[]; // 父菜单
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   route_path?: string; // 路由
-  route_pathLike?: string; // 路由
+  route_path_like?: string; // 路由
   route_query?: string; // 参数
-  route_queryLike?: string; // 参数
+  route_query_like?: string; // 参数
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {

@@ -72,7 +72,7 @@ export async function getLoginInfo(
           lbl
           lang
           dept_id
-          dept_idModels {
+          dept_id_models {
             id
             lbl
           }

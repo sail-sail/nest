@@ -51,7 +51,7 @@ export async function login(
   if (dept_id === null) {
     dept_id = undefined;
   }
-  const dept_ids = await usrDao.getDept_idsById(
+  const dept_ids = await usrDao.getDeptIdsById(
     model.id,
   );
   if (!dept_id) {
@@ -87,11 +87,11 @@ export async function getLoginInfo() {
   }
   const dept_ids = usrModel.dept_ids || [ ];
   const deptModels = await deptDaoGen.findAll();
-  const dept_idModels: { id: string, lbl: string }[] = [ ];
+  const dept_id_models: { id: string, lbl: string }[] = [ ];
   for (let i = 0; i < deptModels.length; i++) {
     const deptModel = deptModels[i];
     if (dept_ids.includes(deptModel.id)) {
-      dept_idModels.push({
+      dept_id_models.push({
         id: deptModel.id,
         lbl: deptModel.lbl,
       });
@@ -101,7 +101,7 @@ export async function getLoginInfo() {
     lbl: usrModel.lbl,
     lang: authModel.lang,
     dept_id,
-    dept_idModels,
+    dept_id_models,
   };
 }
 

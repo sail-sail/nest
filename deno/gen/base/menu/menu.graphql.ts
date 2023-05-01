@@ -90,26 +90,26 @@ input MenuSearch {
   "ID"
   id: ID
   "类型"
-  type: [String]
+  type: [String!]
   "父菜单"
-  menu_id: [String]
-  menu_id_lbl: [String]
+  menu_id: [String!]
+  menu_id_lbl: [String!]
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "路由"
   route_path: String
-  route_pathLike: String
+  route_path_like: String
   "参数"
   route_query: String
-  route_queryLike: String
+  route_query_like: String
   "启用"
-  is_enabled: [Int]
+  is_enabled: [Int!]
   "排序"
-  order_by: [Int]
+  order_by: [Int!]
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
 }
 type Query {
   "根据条件查找据数总数"

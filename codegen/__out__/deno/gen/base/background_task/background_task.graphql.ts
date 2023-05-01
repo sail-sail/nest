@@ -85,27 +85,27 @@ input BackgroundTaskSearch {
   id: ID
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "状态"
-  state: [String]
+  state: [String!]
   "类型"
-  type: [String]
+  type: [String!]
   "执行结果"
   result: String
-  resultLike: String
+  result_like: String
   "错误信息"
   err_msg: String
-  err_msgLike: String
+  err_msg_like: String
   "开始时间"
-  begin_time: [String]
+  begin_time: [String!]
   "结束时间"
-  end_time: [String]
+  end_time: [String!]
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
   "创建人"
-  create_usr_id: [String]
-  create_usr_id_lbl: [String]
+  create_usr_id: [String!]
+  create_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找据数总数"

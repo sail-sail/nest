@@ -76,8 +76,8 @@ async function getWhereQuery(
   if (search?.lbl === null) {
     whereQuery += ` and t.lbl is null`;
   }
-  if (isNotEmpty(search?.lblLike)) {
-    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lblLike) + "%") }`;
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.host !== undefined) {
     whereQuery += ` and t.host = ${ args.push(search.host) }`;
@@ -85,8 +85,8 @@ async function getWhereQuery(
   if (search?.host === null) {
     whereQuery += ` and t.host is null`;
   }
-  if (isNotEmpty(search?.hostLike)) {
-    whereQuery += ` and t.host like ${ args.push(sqlLike(search?.hostLike) + "%") }`;
+  if (isNotEmpty(search?.host_like)) {
+    whereQuery += ` and t.host like ${ args.push(sqlLike(search?.host_like) + "%") }`;
   }
   if (search?.expiration && search?.expiration?.length > 0) {
     if (search.expiration[0] != null) {
@@ -114,10 +114,10 @@ async function getWhereQuery(
     search.menu_ids = [ search.menu_ids ];
   }
   if (search?.menu_ids && search?.menu_ids.length > 0) {
-    whereQuery += ` and menu.id in ${ args.push(search.menu_ids) }`;
+    whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
   }
   if (search?.menu_ids === null) {
-    whereQuery += ` and menu.id is null`;
+    whereQuery += ` and base_menu.id is null`;
   }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
@@ -133,8 +133,8 @@ async function getWhereQuery(
   if (search?.rem === null) {
     whereQuery += ` and t.rem is null`;
   }
-  if (isNotEmpty(search?.remLike)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.remLike) + "%") }`;
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;

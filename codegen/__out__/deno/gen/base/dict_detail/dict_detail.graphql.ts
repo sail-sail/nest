@@ -84,23 +84,23 @@ input DictDetailSearch {
   "ID"
   id: ID
   "系统字典"
-  dict_id: [String]
-  dict_id_lbl: [String]
+  dict_id: [String!]
+  dict_id_lbl: [String!]
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "值"
   val: String
-  valLike: String
+  val_like: String
   "排序"
-  order_by: [Int]
+  order_by: [Int!]
   "启用"
-  is_enabled: [Int]
+  is_enabled: [Int!]
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
   "锁定"
-  is_locked: [Int]
+  is_locked: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

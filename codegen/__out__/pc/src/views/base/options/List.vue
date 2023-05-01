@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -41,13 +41,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.kyLike == null && builtInSearch?.ky == null">
+      <template v-if="builtInSearch?.ky_like == null && builtInSearch?.ky == null">
         <el-form-item
           :label="n('键')"
-          prop="kyLike"
+          prop="ky_like"
         >
           <el-input
-            v-model="search.kyLike"
+            v-model="search.ky_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('键') }`"
             clearable
@@ -56,13 +56,13 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.valLike == null && builtInSearch?.val == null">
+      <template v-if="builtInSearch?.val_like == null && builtInSearch?.val == null">
         <el-form-item
           :label="n('值')"
-          prop="valLike"
+          prop="val_like"
         >
           <el-input
-            v-model="search.valLike"
+            v-model="search.val_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('值') }`"
             clearable
@@ -611,15 +611,15 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   ky?: string; // 键
-  kyLike?: string; // 键
+  ky_like?: string; // 键
   val?: string; // 值
-  valLike?: string; // 值
+  val_like?: string; // 值
   order_by?: string; // 排序
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   is_locked?: string|string[]; // 锁定
   version?: string; // 版本号
   create_usr_id?: string|string[]; // 创建人

@@ -114,30 +114,30 @@ input DeptSearch {
   "ID"
   id: ID
   "父部门"
-  parent_id: [String]
-  parent_id_lbl: [String]
+  parent_id: [String!]
+  parent_id_lbl: [String!]
   "名称"
   lbl: String
-  lblLike: String
+  lbl_like: String
   "排序"
-  order_by: [Int]
+  order_by: [Int!]
   "启用"
-  is_enabled: [Int]
+  is_enabled: [Int!]
   "备注"
   rem: String
-  remLike: String
+  rem_like: String
   "锁定"
-  is_locked: [Int]
+  is_locked: [Int!]
   "创建人"
-  create_usr_id: [String]
-  create_usr_id_lbl: [String]
+  create_usr_id: [String!]
+  create_usr_id_lbl: [String!]
   "创建时间"
-  create_time: [String]
+  create_time: [String!]
   "更新人"
-  update_usr_id: [String]
-  update_usr_id_lbl: [String]
+  update_usr_id: [String!]
+  update_usr_id_lbl: [String!]
   "更新时间"
-  update_time: [String]
+  update_time: [String!]
 }
 type Query {
   "根据条件查找据数总数"

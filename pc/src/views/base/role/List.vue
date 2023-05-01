@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -49,8 +49,7 @@
           <CustomSelect
             :set="search.menu_ids = search.menu_ids || [ ]"
             un-w="full"
-            :model-value="search.menu_ids"
-            @update:model-value="search.menu_ids = $event"
+            v-model="search.menu_ids"
             :method="getMenuList"
             :options-map="((item: MenuModel) => {
               return {
@@ -553,9 +552,9 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   id?: string; // ID
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   is_enabled?: string|string[]; // 启用
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单

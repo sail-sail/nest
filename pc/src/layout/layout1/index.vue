@@ -102,7 +102,7 @@
         un-gap="x-3"
         un-m="r-4"
       >
-        <template v-if="loginInfo && loginInfo.dept_idModels">
+        <template v-if="loginInfo && loginInfo.dept_id_models">
           <el-dropdown
             trigger="click"
           >
@@ -111,14 +111,14 @@
               un-cursor-pointer
               un-whitespace-nowrap
             >
-              {{ loginInfo.dept_idModels.find(item => item.id === loginInfo?.dept_id)?.lbl || '' }}
+              {{ loginInfo.dept_id_models.find(item => item.id === loginInfo?.dept_id)?.lbl || '' }}
             </span>
             <template #dropdown>
               <el-dropdown-menu
                 un-whitespace-nowrap
               >
                 <el-dropdown-item
-                  v-for="item of loginInfo.dept_idModels"
+                  v-for="item of loginInfo.dept_id_models"
                   :key="item.id"
                   @click="deptSelectClk(item.id)"
                 >
