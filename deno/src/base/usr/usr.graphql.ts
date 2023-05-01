@@ -4,7 +4,7 @@ import * as usrResolver from "./usr.resolver.ts";
 
 defineGraphql(usrResolver, /* GraphQL */`
 
-  type GetLoginInfoDept_idModels {
+  type GetLoginInfoDeptIdModels {
     id: String!
     lbl: String!
   }
@@ -13,7 +13,7 @@ defineGraphql(usrResolver, /* GraphQL */`
     lbl: String!
     lang: String!
     dept_id: String
-    dept_idModels: [GetLoginInfoDept_idModels!]!
+    dept_id_models: [GetLoginInfoDeptIdModels!]!
   }
   
   type LoginModel {

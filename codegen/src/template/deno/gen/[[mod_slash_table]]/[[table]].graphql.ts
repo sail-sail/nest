@@ -230,19 +230,19 @@ input <#=Table_Up#>Search {
       data_type = 'ID';
     }
     else if (foreignKey) {
-      data_type = '[String]';
+      data_type = '[String!]';
     }
     else if (column.DATA_TYPE === 'varchar') {
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = '[String]';
+      data_type = '[String!]';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = '[String]';
+      data_type = '[String!]';
     }
     else if (column.DATA_TYPE === 'int') {
-      data_type = '[Int]';
+      data_type = '[Int!]';
     }
     else if (column.DATA_TYPE === 'json') {
       data_type = 'String';
@@ -254,7 +254,7 @@ input <#=Table_Up#>Search {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = '[Float]';
+      data_type = '[Float!]';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';
@@ -265,7 +265,7 @@ input <#=Table_Up#>Search {
       selectList = eval(`(${ selectStr })`);
     }
     if (selectList.length > 0) {
-      data_type = '['+data_type+']';
+      data_type = '['+data_type+'!]';
     }
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
@@ -278,15 +278,15 @@ input <#=Table_Up#>Search {
     }
     if (selectList.length > 0) {
       if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
-        data_type = "[Int]";
+        data_type = "[Int!]";
       } else {
-        data_type = "[String]";
+        data_type = "[String!]";
       }
     } else if (column.dict || column.dictbiz) {
       if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
-        data_type = "[Int]";
+        data_type = "[Int!]";
       } else {
-        data_type = "[String]";
+        data_type = "[String!]";
       }
     }
   #><#

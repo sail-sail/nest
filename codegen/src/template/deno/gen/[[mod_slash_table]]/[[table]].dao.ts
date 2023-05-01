@@ -238,10 +238,10 @@ async function getWhereQuery(
     search.<#=column_name#> = [ search.<#=column_name#> ];
   }
   if (search?.<#=column_name#> && search?.<#=column_name#>.length > 0) {
-    whereQuery += ` and <#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#> === null) {
-    whereQuery += ` and <#=foreignKey.table#>.id is null`;
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
   }<#
     }
   #><#

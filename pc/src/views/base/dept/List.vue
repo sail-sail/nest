@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.lblLike == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
-          prop="lblLike"
+          prop="lbl_like"
         >
           <el-input
-            v-model="search.lblLike"
+            v-model="search.lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
@@ -574,11 +574,11 @@ const props = defineProps<{
   parent_id?: string|string[]; // 父部门
   parent_id_lbl?: string|string[]; // 父部门
   lbl?: string; // 名称
-  lblLike?: string; // 名称
+  lbl_like?: string; // 名称
   order_by?: string; // 排序
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
-  remLike?: string; // 备注
+  rem_like?: string; // 备注
   is_locked?: string|string[]; // 锁定
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人

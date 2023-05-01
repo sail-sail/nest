@@ -75,8 +75,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
-            :model-value="search.<#=column_name#>"
-            @update:model-value="search.<#=column_name#> = $event"
+            v-model="search.<#=column_name#>"
             :method="get<#=foreignTableUp#>List"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
