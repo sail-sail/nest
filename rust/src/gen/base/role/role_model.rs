@@ -89,14 +89,14 @@ pub struct RoleSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleInput {
   pub id: Option<ID>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 菜单
+  /// 菜单
   pub menu_ids: Option<Vec<String>>,
   pub menu_ids_lbl: Option<Vec<String>>,
 }

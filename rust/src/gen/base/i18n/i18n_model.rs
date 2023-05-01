@@ -97,17 +97,17 @@ pub struct I18nSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct I18nInput {
   pub id: Option<ID>,
-  // 语言
+  /// 语言
   pub lang_id: Option<String>,
   pub lang_id_lbl: Option<String>,
-  // 菜单
+  /// 菜单
   pub menu_id: Option<String>,
   pub menu_id_lbl: Option<String>,
-  // 编码
+  /// 编码
   pub code: Option<String>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
 }
 

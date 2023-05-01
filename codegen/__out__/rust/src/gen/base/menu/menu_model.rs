@@ -118,7 +118,7 @@ pub struct MenuSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
-  pub order_by: Option<Vec<Option<i64>>>,
+  pub order_by: Option<Vec<i64>>,
   /// 备注
   pub rem: Option<String>,
 }
@@ -127,24 +127,24 @@ pub struct MenuSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
   pub id: Option<ID>,
-  // 类型
+  /// 类型
   pub r#type: Option<String>,
   pub r#type_lbl: Option<String>,
-  // 父菜单
+  /// 父菜单
   pub menu_id: Option<String>,
   pub menu_id_lbl: Option<String>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 路由
+  /// 路由
   pub route_path: Option<String>,
-  // 参数
+  /// 参数
   pub route_query: Option<String>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 排序
+  /// 排序
   pub order_by: Option<i64>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
 }
 

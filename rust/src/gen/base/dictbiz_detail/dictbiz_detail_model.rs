@@ -105,7 +105,7 @@ pub struct DictbizDetailSearch {
   /// 值
   pub val: Option<String>,
   /// 排序
-  pub order_by: Option<Vec<Option<i64>>>,
+  pub order_by: Option<Vec<i64>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
@@ -118,21 +118,21 @@ pub struct DictbizDetailSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizDetailInput {
   pub id: Option<ID>,
-  // 业务字典
+  /// 业务字典
   pub dictbiz_id: Option<String>,
   pub dictbiz_id_lbl: Option<String>,
-  // 名称
+  /// 名称
   pub lbl: Option<String>,
-  // 值
+  /// 值
   pub val: Option<String>,
-  // 排序
+  /// 排序
   pub order_by: Option<i64>,
-  // 启用
+  /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
-  // 备注
+  /// 备注
   pub rem: Option<String>,
-  // 锁定
+  /// 锁定
   pub is_locked: Option<u8>,
   pub is_locked_lbl: Option<String>,
 }

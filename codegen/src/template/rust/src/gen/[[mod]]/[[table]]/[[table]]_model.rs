@@ -322,7 +322,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<Vec<Option<<#=_data_type#>>>>,<#
+  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#>
@@ -388,17 +388,17 @@ pub struct <#=tableUP#>Input {
   #><#
     if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #>
-  // <#=column_comment#>
+  /// <#=column_comment#>
   pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #>
-  // <#=column_comment#>
+  /// <#=column_comment#>
   pub <#=column_name#>: Option<<#=_data_type#>>,
   pub <#=column_name#>_lbl: Option<String>,<#
   } else {
   #>
-  // <#=column_comment#>
+  /// <#=column_comment#>
   pub <#=column_name#>: Option<<#=_data_type#>>,<#
   }
   #><#

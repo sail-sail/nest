@@ -117,18 +117,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let expiration: Vec<Option<String>> = match &search {
+    let expiration: Vec<String> = match &search {
       Some(item) => item.expiration.clone().unwrap(),
       None => vec![],
     };
     let expiration_gt: Option<String> = match &expiration.len() {
       0 => None,
-      _ => expiration[0].clone(),
+      _ => expiration[0].clone().into(),
     };
     let expiration_lt: Option<String> = match &expiration.len() {
       0 => None,
       1 => None,
-      _ => expiration[1].clone(),
+      _ => expiration[1].clone().into(),
     };
     if let Some(expiration_gt) = expiration_gt {
       where_query += &format!(" and t.expiration >= {}", args.push(expiration_gt.into()));
@@ -138,18 +138,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let max_usr_num: Vec<Option<i64>> = match &search {
+    let max_usr_num: Vec<i64> = match &search {
       Some(item) => item.max_usr_num.clone().unwrap(),
       None => vec![],
     };
     let max_usr_num_gt: Option<i64> = match &max_usr_num.len() {
       0 => None,
-      _ => max_usr_num[0].clone(),
+      _ => max_usr_num[0].clone().into(),
     };
     let max_usr_num_lt: Option<i64> = match &max_usr_num.len() {
       0 => None,
       1 => None,
-      _ => max_usr_num[1].clone(),
+      _ => max_usr_num[1].clone().into(),
     };
     if let Some(max_usr_num_gt) = max_usr_num_gt {
       where_query += &format!(" and t.max_usr_num >= {}", args.push(max_usr_num_gt.into()));
@@ -189,7 +189,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and menu.id in ({})", arg);
+      where_query += &format!(" and base_menu.id in ({})", arg);
     }
   }
   {
@@ -202,18 +202,18 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<Option<i64>> = match &search {
+    let order_by: Vec<i64> = match &search {
       Some(item) => item.order_by.clone().unwrap(),
       None => vec![],
     };
     let order_by_gt: Option<i64> = match &order_by.len() {
       0 => None,
-      _ => order_by[0].clone(),
+      _ => order_by[0].clone().into(),
     };
     let order_by_lt: Option<i64> = match &order_by.len() {
       0 => None,
       1 => None,
-      _ => order_by[1].clone(),
+      _ => order_by[1].clone().into(),
     };
     if let Some(order_by_gt) = order_by_gt {
       where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));

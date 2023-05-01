@@ -165,7 +165,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and menu.id in ({})", arg);
+      where_query += &format!(" and base_menu.id in ({})", arg);
     }
   }
   {
