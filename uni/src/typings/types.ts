@@ -94,6 +94,7 @@ export type BackgroundTaskSearch = {
   begin_time?: InputMaybe<Array<Scalars['String']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 结束时间 */
   end_time?: InputMaybe<Array<Scalars['String']>>;
@@ -232,6 +233,7 @@ export type DeptSearch = {
   create_time?: InputMaybe<Array<Scalars['String']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -250,6 +252,7 @@ export type DeptSearch = {
   order_by?: InputMaybe<Array<Scalars['Int']>>;
   /** 父部门 */
   parent_id?: InputMaybe<Array<Scalars['String']>>;
+  parent_id_is_null?: InputMaybe<Scalars['Boolean']>;
   parent_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
@@ -258,6 +261,7 @@ export type DeptSearch = {
   update_time?: InputMaybe<Array<Scalars['String']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   update_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -340,6 +344,7 @@ export type DictDetailModel = {
 export type DictDetailSearch = {
   /** 系统字典 */
   dict_id?: InputMaybe<Array<Scalars['String']>>;
+  dict_id_is_null?: InputMaybe<Scalars['Boolean']>;
   dict_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -484,6 +489,7 @@ export type DictSearch = {
   create_time?: InputMaybe<Array<Scalars['String']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -509,6 +515,7 @@ export type DictSearch = {
   update_time?: InputMaybe<Array<Scalars['String']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   update_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -591,6 +598,7 @@ export type DictbizDetailModel = {
 export type DictbizDetailSearch = {
   /** 业务字典 */
   dictbiz_id?: InputMaybe<Array<Scalars['String']>>;
+  dictbiz_id_is_null?: InputMaybe<Scalars['Boolean']>;
   dictbiz_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -735,6 +743,7 @@ export type DictbizSearch = {
   create_time?: InputMaybe<Array<Scalars['String']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -760,6 +769,7 @@ export type DictbizSearch = {
   update_time?: InputMaybe<Array<Scalars['String']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   update_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -878,12 +888,14 @@ export type I18nSearch = {
   is_deleted?: InputMaybe<Scalars['Int']>;
   /** 语言 */
   lang_id?: InputMaybe<Array<Scalars['String']>>;
+  lang_id_is_null?: InputMaybe<Scalars['Boolean']>;
   lang_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 名称 */
   lbl?: InputMaybe<Scalars['String']>;
   lbl_like?: InputMaybe<Scalars['String']>;
   /** 菜单 */
   menu_id?: InputMaybe<Array<Scalars['String']>>;
+  menu_id_is_null?: InputMaybe<Scalars['Boolean']>;
   menu_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
@@ -1066,6 +1078,7 @@ export type MenuSearch = {
   lbl_like?: InputMaybe<Scalars['String']>;
   /** 父菜单 */
   menu_id?: InputMaybe<Array<Scalars['String']>>;
+  menu_id_is_null?: InputMaybe<Scalars['Boolean']>;
   menu_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 排序 */
   order_by?: InputMaybe<Array<Scalars['Int']>>;
@@ -1817,6 +1830,7 @@ export type OperationRecordSearch = {
   create_time?: InputMaybe<Array<Scalars['String']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -1846,6 +1860,7 @@ export type OperationRecordSearch = {
   update_time?: InputMaybe<Array<Scalars['String']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   update_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -1966,6 +1981,7 @@ export type OptionsSearch = {
   create_time?: InputMaybe<Array<Scalars['String']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -1992,6 +2008,7 @@ export type OptionsSearch = {
   update_time?: InputMaybe<Array<Scalars['String']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
+  update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   update_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 值 */
   val?: InputMaybe<Scalars['String']>;
@@ -2607,6 +2624,7 @@ export type RoleSearch = {
   lbl_like?: InputMaybe<Scalars['String']>;
   /** 菜单 */
   menu_ids?: InputMaybe<Array<Scalars['String']>>;
+  menu_ids_is_null?: InputMaybe<Scalars['Boolean']>;
   menu_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 备注 */
   rem?: InputMaybe<Scalars['String']>;
@@ -2723,6 +2741,7 @@ export type TenantSearch = {
   max_usr_num?: InputMaybe<Array<Scalars['Int']>>;
   /** 菜单 */
   menu_ids?: InputMaybe<Array<Scalars['String']>>;
+  menu_ids_is_null?: InputMaybe<Scalars['Boolean']>;
   menu_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 排序 */
   order_by?: InputMaybe<Array<Scalars['Int']>>;
@@ -2832,9 +2851,11 @@ export type UsrModel = {
 export type UsrSearch = {
   /** 默认部门 */
   default_dept_id?: InputMaybe<Array<Scalars['String']>>;
+  default_dept_id_is_null?: InputMaybe<Scalars['Boolean']>;
   default_dept_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 拥有部门 */
   dept_ids?: InputMaybe<Array<Scalars['String']>>;
+  dept_ids_is_null?: InputMaybe<Scalars['Boolean']>;
   dept_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** ID */
   id?: InputMaybe<Scalars['ID']>;
@@ -2854,6 +2875,7 @@ export type UsrSearch = {
   rem_like?: InputMaybe<Scalars['String']>;
   /** 拥有角色 */
   role_ids?: InputMaybe<Array<Scalars['String']>>;
+  role_ids_is_null?: InputMaybe<Scalars['Boolean']>;
   role_ids_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 用户名 */
   username?: InputMaybe<Scalars['String']>;

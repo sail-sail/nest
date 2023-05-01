@@ -114,6 +114,7 @@ input UsrSearch {
   "默认部门"
   default_dept_id: [String!]
   default_dept_id_lbl: [String!]
+  default_dept_id_is_null: Boolean
   "启用"
   is_enabled: [Int!]
   "备注"
@@ -122,11 +123,13 @@ input UsrSearch {
   "拥有部门"
   dept_ids: [String!]
   dept_ids_lbl: [String!]
+  dept_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "拥有角色"
   role_ids: [String!]
   role_ids_lbl: [String!]
+  role_ids_is_null: Boolean
 }
 type Query {
   "根据条件查找据数总数"
