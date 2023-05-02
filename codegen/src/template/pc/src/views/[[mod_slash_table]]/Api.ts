@@ -32,7 +32,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignTableUp === tableUp) continue;
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
+  }).join("");
   if (importForeignTables.includes(Foreign_Table_Up)) {
     continue;
   }
@@ -459,7 +459,7 @@ for (let i = 0; i < columns.length; i++) {
   foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
+  }).join("");
   const defaultSort = foreignKey && foreignKey.defaultSort;
 #>
 
