@@ -1,0 +1,63 @@
+use anyhow::Result;
+use crate::common::context::Ctx;
+
+use crate::gen::base::tenant::tenant_dao;
+use crate::gen::base::tenant::tenant_model::{
+  TenantSearch,
+  TenantModel,
+};
+
+// 获取当前租户绑定的网址
+// pub async fn get_host_tenant<'a>(
+//   ctx: &mut impl Ctx<'a>,
+// ) -> Result<String> {
+  
+//   let tenant_id = ctx.get_auth_tenant_id();
+  
+//   if tenant_id.is_none() {
+//     return Err(anyhow::anyhow!("tenant_id is none"));
+//   }
+  
+//   let tenant_id = tenant_id.unwrap();
+  
+//   let model = tenant_dao::find_one(
+//     ctx,
+//     TenantSearch {
+//       id: tenant_id.into(),
+//       ..Default::default()
+//     }.into(),
+//     None,
+//     None,
+//   ).await?;
+  
+//   if model.is_none() {
+//     return Err(anyhow::anyhow!("tenant_id cannot be found"));
+//   }
+  
+//   let model = model.unwrap();
+  
+//   let host = model.host;
+  
+//   Ok(host)
+// }
+
+/// 根据 当前网址的域名+端口 获取 租户列表
+pub async fn get_login_teants<'a>(
+  ctx: &mut impl Ctx<'a>,
+  host: String,
+) -> Result<Vec<TenantModel>> {
+  
+  let res = tenant_dao::find_all(
+    ctx,
+    TenantSearch {
+      host: host.into(),
+      is_enabled: vec![1].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  Ok(res)
+}

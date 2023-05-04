@@ -6,3 +6,4 @@ pub mod lang;
 pub mod usr;
 pub mod menu;
 pub mod options;
+pub mod tenant;
