@@ -95,9 +95,17 @@ export interface <#=Table_Up#>Model extends <#=Table_Up#>ModelType {<#
     else if (column.DATA_TYPE === 'decimal') {
       data_type = 'number';
     }
+  #><#
+    if (is_nullable) {
   #>
   /** <#=column_comment#> */
   <#=column_name#>?: <#=data_type#> | null;<#
+    } else {
+  #>
+  /** <#=column_comment#> */
+  <#=column_name#>: <#=data_type#>;<#
+    }
+  #><#
   }
   #>
   create_usr_id: string;
