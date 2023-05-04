@@ -109,8 +109,10 @@ pub struct MenuSearch {
   pub menu_id_is_null: Option<bool>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 路由
   pub route_path: Option<String>,
+  pub route_path_like: Option<String>,
   /// 参数
   pub route_query: Option<String>,
   /// 启用
@@ -119,6 +121,7 @@ pub struct MenuSearch {
   pub order_by: Option<Vec<i64>>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]

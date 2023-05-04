@@ -116,16 +116,22 @@ pub struct OperationRecordSearch {
   pub is_deleted: Option<u8>,
   /// 模块
   pub r#mod: Option<String>,
+  pub r#mod_like: Option<String>,
   /// 模块名称
   pub mod_lbl: Option<String>,
+  pub mod_lbl_like: Option<String>,
   /// 方法
   pub method: Option<String>,
+  pub method_like: Option<String>,
   /// 方法名称
   pub method_lbl: Option<String>,
+  pub method_lbl_like: Option<String>,
   /// 操作
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   pub create_usr_id_is_null: Option<bool>,

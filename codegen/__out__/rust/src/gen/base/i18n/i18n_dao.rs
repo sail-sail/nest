@@ -65,22 +65,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let id = match &search {
-      Some(item) => item.id.clone(),
-      None => None,
-    };
-    if let Some(id) = id {
-      where_query += &format!(" and t.id = {}", args.push(id.into()));
-    }
-    let id_like = match &search {
-      Some(item) => item.id.clone(),
-      None => None,
-    };
-    if let Some(id_like) = id_like {
-      where_query += &format!(" and t.id like {}", args.push((sql_like(&id_like) + "%").into()));
-    }
-  }
-  {
     let lang_id: Vec<String> = match &search {
       Some(item) => item.lang_id.clone().unwrap_or_default(),
       None => Default::default(),
@@ -141,7 +125,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.code = {}", args.push(code.into()));
     }
     let code_like = match &search {
-      Some(item) => item.code.clone(),
+      Some(item) => item.code_like.clone(),
       None => None,
     };
     if let Some(code_like) = code_like {
@@ -157,7 +141,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
     }
     let lbl_like = match &search {
-      Some(item) => item.lbl.clone(),
+      Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
@@ -173,7 +157,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.rem = {}", args.push(rem.into()));
     }
     let rem_like = match &search {
-      Some(item) => item.rem.clone(),
+      Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {

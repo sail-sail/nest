@@ -124,10 +124,13 @@ pub struct UsrSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 用户名
   pub username: Option<String>,
+  pub username_like: Option<String>,
   /// 密码
   pub password: Option<String>,
+  pub password_like: Option<String>,
   /// 默认部门
   pub default_dept_id: Option<Vec<String>>,
   pub default_dept_id_is_null: Option<bool>,
@@ -135,6 +138,7 @@ pub struct UsrSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
   pub dept_ids_is_null: Option<bool>,

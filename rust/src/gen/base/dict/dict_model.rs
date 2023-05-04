@@ -133,8 +133,10 @@ pub struct DictSearch {
   pub is_deleted: Option<u8>,
   /// 编码
   pub code: Option<String>,
+  pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 数据类型
   pub r#type: Option<Vec<String>>,
   /// 排序
@@ -143,6 +145,7 @@ pub struct DictSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 创建人

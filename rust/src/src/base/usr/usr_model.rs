@@ -5,7 +5,7 @@ use async_graphql::SimpleObject;
 #[graphql(rename_fields = "snake_case")]
 pub struct Login {
   
-  authorization: String,
-  dept_id: String,
+  pub authorization: String,
+  pub dept_id: String,
   
 }
