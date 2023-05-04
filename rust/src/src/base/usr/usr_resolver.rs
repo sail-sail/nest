@@ -7,10 +7,10 @@ use super::usr_service;
 use super::usr_model::Login;
 
 #[derive(Default)]
-pub struct UsrQuery;
+pub struct UsrMutation;
 
 #[Object]
-impl UsrQuery {
+impl UsrMutation {
   
   /// 登录, 获得token
   async fn login<'a>(
