@@ -72,8 +72,6 @@ pub struct LangFieldComment {
 pub struct LangSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
-  #[graphql(skip)]
-  pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
   /// 编码
   pub code: Option<String>,
@@ -109,7 +107,6 @@ impl From<LangInput> for LangSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
       is_deleted: None,
       // 编码
       code: input.code,

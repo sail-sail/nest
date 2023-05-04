@@ -94,8 +94,6 @@ pub struct DictDetailFieldComment {
 pub struct DictDetailSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
-  #[graphql(skip)]
-  pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
   /// 系统字典
   pub dict_id: Option<Vec<String>>,
@@ -142,7 +140,6 @@ impl From<DictDetailInput> for DictDetailSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
       is_deleted: None,
       // 系统字典
       dict_id: input.dict_id.map(|x| vec![x.into()]),

@@ -101,8 +101,6 @@ pub struct MenuFieldComment {
 pub struct MenuSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
-  #[graphql(skip)]
-  pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
   /// 类型
   pub r#type: Option<Vec<String>>,
@@ -153,7 +151,6 @@ impl From<MenuInput> for MenuSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
       is_deleted: None,
       // 类型
       r#type: input.r#type.map(|x| vec![x.into()]),
