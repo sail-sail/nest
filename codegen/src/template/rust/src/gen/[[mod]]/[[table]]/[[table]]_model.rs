@@ -253,9 +253,13 @@ pub struct <#=tableUP#>FieldComment {<#
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
   pub id: Option<String>,
-  pub ids: Option<Vec<String>>,
+  pub ids: Option<Vec<String>>,<#
+  if (hasTenant_id) {
+  #>
   #[graphql(skip)]
-  pub tenant_id: Option<String>,
+  pub tenant_id: Option<String>,<#
+  }
+  #>
   pub is_deleted: Option<u8>,<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -410,8 +414,12 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
   fn from(input: <#=tableUP#>Input) -> Self {
     Self {
       id: input.id.map(|x| x.into()),
-      ids: None,
-      tenant_id: None,
+      ids: None,<#
+      if (hasTenant_id) {
+      #>
+      tenant_id: None,<#
+      }
+      #>
       is_deleted: None,<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];

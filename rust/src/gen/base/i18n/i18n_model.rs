@@ -76,8 +76,6 @@ pub struct I18nFieldComment {
 pub struct I18nSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
-  #[graphql(skip)]
-  pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
   /// 语言
   pub lang_id: Option<Vec<String>>,
@@ -116,7 +114,6 @@ impl From<I18nInput> for I18nSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
       is_deleted: None,
       // 语言
       lang_id: input.lang_id.map(|x| vec![x.into()]),
