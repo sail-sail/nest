@@ -331,6 +331,11 @@ pub struct <#=tableUP#>Search {
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: Option<<#=_data_type#>>,<#
+    } else if (data_type === "varchar" || data_type === "text") {
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name#>: Option<<#=_data_type#>>,
+  pub <#=column_name#>_like: Option<<#=_data_type#>>,<#
     } else {
   #>
   /// <#=column_comment#>

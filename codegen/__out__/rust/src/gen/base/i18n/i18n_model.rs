@@ -85,10 +85,13 @@ pub struct I18nSearch {
   pub menu_id_is_null: Option<bool>,
   /// 编码
   pub code: Option<String>,
+  pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]

@@ -100,14 +100,17 @@ pub struct DictDetailSearch {
   pub dict_id_is_null: Option<bool>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 值
   pub val: Option<String>,
+  pub val_like: Option<String>,
   /// 排序
   pub order_by: Option<Vec<i64>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
 }

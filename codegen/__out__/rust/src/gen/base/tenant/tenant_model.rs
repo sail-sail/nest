@@ -102,8 +102,10 @@ pub struct TenantSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 域名绑定
   pub host: Option<String>,
+  pub host_like: Option<String>,
   /// 到期日
   pub expiration: Option<Vec<String>>,
   /// 最大用户数
@@ -117,6 +119,7 @@ pub struct TenantSearch {
   pub order_by: Option<Vec<i64>>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]

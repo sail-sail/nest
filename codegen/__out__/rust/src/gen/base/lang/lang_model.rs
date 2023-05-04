@@ -75,10 +75,13 @@ pub struct LangSearch {
   pub is_deleted: Option<u8>,
   /// 编码
   pub code: Option<String>,
+  pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序

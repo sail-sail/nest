@@ -84,22 +84,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let id = match &search {
-      Some(item) => item.id.clone(),
-      None => None,
-    };
-    if let Some(id) = id {
-      where_query += &format!(" and t.id = {}", args.push(id.into()));
-    }
-    let id_like = match &search {
-      Some(item) => item.id.clone(),
-      None => None,
-    };
-    if let Some(id_like) = id_like {
-      where_query += &format!(" and t.id like {}", args.push((sql_like(&id_like) + "%").into()));
-    }
-  }
-  {
     let r#mod = match &search {
       Some(item) => item.r#mod.clone(),
       None => None,
@@ -108,7 +92,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.r#mod = {}", args.push(r#mod.into()));
     }
     let r#mod_like = match &search {
-      Some(item) => item.r#mod.clone(),
+      Some(item) => item.r#mod_like.clone(),
       None => None,
     };
     if let Some(r#mod_like) = r#mod_like {
@@ -124,7 +108,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.mod_lbl = {}", args.push(mod_lbl.into()));
     }
     let mod_lbl_like = match &search {
-      Some(item) => item.mod_lbl.clone(),
+      Some(item) => item.mod_lbl_like.clone(),
       None => None,
     };
     if let Some(mod_lbl_like) = mod_lbl_like {
@@ -140,7 +124,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.method = {}", args.push(method.into()));
     }
     let method_like = match &search {
-      Some(item) => item.method.clone(),
+      Some(item) => item.method_like.clone(),
       None => None,
     };
     if let Some(method_like) = method_like {
@@ -156,7 +140,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.method_lbl = {}", args.push(method_lbl.into()));
     }
     let method_lbl_like = match &search {
-      Some(item) => item.method_lbl.clone(),
+      Some(item) => item.method_lbl_like.clone(),
       None => None,
     };
     if let Some(method_lbl_like) = method_lbl_like {
@@ -172,7 +156,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.lbl = {}", args.push(lbl.into()));
     }
     let lbl_like = match &search {
-      Some(item) => item.lbl.clone(),
+      Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
@@ -188,7 +172,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.rem = {}", args.push(rem.into()));
     }
     let rem_like = match &search {
-      Some(item) => item.rem.clone(),
+      Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {

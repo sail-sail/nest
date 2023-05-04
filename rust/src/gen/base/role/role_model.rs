@@ -76,8 +76,10 @@ pub struct RoleSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 菜单

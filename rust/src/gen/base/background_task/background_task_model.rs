@@ -113,20 +113,24 @@ pub struct BackgroundTaskSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  pub lbl_like: Option<String>,
   /// 状态
   pub state: Option<Vec<String>>,
   /// 类型
   pub r#type: Option<Vec<String>>,
   /// 执行结果
   pub result: Option<String>,
+  pub result_like: Option<String>,
   /// 错误信息
   pub err_msg: Option<String>,
+  pub err_msg_like: Option<String>,
   /// 开始时间
   pub begin_time: Option<Vec<String>>,
   /// 结束时间
   pub end_time: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
+  pub rem_like: Option<String>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   pub create_usr_id_is_null: Option<bool>,

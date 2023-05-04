@@ -175,6 +175,7 @@ fn get_where_query<'a>(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = rustKeyEscape(column.COLUMN_NAME);
+    if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -340,7 +341,7 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
     }
   }<#
-    } else {
+    } else if (data_type === "varchar" || data_type === "text") {
   #>
   {
     let <#=column_name#> = match &search {
@@ -351,11 +352,22 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
     }
     let <#=column_name#>_like = match &search {
-      Some(item) => item.<#=column_name#>.clone(),
+      Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
     if let Some(<#=column_name#>_like) = <#=column_name#>_like {
       where_query += &format!(" and t.<#=column_name#> like {}", args.push((sql_like(&<#=column_name#>_like) + "%").into()));
+    }
+  }<#
+    } else {
+  #>
+  {
+    let <#=column_name#> = match &search {
+      Some(item) => item.<#=column_name#>.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name#>) = <#=column_name#> {
+      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
     }
   }<#
     }
@@ -1154,7 +1166,7 @@ pub async fn create<'a>(
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     sql_fields += ",<#=column_name#>";
     sql_values += ",?";
-    args.push(get_password(&<#=column_name_rust#>)?.into());
+    args.push(get_password(<#=column_name_rust#>)?.into());
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #><#
@@ -1402,7 +1414,7 @@ pub async fn update_by_id<'a>(
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     field_num += 1;
     sql_fields += ",<#=column_name#> = ?";
-    args.push(get_password(&<#=column_name_rust#>)?.into());
+    args.push(get_password(<#=column_name_rust#>)?.into());
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
