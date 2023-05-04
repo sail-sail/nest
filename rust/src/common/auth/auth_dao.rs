@@ -29,10 +29,10 @@ pub fn get_token_by_auth_model(
   Ok(token)
 }
 
-pub fn get_password(str: impl AsRef<str>) -> Result<String> {
+pub fn get_password(str: String) -> Result<String> {
   let str = {
     let mut hasher = sha2::Sha256::new();
-    hasher.update(str.as_ref().to_owned() + SECRET_KEY);
+    hasher.update(str + SECRET_KEY);
     let result = hasher.finalize();
     general_purpose::STANDARD.encode(result)
   };
@@ -81,7 +81,7 @@ mod test {
   
   #[test]
   fn test_get_password() {
-    let str = get_password("a").unwrap();
+    let str = get_password("a".to_owned()).unwrap();
     assert!(str == "RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A");
   }
   
