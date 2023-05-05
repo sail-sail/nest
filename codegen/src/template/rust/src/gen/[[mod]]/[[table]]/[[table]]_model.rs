@@ -36,11 +36,11 @@ pub struct <#=tableUP#>Model {<#
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDateTime";
     } else if (data_type === 'time') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveTime";
     } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
       _data_type = 'i32';
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
@@ -124,11 +124,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDateTime";
     } else if (data_type === 'time') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveTime";
     } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
       _data_type = 'i32';
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
@@ -309,11 +309,11 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDateTime";
     } else if (data_type === 'time') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveTime";
     } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
       _data_type = 'i32';
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
@@ -327,7 +327,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
-      _data_type = 'String';
+      _data_type = "rust_decimal::Decimal";
     }
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
@@ -399,9 +399,11 @@ pub struct <#=tableUP#>Input {
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
-      _data_type = "String";
+      _data_type = "chrono::NaiveDateTime";
+    } else if (data_type === 'time') {
+      _data_type = "chrono::NaiveTime";
     } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
       _data_type = 'i32';
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {

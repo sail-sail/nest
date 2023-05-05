@@ -172,15 +172,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let begin_time: Vec<String> = match &search {
+    let begin_time: Vec<chrono::NaiveDateTime> = match &search {
       Some(item) => item.begin_time.clone().unwrap_or_default(),
       None => vec![],
     };
-    let begin_time_gt: Option<String> = match &begin_time.len() {
+    let begin_time_gt: Option<chrono::NaiveDateTime> = match &begin_time.len() {
       0 => None,
       _ => begin_time[0].clone().into(),
     };
-    let begin_time_lt: Option<String> = match &begin_time.len() {
+    let begin_time_lt: Option<chrono::NaiveDateTime> = match &begin_time.len() {
       0 => None,
       1 => None,
       _ => begin_time[1].clone().into(),
@@ -193,15 +193,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let end_time: Vec<String> = match &search {
+    let end_time: Vec<chrono::NaiveDateTime> = match &search {
       Some(item) => item.end_time.clone().unwrap_or_default(),
       None => vec![],
     };
-    let end_time_gt: Option<String> = match &end_time.len() {
+    let end_time_gt: Option<chrono::NaiveDateTime> = match &end_time.len() {
       0 => None,
       _ => end_time[0].clone().into(),
     };
-    let end_time_lt: Option<String> = match &end_time.len() {
+    let end_time_lt: Option<chrono::NaiveDateTime> = match &end_time.len() {
       0 => None,
       1 => None,
       _ => end_time[1].clone().into(),
