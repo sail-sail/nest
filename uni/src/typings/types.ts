@@ -811,7 +811,7 @@ export type GetLoginTenants = {
 
 export type GetMenus = {
   __typename?: 'GetMenus';
-  children?: Maybe<Scalars['JSON']>;
+  children?: Maybe<Array<GetMenus>>;
   id: Scalars['String'];
   lbl: Scalars['String'];
   route_path?: Maybe<Scalars['String']>;
@@ -2195,7 +2195,7 @@ export type Query = {
   /** 根据 当前网址的域名+端口 获取 租户列表 */
   getLoginTenants: Array<Maybe<GetLoginTenants>>;
   /** 获取主页菜单 */
-  getMenus: Array<Maybe<GetMenus>>;
+  getMenus: Array<GetMenus>;
   /** 获取系统选项 */
   getOptionsByLbl: Array<OptionsModel>;
   /** 国际化 */
