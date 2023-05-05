@@ -221,8 +221,6 @@ input <#=Table_Up#>Search {
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const search = column.search;
@@ -365,25 +363,25 @@ type <#=Table_Up#>Summary {<#
 #>
 type Query {
   "根据条件查找据数总数"
-  findCount<#=tableUp#>(search: <#=Table_Up#>Search): Int!
+  findCount<#=Table_Up#>(search: <#=Table_Up#>Search): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=tableUp#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput!]): [<#=Table_Up#>Model!]!
+  findAll<#=Table_Up#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput!]): [<#=Table_Up#>Model!]!
   "获取字段对应的名称"
-  getFieldComments<#=tableUp#>: <#=Table_Up#>FieldComment!<#
+  getFieldComments<#=Table_Up#>: <#=Table_Up#>FieldComment!<#
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"
-  findSummary<#=tableUp#>(search: <#=Table_Up#>Search): <#=Table_Up#>Summary!<#
+  findSummary<#=Table_Up#>(search: <#=Table_Up#>Search): <#=Table_Up#>Summary!<#
   }
   #>
   "根据条件查找第一条数据"
-  findOne<#=tableUp#>(search: <#=Table_Up#>Search, sort: [SortInput!]): <#=Table_Up#>Model
+  findOne<#=Table_Up#>(search: <#=Table_Up#>Search, sort: [SortInput!]): <#=Table_Up#>Model
   "根据id查找一条数据"
-  findById<#=tableUp#>(id: ID!): <#=Table_Up#>Model<#
+  findById<#=Table_Up#>(id: ID!): <#=Table_Up#>Model<#
   if (hasOrderBy) {
   #>
   "查找order_by字段的最大值"
-  findLastOrderBy<#=tableUp#>: Int!<#
+  findLastOrderBy<#=Table_Up#>: Int!<#
   }
   #>
 }<#
@@ -396,39 +394,39 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建一条数据"
-  create<#=tableUp#>(model: <#=Table_Up#>Input!): ID!<#
+  create<#=Table_Up#>(model: <#=Table_Up#>Input!): ID!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
   "根据id修改一条数据"
-  updateById<#=tableUp#>(id: ID!, model: <#=Table_Up#>Input!): ID!<#
+  updateById<#=Table_Up#>(id: ID!, model: <#=Table_Up#>Input!): ID!<#
   }
   #><#
   if (opts.noAdd !== true && opts.noEdit !== true) {
   #>
   "批量导入"
-  importModels<#=tableUp#>(models: [<#=Table_Up#>Input!]!): String<#
+  importModels<#=Table_Up#>(models: [<#=Table_Up#>Input!]!): String<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 删除数据"
-  deleteByIds<#=tableUp#>(ids: [ID!]!): Int!<#
+  deleteByIds<#=Table_Up#>(ids: [ID!]!): Int!<#
   }
   #><#
   if (hasLocked && opts.noEdit !== true) {
   #>
   "根据 ids 锁定或者解锁数据"
-  lockByIds<#=tableUp#>(ids: [ID!]!, is_locked: Int!): Int!<#
+  lockByIds<#=Table_Up#>(ids: [ID!]!, is_locked: Int!): Int!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 还原数据"
-  revertByIds<#=tableUp#>(ids: [ID!]!): Int!
+  revertByIds<#=Table_Up#>(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIds<#=tableUp#>(ids: [ID!]!): Int!<#
+  forceDeleteByIds<#=Table_Up#>(ids: [ID!]!): Int!<#
   }
   #>
 }<#

@@ -58,11 +58,11 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=tableUp#>: Query["findAll<#=tableUp#>"];
+    findAll<#=Table_Up#>: Query["findAll<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
+        findAll<#=Table_Up#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -101,7 +101,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAll<#=tableUp#>;
+  const result = data.findAll<#=Table_Up#>;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];<#
   for (let i = 0; i < columns.length; i++) {
@@ -138,18 +138,18 @@ export async function findCount(
   opt?: GqlOpt,
 ) {
   const data: {
-    findCount<#=tableUp#>: Query["findCount<#=tableUp#>"];
+    findCount<#=Table_Up#>: Query["findCount<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
-        findCount<#=tableUp#>(search: $search)
+        findCount<#=Table_Up#>(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const result = data.findCount<#=tableUp#>;
+  const result = data.findCount<#=Table_Up#>;
   return result;
 }<#
 if (hasSummary) {
@@ -165,11 +165,11 @@ export async function findSummary(
   opt?: GqlOpt,
 ) {
   const data: {
-    findSummary<#=tableUp#>: Query["findSummary<#=tableUp#>"];
+    findSummary<#=Table_Up#>: Query["findSummary<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Table_Up#>Search) {
-        findSummary<#=tableUp#>(search: $search) {<#
+        findSummary<#=Table_Up#>(search: $search) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -191,7 +191,7 @@ export async function findSummary(
       search,
     },
   }, opt);
-  const result = data.findSummary<#=tableUp#>;
+  const result = data.findSummary<#=Table_Up#>;
   return result;
 }<#
 }
@@ -210,18 +210,18 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data: {
-    create<#=tableUp#>: Mutation["create<#=tableUp#>"];
+    create<#=Table_Up#>: Mutation["create<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($model: <#=Table_Up#>Input!) {
-        create<#=tableUp#>(model: $model)
+        create<#=Table_Up#>(model: $model)
       }
     `,
     variables: {
       model,
     },
   }, opt);
-  const result = data.create<#=tableUp#>;
+  const result = data.create<#=Table_Up#>;
   return result;
 }<#
 }
@@ -242,11 +242,11 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data: {
-    updateById<#=tableUp#>: Mutation["updateById<#=tableUp#>"];
+    updateById<#=Table_Up#>: Mutation["updateById<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: <#=Table_Up#>Input!) {
-        updateById<#=tableUp#>(id: $id, model: $model)
+        updateById<#=Table_Up#>(id: $id, model: $model)
       }
     `,
     variables: {
@@ -254,7 +254,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateById<#=tableUp#>;
+  const result = data.updateById<#=Table_Up#>;
   return result;
 }<#
 }
@@ -271,11 +271,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findById<#=tableUp#>: Query["findById<#=tableUp#>"];
+    findById<#=Table_Up#>: Query["findById<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
-        findById<#=tableUp#>(id: $id) {<#
+        findById<#=Table_Up#>(id: $id) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -310,7 +310,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findById<#=tableUp#>;<#
+  const result = data.findById<#=Table_Up#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -341,18 +341,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIds<#=tableUp#>: Mutation["deleteByIds<#=tableUp#>"];
+    deleteByIds<#=Table_Up#>: Mutation["deleteByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        deleteByIds<#=tableUp#>(ids: $ids)
+        deleteByIds<#=Table_Up#>(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.deleteByIds<#=tableUp#>;
+  const result = data.deleteByIds<#=Table_Up#>;
   return result;
 }<#
 }
@@ -373,11 +373,11 @@ export async function lockByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    lockByIds<#=tableUp#>: Mutation["lockByIds<#=tableUp#>"];
+    lockByIds<#=Table_Up#>: Mutation["lockByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
-        lockByIds<#=tableUp#>(ids: $ids, is_locked: $is_locked)
+        lockByIds<#=Table_Up#>(ids: $ids, is_locked: $is_locked)
       }
     `,
     variables: {
@@ -385,7 +385,7 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result = data.lockByIds<#=tableUp#>;
+  const result = data.lockByIds<#=Table_Up#>;
   return result;
 }<#
 }
@@ -404,18 +404,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIds<#=tableUp#>: Mutation["revertByIds<#=tableUp#>"];
+    revertByIds<#=Table_Up#>: Mutation["revertByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        revertByIds<#=tableUp#>(ids: $ids)
+        revertByIds<#=Table_Up#>(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.revertByIds<#=tableUp#>;
+  const result = data.revertByIds<#=Table_Up#>;
   return result;
 }
 
@@ -430,18 +430,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIds<#=tableUp#>: Mutation["forceDeleteByIds<#=tableUp#>"];
+    forceDeleteByIds<#=Table_Up#>: Mutation["forceDeleteByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        forceDeleteByIds<#=tableUp#>(ids: $ids)
+        forceDeleteByIds<#=Table_Up#>(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIds<#=tableUp#>;
+  const result = data.forceDeleteByIds<#=Table_Up#>;
   return result;
 }<#
 }
@@ -465,18 +465,18 @@ for (let i = 0; i < columns.length; i++) {
   const defaultSort = foreignKey && foreignKey.defaultSort;
 #>
 
-export async function findAll<#=foreignTableUp#>(
+export async function findAll<#=Foreign_Table_Up#>(
   search?: <#=Foreign_Table_Up#>Search,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAll<#=foreignTableUp#>: Query["findAll<#=foreignTableUp#>"];
+    findAll<#=Foreign_Table_Up#>: Query["findAll<#=Foreign_Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
       query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
-        findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
+        findAll<#=Foreign_Table_Up#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
         }
@@ -488,12 +488,12 @@ export async function findAll<#=foreignTableUp#>(
       sort,
     },
   }, opt);
-  const result = data.findAll<#=foreignTableUp#>;
+  const result = data.findAll<#=Foreign_Table_Up#>;
   return result;
 }
 
-export async function get<#=foreignTableUp#>List() {
-  const data = await findAll<#=foreignTableUp#>(
+export async function get<#=Foreign_Table_Up#>List() {
+  const data = await findAll<#=Foreign_Table_Up#>(
     undefined,
     {
     },
@@ -534,7 +534,7 @@ export function useExportExcel() {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
         query($search: <#=Table_Up#>Search, $sort: [SortInput!]) {
-          findAll<#=tableUp#>(search: $search, sort: $sort) {<#
+          findAll<#=Table_Up#>(search: $search, sort: $sort) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -563,7 +563,7 @@ export function useExportExcel() {
             }
             #>
           }
-          getFieldComments<#=tableUp#> {<#
+          getFieldComments<#=Table_Up#> {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
@@ -634,18 +634,18 @@ export async function importModels(
   opt?: GqlOpt,
 ) {
   const data: {
-    importModels<#=tableUp#>: Mutation["importModels<#=tableUp#>"];
+    importModels<#=Table_Up#>: Mutation["importModels<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($models: [<#=Table_Up#>Input!]!) {
-        importModels<#=tableUp#>(models: $models)
+        importModels<#=Table_Up#>(models: $models)
       }
     `,
     variables: {
       models,
     },
   }, opt);
-  const res = data.importModels<#=tableUp#>;
+  const res = data.importModels<#=Table_Up#>;
   return res;
 }<#
 }
@@ -662,15 +662,15 @@ export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
   const data: {
-    findLastOrderBy<#=tableUp#>: Query["findLastOrderBy<#=tableUp#>"];
+    findLastOrderBy<#=Table_Up#>: Query["findLastOrderBy<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
       query {
-        findLastOrderBy<#=tableUp#>
+        findLastOrderBy<#=Table_Up#>
       }
     `,
   }, opt);
-  const result = data.findLastOrderBy<#=tableUp#>;
+  const result = data.findLastOrderBy<#=Table_Up#>;
   return result;
 }<#
 }

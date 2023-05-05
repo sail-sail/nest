@@ -26,11 +26,11 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllOperation_record: Query["findAllOperation_record"];
+    findAllOperationRecord: Query["findAllOperationRecord"];
   } = await query({
     query: /* GraphQL */ `
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllOperation_record(search: $search, page: $page, sort: $sort) {
+        findAllOperationRecord(search: $search, page: $page, sort: $sort) {
           id
           mod
           mod_lbl
@@ -53,7 +53,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllOperation_record;
+  const result = data.findAllOperationRecord;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -71,18 +71,18 @@ export async function findCount(
   opt?: GqlOpt,
 ) {
   const data: {
-    findCountOperation_record: Query["findCountOperation_record"];
+    findCountOperationRecord: Query["findCountOperationRecord"];
   } = await query({
     query: /* GraphQL */ `
       query($search: OperationRecordSearch) {
-        findCountOperation_record(search: $search)
+        findCountOperationRecord(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const result = data.findCountOperation_record;
+  const result = data.findCountOperationRecord;
   return result;
 }
 
@@ -97,11 +97,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdOperation_record: Query["findByIdOperation_record"];
+    findByIdOperationRecord: Query["findByIdOperationRecord"];
   } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
-        findByIdOperation_record(id: $id) {
+        findByIdOperationRecord(id: $id) {
           id
           mod
           mod_lbl
@@ -122,7 +122,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdOperation_record;
+  const result = data.findByIdOperationRecord;
   return result;
 }
 
@@ -137,18 +137,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIdsOperation_record: Mutation["deleteByIdsOperation_record"];
+    deleteByIdsOperationRecord: Mutation["deleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        deleteByIdsOperation_record(ids: $ids)
+        deleteByIdsOperationRecord(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsOperation_record;
+  const result = data.deleteByIdsOperationRecord;
   return result;
 }
 
@@ -163,18 +163,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIdsOperation_record: Mutation["revertByIdsOperation_record"];
+    revertByIdsOperationRecord: Mutation["revertByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        revertByIdsOperation_record(ids: $ids)
+        revertByIdsOperationRecord(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.revertByIdsOperation_record;
+  const result = data.revertByIdsOperationRecord;
   return result;
 }
 
@@ -189,18 +189,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIdsOperation_record: Mutation["forceDeleteByIdsOperation_record"];
+    forceDeleteByIdsOperationRecord: Mutation["forceDeleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        forceDeleteByIdsOperation_record(ids: $ids)
+        forceDeleteByIdsOperationRecord(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsOperation_record;
+  const result = data.forceDeleteByIdsOperationRecord;
   return result;
 }
 
@@ -271,7 +271,7 @@ export function useExportExcel() {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
         query($search: OperationRecordSearch, $sort: [SortInput!]) {
-          findAllOperation_record(search: $search, sort: $sort) {
+          findAllOperationRecord(search: $search, sort: $sort) {
             id
             mod
             mod_lbl
@@ -286,7 +286,7 @@ export function useExportExcel() {
             update_usr_id_lbl
             update_time
           }
-          getFieldCommentsOperation_record {
+          getFieldCommentsOperationRecord {
             mod
             mod_lbl
             method

@@ -28,7 +28,7 @@ import {
 /**
  * 根据条件查找据数总数
  */
-export async function findCount<#=tableUp#>(
+export async function findCount<#=Table_Up#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./<#=table#>.service.ts");
@@ -39,7 +39,7 @@ export async function findCount<#=tableUp#>(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAll<#=tableUp#>(
+export async function findAll<#=Table_Up#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -52,7 +52,7 @@ export async function findAll<#=tableUp#>(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments<#=tableUp#>() {
+export async function getFieldComments<#=Table_Up#>() {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
   const data = await getFieldComments();
   return data;
@@ -63,7 +63,7 @@ if (hasSummary) {
 /**
  * 根据搜索条件查找合计
  */
-export async function findSummary<#=tableUp#>(
+export async function findSummary<#=Table_Up#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
 ) {
   const { findSummary } = await import("./<#=table#>.service.ts");
@@ -76,7 +76,7 @@ export async function findSummary<#=tableUp#>(
 /**
  * 根据条件查找第一条数据
  */
-export async function findOne<#=tableUp#>(
+export async function findOne<#=Table_Up#>(
   search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -88,7 +88,7 @@ export async function findOne<#=tableUp#>(
 /**
  * 根据 id 查找一条数据
  */
-export async function findById<#=tableUp#>(
+export async function findById<#=Table_Up#>(
   id: string,
 ) {
   const { findById } = await import("./<#=table#>.service.ts");
@@ -101,7 +101,7 @@ if (opts.noAdd !== true) {
 /**
  * 创建一条数据
  */
-export async function create<#=tableUp#>(
+export async function create<#=Table_Up#>(
   model: <#=Table_Up#>Model,
 ) {
   const context = useContext();
@@ -119,7 +119,7 @@ if (opts.noEdit !== true) {
 /**
  * 根据id修改一条数据
  */
-export async function updateById<#=tableUp#>(
+export async function updateById<#=Table_Up#>(
   id: string,
   model: <#=Table_Up#>Model,
 ) {
@@ -138,7 +138,7 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIds<#=tableUp#>(
+export async function deleteByIds<#=Table_Up#>(
   ids: string[],
 ) {
   const context = useContext();
@@ -156,7 +156,7 @@ export async function deleteByIds<#=tableUp#>(
 /**
  * 根据 ids 锁定或者解锁数据
  */
-export async function lockByIds<#=tableUp#>(
+export async function lockByIds<#=Table_Up#>(
   ids: string[],
   is_locked: 0 | 1,
 ) {
@@ -164,7 +164,7 @@ export async function lockByIds<#=tableUp#>(
   
   context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
-    throw new Error(`lockByIds<#=tableUp#>.is_locked expect 0 or 1 but got ${ is_locked }`);
+    throw new Error(`lockByIds<#=Table_Up#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   const { lockByIds } = await import("./<#=table#>.service.ts");
   const data = await lockByIds(ids, is_locked);
@@ -178,7 +178,7 @@ if (opts.noAdd !== true && opts.noEdit !== true) {
 /**
  * 批量导入
  */
-export async function importModels<#=tableUp#>(
+export async function importModels<#=Table_Up#>(
   models: <#=Table_Up#>Input[],
 ) {
   const { importModels } = await import("./<#=table#>.service.ts");
@@ -193,7 +193,7 @@ if (opts.noDelete !== true) {
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIds<#=tableUp#>(
+export async function revertByIds<#=Table_Up#>(
   ids: string[],
 ) {
   const context = useContext();
@@ -207,7 +207,7 @@ export async function revertByIds<#=tableUp#>(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIds<#=tableUp#>(
+export async function forceDeleteByIds<#=Table_Up#>(
   ids: string[],
 ) {
   const context = useContext();
@@ -225,7 +225,7 @@ if (hasOrderBy) {
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderBy<#=tableUp#>() {
+export async function findLastOrderBy<#=Table_Up#>() {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");
   const data = findLastOrderBy();
   return data;

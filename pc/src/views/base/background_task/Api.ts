@@ -25,11 +25,11 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllBackground_task: Query["findAllBackground_task"];
+    findAllBackgroundTask: Query["findAllBackgroundTask"];
   } = await query({
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllBackground_task(search: $search, page: $page, sort: $sort) {
+        findAllBackgroundTask(search: $search, page: $page, sort: $sort) {
           id
           lbl
           state
@@ -50,7 +50,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllBackground_task;
+  const result = data.findAllBackgroundTask;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -68,18 +68,18 @@ export async function findCount(
   opt?: GqlOpt,
 ) {
   const data: {
-    findCountBackground_task: Query["findCountBackground_task"];
+    findCountBackgroundTask: Query["findCountBackgroundTask"];
   } = await query({
     query: /* GraphQL */ `
       query($search: BackgroundTaskSearch) {
-        findCountBackground_task(search: $search)
+        findCountBackgroundTask(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const result = data.findCountBackground_task;
+  const result = data.findCountBackgroundTask;
   return result;
 }
 
@@ -94,11 +94,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdBackground_task: Query["findByIdBackground_task"];
+    findByIdBackgroundTask: Query["findByIdBackgroundTask"];
   } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
-        findByIdBackground_task(id: $id) {
+        findByIdBackgroundTask(id: $id) {
           id
           lbl
           state
@@ -117,7 +117,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdBackground_task;
+  const result = data.findByIdBackgroundTask;
   return result;
 }
 
@@ -132,18 +132,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIdsBackground_task: Mutation["deleteByIdsBackground_task"];
+    deleteByIdsBackgroundTask: Mutation["deleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        deleteByIdsBackground_task(ids: $ids)
+        deleteByIdsBackgroundTask(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsBackground_task;
+  const result = data.deleteByIdsBackgroundTask;
   return result;
 }
 
@@ -158,18 +158,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIdsBackground_task: Mutation["revertByIdsBackground_task"];
+    revertByIdsBackgroundTask: Mutation["revertByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        revertByIdsBackground_task(ids: $ids)
+        revertByIdsBackgroundTask(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.revertByIdsBackground_task;
+  const result = data.revertByIdsBackgroundTask;
   return result;
 }
 
@@ -184,18 +184,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIdsBackground_task: Mutation["forceDeleteByIdsBackground_task"];
+    forceDeleteByIdsBackgroundTask: Mutation["forceDeleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        forceDeleteByIdsBackground_task(ids: $ids)
+        forceDeleteByIdsBackgroundTask(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsBackground_task;
+  const result = data.forceDeleteByIdsBackgroundTask;
   return result;
 }
 
@@ -221,7 +221,7 @@ export function useExportExcel() {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
         query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
-          findAllBackground_task(search: $search, sort: $sort) {
+          findAllBackgroundTask(search: $search, sort: $sort) {
             id
             lbl
             state
@@ -234,7 +234,7 @@ export function useExportExcel() {
             end_time
             rem
           }
-          getFieldCommentsBackground_task {
+          getFieldCommentsBackgroundTask {
             lbl
             state
             state_lbl

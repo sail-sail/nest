@@ -105,33 +105,33 @@ input DictbizDetailSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountDictbiz_detail(search: DictbizDetailSearch): Int!
+  findCountDictbizDetail(search: DictbizDetailSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllDictbiz_detail(search: DictbizDetailSearch, page: PageInput, sort: [SortInput!]): [DictbizDetailModel!]!
+  findAllDictbizDetail(search: DictbizDetailSearch, page: PageInput, sort: [SortInput!]): [DictbizDetailModel!]!
   "获取字段对应的名称"
-  getFieldCommentsDictbiz_detail: DictbizDetailFieldComment!
+  getFieldCommentsDictbizDetail: DictbizDetailFieldComment!
   "根据条件查找第一条数据"
-  findOneDictbiz_detail(search: DictbizDetailSearch, sort: [SortInput!]): DictbizDetailModel
+  findOneDictbizDetail(search: DictbizDetailSearch, sort: [SortInput!]): DictbizDetailModel
   "根据id查找一条数据"
-  findByIdDictbiz_detail(id: ID!): DictbizDetailModel
+  findByIdDictbizDetail(id: ID!): DictbizDetailModel
   "查找order_by字段的最大值"
-  findLastOrderByDictbiz_detail: Int!
+  findLastOrderByDictbizDetail: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDictbiz_detail(model: DictbizDetailInput!): ID!
+  createDictbizDetail(model: DictbizDetailInput!): ID!
   "根据id修改一条数据"
-  updateByIdDictbiz_detail(id: ID!, model: DictbizDetailInput!): ID!
+  updateByIdDictbizDetail(id: ID!, model: DictbizDetailInput!): ID!
   "批量导入"
-  importModelsDictbiz_detail(models: [DictbizDetailInput!]!): String
+  importModelsDictbizDetail(models: [DictbizDetailInput!]!): String
   "根据 ids 删除数据"
-  deleteByIdsDictbiz_detail(ids: [ID!]!): Int!
+  deleteByIdsDictbizDetail(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDictbiz_detail(ids: [ID!]!, is_locked: Int!): Int!
+  lockByIdsDictbizDetail(ids: [ID!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDictbiz_detail(ids: [ID!]!): Int!
+  revertByIdsDictbizDetail(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDictbiz_detail(ids: [ID!]!): Int!
+  forceDeleteByIdsDictbizDetail(ids: [ID!]!): Int!
 }
 
 `);
