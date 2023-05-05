@@ -844,8 +844,8 @@ let sort: Sort = $ref({
 async function sortChange(
   { prop, order, column }: { column: TableColumnCtx<I18nModel> } & Sort,
 ) {
-  sort.prop = prop;
-  sort.order = order;
+  sort.prop = prop || "";
+  sort.order = order || "ascending";
   await dataGrid();
 }
 
