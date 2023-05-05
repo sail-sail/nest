@@ -29,7 +29,7 @@ export async function findAll(
     findAllDept: Query["findAllDept"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
           id
           parent_id
@@ -304,7 +304,7 @@ export async function findAllDept(
     findAllDept: Query["findAllDept"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -349,7 +349,7 @@ export async function findAllUsr(
     findAllUsr: Query["findAllUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -405,7 +405,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: DeptSearch, $sort: [SortInput]) {
+        query($search: DeptSearch, $sort: [SortInput!]) {
           findAllDept(search: $search, sort: $sort) {
             id
             parent_id

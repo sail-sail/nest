@@ -30,7 +30,7 @@ export async function findAll(
     findAllI18n: Query["findAllI18n"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: I18nSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllI18n(search: $search, page: $page, sort: $sort) {
           id
           lang_id
@@ -260,7 +260,7 @@ export async function findAllLang(
     findAllLang: Query["findAllLang"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: LangSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -305,7 +305,7 @@ export async function findAllMenu(
     findAllMenu: Query["findAllMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -361,7 +361,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: I18nSearch, $sort: [SortInput]) {
+        query($search: I18nSearch, $sort: [SortInput!]) {
           findAllI18n(search: $search, sort: $sort) {
             id
             lang_id

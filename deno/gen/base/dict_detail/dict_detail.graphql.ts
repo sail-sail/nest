@@ -107,11 +107,11 @@ type Query {
   "根据条件查找据数总数"
   findCountDict_detail(search: DictDetailSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllDict_detail(search: DictDetailSearch, page: PageInput, sort: [SortInput]): [DictDetailModel!]!
+  findAllDict_detail(search: DictDetailSearch, page: PageInput, sort: [SortInput!]): [DictDetailModel!]!
   "获取字段对应的名称"
   getFieldCommentsDict_detail: DictDetailFieldComment!
   "根据条件查找第一条数据"
-  findOneDict_detail(search: DictDetailSearch, sort: [SortInput]): DictDetailModel
+  findOneDict_detail(search: DictDetailSearch, sort: [SortInput!]): DictDetailModel
   "根据id查找一条数据"
   findByIdDict_detail(id: ID!): DictDetailModel
   "查找order_by字段的最大值"

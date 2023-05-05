@@ -29,9 +29,21 @@ export async function getMenus(
 ): Promise<any> {
   const data = await query({
     query: /* GraphQL */ `
+     fragment GetMenusFragment on GetMenus {
+        id
+        lbl
+        route_path
+        route_query
+        children {
+          id
+          lbl
+          route_path
+          route_query
+        }
+      }
       query($type: String) {
         menus: getMenus(type: $type) {
-          id lbl route_path route_query children
+          ...GetMenusFragment
         }
       }
     `,

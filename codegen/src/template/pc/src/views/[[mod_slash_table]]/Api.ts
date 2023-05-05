@@ -32,7 +32,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignTableUp === tableUp) continue;
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
+  }).join("");
   if (importForeignTables.includes(Foreign_Table_Up)) {
     continue;
   }
@@ -61,7 +61,7 @@ export async function findAll(
     findAll<#=tableUp#>: Query["findAll<#=tableUp#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
+      query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
         findAll<#=tableUp#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -79,6 +79,8 @@ export async function findAll(
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
             const foreignKey = column.foreignKey;
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
           #><#
             if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
           #>
@@ -459,7 +461,7 @@ for (let i = 0; i < columns.length; i++) {
   foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
+  }).join("");
   const defaultSort = foreignKey && foreignKey.defaultSort;
 #>
 
@@ -473,7 +475,7 @@ export async function findAll<#=foreignTableUp#>(
     findAll<#=foreignTableUp#>: Query["findAll<#=foreignTableUp#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput]) {
+      query($search: <#=Foreign_Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
         findAll<#=foreignTableUp#>(search: $search, page: $page, sort: $sort) {
           <#=foreignKey.column#>
           <#=foreignKey.lbl#>
@@ -531,7 +533,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: <#=Table_Up#>Search, $sort: [SortInput]) {
+        query($search: <#=Table_Up#>Search, $sort: [SortInput!]) {
           findAll<#=tableUp#>(search: $search, sort: $sort) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];

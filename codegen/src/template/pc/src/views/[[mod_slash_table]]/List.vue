@@ -58,7 +58,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
-        }).join("_");
+        }).join("");
       #><#
         if (search) {
       #>
@@ -947,7 +947,7 @@ for (let i = 0; i < columns.length; i++) {
   foreignTableUpArr.push(foreignTableUp);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
+  }).join("");
 #>
   type <#=Foreign_Table_Up#>Model,<#
 }

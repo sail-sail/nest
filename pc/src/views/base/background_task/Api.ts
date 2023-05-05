@@ -28,7 +28,7 @@ export async function findAll(
     findAllBackground_task: Query["findAllBackground_task"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: BackgroundTaskSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllBackground_task(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -220,7 +220,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: BackgroundTaskSearch, $sort: [SortInput]) {
+        query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
           findAllBackground_task(search: $search, sort: $sort) {
             id
             lbl

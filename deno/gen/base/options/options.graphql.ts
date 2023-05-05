@@ -156,11 +156,11 @@ type Query {
   "根据条件查找据数总数"
   findCountOptions(search: OptionsSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllOptions(search: OptionsSearch, page: PageInput, sort: [SortInput]): [OptionsModel!]!
+  findAllOptions(search: OptionsSearch, page: PageInput, sort: [SortInput!]): [OptionsModel!]!
   "获取字段对应的名称"
   getFieldCommentsOptions: OptionsFieldComment!
   "根据条件查找第一条数据"
-  findOneOptions(search: OptionsSearch, sort: [SortInput]): OptionsModel
+  findOneOptions(search: OptionsSearch, sort: [SortInput!]): OptionsModel
   "根据id查找一条数据"
   findByIdOptions(id: ID!): OptionsModel
   "查找order_by字段的最大值"
