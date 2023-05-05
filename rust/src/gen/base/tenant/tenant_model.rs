@@ -12,9 +12,9 @@ pub struct TenantModel {
   /// 域名绑定
   pub host: String,
   /// 到期日
-  pub expiration: String,
+  pub expiration: Option<String>,
   /// 最大用户数
-  pub max_usr_num: i64,
+  pub max_usr_num: u32,
   /// 启用
   pub is_enabled: u8,
   pub is_enabled_lbl: String,
@@ -22,7 +22,7 @@ pub struct TenantModel {
   pub menu_ids: Vec<String>,
   pub menu_ids_lbl: Vec<String>,
   /// 排序
-  pub order_by: i64,
+  pub order_by: u32,
   /// 备注
   pub rem: String,
 }
@@ -37,19 +37,19 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 域名绑定
     let host: String = row.try_get("host")?;
     // 到期日
-    let expiration: String = row.try_get("expiration")?;
+    let expiration: Option<String> = row.try_get("expiration")?;
     // 最大用户数
-    let max_usr_num: i64 = row.try_get("max_usr_num")?;
+    let max_usr_num: u32 = row.try_get("max_usr_num")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
     // 菜单
-    let menu_ids: sqlx::types::Json<Vec<String>> = row.try_get("menu_ids")?;
-    let menu_ids = menu_ids.0;
-    let menu_ids_lbl: sqlx::types::Json<Vec<String>> = row.try_get("menu_ids_lbl")?;
-    let menu_ids_lbl = menu_ids_lbl.0;
+    let menu_ids: sqlx::types::Json<Option<Vec<String>>> = row.try_get("menu_ids")?;
+    let menu_ids = menu_ids.0.unwrap_or_default();
+    let menu_ids_lbl: sqlx::types::Json<Option<Vec<String>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl = menu_ids_lbl.0.unwrap_or_default();
     // 排序
-    let order_by: i64 = row.try_get("order_by")?;
+    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     
@@ -109,14 +109,14 @@ pub struct TenantSearch {
   /// 到期日
   pub expiration: Option<Vec<String>>,
   /// 最大用户数
-  pub max_usr_num: Option<Vec<i64>>,
+  pub max_usr_num: Option<Vec<u32>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 菜单
   pub menu_ids: Option<Vec<String>>,
   pub menu_ids_is_null: Option<bool>,
   /// 排序
-  pub order_by: Option<Vec<i64>>,
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   pub rem_like: Option<String>,
@@ -133,7 +133,7 @@ pub struct TenantInput {
   /// 到期日
   pub expiration: Option<String>,
   /// 最大用户数
-  pub max_usr_num: Option<i64>,
+  pub max_usr_num: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
@@ -141,7 +141,7 @@ pub struct TenantInput {
   pub menu_ids: Option<Vec<String>>,
   pub menu_ids_lbl: Option<Vec<String>>,
   /// 排序
-  pub order_by: Option<i64>,
+  pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
 }

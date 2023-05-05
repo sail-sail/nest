@@ -15,7 +15,7 @@ pub struct DictDetailModel {
   /// 值
   pub val: String,
   /// 排序
-  pub order_by: i64,
+  pub order_by: u32,
   /// 启用
   pub is_enabled: u8,
   pub is_enabled_lbl: String,
@@ -39,7 +39,7 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
     // 值
     let val: String = row.try_get("val")?;
     // 排序
-    let order_by: i64 = row.try_get("order_by")?;
+    let order_by: u32 = row.try_get("order_by")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -105,7 +105,7 @@ pub struct DictDetailSearch {
   pub val: Option<String>,
   pub val_like: Option<String>,
   /// 排序
-  pub order_by: Option<Vec<i64>>,
+  pub order_by: Option<Vec<u32>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
@@ -127,7 +127,7 @@ pub struct DictDetailInput {
   /// 值
   pub val: Option<String>,
   /// 排序
-  pub order_by: Option<i64>,
+  pub order_by: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,

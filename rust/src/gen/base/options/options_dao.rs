@@ -116,15 +116,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<i64> = match &search {
-      Some(item) => item.order_by.clone().unwrap(),
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
     };
-    let order_by_gt: Option<i64> = match &order_by.len() {
+    let order_by_gt: Option<u32> = match &order_by.len() {
       0 => None,
       _ => order_by[0].clone().into(),
     };
-    let order_by_lt: Option<i64> = match &order_by.len() {
+    let order_by_lt: Option<u32> = match &order_by.len() {
       0 => None,
       1 => None,
       _ => order_by[1].clone().into(),
@@ -187,15 +187,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let version: Vec<i64> = match &search {
-      Some(item) => item.version.clone().unwrap(),
+    let version: Vec<u32> = match &search {
+      Some(item) => item.version.clone().unwrap_or_default(),
       None => vec![],
     };
-    let version_gt: Option<i64> = match &version.len() {
+    let version_gt: Option<u32> = match &version.len() {
       0 => None,
       _ => version[0].clone().into(),
     };
-    let version_lt: Option<i64> = match &version.len() {
+    let version_lt: Option<u32> = match &version.len() {
       0 => None,
       1 => None,
       _ => version[1].clone().into(),
@@ -235,7 +235,7 @@ fn get_where_query<'a>(
   }
   {
     let create_time: Vec<String> = match &search {
-      Some(item) => item.create_time.clone().unwrap(),
+      Some(item) => item.create_time.clone().unwrap_or_default(),
       None => vec![],
     };
     let create_time_gt: Option<String> = match &create_time.len() {
@@ -282,7 +282,7 @@ fn get_where_query<'a>(
   }
   {
     let update_time: Vec<String> = match &search {
-      Some(item) => item.update_time.clone().unwrap(),
+      Some(item) => item.update_time.clone().unwrap_or_default(),
       None => vec![],
     };
     let update_time_gt: Option<String> = match &update_time.len() {
@@ -781,7 +781,7 @@ pub async fn create<'a>(
 pub async fn get_version_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-) -> Result<Option<i64>> {
+) -> Result<Option<u32>> {
   let table = "base_options";
   let _method = "get_version_by_id";
   

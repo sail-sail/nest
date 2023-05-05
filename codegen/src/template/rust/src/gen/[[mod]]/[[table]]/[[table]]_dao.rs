@@ -174,10 +174,11 @@ fn get_where_query<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
-    let column_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
     if (isPassword) {
@@ -209,13 +210,17 @@ fn get_where_query<'a>(
       _data_type = "String";
     } else if (data_type === 'time') {
       _data_type = "String";
-    } else if (data_type === 'int') {
-      _data_type = 'i64';
+    } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i32';
+    } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+      _data_type = 'u32';
     } else if (data_type === 'json') {
       _data_type = 'String';
     } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (data_type === 'tinyint') {
+    } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i8';
+    } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
       _data_type = 'String';
@@ -224,14 +229,14 @@ fn get_where_query<'a>(
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   {
-    let <#=column_name#>: Vec<String> = match &search {
-      Some(item) => item.<#=column_name#>.clone().unwrap_or_default(),
+    let <#=column_name_rust#>: Vec<String> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !<#=column_name#>.is_empty() {
+    if !<#=column_name_rust#>.is_empty() {
       let arg = {
         let mut item = "".to_owned();
-        for tmp in <#=column_name#> {
+        for tmp in <#=column_name_rust#> {
           item += &format!("{},", args.push(tmp.into()));
         }
         item = item.trim_end_matches(",").to_owned();
@@ -252,14 +257,14 @@ fn get_where_query<'a>(
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   {
-    let <#=column_name#>: Vec<String> = match &search {
-      Some(item) => item.<#=column_name#>.clone().unwrap_or_default(),
+    let <#=column_name_rust#>: Vec<String> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !<#=column_name#>.is_empty() {
+    if !<#=column_name_rust#>.is_empty() {
       let arg = {
         let mut item = "".to_owned();
-        for tmp in <#=column_name#> {
+        for tmp in <#=column_name_rust#> {
           item += &format!("{},", args.push(tmp.into()));
         }
         item = item.trim_end_matches(",").to_owned();
@@ -280,14 +285,14 @@ fn get_where_query<'a>(
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
   #>
   {
-    let <#=column_name#>: Vec<<#=_data_type#>> = match &search {
-      Some(item) => item.<#=column_name#>.clone().unwrap_or_default(),
+    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !<#=column_name#>.is_empty() {
+    if !<#=column_name_rust#>.is_empty() {
       let arg = {
         let mut item = "".to_owned();
-        for tmp in <#=column_name#> {
+        for tmp in <#=column_name_rust#> {
           item += &format!("{},", args.push(tmp.into()));
         }
         item = item.trim_end_matches(",").to_owned();
@@ -299,29 +304,29 @@ fn get_where_query<'a>(
     } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
   {
-    let <#=column_name#> = match &search {
-      Some(item) => item.<#=column_name#>.clone(),
+    let <#=column_name_rust#> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>) = <#=column_name#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
   }<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   {
-    let <#=column_name#>: Vec<<#=_data_type#>> = match &search {
-      Some(item) => item.<#=column_name#>.clone().unwrap(),
+    let <#=column_name_rust#>: Vec<<#=_data_type#>> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone().unwrap_or_default(),
       None => vec![],
     };
-    let <#=column_name#>_gt: Option<<#=_data_type#>> = match &<#=column_name#>.len() {
+    let <#=column_name#>_gt: Option<<#=_data_type#>> = match &<#=column_name_rust#>.len() {
       0 => None,
       _ => <#=column_name#>[0].clone().into(),
     };
-    let <#=column_name#>_lt: Option<<#=_data_type#>> = match &<#=column_name#>.len() {
+    let <#=column_name#>_lt: Option<<#=_data_type#>> = match &<#=column_name_rust#>.len() {
       0 => None,
       1 => None,
-      _ => <#=column_name#>[1].clone().into(),
+      _ => <#=column_name_rust#>[1].clone().into(),
     };
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
       where_query += &format!(" and t.<#=column_name#> >= {}", args.push(<#=column_name#>_gt.into()));
@@ -333,23 +338,23 @@ fn get_where_query<'a>(
     } else if (data_type === "tinyint") {
   #>
   {
-    let <#=column_name#> = match &search {
-      Some(item) => item.<#=column_name#>.clone(),
+    let <#=column_name_rust#> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>) = <#=column_name#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
   }<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   {
-    let <#=column_name#> = match &search {
-      Some(item) => item.<#=column_name#>.clone(),
+    let <#=column_name_rust#> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>) = <#=column_name#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
     let <#=column_name#>_like = match &search {
       Some(item) => item.<#=column_name#>_like.clone(),
@@ -362,12 +367,12 @@ fn get_where_query<'a>(
     } else {
   #>
   {
-    let <#=column_name#> = match &search {
-      Some(item) => item.<#=column_name#>.clone(),
+    let <#=column_name_rust#> = match &search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>) = <#=column_name#> {
-      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name#>.into()));
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+      where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
   }<#
     }
@@ -1351,7 +1356,7 @@ if (hasVersion) {
 pub async fn get_version_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-) -> Result<Option<i64>> {
+) -> Result<Option<u32>> {
   let table = "<#=mod#>_<#=table#>";
   let _method = "get_version_by_id";
   

@@ -132,7 +132,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and t.r#type in ({})", arg);
+      where_query += &format!(" and t.type in ({})", arg);
     }
   }
   {
@@ -169,7 +169,7 @@ fn get_where_query<'a>(
   }
   {
     let begin_time: Vec<String> = match &search {
-      Some(item) => item.begin_time.clone().unwrap(),
+      Some(item) => item.begin_time.clone().unwrap_or_default(),
       None => vec![],
     };
     let begin_time_gt: Option<String> = match &begin_time.len() {
@@ -190,7 +190,7 @@ fn get_where_query<'a>(
   }
   {
     let end_time: Vec<String> = match &search {
-      Some(item) => item.end_time.clone().unwrap(),
+      Some(item) => item.end_time.clone().unwrap_or_default(),
       None => vec![],
     };
     let end_time_gt: Option<String> = match &end_time.len() {

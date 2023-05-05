@@ -14,7 +14,7 @@ pub struct OptionsModel {
   /// 值
   pub val: String,
   /// 排序
-  pub order_by: i64,
+  pub order_by: u32,
   /// 启用
   pub is_enabled: u8,
   pub is_enabled_lbl: String,
@@ -24,17 +24,17 @@ pub struct OptionsModel {
   pub is_locked: u8,
   pub is_locked_lbl: String,
   /// 版本号
-  pub version: i64,
+  pub version: u32,
   /// 创建人
   pub create_usr_id: String,
   pub create_usr_id_lbl: String,
   /// 创建时间
-  pub create_time: String,
+  pub create_time: Option<String>,
   /// 更新人
   pub update_usr_id: String,
   pub update_usr_id_lbl: String,
   /// 更新时间
-  pub update_time: String,
+  pub update_time: Option<String>,
 }
 
 impl FromRow<'_, MySqlRow> for OptionsModel {
@@ -49,7 +49,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     // 值
     let val: String = row.try_get("val")?;
     // 排序
-    let order_by: i64 = row.try_get("order_by")?;
+    let order_by: u32 = row.try_get("order_by")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -59,17 +59,17 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
     // 版本号
-    let version: i64 = row.try_get("version")?;
+    let version: u32 = row.try_get("version")?;
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: String = create_usr_id.to_string();
     // 创建时间
-    let create_time: String = row.try_get("create_time")?;
+    let create_time: Option<String> = row.try_get("create_time")?;
     // 更新人
     let update_usr_id: String = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: String = update_usr_id.to_string();
     // 更新时间
-    let update_time: String = row.try_get("update_time")?;
+    let update_time: Option<String> = row.try_get("update_time")?;
     
     let model = Self {
       id,
@@ -144,7 +144,7 @@ pub struct OptionsSearch {
   pub val: Option<String>,
   pub val_like: Option<String>,
   /// 排序
-  pub order_by: Option<Vec<i64>>,
+  pub order_by: Option<Vec<u32>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
@@ -153,7 +153,7 @@ pub struct OptionsSearch {
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 版本号
-  pub version: Option<Vec<i64>>,
+  pub version: Option<Vec<u32>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   pub create_usr_id_is_null: Option<bool>,
@@ -177,7 +177,7 @@ pub struct OptionsInput {
   /// 值
   pub val: Option<String>,
   /// 排序
-  pub order_by: Option<i64>,
+  pub order_by: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
@@ -187,7 +187,7 @@ pub struct OptionsInput {
   pub is_locked: Option<u8>,
   pub is_locked_lbl: Option<String>,
   /// 版本号
-  pub version: Option<i64>,
+  pub version: Option<u32>,
   /// 创建人
   pub create_usr_id: Option<String>,
   pub create_usr_id_lbl: Option<String>,

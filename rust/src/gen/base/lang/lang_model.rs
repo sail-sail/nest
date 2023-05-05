@@ -17,7 +17,7 @@ pub struct LangModel {
   pub is_enabled: u8,
   pub is_enabled_lbl: String,
   /// 排序
-  pub order_by: i64,
+  pub order_by: u32,
 }
 
 impl FromRow<'_, MySqlRow> for LangModel {
@@ -35,7 +35,7 @@ impl FromRow<'_, MySqlRow> for LangModel {
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
     // 排序
-    let order_by: i64 = row.try_get("order_by")?;
+    let order_by: u32 = row.try_get("order_by")?;
     
     let model = Self {
       id,
@@ -85,7 +85,7 @@ pub struct LangSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
-  pub order_by: Option<Vec<i64>>,
+  pub order_by: Option<Vec<u32>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -102,7 +102,7 @@ pub struct LangInput {
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
   /// 排序
-  pub order_by: Option<i64>,
+  pub order_by: Option<u32>,
 }
 
 impl From<LangInput> for LangSearch {

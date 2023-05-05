@@ -14,7 +14,7 @@ pub struct <#=tableUP#>Model {<#
     if (column.ignoreCodegen) continue;
     const column_name = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -30,7 +30,7 @@ pub struct <#=tableUP#>Model {<#
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = "Vec<String>";
-      is_nullable = true;
+      is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = "String";
     } else if (data_type === 'varchar') {
@@ -41,16 +41,23 @@ pub struct <#=tableUP#>Model {<#
       _data_type = "String";
     } else if (data_type === 'time') {
       _data_type = "String";
-    } else if (data_type === 'int') {
-      _data_type = 'i64';
+    } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i32';
+    } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+      _data_type = 'u32';
     } else if (data_type === 'json') {
       _data_type = 'String';
     } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (data_type === 'tinyint') {
+    } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i8';
+    } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
       _data_type = "rust_decimal::Decimal";
+    }
+    if (is_nullable) {
+      _data_type = "Option<"+_data_type+">";
     }
   #><#
     if (column_name === "id") {
@@ -92,9 +99,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -121,16 +129,23 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       _data_type = "String";
     } else if (data_type === 'time') {
       _data_type = "String";
-    } else if (data_type === 'int') {
-      _data_type = 'i64';
+    } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i32';
+    } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+      _data_type = 'u32';
     } else if (data_type === 'json') {
       _data_type = 'String';
     } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (data_type === 'tinyint') {
+    } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i8';
+    } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
       _data_type = "rust_decimal::Decimal";
+    }
+    if (is_nullable) {
+      _data_type = "Option<"+_data_type+">";
     }
     #><#
       if (column_name === "id") {
@@ -141,29 +156,29 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: sqlx::types::Json<Vec<String>> = row.try_get("<#=column_name#>")?;
-    let <#=column_name#> = <#=column_name#>.0;
-    let <#=column_name#>_lbl: sqlx::types::Json<Vec<String>> = row.try_get("<#=column_name#>_lbl")?;
-    let <#=column_name#>_lbl = <#=column_name#>_lbl.0;<#
+    let <#=column_name_rust#>: sqlx::types::Json<<#=_data_type#>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = <#=column_name#>.0.unwrap_or_default();
+    let <#=column_name#>_lbl: sqlx::types::Json<<#=_data_type#>> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl = <#=column_name#>_lbl.0.unwrap_or_default();<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: String = row.try_get("<#=column_name#>")?;
-    let <#=column_name#>_lbl: String = <#=column_name#>.to_string();<#
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
       } else if (column.DATA_TYPE === 'tinyint') {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: u8 = row.try_get("<#=column_name#>")?;
-    let <#=column_name#>_lbl: String = <#=column_name#>.to_string();<#
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
       } else if (selectList.length > 0 || column.dict || column.dictbiz) {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
-    let <#=column_name#>_lbl: String = <#=column_name#>.to_string();<#
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
       } else {
     #>
     // <#=column_comment#>
-    let <#=column_name#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
       }
     #><#
     }
@@ -173,9 +188,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      const column_name = rustKeyEscape(column.COLUMN_NAME);
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
+      let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
       let column_comment = column.COLUMN_COMMENT || "";
       let selectList = [ ];
       let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -191,15 +207,15 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #><#
         if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
       #>
-      <#=column_name#>,
+      <#=column_name_rust#>,
       <#=column_name#>_lbl,<#
         } else if (column.DATA_TYPE === 'tinyint') {
       #>
-      <#=column_name#>,
+      <#=column_name_rust#>,
       <#=column_name#>_lbl,<#
         } else {
       #>
-      <#=column_name#>,<#
+      <#=column_name_rust#>,<#
         }
       #><#
       }
@@ -265,10 +281,11 @@ pub struct <#=tableUP#>Search {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
-    let column_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -297,13 +314,17 @@ pub struct <#=tableUP#>Search {
       _data_type = "String";
     } else if (data_type === 'time') {
       _data_type = "String";
-    } else if (data_type === 'int') {
-      _data_type = 'i64';
+    } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i32';
+    } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+      _data_type = 'u32';
     } else if (data_type === 'json') {
       _data_type = 'String';
     } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (data_type === 'tinyint') {
+    } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i8';
+    } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
       _data_type = 'u8';
     } else if (data_type === 'decimal') {
       _data_type = 'String';
@@ -312,34 +333,34 @@ pub struct <#=tableUP#>Search {
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,<#
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,<#
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<<#=_data_type#>>,<#
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<<#=_data_type#>>,
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   pub <#=column_name#>_like: Option<<#=_data_type#>>,<#
     } else {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<<#=_data_type#>>,<#
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     }
   #><#
   }
@@ -354,10 +375,11 @@ pub struct <#=tableUP#>Input {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    const column_name = rustKeyEscape(column.COLUMN_NAME);
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
     let data_type = column.DATA_TYPE;
-    let column_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
     let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -380,14 +402,18 @@ pub struct <#=tableUP#>Input {
       _data_type = "String";
     } else if (data_type === 'datetime') {
       _data_type = "String";
-    } else if (data_type === 'int') {
-      _data_type = "i64";
+    } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i32';
+    } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+      _data_type = 'u32';
     } else if (data_type === 'json') {
       _data_type = 'String';
     } else if (data_type === 'text') {
       _data_type = 'String';
-    } else if (data_type === 'tinyint') {
-      _data_type = "u8";
+    } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+      _data_type = 'i8';
+    } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
+      _data_type = 'u8';
     } else if (data_type === 'decimal') {
       _data_type = "rust_decimal::Decimal";
     }
@@ -398,17 +424,17 @@ pub struct <#=tableUP#>Input {
     if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<<#=_data_type#>>,
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   pub <#=column_name#>_lbl: Option<String>,<#
   } else {
   #>
   /// <#=column_comment#>
-  pub <#=column_name#>: Option<<#=_data_type#>>,<#
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
   }
   #><#
   }
@@ -433,7 +459,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const column_name = rustKeyEscape(column.COLUMN_NAME);
         if (column_name === 'id') continue;
         let data_type = column.DATA_TYPE;
-        let column_type = column.DATA_TYPE;
+        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
         let column_comment = column.COLUMN_COMMENT || "";
         let selectList = [ ];
         let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();

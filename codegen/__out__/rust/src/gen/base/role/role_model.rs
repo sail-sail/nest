@@ -32,10 +32,10 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
     // 菜单
-    let menu_ids: sqlx::types::Json<Vec<String>> = row.try_get("menu_ids")?;
-    let menu_ids = menu_ids.0;
-    let menu_ids_lbl: sqlx::types::Json<Vec<String>> = row.try_get("menu_ids_lbl")?;
-    let menu_ids_lbl = menu_ids_lbl.0;
+    let menu_ids: sqlx::types::Json<Option<Vec<String>>> = row.try_get("menu_ids")?;
+    let menu_ids = menu_ids.0.unwrap_or_default();
+    let menu_ids_lbl: sqlx::types::Json<Option<Vec<String>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl = menu_ids_lbl.0.unwrap_or_default();
     
     let model = Self {
       id,
