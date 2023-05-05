@@ -110,23 +110,23 @@ input BackgroundTaskSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountBackground_task(search: BackgroundTaskSearch): Int!
+  findCountBackgroundTask(search: BackgroundTaskSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllBackground_task(search: BackgroundTaskSearch, page: PageInput, sort: [SortInput!]): [BackgroundTaskModel!]!
+  findAllBackgroundTask(search: BackgroundTaskSearch, page: PageInput, sort: [SortInput!]): [BackgroundTaskModel!]!
   "获取字段对应的名称"
-  getFieldCommentsBackground_task: BackgroundTaskFieldComment!
+  getFieldCommentsBackgroundTask: BackgroundTaskFieldComment!
   "根据条件查找第一条数据"
-  findOneBackground_task(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
+  findOneBackgroundTask(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
   "根据id查找一条数据"
-  findByIdBackground_task(id: ID!): BackgroundTaskModel
+  findByIdBackgroundTask(id: ID!): BackgroundTaskModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsBackground_task(ids: [ID!]!): Int!
+  deleteByIdsBackgroundTask(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsBackground_task(ids: [ID!]!): Int!
+  revertByIdsBackgroundTask(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsBackground_task(ids: [ID!]!): Int!
+  forceDeleteByIdsBackgroundTask(ids: [ID!]!): Int!
 }
 
 `);

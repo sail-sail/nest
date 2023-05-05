@@ -26,11 +26,11 @@ export async function findAll(
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDict_detail: Query["findAllDict_detail"];
+    findAllDictDetail: Query["findAllDictDetail"];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictDetailSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllDict_detail(search: $search, page: $page, sort: $sort) {
+        findAllDictDetail(search: $search, page: $page, sort: $sort) {
           id
           dict_id
           dict_id_lbl
@@ -51,7 +51,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllDict_detail;
+  const result = data.findAllDictDetail;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -69,18 +69,18 @@ export async function findCount(
   opt?: GqlOpt,
 ) {
   const data: {
-    findCountDict_detail: Query["findCountDict_detail"];
+    findCountDictDetail: Query["findCountDictDetail"];
   } = await query({
     query: /* GraphQL */ `
       query($search: DictDetailSearch) {
-        findCountDict_detail(search: $search)
+        findCountDictDetail(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const result = data.findCountDict_detail;
+  const result = data.findCountDictDetail;
   return result;
 }
 
@@ -95,18 +95,18 @@ export async function create(
   opt?: GqlOpt,
 ) {
   const data: {
-    createDict_detail: Mutation["createDict_detail"];
+    createDictDetail: Mutation["createDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($model: DictDetailInput!) {
-        createDict_detail(model: $model)
+        createDictDetail(model: $model)
       }
     `,
     variables: {
       model,
     },
   }, opt);
-  const result = data.createDict_detail;
+  const result = data.createDictDetail;
   return result;
 }
 
@@ -123,11 +123,11 @@ export async function updateById(
   opt?: GqlOpt,
 ) {
   const data: {
-    updateByIdDict_detail: Mutation["updateByIdDict_detail"];
+    updateByIdDictDetail: Mutation["updateByIdDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($id: ID!, $model: DictDetailInput!) {
-        updateByIdDict_detail(id: $id, model: $model)
+        updateByIdDictDetail(id: $id, model: $model)
       }
     `,
     variables: {
@@ -135,7 +135,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdDict_detail;
+  const result = data.updateByIdDictDetail;
   return result;
 }
 
@@ -150,11 +150,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdDict_detail: Query["findByIdDict_detail"];
+    findByIdDictDetail: Query["findByIdDictDetail"];
   } = await query({
     query: /* GraphQL */ `
       query($id: ID!) {
-        findByIdDict_detail(id: $id) {
+        findByIdDictDetail(id: $id) {
           id
           dict_id
           dict_id_lbl
@@ -173,7 +173,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdDict_detail;
+  const result = data.findByIdDictDetail;
   return result;
 }
 
@@ -188,18 +188,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIdsDict_detail: Mutation["deleteByIdsDict_detail"];
+    deleteByIdsDictDetail: Mutation["deleteByIdsDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        deleteByIdsDict_detail(ids: $ids)
+        deleteByIdsDictDetail(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsDict_detail;
+  const result = data.deleteByIdsDictDetail;
   return result;
 }
 
@@ -216,11 +216,11 @@ export async function lockByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    lockByIdsDict_detail: Mutation["lockByIdsDict_detail"];
+    lockByIdsDictDetail: Mutation["lockByIdsDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!, $is_locked: Int!) {
-        lockByIdsDict_detail(ids: $ids, is_locked: $is_locked)
+        lockByIdsDictDetail(ids: $ids, is_locked: $is_locked)
       }
     `,
     variables: {
@@ -228,7 +228,7 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result = data.lockByIdsDict_detail;
+  const result = data.lockByIdsDictDetail;
   return result;
 }
 
@@ -243,18 +243,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIdsDict_detail: Mutation["revertByIdsDict_detail"];
+    revertByIdsDictDetail: Mutation["revertByIdsDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        revertByIdsDict_detail(ids: $ids)
+        revertByIdsDictDetail(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.revertByIdsDict_detail;
+  const result = data.revertByIdsDictDetail;
   return result;
 }
 
@@ -269,18 +269,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIdsDict_detail: Mutation["forceDeleteByIdsDict_detail"];
+    forceDeleteByIdsDictDetail: Mutation["forceDeleteByIdsDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [ID!]!) {
-        forceDeleteByIdsDict_detail(ids: $ids)
+        forceDeleteByIdsDictDetail(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsDict_detail;
+  const result = data.forceDeleteByIdsDictDetail;
   return result;
 }
 
@@ -351,7 +351,7 @@ export function useExportExcel() {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
         query($search: DictDetailSearch, $sort: [SortInput!]) {
-          findAllDict_detail(search: $search, sort: $sort) {
+          findAllDictDetail(search: $search, sort: $sort) {
             id
             dict_id
             dict_id_lbl
@@ -364,7 +364,7 @@ export function useExportExcel() {
             is_locked
             is_locked_lbl
           }
-          getFieldCommentsDict_detail {
+          getFieldCommentsDictDetail {
             dict_id
             dict_id_lbl
             lbl
@@ -411,18 +411,18 @@ export async function importModels(
   opt?: GqlOpt,
 ) {
   const data: {
-    importModelsDict_detail: Mutation["importModelsDict_detail"];
+    importModelsDictDetail: Mutation["importModelsDictDetail"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($models: [DictDetailInput!]!) {
-        importModelsDict_detail(models: $models)
+        importModelsDictDetail(models: $models)
       }
     `,
     variables: {
       models,
     },
   }, opt);
-  const res = data.importModelsDict_detail;
+  const res = data.importModelsDictDetail;
   return res;
 }
 
@@ -435,14 +435,14 @@ export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
   const data: {
-    findLastOrderByDict_detail: Query["findLastOrderByDict_detail"];
+    findLastOrderByDictDetail: Query["findLastOrderByDictDetail"];
   } = await query({
     query: /* GraphQL */ `
       query {
-        findLastOrderByDict_detail
+        findLastOrderByDictDetail
       }
     `,
   }, opt);
-  const result = data.findLastOrderByDict_detail;
+  const result = data.findLastOrderByDictDetail;
   return result;
 }
