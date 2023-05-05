@@ -89,7 +89,8 @@ fn get_where_query<'a>(
     let is_deleted = search.as_ref()
       .and_then(|item| item.is_deleted)
       .unwrap_or(0);
-    where_query += &format!(" t.is_deleted = {}", args.push(is_deleted.into()));
+    where_query += " t.is_deleted = ?";
+    args.push(is_deleted.into());
   }
   {
     let id = match &search {
@@ -104,7 +105,8 @@ fn get_where_query<'a>(
       },
     };
     if let Some(id) = id {
-      where_query += &format!(" and t.id = {}", args.push(id.into()));
+      where_query += " and t.id = ?";
+      args.push(id.into());
     }
   }
   {
@@ -116,7 +118,8 @@ fn get_where_query<'a>(
       let arg = {
         let mut item = "".to_owned();
         for tmp in ids {
-          item += &format!("{},", args.push(tmp.into()));
+          item += "?,";
+          args.push(tmp.into());
         }
         item = item.trim_end_matches(",").to_owned();
         item
@@ -142,7 +145,8 @@ fn get_where_query<'a>(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query += &format!(" and t.tenant_id = {}", args.push(tenant_id.into()));
+      where_query += " and t.tenant_id = ?";
+      args.push(tenant_id.into());
     }
   }<#
     }
@@ -165,7 +169,8 @@ fn get_where_query<'a>(
       dept_id
     };
     if let Some(dept_id) = dept_id {
-      where_query += &format!(" and base_dept.id = {}", args.push(dept_id.into()));
+      where_query += " and base_dept.id = ?";
+      args.push(dept_id.into());
     }
   }<#
     }

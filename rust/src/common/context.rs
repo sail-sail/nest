@@ -1708,17 +1708,27 @@ pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
 ) -> String {
   if sort.is_none() {
-    return String::new();
+    return "".to_owned();
   }
   let sort = sort.unwrap().into_iter()
-    .filter(|item| item.prop.is_empty())
+    .filter(|item| 
+      !item.prop.is_empty()
+    )
     .collect::<Vec<SortInput>>();
   let mut order_by_query = String::with_capacity(128);
   for item in sort {
     let prop = item.prop;
-    let order = item.order;
+    let mut order = item.order;
     if !order_by_query.is_empty() {
       order_by_query += ",";
+    }
+    if order == "ascending" {
+      order = "asc".to_owned();
+    } else if order == "descending" {
+      order = "desc".to_owned();
+    }
+    if order != "asc" && order != "desc" {
+      continue;
     }
     order_by_query += &format!(" {} {}", escape_id(prop), escape(order));
   }
