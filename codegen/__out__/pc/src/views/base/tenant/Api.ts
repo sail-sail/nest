@@ -29,7 +29,7 @@ export async function findAll(
     findAllTenant: Query["findAllTenant"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: TenantSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllTenant(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -265,7 +265,7 @@ export async function findAllMenu(
     findAllMenu: Query["findAllMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -321,7 +321,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: TenantSearch, $sort: [SortInput]) {
+        query($search: TenantSearch, $sort: [SortInput!]) {
           findAllTenant(search: $search, sort: $sort) {
             id
             lbl

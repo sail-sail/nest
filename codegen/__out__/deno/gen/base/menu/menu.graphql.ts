@@ -116,11 +116,11 @@ type Query {
   "根据条件查找据数总数"
   findCountMenu(search: MenuSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllMenu(search: MenuSearch, page: PageInput, sort: [SortInput]): [MenuModel!]!
+  findAllMenu(search: MenuSearch, page: PageInput, sort: [SortInput!]): [MenuModel!]!
   "获取字段对应的名称"
   getFieldCommentsMenu: MenuFieldComment!
   "根据条件查找第一条数据"
-  findOneMenu(search: MenuSearch, sort: [SortInput]): MenuModel
+  findOneMenu(search: MenuSearch, sort: [SortInput!]): MenuModel
   "根据id查找一条数据"
   findByIdMenu(id: ID!): MenuModel
   "查找order_by字段的最大值"

@@ -135,11 +135,11 @@ type Query {
   "根据条件查找据数总数"
   findCountUsr(search: UsrSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput]): [UsrModel!]!
+  findAllUsr(search: UsrSearch, page: PageInput, sort: [SortInput!]): [UsrModel!]!
   "获取字段对应的名称"
   getFieldCommentsUsr: UsrFieldComment!
   "根据条件查找第一条数据"
-  findOneUsr(search: UsrSearch, sort: [SortInput]): UsrModel
+  findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据id查找一条数据"
   findByIdUsr(id: ID!): UsrModel
 }

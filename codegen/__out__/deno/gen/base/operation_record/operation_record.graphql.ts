@@ -130,11 +130,11 @@ type Query {
   "根据条件查找据数总数"
   findCountOperation_record(search: OperationRecordSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllOperation_record(search: OperationRecordSearch, page: PageInput, sort: [SortInput]): [OperationRecordModel!]!
+  findAllOperation_record(search: OperationRecordSearch, page: PageInput, sort: [SortInput!]): [OperationRecordModel!]!
   "获取字段对应的名称"
   getFieldCommentsOperation_record: OperationRecordFieldComment!
   "根据条件查找第一条数据"
-  findOneOperation_record(search: OperationRecordSearch, sort: [SortInput]): OperationRecordModel
+  findOneOperation_record(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
   "根据id查找一条数据"
   findByIdOperation_record(id: ID!): OperationRecordModel
 }

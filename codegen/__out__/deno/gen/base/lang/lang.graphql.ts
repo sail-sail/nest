@@ -77,11 +77,11 @@ type Query {
   "根据条件查找据数总数"
   findCountLang(search: LangSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllLang(search: LangSearch, page: PageInput, sort: [SortInput]): [LangModel!]!
+  findAllLang(search: LangSearch, page: PageInput, sort: [SortInput!]): [LangModel!]!
   "获取字段对应的名称"
   getFieldCommentsLang: LangFieldComment!
   "根据条件查找第一条数据"
-  findOneLang(search: LangSearch, sort: [SortInput]): LangModel
+  findOneLang(search: LangSearch, sort: [SortInput!]): LangModel
   "根据id查找一条数据"
   findByIdLang(id: ID!): LangModel
   "查找order_by字段的最大值"

@@ -76,11 +76,11 @@ type Query {
   "根据条件查找据数总数"
   findCountRole(search: RoleSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput]): [RoleModel!]!
+  findAllRole(search: RoleSearch, page: PageInput, sort: [SortInput!]): [RoleModel!]!
   "获取字段对应的名称"
   getFieldCommentsRole: RoleFieldComment!
   "根据条件查找第一条数据"
-  findOneRole(search: RoleSearch, sort: [SortInput]): RoleModel
+  findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
   "根据id查找一条数据"
   findByIdRole(id: ID!): RoleModel
 }

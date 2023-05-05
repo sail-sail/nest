@@ -153,11 +153,11 @@ type Query {
   "根据条件查找据数总数"
   findCountDictbiz(search: DictbizSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllDictbiz(search: DictbizSearch, page: PageInput, sort: [SortInput]): [DictbizModel!]!
+  findAllDictbiz(search: DictbizSearch, page: PageInput, sort: [SortInput!]): [DictbizModel!]!
   "获取字段对应的名称"
   getFieldCommentsDictbiz: DictbizFieldComment!
   "根据条件查找第一条数据"
-  findOneDictbiz(search: DictbizSearch, sort: [SortInput]): DictbizModel
+  findOneDictbiz(search: DictbizSearch, sort: [SortInput!]): DictbizModel
   "根据id查找一条数据"
   findByIdDictbiz(id: ID!): DictbizModel
   "查找order_by字段的最大值"

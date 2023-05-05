@@ -30,12 +30,11 @@ export async function findAll(
     findAllUsr: Query["findAllUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
           lbl
           username
-          password
           default_dept_id
           default_dept_id_lbl
           is_enabled
@@ -303,7 +302,7 @@ export async function findAllDept(
     findAllDept: Query["findAllDept"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: DeptSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDept(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -348,7 +347,7 @@ export async function findAllRole(
     findAllRole: Query["findAllRole"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -404,7 +403,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: UsrSearch, $sort: [SortInput]) {
+        query($search: UsrSearch, $sort: [SortInput!]) {
           findAllUsr(search: $search, sort: $sort) {
             id
             lbl

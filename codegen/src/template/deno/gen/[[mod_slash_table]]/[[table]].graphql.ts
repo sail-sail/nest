@@ -367,7 +367,7 @@ type Query {
   "根据条件查找据数总数"
   findCount<#=tableUp#>(search: <#=Table_Up#>Search): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=tableUp#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput]): [<#=Table_Up#>Model!]!
+  findAll<#=tableUp#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput!]): [<#=Table_Up#>Model!]!
   "获取字段对应的名称"
   getFieldComments<#=tableUp#>: <#=Table_Up#>FieldComment!<#
   if (hasSummary) {
@@ -377,7 +377,7 @@ type Query {
   }
   #>
   "根据条件查找第一条数据"
-  findOne<#=tableUp#>(search: <#=Table_Up#>Search, sort: [SortInput]): <#=Table_Up#>Model
+  findOne<#=tableUp#>(search: <#=Table_Up#>Search, sort: [SortInput!]): <#=Table_Up#>Model
   "根据id查找一条数据"
   findById<#=tableUp#>(id: ID!): <#=Table_Up#>Model<#
   if (hasOrderBy) {

@@ -87,11 +87,11 @@ type Query {
   "根据条件查找据数总数"
   findCountI18n(search: I18nSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllI18n(search: I18nSearch, page: PageInput, sort: [SortInput]): [I18nModel!]!
+  findAllI18n(search: I18nSearch, page: PageInput, sort: [SortInput!]): [I18nModel!]!
   "获取字段对应的名称"
   getFieldCommentsI18n: I18nFieldComment!
   "根据条件查找第一条数据"
-  findOneI18n(search: I18nSearch, sort: [SortInput]): I18nModel
+  findOneI18n(search: I18nSearch, sort: [SortInput!]): I18nModel
   "根据id查找一条数据"
   findByIdI18n(id: ID!): I18nModel
 }

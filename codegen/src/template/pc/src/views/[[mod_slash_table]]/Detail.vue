@@ -88,7 +88,7 @@ for (let i = 0; i < columns.length; i++) {
           const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
           const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
             return item.substring(0, 1).toUpperCase() + item.substring(1);
-          }).join("_");
+          }).join("");
           let vIf = [ ];
           if (column.noAdd) {
             vIf.push("dialogAction !== 'add'");
@@ -407,7 +407,7 @@ import {
   foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
-  }).join("_");
+  }).join("");
 #>
   type <#=Foreign_Table_Up#>Model,<#
 }
