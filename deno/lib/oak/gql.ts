@@ -30,8 +30,6 @@ scalar JSON
 input PageInput {
   pgOffset: Int
   pgSize: Int
-  orderBy: String
-  orderDec: Boolean
 }
 "排序输入"
 input SortInput {

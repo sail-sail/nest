@@ -28,7 +28,7 @@ export async function findAll(
     findAllLang: Query["findAllLang"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: LangSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllLang(search: $search, page: $page, sort: $sort) {
           id
           code
@@ -267,7 +267,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: LangSearch, $sort: [SortInput]) {
+        query($search: LangSearch, $sort: [SortInput!]) {
           findAllLang(search: $search, sort: $sort) {
             id
             code

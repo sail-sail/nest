@@ -109,11 +109,11 @@ type Query {
   "根据条件查找据数总数"
   findCountTenant(search: TenantSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllTenant(search: TenantSearch, page: PageInput, sort: [SortInput]): [TenantModel!]!
+  findAllTenant(search: TenantSearch, page: PageInput, sort: [SortInput!]): [TenantModel!]!
   "获取字段对应的名称"
   getFieldCommentsTenant: TenantFieldComment!
   "根据条件查找第一条数据"
-  findOneTenant(search: TenantSearch, sort: [SortInput]): TenantModel
+  findOneTenant(search: TenantSearch, sort: [SortInput!]): TenantModel
   "根据id查找一条数据"
   findByIdTenant(id: ID!): TenantModel
   "查找order_by字段的最大值"

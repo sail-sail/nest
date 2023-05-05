@@ -29,7 +29,7 @@ export async function findAll(
     findAllDictbiz: Query["findAllDictbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: DictbizSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDictbiz(search: $search, page: $page, sort: $sort) {
           id
           code
@@ -306,7 +306,7 @@ export async function findAllUsr(
     findAllUsr: Query["findAllUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -362,7 +362,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: DictbizSearch, $sort: [SortInput]) {
+        query($search: DictbizSearch, $sort: [SortInput!]) {
           findAllDictbiz(search: $search, sort: $sort) {
             id
             code

@@ -29,7 +29,7 @@ export async function findAll(
     findAllRole: Query["findAllRole"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: RoleSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -257,7 +257,7 @@ export async function findAllMenu(
     findAllMenu: Query["findAllMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllMenu(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -313,7 +313,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: RoleSearch, $sort: [SortInput]) {
+        query($search: RoleSearch, $sort: [SortInput!]) {
           findAllRole(search: $search, sort: $sort) {
             id
             lbl

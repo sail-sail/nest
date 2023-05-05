@@ -2019,8 +2019,6 @@ export type OptionsSearch = {
 
 /** 分页输入 */
 export type PageInput = {
-  orderBy?: InputMaybe<Scalars['String']>;
-  orderDec?: InputMaybe<Scalars['Boolean']>;
   pgOffset?: InputMaybe<Scalars['Int']>;
   pgSize?: InputMaybe<Scalars['Int']>;
 };
@@ -2208,98 +2206,98 @@ export type Query = {
 export type QueryFindAllBackground_TaskArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<BackgroundTaskSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllDeptArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DeptSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllDictArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DictSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllDict_DetailArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DictDetailSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllDictbizArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DictbizSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllDictbiz_DetailArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DictbizDetailSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllI18nArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<I18nSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllLangArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<LangSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllMenuArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<MenuSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllOperation_RecordArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<OperationRecordSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllOptionsArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<OptionsSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllRoleArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<RoleSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllTenantArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<TenantSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindAllUsrArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<UsrSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
@@ -2445,85 +2443,85 @@ export type QueryFindCountUsrArgs = {
 
 export type QueryFindOneBackground_TaskArgs = {
   search?: InputMaybe<BackgroundTaskSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneDeptArgs = {
   search?: InputMaybe<DeptSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneDictArgs = {
   search?: InputMaybe<DictSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneDict_DetailArgs = {
   search?: InputMaybe<DictDetailSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneDictbizArgs = {
   search?: InputMaybe<DictbizSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneDictbiz_DetailArgs = {
   search?: InputMaybe<DictbizDetailSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneI18nArgs = {
   search?: InputMaybe<I18nSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneLangArgs = {
   search?: InputMaybe<LangSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneMenuArgs = {
   search?: InputMaybe<MenuSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneOperation_RecordArgs = {
   search?: InputMaybe<OperationRecordSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneOptionsArgs = {
   search?: InputMaybe<OptionsSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneRoleArgs = {
   search?: InputMaybe<RoleSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneTenantArgs = {
   search?: InputMaybe<TenantSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 
 export type QueryFindOneUsrArgs = {
   search?: InputMaybe<UsrSearch>;
-  sort?: InputMaybe<Array<InputMaybe<SortInput>>>;
+  sort?: InputMaybe<Array<SortInput>>;
 };
 
 

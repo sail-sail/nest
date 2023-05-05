@@ -29,7 +29,7 @@ export async function findAll(
     findAllOptions: Query["findAllOptions"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: OptionsSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOptions(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -306,7 +306,7 @@ export async function findAllUsr(
     findAllUsr: Query["findAllUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput]) {
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
           lbl
@@ -362,7 +362,7 @@ export function useExportExcel() {
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: OptionsSearch, $sort: [SortInput]) {
+        query($search: OptionsSearch, $sort: [SortInput!]) {
           findAllOptions(search: $search, sort: $sort) {
             id
             lbl
