@@ -128,23 +128,23 @@ input OperationRecordSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountOperation_record(search: OperationRecordSearch): Int!
+  findCountOperationRecord(search: OperationRecordSearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllOperation_record(search: OperationRecordSearch, page: PageInput, sort: [SortInput!]): [OperationRecordModel!]!
+  findAllOperationRecord(search: OperationRecordSearch, page: PageInput, sort: [SortInput!]): [OperationRecordModel!]!
   "获取字段对应的名称"
-  getFieldCommentsOperation_record: OperationRecordFieldComment!
+  getFieldCommentsOperationRecord: OperationRecordFieldComment!
   "根据条件查找第一条数据"
-  findOneOperation_record(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
+  findOneOperationRecord(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
   "根据id查找一条数据"
-  findByIdOperation_record(id: ID!): OperationRecordModel
+  findByIdOperationRecord(id: ID!): OperationRecordModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsOperation_record(ids: [ID!]!): Int!
+  deleteByIdsOperationRecord(ids: [ID!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsOperation_record(ids: [ID!]!): Int!
+  revertByIdsOperationRecord(ids: [ID!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsOperation_record(ids: [ID!]!): Int!
+  forceDeleteByIdsOperationRecord(ids: [ID!]!): Int!
 }
 
 `);

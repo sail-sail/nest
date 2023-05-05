@@ -1102,11 +1102,11 @@ export type Mutation = {
   /** 创建一条数据 */
   createDict: Scalars['ID'];
   /** 创建一条数据 */
-  createDict_detail: Scalars['ID'];
+  createDictDetail: Scalars['ID'];
   /** 创建一条数据 */
   createDictbiz: Scalars['ID'];
   /** 创建一条数据 */
-  createDictbiz_detail: Scalars['ID'];
+  createDictbizDetail: Scalars['ID'];
   /** 创建一条数据 */
   createI18n: Scalars['ID'];
   /** 创建一条数据 */
@@ -1122,17 +1122,17 @@ export type Mutation = {
   /** 创建一条数据 */
   createUsr: Scalars['ID'];
   /** 根据 ids 删除数据 */
-  deleteByIdsBackground_task: Scalars['Int'];
+  deleteByIdsBackgroundTask: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsDept: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsDict: Scalars['Int'];
   /** 根据 ids 删除数据 */
-  deleteByIdsDict_detail: Scalars['Int'];
+  deleteByIdsDictDetail: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsDictbiz: Scalars['Int'];
   /** 根据 ids 删除数据 */
-  deleteByIdsDictbiz_detail: Scalars['Int'];
+  deleteByIdsDictbizDetail: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsI18n: Scalars['Int'];
   /** 根据 ids 删除数据 */
@@ -1140,7 +1140,7 @@ export type Mutation = {
   /** 根据 ids 删除数据 */
   deleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 删除数据 */
-  deleteByIdsOperation_record: Scalars['Int'];
+  deleteByIdsOperationRecord: Scalars['Int'];
   /** 根据 ids 删除数据 */
   deleteByIdsOptions: Scalars['Int'];
   /** 根据 ids 删除数据 */
@@ -1152,17 +1152,17 @@ export type Mutation = {
   /** 切换登录状态下的部门, 更换token */
   deptLoginSelect: Scalars['String'];
   /** 根据 ids 彻底删除数据 */
-  forceDeleteByIdsBackground_task: Scalars['Int'];
+  forceDeleteByIdsBackgroundTask: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsDept: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsDict: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
-  forceDeleteByIdsDict_detail: Scalars['Int'];
+  forceDeleteByIdsDictDetail: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsDictbiz: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
-  forceDeleteByIdsDictbiz_detail: Scalars['Int'];
+  forceDeleteByIdsDictbizDetail: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsI18n: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
@@ -1170,7 +1170,7 @@ export type Mutation = {
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsMenu: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
-  forceDeleteByIdsOperation_record: Scalars['Int'];
+  forceDeleteByIdsOperationRecord: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsOptions: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
@@ -1184,11 +1184,11 @@ export type Mutation = {
   /** 批量导入 */
   importModelsDict?: Maybe<Scalars['String']>;
   /** 批量导入 */
-  importModelsDict_detail?: Maybe<Scalars['String']>;
+  importModelsDictDetail?: Maybe<Scalars['String']>;
   /** 批量导入 */
   importModelsDictbiz?: Maybe<Scalars['String']>;
   /** 批量导入 */
-  importModelsDictbiz_detail?: Maybe<Scalars['String']>;
+  importModelsDictbizDetail?: Maybe<Scalars['String']>;
   /** 批量导入 */
   importModelsI18n?: Maybe<Scalars['String']>;
   /** 批量导入 */
@@ -1208,11 +1208,11 @@ export type Mutation = {
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsDict: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
-  lockByIdsDict_detail: Scalars['Int'];
+  lockByIdsDictDetail: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsDictbiz: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
-  lockByIdsDictbiz_detail: Scalars['Int'];
+  lockByIdsDictbizDetail: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsOptions: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
@@ -1220,17 +1220,17 @@ export type Mutation = {
   /** 登录 */
   login: LoginModel;
   /** 根据 ids 还原数据 */
-  revertByIdsBackground_task: Scalars['Int'];
+  revertByIdsBackgroundTask: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsDept: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsDict: Scalars['Int'];
   /** 根据 ids 还原数据 */
-  revertByIdsDict_detail: Scalars['Int'];
+  revertByIdsDictDetail: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsDictbiz: Scalars['Int'];
   /** 根据 ids 还原数据 */
-  revertByIdsDictbiz_detail: Scalars['Int'];
+  revertByIdsDictbizDetail: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsI18n: Scalars['Int'];
   /** 根据 ids 还原数据 */
@@ -1238,7 +1238,7 @@ export type Mutation = {
   /** 根据 ids 还原数据 */
   revertByIdsMenu: Scalars['Int'];
   /** 根据 ids 还原数据 */
-  revertByIdsOperation_record: Scalars['Int'];
+  revertByIdsOperationRecord: Scalars['Int'];
   /** 根据 ids 还原数据 */
   revertByIdsOptions: Scalars['Int'];
   /** 根据 ids 还原数据 */
@@ -1253,11 +1253,11 @@ export type Mutation = {
   /** 根据id修改一条数据 */
   updateByIdDict: Scalars['ID'];
   /** 根据id修改一条数据 */
-  updateByIdDict_detail: Scalars['ID'];
+  updateByIdDictDetail: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdDictbiz: Scalars['ID'];
   /** 根据id修改一条数据 */
-  updateByIdDictbiz_detail: Scalars['ID'];
+  updateByIdDictbizDetail: Scalars['ID'];
   /** 根据id修改一条数据 */
   updateByIdI18n: Scalars['ID'];
   /** 根据id修改一条数据 */
@@ -1285,7 +1285,7 @@ export type MutationCreateDictArgs = {
 };
 
 
-export type MutationCreateDict_DetailArgs = {
+export type MutationCreateDictDetailArgs = {
   model: DictDetailInput;
 };
 
@@ -1295,7 +1295,7 @@ export type MutationCreateDictbizArgs = {
 };
 
 
-export type MutationCreateDictbiz_DetailArgs = {
+export type MutationCreateDictbizDetailArgs = {
   model: DictbizDetailInput;
 };
 
@@ -1335,7 +1335,7 @@ export type MutationCreateUsrArgs = {
 };
 
 
-export type MutationDeleteByIdsBackground_TaskArgs = {
+export type MutationDeleteByIdsBackgroundTaskArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1350,7 +1350,7 @@ export type MutationDeleteByIdsDictArgs = {
 };
 
 
-export type MutationDeleteByIdsDict_DetailArgs = {
+export type MutationDeleteByIdsDictDetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1360,7 +1360,7 @@ export type MutationDeleteByIdsDictbizArgs = {
 };
 
 
-export type MutationDeleteByIdsDictbiz_DetailArgs = {
+export type MutationDeleteByIdsDictbizDetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1380,7 +1380,7 @@ export type MutationDeleteByIdsMenuArgs = {
 };
 
 
-export type MutationDeleteByIdsOperation_RecordArgs = {
+export type MutationDeleteByIdsOperationRecordArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1410,7 +1410,7 @@ export type MutationDeptLoginSelectArgs = {
 };
 
 
-export type MutationForceDeleteByIdsBackground_TaskArgs = {
+export type MutationForceDeleteByIdsBackgroundTaskArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1425,7 +1425,7 @@ export type MutationForceDeleteByIdsDictArgs = {
 };
 
 
-export type MutationForceDeleteByIdsDict_DetailArgs = {
+export type MutationForceDeleteByIdsDictDetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1435,7 +1435,7 @@ export type MutationForceDeleteByIdsDictbizArgs = {
 };
 
 
-export type MutationForceDeleteByIdsDictbiz_DetailArgs = {
+export type MutationForceDeleteByIdsDictbizDetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1455,7 +1455,7 @@ export type MutationForceDeleteByIdsMenuArgs = {
 };
 
 
-export type MutationForceDeleteByIdsOperation_RecordArgs = {
+export type MutationForceDeleteByIdsOperationRecordArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1490,7 +1490,7 @@ export type MutationImportModelsDictArgs = {
 };
 
 
-export type MutationImportModelsDict_DetailArgs = {
+export type MutationImportModelsDictDetailArgs = {
   models: Array<DictDetailInput>;
 };
 
@@ -1500,7 +1500,7 @@ export type MutationImportModelsDictbizArgs = {
 };
 
 
-export type MutationImportModelsDictbiz_DetailArgs = {
+export type MutationImportModelsDictbizDetailArgs = {
   models: Array<DictbizDetailInput>;
 };
 
@@ -1552,7 +1552,7 @@ export type MutationLockByIdsDictArgs = {
 };
 
 
-export type MutationLockByIdsDict_DetailArgs = {
+export type MutationLockByIdsDictDetailArgs = {
   ids: Array<Scalars['ID']>;
   is_locked: Scalars['Int'];
 };
@@ -1564,7 +1564,7 @@ export type MutationLockByIdsDictbizArgs = {
 };
 
 
-export type MutationLockByIdsDictbiz_DetailArgs = {
+export type MutationLockByIdsDictbizDetailArgs = {
   ids: Array<Scalars['ID']>;
   is_locked: Scalars['Int'];
 };
@@ -1591,7 +1591,7 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationRevertByIdsBackground_TaskArgs = {
+export type MutationRevertByIdsBackgroundTaskArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1606,7 +1606,7 @@ export type MutationRevertByIdsDictArgs = {
 };
 
 
-export type MutationRevertByIdsDict_DetailArgs = {
+export type MutationRevertByIdsDictDetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1616,7 +1616,7 @@ export type MutationRevertByIdsDictbizArgs = {
 };
 
 
-export type MutationRevertByIdsDictbiz_DetailArgs = {
+export type MutationRevertByIdsDictbizDetailArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1636,7 +1636,7 @@ export type MutationRevertByIdsMenuArgs = {
 };
 
 
-export type MutationRevertByIdsOperation_RecordArgs = {
+export type MutationRevertByIdsOperationRecordArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -1678,7 +1678,7 @@ export type MutationUpdateByIdDictArgs = {
 };
 
 
-export type MutationUpdateByIdDict_DetailArgs = {
+export type MutationUpdateByIdDictDetailArgs = {
   id: Scalars['ID'];
   model: DictDetailInput;
 };
@@ -1690,7 +1690,7 @@ export type MutationUpdateByIdDictbizArgs = {
 };
 
 
-export type MutationUpdateByIdDictbiz_DetailArgs = {
+export type MutationUpdateByIdDictbizDetailArgs = {
   id: Scalars['ID'];
   model: DictbizDetailInput;
 };
@@ -2027,17 +2027,17 @@ export type Query = {
   __typename?: 'Query';
   _version?: Maybe<Scalars['String']>;
   /** 根据搜索条件和分页查找数据 */
-  findAllBackground_task: Array<BackgroundTaskModel>;
+  findAllBackgroundTask: Array<BackgroundTaskModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDept: Array<DeptModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDict: Array<DictModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllDict_detail: Array<DictDetailModel>;
+  findAllDictDetail: Array<DictDetailModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllDictbiz: Array<DictbizModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllDictbiz_detail: Array<DictbizDetailModel>;
+  findAllDictbizDetail: Array<DictbizDetailModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllI18n: Array<I18nModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -2045,7 +2045,7 @@ export type Query = {
   /** 根据搜索条件和分页查找数据 */
   findAllMenu: Array<MenuModel>;
   /** 根据搜索条件和分页查找数据 */
-  findAllOperation_record: Array<OperationRecordModel>;
+  findAllOperationRecord: Array<OperationRecordModel>;
   /** 根据搜索条件和分页查找数据 */
   findAllOptions: Array<OptionsModel>;
   /** 根据搜索条件和分页查找数据 */
@@ -2055,17 +2055,17 @@ export type Query = {
   /** 根据搜索条件和分页查找数据 */
   findAllUsr: Array<UsrModel>;
   /** 根据id查找一条数据 */
-  findByIdBackground_task?: Maybe<BackgroundTaskModel>;
+  findByIdBackgroundTask?: Maybe<BackgroundTaskModel>;
   /** 根据id查找一条数据 */
   findByIdDept?: Maybe<DeptModel>;
   /** 根据id查找一条数据 */
   findByIdDict?: Maybe<DictModel>;
   /** 根据id查找一条数据 */
-  findByIdDict_detail?: Maybe<DictDetailModel>;
+  findByIdDictDetail?: Maybe<DictDetailModel>;
   /** 根据id查找一条数据 */
   findByIdDictbiz?: Maybe<DictbizModel>;
   /** 根据id查找一条数据 */
-  findByIdDictbiz_detail?: Maybe<DictbizDetailModel>;
+  findByIdDictbizDetail?: Maybe<DictbizDetailModel>;
   /** 根据id查找一条数据 */
   findByIdI18n?: Maybe<I18nModel>;
   /** 根据id查找一条数据 */
@@ -2073,7 +2073,7 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdMenu?: Maybe<MenuModel>;
   /** 根据id查找一条数据 */
-  findByIdOperation_record?: Maybe<OperationRecordModel>;
+  findByIdOperationRecord?: Maybe<OperationRecordModel>;
   /** 根据id查找一条数据 */
   findByIdOptions?: Maybe<OptionsModel>;
   /** 根据id查找一条数据 */
@@ -2083,17 +2083,17 @@ export type Query = {
   /** 根据id查找一条数据 */
   findByIdUsr?: Maybe<UsrModel>;
   /** 根据条件查找据数总数 */
-  findCountBackground_task: Scalars['Int'];
+  findCountBackgroundTask: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountDept: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountDict: Scalars['Int'];
   /** 根据条件查找据数总数 */
-  findCountDict_detail: Scalars['Int'];
+  findCountDictDetail: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountDictbiz: Scalars['Int'];
   /** 根据条件查找据数总数 */
-  findCountDictbiz_detail: Scalars['Int'];
+  findCountDictbizDetail: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountI18n: Scalars['Int'];
   /** 根据条件查找据数总数 */
@@ -2101,7 +2101,7 @@ export type Query = {
   /** 根据条件查找据数总数 */
   findCountMenu: Scalars['Int'];
   /** 根据条件查找据数总数 */
-  findCountOperation_record: Scalars['Int'];
+  findCountOperationRecord: Scalars['Int'];
   /** 根据条件查找据数总数 */
   findCountOptions: Scalars['Int'];
   /** 根据条件查找据数总数 */
@@ -2115,11 +2115,11 @@ export type Query = {
   /** 查找order_by字段的最大值 */
   findLastOrderByDict: Scalars['Int'];
   /** 查找order_by字段的最大值 */
-  findLastOrderByDict_detail: Scalars['Int'];
+  findLastOrderByDictDetail: Scalars['Int'];
   /** 查找order_by字段的最大值 */
   findLastOrderByDictbiz: Scalars['Int'];
   /** 查找order_by字段的最大值 */
-  findLastOrderByDictbiz_detail: Scalars['Int'];
+  findLastOrderByDictbizDetail: Scalars['Int'];
   /** 查找order_by字段的最大值 */
   findLastOrderByLang: Scalars['Int'];
   /** 查找order_by字段的最大值 */
@@ -2129,17 +2129,17 @@ export type Query = {
   /** 查找order_by字段的最大值 */
   findLastOrderByTenant: Scalars['Int'];
   /** 根据条件查找第一条数据 */
-  findOneBackground_task?: Maybe<BackgroundTaskModel>;
+  findOneBackgroundTask?: Maybe<BackgroundTaskModel>;
   /** 根据条件查找第一条数据 */
   findOneDept?: Maybe<DeptModel>;
   /** 根据条件查找第一条数据 */
   findOneDict?: Maybe<DictModel>;
   /** 根据条件查找第一条数据 */
-  findOneDict_detail?: Maybe<DictDetailModel>;
+  findOneDictDetail?: Maybe<DictDetailModel>;
   /** 根据条件查找第一条数据 */
   findOneDictbiz?: Maybe<DictbizModel>;
   /** 根据条件查找第一条数据 */
-  findOneDictbiz_detail?: Maybe<DictbizDetailModel>;
+  findOneDictbizDetail?: Maybe<DictbizDetailModel>;
   /** 根据条件查找第一条数据 */
   findOneI18n?: Maybe<I18nModel>;
   /** 根据条件查找第一条数据 */
@@ -2147,7 +2147,7 @@ export type Query = {
   /** 根据条件查找第一条数据 */
   findOneMenu?: Maybe<MenuModel>;
   /** 根据条件查找第一条数据 */
-  findOneOperation_record?: Maybe<OperationRecordModel>;
+  findOneOperationRecord?: Maybe<OperationRecordModel>;
   /** 根据条件查找第一条数据 */
   findOneOptions?: Maybe<OptionsModel>;
   /** 根据条件查找第一条数据 */
@@ -2161,17 +2161,17 @@ export type Query = {
   /** 获取业务字典列表 */
   getDictbiz: Array<Array<GetDict>>;
   /** 获取字段对应的名称 */
-  getFieldCommentsBackground_task: BackgroundTaskFieldComment;
+  getFieldCommentsBackgroundTask: BackgroundTaskFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsDept: DeptFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsDict: DictFieldComment;
   /** 获取字段对应的名称 */
-  getFieldCommentsDict_detail: DictDetailFieldComment;
+  getFieldCommentsDictDetail: DictDetailFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsDictbiz: DictbizFieldComment;
   /** 获取字段对应的名称 */
-  getFieldCommentsDictbiz_detail: DictbizDetailFieldComment;
+  getFieldCommentsDictbizDetail: DictbizDetailFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsI18n: I18nFieldComment;
   /** 获取字段对应的名称 */
@@ -2179,7 +2179,7 @@ export type Query = {
   /** 获取字段对应的名称 */
   getFieldCommentsMenu: MenuFieldComment;
   /** 获取字段对应的名称 */
-  getFieldCommentsOperation_record: OperationRecordFieldComment;
+  getFieldCommentsOperationRecord: OperationRecordFieldComment;
   /** 获取字段对应的名称 */
   getFieldCommentsOptions: OptionsFieldComment;
   /** 获取字段对应的名称 */
@@ -2203,7 +2203,7 @@ export type Query = {
 };
 
 
-export type QueryFindAllBackground_TaskArgs = {
+export type QueryFindAllBackgroundTaskArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<BackgroundTaskSearch>;
   sort?: InputMaybe<Array<SortInput>>;
@@ -2224,7 +2224,7 @@ export type QueryFindAllDictArgs = {
 };
 
 
-export type QueryFindAllDict_DetailArgs = {
+export type QueryFindAllDictDetailArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DictDetailSearch>;
   sort?: InputMaybe<Array<SortInput>>;
@@ -2238,7 +2238,7 @@ export type QueryFindAllDictbizArgs = {
 };
 
 
-export type QueryFindAllDictbiz_DetailArgs = {
+export type QueryFindAllDictbizDetailArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<DictbizDetailSearch>;
   sort?: InputMaybe<Array<SortInput>>;
@@ -2266,7 +2266,7 @@ export type QueryFindAllMenuArgs = {
 };
 
 
-export type QueryFindAllOperation_RecordArgs = {
+export type QueryFindAllOperationRecordArgs = {
   page?: InputMaybe<PageInput>;
   search?: InputMaybe<OperationRecordSearch>;
   sort?: InputMaybe<Array<SortInput>>;
@@ -2301,7 +2301,7 @@ export type QueryFindAllUsrArgs = {
 };
 
 
-export type QueryFindByIdBackground_TaskArgs = {
+export type QueryFindByIdBackgroundTaskArgs = {
   id: Scalars['ID'];
 };
 
@@ -2316,7 +2316,7 @@ export type QueryFindByIdDictArgs = {
 };
 
 
-export type QueryFindByIdDict_DetailArgs = {
+export type QueryFindByIdDictDetailArgs = {
   id: Scalars['ID'];
 };
 
@@ -2326,7 +2326,7 @@ export type QueryFindByIdDictbizArgs = {
 };
 
 
-export type QueryFindByIdDictbiz_DetailArgs = {
+export type QueryFindByIdDictbizDetailArgs = {
   id: Scalars['ID'];
 };
 
@@ -2346,7 +2346,7 @@ export type QueryFindByIdMenuArgs = {
 };
 
 
-export type QueryFindByIdOperation_RecordArgs = {
+export type QueryFindByIdOperationRecordArgs = {
   id: Scalars['ID'];
 };
 
@@ -2371,7 +2371,7 @@ export type QueryFindByIdUsrArgs = {
 };
 
 
-export type QueryFindCountBackground_TaskArgs = {
+export type QueryFindCountBackgroundTaskArgs = {
   search?: InputMaybe<BackgroundTaskSearch>;
 };
 
@@ -2386,7 +2386,7 @@ export type QueryFindCountDictArgs = {
 };
 
 
-export type QueryFindCountDict_DetailArgs = {
+export type QueryFindCountDictDetailArgs = {
   search?: InputMaybe<DictDetailSearch>;
 };
 
@@ -2396,7 +2396,7 @@ export type QueryFindCountDictbizArgs = {
 };
 
 
-export type QueryFindCountDictbiz_DetailArgs = {
+export type QueryFindCountDictbizDetailArgs = {
   search?: InputMaybe<DictbizDetailSearch>;
 };
 
@@ -2416,7 +2416,7 @@ export type QueryFindCountMenuArgs = {
 };
 
 
-export type QueryFindCountOperation_RecordArgs = {
+export type QueryFindCountOperationRecordArgs = {
   search?: InputMaybe<OperationRecordSearch>;
 };
 
@@ -2441,7 +2441,7 @@ export type QueryFindCountUsrArgs = {
 };
 
 
-export type QueryFindOneBackground_TaskArgs = {
+export type QueryFindOneBackgroundTaskArgs = {
   search?: InputMaybe<BackgroundTaskSearch>;
   sort?: InputMaybe<Array<SortInput>>;
 };
@@ -2459,7 +2459,7 @@ export type QueryFindOneDictArgs = {
 };
 
 
-export type QueryFindOneDict_DetailArgs = {
+export type QueryFindOneDictDetailArgs = {
   search?: InputMaybe<DictDetailSearch>;
   sort?: InputMaybe<Array<SortInput>>;
 };
@@ -2471,7 +2471,7 @@ export type QueryFindOneDictbizArgs = {
 };
 
 
-export type QueryFindOneDictbiz_DetailArgs = {
+export type QueryFindOneDictbizDetailArgs = {
   search?: InputMaybe<DictbizDetailSearch>;
   sort?: InputMaybe<Array<SortInput>>;
 };
@@ -2495,7 +2495,7 @@ export type QueryFindOneMenuArgs = {
 };
 
 
-export type QueryFindOneOperation_RecordArgs = {
+export type QueryFindOneOperationRecordArgs = {
   search?: InputMaybe<OperationRecordSearch>;
   sort?: InputMaybe<Array<SortInput>>;
 };

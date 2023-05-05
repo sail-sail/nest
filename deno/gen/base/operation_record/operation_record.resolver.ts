@@ -20,7 +20,7 @@ import {
 /**
  * 根据条件查找据数总数
  */
-export async function findCountOperation_record(
+export async function findCountOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./operation_record.service.ts");
@@ -31,7 +31,7 @@ export async function findCountOperation_record(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAllOperation_record(
+export async function findAllOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
@@ -44,7 +44,7 @@ export async function findAllOperation_record(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsOperation_record() {
+export async function getFieldCommentsOperationRecord() {
   const { getFieldComments } = await import("./operation_record.service.ts");
   const data = await getFieldComments();
   return data;
@@ -53,7 +53,7 @@ export async function getFieldCommentsOperation_record() {
 /**
  * 根据条件查找第一条数据
  */
-export async function findOneOperation_record(
+export async function findOneOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
@@ -65,7 +65,7 @@ export async function findOneOperation_record(
 /**
  * 根据 id 查找一条数据
  */
-export async function findByIdOperation_record(
+export async function findByIdOperationRecord(
   id: string,
 ) {
   const { findById } = await import("./operation_record.service.ts");
@@ -76,7 +76,7 @@ export async function findByIdOperation_record(
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIdsOperation_record(
+export async function deleteByIdsOperationRecord(
   ids: string[],
 ) {
   const context = useContext();
@@ -90,7 +90,7 @@ export async function deleteByIdsOperation_record(
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIdsOperation_record(
+export async function revertByIdsOperationRecord(
   ids: string[],
 ) {
   const context = useContext();
@@ -104,7 +104,7 @@ export async function revertByIdsOperation_record(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIdsOperation_record(
+export async function forceDeleteByIdsOperationRecord(
   ids: string[],
 ) {
   const context = useContext();
