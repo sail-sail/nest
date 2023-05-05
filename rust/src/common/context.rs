@@ -123,7 +123,7 @@ pub trait Ctx<'a>: Send + Sized {
   
   fn get_auth_tenant_id(&mut self) -> Option<String> {
     match self.get_auth_model() {
-      Some(item) => item.tenant_id,
+      Some(item) => item.tenant_id.into(),
       None => None,
     }
   }
@@ -137,7 +137,7 @@ pub trait Ctx<'a>: Send + Sized {
   
   fn get_auth_lang(&mut self) -> Option<String> {
     match self.get_auth_model() {
-      Some(item) => item.lang,
+      Some(item) => item.lang.into(),
       None => None,
     }
   }

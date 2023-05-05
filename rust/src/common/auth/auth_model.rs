@@ -8,8 +8,8 @@ pub struct AuthModel {
   pub id: String,
   pub wx_usr_id: Option<String>,
   pub dept_id: Option<String>,
-  pub lang: Option<String>,
-  pub tenant_id: Option<String>,
+  pub lang: String,
+  pub tenant_id: String,
   pub exp: i64,
 }
 
