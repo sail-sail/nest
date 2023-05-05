@@ -26,6 +26,14 @@ const gqlRouter = new Router();
 
 const _gqlSchemaStr = /* GraphQL */`
 scalar JSON
+scalar NaiveDateTime
+scalar NaiveDate
+scalar NaiveTime
+scalar DateTime
+scalar Date
+scalar Decimal
+scalar BigDecimal
+scalar Uuid
 "分页输入"
 input PageInput {
   pgOffset: Int

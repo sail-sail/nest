@@ -12,7 +12,7 @@ type TenantModel {
   "域名绑定"
   host: String!
   "到期日"
-  expiration: String
+  expiration: Date
   "最大用户数"
   max_usr_num: Int!
   "启用"
@@ -60,7 +60,7 @@ input TenantInput {
   "域名绑定"
   host: String
   "到期日"
-  expiration: String
+  expiration: NaiveDate
   "最大用户数"
   max_usr_num: Int
   "启用"
@@ -90,7 +90,7 @@ input TenantSearch {
   host: String
   host_like: String
   "到期日"
-  expiration: [String!]
+  expiration: [NaiveDate!]
   "最大用户数"
   max_usr_num: [Int!]
   "启用"

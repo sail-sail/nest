@@ -38,16 +38,16 @@ type <#=Table_Up#>Model {<#
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'String';
+      data_type = 'Date';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'String';
+      data_type = 'NaiveDateTime';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'json') {
-      data_type = 'JSON';
+      data_type = 'String';
     }
     else if (column.DATA_TYPE === 'text') {
       data_type = 'String';
@@ -56,7 +56,7 @@ type <#=Table_Up#>Model {<#
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'Float';
+      data_type = 'Decimal';
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -153,16 +153,16 @@ input <#=Table_Up#>Input {<#
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'String';
+      data_type = 'NaiveDate';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'String';
+      data_type = 'NaiveDateTime';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'json') {
-      data_type = 'JSON';
+      data_type = 'String';
     }
     else if (column.DATA_TYPE === 'text') {
       data_type = 'String';
@@ -171,7 +171,7 @@ input <#=Table_Up#>Input {<#
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'Float';
+      data_type = 'Decimal';
     }
     let column_comment = column.COLUMN_COMMENT;
     let selectList = [ ];
@@ -234,10 +234,10 @@ input <#=Table_Up#>Search {
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = '[String!]';
+      data_type = '[NaiveDate!]';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = '[String!]';
+      data_type = '[NaiveDateTime!]';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = '[Int!]';
@@ -252,7 +252,7 @@ input <#=Table_Up#>Search {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = '[Float!]';
+      data_type = '[Decimal!]';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';

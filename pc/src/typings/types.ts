@@ -10,7 +10,15 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  BigDecimal: any;
+  Date: any;
+  DateTime: any;
+  Decimal: any;
   JSON: any;
+  NaiveDate: any;
+  NaiveDateTime: any;
+  NaiveTime: any;
+  Uuid: any;
 };
 
 export type BackgroundTaskFieldComment = {
@@ -39,9 +47,9 @@ export type BackgroundTaskFieldComment = {
 
 export type BackgroundTaskInput = {
   /** 开始时间 */
-  begin_time?: InputMaybe<Scalars['String']>;
+  begin_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 结束时间 */
-  end_time?: InputMaybe<Scalars['String']>;
+  end_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 错误信息 */
   err_msg?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
@@ -66,9 +74,9 @@ export type BackgroundTaskInput = {
 export type BackgroundTaskModel = {
   __typename?: 'BackgroundTaskModel';
   /** 开始时间 */
-  begin_time?: Maybe<Scalars['String']>;
+  begin_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 结束时间 */
-  end_time?: Maybe<Scalars['String']>;
+  end_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 错误信息 */
   err_msg: Scalars['String'];
   /** ID */
@@ -91,13 +99,13 @@ export type BackgroundTaskModel = {
 
 export type BackgroundTaskSearch = {
   /** 开始时间 */
-  begin_time?: InputMaybe<Array<Scalars['String']>>;
+  begin_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
   create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
   create_usr_id_lbl?: InputMaybe<Array<Scalars['String']>>;
   /** 结束时间 */
-  end_time?: InputMaybe<Array<Scalars['String']>>;
+  end_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 错误信息 */
   err_msg?: InputMaybe<Scalars['String']>;
   err_msg_like?: InputMaybe<Scalars['String']>;
@@ -158,7 +166,7 @@ export type DeptFieldComment = {
 
 export type DeptInput = {
   /** 创建时间 */
-  create_time?: InputMaybe<Scalars['String']>;
+  create_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
   /** 创建人 */
@@ -185,7 +193,7 @@ export type DeptInput = {
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Scalars['String']>;
+  update_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
   /** 更新人 */
@@ -195,7 +203,7 @@ export type DeptInput = {
 export type DeptModel = {
   __typename?: 'DeptModel';
   /** 创建时间 */
-  create_time?: Maybe<Scalars['String']>;
+  create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -221,7 +229,7 @@ export type DeptModel = {
   /** 备注 */
   rem: Scalars['String'];
   /** 更新时间 */
-  update_time?: Maybe<Scalars['String']>;
+  update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -230,7 +238,7 @@ export type DeptModel = {
 
 export type DeptSearch = {
   /** 创建时间 */
-  create_time?: InputMaybe<Array<Scalars['String']>>;
+  create_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
   create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -258,7 +266,7 @@ export type DeptSearch = {
   rem?: InputMaybe<Scalars['String']>;
   rem_like?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Array<Scalars['String']>>;
+  update_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
   update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -409,7 +417,7 @@ export type DictInput = {
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
-  create_time?: InputMaybe<Scalars['String']>;
+  create_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
   /** 创建人 */
@@ -436,7 +444,7 @@ export type DictInput = {
   /** 数据类型 */
   type_lbl?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Scalars['String']>;
+  update_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
   /** 更新人 */
@@ -448,7 +456,7 @@ export type DictModel = {
   /** 编码 */
   code: Scalars['String'];
   /** 创建时间 */
-  create_time?: Maybe<Scalars['String']>;
+  create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -474,7 +482,7 @@ export type DictModel = {
   /** 数据类型 */
   type_lbl?: Maybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: Maybe<Scalars['String']>;
+  update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -486,7 +494,7 @@ export type DictSearch = {
   code?: InputMaybe<Scalars['String']>;
   code_like?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
-  create_time?: InputMaybe<Array<Scalars['String']>>;
+  create_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
   create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -512,7 +520,7 @@ export type DictSearch = {
   /** 数据类型 */
   type?: InputMaybe<Array<Scalars['String']>>;
   /** 更新时间 */
-  update_time?: InputMaybe<Array<Scalars['String']>>;
+  update_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
   update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -663,7 +671,7 @@ export type DictbizInput = {
   /** 编码 */
   code?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
-  create_time?: InputMaybe<Scalars['String']>;
+  create_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
   /** 创建人 */
@@ -690,7 +698,7 @@ export type DictbizInput = {
   /** 数据类型 */
   type_lbl?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Scalars['String']>;
+  update_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
   /** 更新人 */
@@ -702,7 +710,7 @@ export type DictbizModel = {
   /** 编码 */
   code: Scalars['String'];
   /** 创建时间 */
-  create_time?: Maybe<Scalars['String']>;
+  create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -728,7 +736,7 @@ export type DictbizModel = {
   /** 数据类型 */
   type_lbl?: Maybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: Maybe<Scalars['String']>;
+  update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -740,7 +748,7 @@ export type DictbizSearch = {
   code?: InputMaybe<Scalars['String']>;
   code_like?: InputMaybe<Scalars['String']>;
   /** 创建时间 */
-  create_time?: InputMaybe<Array<Scalars['String']>>;
+  create_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
   create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -766,7 +774,7 @@ export type DictbizSearch = {
   /** 数据类型 */
   type?: InputMaybe<Array<Scalars['String']>>;
   /** 更新时间 */
-  update_time?: InputMaybe<Array<Scalars['String']>>;
+  update_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
   update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -1027,7 +1035,7 @@ export type MenuInput = {
   /** 路由 */
   route_path?: InputMaybe<Scalars['String']>;
   /** 参数 */
-  route_query?: InputMaybe<Scalars['JSON']>;
+  route_query?: InputMaybe<Scalars['String']>;
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 类型 */
@@ -1057,7 +1065,7 @@ export type MenuModel = {
   /** 路由 */
   route_path: Scalars['String'];
   /** 参数 */
-  route_query?: Maybe<Scalars['JSON']>;
+  route_query?: Maybe<Scalars['String']>;
   /** 类型 */
   type: Scalars['String'];
   /** 类型 */
@@ -1767,7 +1775,7 @@ export type OperationRecordFieldComment = {
 
 export type OperationRecordInput = {
   /** 创建时间 */
-  create_time?: InputMaybe<Scalars['String']>;
+  create_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
   /** 创建人 */
@@ -1788,7 +1796,7 @@ export type OperationRecordInput = {
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Scalars['String']>;
+  update_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
   /** 更新人 */
@@ -1798,7 +1806,7 @@ export type OperationRecordInput = {
 export type OperationRecordModel = {
   __typename?: 'OperationRecordModel';
   /** 创建时间 */
-  create_time?: Maybe<Scalars['String']>;
+  create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -1818,7 +1826,7 @@ export type OperationRecordModel = {
   /** 备注 */
   rem: Scalars['String'];
   /** 更新时间 */
-  update_time?: Maybe<Scalars['String']>;
+  update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -1827,7 +1835,7 @@ export type OperationRecordModel = {
 
 export type OperationRecordSearch = {
   /** 创建时间 */
-  create_time?: InputMaybe<Array<Scalars['String']>>;
+  create_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
   create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -1857,7 +1865,7 @@ export type OperationRecordSearch = {
   rem?: InputMaybe<Scalars['String']>;
   rem_like?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Array<Scalars['String']>>;
+  update_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
   update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -1902,7 +1910,7 @@ export type OptionsFieldComment = {
 
 export type OptionsInput = {
   /** 创建时间 */
-  create_time?: InputMaybe<Scalars['String']>;
+  create_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Scalars['ID']>;
   /** 创建人 */
@@ -1927,7 +1935,7 @@ export type OptionsInput = {
   /** 租户ID */
   tenant_id?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Scalars['String']>;
+  update_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Scalars['ID']>;
   /** 更新人 */
@@ -1941,7 +1949,7 @@ export type OptionsInput = {
 export type OptionsModel = {
   __typename?: 'OptionsModel';
   /** 创建时间 */
-  create_time?: Maybe<Scalars['String']>;
+  create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -1965,7 +1973,7 @@ export type OptionsModel = {
   /** 备注 */
   rem: Scalars['String'];
   /** 更新时间 */
-  update_time?: Maybe<Scalars['String']>;
+  update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -1978,7 +1986,7 @@ export type OptionsModel = {
 
 export type OptionsSearch = {
   /** 创建时间 */
-  create_time?: InputMaybe<Array<Scalars['String']>>;
+  create_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 创建人 */
   create_usr_id?: InputMaybe<Array<Scalars['String']>>;
   create_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -2005,7 +2013,7 @@ export type OptionsSearch = {
   rem?: InputMaybe<Scalars['String']>;
   rem_like?: InputMaybe<Scalars['String']>;
   /** 更新时间 */
-  update_time?: InputMaybe<Array<Scalars['String']>>;
+  update_time?: InputMaybe<Array<Scalars['NaiveDateTime']>>;
   /** 更新人 */
   update_usr_id?: InputMaybe<Array<Scalars['String']>>;
   update_usr_id_is_null?: InputMaybe<Scalars['Boolean']>;
@@ -2668,7 +2676,7 @@ export type TenantFieldComment = {
 
 export type TenantInput = {
   /** 到期日 */
-  expiration?: InputMaybe<Scalars['String']>;
+  expiration?: InputMaybe<Scalars['NaiveDate']>;
   /** 域名绑定 */
   host?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
@@ -2695,7 +2703,7 @@ export type TenantInput = {
 export type TenantModel = {
   __typename?: 'TenantModel';
   /** 到期日 */
-  expiration?: Maybe<Scalars['String']>;
+  expiration?: Maybe<Scalars['Date']>;
   /** 域名绑定 */
   host: Scalars['String'];
   /** ID */
@@ -2720,7 +2728,7 @@ export type TenantModel = {
 
 export type TenantSearch = {
   /** 到期日 */
-  expiration?: InputMaybe<Array<Scalars['String']>>;
+  expiration?: InputMaybe<Array<Scalars['NaiveDate']>>;
   /** 域名绑定 */
   host?: InputMaybe<Scalars['String']>;
   host_like?: InputMaybe<Scalars['String']>;
