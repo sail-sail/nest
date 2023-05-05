@@ -15,7 +15,7 @@ pub struct DictModel {
   pub r#type: String,
   pub r#type_lbl: String,
   /// 排序
-  pub order_by: i64,
+  pub order_by: u32,
   /// 启用
   pub is_enabled: u8,
   pub is_enabled_lbl: String,
@@ -28,12 +28,12 @@ pub struct DictModel {
   pub create_usr_id: String,
   pub create_usr_id_lbl: String,
   /// 创建时间
-  pub create_time: String,
+  pub create_time: Option<String>,
   /// 更新人
   pub update_usr_id: String,
   pub update_usr_id_lbl: String,
   /// 更新时间
-  pub update_time: String,
+  pub update_time: Option<String>,
 }
 
 impl FromRow<'_, MySqlRow> for DictModel {
@@ -46,10 +46,10 @@ impl FromRow<'_, MySqlRow> for DictModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 数据类型
-    let r#type: String = row.try_get("r#type")?;
-    let r#type_lbl: String = r#type.to_string();
+    let r#type: String = row.try_get("type")?;
+    let type_lbl: String = r#type.to_string();
     // 排序
-    let order_by: i64 = row.try_get("order_by")?;
+    let order_by: u32 = row.try_get("order_by")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -62,19 +62,19 @@ impl FromRow<'_, MySqlRow> for DictModel {
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: String = create_usr_id.to_string();
     // 创建时间
-    let create_time: String = row.try_get("create_time")?;
+    let create_time: Option<String> = row.try_get("create_time")?;
     // 更新人
     let update_usr_id: String = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: String = update_usr_id.to_string();
     // 更新时间
-    let update_time: String = row.try_get("update_time")?;
+    let update_time: Option<String> = row.try_get("update_time")?;
     
     let model = Self {
       id,
       code,
       lbl,
       r#type,
-      r#type_lbl,
+      type_lbl,
       order_by,
       is_enabled,
       is_enabled_lbl,
@@ -140,7 +140,7 @@ pub struct DictSearch {
   /// 数据类型
   pub r#type: Option<Vec<String>>,
   /// 排序
-  pub order_by: Option<Vec<i64>>,
+  pub order_by: Option<Vec<u32>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
@@ -170,9 +170,9 @@ pub struct DictInput {
   pub lbl: Option<String>,
   /// 数据类型
   pub r#type: Option<String>,
-  pub r#type_lbl: Option<String>,
+  pub type_lbl: Option<String>,
   /// 排序
-  pub order_by: Option<i64>,
+  pub order_by: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,

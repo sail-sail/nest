@@ -217,22 +217,43 @@ pub trait Ctx<'a>: Send + Sized {
         for arg in args {
           debug_args.push(arg.to_string());
           match arg {
-            ArgType::String(s) => {
+            ArgType::Bool(s) => {
               query = query.bind(s);
             }
-            ArgType::Int(s) => {
+            ArgType::I8(s) => {
               query = query.bind(s);
             }
-            ArgType::BigInt(s) => {
+            ArgType::I16(s) => {
               query = query.bind(s);
             }
-            ArgType::Float(s) => {
+            ArgType::I32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::I64(s) => {
               query = query.bind(s);
             }
             ArgType::Decimal(s) => {
               query = query.bind(s);
             }
-            ArgType::Bool(s) => {
+            ArgType::U8(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U16(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::String(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -260,22 +281,43 @@ pub trait Ctx<'a>: Send + Sized {
       } else {
         for arg in args {
           match arg {
-            ArgType::String(s) => {
+            ArgType::Bool(s) => {
               query = query.bind(s);
             }
-            ArgType::Int(s) => {
+            ArgType::I8(s) => {
               query = query.bind(s);
             }
-            ArgType::BigInt(s) => {
+            ArgType::I16(s) => {
               query = query.bind(s);
             }
-            ArgType::Float(s) => {
+            ArgType::I32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::I64(s) => {
               query = query.bind(s);
             }
             ArgType::Decimal(s) => {
               query = query.bind(s);
             }
-            ArgType::Bool(s) => {
+            ArgType::U8(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U16(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::String(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -319,22 +361,43 @@ pub trait Ctx<'a>: Send + Sized {
       for arg in args {
         debug_args.push(arg.to_string());
         match arg {
-          ArgType::String(s) => {
+          ArgType::Bool(s) => {
             query = query.bind(s);
           }
-          ArgType::Int(s) => {
+          ArgType::I8(s) => {
             query = query.bind(s);
           }
-          ArgType::BigInt(s) => {
+          ArgType::I16(s) => {
             query = query.bind(s);
           }
-          ArgType::Float(s) => {
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
             query = query.bind(s);
           }
           ArgType::Decimal(s) => {
             query = query.bind(s);
           }
-          ArgType::Bool(s) => {
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -362,22 +425,43 @@ pub trait Ctx<'a>: Send + Sized {
     } else {
       for arg in args {
         match arg {
-          ArgType::String(s) => {
+          ArgType::Bool(s) => {
             query = query.bind(s);
           }
-          ArgType::Int(s) => {
+          ArgType::I8(s) => {
             query = query.bind(s);
           }
-          ArgType::BigInt(s) => {
+          ArgType::I16(s) => {
             query = query.bind(s);
           }
-          ArgType::Float(s) => {
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
             query = query.bind(s);
           }
           ArgType::Decimal(s) => {
             query = query.bind(s);
           }
-          ArgType::Bool(s) => {
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -398,12 +482,7 @@ pub trait Ctx<'a>: Send + Sized {
         };
       }
     }
-    let res = query.execute(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
+    let res = query.execute(&DB_POOL.clone()).await?;
     let rows_affected = res.rows_affected();
     if rows_affected > 0 {
       if let Some(options) = &options {
@@ -466,22 +545,43 @@ pub trait Ctx<'a>: Send + Sized {
         for arg in args {
           debug_args.push(arg.to_string());
           match arg {
-            ArgType::String(s) => {
+            ArgType::Bool(s) => {
               query = query.bind(s);
             }
-            ArgType::Int(s) => {
+            ArgType::I8(s) => {
               query = query.bind(s);
             }
-            ArgType::BigInt(s) => {
+            ArgType::I16(s) => {
               query = query.bind(s);
             }
-            ArgType::Float(s) => {
+            ArgType::I32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::I64(s) => {
               query = query.bind(s);
             }
             ArgType::Decimal(s) => {
               query = query.bind(s);
             }
-            ArgType::Bool(s) => {
+            ArgType::U8(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U16(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::String(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -509,22 +609,43 @@ pub trait Ctx<'a>: Send + Sized {
       } else {
         for arg in args {
           match arg {
-            ArgType::String(s) => {
+            ArgType::Bool(s) => {
               query = query.bind(s);
             }
-            ArgType::Int(s) => {
+            ArgType::I8(s) => {
               query = query.bind(s);
             }
-            ArgType::BigInt(s) => {
+            ArgType::I16(s) => {
               query = query.bind(s);
             }
-            ArgType::Float(s) => {
+            ArgType::I32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::I64(s) => {
               query = query.bind(s);
             }
             ArgType::Decimal(s) => {
               query = query.bind(s);
             }
-            ArgType::Bool(s) => {
+            ArgType::U8(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U16(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::String(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -569,22 +690,43 @@ pub trait Ctx<'a>: Send + Sized {
       for arg in args {
         debug_args.push(arg.to_string());
         match arg {
-          ArgType::String(s) => {
+          ArgType::Bool(s) => {
             query = query.bind(s);
           }
-          ArgType::Int(s) => {
+          ArgType::I8(s) => {
             query = query.bind(s);
           }
-          ArgType::BigInt(s) => {
+          ArgType::I16(s) => {
             query = query.bind(s);
           }
-          ArgType::Float(s) => {
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
             query = query.bind(s);
           }
           ArgType::Decimal(s) => {
             query = query.bind(s);
           }
-          ArgType::Bool(s) => {
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -612,22 +754,43 @@ pub trait Ctx<'a>: Send + Sized {
     } else {
       for arg in args {
         match arg {
-          ArgType::String(s) => {
+          ArgType::Bool(s) => {
             query = query.bind(s);
           }
-          ArgType::Int(s) => {
+          ArgType::I8(s) => {
             query = query.bind(s);
           }
-          ArgType::BigInt(s) => {
+          ArgType::I16(s) => {
             query = query.bind(s);
           }
-          ArgType::Float(s) => {
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
             query = query.bind(s);
           }
           ArgType::Decimal(s) => {
             query = query.bind(s);
           }
-          ArgType::Bool(s) => {
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -648,12 +811,7 @@ pub trait Ctx<'a>: Send + Sized {
         };
       }
     }
-    let res = query.fetch_all(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
+    let res = query.fetch_all(&DB_POOL.clone()).await?;
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
         let cache_key1 = options.cache_key1.as_ref().unwrap();
@@ -716,22 +874,43 @@ pub trait Ctx<'a>: Send + Sized {
         for arg in args {
           debug_args.push(arg.to_string());
           match arg {
-            ArgType::String(s) => {
+            ArgType::Bool(s) => {
               query = query.bind(s);
             }
-            ArgType::Int(s) => {
+            ArgType::I8(s) => {
               query = query.bind(s);
             }
-            ArgType::BigInt(s) => {
+            ArgType::I16(s) => {
               query = query.bind(s);
             }
-            ArgType::Float(s) => {
+            ArgType::I32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::I64(s) => {
               query = query.bind(s);
             }
             ArgType::Decimal(s) => {
               query = query.bind(s);
             }
-            ArgType::Bool(s) => {
+            ArgType::U8(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U16(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::String(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -757,22 +936,43 @@ pub trait Ctx<'a>: Send + Sized {
       } else {
         for arg in args {
           match arg {
-            ArgType::String(s) => {
+            ArgType::Bool(s) => {
               query = query.bind(s);
             }
-            ArgType::Int(s) => {
+            ArgType::I8(s) => {
               query = query.bind(s);
             }
-            ArgType::BigInt(s) => {
+            ArgType::I16(s) => {
               query = query.bind(s);
             }
-            ArgType::Float(s) => {
+            ArgType::I32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::I64(s) => {
               query = query.bind(s);
             }
             ArgType::Decimal(s) => {
               query = query.bind(s);
             }
-            ArgType::Bool(s) => {
+            ArgType::U8(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U16(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::U64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F32(s) => {
+              query = query.bind(s);
+            }
+            ArgType::F64(s) => {
+              query = query.bind(s);
+            }
+            ArgType::String(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -818,22 +1018,43 @@ pub trait Ctx<'a>: Send + Sized {
       for arg in args {
         debug_args.push(arg.to_string());
         match arg {
-          ArgType::String(s) => {
+          ArgType::Bool(s) => {
             query = query.bind(s);
           }
-          ArgType::Int(s) => {
+          ArgType::I8(s) => {
             query = query.bind(s);
           }
-          ArgType::BigInt(s) => {
+          ArgType::I16(s) => {
             query = query.bind(s);
           }
-          ArgType::Float(s) => {
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
             query = query.bind(s);
           }
           ArgType::Decimal(s) => {
             query = query.bind(s);
           }
-          ArgType::Bool(s) => {
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -859,22 +1080,43 @@ pub trait Ctx<'a>: Send + Sized {
     } else {
       for arg in args {
         match arg {
-          ArgType::String(s) => {
+          ArgType::Bool(s) => {
             query = query.bind(s);
           }
-          ArgType::Int(s) => {
+          ArgType::I8(s) => {
             query = query.bind(s);
           }
-          ArgType::BigInt(s) => {
+          ArgType::I16(s) => {
             query = query.bind(s);
           }
-          ArgType::Float(s) => {
+          ArgType::I32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::I64(s) => {
             query = query.bind(s);
           }
           ArgType::Decimal(s) => {
             query = query.bind(s);
           }
-          ArgType::Bool(s) => {
+          ArgType::U8(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U16(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::U64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F32(s) => {
+            query = query.bind(s);
+          }
+          ArgType::F64(s) => {
+            query = query.bind(s);
+          }
+          ArgType::String(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -895,12 +1137,7 @@ pub trait Ctx<'a>: Send + Sized {
         };
       }
     }
-    let res = query.fetch_optional(&DB_POOL.clone()).await
-      .map_err(|e| {
-        let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
-        error!("{}", err_msg);
-        anyhow::anyhow!(err_msg)
-      })?;
+    let res = query.fetch_optional(&DB_POOL.clone()).await?;
     if let Some(res) = &res {
       if let Some(options) = &options {
         if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -1088,12 +1325,19 @@ impl std::fmt::Display for SrvErr {
 
 #[derive(Debug, Clone)]
 pub enum ArgType {
-  String(String),
-  Int(i32),
-  BigInt(i64),
-  Float(f32),
+  Bool(bool),
+  I8(i8),
+  I16(i16),
+  I32(i32),
+  I64(i64),
   Decimal(Decimal),
-  Bool(u8),
+  U8(u8),
+  U16(u16),
+  U32(u32),
+  U64(u64),
+  F32(f32),
+  F64(f64),
+  String(String),
   Date(NaiveDate),
   DateTime(DateTime<Local>),
   Time(NaiveTime),
@@ -1107,12 +1351,19 @@ impl Serialize for ArgType {
       S: serde::Serializer,
   {
     match self {
-      ArgType::String(value) => serializer.serialize_str(value),
-      ArgType::Int(value) => serializer.serialize_i32(*value),
-      ArgType::BigInt(value) => serializer.serialize_i64(*value),
-      ArgType::Float(value) => serializer.serialize_f32(*value),
+      ArgType::Bool(value) => serializer.serialize_bool(*value),
+      ArgType::I8(value) => serializer.serialize_i8(*value),
+      ArgType::I16(value) => serializer.serialize_i16(*value),
+      ArgType::I32(value) => serializer.serialize_i32(*value),
+      ArgType::I64(value) => serializer.serialize_i64(*value),
       ArgType::Decimal(value) => serializer.serialize_str(&value.to_string()),
-      ArgType::Bool(value) => serializer.serialize_u8(*value),
+      ArgType::U8(value) => serializer.serialize_u8(*value),
+      ArgType::U16(value) => serializer.serialize_u16(*value),
+      ArgType::U32(value) => serializer.serialize_u32(*value),
+      ArgType::U64(value) => serializer.serialize_u64(*value),
+      ArgType::F32(value) => serializer.serialize_f32(*value),
+      ArgType::F64(value) => serializer.serialize_f64(*value),
+      ArgType::String(value) => serializer.serialize_str(value),
       ArgType::Date(value) => serializer.serialize_str(&value.format("%Y-%m-%d").to_string()),
       ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
@@ -1125,12 +1376,19 @@ impl Serialize for ArgType {
 impl Display for ArgType {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
-      ArgType::String(value) => write!(f, "{}", value),
-      ArgType::Int(value) => write!(f, "{}", value),
-      ArgType::BigInt(value) => write!(f, "{}", value),
-      ArgType::Float(value) => write!(f, "{}", value),
-      ArgType::Decimal(value) => write!(f, "{}", value),
       ArgType::Bool(value) => write!(f, "{}", value),
+      ArgType::I8(value) => write!(f, "{}", value),
+      ArgType::I16(value) => write!(f, "{}", value),
+      ArgType::I32(value) => write!(f, "{}", value),
+      ArgType::I64(value) => write!(f, "{}", value),
+      ArgType::Decimal(value) => write!(f, "{}", value),
+      ArgType::U8(value) => write!(f, "{}", value),
+      ArgType::U16(value) => write!(f, "{}", value),
+      ArgType::U32(value) => write!(f, "{}", value),
+      ArgType::U64(value) => write!(f, "{}", value),
+      ArgType::F32(value) => write!(f, "{}", value),
+      ArgType::F64(value) => write!(f, "{}", value),
+      ArgType::String(value) => write!(f, "{}", value),
       ArgType::Date(value) => write!(f, "{}", value.format("%Y-%m-%d")),
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
@@ -1176,33 +1434,33 @@ impl From<Vec<ArgType>> for QueryArgs {
   }
 }
 
-impl From<String> for ArgType {
-  fn from(value: String) -> Self {
-    ArgType::String(value)
+impl From<bool> for ArgType {
+  fn from(value: bool) -> Self {
+    ArgType::Bool(value)
   }
 }
 
-impl From<&str> for ArgType {
-  fn from(value: &str) -> Self {
-    ArgType::String(value.to_string())
+impl From<i8> for ArgType {
+  fn from(value: i8) -> Self {
+    ArgType::I8(value)
+  }
+}
+
+impl From<i16> for ArgType {
+  fn from(value: i16) -> Self {
+    ArgType::I16(value)
   }
 }
 
 impl From<i32> for ArgType {
   fn from(value: i32) -> Self {
-    ArgType::Int(value)
+    ArgType::I32(value)
   }
 }
 
 impl From<i64> for ArgType {
   fn from(value: i64) -> Self {
-    ArgType::BigInt(value)
-  }
-}
-
-impl From<f32> for ArgType {
-  fn from(value: f32) -> Self {
-    ArgType::Float(value)
+    ArgType::I64(value)
   }
 }
 
@@ -1214,7 +1472,49 @@ impl From<Decimal> for ArgType {
 
 impl From<u8> for ArgType {
   fn from(value: u8) -> Self {
-    ArgType::Bool(value)
+    ArgType::U8(value)
+  }
+}
+
+impl From<u16> for ArgType {
+  fn from(value: u16) -> Self {
+    ArgType::U16(value)
+  }
+}
+
+impl From<u32> for ArgType {
+  fn from(value: u32) -> Self {
+    ArgType::U32(value)
+  }
+}
+
+impl From<u64> for ArgType {
+  fn from(value: u64) -> Self {
+    ArgType::U64(value)
+  }
+}
+
+impl From<f32> for ArgType {
+  fn from(value: f32) -> Self {
+    ArgType::F32(value)
+  }
+}
+
+impl From<f64> for ArgType {
+  fn from(value: f64) -> Self {
+    ArgType::F64(value)
+  }
+}
+
+impl From<String> for ArgType {
+  fn from(value: String) -> Self {
+    ArgType::String(value)
+  }
+}
+
+impl From<&str> for ArgType {
+  fn from(value: &str) -> Self {
+    ArgType::String(value.to_string())
   }
 }
 

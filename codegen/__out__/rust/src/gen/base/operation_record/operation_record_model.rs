@@ -23,12 +23,12 @@ pub struct OperationRecordModel {
   pub create_usr_id: String,
   pub create_usr_id_lbl: String,
   /// 创建时间
-  pub create_time: String,
+  pub create_time: Option<String>,
   /// 更新人
   pub update_usr_id: String,
   pub update_usr_id_lbl: String,
   /// 更新时间
-  pub update_time: String,
+  pub update_time: Option<String>,
 }
 
 impl FromRow<'_, MySqlRow> for OperationRecordModel {
@@ -37,7 +37,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     let id: String = row.try_get("id")?;
     let id: ID = id.into();
     // 模块
-    let r#mod: String = row.try_get("r#mod")?;
+    let r#mod: String = row.try_get("mod")?;
     // 模块名称
     let mod_lbl: String = row.try_get("mod_lbl")?;
     // 方法
@@ -52,12 +52,12 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: String = create_usr_id.to_string();
     // 创建时间
-    let create_time: String = row.try_get("create_time")?;
+    let create_time: Option<String> = row.try_get("create_time")?;
     // 更新人
     let update_usr_id: String = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: String = update_usr_id.to_string();
     // 更新时间
-    let update_time: String = row.try_get("update_time")?;
+    let update_time: Option<String> = row.try_get("update_time")?;
     
     let model = Self {
       id,
@@ -116,7 +116,7 @@ pub struct OperationRecordSearch {
   pub is_deleted: Option<u8>,
   /// 模块
   pub r#mod: Option<String>,
-  pub r#mod_like: Option<String>,
+  pub mod_like: Option<String>,
   /// 模块名称
   pub mod_lbl: Option<String>,
   pub mod_lbl_like: Option<String>,

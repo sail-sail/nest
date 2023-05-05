@@ -102,7 +102,7 @@ fn get_where_query<'a>(
   }
   {
     let expiration: Vec<String> = match &search {
-      Some(item) => item.expiration.clone().unwrap(),
+      Some(item) => item.expiration.clone().unwrap_or_default(),
       None => vec![],
     };
     let expiration_gt: Option<String> = match &expiration.len() {
@@ -122,15 +122,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let max_usr_num: Vec<i64> = match &search {
-      Some(item) => item.max_usr_num.clone().unwrap(),
+    let max_usr_num: Vec<u32> = match &search {
+      Some(item) => item.max_usr_num.clone().unwrap_or_default(),
       None => vec![],
     };
-    let max_usr_num_gt: Option<i64> = match &max_usr_num.len() {
+    let max_usr_num_gt: Option<u32> = match &max_usr_num.len() {
       0 => None,
       _ => max_usr_num[0].clone().into(),
     };
-    let max_usr_num_lt: Option<i64> = match &max_usr_num.len() {
+    let max_usr_num_lt: Option<u32> = match &max_usr_num.len() {
       0 => None,
       1 => None,
       _ => max_usr_num[1].clone().into(),
@@ -186,15 +186,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<i64> = match &search {
-      Some(item) => item.order_by.clone().unwrap(),
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
     };
-    let order_by_gt: Option<i64> = match &order_by.len() {
+    let order_by_gt: Option<u32> = match &order_by.len() {
       0 => None,
       _ => order_by[0].clone().into(),
     };
-    let order_by_lt: Option<i64> = match &order_by.len() {
+    let order_by_lt: Option<u32> = match &order_by.len() {
       0 => None,
       1 => None,
       _ => order_by[1].clone().into(),

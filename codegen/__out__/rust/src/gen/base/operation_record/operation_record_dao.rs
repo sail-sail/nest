@@ -89,14 +89,14 @@ fn get_where_query<'a>(
       None => None,
     };
     if let Some(r#mod) = r#mod {
-      where_query += &format!(" and t.r#mod = {}", args.push(r#mod.into()));
+      where_query += &format!(" and t.mod = {}", args.push(r#mod.into()));
     }
-    let r#mod_like = match &search {
-      Some(item) => item.r#mod_like.clone(),
+    let mod_like = match &search {
+      Some(item) => item.mod_like.clone(),
       None => None,
     };
-    if let Some(r#mod_like) = r#mod_like {
-      where_query += &format!(" and t.r#mod like {}", args.push((sql_like(&r#mod_like) + "%").into()));
+    if let Some(mod_like) = mod_like {
+      where_query += &format!(" and t.mod like {}", args.push((sql_like(&mod_like) + "%").into()));
     }
   }
   {
@@ -207,7 +207,7 @@ fn get_where_query<'a>(
   }
   {
     let create_time: Vec<String> = match &search {
-      Some(item) => item.create_time.clone().unwrap(),
+      Some(item) => item.create_time.clone().unwrap_or_default(),
       None => vec![],
     };
     let create_time_gt: Option<String> = match &create_time.len() {
@@ -254,7 +254,7 @@ fn get_where_query<'a>(
   }
   {
     let update_time: Vec<String> = match &search {
-      Some(item) => item.update_time.clone().unwrap(),
+      Some(item) => item.update_time.clone().unwrap_or_default(),
       None => vec![],
     };
     let update_time_gt: Option<String> = match &update_time.len() {

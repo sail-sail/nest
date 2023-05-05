@@ -23,7 +23,7 @@ async fn find_menus<'a>(
   
   let tenant_id = ctx.get_auth_tenant_id();
   if let Some(tenant_id) = tenant_id {
-    where_query.push_str(" and tenant_id = ?");
+    where_query.push_str(" and base_tenant_menu.tenant_id = ?");
     args.push(tenant_id.into());
   }
   
@@ -39,7 +39,8 @@ async fn find_menus<'a>(
       t.type,
       t.menu_id,
       t.lbl,
-      t.route_path
+      t.route_path,
+      t.route_query
     from {table} t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id

@@ -81,7 +81,7 @@ fn get_where_query<'a>(
         item = item.trim_end_matches(",").to_owned();
         item
       };
-      where_query += &format!(" and t.r#type in ({})", arg);
+      where_query += &format!(" and t.type in ({})", arg);
     }
   }
   {
@@ -169,15 +169,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<i64> = match &search {
-      Some(item) => item.order_by.clone().unwrap(),
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
     };
-    let order_by_gt: Option<i64> = match &order_by.len() {
+    let order_by_gt: Option<u32> = match &order_by.len() {
       0 => None,
       _ => order_by[0].clone().into(),
     };
-    let order_by_lt: Option<i64> = match &order_by.len() {
+    let order_by_lt: Option<u32> = match &order_by.len() {
       0 => None,
       1 => None,
       _ => order_by[1].clone().into(),

@@ -53,18 +53,18 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 拥有部门
-    let dept_ids: sqlx::types::Json<Vec<String>> = row.try_get("dept_ids")?;
-    let dept_ids = dept_ids.0;
-    let dept_ids_lbl: sqlx::types::Json<Vec<String>> = row.try_get("dept_ids_lbl")?;
-    let dept_ids_lbl = dept_ids_lbl.0;
+    let dept_ids: sqlx::types::Json<Option<Vec<String>>> = row.try_get("dept_ids")?;
+    let dept_ids = dept_ids.0.unwrap_or_default();
+    let dept_ids_lbl: sqlx::types::Json<Option<Vec<String>>> = row.try_get("dept_ids_lbl")?;
+    let dept_ids_lbl = dept_ids_lbl.0.unwrap_or_default();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
     // 拥有角色
-    let role_ids: sqlx::types::Json<Vec<String>> = row.try_get("role_ids")?;
-    let role_ids = role_ids.0;
-    let role_ids_lbl: sqlx::types::Json<Vec<String>> = row.try_get("role_ids_lbl")?;
-    let role_ids_lbl = role_ids_lbl.0;
+    let role_ids: sqlx::types::Json<Option<Vec<String>>> = row.try_get("role_ids")?;
+    let role_ids = role_ids.0.unwrap_or_default();
+    let role_ids_lbl: sqlx::types::Json<Option<Vec<String>>> = row.try_get("role_ids_lbl")?;
+    let role_ids_lbl = role_ids_lbl.0.unwrap_or_default();
     
     let model = Self {
       id,

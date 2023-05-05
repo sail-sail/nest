@@ -18,12 +18,12 @@ pub struct MenuModel {
   /// 路由
   pub route_path: String,
   /// 参数
-  pub route_query: String,
+  pub route_query: Option<String>,
   /// 启用
   pub is_enabled: u8,
   pub is_enabled_lbl: String,
   /// 排序
-  pub order_by: i64,
+  pub order_by: u32,
   /// 备注
   pub rem: String,
 }
@@ -34,8 +34,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let id: String = row.try_get("id")?;
     let id: ID = id.into();
     // 类型
-    let r#type: String = row.try_get("r#type")?;
-    let r#type_lbl: String = r#type.to_string();
+    let r#type: String = row.try_get("type")?;
+    let type_lbl: String = r#type.to_string();
     // 父菜单
     let menu_id: String = row.try_get("menu_id")?;
     let menu_id_lbl: String = menu_id.to_string();
@@ -44,19 +44,19 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 路由
     let route_path: String = row.try_get("route_path")?;
     // 参数
-    let route_query: String = row.try_get("route_query")?;
+    let route_query: Option<String> = row.try_get("route_query")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
     // 排序
-    let order_by: i64 = row.try_get("order_by")?;
+    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     
     let model = Self {
       id,
       r#type,
-      r#type_lbl,
+      type_lbl,
       menu_id,
       menu_id_lbl,
       lbl,
@@ -118,7 +118,7 @@ pub struct MenuSearch {
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
-  pub order_by: Option<Vec<i64>>,
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   pub rem_like: Option<String>,
@@ -130,7 +130,7 @@ pub struct MenuInput {
   pub id: Option<ID>,
   /// 类型
   pub r#type: Option<String>,
-  pub r#type_lbl: Option<String>,
+  pub type_lbl: Option<String>,
   /// 父菜单
   pub menu_id: Option<String>,
   pub menu_id_lbl: Option<String>,
@@ -144,7 +144,7 @@ pub struct MenuInput {
   pub is_enabled: Option<u8>,
   pub is_enabled_lbl: Option<String>,
   /// 排序
-  pub order_by: Option<i64>,
+  pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
 }

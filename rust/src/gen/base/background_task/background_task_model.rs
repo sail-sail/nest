@@ -20,9 +20,9 @@ pub struct BackgroundTaskModel {
   /// 错误信息
   pub err_msg: String,
   /// 开始时间
-  pub begin_time: String,
+  pub begin_time: Option<String>,
   /// 结束时间
-  pub end_time: String,
+  pub end_time: Option<String>,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -41,16 +41,16 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     let state: String = row.try_get("state")?;
     let state_lbl: String = state.to_string();
     // 类型
-    let r#type: String = row.try_get("r#type")?;
-    let r#type_lbl: String = r#type.to_string();
+    let r#type: String = row.try_get("type")?;
+    let type_lbl: String = r#type.to_string();
     // 执行结果
     let result: String = row.try_get("result")?;
     // 错误信息
     let err_msg: String = row.try_get("err_msg")?;
     // 开始时间
-    let begin_time: String = row.try_get("begin_time")?;
+    let begin_time: Option<String> = row.try_get("begin_time")?;
     // 结束时间
-    let end_time: String = row.try_get("end_time")?;
+    let end_time: Option<String> = row.try_get("end_time")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -63,7 +63,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
       state,
       state_lbl,
       r#type,
-      r#type_lbl,
+      type_lbl,
       result,
       err_msg,
       begin_time,
@@ -147,7 +147,7 @@ pub struct BackgroundTaskInput {
   pub state_lbl: Option<String>,
   /// 类型
   pub r#type: Option<String>,
-  pub r#type_lbl: Option<String>,
+  pub type_lbl: Option<String>,
   /// 执行结果
   pub result: Option<String>,
   /// 错误信息
