@@ -11,7 +11,7 @@ use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 
 use async_trait::async_trait;
-use chrono::{Local, DateTime, NaiveDate, NaiveTime};
+use chrono::{Local, DateTime, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
@@ -256,6 +256,9 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::String(s) => {
               query = query.bind(s);
             }
+            ArgType::TimeStamp(s) => {
+              query = query.bind(s);
+            }
             ArgType::Date(s) => {
               query = query.bind(s);
             }
@@ -318,6 +321,9 @@ pub trait Ctx<'a>: Send + Sized {
               query = query.bind(s);
             }
             ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::TimeStamp(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -400,6 +406,9 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::TimeStamp(s) => {
+            query = query.bind(s);
+          }
           ArgType::Date(s) => {
             query = query.bind(s);
           }
@@ -462,6 +471,9 @@ pub trait Ctx<'a>: Send + Sized {
             query = query.bind(s);
           }
           ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::TimeStamp(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -584,6 +596,9 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::String(s) => {
               query = query.bind(s);
             }
+            ArgType::TimeStamp(s) => {
+              query = query.bind(s);
+            }
             ArgType::Date(s) => {
               query = query.bind(s);
             }
@@ -646,6 +661,9 @@ pub trait Ctx<'a>: Send + Sized {
               query = query.bind(s);
             }
             ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::TimeStamp(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -729,6 +747,9 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::TimeStamp(s) => {
+            query = query.bind(s);
+          }
           ArgType::Date(s) => {
             query = query.bind(s);
           }
@@ -791,6 +812,9 @@ pub trait Ctx<'a>: Send + Sized {
             query = query.bind(s);
           }
           ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::TimeStamp(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -913,6 +937,9 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::String(s) => {
               query = query.bind(s);
             }
+            ArgType::TimeStamp(s) => {
+              query = query.bind(s);
+            }
             ArgType::Date(s) => {
               query = query.bind(s);
             }
@@ -973,6 +1000,9 @@ pub trait Ctx<'a>: Send + Sized {
               query = query.bind(s);
             }
             ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::TimeStamp(s) => {
               query = query.bind(s);
             }
             ArgType::Date(s) => {
@@ -1057,6 +1087,9 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::TimeStamp(s) => {
+            query = query.bind(s);
+          }
           ArgType::Date(s) => {
             query = query.bind(s);
           }
@@ -1117,6 +1150,9 @@ pub trait Ctx<'a>: Send + Sized {
             query = query.bind(s);
           }
           ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::TimeStamp(s) => {
             query = query.bind(s);
           }
           ArgType::Date(s) => {
@@ -1338,8 +1374,9 @@ pub enum ArgType {
   F32(f32),
   F64(f64),
   String(String),
+  TimeStamp(DateTime<Local>),
   Date(NaiveDate),
-  DateTime(DateTime<Local>),
+  DateTime(NaiveDateTime),
   Time(NaiveTime),
   Json(serde_json::Value),
   Uuid(Uuid),
@@ -1364,6 +1401,7 @@ impl Serialize for ArgType {
       ArgType::F32(value) => serializer.serialize_f32(*value),
       ArgType::F64(value) => serializer.serialize_f64(*value),
       ArgType::String(value) => serializer.serialize_str(value),
+      ArgType::TimeStamp(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Date(value) => serializer.serialize_str(&value.format("%Y-%m-%d").to_string()),
       ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
@@ -1389,6 +1427,7 @@ impl Display for ArgType {
       ArgType::F32(value) => write!(f, "{}", value),
       ArgType::F64(value) => write!(f, "{}", value),
       ArgType::String(value) => write!(f, "{}", value),
+      ArgType::TimeStamp(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Date(value) => write!(f, "{}", value.format("%Y-%m-%d")),
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
@@ -1518,14 +1557,20 @@ impl From<&str> for ArgType {
   }
 }
 
+impl From<DateTime<Local>> for ArgType {
+  fn from(value: DateTime<Local>) -> Self {
+    ArgType::TimeStamp(value)
+  }
+}
+
 impl From<NaiveDate> for ArgType {
   fn from(value: NaiveDate) -> Self {
     ArgType::Date(value)
   }
 }
 
-impl From<DateTime<Local>> for ArgType {
-  fn from(value: DateTime<Local>) -> Self {
+impl From<NaiveDateTime> for ArgType {
+  fn from(value: NaiveDateTime) -> Self {
     ArgType::DateTime(value)
   }
 }

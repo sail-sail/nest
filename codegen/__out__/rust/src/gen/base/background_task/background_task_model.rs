@@ -20,9 +20,9 @@ pub struct BackgroundTaskModel {
   /// 错误信息
   pub err_msg: String,
   /// 开始时间
-  pub begin_time: Option<String>,
+  pub begin_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
-  pub end_time: Option<String>,
+  pub end_time: Option<chrono::NaiveDateTime>,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -48,9 +48,9 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 错误信息
     let err_msg: String = row.try_get("err_msg")?;
     // 开始时间
-    let begin_time: Option<String> = row.try_get("begin_time")?;
+    let begin_time: Option<chrono::NaiveDateTime> = row.try_get("begin_time")?;
     // 结束时间
-    let end_time: Option<String> = row.try_get("end_time")?;
+    let end_time: Option<chrono::NaiveDateTime> = row.try_get("end_time")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -125,9 +125,9 @@ pub struct BackgroundTaskSearch {
   pub err_msg: Option<String>,
   pub err_msg_like: Option<String>,
   /// 开始时间
-  pub begin_time: Option<Vec<String>>,
+  pub begin_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 结束时间
-  pub end_time: Option<Vec<String>>,
+  pub end_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 备注
   pub rem: Option<String>,
   pub rem_like: Option<String>,
@@ -153,9 +153,9 @@ pub struct BackgroundTaskInput {
   /// 错误信息
   pub err_msg: Option<String>,
   /// 开始时间
-  pub begin_time: Option<String>,
+  pub begin_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
-  pub end_time: Option<String>,
+  pub end_time: Option<chrono::NaiveDateTime>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人

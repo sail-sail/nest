@@ -12,7 +12,7 @@ pub struct TenantModel {
   /// 域名绑定
   pub host: String,
   /// 到期日
-  pub expiration: Option<String>,
+  pub expiration: Option<chrono::NaiveDate>,
   /// 最大用户数
   pub max_usr_num: u32,
   /// 启用
@@ -37,7 +37,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 域名绑定
     let host: String = row.try_get("host")?;
     // 到期日
-    let expiration: Option<String> = row.try_get("expiration")?;
+    let expiration: Option<chrono::NaiveDate> = row.try_get("expiration")?;
     // 最大用户数
     let max_usr_num: u32 = row.try_get("max_usr_num")?;
     // 启用
@@ -107,7 +107,7 @@ pub struct TenantSearch {
   pub host: Option<String>,
   pub host_like: Option<String>,
   /// 到期日
-  pub expiration: Option<Vec<String>>,
+  pub expiration: Option<Vec<chrono::NaiveDate>>,
   /// 最大用户数
   pub max_usr_num: Option<Vec<u32>>,
   /// 启用
@@ -131,7 +131,7 @@ pub struct TenantInput {
   /// 域名绑定
   pub host: Option<String>,
   /// 到期日
-  pub expiration: Option<String>,
+  pub expiration: Option<chrono::NaiveDate>,
   /// 最大用户数
   pub max_usr_num: Option<u32>,
   /// 启用

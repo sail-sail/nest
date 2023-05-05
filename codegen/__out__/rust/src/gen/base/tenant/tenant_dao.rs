@@ -104,15 +104,15 @@ fn get_where_query<'a>(
     }
   }
   {
-    let expiration: Vec<String> = match &search {
+    let expiration: Vec<chrono::NaiveDate> = match &search {
       Some(item) => item.expiration.clone().unwrap_or_default(),
       None => vec![],
     };
-    let expiration_gt: Option<String> = match &expiration.len() {
+    let expiration_gt: Option<chrono::NaiveDate> = match &expiration.len() {
       0 => None,
       _ => expiration[0].clone().into(),
     };
-    let expiration_lt: Option<String> = match &expiration.len() {
+    let expiration_lt: Option<chrono::NaiveDate> = match &expiration.len() {
       0 => None,
       1 => None,
       _ => expiration[1].clone().into(),

@@ -28,12 +28,12 @@ pub struct DictModel {
   pub create_usr_id: String,
   pub create_usr_id_lbl: String,
   /// 创建时间
-  pub create_time: Option<String>,
+  pub create_time: Option<chrono::NaiveDateTime>,
   /// 更新人
   pub update_usr_id: String,
   pub update_usr_id_lbl: String,
   /// 更新时间
-  pub update_time: Option<String>,
+  pub update_time: Option<chrono::NaiveDateTime>,
 }
 
 impl FromRow<'_, MySqlRow> for DictModel {
@@ -62,12 +62,12 @@ impl FromRow<'_, MySqlRow> for DictModel {
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: String = create_usr_id.to_string();
     // 创建时间
-    let create_time: Option<String> = row.try_get("create_time")?;
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     // 更新人
     let update_usr_id: String = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: String = update_usr_id.to_string();
     // 更新时间
-    let update_time: Option<String> = row.try_get("update_time")?;
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     
     let model = Self {
       id,
@@ -152,12 +152,12 @@ pub struct DictSearch {
   pub create_usr_id: Option<Vec<String>>,
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
-  pub create_time: Option<Vec<String>>,
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
   pub update_usr_id: Option<Vec<String>>,
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
-  pub update_time: Option<Vec<String>>,
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -185,12 +185,12 @@ pub struct DictInput {
   pub create_usr_id: Option<String>,
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
-  pub create_time: Option<String>,
+  pub create_time: Option<chrono::NaiveDateTime>,
   /// 更新人
   pub update_usr_id: Option<String>,
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
-  pub update_time: Option<String>,
+  pub update_time: Option<chrono::NaiveDateTime>,
 }
 
 impl From<DictInput> for DictSearch {
