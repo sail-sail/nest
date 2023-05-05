@@ -8,6 +8,8 @@ pub struct PageInput {
 
 #[derive(SimpleObject, InputObject, Debug)]
 pub struct SortInput {
+  #[graphql(default)]
   pub prop: String,
+  #[graphql(default)]
   pub order: String,
 }
