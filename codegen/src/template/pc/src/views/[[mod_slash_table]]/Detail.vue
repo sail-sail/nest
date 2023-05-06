@@ -139,7 +139,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               v-model="dialogModel.<#=column_name#>"
-              :method="get<#=foreignTableUp#>List"
+              :method="get<#=Foreign_Table_Up#>List"
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
                   label: item.<#=foreignKey.lbl#>,
@@ -429,6 +429,9 @@ import {<#
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     if (foreignTableArr2.includes(foreignTable)) continue;
     foreignTableArr2.push(foreignTable);
     if (column.noAdd && column.noEdit) {
@@ -437,7 +440,7 @@ import {<#
   #><#
     if (foreignKey) {
   #>
-  get<#=foreignTableUp#>List,<#
+  get<#=Foreign_Table_Up#>List,<#
     }
   }
   #>
