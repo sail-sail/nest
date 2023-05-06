@@ -631,12 +631,7 @@ pub async fn find_all<'a>(
       const many2many = column.many2many;
       const isPassword = column.isPassword;
   #><#
-    if (isPassword) {
-    #>
-    
-    // <#=column_comment#>
-    model.<#=column_name#> = "".to_owned();<#
-    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+    if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
     
     // <#=column_comment#>
