@@ -763,7 +763,7 @@ export async function findAll(
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD HH:mm:ss");
       }
     }<#
-      } else if (data_type === "datetime") {
+      } else if (data_type === "date") {
     #>
     
     // <#=column_comment#>
