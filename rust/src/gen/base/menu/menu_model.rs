@@ -38,7 +38,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let type_lbl: String = r#type.to_string();
     // 父菜单
     let menu_id: String = row.try_get("menu_id")?;
-    let menu_id_lbl: String = menu_id.to_string();
+    let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
+    let menu_id_lbl = menu_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 路由
