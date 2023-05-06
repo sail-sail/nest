@@ -114,7 +114,7 @@ impl DeptGenMutation {
   }
   
   /// 根据id修改租户id
-  pub async fn update_tenant_by_id<'a>(
+  pub async fn update_tenant_by_id_dept<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -133,7 +133,7 @@ impl DeptGenMutation {
   }
   
   /// 根据id修改数据
-  pub async fn update_by_id<'a>(
+  pub async fn update_by_id_dept<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -152,7 +152,7 @@ impl DeptGenMutation {
   }
   
   /// 根据 ids 删除数据
-  pub async fn delete_by_ids<'a>(
+  pub async fn delete_by_ids_dept<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -169,7 +169,7 @@ impl DeptGenMutation {
   }
   
   /// 根据 ids 还原数据
-  pub async fn revert_by_ids<'a>(
+  pub async fn revert_by_ids_dept<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -186,7 +186,7 @@ impl DeptGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  pub async fn force_delete_by_ids<'a>(
+  pub async fn force_delete_by_ids_dept<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
