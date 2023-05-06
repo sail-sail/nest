@@ -30,11 +30,13 @@ pub struct OptionsModel {
   pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: String,
   pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for OptionsModel {
@@ -65,11 +67,19 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     let create_usr_id_lbl: String = create_usr_id.to_string();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(create_time) => create_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 更新人
     let update_usr_id: String = row.try_get("update_usr_id")?;
     let update_usr_id_lbl: String = update_usr_id.to_string();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     
     let model = Self {
       id,
@@ -86,9 +96,11 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
       create_usr_id,
       create_usr_id_lbl,
       create_time,
+      create_time_lbl,
       update_usr_id,
       update_usr_id_lbl,
       update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -121,11 +133,13 @@ pub struct OptionsFieldComment {
   pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: String,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: String,
   pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: String,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]

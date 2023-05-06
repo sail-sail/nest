@@ -21,8 +21,10 @@ pub struct BackgroundTaskModel {
   pub err_msg: String,
   /// 开始时间
   pub begin_time: Option<chrono::NaiveDateTime>,
+  pub begin_time_lbl: String,
   /// 结束时间
   pub end_time: Option<chrono::NaiveDateTime>,
+  pub end_time_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -49,8 +51,16 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     let err_msg: String = row.try_get("err_msg")?;
     // 开始时间
     let begin_time: Option<chrono::NaiveDateTime> = row.try_get("begin_time")?;
+    let begin_time_lbl: String = match begin_time {
+      Some(begin_time) => begin_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 结束时间
     let end_time: Option<chrono::NaiveDateTime> = row.try_get("end_time")?;
+    let end_time_lbl: String = match end_time {
+      Some(end_time) => end_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -67,7 +77,9 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
       result,
       err_msg,
       begin_time,
+      begin_time_lbl,
       end_time,
+      end_time_lbl,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -94,8 +106,10 @@ pub struct BackgroundTaskFieldComment {
   pub err_msg: String,
   /// 开始时间
   pub begin_time: String,
+  pub begin_time_lbl: String,
   /// 结束时间
   pub end_time: String,
+  pub end_time_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人

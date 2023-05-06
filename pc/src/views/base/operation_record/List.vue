@@ -56,27 +56,6 @@
         </el-form-item>
       </template>
       
-      <el-form-item
-        :label="'创建时间'"
-        prop="create_time"
-      >
-        <!-- <el-input
-          v-model="search.create_time"
-          un-w="full"
-          clearable
-          @clear="searchIptClr"
-        ></el-input> -->
-        <ElDatePicker
-          :set="search.create_time = search.create_time || [ ]"
-          v-model="(search.create_time as any)"
-          value-format="YYYY-MM-DDTHH:mm:ss"
-          type="datetimerange"
-          un-w="full"
-          clearable
-          @clear="searchIptClr"
-        ></ElDatePicker>
-      </el-form-item>
-      
       <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('操作')"
