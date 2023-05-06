@@ -131,7 +131,7 @@ export async function getClient(): Promise<Client> {
     } else {
       configLogger({ enable: false });
     }
-    opt.dateStrings = true;
+    opt.dateStrings = false;
     opt.bigNumberStrings = true;
     // opt.stringifyObjects = true;
     // console.log(opt);

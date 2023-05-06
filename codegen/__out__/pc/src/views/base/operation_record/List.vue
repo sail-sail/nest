@@ -71,6 +71,27 @@
         </el-form-item>
       </template>
       
+      <template v-if="builtInSearch?.create_time == null">
+        <el-form-item
+          :label="n('创建时间')"
+          prop="create_time"
+        >
+          <el-date-picker
+            :set="search.create_time = search.create_time || [ ]"
+            type="daterange"
+            un-w="full"
+            :model-value="(search.create_time as any)"
+            :start-placeholder="ns('开始')"
+            :end-placeholder="ns('结束')"
+            format="YYYY-MM-DD"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
+            clearable
+            @update:model-value="search.create_time = $event"
+            @clear="searchIptClr"
+          ></el-date-picker>
+        </el-form-item>
+      </template>
+      
       <template v-if="builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
@@ -711,14 +732,14 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      width: 100,
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
       label: "创建时间",
-      prop: "create_time",
+      prop: "create_time_lbl",
       width: 150,
       align: "center",
       headerAlign: "center",
@@ -727,14 +748,14 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      width: 100,
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
       label: "更新时间",
-      prop: "update_time",
+      prop: "update_time_lbl",
       width: 150,
       align: "center",
       headerAlign: "center",

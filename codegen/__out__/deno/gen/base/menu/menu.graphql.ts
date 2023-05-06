@@ -20,7 +20,7 @@ type MenuModel {
   "路由"
   route_path: String!
   "参数"
-  route_query: JSON
+  route_query: String
   "启用"
   is_enabled: Int!
   "启用"
@@ -72,7 +72,7 @@ input MenuInput {
   "路由"
   route_path: String
   "参数"
-  route_query: JSON
+  route_query: String
   "启用"
   is_enabled: Int
   "启用"

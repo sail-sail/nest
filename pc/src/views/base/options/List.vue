@@ -837,7 +837,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "创建时间",
-      prop: "create_time",
+      prop: "create_time_lbl",
       width: 150,
       align: "center",
       headerAlign: "center",
@@ -853,7 +853,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "更新时间",
-      prop: "update_time",
+      prop: "update_time_lbl",
       width: 150,
       align: "center",
       headerAlign: "center",

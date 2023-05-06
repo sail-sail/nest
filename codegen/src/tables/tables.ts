@@ -501,7 +501,7 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
         },
-        width: 100,
+        width: 120,
       },
       {
         COLUMN_NAME: "create_time",
@@ -509,6 +509,7 @@ export default defineConfig({
         noAdd: true,
         noEdit: true,
         width: 150,
+        search: true,
       },
       {
         COLUMN_NAME: "update_usr_id",
@@ -520,7 +521,7 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
         },
-        width: 100,
+        width: 120,
       },
       {
         COLUMN_NAME: "update_time",

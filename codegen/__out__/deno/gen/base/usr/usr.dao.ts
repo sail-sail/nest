@@ -4,6 +4,8 @@ import {
   escape,
 } from "sqlstring";
 
+import dayjs from "dayjs";
+
 import {
   log,
   escapeDec,

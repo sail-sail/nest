@@ -115,7 +115,6 @@
               un-w="full"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ n('请选择') } ${ n('开始时间') }`"
             ></el-date-picker>
           </el-form-item>
@@ -133,7 +132,6 @@
               un-w="full"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ n('请选择') } ${ n('结束时间') }`"
             ></el-date-picker>
           </el-form-item>

@@ -90,7 +90,6 @@
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD HH:mm:ss"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
             clearable
             @update:model-value="search.begin_time = $event"
@@ -705,7 +704,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "开始时间",
-      prop: "begin_time",
+      prop: "begin_time_lbl",
       width: 180,
       sortable: "custom",
       align: "center",
@@ -714,7 +713,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "结束时间",
-      prop: "end_time",
+      prop: "end_time_lbl",
       width: 180,
       sortable: "custom",
       align: "center",

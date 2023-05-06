@@ -4,6 +4,8 @@ import {
   escape,
 } from "sqlstring";
 
+import dayjs from "dayjs";
+
 import {
   log,
   escapeDec,
@@ -312,6 +314,26 @@ export async function findAll(
       }
     }
     model.type_lbl = type_lbl;
+    
+    // 开始时间
+    if (model.begin_time) {
+      const begin_time = dayjs(model.begin_time);
+      if (isNaN(begin_time.toDate().getTime())) {
+        model.begin_time_lbl = (model.begin_time || "").toString();
+      } else {
+        model.begin_time_lbl = begin_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    }
+    
+    // 结束时间
+    if (model.end_time) {
+      const end_time = dayjs(model.end_time);
+      if (isNaN(end_time.toDate().getTime())) {
+        model.end_time_lbl = (model.end_time || "").toString();
+      } else {
+        model.end_time_lbl = end_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    }
   }
   
   return result;
