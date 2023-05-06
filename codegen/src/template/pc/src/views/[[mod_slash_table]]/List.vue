@@ -76,7 +76,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
             v-model="search.<#=column_name#>"
-            :method="get<#=foreignTableUp#>List"
+            :method="get<#=Foreign_Table_Up#>List"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -733,11 +733,14 @@ const hasAtt = columns.some((item) => item.isAtt);
               } else if (foreignKey.isLinkForeignTabs) {
                 const foreignTable = foreignKey.table;
                 const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+                const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+                  return item.substring(0, 1).toUpperCase() + item.substring(1);
+                }).join("");
             #>
               <template #default="scope">
                 <el-link
                   type="primary"
-                  @click="open<#=foreignTableUp#>ForeignTabs(scope.row.<#=column_name#>, scope.row[scope.column.property])"
+                  @click="open<#=Foreign_Table_Up#>ForeignTabs(scope.row.<#=column_name#>, scope.row[scope.column.property])"
                 >
                   {{ scope.row[scope.column.property] }}
                 </el-link>
@@ -803,6 +806,9 @@ const hasAtt = columns.some((item) => item.isAtt);
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
   #><#
     if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
   #>
@@ -810,18 +816,18 @@ const hasAtt = columns.some((item) => item.isAtt);
     ref="<#=column_name#>ListSelectDialogRef"
     v-slot="{ selectedIds }"
   >
-    <<#=foreignTableUp#>List
+    <<#=Foreign_Table_Up#>List
       :selected-ids="selectedIds"
       @selected-ids-chg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
-    ></<#=foreignTableUp#>List>
+    ></<#=Foreign_Table_Up#>List>
   </ListSelectDialog><#
     }
   #><#
     if (foreignKey && foreignKey.isLinkForeignTabs) {
   #>
-  <<#=foreignTableUp#>ForeignTabs
+  <<#=Foreign_Table_Up#>ForeignTabs
     ref="<#=foreignTable#>ForeignTabsRef"
-  ></<#=foreignTableUp#>ForeignTabs><#
+  ></<#=Foreign_Table_Up#>ForeignTabs><#
   }
   #><#
   }
@@ -870,15 +876,18 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
 #><#
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
-import <#=foreignTableUp#>List from "../<#=foreignTable#>/List.vue";<#
+import <#=Foreign_Table_Up#>List from "../<#=foreignTable#>/List.vue";<#
   }
 #><#
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
-import <#=foreignTableUp#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.vue";<#
+import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.vue";<#
   }
 #><#
 }
@@ -943,10 +952,10 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (table === foreignTable) continue;
   if (foreignTableUpArr.includes(foreignTableUp)) continue;
-  foreignTableUpArr.push(foreignTableUp);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  foreignTableUpArr.push(Foreign_Table_Up);
 #>
   type <#=Foreign_Table_Up#>Model,<#
 }
@@ -990,8 +999,11 @@ import {<#
   for (let i = 0; i < foreignTableArr.length; i++) {
     const foreignTable = foreignTableArr[i];
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
   #>
-  get<#=foreignTableUp#>List,<#
+  get<#=Foreign_Table_Up#>List,<#
   }
   #>
 } from "./Api";<#
@@ -2105,6 +2117,9 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
 #><#
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
@@ -2146,9 +2161,9 @@ async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
 
-let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=foreignTableUp#>ForeignTabs> | undefined>();
+let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs> | undefined>();
 
-async function open<#=foreignTableUp#>ForeignTabs(id: string, title: string) {
+async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({
     title,
     model: {
