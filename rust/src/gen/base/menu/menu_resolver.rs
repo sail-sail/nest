@@ -100,13 +100,13 @@ impl MenuGenMutation {
   pub async fn create_menu<'a>(
     &self,
     ctx: &Context<'a>,
-    input: MenuInput,
+    model: MenuInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = menu_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl MenuGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: MenuInput,
+    model: MenuInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = menu_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

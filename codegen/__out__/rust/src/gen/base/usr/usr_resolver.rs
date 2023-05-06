@@ -100,13 +100,13 @@ impl UsrGenMutation {
   pub async fn create_usr<'a>(
     &self,
     ctx: &Context<'a>,
-    input: UsrInput,
+    model: UsrInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = usr_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -137,14 +137,14 @@ impl UsrGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: UsrInput,
+    model: UsrInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = usr_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

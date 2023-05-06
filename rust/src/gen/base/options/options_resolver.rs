@@ -100,13 +100,13 @@ impl OptionsGenMutation {
   pub async fn create_options<'a>(
     &self,
     ctx: &Context<'a>,
-    input: OptionsInput,
+    model: OptionsInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = options_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl OptionsGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: OptionsInput,
+    model: OptionsInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = options_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

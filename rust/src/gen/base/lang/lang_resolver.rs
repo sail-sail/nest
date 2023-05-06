@@ -100,13 +100,13 @@ impl LangGenMutation {
   pub async fn create_lang<'a>(
     &self,
     ctx: &Context<'a>,
-    input: LangInput,
+    model: LangInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = lang_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl LangGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: LangInput,
+    model: LangInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = lang_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

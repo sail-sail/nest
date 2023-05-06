@@ -100,13 +100,13 @@ impl RoleGenMutation {
   pub async fn create_role<'a>(
     &self,
     ctx: &Context<'a>,
-    input: RoleInput,
+    model: RoleInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = role_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -137,14 +137,14 @@ impl RoleGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: RoleInput,
+    model: RoleInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = role_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     
