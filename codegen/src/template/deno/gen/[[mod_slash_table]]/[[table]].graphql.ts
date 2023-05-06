@@ -78,10 +78,18 @@ type <#=Table_Up#>Model {<#
       data_type += "!";
     }
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
+    ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String<#
     } else {
   #>
   "<#=column_comment#>"
@@ -218,7 +226,7 @@ input <#=Table_Up#>Search {
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
-    let column_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const isPassword = column.isPassword;
@@ -309,12 +317,18 @@ input <#=Table_Up#>Search {
     } else if (
       column.DATA_TYPE === "int"
       || column.DATA_TYPE === "decimal"
-      || column.DATA_TYPE === "date"
-      || column.DATA_TYPE === "datetime"
     ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
+    } else if (
+      column.DATA_TYPE === "date"
+      || column.DATA_TYPE === "datetime"
+    ) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  <#=column_name#>_lbl: String<#
     } else {
   #>
   "<#=column_comment#>"

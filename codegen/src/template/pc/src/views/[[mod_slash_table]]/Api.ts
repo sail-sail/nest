@@ -68,7 +68,8 @@ export async function findAll(
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
-            let column_type = column.DATA_TYPE;
+            let column_type = column.COLUMN_TYPE;
+            let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
             let selectList = [ ];
             let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -82,13 +83,15 @@ export async function findAll(
             const isPassword = column.isPassword;
             if (isPassword) continue;
           #><#
-            if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-          #>
-          <#=column_name#><#
-            } else {
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "datetime" || data_type === "date"
+            ) {
           #>
           <#=column_name#>
           <#=column_name#>_lbl<#
+            } else {
+          #>
+          <#=column_name#><#
             }
           }
           #>
@@ -110,6 +113,7 @@ export async function findAll(
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const data_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
     let formatter = column.formatter;
     if (!formatter) {
       if (data_type === "json") {
@@ -281,7 +285,8 @@ export async function findById(
             if (column.ignoreCodegen) continue;
             if (column.onlyCodegenDeno) continue;
             const column_name = column.COLUMN_NAME;
-            let column_type = column.DATA_TYPE;
+            let column_type = column.COLUMN_TYPE;
+            let data_type = column.DATA_TYPE;
             let column_comment = column.COLUMN_COMMENT;
             let selectList = [ ];
             let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -293,13 +298,15 @@ export async function findById(
             }
             const foreignKey = column.foreignKey;
           #><#
-            if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-          #>
-          <#=column_name#><#
-            } else {
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "datetime" || data_type === "date"
+            ) {
           #>
           <#=column_name#>
           <#=column_name#>_lbl<#
+            } else {
+          #>
+          <#=column_name#><#
             }
           }
           #>
@@ -540,7 +547,8 @@ export function useExportExcel() {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
-              let column_type = column.DATA_TYPE;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
               let selectList = [ ];
               let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -552,13 +560,15 @@ export function useExportExcel() {
               }
               const foreignKey = column.foreignKey;
             #><#
-              if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-            #>
-            <#=column_name#><#
-              } else {
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
             #>
             <#=column_name#>
             <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
               }
             }
             #>
@@ -569,7 +579,8 @@ export function useExportExcel() {
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
               const column_name = column.COLUMN_NAME;
-              let column_type = column.DATA_TYPE;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
               let column_comment = column.COLUMN_COMMENT;
               let selectList = [ ];
               let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
@@ -586,13 +597,15 @@ export function useExportExcel() {
               const isPassword = column.isPassword;
               if (isPassword) continue;
             #><#
-              if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-            #>
-            <#=column_name#><#
-              } else {
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
             #>
             <#=column_name#>
             <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
               }
             }
             #>

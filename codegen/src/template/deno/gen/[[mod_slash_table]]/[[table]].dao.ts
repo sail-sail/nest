@@ -35,6 +35,8 @@ import {
   escape,
 } from "sqlstring";
 
+import dayjs from "dayjs";
+
 import {
   log,
   escapeDec,
@@ -749,6 +751,30 @@ export async function findAll(
       }
     }
     model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+      } else if (data_type === "datetime") {
+    #>
+    
+    // <#=column_comment#>
+    if (model.<#=column_name#>) {
+      const <#=column_name#> = dayjs(model.<#=column_name#>);
+      if (isNaN(<#=column_name#>.toDate().getTime())) {
+        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
+      } else {
+        model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD HH:mm:ss");
+      }
+    }<#
+      } else if (data_type === "datetime") {
+    #>
+    
+    // <#=column_comment#>
+    if (model.<#=column_name#>) {
+      const <#=column_name#> = dayjs(model.<#=column_name#>);
+      if (isNaN(<#=column_name#>.toDate().getTime())) {
+        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
+      } else {
+        model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD");
+      }
+    }<#
       }
     #><#
     }

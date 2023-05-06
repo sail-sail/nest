@@ -39,7 +39,9 @@ export async function findAll(
           result
           err_msg
           begin_time
+          begin_time_lbl
           end_time
+          end_time_lbl
           rem
         }
       }
@@ -108,7 +110,9 @@ export async function findById(
           result
           err_msg
           begin_time
+          begin_time_lbl
           end_time
+          end_time_lbl
           rem
         }
       }
@@ -231,7 +235,9 @@ export function useExportExcel() {
             result
             err_msg
             begin_time
+            begin_time_lbl
             end_time
+            end_time_lbl
             rem
           }
           getFieldCommentsBackgroundTask {
@@ -243,7 +249,9 @@ export function useExportExcel() {
             result
             err_msg
             begin_time
+            begin_time_lbl
             end_time
+            end_time_lbl
             rem
           }
         }
