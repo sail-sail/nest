@@ -294,6 +294,16 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 到期日
+    if (model.expiration) {
+      const expiration = dayjs(model.expiration);
+      if (isNaN(expiration.toDate().getTime())) {
+        model.expiration_lbl = (model.expiration || "").toString();
+      } else {
+        model.expiration_lbl = expiration.format("YYYY-MM-DD");
+      }
+    }
+    
     // 启用
     let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
