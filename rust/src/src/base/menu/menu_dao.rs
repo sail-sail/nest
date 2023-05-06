@@ -89,7 +89,7 @@ fn tmp_fn(
       if let Some(parent_id) = parent_id.clone() {
         item.menu_id == parent_id
       } else {
-        false
+        item.menu_id == ""
       }
     })
     .collect::<Vec<GetMenus>>();

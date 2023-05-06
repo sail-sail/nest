@@ -367,9 +367,6 @@ pub async fn find_all<'a>(
   #[allow(unused_assignments)]
   for model in &mut res {
     
-    // 密码
-    model.password = "".to_owned();
-    
     // 启用
     model.is_enabled_lbl = {
       is_enabled_dict.iter()

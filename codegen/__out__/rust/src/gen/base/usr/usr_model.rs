@@ -43,7 +43,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 用户名
     let username: String = row.try_get("username")?;
     // 密码
-    let password: String = row.try_get("password")?;
+    let password = "".to_owned();
     // 默认部门
     let default_dept_id: String = row.try_get("default_dept_id")?;
     let default_dept_id_lbl: String = default_dept_id.to_string();
