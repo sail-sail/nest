@@ -123,10 +123,18 @@ type <#=Table_Up#>FieldComment {<#
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
+    ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String!
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String!<#
     } else {
   #>
   "<#=column_comment#>"
@@ -327,8 +335,7 @@ input <#=Table_Up#>Search {
     ) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
-  <#=column_name#>_lbl: String<#
+  <#=column_name#>: <#=data_type#><#
     } else {
   #>
   "<#=column_comment#>"
