@@ -389,9 +389,11 @@ export async function getFieldComments() {
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
     update_usr_id: await n("更新人"),
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }

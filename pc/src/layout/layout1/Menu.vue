@@ -24,6 +24,10 @@ import useUsrStore from "@/store/usr";
 
 import { getMenus } from "./Api";
 
+import {
+  type LocationQueryRaw,
+} from "vue-router";
+
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
 
@@ -33,6 +37,8 @@ let selectedRouteNext = $ref(false);
 const route = useRoute();
 const router = useRouter();
 
+let defaultActive = $ref<string>();
+
 watch(
   [
     () => route.path,
@@ -41,6 +47,9 @@ watch(
   () => {
     if (selectedRouteNext) return;
     setDefaultActiveByRouter(route.path, route.query);
+  },
+  {
+    immediate: true,
   },
 );
 
@@ -61,17 +70,20 @@ async function menuSelect(id: string) {
   selectedRouteNext = true;
   const model = menuStore.getMenuById(id);
   if (model) {
+    const path = model.route_path;
+    let query: LocationQueryRaw | undefined = undefined;
+    if (model.route_query) {
+      query = JSON.parse(model.route_query);
+    }
     await router.push({
-      path: model.route_path,
-      query: model.route_query,
+      path,
+      query,
     });
   }
   setTimeout(() => {
     selectedRouteNext = false;
   }, 0);
 }
-
-let defaultActive = $ref<string | undefined>();
 
 async function getMenusEfc() {
   const result = await getMenus({ type: "pc" });

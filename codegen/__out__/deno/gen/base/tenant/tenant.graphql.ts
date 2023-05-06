@@ -14,7 +14,7 @@ type TenantModel {
   "到期日"
   expiration: Date
   "到期日"
-  expiration_lbl: String
+  expiration_lbl: String!
   "最大用户数"
   max_usr_num: Int!
   "启用"
@@ -37,6 +37,8 @@ type TenantFieldComment {
   host: String!
   "到期日"
   expiration: String!
+  "到期日"
+  expiration_lbl: String!
   "最大用户数"
   max_usr_num: String!
   "启用"
@@ -93,7 +95,6 @@ input TenantSearch {
   host_like: String
   "到期日"
   expiration: [NaiveDate!]
-  expiration_lbl: String
   "最大用户数"
   max_usr_num: [Int!]
   "启用"

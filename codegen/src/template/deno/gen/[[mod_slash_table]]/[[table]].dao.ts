@@ -810,7 +810,9 @@ export async function getFieldComments() {
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
     #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
     #>
     <#=column_name#>: await n("<#=column_comment#>"),
     <#=column_name#>_lbl: await n("<#=column_comment#>"),<#
