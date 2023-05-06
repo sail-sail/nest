@@ -11,7 +11,7 @@ use super::i18n_service;
 #[derive(Default)]
 pub struct I18nGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl I18nGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl I18nGenQuery {
 #[derive(Default)]
 pub struct I18nGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl I18nGenMutation {
   
   /// 创建数据

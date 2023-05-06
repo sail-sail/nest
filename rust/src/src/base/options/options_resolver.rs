@@ -9,7 +9,7 @@ use crate::gen::base::options::options_model::OptionsModel;
 #[derive(Default)]
 pub struct OptionsQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl OptionsQuery {
   
   async fn get_options_by_lbl<'a>(

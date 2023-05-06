@@ -9,7 +9,7 @@ use crate::gen::base::lang::lang_model::LangModel;
 #[derive(Default)]
 pub struct LangQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl LangQuery {
   
   async fn get_login_langs<'a>(

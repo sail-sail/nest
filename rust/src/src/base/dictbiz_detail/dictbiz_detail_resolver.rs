@@ -9,7 +9,7 @@ use super::dictbiz_detail_service;
 #[derive(Default)]
 pub struct DictbizDetailQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl DictbizDetailQuery {
   
   async fn get_dict<'a>(

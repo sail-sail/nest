@@ -11,7 +11,7 @@ use super::background_task_service;
 #[derive(Default)]
 pub struct BackgroundTaskGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl BackgroundTaskGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl BackgroundTaskGenQuery {
 #[derive(Default)]
 pub struct BackgroundTaskGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl BackgroundTaskGenMutation {
   
   /// 创建数据

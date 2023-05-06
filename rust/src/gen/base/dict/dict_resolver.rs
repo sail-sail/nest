@@ -11,7 +11,7 @@ use super::dict_service;
 #[derive(Default)]
 pub struct DictGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl DictGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl DictGenQuery {
 #[derive(Default)]
 pub struct DictGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl DictGenMutation {
   
   /// 创建数据

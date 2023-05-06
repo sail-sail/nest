@@ -11,7 +11,7 @@ use super::lang_service;
 #[derive(Default)]
 pub struct LangGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl LangGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl LangGenQuery {
 #[derive(Default)]
 pub struct LangGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl LangGenMutation {
   
   /// 创建数据

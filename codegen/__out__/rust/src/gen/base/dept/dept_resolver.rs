@@ -11,7 +11,7 @@ use super::dept_service;
 #[derive(Default)]
 pub struct DeptGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl DeptGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl DeptGenQuery {
 #[derive(Default)]
 pub struct DeptGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl DeptGenMutation {
   
   /// 创建数据

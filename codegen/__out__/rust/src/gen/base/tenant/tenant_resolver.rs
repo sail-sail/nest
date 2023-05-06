@@ -11,7 +11,7 @@ use super::tenant_service;
 #[derive(Default)]
 pub struct TenantGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl TenantGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl TenantGenQuery {
 #[derive(Default)]
 pub struct TenantGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl TenantGenMutation {
   
   /// 创建数据

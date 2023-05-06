@@ -11,7 +11,7 @@ use super::usr_service;
 #[derive(Default)]
 pub struct UsrGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl UsrGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl UsrGenQuery {
 #[derive(Default)]
 pub struct UsrGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl UsrGenMutation {
   
   /// 创建数据

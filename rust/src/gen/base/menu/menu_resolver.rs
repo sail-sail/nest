@@ -11,7 +11,7 @@ use super::menu_service;
 #[derive(Default)]
 pub struct MenuGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl MenuGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl MenuGenQuery {
 #[derive(Default)]
 pub struct MenuGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl MenuGenMutation {
   
   /// 创建数据

@@ -9,7 +9,7 @@ use super::menu_model::GetMenus;
 #[derive(Default)]
 pub struct MenuQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl MenuQuery {
   
   async fn get_menus<'a>(
