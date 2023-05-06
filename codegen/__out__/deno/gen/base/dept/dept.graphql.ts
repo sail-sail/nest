@@ -30,13 +30,17 @@ type DeptModel {
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
-  create_time: String
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
   "更新人"
   update_usr_id: ID!
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
-  update_time: String
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
 }
 type DeptFieldComment {
   "父部门"
@@ -98,13 +102,13 @@ input DeptInput {
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
-  create_time: String
+  create_time: NaiveDateTime
   "更新人"
   update_usr_id: ID
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
-  update_time: String
+  update_time: NaiveDateTime
 }
 input DeptSearch {
   "是否已删除"
@@ -134,13 +138,15 @@ input DeptSearch {
   create_usr_id_lbl: [String!]
   create_usr_id_is_null: Boolean
   "创建时间"
-  create_time: [String!]
+  create_time: [NaiveDateTime!]
+  create_time_lbl: String
   "更新人"
   update_usr_id: [String!]
   update_usr_id_lbl: [String!]
   update_usr_id_is_null: Boolean
   "更新时间"
-  update_time: [String!]
+  update_time: [NaiveDateTime!]
+  update_time_lbl: String
 }
 type Query {
   "根据条件查找据数总数"

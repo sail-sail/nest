@@ -38,16 +38,16 @@ type <#=Table_Up#>Model {<#
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'String';
+      data_type = 'Date';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'String';
+      data_type = 'NaiveDateTime';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'json') {
-      data_type = 'JSON';
+      data_type = 'String';
     }
     else if (column.DATA_TYPE === 'text') {
       data_type = 'String';
@@ -56,7 +56,7 @@ type <#=Table_Up#>Model {<#
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'Float';
+      data_type = 'Decimal';
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
@@ -78,10 +78,18 @@ type <#=Table_Up#>Model {<#
       data_type += "!";
     }
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
+    ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String<#
     } else {
   #>
   "<#=column_comment#>"
@@ -153,16 +161,16 @@ input <#=Table_Up#>Input {<#
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'String';
+      data_type = 'NaiveDate';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = 'String';
+      data_type = 'NaiveDateTime';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'json') {
-      data_type = 'JSON';
+      data_type = 'String';
     }
     else if (column.DATA_TYPE === 'text') {
       data_type = 'String';
@@ -171,7 +179,7 @@ input <#=Table_Up#>Input {<#
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'Float';
+      data_type = 'Decimal';
     }
     let column_comment = column.COLUMN_COMMENT;
     let selectList = [ ];
@@ -218,7 +226,7 @@ input <#=Table_Up#>Search {
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
-    let column_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const isPassword = column.isPassword;
@@ -234,10 +242,10 @@ input <#=Table_Up#>Search {
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = '[String!]';
+      data_type = '[NaiveDate!]';
     }
     else if (column.DATA_TYPE === 'datetime') {
-      data_type = '[String!]';
+      data_type = '[NaiveDateTime!]';
     }
     else if (column.DATA_TYPE === 'int') {
       data_type = '[Int!]';
@@ -252,7 +260,7 @@ input <#=Table_Up#>Search {
       data_type = 'Int';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = '[Float!]';
+      data_type = '[Decimal!]';
     }
     if (column_name.startsWith("is_")) {
       data_type = 'Int';
@@ -309,12 +317,18 @@ input <#=Table_Up#>Search {
     } else if (
       column.DATA_TYPE === "int"
       || column.DATA_TYPE === "decimal"
-      || column.DATA_TYPE === "date"
-      || column.DATA_TYPE === "datetime"
     ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
+    } else if (
+      column.DATA_TYPE === "date"
+      || column.DATA_TYPE === "datetime"
+    ) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  <#=column_name#>_lbl: String<#
     } else {
   #>
   "<#=column_comment#>"

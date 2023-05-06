@@ -35,6 +35,7 @@ export async function findAll(
           lbl
           host
           expiration
+          expiration_lbl
           max_usr_num
           is_enabled
           is_enabled_lbl
@@ -159,6 +160,7 @@ export async function findById(
           lbl
           host
           expiration
+          expiration_lbl
           max_usr_num
           is_enabled
           is_enabled_lbl
@@ -327,6 +329,7 @@ export function useExportExcel() {
             lbl
             host
             expiration
+            expiration_lbl
             max_usr_num
             is_enabled
             is_enabled_lbl
@@ -339,6 +342,7 @@ export function useExportExcel() {
             lbl
             host
             expiration
+            expiration_lbl
             max_usr_num
             is_enabled
             is_enabled_lbl

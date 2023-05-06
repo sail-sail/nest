@@ -70,7 +70,6 @@
               un-w="full"
               type="date"
               format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD 00:00:00"
               :placeholder="`${ n('请选择') } ${ n('到期日') }`"
             ></el-date-picker>
           </el-form-item>

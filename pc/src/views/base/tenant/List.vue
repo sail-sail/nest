@@ -755,7 +755,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "到期日",
-      prop: "expiration",
+      prop: "expiration_lbl",
       width: 140,
       align: "center",
       headerAlign: "center",

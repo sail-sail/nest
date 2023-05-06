@@ -22,9 +22,13 @@ type BackgroundTaskModel {
   "错误信息"
   err_msg: String!
   "开始时间"
-  begin_time: String
+  begin_time: NaiveDateTime
+  "开始时间"
+  begin_time_lbl: String
   "结束时间"
-  end_time: String
+  end_time: NaiveDateTime
+  "结束时间"
+  end_time_lbl: String
   "备注"
   rem: String!
 }
@@ -70,9 +74,9 @@ input BackgroundTaskInput {
   "错误信息"
   err_msg: String
   "开始时间"
-  begin_time: String
+  begin_time: NaiveDateTime
   "结束时间"
-  end_time: String
+  end_time: NaiveDateTime
   "备注"
   rem: String
 }
@@ -97,9 +101,11 @@ input BackgroundTaskSearch {
   err_msg: String
   err_msg_like: String
   "开始时间"
-  begin_time: [String!]
+  begin_time: [NaiveDateTime!]
+  begin_time_lbl: String
   "结束时间"
-  end_time: [String!]
+  end_time: [NaiveDateTime!]
+  end_time_lbl: String
   "备注"
   rem: String
   rem_like: String

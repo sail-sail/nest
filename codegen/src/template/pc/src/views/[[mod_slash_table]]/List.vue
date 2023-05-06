@@ -142,7 +142,6 @@ const hasAtt = columns.some((item) => item.isAtt);
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD HH:mm:ss"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
             clearable
             @update:model-value="search.<#=column_name#> = $event"
@@ -1471,11 +1470,13 @@ function getTableColumns(): ColumnType[] {
       }
       #>
     },<#
-    } else if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
+    } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
     #>
     {
       label: "<#=column_comment#>",
-      prop: "<#=column_name#>",<#
+      prop: "<#=column_name#>_lbl",<#
       if (column.width) {
       #>
       width: <#=column.width#>,<#
@@ -1512,11 +1513,11 @@ function getTableColumns(): ColumnType[] {
       }
       #>
     },<#
-    } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz) {
+    } else {
     #>
     {
       label: "<#=column_comment#>",
-      prop: "<#=column_name#>_lbl",<#
+      prop: "<#=column_name#>",<#
       if (column.width) {
       #>
       width: <#=column.width#>,<#
