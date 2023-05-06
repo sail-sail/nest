@@ -28,10 +28,12 @@ impl FromRow<'_, MySqlRow> for I18nModel {
     let id: ID = id.into();
     // 语言
     let lang_id: String = row.try_get("lang_id")?;
-    let lang_id_lbl: String = lang_id.to_string();
+    let lang_id_lbl: Option<String> = row.try_get("lang_id_lbl")?;
+    let lang_id_lbl = lang_id_lbl.unwrap_or_default();
     // 菜单
     let menu_id: String = row.try_get("menu_id")?;
-    let menu_id_lbl: String = menu_id.to_string();
+    let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
+    let menu_id_lbl = menu_id_lbl.unwrap_or_default();
     // 编码
     let code: String = row.try_get("code")?;
     // 名称

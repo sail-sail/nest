@@ -33,7 +33,8 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
     let id: ID = id.into();
     // 业务字典
     let dictbiz_id: String = row.try_get("dictbiz_id")?;
-    let dictbiz_id_lbl: String = dictbiz_id.to_string();
+    let dictbiz_id_lbl: Option<String> = row.try_get("dictbiz_id_lbl")?;
+    let dictbiz_id_lbl = dictbiz_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 值

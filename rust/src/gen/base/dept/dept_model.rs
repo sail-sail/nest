@@ -43,7 +43,8 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     let id: ID = id.into();
     // 父部门
     let parent_id: String = row.try_get("parent_id")?;
-    let parent_id_lbl: String = parent_id.to_string();
+    let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
+    let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 排序
@@ -58,7 +59,8 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     let is_locked_lbl: String = is_locked.to_string();
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: String = create_usr_id.to_string();
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
@@ -67,7 +69,8 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     };
     // 更新人
     let update_usr_id: String = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: String = update_usr_id.to_string();
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {

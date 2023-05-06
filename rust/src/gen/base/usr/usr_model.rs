@@ -46,7 +46,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let password = "".to_owned();
     // 默认部门
     let default_dept_id: String = row.try_get("default_dept_id")?;
-    let default_dept_id_lbl: String = default_dept_id.to_string();
+    let default_dept_id_lbl: Option<String> = row.try_get("default_dept_id_lbl")?;
+    let default_dept_id_lbl = default_dept_id_lbl.unwrap_or_default();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();

@@ -170,7 +170,8 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
-    let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>_lbl")?;<#
+    let <#=column_name#>_lbl: Option<String> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default();<#
       } else if (column.DATA_TYPE === 'tinyint') {
     #>
     // <#=column_comment#>

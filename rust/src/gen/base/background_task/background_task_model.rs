@@ -65,7 +65,8 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: String = create_usr_id.to_string();
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     
     let model = Self {
       id,
