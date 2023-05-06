@@ -317,6 +317,7 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     host: await n("域名绑定"),
     expiration: await n("到期日"),
+    expiration_lbl: await n("到期日"),
     max_usr_num: await n("最大用户数"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),

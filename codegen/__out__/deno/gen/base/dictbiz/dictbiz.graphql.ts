@@ -34,7 +34,7 @@ type DictbizModel {
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
-  create_time_lbl: String
+  create_time_lbl: String!
   "更新人"
   update_usr_id: ID!
   "更新人"
@@ -42,7 +42,7 @@ type DictbizModel {
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
-  update_time_lbl: String
+  update_time_lbl: String!
 }
 type DictbizFieldComment {
   "编码"

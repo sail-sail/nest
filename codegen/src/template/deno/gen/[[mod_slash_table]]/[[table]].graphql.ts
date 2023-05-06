@@ -89,7 +89,7 @@ type <#=Table_Up#>Model {<#
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: String<#
+  <#=column_name#>_lbl: String!<#
     } else {
   #>
   "<#=column_comment#>"

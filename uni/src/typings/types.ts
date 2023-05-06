@@ -80,11 +80,11 @@ export type BackgroundTaskModel = {
   /** 开始时间 */
   begin_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 开始时间 */
-  begin_time_lbl?: Maybe<Scalars['String']>;
+  begin_time_lbl: Scalars['String'];
   /** 结束时间 */
   end_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 结束时间 */
-  end_time_lbl?: Maybe<Scalars['String']>;
+  end_time_lbl: Scalars['String'];
   /** 错误信息 */
   err_msg: Scalars['String'];
   /** ID */
@@ -217,7 +217,7 @@ export type DeptModel = {
   /** 创建时间 */
   create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建时间 */
-  create_time_lbl?: Maybe<Scalars['String']>;
+  create_time_lbl: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -245,7 +245,7 @@ export type DeptModel = {
   /** 更新时间 */
   update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新时间 */
-  update_time_lbl?: Maybe<Scalars['String']>;
+  update_time_lbl: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -478,7 +478,7 @@ export type DictModel = {
   /** 创建时间 */
   create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建时间 */
-  create_time_lbl?: Maybe<Scalars['String']>;
+  create_time_lbl: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -506,7 +506,7 @@ export type DictModel = {
   /** 更新时间 */
   update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新时间 */
-  update_time_lbl?: Maybe<Scalars['String']>;
+  update_time_lbl: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -740,7 +740,7 @@ export type DictbizModel = {
   /** 创建时间 */
   create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建时间 */
-  create_time_lbl?: Maybe<Scalars['String']>;
+  create_time_lbl: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -768,7 +768,7 @@ export type DictbizModel = {
   /** 更新时间 */
   update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新时间 */
-  update_time_lbl?: Maybe<Scalars['String']>;
+  update_time_lbl: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -1844,7 +1844,7 @@ export type OperationRecordModel = {
   /** 创建时间 */
   create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建时间 */
-  create_time_lbl?: Maybe<Scalars['String']>;
+  create_time_lbl: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -1866,7 +1866,7 @@ export type OperationRecordModel = {
   /** 更新时间 */
   update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新时间 */
-  update_time_lbl?: Maybe<Scalars['String']>;
+  update_time_lbl: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -1995,7 +1995,7 @@ export type OptionsModel = {
   /** 创建时间 */
   create_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 创建时间 */
-  create_time_lbl?: Maybe<Scalars['String']>;
+  create_time_lbl: Scalars['String'];
   /** 创建人 */
   create_usr_id: Scalars['ID'];
   /** 创建人 */
@@ -2021,7 +2021,7 @@ export type OptionsModel = {
   /** 更新时间 */
   update_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 更新时间 */
-  update_time_lbl?: Maybe<Scalars['String']>;
+  update_time_lbl: Scalars['String'];
   /** 更新人 */
   update_usr_id: Scalars['ID'];
   /** 更新人 */
@@ -2755,7 +2755,7 @@ export type TenantModel = {
   /** 到期日 */
   expiration?: Maybe<Scalars['Date']>;
   /** 到期日 */
-  expiration_lbl?: Maybe<Scalars['String']>;
+  expiration_lbl: Scalars['String'];
   /** 域名绑定 */
   host: Scalars['String'];
   /** ID */

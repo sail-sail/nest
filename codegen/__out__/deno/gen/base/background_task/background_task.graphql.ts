@@ -24,11 +24,11 @@ type BackgroundTaskModel {
   "开始时间"
   begin_time: NaiveDateTime
   "开始时间"
-  begin_time_lbl: String
+  begin_time_lbl: String!
   "结束时间"
   end_time: NaiveDateTime
   "结束时间"
-  end_time_lbl: String
+  end_time_lbl: String!
   "备注"
   rem: String!
 }
