@@ -8,7 +8,7 @@ use super::dept_service;
 #[derive(Default)]
 pub struct DeptMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl DeptMutation {
   
   async fn dept_login_select<'a>(

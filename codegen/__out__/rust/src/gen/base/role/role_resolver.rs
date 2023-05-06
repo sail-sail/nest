@@ -11,7 +11,7 @@ use super::role_service;
 #[derive(Default)]
 pub struct RoleGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl RoleGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl RoleGenQuery {
 #[derive(Default)]
 pub struct RoleGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl RoleGenMutation {
   
   /// 创建数据

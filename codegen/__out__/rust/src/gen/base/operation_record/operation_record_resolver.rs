@@ -11,7 +11,7 @@ use super::operation_record_service;
 #[derive(Default)]
 pub struct OperationRecordGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl OperationRecordGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl OperationRecordGenQuery {
 #[derive(Default)]
 pub struct OperationRecordGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl OperationRecordGenMutation {
   
   /// 创建数据

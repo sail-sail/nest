@@ -11,7 +11,7 @@ use super::options_service;
 #[derive(Default)]
 pub struct OptionsGenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl OptionsGenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -93,7 +93,7 @@ impl OptionsGenQuery {
 #[derive(Default)]
 pub struct OptionsGenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl OptionsGenMutation {
   
   /// 创建数据

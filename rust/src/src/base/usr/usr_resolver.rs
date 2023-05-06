@@ -9,7 +9,7 @@ use super::usr_model::{Login, GetLoginInfo};
 #[derive(Default)]
 pub struct UsrMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl UsrMutation {
   
   /// 登录, 获得token

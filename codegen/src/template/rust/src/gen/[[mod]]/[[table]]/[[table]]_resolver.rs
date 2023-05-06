@@ -43,7 +43,7 @@ use super::<#=table#>_service;
 #[derive(Default)]
 pub struct <#=tableUP#>GenQuery;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl <#=tableUP#>GenQuery {
   
   /// 根据搜索条件和分页查找数据
@@ -125,7 +125,7 @@ impl <#=tableUP#>GenQuery {
 #[derive(Default)]
 pub struct <#=tableUP#>GenMutation;
 
-#[Object]
+#[Object(rename_args = "snake_case")]
 impl <#=tableUP#>GenMutation {
   
   /// 创建数据
