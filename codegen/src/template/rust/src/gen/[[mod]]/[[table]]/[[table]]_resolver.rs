@@ -132,13 +132,13 @@ impl <#=tableUP#>GenMutation {
   pub async fn create_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
-    input: <#=tableUP#>Input,
+    model: <#=tableUP#>Input,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = <#=table#>_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -196,14 +196,14 @@ impl <#=tableUP#>GenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: <#=tableUP#>Input,
+    model: <#=tableUP#>Input,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = <#=table#>_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     
