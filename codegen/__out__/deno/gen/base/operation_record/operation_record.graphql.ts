@@ -26,7 +26,7 @@ type OperationRecordModel {
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
-  create_time_lbl: String
+  create_time_lbl: String!
   "更新人"
   update_usr_id: ID!
   "更新人"
@@ -34,7 +34,7 @@ type OperationRecordModel {
   "更新时间"
   update_time: NaiveDateTime
   "更新时间"
-  update_time_lbl: String
+  update_time_lbl: String!
 }
 type OperationRecordFieldComment {
   "模块"
@@ -55,12 +55,16 @@ type OperationRecordFieldComment {
   create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
+  "创建时间"
+  create_time_lbl: String!
   "更新人"
   update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String!
   "更新时间"
   update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input OperationRecordInput {
   "租户ID"
@@ -123,14 +127,12 @@ input OperationRecordSearch {
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
-  create_time_lbl: String
   "更新人"
   update_usr_id: [String!]
   update_usr_id_lbl: [String!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
-  update_time_lbl: String
 }
 type Query {
   "根据条件查找据数总数"
