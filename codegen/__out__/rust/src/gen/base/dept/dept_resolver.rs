@@ -100,13 +100,13 @@ impl DeptGenMutation {
   pub async fn create_dept<'a>(
     &self,
     ctx: &Context<'a>,
-    input: DeptInput,
+    model: DeptInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = dept_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -137,14 +137,14 @@ impl DeptGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: DeptInput,
+    model: DeptInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dept_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

@@ -100,13 +100,13 @@ impl OperationRecordGenMutation {
   pub async fn create_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
-    input: OperationRecordInput,
+    model: OperationRecordInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = operation_record_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -137,14 +137,14 @@ impl OperationRecordGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: OperationRecordInput,
+    model: OperationRecordInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = operation_record_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

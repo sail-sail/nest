@@ -100,13 +100,13 @@ impl BackgroundTaskGenMutation {
   pub async fn create_background_task<'a>(
     &self,
     ctx: &Context<'a>,
-    input: BackgroundTaskInput,
+    model: BackgroundTaskInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = background_task_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -137,14 +137,14 @@ impl BackgroundTaskGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: BackgroundTaskInput,
+    model: BackgroundTaskInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = background_task_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

@@ -100,13 +100,13 @@ impl DictbizGenMutation {
   pub async fn create_dictbiz<'a>(
     &self,
     ctx: &Context<'a>,
-    input: DictbizInput,
+    model: DictbizInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = dictbiz_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -137,14 +137,14 @@ impl DictbizGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: DictbizInput,
+    model: DictbizInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dictbiz_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

@@ -100,13 +100,13 @@ impl TenantGenMutation {
   pub async fn create_tenant<'a>(
     &self,
     ctx: &Context<'a>,
-    input: TenantInput,
+    model: TenantInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = tenant_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl TenantGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: TenantInput,
+    model: TenantInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = tenant_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

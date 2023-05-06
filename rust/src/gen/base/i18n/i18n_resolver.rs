@@ -100,13 +100,13 @@ impl I18nGenMutation {
   pub async fn create_i18n<'a>(
     &self,
     ctx: &Context<'a>,
-    input: I18nInput,
+    model: I18nInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = i18n_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl I18nGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: I18nInput,
+    model: I18nInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = i18n_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

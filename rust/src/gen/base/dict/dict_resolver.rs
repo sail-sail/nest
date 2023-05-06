@@ -100,13 +100,13 @@ impl DictGenMutation {
   pub async fn create_dict<'a>(
     &self,
     ctx: &Context<'a>,
-    input: DictInput,
+    model: DictInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = dict_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl DictGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: DictInput,
+    model: DictInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dict_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     

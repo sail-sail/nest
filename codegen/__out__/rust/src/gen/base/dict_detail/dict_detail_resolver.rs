@@ -100,13 +100,13 @@ impl DictDetailGenMutation {
   pub async fn create_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
-    input: DictDetailInput,
+    model: DictDetailInput,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let id = dict_detail_service::create(
       &mut ctx,
-      input,
+      model,
       None,
     ).await;
     
@@ -118,14 +118,14 @@ impl DictDetailGenMutation {
     &self,
     ctx: &Context<'a>,
     id: String,
-    input: DictDetailInput,
+    model: DictDetailInput,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dict_detail_service::update_by_id(
       &mut ctx,
       id,
-      input,
+      model,
       None,
     ).await;
     
