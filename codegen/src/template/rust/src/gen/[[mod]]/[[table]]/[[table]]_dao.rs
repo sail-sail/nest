@@ -746,7 +746,9 @@ pub async fn get_field_comments() -> Result<<#=tableUP#>FieldComment> {
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
     #><#
-      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+      if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
     #>
     <#=column_name#>: "<#=column_comment#>".to_owned(),
     <#=column_name#>_lbl: "<#=column_comment#>".to_owned(),<#

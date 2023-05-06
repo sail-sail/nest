@@ -13,6 +13,7 @@ pub struct TenantModel {
   pub host: String,
   /// 到期日
   pub expiration: Option<chrono::NaiveDate>,
+  pub expiration_lbl: String,
   /// 最大用户数
   pub max_usr_num: u32,
   /// 启用
@@ -38,6 +39,10 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     let host: String = row.try_get("host")?;
     // 到期日
     let expiration: Option<chrono::NaiveDate> = row.try_get("expiration")?;
+    let expiration_lbl: String = match expiration {
+      Some(expiration) => expiration.format("%Y-%m-%d").to_string(),
+      None => "".to_owned(),
+    };
     // 最大用户数
     let max_usr_num: u32 = row.try_get("max_usr_num")?;
     // 启用
@@ -58,6 +63,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       lbl,
       host,
       expiration,
+      expiration_lbl,
       max_usr_num,
       is_enabled,
       is_enabled_lbl,
@@ -80,6 +86,7 @@ pub struct TenantFieldComment {
   pub host: String,
   /// 到期日
   pub expiration: String,
+  pub expiration_lbl: String,
   /// 最大用户数
   pub max_usr_num: String,
   /// 启用

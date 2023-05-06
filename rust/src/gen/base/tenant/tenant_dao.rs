@@ -383,6 +383,7 @@ pub async fn get_field_comments() -> Result<TenantFieldComment> {
     lbl: "名称".to_owned(),
     host: "域名绑定".to_owned(),
     expiration: "到期日".to_owned(),
+    expiration_lbl: "到期日".to_owned(),
     max_usr_num: "最大用户数".to_owned(),
     is_enabled: "启用".to_owned(),
     is_enabled_lbl: "启用".to_owned(),

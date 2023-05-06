@@ -74,7 +74,9 @@ pub struct <#=tableUP#>Model {<#
   /// <#=column_comment#>
   pub <#=column_name#>: <#=_data_type#>,
   pub <#=column_name#>_lbl: <#=_data_type#>,<#
-    } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+    } else if (selectList.length > 0 || column.dict || column.dictbiz
+      || data_type === "date" || data_type === "datetime"
+    ) {
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: <#=_data_type#>,
@@ -175,6 +177,22 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
     let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
+      } else if (data_type === "datetime") {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
+      Some(<#=column_name_rust#>) => <#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };<#
+      } else if (data_type === "date") {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
+      Some(<#=column_name_rust#>) => <#=column_name_rust#>.format("%Y-%m-%d").to_string(),
+      None => "".to_owned(),
+    };<#
       } else {
     #>
     // <#=column_comment#>
@@ -205,7 +223,9 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       const foreignKey = column.foreignKey;
       let is_nullable = column.IS_NULLABLE === "YES";
       #><#
-        if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+        if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+          || data_type === "date" || data_type === "datetime"
+        ) {
       #>
       <#=column_name_rust#>,
       <#=column_name#>_lbl,<#
@@ -250,7 +270,9 @@ pub struct <#=tableUP#>FieldComment {<#
     const foreignKey = column.foreignKey;
     let is_nullable = column.IS_NULLABLE === "YES";
   #><#
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      || data_type === "date" || data_type === "datetime"
+    ) {
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: String,
