@@ -29,7 +29,12 @@ export async function getMenus(
 ): Promise<any> {
   const data = await query({
     query: /* GraphQL */ `
-     fragment GetMenusFragment on GetMenus {
+      query($type: String) {
+        getMenus(type: $type) {
+          ...GetMenusFragment
+        }
+      }
+      fragment GetMenusFragment on GetMenus {
         id
         lbl
         route_path
@@ -41,15 +46,10 @@ export async function getMenus(
           route_query
         }
       }
-      query($type: String) {
-        menus: getMenus(type: $type) {
-          ...GetMenusFragment
-        }
-      }
     `,
     variables,
   }, opt);
-  const result = data?.menus;
+  const result = data?.getMenus;
   if (result) {
     treeMenusUrl(result);
   }
