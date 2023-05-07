@@ -93,14 +93,14 @@ impl <#=tableUP#>GenQuery {
   ) -> Result<Option<<#=tableUP#>Model>> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
-    let model = <#=table#>_service::find_one(
+    let res = <#=table#>_service::find_one(
       &mut ctx,
       search,
       sort,
       None,
     ).await;
     
-    ctx.ok(model).await
+    ctx.ok(res).await
   }
   
   /// 根据ID查找第一条数据
@@ -111,14 +111,37 @@ impl <#=tableUP#>GenQuery {
   ) -> Result<Option<<#=tableUP#>Model>> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
-    let model = <#=table#>_service::find_by_id(
+    let res = <#=table#>_service::find_by_id(
       &mut ctx,
       id,
       None,
     ).await;
     
-    ctx.ok(model).await
+    ctx.ok(res).await
+  }<#
+  if (hasLocked) {
+  #>
+  
+  /// 根据 ID 查找是否已锁定
+  /// 已锁定的记录不能修改和删除
+  /// 记录不存在则返回 false
+  pub async fn get_is_locked_by_id_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<bool> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = <#=table#>_service::get_is_locked_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
   }
+  #>
   
 }
 
@@ -225,7 +248,30 @@ impl <#=tableUP#>GenMutation {
     ).await;
     
     ctx.ok(res).await
+  }<#
+  if (hasLocked) {
+  #>
+  
+  /// 根据 ids 锁定或者解锁数据
+  pub async fn lock_by_ids_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+    is_locked: u8,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_service::lock_by_ids(
+      &mut ctx,
+      ids,
+      is_locked,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
   }
+  #>
   
   /// 根据 ids 还原数据
   pub async fn revert_by_ids_<#=table#><'a>(
