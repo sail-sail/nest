@@ -509,12 +509,6 @@ pub async fn set_id_by_lbl<'a>(
 ) -> Result<OperationRecordInput> {
   let mut input = input;
   
-  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-  //     item.trim().to_owned()
-  //   );
-  // }
-  
   Ok(input)
 }
 

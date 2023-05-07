@@ -513,14 +513,32 @@ pub async fn set_id_by_lbl<'a>(
     "background_task_type",
   ]).await?;
   
-  let state_dict = &dict_vec[0];
-  let type_dict = &dict_vec[1];
   
-  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-  //     item.trim().to_owned()
-  //   );
-  // }
+  // 状态
+  let state_dict = &dict_vec[0];
+  if let Some(state_lbl) = input.state_lbl.clone() {
+    input.state = state_dict.into_iter()
+      .find(|item| {
+        item.lbl == state_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }
+  
+  // 类型
+  let type_dict = &dict_vec[1];
+  if let Some(type_lbl) = input.type_lbl.clone() {
+    input.r#type = type_dict.into_iter()
+      .find(|item| {
+        item.lbl == type_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }
   
   Ok(input)
 }

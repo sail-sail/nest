@@ -446,13 +446,19 @@ pub async fn set_id_by_lbl<'a>(
     "is_enabled",
   ]).await?;
   
-  let is_enabled_dict = &dict_vec[0];
   
-  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-  //     item.trim().to_owned()
-  //   );
-  // }
+  // 启用
+  let is_enabled_dict = &dict_vec[0];
+  if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+    input.is_enabled = is_enabled_dict.into_iter()
+      .find(|item| {
+        item.lbl == is_enabled_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }
   
   Ok(input)
 }
