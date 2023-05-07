@@ -61,14 +61,14 @@ impl RoleGenQuery {
   ) -> Result<Option<RoleModel>> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
-    let model = role_service::find_one(
+    let res = role_service::find_one(
       &mut ctx,
       search,
       sort,
       None,
     ).await;
     
-    ctx.ok(model).await
+    ctx.ok(res).await
   }
   
   /// 根据ID查找第一条数据
@@ -79,13 +79,13 @@ impl RoleGenQuery {
   ) -> Result<Option<RoleModel>> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
-    let model = role_service::find_by_id(
+    let res = role_service::find_by_id(
       &mut ctx,
       id,
       None,
     ).await;
     
-    ctx.ok(model).await
+    ctx.ok(res).await
   }
   
 }

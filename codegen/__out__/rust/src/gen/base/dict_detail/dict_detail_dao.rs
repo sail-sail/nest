@@ -853,9 +853,10 @@ pub async fn delete_by_ids<'a>(
 pub async fn get_is_locked_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
+  options: Option<Options>,
 ) -> Result<bool> {
   
-  let model = find_by_id(ctx, id, None).await?;
+  let model = find_by_id(ctx, id, options).await?;
   
   let is_locked = {
     if let Some(model) = model {
@@ -868,9 +869,11 @@ pub async fn get_is_locked_by_id<'a>(
   Ok(is_locked)
 }
 
+/// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
+  is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -884,10 +887,11 @@ pub async fn lock_by_ids<'a>(
     let mut args = QueryArgs::new();
     
     let sql = format!(
-      "update {} set is_locked=1 where id=? limit 1",
+      "update {} set is_locked=? where id=? limit 1",
       table,
     );
     
+    args.push(is_locked.into());
     args.push(id.into());
     
     let args = args.into();
