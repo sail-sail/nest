@@ -993,6 +993,7 @@ pub async fn set_id_by_lbl<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -1005,7 +1006,19 @@ pub async fn set_id_by_lbl<'a>(
     }
     if (!column.dict) continue;
   #>
-  let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];<#
+  
+  // <#=column_comment#>
+  let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];
+  if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
+    input.<#=column_name_rust#> = <#=column_name#>_dict.into_iter()
+      .find(|item| {
+        item.lbl == <#=column_name#>_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }<#
     dictNum++;
   }
   #><#
@@ -1018,6 +1031,7 @@ pub async fn set_id_by_lbl<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -1040,6 +1054,7 @@ pub async fn set_id_by_lbl<'a>(
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT || "";
     let selectList = [ ];
@@ -1052,18 +1067,105 @@ pub async fn set_id_by_lbl<'a>(
     }
     if (!column.dictbiz) continue;
   #>
-  let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];<#
+  
+  // <#=column_comment#>
+  let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
+  if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
+    input.<#=column_name_rust#> = <#=column_name#>_dictbiz.into_iter()
+      .find(|item| {
+        item.lbl == <#=column_name#>_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }<#
   dictBizNum++;
   }
   #><#
     }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column_name);
+    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    let foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    foreignTableUp = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const many2many = column.many2many;
+    const isPassword = column.isPassword;
+    let daoStr = "";
+    if (foreignKey && foreignTable) {
+      if (foreignTable !== table) {
+        daoStr = `crate::gen::${ foreignKey.mod }::${ foreignTable }::${ foreignTable }_dao::`;
+      }
+    }
+  #><#
+    if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
   #>
   
-  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-  //     item.trim().to_owned()
-  //   );
-  // }
+  // <#=column_comment#>
+  if is_not_empty_opt(&input.<#=column_name#>_lbl) && input.<#=column_name_rust#>.is_none() {
+    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = <#=daoStr#>find_one(
+      ctx,
+      crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.<#=column_name_rust#> = model.id.0.into();
+    }
+  }<#
+    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+  #>
+  
+  // <#=column_comment#>
+  if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
+    input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .collect::<Vec<String>>()
+    );
+    let mut models = vec![];
+    for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
+      let model = <#=daoStr#>find_one(
+        ctx,
+        crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
+      }
+    }
+    if !models.is_empty() {
+      input.<#=column_name_rust#> = models.into_iter()
+        .map(|item| item.id.0)
+        .collect::<Vec<String>>()
+        .into();
+    }
+  }<#
+    }
+  #><#
+  }
+  #>
   
   Ok(input)
 }

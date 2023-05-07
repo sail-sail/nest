@@ -618,14 +618,51 @@ pub async fn set_id_by_lbl<'a>(
     "is_locked",
   ]).await?;
   
-  let is_enabled_dict = &dict_vec[0];
-  let is_locked_dict = &dict_vec[1];
   
-  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-  //     item.trim().to_owned()
-  //   );
-  // }
+  // 启用
+  let is_enabled_dict = &dict_vec[0];
+  if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+    input.is_enabled = is_enabled_dict.into_iter()
+      .find(|item| {
+        item.lbl == is_enabled_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }
+  
+  // 锁定
+  let is_locked_dict = &dict_vec[1];
+  if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
+    input.is_locked = is_locked_dict.into_iter()
+      .find(|item| {
+        item.lbl == is_locked_lbl
+      })
+      .map(|item| {
+        item.val.parse().unwrap_or_default()
+      })
+      .into();
+  }
+  
+  // 父部门
+  if is_not_empty_opt(&input.parent_id_lbl) && input.parent_id.is_none() {
+    input.parent_id_lbl = input.parent_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = find_one(
+      ctx,
+      crate::gen::base::dept::dept_model::DeptSearch {
+        lbl: input.parent_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.parent_id = model.id.0.into();
+    }
+  }
   
   Ok(input)
 }

@@ -456,11 +456,43 @@ pub async fn set_id_by_lbl<'a>(
 ) -> Result<I18nInput> {
   let mut input = input;
   
-  // if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-  //   input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-  //     item.trim().to_owned()
-  //   );
-  // }
+  // 语言
+  if is_not_empty_opt(&input.lang_id_lbl) && input.lang_id.is_none() {
+    input.lang_id_lbl = input.lang_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::lang::lang_dao::find_one(
+      ctx,
+      crate::gen::base::lang::lang_model::LangSearch {
+        lbl: input.lang_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.lang_id = model.id.0.into();
+    }
+  }
+  
+  // 菜单
+  if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
+    input.menu_id_lbl = input.menu_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::menu::menu_dao::find_one(
+      ctx,
+      crate::gen::base::menu::menu_model::MenuSearch {
+        lbl: input.menu_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.menu_id = model.id.0.into();
+    }
+  }
   
   Ok(input)
 }
