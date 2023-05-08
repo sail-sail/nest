@@ -111,23 +111,6 @@ pub struct OperationRecordGenMutation;
 #[Object(rename_args = "snake_case")]
 impl OperationRecordGenMutation {
   
-  /// 创建数据
-  pub async fn create_operation_record<'a>(
-    &self,
-    ctx: &Context<'a>,
-    model: OperationRecordInput,
-  ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let id = operation_record_service::create(
-      &mut ctx,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(id).await
-  }
-  
   /// 根据id修改租户id
   pub async fn update_tenant_by_id_operation_record<'a>(
     &self,
@@ -141,25 +124,6 @@ impl OperationRecordGenMutation {
       &mut ctx,
       id,
       tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据id修改数据
-  pub async fn update_by_id_operation_record<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    model: OperationRecordInput,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = operation_record_service::update_by_id(
-      &mut ctx,
-      id,
-      model,
       None,
     ).await;
     

@@ -111,23 +111,6 @@ pub struct BackgroundTaskGenMutation;
 #[Object(rename_args = "snake_case")]
 impl BackgroundTaskGenMutation {
   
-  /// 创建数据
-  pub async fn create_background_task<'a>(
-    &self,
-    ctx: &Context<'a>,
-    model: BackgroundTaskInput,
-  ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let id = background_task_service::create(
-      &mut ctx,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(id).await
-  }
-  
   /// 根据id修改租户id
   pub async fn update_tenant_by_id_background_task<'a>(
     &self,
@@ -141,25 +124,6 @@ impl BackgroundTaskGenMutation {
       &mut ctx,
       id,
       tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据id修改数据
-  pub async fn update_by_id_background_task<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    model: BackgroundTaskInput,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = background_task_service::update_by_id(
-      &mut ctx,
-      id,
-      model,
       None,
     ).await;
     

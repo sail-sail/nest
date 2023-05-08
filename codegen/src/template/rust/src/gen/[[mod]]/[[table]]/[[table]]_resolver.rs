@@ -183,7 +183,9 @@ impl <#=tableUP#>GenQuery {
 pub struct <#=tableUP#>GenMutation;
 
 #[Object(rename_args = "snake_case")]
-impl <#=tableUP#>GenMutation {
+impl <#=tableUP#>GenMutation {<#
+    if (opts.noAdd !== true) {
+  #>
   
   /// 创建数据
   pub async fn create_<#=table#><'a>(
@@ -201,6 +203,8 @@ impl <#=tableUP#>GenMutation {
     
     ctx.ok(id).await
   }<#
+    }
+  #><#
   if (hasTenant_id) {
   #>
   
@@ -246,6 +250,8 @@ impl <#=tableUP#>GenMutation {
     ctx.ok(res).await
   }<#
   }
+  #><#
+    if (opts.noEdit !== true) {
   #>
   
   /// 根据id修改数据
@@ -265,7 +271,11 @@ impl <#=tableUP#>GenMutation {
     ).await;
     
     ctx.ok(res).await
-  }
+  }<#
+    }
+  #><#
+    if (opts.noDelete !== true) {
+  #>
   
   /// 根据 ids 删除数据
   pub async fn delete_by_ids_<#=table#><'a>(
@@ -283,7 +293,9 @@ impl <#=tableUP#>GenMutation {
     
     ctx.ok(res).await
   }<#
-  if (hasLocked) {
+    }
+  #><#
+    if (hasLocked && opts.noEdit !== true) {
   #>
   
   /// 根据 ids 锁定或者解锁数据
@@ -304,7 +316,9 @@ impl <#=tableUP#>GenMutation {
     
     ctx.ok(res).await
   }<#
-  }
+    }
+  #><#
+    if (opts.noDelete !== true) {
   #>
   
   /// 根据 ids 还原数据
@@ -339,6 +353,8 @@ impl <#=tableUP#>GenMutation {
     ).await;
     
     ctx.ok(res).await
-  }
+  }<#
+    }
+  #>
   
 }
