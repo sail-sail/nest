@@ -225,3 +225,17 @@ pub async fn force_delete_by_ids<'a>(
   
   Ok(num)
 }
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by<'a>(
+  ctx: &mut impl Ctx<'a>,
+  options: Option<Options>,
+) -> Result<i64> {
+  
+  let res = dept_dao::find_last_order_by(
+    ctx,
+    options,
+  ).await?;
+  
+  Ok(res)
+}

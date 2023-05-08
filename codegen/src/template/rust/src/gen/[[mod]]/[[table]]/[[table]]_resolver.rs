@@ -156,7 +156,26 @@ impl <#=tableUP#>GenQuery {
     ).await;
     
     ctx.ok(res).await
+  }<#
+  if (hasOrderBy) {
+  #>
+  
+  /// 查找 order_by 字段的最大值
+  pub async fn find_last_order_by_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+  ) -> Result<i64> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = <#=table#>_service::find_last_order_by(
+      &mut ctx,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
   }
+  #>
   
 }
 
