@@ -15,10 +15,13 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::i18n_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -180,6 +183,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<I18nSearch>,
@@ -225,7 +229,6 @@ pub async fn find_all<'a>(
     options,
   ).await?;
   
-  #[allow(unused_assignments)]
   for model in &mut res {
     
   }
@@ -291,14 +294,19 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<I18nFieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/i18n".to_owned().into(),
+  };
+  
   let field_comments = I18nFieldComment {
-    lang_id: "语言".to_owned(),
-    lang_id_lbl: "语言".to_owned(),
-    menu_id: "菜单".to_owned(),
-    menu_id_lbl: "菜单".to_owned(),
-    code: "编码".to_owned(),
-    lbl: "名称".to_owned(),
-    rem: "备注".to_owned(),
+    lang_id: n_route.n(ctx, "语言".to_owned(), None).await?,
+    lang_id_lbl: n_route.n(ctx, "语言".to_owned(), None).await?,
+    menu_id: n_route.n(ctx, "菜单".to_owned(), None).await?,
+    menu_id_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
+    code: n_route.n(ctx, "编码".to_owned(), None).await?,
+    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
   };
   Ok(field_comments)
 }

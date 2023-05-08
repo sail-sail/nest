@@ -16,12 +16,15 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::dept_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -312,6 +315,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<DeptSearch>,
@@ -366,7 +370,6 @@ pub async fn find_all<'a>(
   let is_enabled_dict = &dict_vec[0];
   let is_locked_dict = &dict_vec[1];
   
-  #[allow(unused_assignments)]
   for model in &mut res {
     
     // 启用
@@ -448,24 +451,29 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<DeptFieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/dept".to_owned().into(),
+  };
+  
   let field_comments = DeptFieldComment {
-    parent_id: "父部门".to_owned(),
-    parent_id_lbl: "父部门".to_owned(),
-    lbl: "名称".to_owned(),
-    order_by: "排序".to_owned(),
-    is_enabled: "启用".to_owned(),
-    is_enabled_lbl: "启用".to_owned(),
-    rem: "备注".to_owned(),
-    is_locked: "锁定".to_owned(),
-    is_locked_lbl: "锁定".to_owned(),
-    create_usr_id: "创建人".to_owned(),
-    create_usr_id_lbl: "创建人".to_owned(),
-    create_time: "创建时间".to_owned(),
-    create_time_lbl: "创建时间".to_owned(),
-    update_usr_id: "更新人".to_owned(),
-    update_usr_id_lbl: "更新人".to_owned(),
-    update_time: "更新时间".to_owned(),
-    update_time_lbl: "更新时间".to_owned(),
+    parent_id: n_route.n(ctx, "父部门".to_owned(), None).await?,
+    parent_id_lbl: n_route.n(ctx, "父部门".to_owned(), None).await?,
+    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
+    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
   };
   Ok(field_comments)
 }

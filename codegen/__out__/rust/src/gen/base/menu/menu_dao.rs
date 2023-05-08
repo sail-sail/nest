@@ -16,12 +16,15 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::menu_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -219,6 +222,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<MenuSearch>,
@@ -271,7 +275,6 @@ pub async fn find_all<'a>(
   let type_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
   
-  #[allow(unused_assignments)]
   for model in &mut res {
     
     // 类型
@@ -353,18 +356,23 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<MenuFieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/menu".to_owned().into(),
+  };
+  
   let field_comments = MenuFieldComment {
-    r#type: "类型".to_owned(),
-    r#type_lbl: "类型".to_owned(),
-    menu_id: "父菜单".to_owned(),
-    menu_id_lbl: "父菜单".to_owned(),
-    lbl: "名称".to_owned(),
-    route_path: "路由".to_owned(),
-    route_query: "参数".to_owned(),
-    is_enabled: "启用".to_owned(),
-    is_enabled_lbl: "启用".to_owned(),
-    order_by: "排序".to_owned(),
-    rem: "备注".to_owned(),
+    r#type: n_route.n(ctx, "类型".to_owned(), None).await?,
+    r#type_lbl: n_route.n(ctx, "类型".to_owned(), None).await?,
+    menu_id: n_route.n(ctx, "父菜单".to_owned(), None).await?,
+    menu_id_lbl: n_route.n(ctx, "父菜单".to_owned(), None).await?,
+    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    route_path: n_route.n(ctx, "路由".to_owned(), None).await?,
+    route_query: n_route.n(ctx, "参数".to_owned(), None).await?,
+    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
+    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
   };
   Ok(field_comments)
 }

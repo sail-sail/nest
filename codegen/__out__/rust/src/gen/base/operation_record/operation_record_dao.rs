@@ -15,10 +15,13 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::operation_record_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -290,6 +293,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<OperationRecordSearch>,
@@ -333,7 +337,6 @@ pub async fn find_all<'a>(
     options,
   ).await?;
   
-  #[allow(unused_assignments)]
   for model in &mut res {
     
   }
@@ -397,21 +400,26 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<OperationRecordFieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/operation_record".to_owned().into(),
+  };
+  
   let field_comments = OperationRecordFieldComment {
-    r#mod: "模块".to_owned(),
-    mod_lbl: "模块名称".to_owned(),
-    method: "方法".to_owned(),
-    method_lbl: "方法名称".to_owned(),
-    lbl: "操作".to_owned(),
-    rem: "备注".to_owned(),
-    create_usr_id: "创建人".to_owned(),
-    create_usr_id_lbl: "创建人".to_owned(),
-    create_time: "创建时间".to_owned(),
-    create_time_lbl: "创建时间".to_owned(),
-    update_usr_id: "更新人".to_owned(),
-    update_usr_id_lbl: "更新人".to_owned(),
-    update_time: "更新时间".to_owned(),
-    update_time_lbl: "更新时间".to_owned(),
+    r#mod: n_route.n(ctx, "模块".to_owned(), None).await?,
+    mod_lbl: n_route.n(ctx, "模块名称".to_owned(), None).await?,
+    method: n_route.n(ctx, "方法".to_owned(), None).await?,
+    method_lbl: n_route.n(ctx, "方法名称".to_owned(), None).await?,
+    lbl: n_route.n(ctx, "操作".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
   };
   Ok(field_comments)
 }

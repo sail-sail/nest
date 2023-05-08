@@ -15,12 +15,15 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::background_task_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -266,6 +269,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<BackgroundTaskSearch>,
@@ -316,7 +320,6 @@ pub async fn find_all<'a>(
   let state_dict = &dict_vec[0];
   let type_dict = &dict_vec[1];
   
-  #[allow(unused_assignments)]
   for model in &mut res {
     
     // 状态
@@ -396,21 +399,26 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<BackgroundTaskFieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/background_task".to_owned().into(),
+  };
+  
   let field_comments = BackgroundTaskFieldComment {
-    lbl: "名称".to_owned(),
-    state: "状态".to_owned(),
-    state_lbl: "状态".to_owned(),
-    r#type: "类型".to_owned(),
-    r#type_lbl: "类型".to_owned(),
-    result: "执行结果".to_owned(),
-    err_msg: "错误信息".to_owned(),
-    begin_time: "开始时间".to_owned(),
-    begin_time_lbl: "开始时间".to_owned(),
-    end_time: "结束时间".to_owned(),
-    end_time_lbl: "结束时间".to_owned(),
-    rem: "备注".to_owned(),
-    create_usr_id: "创建人".to_owned(),
-    create_usr_id_lbl: "创建人".to_owned(),
+    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    state: n_route.n(ctx, "状态".to_owned(), None).await?,
+    state_lbl: n_route.n(ctx, "状态".to_owned(), None).await?,
+    r#type: n_route.n(ctx, "类型".to_owned(), None).await?,
+    r#type_lbl: n_route.n(ctx, "类型".to_owned(), None).await?,
+    result: n_route.n(ctx, "执行结果".to_owned(), None).await?,
+    err_msg: n_route.n(ctx, "错误信息".to_owned(), None).await?,
+    begin_time: n_route.n(ctx, "开始时间".to_owned(), None).await?,
+    begin_time_lbl: n_route.n(ctx, "开始时间".to_owned(), None).await?,
+    end_time: n_route.n(ctx, "结束时间".to_owned(), None).await?,
+    end_time_lbl: n_route.n(ctx, "结束时间".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
