@@ -126,6 +126,20 @@ pub async fn delete_by_ids<'a>(
   Ok(num)
 }
 
+/// 获取字段对应的名称
+pub async fn get_field_comments<'a>(
+  ctx: &mut impl Ctx<'a>,
+  options: Option<Options>,
+) -> Result<MenuFieldComment> {
+  
+  let comments = menu_dao::get_field_comments(
+    ctx,
+    options,
+  ).await?;
+  
+  Ok(comments)
+}
+
 /// 根据 ids 还原数据
 pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,

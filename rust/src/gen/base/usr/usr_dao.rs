@@ -388,6 +388,7 @@ pub async fn find_all<'a>(
   Ok(res)
 }
 
+/// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<UsrSearch>,
@@ -441,8 +442,10 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
-#[allow(dead_code)]
-pub async fn get_field_comments() -> Result<UsrFieldComment> {
+pub async fn get_field_comments<'a>(
+  ctx: &mut impl Ctx<'a>,
+  _options: Option<Options>,
+) -> Result<UsrFieldComment> {
   let field_comments = UsrFieldComment {
     lbl: "名称".to_owned(),
     username: "用户名".to_owned(),
@@ -591,7 +594,7 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Throw {
-    let field_comments = get_field_comments().await?;
+    let field_comments = get_field_comments(ctx, None).await?;
     let err_msg: String = format!(
       "{} 已经存在",
       field_comments.lbl,

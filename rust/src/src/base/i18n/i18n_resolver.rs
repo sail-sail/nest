@@ -8,7 +8,7 @@ use super::i18n_service;
 #[derive(Default)]
 pub struct I18nQuery;
 
-#[Object(rename_args = "snake_case")]
+#[Object]
 impl I18nQuery {
   
   async fn n<'a>(

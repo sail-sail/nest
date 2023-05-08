@@ -67,7 +67,7 @@ impl <#=tableUP#>GenQuery {
     ctx.ok(res).await
   }
   
-  /// 根据搜索条件查找总数
+  /// 根据搜索条件查询数据总数
   async fn find_count_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -142,6 +142,21 @@ impl <#=tableUP#>GenQuery {
   }<#
   }
   #>
+  
+  /// 获取字段对应的名称
+  pub async fn get_field_comments_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+  ) -> Result<<#=tableUP#>FieldComment> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = <#=table#>_service::get_field_comments(
+      &mut ctx,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
   
 }
 
