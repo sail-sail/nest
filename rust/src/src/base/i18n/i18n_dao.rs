@@ -17,11 +17,30 @@ lazy_static! {
   static ref REG: Regex = Regex::new(r"\{([\s\S]*?)\}").unwrap();
 }
 
+pub struct NRoute {
+  pub route_path: Option<String>,
+}
+
+impl NRoute {
+  
+  pub async fn n<'a>(
+    &self,
+    ctx: &mut impl Ctx<'a>,
+    code: String,
+    map: Option<&HashMap<&'a str, &'a str>>,
+  ) -> Result<String> {
+    let res = n(ctx, self.route_path.clone().into(), code, map).await?;
+    Ok(res)
+  }
+  
+}
+
+#[allow(dead_code)]
 pub async fn n<'a>(
   ctx: &mut impl Ctx<'a>,
   route_path: Option<String>,
   code: String,
-  map: &HashMap<&'a str, &'a str>,
+  map: Option<&HashMap<&'a str, &'a str>>,
 ) -> Result<String> {
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
@@ -31,14 +50,15 @@ pub async fn n<'a>(
   if lang_code.is_empty() {
     return Ok(code);
   }
-  let i18n_lbl = n_lang(ctx, lang_code, route_path, code, map.into()).await?;
+  let i18n_lbl = n_lang(ctx, lang_code, route_path, code, map).await?;
   Ok(i18n_lbl)
 }
 
+#[allow(dead_code)]
 pub async fn ns<'a>(
   ctx: &mut impl Ctx<'a>,
   code: String,
-  map: &HashMap<&'a str, &'a str>,
+  map: Option<&HashMap<&'a str, &'a str>>,
 ) -> Result<String> {
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
@@ -48,7 +68,7 @@ pub async fn ns<'a>(
   if lang_code.is_empty() {
     return Ok(code);
   }
-  let i18n_lbl = n_lang(ctx, lang_code, None, code, map.into()).await?;
+  let i18n_lbl = n_lang(ctx, lang_code, None, code, map).await?;
   Ok(i18n_lbl)
 }
 

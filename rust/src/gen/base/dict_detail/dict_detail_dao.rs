@@ -16,12 +16,15 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use super::dict_detail_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -210,6 +213,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<DictDetailSearch>,
@@ -262,7 +266,6 @@ pub async fn find_all<'a>(
   let is_enabled_dict = &dict_vec[0];
   let is_locked_dict = &dict_vec[1];
   
-  #[allow(unused_assignments)]
   for model in &mut res {
     
     // 启用
@@ -344,17 +347,22 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<DictDetailFieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/dict_detail".to_owned().into(),
+  };
+  
   let field_comments = DictDetailFieldComment {
-    dict_id: "系统字典".to_owned(),
-    dict_id_lbl: "系统字典".to_owned(),
-    lbl: "名称".to_owned(),
-    val: "值".to_owned(),
-    order_by: "排序".to_owned(),
-    is_enabled: "启用".to_owned(),
-    is_enabled_lbl: "启用".to_owned(),
-    rem: "备注".to_owned(),
-    is_locked: "锁定".to_owned(),
-    is_locked_lbl: "锁定".to_owned(),
+    dict_id: n_route.n(ctx, "系统字典".to_owned(), None).await?,
+    dict_id_lbl: n_route.n(ctx, "系统字典".to_owned(), None).await?,
+    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    val: n_route.n(ctx, "值".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
+    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
   };
   Ok(field_comments)
 }

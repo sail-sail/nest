@@ -63,6 +63,8 @@ use crate::common::context::{
   get_page_query,
 };
 
+use crate::src::base::i18n::i18n_dao::NRoute;
+
 use crate::common::gql::model::{PageInput, SortInput};<#
   if (hasDict) {
 #>
@@ -79,6 +81,7 @@ use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
 
 use super::<#=table#>_model::*;
 
+#[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
@@ -442,6 +445,7 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
+#[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<<#=tableUP#>Search>,
@@ -607,7 +611,6 @@ pub async fn find_all<'a>(
     }
   #>
   
-  #[allow(unused_assignments)]
   for model in &mut res {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -723,6 +726,11 @@ pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {
+  
+  let n_route = NRoute {
+    route_path: "/<#=table#>".to_owned().into(),
+  };
+  
   let field_comments = <#=tableUP#>FieldComment {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -748,11 +756,11 @@ pub async fn get_field_comments<'a>(
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
-    <#=column_name#>: "<#=column_comment#>".to_owned(),
-    <#=column_name#>_lbl: "<#=column_comment#>".to_owned(),<#
+    <#=column_name#>: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,
+    <#=column_name#>_lbl: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,<#
       } else {
     #>
-    <#=column_name#>: "<#=column_comment#>".to_owned(),<#
+    <#=column_name#>: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,<#
       }
     #><#
     }
