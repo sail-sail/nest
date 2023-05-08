@@ -35,7 +35,7 @@ impl I18nGenQuery {
     ctx.ok(res).await
   }
   
-  /// 根据搜索条件查找总数
+  /// 根据搜索条件查询数据总数
   async fn find_count_i18n<'a>(
     &self,
     ctx: &Context<'a>,
@@ -82,6 +82,21 @@ impl I18nGenQuery {
     let res = i18n_service::find_by_id(
       &mut ctx,
       id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 获取字段对应的名称
+  pub async fn get_field_comments_i18n<'a>(
+    &self,
+    ctx: &Context<'a>,
+  ) -> Result<I18nFieldComment> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = i18n_service::get_field_comments(
+      &mut ctx,
       None,
     ).await;
     

@@ -80,7 +80,10 @@ async fn main() -> Result<(), std::io::Error> {
     {
       app = app.at("/graphiql", get(common::gql::gql_router::graphql_playground));
     }
-    app = app.at("/graphql", post(common::gql::gql_router::graphql_handler));
+    app = app.at("/graphql",
+      post(common::gql::gql_router::graphql_handler)
+      .get(common::gql::gql_router::graphql_handler_get)
+    );
     app = app.at("/api/oss/upload", post(common::oss::oss_router::upload));
     app = app.at("/api/oss/delete", post(common::oss::oss_router::delete));
     app = app.at("/api/oss/download/:filename", get(common::oss::oss_router::download_filename));

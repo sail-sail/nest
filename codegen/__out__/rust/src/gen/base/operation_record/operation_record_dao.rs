@@ -341,6 +341,7 @@ pub async fn find_all<'a>(
   Ok(res)
 }
 
+/// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<OperationRecordSearch>,
@@ -392,8 +393,10 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
-#[allow(dead_code)]
-pub async fn get_field_comments() -> Result<OperationRecordFieldComment> {
+pub async fn get_field_comments<'a>(
+  ctx: &mut impl Ctx<'a>,
+  _options: Option<Options>,
+) -> Result<OperationRecordFieldComment> {
   let field_comments = OperationRecordFieldComment {
     r#mod: "模块".to_owned(),
     mod_lbl: "模块名称".to_owned(),
