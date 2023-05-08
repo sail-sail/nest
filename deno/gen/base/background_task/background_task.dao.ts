@@ -323,6 +323,8 @@ export async function findAll(
       } else {
         model.begin_time_lbl = begin_time.format("YYYY-MM-DD HH:mm:ss");
       }
+    } else {
+      model.begin_time_lbl = "";
     }
     
     // 结束时间
@@ -333,6 +335,8 @@ export async function findAll(
       } else {
         model.end_time_lbl = end_time.format("YYYY-MM-DD HH:mm:ss");
       }
+    } else {
+      model.end_time_lbl = "";
     }
   }
   
