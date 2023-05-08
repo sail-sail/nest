@@ -969,10 +969,13 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+#[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
   input: <#=tableUP#>Input,
 ) -> Result<<#=tableUP#>Input> {
+  
+  #[allow(unused_mut)]
   let mut input = input;<#
     if (hasDict) {
   #>
@@ -1472,8 +1475,6 @@ pub async fn get_version_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
 ) -> Result<Option<u32>> {
-  let table = "<#=mod#>_<#=table#>";
-  let _method = "get_version_by_id";
   
   let model = find_by_id(ctx, id, None).await?;
   
@@ -1651,6 +1652,12 @@ pub async fn update_by_id<'a>(
   }
   #><#
   }
+  #><#
+    if (table === "i18n") {
+  #>
+  
+  crate::src::base::options::options_dao::update_i18n_version(ctx).await?;<#
+    }
   #>
   
   Ok(num)
@@ -1745,7 +1752,13 @@ pub async fn delete_by_ids<'a>(
       args,
       options,
     ).await?;
-  }
+  }<#
+    if (table === "i18n") {
+  #>
+  
+  crate::src::base::options::options_dao::update_i18n_version(ctx).await?;<#
+    }
+  #>
   
   Ok(num)
 }<#
@@ -1918,11 +1931,13 @@ if (hasOrderBy) {
 /// 查找 order_by 字段的最大值
 pub async fn find_last_order_by<'a>(
   ctx: &mut impl Ctx<'a>,
+  _options: Option<Options>,
 ) -> Result<i64> {
   
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_last_order_by";
   
+  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
   let mut sql_where = "".to_owned();
   

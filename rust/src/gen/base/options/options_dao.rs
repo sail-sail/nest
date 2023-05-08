@@ -623,10 +623,13 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+#[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
   input: OptionsInput,
 ) -> Result<OptionsInput> {
+  
+  #[allow(unused_mut)]
   let mut input = input;
   
   let dict_vec = get_dict(ctx, &vec![
@@ -816,8 +819,6 @@ pub async fn get_version_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
 ) -> Result<Option<u32>> {
-  let table = "base_options";
-  let _method = "get_version_by_id";
   
   let model = find_by_id(ctx, id, None).await?;
   
@@ -1155,11 +1156,13 @@ pub async fn force_delete_by_ids<'a>(
 /// 查找 order_by 字段的最大值
 pub async fn find_last_order_by<'a>(
   ctx: &mut impl Ctx<'a>,
+  _options: Option<Options>,
 ) -> Result<i64> {
   
   let table = "base_options";
   let _method = "find_last_order_by";
   
+  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
   let mut sql_where = "".to_owned();
   

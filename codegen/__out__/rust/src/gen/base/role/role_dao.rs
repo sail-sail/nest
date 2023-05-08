@@ -481,10 +481,13 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+#[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
   input: RoleInput,
 ) -> Result<RoleInput> {
+  
+  #[allow(unused_mut)]
   let mut input = input;
   
   let dict_vec = get_dict(ctx, &vec![

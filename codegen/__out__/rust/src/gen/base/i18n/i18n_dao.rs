@@ -461,10 +461,13 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+#[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
   input: I18nInput,
 ) -> Result<I18nInput> {
+  
+  #[allow(unused_mut)]
   let mut input = input;
   
   // 语言
@@ -715,6 +718,8 @@ pub async fn update_by_id<'a>(
     options,
   ).await?;
   
+  crate::src::base::options::options_dao::update_i18n_version(ctx).await?;
+  
   Ok(num)
 }
 
@@ -767,6 +772,8 @@ pub async fn delete_by_ids<'a>(
       options,
     ).await?;
   }
+  
+  crate::src::base::options::options_dao::update_i18n_version(ctx).await?;
   
   Ok(num)
 }

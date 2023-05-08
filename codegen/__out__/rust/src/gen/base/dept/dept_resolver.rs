@@ -122,6 +122,21 @@ impl DeptGenQuery {
     ctx.ok(res).await
   }
   
+  /// 查找 order_by 字段的最大值
+  pub async fn find_last_order_by_dept<'a>(
+    &self,
+    ctx: &Context<'a>,
+  ) -> Result<i64> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = dept_service::find_last_order_by(
+      &mut ctx,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
 }
 
 #[derive(Default)]

@@ -41,7 +41,7 @@ fn into_macro(ast: &syn::DeriveInput) -> TokenStream {
     syn::Data::Struct(data_struct) => data_struct,
     _ => panic!("FromModel can only be derived for structs"),
   };
-  let builder_fields = map_fields(&data_struct.fields, &mut |(ident, ty)| {
+  let builder_fields = map_fields(&data_struct.fields, &mut |(ident, _ty)| {
       quote!(
         #ident: model.#ident.into(),
       ) 

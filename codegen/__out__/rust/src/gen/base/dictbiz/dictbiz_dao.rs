@@ -633,10 +633,13 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+#[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
   input: DictbizInput,
 ) -> Result<DictbizInput> {
+  
+  #[allow(unused_mut)]
   let mut input = input;
   
   let dict_vec = get_dict(ctx, &vec![
@@ -1186,11 +1189,13 @@ pub async fn force_delete_by_ids<'a>(
 /// 查找 order_by 字段的最大值
 pub async fn find_last_order_by<'a>(
   ctx: &mut impl Ctx<'a>,
+  _options: Option<Options>,
 ) -> Result<i64> {
   
   let table = "base_dictbiz";
   let _method = "find_last_order_by";
   
+  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
   let mut sql_where = "".to_owned();
   
