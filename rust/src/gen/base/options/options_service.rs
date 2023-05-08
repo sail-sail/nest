@@ -77,6 +77,7 @@ pub async fn find_by_id<'a>(
 }
 
 /// 创建数据
+#[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
   input: OptionsInput,
@@ -93,6 +94,7 @@ pub async fn create<'a>(
 }
 
 /// 根据id修改数据
+#[allow(dead_code)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -111,6 +113,7 @@ pub async fn update_by_id<'a>(
 }
 
 /// 根据 ids 删除数据
+#[allow(dead_code)]
 pub async fn delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
@@ -129,6 +132,7 @@ pub async fn delete_by_ids<'a>(
 /// 根据 ID 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
+#[allow(dead_code)]
 pub async fn get_is_locked_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -145,6 +149,7 @@ pub async fn get_is_locked_by_id<'a>(
 }
 
 /// 根据 ids 锁定或者解锁数据
+#[allow(dead_code)]
 pub async fn lock_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
@@ -177,6 +182,7 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据 ids 还原数据
+#[allow(dead_code)]
 pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
@@ -193,6 +199,7 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
+#[allow(dead_code)]
 pub async fn force_delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
