@@ -302,6 +302,8 @@ export async function findAll(
       } else {
         model.expiration_lbl = expiration.format("YYYY-MM-DD");
       }
+    } else {
+      model.expiration_lbl = "";
     }
     
     // 启用

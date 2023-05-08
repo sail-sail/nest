@@ -762,6 +762,8 @@ export async function findAll(
       } else {
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD HH:mm:ss");
       }
+    } else {
+      model.<#=column_name#>_lbl = "";
     }<#
       } else if (data_type === "date") {
     #>
@@ -774,6 +776,8 @@ export async function findAll(
       } else {
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD");
       }
+    } else {
+      model.<#=column_name#>_lbl = "";
     }<#
       }
     #><#

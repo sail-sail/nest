@@ -354,6 +354,8 @@ export async function findAll(
       } else {
         model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
       }
+    } else {
+      model.create_time_lbl = "";
     }
     
     // 更新时间
@@ -364,6 +366,8 @@ export async function findAll(
       } else {
         model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
       }
+    } else {
+      model.update_time_lbl = "";
     }
   }
   
