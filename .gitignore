@@ -19,3 +19,6 @@ codegening.txt
 /rust/src/common/gql/schema.graphql
 
 /app_macro
+
+/pc/typings/components.d.ts
+/pc/typings/auto-imports.d.ts
