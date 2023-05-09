@@ -551,7 +551,7 @@ export async function create(
       select
         t.id
       from
-        menu t
+        base_menu t
       where
         t.lbl in ${ args.push(model.menu_ids_lbl) }
     `;
@@ -760,7 +760,7 @@ export async function updateById(
       select
         t.id
       from
-        menu t
+        base_menu t
       where
         t.lbl in ${ args.push(model.menu_ids_lbl) }
     `;
