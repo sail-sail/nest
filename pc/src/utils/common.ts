@@ -93,3 +93,33 @@ export function saveAsExcel(
   });
   saveAs(blob, name);
 }
+
+export function showUploadMsg(
+  succNum: number,
+  failNum: number,
+  failErrMsgs: string[],
+) {
+  let msgArr: VNode[] = [ ];
+  
+  msgArr.push(
+    h("div", { style: { color: "green" } }, `导入成功 ${ succNum } 条`),
+  );
+  msgArr.push(
+    h("div", { style: { color: "red", marginTop: "4px", marginBottom: "4px" } }, `导入失败 ${ failNum } 条:`),
+  );
+  for (let i = 0; i < failErrMsgs.length; i++) {
+    msgArr.push(
+      h("div", { style: { color: "gray", fontSize: "12px", marginTop: "4px" } }, failErrMsgs[i]),
+    );
+  }
+  let msg: VNode | undefined = undefined;
+  if (msgArr.length > 0) {
+    msg = h("div", { style: { color: "red" } }, msgArr);
+  }
+  
+  return {
+    succNum,
+    failNum,
+    msg,
+  };
+}

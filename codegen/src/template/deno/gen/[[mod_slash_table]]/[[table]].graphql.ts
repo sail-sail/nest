@@ -424,12 +424,6 @@ type Mutation {<#
   updateById<#=Table_Up#>(id: ID!, model: <#=Table_Up#>Input!): ID!<#
   }
   #><#
-  if (opts.noAdd !== true && opts.noEdit !== true) {
-  #>
-  "批量导入"
-  importModels<#=Table_Up#>(models: [<#=Table_Up#>Input!]!): String<#
-  }
-  #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 删除数据"

@@ -117,17 +117,6 @@ export async function deleteByIdsRole(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsRole(
-  models: RoleInput[],
-) {
-  const { importModels } = await import("./role.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsRole(

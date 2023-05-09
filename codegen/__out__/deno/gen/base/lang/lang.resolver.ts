@@ -117,17 +117,6 @@ export async function deleteByIdsLang(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsLang(
-  models: LangInput[],
-) {
-  const { importModels } = await import("./lang.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsLang(

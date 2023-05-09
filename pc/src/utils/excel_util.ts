@@ -5,7 +5,6 @@
   file: File,
   header?: {[key: string]: string},
 ): Promise<T[]> {
-  ElMessage.info("正在导入...");
   const XLSX = await import("xlsx");
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, {

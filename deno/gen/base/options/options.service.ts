@@ -196,44 +196,6 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 批量导入
- * @param {OptionsInput[]} models
- */
-export async function importModels(
-  models: OptionsInput[],
-) {
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    try {
-      await optionsDao.create(model, { uniqueType: "update" });
-      succNum++;
-    } catch (err) {
-      failNum++;
-      failErrMsgs.push(await ns("第 {0} 行: {1}", (i + 1).toString(), err.message || err.toString()));
-    }
-  }
-  
-  let data = "";
-  if (succNum > 0) {
-    data = await ns("导入成功 {0} 条", succNum.toString());
-    data += "\n";
-  }
-  if (failNum > 0) {
-    data += await ns("导入失败 {0} 条", failNum.toString());
-    data += "\n";
-  }
-  if (failErrMsgs.length > 0) {
-    data += failErrMsgs.join("\n");
-  }
-  
-  return data;
-}
-
-/**
  * 获取字段对应的名称
  */
 export async function getFieldComments() {

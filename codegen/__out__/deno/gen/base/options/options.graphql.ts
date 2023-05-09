@@ -179,8 +179,6 @@ type Mutation {
   createOptions(model: OptionsInput!): ID!
   "根据id修改一条数据"
   updateByIdOptions(id: ID!, model: OptionsInput!): ID!
-  "批量导入"
-  importModelsOptions(models: [OptionsInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsOptions(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

@@ -117,17 +117,6 @@ export async function deleteByIdsMenu(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsMenu(
-  models: MenuInput[],
-) {
-  const { importModels } = await import("./menu.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsMenu(

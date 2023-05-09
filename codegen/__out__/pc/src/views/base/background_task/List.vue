@@ -428,9 +428,11 @@
       ></el-pagination>
     </div>
   </div>
+  
   <Detail
     ref="detailRef"
   ></Detail>
+  
 </div>
 </template>
 

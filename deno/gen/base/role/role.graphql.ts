@@ -89,8 +89,6 @@ type Mutation {
   createRole(model: RoleInput!): ID!
   "根据id修改一条数据"
   updateByIdRole(id: ID!, model: RoleInput!): ID!
-  "批量导入"
-  importModelsRole(models: [RoleInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsRole(ids: [ID!]!): Int!
   "根据 ids 还原数据"

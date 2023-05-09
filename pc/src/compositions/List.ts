@@ -501,6 +501,8 @@ export async function initListI18ns() {
     "请输入",
     "请选择",
     "导出失败",
+    "批量导入",
+    "正在导入...",
   ];
   await initSysI18ns(codes);
 }
