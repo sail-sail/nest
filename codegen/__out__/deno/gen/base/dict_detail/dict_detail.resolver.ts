@@ -135,17 +135,6 @@ export async function lockByIdsDictDetail(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsDictDetail(
-  models: DictDetailInput[],
-) {
-  const { importModels } = await import("./dict_detail.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsDictDetail(

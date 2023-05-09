@@ -1339,7 +1339,7 @@ export async function create(
       select
         t.id
       from
-        <#=foreignTable#> t
+        <#=foreignKey.mod#>_<#=foreignTable#> t
       where
         t.<#=foreignKey.lbl#> in ${ args.push(model.<#=column_name#>_lbl) }
     `;
@@ -1968,7 +1968,7 @@ export async function updateById(
       select
         t.id
       from
-        <#=foreignTable#> t
+        <#=foreignKey.mod#>_<#=foreignTable#> t
       where
         t.<#=foreignKey.lbl#> in ${ args.push(model.<#=column_name#>_lbl) }
     `;

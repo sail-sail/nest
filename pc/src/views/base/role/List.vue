@@ -443,6 +443,7 @@
       ></el-pagination>
     </div>
   </div>
+  
   <ListSelectDialog
     ref="menu_idsListSelectDialogRef"
     v-slot="{ selectedIds }"
@@ -452,12 +453,21 @@
       @selected-ids-chg="menu_idsListSelectDialogRef?.selectedIdsChg($event)"
     ></MenuList>
   </ListSelectDialog>
+  
   <Detail
     ref="detailRef"
   ></Detail>
+  
   <UploadFileDialog
     ref="uploadFileDialogRef"
   ></UploadFileDialog>
+  
+  <ImportPercentageDialog
+    :percentage="importPercentage"
+    :dialog_visible="isImporting"
+    @cancel="cancelImport"
+  ></ImportPercentageDialog>
+  
 </div>
 </template>
 
@@ -880,9 +890,11 @@ async function openCopy() {
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
-/**
- * 弹出导入窗口
-*/
+let importPercentage = $ref(0);
+let isImporting = $ref(false);
+let isCancelImport = $ref(false);
+
+/** 弹出导入窗口 */
 async function importExcelClk() {
   if (!uploadFileDialogRef) {
     return;
@@ -894,17 +906,39 @@ async function importExcelClk() {
     [ n("菜单") ]: "menu_ids_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
-    title: "批量导入角色",
+    title: ns("批量导入"),
   });
   if (!file) {
     return;
   }
-  const models = await getExcelData<RoleInput>(file, header);
-  const msg = await importModels(models);
-  if (msg) {
-    MessageBox.success(msg);
+  isCancelImport = false;
+  isImporting = true;
+  let msg: VNode | undefined = undefined;
+  let succNum = 0;
+  try {
+    ElMessage.info(ns("正在导入..."));
+    const models = await getExcelData<RoleInput>(file, header);
+    const res = await importModels(
+      models,
+      $$(importPercentage),
+      $$(isCancelImport),
+    );
+    msg = res.msg;
+    succNum = res.succNum;
+  } finally {
+    isImporting = false;
   }
-  await dataGrid(true);
+  if (msg) {
+    ElMessageBox.alert(msg)
+  }
+  if (succNum > 0) {
+    await dataGrid(true);
+  }
+}
+
+/** 取消导入 */
+async function cancelImport() {
+  isCancelImport = true;
 }
 
 /** 打开修改页面 */

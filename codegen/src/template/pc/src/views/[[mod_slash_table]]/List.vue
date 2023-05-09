@@ -812,6 +812,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   #><#
     if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
   #>
+  
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
     v-slot="{ selectedIds }"
@@ -825,6 +826,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   #><#
     if (foreignKey && foreignKey.isLinkForeignTabs) {
   #>
+  
   <<#=Foreign_Table_Up#>ForeignTabs
     ref="<#=foreignTable#>ForeignTabsRef"
   ></<#=Foreign_Table_Up#>ForeignTabs><#
@@ -832,23 +834,33 @@ const hasAtt = columns.some((item) => item.isAtt);
   #><#
   }
   #>
+  
   <Detail
     ref="detailRef"
   ></Detail><#
-    if (opts.noImport !== true) {
+    if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
+  
   <UploadFileDialog
     ref="uploadFileDialogRef"
-  ></UploadFileDialog><#
+  ></UploadFileDialog>
+  
+  <ImportPercentageDialog
+    :percentage="importPercentage"
+    :dialog_visible="isImporting"
+    @cancel="cancelImport"
+  ></ImportPercentageDialog><#
     }
   #><#
   if (hasForeignTabs > 0) {
   #>
+  
   <ForeignTabs
     ref="foreignTabsRef"
   ></ForeignTabs><#
   }
   #>
+  
 </div>
 </template>
 
@@ -1788,9 +1800,11 @@ async function openCopy() {
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
-/**
- * 弹出导入窗口
-*/
+let importPercentage = $ref(0);
+let isImporting = $ref(false);
+let isCancelImport = $ref(false);
+
+/** 弹出导入窗口 */
 async function importExcelClk() {
   if (!uploadFileDialogRef) {
     return;
@@ -1826,17 +1840,39 @@ async function importExcelClk() {
   #>
   };
   const file = await uploadFileDialogRef.showDialog({
-    title: "批量导入<#=table_comment#>",
+    title: ns("批量导入"),
   });
   if (!file) {
     return;
   }
-  const models = await getExcelData<<#=Table_Up#>Input>(file, header);
-  const msg = await importModels(models);
-  if (msg) {
-    MessageBox.success(msg);
+  isCancelImport = false;
+  isImporting = true;
+  let msg: VNode | undefined = undefined;
+  let succNum = 0;
+  try {
+    ElMessage.info(ns("正在导入..."));
+    const models = await getExcelData<<#=Table_Up#>Input>(file, header);
+    const res = await importModels(
+      models,
+      $$(importPercentage),
+      $$(isCancelImport),
+    );
+    msg = res.msg;
+    succNum = res.succNum;
+  } finally {
+    isImporting = false;
   }
-  await dataGrid(true);
+  if (msg) {
+    ElMessageBox.alert(msg)
+  }
+  if (succNum > 0) {
+    await dataGrid(true);
+  }
+}
+
+/** 取消导入 */
+async function cancelImport() {
+  isCancelImport = true;
 }<#
   }
 #><#

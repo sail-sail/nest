@@ -20,3 +20,6 @@ codegening.txt
 
 /app_macro/target
 /app_macro/Cargo.lock
+
+/pc/typings/components.d.ts
+/pc/typings/auto-imports.d.ts

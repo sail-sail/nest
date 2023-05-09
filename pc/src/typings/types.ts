@@ -1219,30 +1219,6 @@ export type Mutation = {
   forceDeleteByIdsTenant: Scalars['Int'];
   /** 根据 ids 彻底删除数据 */
   forceDeleteByIdsUsr: Scalars['Int'];
-  /** 批量导入 */
-  importModelsDept?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsDict?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsDictDetail?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsDictbiz?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsDictbizDetail?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsI18n?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsLang?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsMenu?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsOptions?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsRole?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsTenant?: Maybe<Scalars['String']>;
-  /** 批量导入 */
-  importModelsUsr?: Maybe<Scalars['String']>;
   /** 根据 ids 锁定或者解锁数据 */
   lockByIdsDept: Scalars['Int'];
   /** 根据 ids 锁定或者解锁数据 */
@@ -1517,66 +1493,6 @@ export type MutationForceDeleteByIdsTenantArgs = {
 
 export type MutationForceDeleteByIdsUsrArgs = {
   ids: Array<Scalars['ID']>;
-};
-
-
-export type MutationImportModelsDeptArgs = {
-  models: Array<DeptInput>;
-};
-
-
-export type MutationImportModelsDictArgs = {
-  models: Array<DictInput>;
-};
-
-
-export type MutationImportModelsDictDetailArgs = {
-  models: Array<DictDetailInput>;
-};
-
-
-export type MutationImportModelsDictbizArgs = {
-  models: Array<DictbizInput>;
-};
-
-
-export type MutationImportModelsDictbizDetailArgs = {
-  models: Array<DictbizDetailInput>;
-};
-
-
-export type MutationImportModelsI18nArgs = {
-  models: Array<I18nInput>;
-};
-
-
-export type MutationImportModelsLangArgs = {
-  models: Array<LangInput>;
-};
-
-
-export type MutationImportModelsMenuArgs = {
-  models: Array<MenuInput>;
-};
-
-
-export type MutationImportModelsOptionsArgs = {
-  models: Array<OptionsInput>;
-};
-
-
-export type MutationImportModelsRoleArgs = {
-  models: Array<RoleInput>;
-};
-
-
-export type MutationImportModelsTenantArgs = {
-  models: Array<TenantInput>;
-};
-
-
-export type MutationImportModelsUsrArgs = {
-  models: Array<UsrInput>;
 };
 
 

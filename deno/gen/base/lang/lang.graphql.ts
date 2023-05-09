@@ -92,8 +92,6 @@ type Mutation {
   createLang(model: LangInput!): ID!
   "根据id修改一条数据"
   updateByIdLang(id: ID!, model: LangInput!): ID!
-  "批量导入"
-  importModelsLang(models: [LangInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsLang(ids: [ID!]!): Int!
   "根据 ids 还原数据"

@@ -137,6 +137,7 @@
     "shallowReactive": true,
     "shallowReadonly": true,
     "shallowRef": true,
+    "showUploadMsg": true,
     "syncRef": true,
     "syncRefs": true,
     "templateRef": true,

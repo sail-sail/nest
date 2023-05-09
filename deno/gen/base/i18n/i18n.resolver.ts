@@ -117,17 +117,6 @@ export async function deleteByIdsI18n(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsI18n(
-  models: I18nInput[],
-) {
-  const { importModels } = await import("./i18n.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsI18n(

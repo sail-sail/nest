@@ -135,17 +135,6 @@ export async function lockByIdsOptions(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsOptions(
-  models: OptionsInput[],
-) {
-  const { importModels } = await import("./options.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsOptions(

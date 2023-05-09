@@ -658,7 +658,7 @@ export async function create(
       select
         t.id
       from
-        dept t
+        base_dept t
       where
         t.lbl in ${ args.push(model.dept_ids_lbl) }
     `;
@@ -688,7 +688,7 @@ export async function create(
       select
         t.id
       from
-        role t
+        base_role t
       where
         t.lbl in ${ args.push(model.role_ids_lbl) }
     `;
@@ -937,7 +937,7 @@ export async function updateById(
       select
         t.id
       from
-        dept t
+        base_dept t
       where
         t.lbl in ${ args.push(model.dept_ids_lbl) }
     `;
@@ -967,7 +967,7 @@ export async function updateById(
       select
         t.id
       from
-        role t
+        base_role t
       where
         t.lbl in ${ args.push(model.role_ids_lbl) }
     `;

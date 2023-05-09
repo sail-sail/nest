@@ -172,21 +172,6 @@ export async function lockByIds<#=Table_Up#>(
 }<#
   }
 #><#
-if (opts.noAdd !== true && opts.noEdit !== true) {
-#>
-
-/**
- * 批量导入
- */
-export async function importModels<#=Table_Up#>(
-  models: <#=Table_Up#>Input[],
-) {
-  const { importModels } = await import("./<#=table#>.service.ts");
-  const data = await importModels(models);
-  return data;
-}<#
-}
-#><#
 if (opts.noDelete !== true) {
 #>
 

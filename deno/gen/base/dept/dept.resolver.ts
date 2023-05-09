@@ -135,17 +135,6 @@ export async function lockByIdsDept(
 }
 
 /**
- * 批量导入
- */
-export async function importModelsDept(
-  models: DeptInput[],
-) {
-  const { importModels } = await import("./dept.service.ts");
-  const data = await importModels(models);
-  return data;
-}
-
-/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsDept(

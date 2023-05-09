@@ -100,8 +100,6 @@ type Mutation {
   createI18n(model: I18nInput!): ID!
   "根据id修改一条数据"
   updateByIdI18n(id: ID!, model: I18nInput!): ID!
-  "批量导入"
-  importModelsI18n(models: [I18nInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsI18n(ids: [ID!]!): Int!
   "根据 ids 还原数据"

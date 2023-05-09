@@ -122,8 +122,6 @@ type Mutation {
   createDictbizDetail(model: DictbizDetailInput!): ID!
   "根据id修改一条数据"
   updateByIdDictbizDetail(id: ID!, model: DictbizDetailInput!): ID!
-  "批量导入"
-  importModelsDictbizDetail(models: [DictbizDetailInput!]!): String
   "根据 ids 删除数据"
   deleteByIdsDictbizDetail(ids: [ID!]!): Int!
   "根据 ids 锁定或者解锁数据"

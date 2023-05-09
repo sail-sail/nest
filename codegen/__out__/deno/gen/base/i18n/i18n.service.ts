@@ -167,49 +167,6 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 批量导入
- * @param {I18nInput[]} models
- */
-export async function importModels(
-  models: I18nInput[],
-) {
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    try {
-      await i18nDao.create(model, { uniqueType: "update" });
-      succNum++;
-    } catch (err) {
-      failNum++;
-      failErrMsgs.push(await ns("第 {0} 行: {1}", (i + 1).toString(), err.message || err.toString()));
-    }
-  }
-  
-  let data = "";
-  if (succNum > 0) {
-    data = await ns("导入成功 {0} 条", succNum.toString());
-    data += "\n";
-  }
-  if (failNum > 0) {
-    data += await ns("导入失败 {0} 条", failNum.toString());
-    data += "\n";
-  }
-  if (failErrMsgs.length > 0) {
-    data += failErrMsgs.join("\n");
-  }
-  
-  if (succNum > 0) {
-    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
-    await optionsDaoSrc.updateI18n_version();
-  }
-  
-  return data;
-}
-
-/**
  * 获取字段对应的名称
  */
 export async function getFieldComments() {
