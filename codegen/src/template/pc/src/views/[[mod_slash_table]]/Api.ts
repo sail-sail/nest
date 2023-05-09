@@ -644,22 +644,42 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
  */
 export async function importModels(
   models: <#=Table_Up#>Input[],
+  percentage: Ref<number>,
+  isCancel: Ref<boolean>,
   opt?: GqlOpt,
 ) {
-  const data: {
-    importModels<#=Table_Up#>: Mutation["importModels<#=Table_Up#>"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($models: [<#=Table_Up#>Input!]!) {
-        importModels<#=Table_Up#>(models: $models)
-      }
-    `,
-    variables: {
-      models,
-    },
-  }, opt);
-  const res = data.importModels<#=Table_Up#>;
-  return res;
+  const {
+    nsAsync,
+  } = useI18n();
+  
+  let succNum = 0;
+  let failNum = 0;
+  const failErrMsgs: string[] = [ ];
+  percentage.value = 0;
+  
+  for (let i = 0; i < models.length; i++) {
+    if (isCancel.value) {
+      break;
+    }
+    
+    const item = models[i];
+    
+    opt = opt || { };
+    opt.showErrMsg = false;
+    opt.notLoading = true;
+    
+    try {
+      await create(item, opt);
+      succNum++;
+    } catch (err) {
+      failNum++;
+      failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
+    }
+    
+    percentage.value = Math.floor((i + 1) / models.length * 100);
+  }
+  
+  return showUploadMsg(succNum, failNum, failErrMsgs);
 }<#
 }
 #><#

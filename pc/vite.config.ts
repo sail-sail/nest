@@ -62,6 +62,7 @@ export default defineConfig({
             "getDictbiz",
             "useRenderExcel",
             "saveAsExcel",
+            "showUploadMsg",
           ],
         },
         {
