@@ -18,7 +18,12 @@ import Unocss from "unocss/vite";
 
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import defineOptions from "unplugin-vue-define-options/vite";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -30,9 +35,8 @@ export default defineConfig({
     },
   },
   plugins: [
-    vue({
-      reactivityTransform: /^((?!node_modules).)*$/,
-    }),
+    vue(),
+    reactivityTransform(),
     defineOptions(),
     vueJsx(),
     Icons({

@@ -9,6 +9,10 @@ import { FileSystemIconLoader } from "unplugin-icons/loaders";
 
 import Unocss from "unocss/vite";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import reactivityTransform from "@vue-macros/reactivity-transform/vite";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -19,11 +23,8 @@ export default defineConfig({
     },
   },
   plugins: [
-    uni({
-      vueOptions:{
-        reactivityTransform: /^((?!node_modules).)*$/,
-      }
-    }),
+    uni(),
+    reactivityTransform(),
     Icons({
       compiler: "vue3",
       customCollections: {
