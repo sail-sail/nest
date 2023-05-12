@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "lib": [ "esnext", "dom", "WebWorker" ],
     "types": [
+      "@vue-macros/reactivity-transform/macros-global",
       "vite/client",
       "node",
       "unplugin-vue-define-options/macros-global"

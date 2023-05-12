@@ -6,6 +6,7 @@ npm-debug.log
 package-lock.json
 yarn.lock
 unpackage
+~$*.xlsx
 
 /build
 /error.js

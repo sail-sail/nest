@@ -53,6 +53,9 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
   const mod_slash_table = table.replace("_", "/");
   table = table.substring(table.indexOf("_") + 1);
   const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+  const Table_Up_IN = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
   
   let optTables = tables;
   const result = await context.conn.query(`
@@ -101,7 +104,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           const foreignKey = column.foreignKey;
           let lbl = ``;
           if (lbls.length === 0) {
-            lbl += `<%const comment = _data_.data.getFieldComments${ tableUp };%>`;
+            lbl += `<%const comment = _data_.data.getFieldComments${ Table_Up_IN };%>`;
           }
           lbl += `<%=comment.`;
           if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
@@ -113,7 +116,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           lbls.push(lbl);
           let str = "";
           if (fields.length === 0) {
-            str += `<%forRow model in _data_.data.findAll${ tableUp }%>`;
+            str += `<%forRow model in _data_.data.findAll${ Table_Up_IN }%>`;
           }
           str += "<%";
           if (data_type === "varchar") {
@@ -129,11 +132,15 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
           } else {
             str += "=";
           }
-          str += "model.";
-          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
-            str += column_name + "_lbl";
+          if (data_type === "date" || data_type === "datetime") {
+            str += `model.${ column_name } ? new Date(model.${ column_name }) : ""`;
           } else {
-            str += column_name;
+            str += "model.";
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+              str += column_name + "_lbl";
+            } else {
+              str += column_name;
+            }
           }
           str += "%>";
           fields.push(str);
