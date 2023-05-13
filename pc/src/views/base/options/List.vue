@@ -563,6 +563,7 @@ defineOptions({
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns
 } = useI18n();
@@ -972,7 +973,7 @@ async function openAdd() {
     type,
     changedIds,
   } = await detailRef.showDialog({
-    title: ns("增加"),
+    title: await nsAsync("增加"),
     action: "add",
     builtInModel,
   });
@@ -994,14 +995,14 @@ async function openCopy() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(ns("请选择需要 复制 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 复制 的数据"));
     return;
   }
   const {
     type,
     changedIds,
   } = await detailRef.showDialog({
-    title: ns("复制"),
+    title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
     model: {
@@ -1045,7 +1046,7 @@ async function importExcelClk() {
     [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({
-    title: ns("批量导入"),
+    title: await nsAsync("批量导入"),
   });
   if (!file) {
     return;
@@ -1055,7 +1056,7 @@ async function importExcelClk() {
   let msg: VNode | undefined = undefined;
   let succNum = 0;
   try {
-    ElMessage.info(ns("正在导入..."));
+    ElMessage.info(await nsAsync("正在导入..."));
     const models = await getExcelData<OptionsInput>(file, header);
     const res = await importModels(
       models,
@@ -1086,14 +1087,14 @@ async function openEdit() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(ns("请选择需要修改的数据"));
+    ElMessage.warning(await nsAsync("请选择需要修改的数据"));
     return;
   }
   const {
     type,
     changedIds,
   } = await detailRef.showDialog({
-    title: ns("修改"),
+    title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
     model: {
@@ -1114,13 +1115,13 @@ async function openEdit() {
 /** 点击删除 */
 async function deleteByIdsEfc() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(ns("请选择需要删除的数据"));
+    ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ ns("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
-      confirmButtonText: ns("确定"),
-      cancelButtonText: ns("取消"),
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -1132,7 +1133,7 @@ async function deleteByIdsEfc() {
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(ns("删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
 }
@@ -1140,13 +1141,13 @@ async function deleteByIdsEfc() {
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(ns("请选择需要 彻底删除 的数据"));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ ns("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
-      confirmButtonText: ns("确定"),
-      cancelButtonText: ns("取消"),
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -1155,7 +1156,7 @@ async function forceDeleteByIdsClk() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(ns("彻底删除 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
     await Promise.all([
       dataGrid(true),
     ]);
@@ -1167,9 +1168,9 @@ async function lockByIdsClk(is_locked: 0 | 1) {
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = ns("请选择需要 锁定 的数据");
+      msg = await nsAsync("请选择需要 锁定 的数据");
     } else {
-      msg = ns("请选择需要 解锁 的数据");
+      msg = await nsAsync("请选择需要 解锁 的数据");
     }
     ElMessage.warning(msg);
     return;
@@ -1178,9 +1179,9 @@ async function lockByIdsClk(is_locked: 0 | 1) {
   if (num) {
     let msg = "";
     if (is_locked === 1) {
-      msg = ns("锁定 {0} 条数据成功", num);
+      msg = await nsAsync("锁定 {0} 条数据成功", num);
     } else {
-      msg = ns("解锁 {0} 条数据成功", num);
+      msg = await nsAsync("解锁 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
     await dataGrid(true);
@@ -1190,13 +1191,13 @@ async function lockByIdsClk(is_locked: 0 | 1) {
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (selectedIds.length === 0) {
-    ElMessage.warning(ns("请选择需要还原的数据"));
+    ElMessage.warning(await nsAsync("请选择需要还原的数据"));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ ns("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
-      confirmButtonText: ns("确定"),
-      cancelButtonText: ns("取消"),
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 条数据", selectedIds.length) }?`, {
+      confirmButtonText: await nsAsync("确定"),
+      cancelButtonText: await nsAsync("取消"),
       type: "warning",
     });
   } catch (err) {
@@ -1208,7 +1209,7 @@ async function revertByIdsEfc() {
     await Promise.all([
       dataGrid(true),
     ]);
-    ElMessage.success(ns("还原 {0} 条数据成功", num));
+    ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
 }
