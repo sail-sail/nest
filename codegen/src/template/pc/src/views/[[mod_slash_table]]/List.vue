@@ -1852,7 +1852,41 @@ async function importExcelClk() {
   let succNum = 0;
   try {
     ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<<#=Table_Up#>Input>(file, header);
+    const models = await getExcelData<<#=Table_Up#>Input>(
+      file,
+      header,
+      {
+        date_keys: [<#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            if (column.noList) continue;
+            const column_name = column.COLUMN_NAME;
+            if (column_name === "id") continue;
+            if (column_name === "version") continue;
+            const data_type = column.DATA_TYPE;
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            let column_comment = column.COLUMN_COMMENT || "";
+            let selectList = [ ];
+            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+            if (selectStr) {
+              selectList = eval(`(${ selectStr })`);
+            }
+            if (column_comment.indexOf("[") !== -1) {
+              column_comment = column_comment.substring(0, column_comment.indexOf("["));
+            }
+            if (![ "datetime", "date" ].includes(data_type)) {
+              continue;
+            }
+          #>
+          n("<#=column_comment#>"),<#
+          }
+          #>
+        ],
+      },
+    );
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -1862,6 +1896,7 @@ async function importExcelClk() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
+    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -1874,6 +1909,8 @@ async function importExcelClk() {
 /** 取消导入 */
 async function cancelImport() {
   isCancelImport = true;
+  isImporting = false;
+  importPercentage = 0;
 }<#
   }
 #><#

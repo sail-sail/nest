@@ -2,11 +2,11 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.186.0/",
+    "std/": "https://deno.land/std@0.187.0/",
     "oak": "https://deno.land/x/oak@v12.4.0/mod.ts",
     "graphql": "https://esm.sh/graphql@16.6.0",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
-    "redis": "https://deno.land/x/redis@v0.29.3/mod.ts",
+    "redis": "https://deno.land/x/redis@v0.29.4/mod.ts",
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
     "jose/": "https://deno.land/x/jose@v4.14.4/",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",

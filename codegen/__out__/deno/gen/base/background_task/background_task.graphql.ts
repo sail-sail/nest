@@ -31,6 +31,10 @@ type BackgroundTaskModel {
   end_time_lbl: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: ID!
+  "创建人"
+  create_usr_id_lbl: String
 }
 type BackgroundTaskFieldComment {
   "名称"
@@ -57,10 +61,12 @@ type BackgroundTaskFieldComment {
   end_time_lbl: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
 }
 input BackgroundTaskInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "名称"
@@ -79,10 +85,18 @@ input BackgroundTaskInput {
   err_msg: String
   "开始时间"
   begin_time: NaiveDateTime
+  "开始时间"
+  begin_time_lbl: String
   "结束时间"
   end_time: NaiveDateTime
+  "结束时间"
+  end_time_lbl: String
   "备注"
   rem: String
+  "创建人"
+  create_usr_id: ID
+  "创建人"
+  create_usr_id_lbl: String
 }
 input BackgroundTaskSearch {
   "是否已删除"

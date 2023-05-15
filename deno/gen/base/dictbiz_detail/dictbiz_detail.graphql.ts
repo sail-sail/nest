@@ -51,8 +51,6 @@ type DictbizDetailFieldComment {
   is_locked_lbl: String!
 }
 input DictbizDetailInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "业务字典"

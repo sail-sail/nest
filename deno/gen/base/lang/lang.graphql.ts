@@ -35,8 +35,6 @@ type LangFieldComment {
   order_by: String!
 }
 input LangInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "编码"

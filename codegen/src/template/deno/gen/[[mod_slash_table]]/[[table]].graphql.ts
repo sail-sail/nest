@@ -203,23 +203,30 @@ input <#=Table_Up#>Input {<#
     }
     if (column_name === 'id') column_comment = '';
   #><#
-    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz) {
-  #><#
-    if (column_name === 'id') {
-  #>
-  "租户ID"
-  tenant_id: String<#
-    }
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+    ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    } else {
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: <#=_data_type#><#
+    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: <#=_data_type#><#
+    } else {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#><#
     }
+  #><#
   }
   #>
 }

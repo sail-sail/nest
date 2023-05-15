@@ -61,19 +61,20 @@ axios.interceptors.response.use(
       indexStore.logout();
       return data;
     }
-    if ((<any>config).showErrMsg !== false) {
-      if (data.code !== 0) {
-        const errMsg = <string>data.msg;
+    if (data.code !== 0) {
+      const errMsg = <string>data.msg;
+      if ((<any>config).showErrMsg !== false) {
         if (errMsg) {
           ElMessage({
             offset: 0,
             type: "error",
             showClose: true,
-            message: errMsg.toString(),
+            message: errMsg,
             duration: (<any>config).duration,
           });
         }
       }
+      return Promise.reject(data);
     }
     return response;
   },

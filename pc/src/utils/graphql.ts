@@ -341,16 +341,16 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       return data;
     }
   }
-  if (!opt || opt.showErrMsg !== false) {
-    if (errors && errors.length > 0) {
-      let errMsg = "";
-      for (let i = 0; i < errors.length; i++) {
-        const item = errors[i];
-        errMsg += item.message;
-        if (i !== errors.length - 1) {
-          errMsg += "\n";
-        }
+  if (errors && errors.length > 0) {
+    let errMsg = "";
+    for (let i = 0; i < errors.length; i++) {
+      const item = errors[i];
+      errMsg += item.message;
+      if (i !== errors.length - 1) {
+        errMsg += "\n";
       }
+    }
+    if (!opt || opt.showErrMsg !== false) {
       if (errMsg) {
         ElMessage({
           offset: 0,
@@ -360,8 +360,8 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
           duration,
         });
       }
-      throw errMsg;
     }
+    throw errMsg;
   }
   return data;
 }

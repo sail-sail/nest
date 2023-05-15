@@ -466,6 +466,7 @@ async function initI18nsEfc() {
     "开始时间",
     "结束时间",
     "备注",
+    "创建人",
   ];
   await Promise.all([
     initDetailI18ns(),

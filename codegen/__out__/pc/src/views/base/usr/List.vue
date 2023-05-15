@@ -853,6 +853,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "锁定",
       prop: "is_locked_lbl",
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1050,7 +1051,14 @@ async function importExcelClk() {
   let succNum = 0;
   try {
     ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<UsrInput>(file, header);
+    const models = await getExcelData<UsrInput>(
+      file,
+      header,
+      {
+        date_keys: [
+        ],
+      },
+    );
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -1060,6 +1068,7 @@ async function importExcelClk() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
+    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -1072,6 +1081,8 @@ async function importExcelClk() {
 /** 取消导入 */
 async function cancelImport() {
   isCancelImport = true;
+  isImporting = false;
+  importPercentage = 0;
 }
 
 /** 打开修改页面 */

@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ rows-[auto] cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -69,22 +69,6 @@
               un-w="full"
               :placeholder="`${ n('请输入') } ${ n('备注') }`"
             ></el-input>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.is_enabled == null">
-          <el-form-item
-            :label="n('启用')"
-            prop="is_enabled"
-            un-h="full"
-          >
-            <DictSelect
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
-              v-model="dialogModel.is_enabled"
-              code="is_enabled"
-              un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('启用') }`"
-            ></DictSelect>
           </el-form-item>
         </template>
         

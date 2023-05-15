@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ rows-[auto] cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -81,22 +81,6 @@
               :controls="false"
               :placeholder="`${ n('请输入') } ${ n('排序') }`"
             ></el-input-number>
-          </el-form-item>
-        </template>
-        
-        <template v-if="builtInModel?.is_enabled == null">
-          <el-form-item
-            :label="n('启用')"
-            prop="is_enabled"
-            un-h="full"
-          >
-            <DictSelect
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
-              v-model="dialogModel.is_enabled"
-              code="is_enabled"
-              un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('启用') }`"
-            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -193,7 +177,6 @@ import {
 import {
   type DeptInput,
   type DeptModel,
-  type UsrModel,
 } from "#/types";
 
 import {
@@ -244,6 +227,18 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ ns("请输入") } ${ n("名称") }`,
+      },
+    ],
+    is_enabled: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("启用") }`,
+      },
+    ],
+    is_locked: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("锁定") }`,
       },
     ],
   };
