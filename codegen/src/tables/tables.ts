@@ -128,6 +128,9 @@ export default defineConfig({
           },
         },
       },
+      // {
+      //   COLUMN_NAME: "test_time",
+      // },
       {
         COLUMN_NAME: "is_locked",
       },
