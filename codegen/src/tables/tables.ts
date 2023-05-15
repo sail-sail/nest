@@ -130,8 +130,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_locked",
-        noAdd: true,
-        noEdit: true,
       },
       {
         COLUMN_NAME: "is_enabled",

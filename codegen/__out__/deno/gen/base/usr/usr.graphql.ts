@@ -65,8 +65,6 @@ type UsrFieldComment {
   role_ids_lbl: String!
 }
 input UsrInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "名称"

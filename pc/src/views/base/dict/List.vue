@@ -1055,7 +1055,16 @@ async function importExcelClk() {
   let succNum = 0;
   try {
     ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<DictInput>(file, header);
+    const models = await getExcelData<DictInput>(
+      file,
+      header,
+      {
+        date_keys: [
+          n("创建时间"),
+          n("更新时间"),
+        ],
+      },
+    );
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -1065,6 +1074,7 @@ async function importExcelClk() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
+    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -1077,6 +1087,8 @@ async function importExcelClk() {
 /** 取消导入 */
 async function cancelImport() {
   isCancelImport = true;
+  isImporting = false;
+  importPercentage = 0;
 }
 
 /** 打开修改页面 */
