@@ -42,7 +42,8 @@ use crate::gen::base::tenant::tenant_model::{
 // }
 
 /// 根据 当前网址的域名+端口 获取 租户列表
-pub async fn get_login_teants<'a>(
+#[allow(unused_variables)]
+pub async fn get_login_tenants<'a>(
   ctx: &mut impl Ctx<'a>,
   host: String,
 ) -> Result<Vec<TenantModel>> {
@@ -50,7 +51,7 @@ pub async fn get_login_teants<'a>(
   let res = tenant_dao::find_all(
     ctx,
     TenantSearch {
-      host: host.into(),
+      // host: host.into(),
       is_enabled: vec![1].into(),
       ..Default::default()
     }.into(),
