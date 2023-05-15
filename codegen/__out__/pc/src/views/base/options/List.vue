@@ -840,7 +840,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      width: 100,
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -856,7 +856,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      width: 100,
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

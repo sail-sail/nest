@@ -27,6 +27,10 @@ export type BackgroundTaskFieldComment = {
   begin_time: Scalars['String'];
   /** 开始时间 */
   begin_time_lbl: Scalars['String'];
+  /** 创建人 */
+  create_usr_id: Scalars['String'];
+  /** 创建人 */
+  create_usr_id_lbl: Scalars['String'];
   /** 结束时间 */
   end_time: Scalars['String'];
   /** 结束时间 */
@@ -52,6 +56,10 @@ export type BackgroundTaskFieldComment = {
 export type BackgroundTaskInput = {
   /** 开始时间 */
   begin_time?: InputMaybe<Scalars['NaiveDateTime']>;
+  /** 创建人 */
+  create_usr_id?: InputMaybe<Scalars['ID']>;
+  /** 创建人 */
+  create_usr_id_lbl?: InputMaybe<Scalars['String']>;
   /** 结束时间 */
   end_time?: InputMaybe<Scalars['NaiveDateTime']>;
   /** 错误信息 */
@@ -81,6 +89,10 @@ export type BackgroundTaskModel = {
   begin_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 开始时间 */
   begin_time_lbl: Scalars['String'];
+  /** 创建人 */
+  create_usr_id: Scalars['ID'];
+  /** 创建人 */
+  create_usr_id_lbl?: Maybe<Scalars['String']>;
   /** 结束时间 */
   end_time?: Maybe<Scalars['NaiveDateTime']>;
   /** 结束时间 */

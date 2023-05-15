@@ -93,22 +93,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.is_enabled == null">
-          <el-form-item
-            :label="n('启用')"
-            prop="is_enabled"
-            un-h="full"
-          >
-            <DictSelect
-              :set="dialogModel.is_enabled = dialogModel.is_enabled ?? undefined"
-              v-model="dialogModel.is_enabled"
-              code="is_enabled"
-              un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('启用') }`"
-            ></DictSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="builtInModel?.rem == null">
           <el-form-item
             :label="n('备注')"
@@ -313,6 +297,12 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ ns("请输入") } ${ n("启用") }`,
+      },
+    ],
+    is_locked: [
+      {
+        required: true,
+        message: `${ ns("请输入") } ${ n("锁定") }`,
       },
     ],
   };

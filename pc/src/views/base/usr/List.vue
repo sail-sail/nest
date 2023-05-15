@@ -853,6 +853,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "锁定",
       prop: "is_locked_lbl",
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

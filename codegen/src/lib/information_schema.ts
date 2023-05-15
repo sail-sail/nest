@@ -6,11 +6,11 @@ import config, { TableCloumn, TablesConfigItem } from "../config";
 import { isEmpty } from "./StringUitl";
 
 export class Context {
-  pool: Pool;
+  pool: PoolConnection;
   conn: PoolConnection;
 }
 
-function getPool(): Pool {
+function getPool(): PoolConnection {
   const db = nestConfig.database;
   console.log({
     host: db.host,
@@ -107,12 +107,66 @@ async function getSchema0(
     records2.push(tenant_idColumn);
   }
   const dept_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "dept_id");
-  if (dept_idColumn) {
+  if (dept_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "dept_id")) {
     records2.push(dept_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
   if (is_deletedColumn) {
     records2.push(is_deletedColumn);
+  }
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const item = tables[table_name].columns[i];
+    const column_name = item.COLUMN_NAME;
+    if ([ "dept_id", "tenant_id", "is_deleted" ].includes(column_name)) {
+      item.isVirtual = true;
+      item.ignoreCodegen = false;
+    } else if ([ "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted"  ].includes(column_name)) {
+      item.ignoreCodegen = false;
+      item.noAdd = true;
+      item.noEdit = true;
+    }
+    if ([ "create_usr_id", "update_usr_id" ].includes(column_name)) {
+      item.foreignKey = item.foreignKey || { };
+      item.foreignKey.table = "usr";
+      item.foreignKey.column = "id";
+      item.foreignKey.lbl = item.foreignKey.lbl || "lbl";
+      if (item.width == null) {
+        item.width = 120;
+      }
+    }
+    if ([ "create_time", "update_time" ].includes(column_name)) {
+      if (item.width == null) {
+        item.width = 150;
+      }
+    }
+    if ([ "is_locked" ].includes(column_name)) {
+      if (item.noAdd == null) {
+        item.noAdd = true;
+      }
+      if (item.noEdit == null) {
+        item.noEdit = true;
+      }
+      if (item.require == null) {
+        item.require = true;
+      }
+      if (item.width == null) {
+        item.width = 60;
+      }
+    }
+    if ([ "is_enabled" ].includes(column_name)) {
+      if (item.noAdd == null) {
+        item.noAdd = true;
+      }
+      if (item.noEdit == null) {
+        item.noEdit = true;
+      }
+      if (item.require == null) {
+        item.require = true;
+      }
+      if (item.width == null) {
+        item.width = 60;
+      }
+    }
   }
   return records2;
 }

@@ -8,6 +8,7 @@ import {
 } from "#/types";
 
 import {
+  type UsrSearch,
 } from "#/types";
 
 /**
@@ -43,6 +44,8 @@ export async function findAll(
           end_time
           end_time_lbl
           rem
+          create_usr_id
+          create_usr_id_lbl
         }
       }
     `,
@@ -114,6 +117,8 @@ export async function findById(
           end_time
           end_time_lbl
           rem
+          create_usr_id
+          create_usr_id_lbl
         }
       }
     `,
@@ -203,6 +208,51 @@ export async function forceDeleteByIds(
   return result;
 }
 
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const result = data.findAllUsr;
+  return result;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  */
@@ -239,6 +289,8 @@ export function useExportExcel() {
             end_time
             end_time_lbl
             rem
+            create_usr_id
+            create_usr_id_lbl
           }
           getFieldCommentsBackgroundTask {
             lbl
@@ -253,6 +305,8 @@ export function useExportExcel() {
             end_time
             end_time_lbl
             rem
+            create_usr_id
+            create_usr_id_lbl
           }
         }
       `,
