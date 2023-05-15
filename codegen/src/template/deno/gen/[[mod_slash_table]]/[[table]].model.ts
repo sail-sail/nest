@@ -112,12 +112,14 @@ export interface <#=Table_Up#>Model extends <#=Table_Up#>ModelType {<#
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;<#
-  if (hasTenant_id) {
+  const tenant_id_column = columns.find((column) => column.COLUMN_NAME === "tenant_id");
+  if (hasTenant_id && tenant_id_column.ignoreCodegen) {
   #>
   tenant_id?: string | null;<#
   }
   #><#
-  if (hasDeptId) {
+  const dept_id_column = columns.find((column) => column.COLUMN_NAME === "dept_id");
+  if (hasDeptId && dept_id_column.ignoreCodegen) {
   #>
   dept_id?: string | null;<#
   }

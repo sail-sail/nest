@@ -406,6 +406,9 @@ import {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
 #>
   type <#=Foreign_Table_Up#>Model,<#
 }

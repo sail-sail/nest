@@ -139,6 +139,8 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   const many2many = column.many2many;
   const isPassword = column.isPassword;
+  const isVirtual = column.isVirtual;
+  if (isVirtual) continue;
 #><#
   if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple) {
     if (foreignTable === table) {
@@ -326,8 +328,8 @@ function getFromQuery() {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
+      if (column.isVirtual && column_name !== "dept_id") continue;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -446,8 +448,8 @@ export async function findAll(
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        if (column.isVirtual) continue;
         const column_name = column.COLUMN_NAME;
+        if (column.isVirtual && column_name !== "dept_id") continue;
         const foreignKey = column.foreignKey;
         let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
@@ -1268,6 +1270,8 @@ export async function create(
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
     const isPassword = column.isPassword;
+    const isVirtual = column.isVirtual;
+    if (isVirtual) continue;
   #><#
     if (selectList.length > 0) {
   #>
@@ -1897,6 +1901,8 @@ export async function updateById(
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
     const isPassword = column.isPassword;
+    const isVirtual = column.isVirtual;
+    if (isVirtual) continue;
   #><#
     if (selectList.length > 0) {
   #>

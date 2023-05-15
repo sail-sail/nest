@@ -35,8 +35,6 @@ type RoleFieldComment {
   menu_ids_lbl: String!
 }
 input RoleInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "名称"

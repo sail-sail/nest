@@ -399,6 +399,15 @@
             </el-table-column>
           </template>
           
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
@@ -451,6 +460,7 @@ import {
   type BackgroundTaskModel,
   type BackgroundTaskInput,
   type BackgroundTaskSearch,
+  type UsrModel,
 } from "#/types";
 
 defineOptions({
@@ -529,6 +539,8 @@ const props = defineProps<{
   end_time?: string; // 结束时间
   rem?: string; // 备注
   rem_like?: string; // 备注
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -538,6 +550,8 @@ const builtInSearchType: { [key: string]: string } = {
   state_lbl: "string[]",
   type: "string[]",
   type_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -731,6 +745,14 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
     },
+    {
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
   ];
 }
 
@@ -902,6 +924,7 @@ async function initI18nsEfc() {
     "开始时间",
     "结束时间",
     "备注",
+    "创建人",
   ];
   await Promise.all([
     initListI18ns(),

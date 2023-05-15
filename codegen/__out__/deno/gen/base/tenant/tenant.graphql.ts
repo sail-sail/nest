@@ -55,8 +55,6 @@ type TenantFieldComment {
   rem: String!
 }
 input TenantInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "名称"
@@ -65,6 +63,8 @@ input TenantInput {
   host: String
   "到期日"
   expiration: NaiveDate
+  "到期日"
+  expiration_lbl: String
   "最大用户数"
   max_usr_num: Int
   "启用"

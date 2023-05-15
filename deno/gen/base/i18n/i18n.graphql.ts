@@ -39,8 +39,6 @@ type I18nFieldComment {
   rem: String!
 }
 input I18nInput {
-  "租户ID"
-  tenant_id: String
   ""
   id: ID
   "语言"

@@ -177,7 +177,6 @@ import {
 
 import {
   type OperationRecordInput,
-  type UsrModel,
 } from "#/types";
 
 import {
