@@ -71,11 +71,16 @@ pub async fn login<'a>(
   
   let dept_id: String = dept_id.unwrap();
   
+  let now: chrono::DateTime<chrono::Local> = ctx.get_now();
+  let server_tokentimeout = ctx.get_server_tokentimeout();
+  let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
+  
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_model.id.into(),
     tenant_id: tenant_id.into(),
     dept_id: dept_id.clone().into(),
     lang,
+    exp,
     ..Default::default()
   })?;
   

@@ -83,12 +83,7 @@ pub struct <#=tableUP#>Model {<#
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
-  /// <#=column_comment#><#
-    if (isPassword) {
-  #>
-  #[graphql(skip)]<#
-    }
-  #>
+  /// <#=column_comment#>
   pub <#=column_name#>: <#=_data_type#>,<#
     }
   #><#

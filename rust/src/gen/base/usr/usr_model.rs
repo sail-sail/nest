@@ -12,7 +12,6 @@ pub struct UsrModel {
   /// 用户名
   pub username: String,
   /// 密码
-  #[graphql(skip)]
   pub password: String,
   /// 默认部门
   pub default_dept_id: String,
