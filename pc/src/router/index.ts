@@ -11,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
   ...routesGen,
   {
     path: "",
-    redirect: "/usr",
+    redirect: "/base/usr",
   },
   // {
   //   path: "/index",
