@@ -22,6 +22,9 @@ axios.interceptors.request.use(
       if (!authorization.startsWith("Bearer ")) {
         config.headers = config.headers || { };
         (config.headers as any).Authorization = `Bearer ${ authorization }`;
+      } else {
+        config.headers = config.headers || { };
+        (config.headers as any).Authorization = authorization;
       }
     }
     if ((<any>config).notLoading !== true) {
