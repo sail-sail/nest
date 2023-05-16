@@ -25,6 +25,8 @@ import defineOptions from "unplugin-vue-define-options/vite";
 // @ts-ignore
 import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
+import VueDevTools from "vite-plugin-vue-devtools";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -35,6 +37,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    VueDevTools(),
     vue(),
     reactivityTransform(),
     defineOptions(),
