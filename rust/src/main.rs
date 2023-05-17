@@ -33,7 +33,7 @@ use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
 async fn main() -> Result<(), std::io::Error> {
   dotenv().ok();
   if std::env::var_os("RUST_LOG").is_none() {
-    std::env::set_var("RUST_LOG", "rust=info");
+    std::env::set_var("RUST_LOG", "server=info");
   }
   tracing_subscriber::fmt::init();
   
