@@ -175,10 +175,8 @@ fn get_from_query() -> &'static str {
   let from_query = r#"base_role t
     left join base_role_menu
       on base_role_menu.role_id = t.id
-      and base_role_menu.is_deleted = 0
     left join base_menu
       on base_role_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = 0
     left join (
       select
         json_arrayagg(base_menu.id) menu_ids,
@@ -187,12 +185,8 @@ fn get_from_query() -> &'static str {
       from base_role_menu
       inner join base_menu
         on base_menu.id = base_role_menu.menu_id
-        and base_menu.is_deleted = 0
       inner join base_role
         on base_role.id = base_role_menu.role_id
-        and base_role.is_deleted = 0
-      where
-      base_role_menu.is_deleted = 0
       group by role_id
     ) _menu
       on _menu.role_id = t.id"#;
@@ -596,7 +590,7 @@ pub async fn create<'a>(
   
   if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_fields += ",tenant_id";
-    sql_values += "?";
+    sql_values += ",?";
     args.push(tenant_id.into());
   }
   

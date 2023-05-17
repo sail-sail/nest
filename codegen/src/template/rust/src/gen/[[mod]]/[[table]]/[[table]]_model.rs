@@ -115,7 +115,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = "Vec<String>";
-      is_nullable = true;
+      is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = "String";
     } else if (data_type === 'varchar') {
@@ -157,10 +157,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: sqlx::types::Json<<#=_data_type#>> = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = <#=column_name#>.0.unwrap_or_default();
-    let <#=column_name#>_lbl: sqlx::types::Json<<#=_data_type#>> = row.try_get("<#=column_name#>_lbl")?;
-    let <#=column_name#>_lbl = <#=column_name#>_lbl.0.unwrap_or_default();<#
+    let <#=column_name_rust#>: Option<sqlx::types::Json<<#=_data_type#>>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = <#=column_name#>.unwrap_or_default().0;
+    let <#=column_name#>_lbl: Option<sqlx::types::Json<<#=_data_type#>>> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
