@@ -57,6 +57,7 @@ enum_dispatch = "0.3.11"
 pin-project-lite = "0.2.9"
 rayon = "1.7.0"
 regex = "1.8.1"
+yarte = "0.15.7"
 
 [build.dependencies]
 protobuf = "3.2.0"

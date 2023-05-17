@@ -235,10 +235,8 @@ fn get_from_query() -> &'static str {
   let from_query = r#"base_tenant t
     left join base_tenant_menu
       on base_tenant_menu.tenant_id = t.id
-      and base_tenant_menu.is_deleted = 0
     left join base_menu
       on base_tenant_menu.menu_id = base_menu.id
-      and base_menu.is_deleted = 0
     left join (
       select
         json_arrayagg(base_menu.id) menu_ids,
@@ -247,12 +245,8 @@ fn get_from_query() -> &'static str {
       from base_tenant_menu
       inner join base_menu
         on base_menu.id = base_tenant_menu.menu_id
-        and base_menu.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_menu.tenant_id
-        and base_tenant.is_deleted = 0
-      where
-      base_tenant_menu.is_deleted = 0
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id"#;

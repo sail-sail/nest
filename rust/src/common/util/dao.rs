@@ -70,10 +70,10 @@ pub async fn many2many_update<'a>(
         where
           id = ?
       "#);
-      args.push(id.clone().into());
+      args.push(model.id.clone().into());
       let args = args.into();
       ctx.execute(sql, args, None).await?;
-    } else if foreign_ids.contains(&model.column2_id) && model.is_deleted {
+    } else if !foreign_ids.contains(&model.column2_id) && !model.is_deleted {
       let mut args = QueryArgs::new();
       let sql = format!(r#"
         update {mod_table}
@@ -84,7 +84,7 @@ pub async fn many2many_update<'a>(
           id = ?
       "#);
       args.push(ctx.get_now().into());
-      args.push(id.clone().into());
+      args.push(model.id.clone().into());
       let args = args.into();
       ctx.execute(sql, args, None).await?;
     }
@@ -116,7 +116,7 @@ pub async fn many2many_update<'a>(
     }
     
     if let Some(auth_model) = &auth_model {
-      sql_fields += ",create_user_id";
+      sql_fields += ",create_usr_id";
       sql_values += ",?";
       args.push(auth_model.id.clone().into());
     }

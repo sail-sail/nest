@@ -736,7 +736,7 @@ pub async fn create<'a>(
   
   if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_fields += ",tenant_id";
-    sql_values += "?";
+    sql_values += ",?";
     args.push(tenant_id.into());
   }
   
