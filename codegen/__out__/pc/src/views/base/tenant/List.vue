@@ -74,7 +74,7 @@
             v-model="search.is_deleted"
             :false-label="0"
             :true-label="1"
-            @change="searchClk"
+            @change="recycleChg"
           >
             <span>{{ ns('回收站') }}</span>
           </el-checkbox>
@@ -569,6 +569,12 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+/** 回收站 */
+async function recycleChg() {
+  selectedIds = [ ];
+  await searchClk();
+}
 
 /** 搜索 */
 async function searchClk() {
