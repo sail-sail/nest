@@ -26,15 +26,16 @@ async function copyEnv() {
 
 async function gqlgen() {
   console.log("gqlgen");
-  const proc = Deno.run({
-    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "gqlgen" ],
+  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
     cwd: Deno.cwd(),
-    stderr: 'piped',
+    args: [
+      "run",
+      "gqlgen",
+    ],
+    stderr: "piped",
     stdout: "null",
   });
-  const [ stderr ] = await Promise.all([
-    proc.stderrOutput(),
-  ]);
+  const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
   if (stderrStr) {
     console.error(stderrStr);
@@ -136,7 +137,6 @@ async function compile() {
       allowReads.push(await getEnv("log_path"));
     }
     let cmds = [
-      "deno",
       "compile",
       "--unstable",
       // `--allow-read=${ allowReads.join(",") }`,
@@ -155,16 +155,14 @@ async function compile() {
     }
     const server_title = await getEnv("server_title") || "start";
     cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "--", "-e=prod" ]);
-    console.log(cmds.join(" "));
-    const proc = Deno.run({
-      cmd: cmds,
+    console.log("deno " + cmds.join(" "));
+    const command = new Deno.Command(Deno.execPath(), {
       cwd: Deno.cwd(),
-      stderr: 'piped',
+      args: cmds,
+      stderr: "piped",
       stdout: "null",
     });
-    const [ stderr ] = await Promise.all([
-      proc.stderrOutput(),
-    ]);
+    const { stderr } = await command.output();
     const stderrStr = new TextDecoder().decode(stderr);
     if (stderrStr) {
       console.error(stderrStr);
@@ -176,15 +174,16 @@ async function compile() {
 
 async function pc() {
   console.log("pc");
-  const proc = Deno.run({
-    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "build" ],
+  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
     cwd: Deno.cwd() + "/../pc",
-    stderr: 'piped',
+    args: [
+      "run",
+      "build",
+    ],
+    stderr: "piped",
     stdout: "null",
   });
-  const [ stderr ] = await Promise.all([
-    proc.stderrOutput(),
-  ]);
+  const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
   if (stderrStr) {
     console.error(stderrStr);
@@ -196,15 +195,16 @@ async function pc() {
 
 async function docs() {
   console.log("docs");
-  const proc = Deno.run({
-    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "docs:build" ],
+  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
     cwd: Deno.cwd() + "/../",
-    stderr: 'piped',
+    args: [
+      "run",
+      "docs:build",
+    ],
+    stderr: "piped",
     stdout: "null",
   });
-  const [ stderr ] = await Promise.all([
-    proc.stderrOutput(),
-  ]);
+  const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
   if (stderrStr) {
     console.error(stderrStr);
@@ -213,15 +213,16 @@ async function docs() {
 
 async function publish() {
   console.log("publish");
-  const proc = Deno.run({
-    cmd: [ "C:/Program Files/nodejs/npm.cmd", "run", "publish" ],
+  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
     cwd: Deno.cwd(),
-    stderr: 'piped',
+    args: [
+      "run",
+      "publish",
+    ],
+    stderr: "piped",
     stdout: "null",
   });
-  const [ stderr ] = await Promise.all([
-    proc.stderrOutput(),
-  ]);
+  const { stderr } = await command.output();
   if (stderr) {
     const stderrStr = new TextDecoder().decode(stderr);
     console.error(stderrStr);
