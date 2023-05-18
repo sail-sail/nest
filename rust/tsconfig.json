@@ -15,6 +15,7 @@
     "allowJs": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "esModuleInterop": false,
     "skipLibCheck": true,
     "outDir": "./dist",
     "lib": [
