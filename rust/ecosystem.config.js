@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: "server",
+    name: "rust",
     script: "./server",
     instances: 1,
     autorestart: true,
