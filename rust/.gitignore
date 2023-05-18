@@ -2,6 +2,7 @@ node_modules
 npm-debug.log
 *.log
 package-lock.json
+publish_cnf.js
 
 pnpm-lock.yaml
 
