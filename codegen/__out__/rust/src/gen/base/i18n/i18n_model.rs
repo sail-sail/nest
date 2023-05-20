@@ -1,17 +1,19 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct I18nModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 语言
   pub lang_id: String,
+  /// 语言
   pub lang_id_lbl: String,
   /// 菜单
   pub menu_id: String,
+  /// 菜单
   pub menu_id_lbl: String,
   /// 编码
   pub code: String,
@@ -25,7 +27,6 @@ impl FromRow<'_, MySqlRow> for I18nModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 语言
     let lang_id: String = row.try_get("lang_id")?;
     let lang_id_lbl: Option<String> = row.try_get("lang_id_lbl")?;
@@ -61,9 +62,11 @@ impl FromRow<'_, MySqlRow> for I18nModel {
 pub struct I18nFieldComment {
   /// 语言
   pub lang_id: String,
+  /// 语言
   pub lang_id_lbl: String,
   /// 菜单
   pub menu_id: String,
+  /// 菜单
   pub menu_id_lbl: String,
   /// 编码
   pub code: String,
@@ -81,30 +84,37 @@ pub struct I18nSearch {
   pub is_deleted: Option<u8>,
   /// 语言
   pub lang_id: Option<Vec<String>>,
+  /// 语言
   pub lang_id_is_null: Option<bool>,
   /// 菜单
   pub menu_id: Option<Vec<String>>,
+  /// 菜单
   pub menu_id_is_null: Option<bool>,
   /// 编码
   pub code: Option<String>,
+  /// 编码
   pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct I18nInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 语言
   pub lang_id: Option<String>,
+  /// 语言
   pub lang_id_lbl: Option<String>,
   /// 菜单
   pub menu_id: Option<String>,
+  /// 菜单
   pub menu_id_lbl: Option<String>,
   /// 编码
   pub code: Option<String>,

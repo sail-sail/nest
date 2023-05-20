@@ -1,21 +1,23 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 名称
   pub lbl: String,
   /// 备注
   pub rem: String,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 菜单
   pub menu_ids: Vec<String>,
+  /// 菜单
   pub menu_ids_lbl: Vec<String>,
 }
 
@@ -23,7 +25,6 @@ impl FromRow<'_, MySqlRow> for RoleModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 备注
@@ -60,9 +61,11 @@ pub struct RoleFieldComment {
   pub rem: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 菜单
   pub menu_ids: String,
+  /// 菜单
   pub menu_ids_lbl: String,
 }
 
@@ -76,30 +79,35 @@ pub struct RoleSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 菜单
   pub menu_ids: Option<Vec<String>>,
+  /// 菜单
   pub menu_ids_is_null: Option<bool>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 菜单
   pub menu_ids: Option<Vec<String>>,
+  /// 菜单
   pub menu_ids_lbl: Option<Vec<String>>,
 }
 

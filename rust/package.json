@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "cargo run",
-    "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.yml",
+    "gqlgen": "npx graphql-codegen --config ./src/common/script/graphql_codegen_config.yml",
     "build": "node ./src/common/script/build.js",
     "publish": "node lib/script/publish.js",
     "codegen": "cd .. && npm run codegen",

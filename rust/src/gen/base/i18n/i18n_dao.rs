@@ -485,7 +485,7 @@ pub async fn set_id_by_lbl<'a>(
       None,
     ).await?;
     if let Some(model) = model {
-      input.lang_id = model.id.0.into();
+      input.lang_id = model.id.into();
     }
   }
   
@@ -504,7 +504,7 @@ pub async fn set_id_by_lbl<'a>(
       None,
     ).await?;
     if let Some(model) = model {
-      input.menu_id = model.id.0.into();
+      input.menu_id = model.id.into();
     }
   }
   

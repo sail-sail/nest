@@ -588,7 +588,7 @@ pub async fn set_id_by_lbl<'a>(
       None,
     ).await?;
     if let Some(model) = model {
-      input.dictbiz_id = model.id.0.into();
+      input.dictbiz_id = model.id.into();
     }
   }
   

@@ -1,19 +1,21 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 名称
   pub lbl: String,
   /// 状态
   pub state: String,
+  /// 状态
   pub state_lbl: String,
   /// 类型
   pub r#type: String,
+  /// 类型
   pub r#type_lbl: String,
   /// 执行结果
   pub result: String,
@@ -21,14 +23,17 @@ pub struct BackgroundTaskModel {
   pub err_msg: String,
   /// 开始时间
   pub begin_time: Option<chrono::NaiveDateTime>,
+  /// 开始时间
   pub begin_time_lbl: String,
   /// 结束时间
   pub end_time: Option<chrono::NaiveDateTime>,
+  /// 结束时间
   pub end_time_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
   pub create_usr_id: String,
+  /// 创建人
   pub create_usr_id_lbl: String,
 }
 
@@ -36,7 +41,6 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 状态
@@ -97,9 +101,11 @@ pub struct BackgroundTaskFieldComment {
   pub lbl: String,
   /// 状态
   pub state: String,
+  /// 状态
   pub state_lbl: String,
   /// 类型
   pub r#type: String,
+  /// 类型
   pub r#type_lbl: String,
   /// 执行结果
   pub result: String,
@@ -107,14 +113,17 @@ pub struct BackgroundTaskFieldComment {
   pub err_msg: String,
   /// 开始时间
   pub begin_time: String,
+  /// 开始时间
   pub begin_time_lbl: String,
   /// 结束时间
   pub end_time: String,
+  /// 结束时间
   pub end_time_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
   pub create_usr_id: String,
+  /// 创建人
   pub create_usr_id_lbl: String,
 }
 
@@ -128,6 +137,7 @@ pub struct BackgroundTaskSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 状态
   pub state: Option<Vec<String>>,
@@ -135,9 +145,11 @@ pub struct BackgroundTaskSearch {
   pub r#type: Option<Vec<String>>,
   /// 执行结果
   pub result: Option<String>,
+  /// 执行结果
   pub result_like: Option<String>,
   /// 错误信息
   pub err_msg: Option<String>,
+  /// 错误信息
   pub err_msg_like: Option<String>,
   /// 开始时间
   pub begin_time: Option<Vec<chrono::NaiveDateTime>>,
@@ -145,23 +157,27 @@ pub struct BackgroundTaskSearch {
   pub end_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
+  /// 创建人
   pub create_usr_id_is_null: Option<bool>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 状态
   pub state: Option<String>,
+  /// 状态
   pub state_lbl: Option<String>,
   /// 类型
   pub r#type: Option<String>,
+  /// 类型
   pub type_lbl: Option<String>,
   /// 执行结果
   pub result: Option<String>,
@@ -175,6 +191,7 @@ pub struct BackgroundTaskInput {
   pub rem: Option<String>,
   /// 创建人
   pub create_usr_id: Option<String>,
+  /// 创建人
   pub create_usr_id_lbl: Option<String>,
 }
 

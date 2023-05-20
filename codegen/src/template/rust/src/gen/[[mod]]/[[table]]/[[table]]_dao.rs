@@ -1135,7 +1135,7 @@ pub async fn set_id_by_lbl<'a>(
       None,
     ).await?;
     if let Some(model) = model {
-      input.<#=column_name_rust#> = model.id.0.into();
+      input.<#=column_name_rust#> = model.id.into();
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
@@ -1165,7 +1165,7 @@ pub async fn set_id_by_lbl<'a>(
     }
     if !models.is_empty() {
       input.<#=column_name_rust#> = models.into_iter()
-        .map(|item| item.id.0)
+        .map(|item| item.id)
         .collect::<Vec<String>>()
         .into();
     }

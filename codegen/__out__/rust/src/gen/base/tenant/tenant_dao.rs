@@ -591,7 +591,7 @@ pub async fn set_id_by_lbl<'a>(
     }
     if !models.is_empty() {
       input.menu_ids = models.into_iter()
-        .map(|item| item.id.0)
+        .map(|item| item.id)
         .collect::<Vec<String>>()
         .into();
     }
