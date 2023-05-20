@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 名称
   pub lbl: String,
   /// 用户名
@@ -15,20 +15,25 @@ pub struct UsrModel {
   pub password: String,
   /// 默认部门
   pub default_dept_id: String,
+  /// 默认部门
   pub default_dept_id_lbl: String,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 备注
   pub rem: String,
   /// 拥有部门
   pub dept_ids: Vec<String>,
+  /// 拥有部门
   pub dept_ids_lbl: Vec<String>,
   /// 锁定
   pub is_locked: u8,
+  /// 锁定
   pub is_locked_lbl: String,
   /// 拥有角色
   pub role_ids: Vec<String>,
+  /// 拥有角色
   pub role_ids_lbl: Vec<String>,
 }
 
@@ -36,7 +41,6 @@ impl FromRow<'_, MySqlRow> for UsrModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 用户名
@@ -97,20 +101,25 @@ pub struct UsrFieldComment {
   pub username: String,
   /// 默认部门
   pub default_dept_id: String,
+  /// 默认部门
   pub default_dept_id_lbl: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 备注
   pub rem: String,
   /// 拥有部门
   pub dept_ids: String,
+  /// 拥有部门
   pub dept_ids_lbl: String,
   /// 锁定
   pub is_locked: String,
+  /// 锁定
   pub is_locked_lbl: String,
   /// 拥有角色
   pub role_ids: String,
+  /// 拥有角色
   pub role_ids_lbl: String,
 }
 
@@ -124,35 +133,42 @@ pub struct UsrSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 用户名
   pub username: Option<String>,
+  /// 用户名
   pub username_like: Option<String>,
   /// 密码
   pub password: Option<String>,
+  /// 密码
   pub password_like: Option<String>,
   /// 默认部门
   pub default_dept_id: Option<Vec<String>>,
+  /// 默认部门
   pub default_dept_id_is_null: Option<bool>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
+  /// 拥有部门
   pub dept_ids_is_null: Option<bool>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
+  /// 拥有角色
   pub role_ids_is_null: Option<bool>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 用户名
@@ -161,20 +177,25 @@ pub struct UsrInput {
   pub password: Option<String>,
   /// 默认部门
   pub default_dept_id: Option<String>,
+  /// 默认部门
   pub default_dept_id_lbl: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
+  /// 拥有部门
   pub dept_ids_lbl: Option<Vec<String>>,
   /// 锁定
   pub is_locked: Option<u8>,
+  /// 锁定
   pub is_locked_lbl: Option<String>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
+  /// 拥有角色
   pub role_ids_lbl: Option<Vec<String>>,
 }
 

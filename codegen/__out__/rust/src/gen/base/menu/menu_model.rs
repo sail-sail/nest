@@ -1,17 +1,19 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 类型
   pub r#type: String,
+  /// 类型
   pub r#type_lbl: String,
   /// 父菜单
   pub menu_id: String,
+  /// 父菜单
   pub menu_id_lbl: String,
   /// 名称
   pub lbl: String,
@@ -21,6 +23,7 @@ pub struct MenuModel {
   pub route_query: Option<String>,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: u32,
@@ -32,7 +35,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 类型
     let r#type: String = row.try_get("type")?;
     let type_lbl: String = r#type.to_string();
@@ -78,9 +80,11 @@ impl FromRow<'_, MySqlRow> for MenuModel {
 pub struct MenuFieldComment {
   /// 类型
   pub r#type: String,
+  /// 类型
   pub r#type_lbl: String,
   /// 父菜单
   pub menu_id: String,
+  /// 父菜单
   pub menu_id_lbl: String,
   /// 名称
   pub lbl: String,
@@ -90,6 +94,7 @@ pub struct MenuFieldComment {
   pub route_query: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: String,
@@ -107,12 +112,15 @@ pub struct MenuSearch {
   pub r#type: Option<Vec<String>>,
   /// 父菜单
   pub menu_id: Option<Vec<String>>,
+  /// 父菜单
   pub menu_id_is_null: Option<bool>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 路由
   pub route_path: Option<String>,
+  /// 路由
   pub route_path_like: Option<String>,
   /// 参数
   pub route_query: Option<String>,
@@ -122,18 +130,21 @@ pub struct MenuSearch {
   pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 类型
   pub r#type: Option<String>,
+  /// 类型
   pub type_lbl: Option<String>,
   /// 父菜单
   pub menu_id: Option<String>,
+  /// 父菜单
   pub menu_id_lbl: Option<String>,
   /// 名称
   pub lbl: Option<String>,
@@ -143,6 +154,7 @@ pub struct MenuInput {
   pub route_query: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 排序
   pub order_by: Option<u32>,

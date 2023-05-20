@@ -656,7 +656,7 @@ pub async fn set_id_by_lbl<'a>(
       None,
     ).await?;
     if let Some(model) = model {
-      input.default_dept_id = model.id.0.into();
+      input.default_dept_id = model.id.into();
     }
   }
   
@@ -684,7 +684,7 @@ pub async fn set_id_by_lbl<'a>(
     }
     if !models.is_empty() {
       input.dept_ids = models.into_iter()
-        .map(|item| item.id.0)
+        .map(|item| item.id)
         .collect::<Vec<String>>()
         .into();
     }
@@ -714,7 +714,7 @@ pub async fn set_id_by_lbl<'a>(
     }
     if !models.is_empty() {
       input.role_ids = models.into_iter()
-        .map(|item| item.id.0)
+        .map(|item| item.id)
         .collect::<Vec<String>>()
         .into();
     }

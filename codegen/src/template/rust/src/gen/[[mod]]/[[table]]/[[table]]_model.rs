@@ -4,7 +4,7 @@ const tableUP = tableUp.split("_").map(function(item) {
 }).join("");
 #>use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
@@ -63,16 +63,18 @@ pub struct <#=tableUP#>Model {<#
     if (column_name === "id") {
   #>
   /// ID
-  pub id: ID,<#
+  pub id: String,<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: <#=_data_type#>,
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: <#=_data_type#>,<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: <#=_data_type#>,
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: <#=_data_type#>,<#
     } else if (selectList.length > 0 || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime"
@@ -80,6 +82,7 @@ pub struct <#=tableUP#>Model {<#
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: <#=_data_type#>,
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
@@ -148,8 +151,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (column_name === "id") {
     #>
     // ID
-    let id: String = row.try_get("id")?;
-    let id: ID = id.into();<#
+    let id: String = row.try_get("id")?;<#
       } else if (isPassword) {
     #>
     // <#=column_comment#>
@@ -276,6 +278,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
   /// <#=column_comment#>
   pub <#=column_name#>: String,
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: String,<#
     } else {
   #>
@@ -356,11 +359,13 @@ pub struct <#=tableUP#>Search {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
+  /// <#=column_comment#>
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
+  /// <#=column_comment#>
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
   #>
@@ -378,6 +383,7 @@ pub struct <#=tableUP#>Search {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  /// <#=column_comment#>
   pub <#=column_name#>_like: Option<<#=_data_type#>>,<#
     } else {
   #>
@@ -392,7 +398,7 @@ pub struct <#=tableUP#>Search {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {
-  pub id: Option<ID>,<#
+  pub id: Option<String>,<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -442,18 +448,20 @@ pub struct <#=tableUP#>Input {
       _data_type = "rust_decimal::Decimal";
     }
     if (column_name === "id") {
-      _data_type = "ID";
+      _data_type = "String";
     }
   #><#
     if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<String>,<#
   } else {
   #>

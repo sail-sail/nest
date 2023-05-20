@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 编码
   pub code: String,
   /// 名称
@@ -15,6 +15,7 @@ pub struct LangModel {
   pub rem: String,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: u32,
@@ -24,7 +25,6 @@ impl FromRow<'_, MySqlRow> for LangModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 编码
     let code: String = row.try_get("code")?;
     // 名称
@@ -62,6 +62,7 @@ pub struct LangFieldComment {
   pub rem: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: String,
@@ -75,12 +76,15 @@ pub struct LangSearch {
   pub is_deleted: Option<u8>,
   /// 编码
   pub code: Option<String>,
+  /// 编码
   pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
@@ -91,7 +95,7 @@ pub struct LangSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 编码
   pub code: Option<String>,
   /// 名称
@@ -100,6 +104,7 @@ pub struct LangInput {
   pub rem: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 排序
   pub order_by: Option<u32>,

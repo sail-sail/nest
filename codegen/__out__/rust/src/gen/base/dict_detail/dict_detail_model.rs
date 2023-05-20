@@ -1,14 +1,15 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 系统字典
   pub dict_id: String,
+  /// 系统字典
   pub dict_id_lbl: String,
   /// 名称
   pub lbl: String,
@@ -18,11 +19,13 @@ pub struct DictDetailModel {
   pub order_by: u32,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 备注
   pub rem: String,
   /// 锁定
   pub is_locked: u8,
+  /// 锁定
   pub is_locked_lbl: String,
 }
 
@@ -30,7 +33,6 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 系统字典
     let dict_id: String = row.try_get("dict_id")?;
     let dict_id_lbl: Option<String> = row.try_get("dict_id_lbl")?;
@@ -73,6 +75,7 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
 pub struct DictDetailFieldComment {
   /// 系统字典
   pub dict_id: String,
+  /// 系统字典
   pub dict_id_lbl: String,
   /// 名称
   pub lbl: String,
@@ -82,11 +85,13 @@ pub struct DictDetailFieldComment {
   pub order_by: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 备注
   pub rem: String,
   /// 锁定
   pub is_locked: String,
+  /// 锁定
   pub is_locked_lbl: String,
 }
 
@@ -98,12 +103,15 @@ pub struct DictDetailSearch {
   pub is_deleted: Option<u8>,
   /// 系统字典
   pub dict_id: Option<Vec<String>>,
+  /// 系统字典
   pub dict_id_is_null: Option<bool>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 值
   pub val: Option<String>,
+  /// 值
   pub val_like: Option<String>,
   /// 排序
   pub order_by: Option<Vec<u32>>,
@@ -111,6 +119,7 @@ pub struct DictDetailSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
@@ -119,9 +128,10 @@ pub struct DictDetailSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 系统字典
   pub dict_id: Option<String>,
+  /// 系统字典
   pub dict_id_lbl: Option<String>,
   /// 名称
   pub lbl: Option<String>,
@@ -131,11 +141,13 @@ pub struct DictDetailInput {
   pub order_by: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
+  /// 锁定
   pub is_locked_lbl: Option<String>,
 }
 

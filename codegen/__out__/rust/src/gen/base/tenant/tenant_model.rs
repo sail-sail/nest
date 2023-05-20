@@ -1,26 +1,29 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 名称
   pub lbl: String,
   /// 域名绑定
   pub host: String,
   /// 到期日
   pub expiration: Option<chrono::NaiveDate>,
+  /// 到期日
   pub expiration_lbl: String,
   /// 最大用户数
   pub max_usr_num: u32,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 菜单
   pub menu_ids: Vec<String>,
+  /// 菜单
   pub menu_ids_lbl: Vec<String>,
   /// 排序
   pub order_by: u32,
@@ -32,7 +35,6 @@ impl FromRow<'_, MySqlRow> for TenantModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 域名绑定
@@ -86,14 +88,17 @@ pub struct TenantFieldComment {
   pub host: String,
   /// 到期日
   pub expiration: String,
+  /// 到期日
   pub expiration_lbl: String,
   /// 最大用户数
   pub max_usr_num: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 菜单
   pub menu_ids: String,
+  /// 菜单
   pub menu_ids_lbl: String,
   /// 排序
   pub order_by: String,
@@ -109,9 +114,11 @@ pub struct TenantSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 域名绑定
   pub host: Option<String>,
+  /// 域名绑定
   pub host_like: Option<String>,
   /// 到期日
   pub expiration: Option<Vec<chrono::NaiveDate>>,
@@ -121,18 +128,20 @@ pub struct TenantSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 菜单
   pub menu_ids: Option<Vec<String>>,
+  /// 菜单
   pub menu_ids_is_null: Option<bool>,
   /// 排序
   pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 域名绑定
@@ -143,9 +152,11 @@ pub struct TenantInput {
   pub max_usr_num: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 菜单
   pub menu_ids: Option<Vec<String>>,
+  /// 菜单
   pub menu_ids_lbl: Option<Vec<String>>,
   /// 排序
   pub order_by: Option<u32>,

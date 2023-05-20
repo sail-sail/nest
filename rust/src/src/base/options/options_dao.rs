@@ -60,7 +60,7 @@ pub async fn update_i18n_version<'a>(
   
   options_dao::update_by_id(
     ctx,
-    options_model.id.0.into(),
+    options_model.id.into(),
     OptionsInput {
       val: i18n_version.clone().into(),
       ..Default::default()

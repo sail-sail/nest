@@ -1,40 +1,47 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject, ID};
+use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizModel {
   /// ID
-  pub id: ID,
+  pub id: String,
   /// 编码
   pub code: String,
   /// 名称
   pub lbl: String,
   /// 数据类型
   pub r#type: String,
+  /// 数据类型
   pub r#type_lbl: String,
   /// 排序
   pub order_by: u32,
   /// 启用
   pub is_enabled: u8,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 备注
   pub rem: String,
   /// 锁定
   pub is_locked: u8,
+  /// 锁定
   pub is_locked_lbl: String,
   /// 创建人
   pub create_usr_id: String,
+  /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: String,
+  /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
   pub update_time_lbl: String,
 }
 
@@ -42,7 +49,6 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 编码
     let code: String = row.try_get("code")?;
     // 名称
@@ -116,28 +122,35 @@ pub struct DictbizFieldComment {
   pub lbl: String,
   /// 数据类型
   pub r#type: String,
+  /// 数据类型
   pub r#type_lbl: String,
   /// 排序
   pub order_by: String,
   /// 启用
   pub is_enabled: String,
+  /// 启用
   pub is_enabled_lbl: String,
   /// 备注
   pub rem: String,
   /// 锁定
   pub is_locked: String,
+  /// 锁定
   pub is_locked_lbl: String,
   /// 创建人
   pub create_usr_id: String,
+  /// 创建人
   pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: String,
+  /// 创建时间
   pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: String,
+  /// 更新人
   pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: String,
+  /// 更新时间
   pub update_time_lbl: String,
 }
 
@@ -151,9 +164,11 @@ pub struct DictbizSearch {
   pub is_deleted: Option<u8>,
   /// 编码
   pub code: Option<String>,
+  /// 编码
   pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 名称
   pub lbl_like: Option<String>,
   /// 数据类型
   pub r#type: Option<Vec<String>>,
@@ -163,16 +178,19 @@ pub struct DictbizSearch {
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
+  /// 备注
   pub rem_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
+  /// 创建人
   pub create_usr_id_is_null: Option<bool>,
   /// 创建时间
   pub create_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 更新人
   pub update_usr_id: Option<Vec<String>>,
+  /// 更新人
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
@@ -181,31 +199,36 @@ pub struct DictbizSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizInput {
-  pub id: Option<ID>,
+  pub id: Option<String>,
   /// 编码
   pub code: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 数据类型
   pub r#type: Option<String>,
+  /// 数据类型
   pub type_lbl: Option<String>,
   /// 排序
   pub order_by: Option<u32>,
   /// 启用
   pub is_enabled: Option<u8>,
+  /// 启用
   pub is_enabled_lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
+  /// 锁定
   pub is_locked_lbl: Option<String>,
   /// 创建人
   pub create_usr_id: Option<String>,
+  /// 创建人
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 更新人
   pub update_usr_id: Option<String>,
+  /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
