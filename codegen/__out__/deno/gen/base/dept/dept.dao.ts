@@ -99,12 +99,6 @@ async function getWhereQuery(
   if (search?.parent_id_is_null) {
     whereQuery += ` and parent_id_lbl.id is null`;
   }
-  if (search?.parent_id_lbl && !Array.isArray(search?.parent_id_lbl)) {
-    search.parent_id_lbl = [ search.parent_id_lbl ];
-  }
-  if (search?.parent_id_lbl && search.parent_id_lbl?.length > 0) {
-    whereQuery += ` and parent_id_lbl in ${ args.push(search.parent_id_lbl) }`;
-  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -155,12 +149,6 @@ async function getWhereQuery(
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_usr_id_lbl && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
-  }
-  if (search?.create_usr_id_lbl && search.create_usr_id_lbl?.length > 0) {
-    whereQuery += ` and create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
-  }
   if (search?.create_time && search?.create_time?.length > 0) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
@@ -180,12 +168,6 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and update_usr_id_lbl.id is null`;
-  }
-  if (search?.update_usr_id_lbl && !Array.isArray(search?.update_usr_id_lbl)) {
-    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
-  }
-  if (search?.update_usr_id_lbl && search.update_usr_id_lbl?.length > 0) {
-    whereQuery += ` and update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time && search?.update_time?.length > 0) {
     if (search.update_time[0] != null) {

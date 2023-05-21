@@ -229,16 +229,6 @@ async function getWhereQuery(
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=column_name#>_lbl.id is null`;
   }<#
-    if (foreignKey.lbl) {
-  #>
-  if (search?.<#=column_name#>_lbl && !Array.isArray(search?.<#=column_name#>_lbl)) {
-    search.<#=column_name#>_lbl = [ search.<#=column_name#>_lbl ];
-  }
-  if (search?.<#=column_name#>_lbl && search.<#=column_name#>_lbl?.length > 0) {
-    whereQuery += ` and <#=column_name#>_lbl in ${ args.push(search.<#=column_name#>_lbl) }`;
-  }<#
-    }
-  #><#
       } else if (foreignKey.type === "many2many") {
   #>
   if (search?.<#=column_name#> && !Array.isArray(search?.<#=column_name#>)) {
