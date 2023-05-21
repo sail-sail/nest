@@ -90,12 +90,6 @@ async function getWhereQuery(
   if (search?.menu_id_is_null) {
     whereQuery += ` and menu_id_lbl.id is null`;
   }
-  if (search?.menu_id_lbl && !Array.isArray(search?.menu_id_lbl)) {
-    search.menu_id_lbl = [ search.menu_id_lbl ];
-  }
-  if (search?.menu_id_lbl && search.menu_id_lbl?.length > 0) {
-    whereQuery += ` and menu_id_lbl in ${ args.push(search.menu_id_lbl) }`;
-  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }

@@ -117,12 +117,6 @@ async function getWhereQuery(
   if (search?.default_dept_id_is_null) {
     whereQuery += ` and default_dept_id_lbl.id is null`;
   }
-  if (search?.default_dept_id_lbl && !Array.isArray(search?.default_dept_id_lbl)) {
-    search.default_dept_id_lbl = [ search.default_dept_id_lbl ];
-  }
-  if (search?.default_dept_id_lbl && search.default_dept_id_lbl?.length > 0) {
-    whereQuery += ` and default_dept_id_lbl in ${ args.push(search.default_dept_id_lbl) }`;
-  }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }

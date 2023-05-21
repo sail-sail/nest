@@ -86,12 +86,6 @@ async function getWhereQuery(
   if (search?.dict_id_is_null) {
     whereQuery += ` and dict_id_lbl.id is null`;
   }
-  if (search?.dict_id_lbl && !Array.isArray(search?.dict_id_lbl)) {
-    search.dict_id_lbl = [ search.dict_id_lbl ];
-  }
-  if (search?.dict_id_lbl && search.dict_id_lbl?.length > 0) {
-    whereQuery += ` and dict_id_lbl in ${ args.push(search.dict_id_lbl) }`;
-  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }

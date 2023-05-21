@@ -86,12 +86,6 @@ async function getWhereQuery(
   if (search?.lang_id_is_null) {
     whereQuery += ` and lang_id_lbl.id is null`;
   }
-  if (search?.lang_id_lbl && !Array.isArray(search?.lang_id_lbl)) {
-    search.lang_id_lbl = [ search.lang_id_lbl ];
-  }
-  if (search?.lang_id_lbl && search.lang_id_lbl?.length > 0) {
-    whereQuery += ` and lang_id_lbl in ${ args.push(search.lang_id_lbl) }`;
-  }
   if (search?.menu_id && !Array.isArray(search?.menu_id)) {
     search.menu_id = [ search.menu_id ];
   }
@@ -103,12 +97,6 @@ async function getWhereQuery(
   }
   if (search?.menu_id_is_null) {
     whereQuery += ` and menu_id_lbl.id is null`;
-  }
-  if (search?.menu_id_lbl && !Array.isArray(search?.menu_id_lbl)) {
-    search.menu_id_lbl = [ search.menu_id_lbl ];
-  }
-  if (search?.menu_id_lbl && search.menu_id_lbl?.length > 0) {
-    whereQuery += ` and menu_id_lbl in ${ args.push(search.menu_id_lbl) }`;
   }
   if (search?.code !== undefined) {
     whereQuery += ` and t.code = ${ args.push(search.code) }`;

@@ -163,12 +163,6 @@ async function getWhereQuery(
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and create_usr_id_lbl.id is null`;
   }
-  if (search?.create_usr_id_lbl && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
-  }
-  if (search?.create_usr_id_lbl && search.create_usr_id_lbl?.length > 0) {
-    whereQuery += ` and create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
-  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {

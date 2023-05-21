@@ -99,12 +99,6 @@ async function getWhereQuery(
   if (search?.dictbiz_id_is_null) {
     whereQuery += ` and dictbiz_id_lbl.id is null`;
   }
-  if (search?.dictbiz_id_lbl && !Array.isArray(search?.dictbiz_id_lbl)) {
-    search.dictbiz_id_lbl = [ search.dictbiz_id_lbl ];
-  }
-  if (search?.dictbiz_id_lbl && search.dictbiz_id_lbl?.length > 0) {
-    whereQuery += ` and dictbiz_id_lbl in ${ args.push(search.dictbiz_id_lbl) }`;
-  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
