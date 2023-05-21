@@ -5,8 +5,8 @@ import * as operation_recordResolver from "./operation_record.resolver.ts";
 defineGraphql(operation_recordResolver, /* GraphQL */ `
 
 type OperationRecordModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "模块"
   mod: String!
   "模块名称"
@@ -20,7 +20,7 @@ type OperationRecordModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: ID!
+  create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -28,7 +28,7 @@ type OperationRecordModel {
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: ID!
+  update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -68,7 +68,7 @@ type OperationRecordFieldComment {
 }
 input OperationRecordInput {
   ""
-  id: ID
+  id: String
   "模块"
   mod: String
   "模块名称"
@@ -82,7 +82,7 @@ input OperationRecordInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: ID
+  create_usr_id: String
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -90,7 +90,7 @@ input OperationRecordInput {
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: ID
+  update_usr_id: String
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -102,9 +102,9 @@ input OperationRecordSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "模块"
   mod: String
   mod_like: String
@@ -125,13 +125,11 @@ input OperationRecordSearch {
   rem_like: String
   "创建人"
   create_usr_id: [String!]
-  create_usr_id_lbl: [String!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
   update_usr_id: [String!]
-  update_usr_id_lbl: [String!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
@@ -146,15 +144,15 @@ type Query {
   "根据条件查找第一条数据"
   findOneOperationRecord(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
   "根据id查找一条数据"
-  findByIdOperationRecord(id: ID!): OperationRecordModel
+  findByIdOperationRecord(id: String!): OperationRecordModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsOperationRecord(ids: [ID!]!): Int!
+  deleteByIdsOperationRecord(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsOperationRecord(ids: [ID!]!): Int!
+  revertByIdsOperationRecord(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsOperationRecord(ids: [ID!]!): Int!
+  forceDeleteByIdsOperationRecord(ids: [String!]!): Int!
 }
 
 `);

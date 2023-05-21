@@ -5,8 +5,8 @@ import * as dictbizResolver from "./dictbiz.resolver.ts";
 defineGraphql(dictbizResolver, /* GraphQL */ `
 
 type DictbizModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "编码"
   code: String!
   "名称"
@@ -28,7 +28,7 @@ type DictbizModel {
   "锁定"
   is_locked_lbl: String
   "创建人"
-  create_usr_id: ID!
+  create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -36,7 +36,7 @@ type DictbizModel {
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: ID!
+  update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -84,7 +84,7 @@ type DictbizFieldComment {
 }
 input DictbizInput {
   ""
-  id: ID
+  id: String
   "编码"
   code: String
   "名称"
@@ -106,7 +106,7 @@ input DictbizInput {
   "锁定"
   is_locked_lbl: String
   "创建人"
-  create_usr_id: ID
+  create_usr_id: String
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -114,7 +114,7 @@ input DictbizInput {
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: ID
+  update_usr_id: String
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -126,9 +126,9 @@ input DictbizSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "编码"
   code: String
   code_like: String
@@ -148,13 +148,11 @@ input DictbizSearch {
   is_locked: [Int!]
   "创建人"
   create_usr_id: [String!]
-  create_usr_id_lbl: [String!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
   update_usr_id: [String!]
-  update_usr_id_lbl: [String!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
@@ -169,23 +167,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneDictbiz(search: DictbizSearch, sort: [SortInput!]): DictbizModel
   "根据id查找一条数据"
-  findByIdDictbiz(id: ID!): DictbizModel
+  findByIdDictbiz(id: String!): DictbizModel
   "查找order_by字段的最大值"
   findLastOrderByDictbiz: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDictbiz(model: DictbizInput!): ID!
+  createDictbiz(model: DictbizInput!): String!
   "根据id修改一条数据"
-  updateByIdDictbiz(id: ID!, model: DictbizInput!): ID!
+  updateByIdDictbiz(id: String!, model: DictbizInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsDictbiz(ids: [ID!]!): Int!
+  deleteByIdsDictbiz(ids: [String!]!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDictbiz(ids: [ID!]!, is_locked: Int!): Int!
+  lockByIdsDictbiz(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDictbiz(ids: [ID!]!): Int!
+  revertByIdsDictbiz(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDictbiz(ids: [ID!]!): Int!
+  forceDeleteByIdsDictbiz(ids: [String!]!): Int!
 }
 
 `);

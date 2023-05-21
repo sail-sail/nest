@@ -5,8 +5,8 @@ import * as tenantResolver from "./tenant.resolver.ts";
 defineGraphql(tenantResolver, /* GraphQL */ `
 
 type TenantModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "名称"
   lbl: String!
   "域名绑定"
@@ -22,7 +22,7 @@ type TenantModel {
   "启用"
   is_enabled_lbl: String
   "菜单"
-  menu_ids: [ID!]
+  menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
   "排序"
@@ -56,7 +56,7 @@ type TenantFieldComment {
 }
 input TenantInput {
   ""
-  id: ID
+  id: String
   "名称"
   lbl: String
   "域名绑定"
@@ -72,7 +72,7 @@ input TenantInput {
   "启用"
   is_enabled_lbl: String
   "菜单"
-  menu_ids: [ID!]
+  menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
   "排序"
@@ -84,9 +84,9 @@ input TenantSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "名称"
   lbl: String
   lbl_like: String
@@ -101,7 +101,6 @@ input TenantSearch {
   is_enabled: [Int!]
   "菜单"
   menu_ids: [String!]
-  menu_ids_lbl: [String!]
   menu_ids_is_null: Boolean
   "排序"
   order_by: [Int!]
@@ -119,21 +118,21 @@ type Query {
   "根据条件查找第一条数据"
   findOneTenant(search: TenantSearch, sort: [SortInput!]): TenantModel
   "根据id查找一条数据"
-  findByIdTenant(id: ID!): TenantModel
+  findByIdTenant(id: String!): TenantModel
   "查找order_by字段的最大值"
   findLastOrderByTenant: Int!
 }
 type Mutation {
   "创建一条数据"
-  createTenant(model: TenantInput!): ID!
+  createTenant(model: TenantInput!): String!
   "根据id修改一条数据"
-  updateByIdTenant(id: ID!, model: TenantInput!): ID!
+  updateByIdTenant(id: String!, model: TenantInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsTenant(ids: [ID!]!): Int!
+  deleteByIdsTenant(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsTenant(ids: [ID!]!): Int!
+  revertByIdsTenant(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsTenant(ids: [ID!]!): Int!
+  forceDeleteByIdsTenant(ids: [String!]!): Int!
 }
 
 `);

@@ -23,15 +23,15 @@ type <#=Table_Up#>Model {<#
     let data_type = column.DATA_TYPE;
     let _data_type = "String";
     if (column_name === 'id') {
-      data_type = 'ID';
+      data_type = 'String';
     }
     else if (foreignKey && foreignKey.multiple) {
-      data_type = '[ID!]';
+      data_type = '[String!]';
       _data_type = "[String!]";
       is_nullable = true;
     }
     else if (foreignKey && !foreignKey.multiple) {
-      data_type = 'ID';
+      data_type = 'String';
       _data_type = "String";
     }
     else if (column.DATA_TYPE === 'varchar') {
@@ -73,7 +73,7 @@ type <#=Table_Up#>Model {<#
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') column_comment = 'ID';
+    if (column_name === 'id') column_comment = 'String';
     if (!is_nullable) {
       data_type += "!";
     }
@@ -155,14 +155,14 @@ input <#=Table_Up#>Input {<#
     let data_type = column.DATA_TYPE;
     let _data_type = "String";
     if (column_name === 'id') {
-      data_type = 'ID';
+      data_type = 'String';
     }
     else if (foreignKey && foreignKey.multiple) {
-      data_type = '[ID!]';
+      data_type = '[String!]';
       _data_type = "[String!]";
     }
     else if (foreignKey && !foreignKey.multiple) {
-      data_type = 'ID';
+      data_type = 'String';
       _data_type = "String";
     }
     else if (column.DATA_TYPE === 'varchar') {
@@ -234,7 +234,7 @@ input <#=Table_Up#>Search {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]<#
+  ids: [String]<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -248,7 +248,7 @@ input <#=Table_Up#>Search {
     if (isPassword) continue;
     const search = column.search;
     if (column_name === 'id') {
-      data_type = 'ID';
+      data_type = 'String';
     }
     else if (foreignKey) {
       data_type = '[String!]';
@@ -295,7 +295,7 @@ input <#=Table_Up#>Search {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     if (column_name === 'id') {
-      column_comment = 'ID';
+      column_comment = 'String';
     }
     if (selectList.length > 0) {
       if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
@@ -315,7 +315,6 @@ input <#=Table_Up#>Search {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
-  <#=column_name#>_lbl: <#=data_type#>
   <#=column_name#>_is_null: Boolean<#
     } else if (selectList && selectList.length > 0) {
   #>
@@ -405,7 +404,7 @@ type Query {
   "根据条件查找第一条数据"
   findOne<#=Table_Up#>(search: <#=Table_Up#>Search, sort: [SortInput!]): <#=Table_Up#>Model
   "根据id查找一条数据"
-  findById<#=Table_Up#>(id: ID!): <#=Table_Up#>Model<#
+  findById<#=Table_Up#>(id: String!): <#=Table_Up#>Model<#
   if (hasOrderBy) {
   #>
   "查找order_by字段的最大值"
@@ -422,33 +421,33 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建一条数据"
-  create<#=Table_Up#>(model: <#=Table_Up#>Input!): ID!<#
+  create<#=Table_Up#>(model: <#=Table_Up#>Input!): String!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
   "根据id修改一条数据"
-  updateById<#=Table_Up#>(id: ID!, model: <#=Table_Up#>Input!): ID!<#
+  updateById<#=Table_Up#>(id: String!, model: <#=Table_Up#>Input!): String!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 删除数据"
-  deleteByIds<#=Table_Up#>(ids: [ID!]!): Int!<#
+  deleteByIds<#=Table_Up#>(ids: [String!]!): Int!<#
   }
   #><#
   if (hasLocked && opts.noEdit !== true) {
   #>
   "根据 ids 锁定或者解锁数据"
-  lockByIds<#=Table_Up#>(ids: [ID!]!, is_locked: Int!): Int!<#
+  lockByIds<#=Table_Up#>(ids: [String!]!, is_locked: Int!): Int!<#
   }
   #><#
   if (opts.noDelete !== true) {
   #>
   "根据 ids 还原数据"
-  revertByIds<#=Table_Up#>(ids: [ID!]!): Int!
+  revertByIds<#=Table_Up#>(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIds<#=Table_Up#>(ids: [ID!]!): Int!<#
+  forceDeleteByIds<#=Table_Up#>(ids: [String!]!): Int!<#
   }
   #>
 }<#

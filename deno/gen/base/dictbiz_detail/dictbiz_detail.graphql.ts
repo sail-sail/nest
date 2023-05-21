@@ -5,10 +5,10 @@ import * as dictbiz_detailResolver from "./dictbiz_detail.resolver.ts";
 defineGraphql(dictbiz_detailResolver, /* GraphQL */ `
 
 type DictbizDetailModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "业务字典"
-  dictbiz_id: ID!
+  dictbiz_id: String!
   "业务字典"
   dictbiz_id_lbl: String
   "名称"
@@ -52,9 +52,9 @@ type DictbizDetailFieldComment {
 }
 input DictbizDetailInput {
   ""
-  id: ID
+  id: String
   "业务字典"
-  dictbiz_id: ID
+  dictbiz_id: String
   "业务字典"
   dictbiz_id_lbl: String
   "名称"
@@ -78,12 +78,11 @@ input DictbizDetailSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "业务字典"
   dictbiz_id: [String!]
-  dictbiz_id_lbl: [String!]
   dictbiz_id_is_null: Boolean
   "名称"
   lbl: String
@@ -111,23 +110,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneDictbizDetail(search: DictbizDetailSearch, sort: [SortInput!]): DictbizDetailModel
   "根据id查找一条数据"
-  findByIdDictbizDetail(id: ID!): DictbizDetailModel
+  findByIdDictbizDetail(id: String!): DictbizDetailModel
   "查找order_by字段的最大值"
   findLastOrderByDictbizDetail: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDictbizDetail(model: DictbizDetailInput!): ID!
+  createDictbizDetail(model: DictbizDetailInput!): String!
   "根据id修改一条数据"
-  updateByIdDictbizDetail(id: ID!, model: DictbizDetailInput!): ID!
+  updateByIdDictbizDetail(id: String!, model: DictbizDetailInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsDictbizDetail(ids: [ID!]!): Int!
+  deleteByIdsDictbizDetail(ids: [String!]!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDictbizDetail(ids: [ID!]!, is_locked: Int!): Int!
+  lockByIdsDictbizDetail(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDictbizDetail(ids: [ID!]!): Int!
+  revertByIdsDictbizDetail(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDictbizDetail(ids: [ID!]!): Int!
+  forceDeleteByIdsDictbizDetail(ids: [String!]!): Int!
 }
 
 `);

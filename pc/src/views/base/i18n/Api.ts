@@ -124,7 +124,7 @@ export async function updateById(
     updateByIdI18n: Mutation["updateByIdI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: I18nInput!) {
+      mutation($id: String!, $model: I18nInput!) {
         updateByIdI18n(id: $id, model: $model)
       }
     `,
@@ -151,7 +151,7 @@ export async function findById(
     findByIdI18n: Query["findByIdI18n"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdI18n(id: $id) {
           id
           lang_id
@@ -186,7 +186,7 @@ export async function deleteByIds(
     deleteByIdsI18n: Mutation["deleteByIdsI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsI18n(ids: $ids)
       }
     `,
@@ -212,7 +212,7 @@ export async function revertByIds(
     revertByIdsI18n: Mutation["revertByIdsI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsI18n(ids: $ids)
       }
     `,
@@ -238,7 +238,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsI18n: Mutation["forceDeleteByIdsI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsI18n(ids: $ids)
       }
     `,

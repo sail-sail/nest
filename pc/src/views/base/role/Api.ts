@@ -122,7 +122,7 @@ export async function updateById(
     updateByIdRole: Mutation["updateByIdRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: RoleInput!) {
+      mutation($id: String!, $model: RoleInput!) {
         updateByIdRole(id: $id, model: $model)
       }
     `,
@@ -149,7 +149,7 @@ export async function findById(
     findByIdRole: Query["findByIdRole"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdRole(id: $id) {
           id
           lbl
@@ -183,7 +183,7 @@ export async function deleteByIds(
     deleteByIdsRole: Mutation["deleteByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsRole(ids: $ids)
       }
     `,
@@ -209,7 +209,7 @@ export async function revertByIds(
     revertByIdsRole: Mutation["revertByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsRole(ids: $ids)
       }
     `,
@@ -235,7 +235,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsRole: Mutation["forceDeleteByIdsRole"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsRole(ids: $ids)
       }
     `,

@@ -133,7 +133,7 @@ export async function updateById(
     updateByIdDept: Mutation["updateByIdDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: DeptInput!) {
+      mutation($id: String!, $model: DeptInput!) {
         updateByIdDept(id: $id, model: $model)
       }
     `,
@@ -160,7 +160,7 @@ export async function findById(
     findByIdDept: Query["findByIdDept"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdDept(id: $id) {
           id
           parent_id
@@ -205,7 +205,7 @@ export async function deleteByIds(
     deleteByIdsDept: Mutation["deleteByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsDept(ids: $ids)
       }
     `,
@@ -233,7 +233,7 @@ export async function lockByIds(
     lockByIdsDept: Mutation["lockByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!, $is_locked: Int!) {
+      mutation($ids: [String!]!, $is_locked: Int!) {
         lockByIdsDept(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -260,7 +260,7 @@ export async function revertByIds(
     revertByIdsDept: Mutation["revertByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsDept(ids: $ids)
       }
     `,
@@ -286,7 +286,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsDept: Mutation["forceDeleteByIdsDept"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsDept(ids: $ids)
       }
     `,

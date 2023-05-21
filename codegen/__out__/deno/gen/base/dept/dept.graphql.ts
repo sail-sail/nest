@@ -5,10 +5,10 @@ import * as deptResolver from "./dept.resolver.ts";
 defineGraphql(deptResolver, /* GraphQL */ `
 
 type DeptModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "父部门"
-  parent_id: ID!
+  parent_id: String!
   "父部门"
   parent_id_lbl: String
   "名称"
@@ -26,7 +26,7 @@ type DeptModel {
   "锁定"
   is_locked_lbl: String
   "创建人"
-  create_usr_id: ID!
+  create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -34,7 +34,7 @@ type DeptModel {
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: ID!
+  update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -80,9 +80,9 @@ type DeptFieldComment {
 }
 input DeptInput {
   ""
-  id: ID
+  id: String
   "父部门"
-  parent_id: ID
+  parent_id: String
   "父部门"
   parent_id_lbl: String
   "名称"
@@ -100,7 +100,7 @@ input DeptInput {
   "锁定"
   is_locked_lbl: String
   "创建人"
-  create_usr_id: ID
+  create_usr_id: String
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -108,7 +108,7 @@ input DeptInput {
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: ID
+  update_usr_id: String
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -120,12 +120,11 @@ input DeptSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "父部门"
   parent_id: [String!]
-  parent_id_lbl: [String!]
   parent_id_is_null: Boolean
   "名称"
   lbl: String
@@ -141,13 +140,11 @@ input DeptSearch {
   is_locked: [Int!]
   "创建人"
   create_usr_id: [String!]
-  create_usr_id_lbl: [String!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
   update_usr_id: [String!]
-  update_usr_id_lbl: [String!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
@@ -162,23 +159,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneDept(search: DeptSearch, sort: [SortInput!]): DeptModel
   "根据id查找一条数据"
-  findByIdDept(id: ID!): DeptModel
+  findByIdDept(id: String!): DeptModel
   "查找order_by字段的最大值"
   findLastOrderByDept: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDept(model: DeptInput!): ID!
+  createDept(model: DeptInput!): String!
   "根据id修改一条数据"
-  updateByIdDept(id: ID!, model: DeptInput!): ID!
+  updateByIdDept(id: String!, model: DeptInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsDept(ids: [ID!]!): Int!
+  deleteByIdsDept(ids: [String!]!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDept(ids: [ID!]!, is_locked: Int!): Int!
+  lockByIdsDept(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDept(ids: [ID!]!): Int!
+  revertByIdsDept(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDept(ids: [ID!]!): Int!
+  forceDeleteByIdsDept(ids: [String!]!): Int!
 }
 
 `);

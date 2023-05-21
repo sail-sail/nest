@@ -102,7 +102,7 @@ export async function findById(
     findByIdOperationRecord: Query["findByIdOperationRecord"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdOperationRecord(id: $id) {
           id
           mod
@@ -144,7 +144,7 @@ export async function deleteByIds(
     deleteByIdsOperationRecord: Mutation["deleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -170,7 +170,7 @@ export async function revertByIds(
     revertByIdsOperationRecord: Mutation["revertByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsOperationRecord(ids: $ids)
       }
     `,
@@ -196,7 +196,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsOperationRecord: Mutation["forceDeleteByIdsOperationRecord"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsOperationRecord(ids: $ids)
       }
     `,
