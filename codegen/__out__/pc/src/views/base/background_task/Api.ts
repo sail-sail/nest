@@ -102,7 +102,7 @@ export async function findById(
     findByIdBackgroundTask: Query["findByIdBackgroundTask"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdBackgroundTask(id: $id) {
           id
           lbl
@@ -144,7 +144,7 @@ export async function deleteByIds(
     deleteByIdsBackgroundTask: Mutation["deleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -170,7 +170,7 @@ export async function revertByIds(
     revertByIdsBackgroundTask: Mutation["revertByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsBackgroundTask(ids: $ids)
       }
     `,
@@ -196,7 +196,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsBackgroundTask: Mutation["forceDeleteByIdsBackgroundTask"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsBackgroundTask(ids: $ids)
       }
     `,

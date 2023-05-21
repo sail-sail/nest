@@ -5,8 +5,8 @@ import * as background_taskResolver from "./background_task.resolver.ts";
 defineGraphql(background_taskResolver, /* GraphQL */ `
 
 type BackgroundTaskModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "名称"
   lbl: String!
   "状态"
@@ -32,7 +32,7 @@ type BackgroundTaskModel {
   "备注"
   rem: String!
   "创建人"
-  create_usr_id: ID!
+  create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
 }
@@ -68,7 +68,7 @@ type BackgroundTaskFieldComment {
 }
 input BackgroundTaskInput {
   ""
-  id: ID
+  id: String
   "名称"
   lbl: String
   "状态"
@@ -94,7 +94,7 @@ input BackgroundTaskInput {
   "备注"
   rem: String
   "创建人"
-  create_usr_id: ID
+  create_usr_id: String
   "创建人"
   create_usr_id_lbl: String
 }
@@ -102,9 +102,9 @@ input BackgroundTaskSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "名称"
   lbl: String
   lbl_like: String
@@ -127,7 +127,6 @@ input BackgroundTaskSearch {
   rem_like: String
   "创建人"
   create_usr_id: [String!]
-  create_usr_id_lbl: [String!]
   create_usr_id_is_null: Boolean
 }
 type Query {
@@ -140,15 +139,15 @@ type Query {
   "根据条件查找第一条数据"
   findOneBackgroundTask(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
   "根据id查找一条数据"
-  findByIdBackgroundTask(id: ID!): BackgroundTaskModel
+  findByIdBackgroundTask(id: String!): BackgroundTaskModel
 }
 type Mutation {
   "根据 ids 删除数据"
-  deleteByIdsBackgroundTask(ids: [ID!]!): Int!
+  deleteByIdsBackgroundTask(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsBackgroundTask(ids: [ID!]!): Int!
+  revertByIdsBackgroundTask(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsBackgroundTask(ids: [ID!]!): Int!
+  forceDeleteByIdsBackgroundTask(ids: [String!]!): Int!
 }
 
 `);

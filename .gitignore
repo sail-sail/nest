@@ -13,7 +13,7 @@ unpackage
 pnpm-lock.yaml
 codegening.txt
 
-/deno/lib/script/publish_cnf.js
+publish_cnf.js
 
 /rust/target
 /rust/Cargo.lock

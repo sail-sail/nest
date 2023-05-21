@@ -121,7 +121,7 @@ export async function updateById(
     updateByIdLang: Mutation["updateByIdLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: LangInput!) {
+      mutation($id: String!, $model: LangInput!) {
         updateByIdLang(id: $id, model: $model)
       }
     `,
@@ -148,7 +148,7 @@ export async function findById(
     findByIdLang: Query["findByIdLang"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdLang(id: $id) {
           id
           code
@@ -182,7 +182,7 @@ export async function deleteByIds(
     deleteByIdsLang: Mutation["deleteByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsLang(ids: $ids)
       }
     `,
@@ -208,7 +208,7 @@ export async function revertByIds(
     revertByIdsLang: Mutation["revertByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsLang(ids: $ids)
       }
     `,
@@ -234,7 +234,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsLang: Mutation["forceDeleteByIdsLang"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsLang(ids: $ids)
       }
     `,

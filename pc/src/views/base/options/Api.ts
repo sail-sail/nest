@@ -134,7 +134,7 @@ export async function updateById(
     updateByIdOptions: Mutation["updateByIdOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: OptionsInput!) {
+      mutation($id: String!, $model: OptionsInput!) {
         updateByIdOptions(id: $id, model: $model)
       }
     `,
@@ -161,7 +161,7 @@ export async function findById(
     findByIdOptions: Query["findByIdOptions"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdOptions(id: $id) {
           id
           lbl
@@ -207,7 +207,7 @@ export async function deleteByIds(
     deleteByIdsOptions: Mutation["deleteByIdsOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsOptions(ids: $ids)
       }
     `,
@@ -235,7 +235,7 @@ export async function lockByIds(
     lockByIdsOptions: Mutation["lockByIdsOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!, $is_locked: Int!) {
+      mutation($ids: [String!]!, $is_locked: Int!) {
         lockByIdsOptions(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -262,7 +262,7 @@ export async function revertByIds(
     revertByIdsOptions: Mutation["revertByIdsOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsOptions(ids: $ids)
       }
     `,
@@ -288,7 +288,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsOptions: Mutation["forceDeleteByIdsOptions"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsOptions(ids: $ids)
       }
     `,

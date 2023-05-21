@@ -67,6 +67,10 @@ ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-
 npm config list
 npm i -g pm2
 npm i -g pnpm
+
+pm2 配置日志
+pm2 install pm2-logrotate
+通过 pm2 conf pm2-logratate 可以查看日志详细的配置
 ```
 
 7. Ubuntu 通过apt安装nodejs

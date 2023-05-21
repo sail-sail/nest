@@ -5,8 +5,8 @@ import * as dictResolver from "./dict.resolver.ts";
 defineGraphql(dictResolver, /* GraphQL */ `
 
 type DictModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "编码"
   code: String!
   "名称"
@@ -28,7 +28,7 @@ type DictModel {
   "锁定"
   is_locked_lbl: String
   "创建人"
-  create_usr_id: ID!
+  create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -36,7 +36,7 @@ type DictModel {
   "创建时间"
   create_time_lbl: String!
   "更新人"
-  update_usr_id: ID!
+  update_usr_id: String!
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -84,7 +84,7 @@ type DictFieldComment {
 }
 input DictInput {
   ""
-  id: ID
+  id: String
   "编码"
   code: String
   "名称"
@@ -106,7 +106,7 @@ input DictInput {
   "锁定"
   is_locked_lbl: String
   "创建人"
-  create_usr_id: ID
+  create_usr_id: String
   "创建人"
   create_usr_id_lbl: String
   "创建时间"
@@ -114,7 +114,7 @@ input DictInput {
   "创建时间"
   create_time_lbl: String
   "更新人"
-  update_usr_id: ID
+  update_usr_id: String
   "更新人"
   update_usr_id_lbl: String
   "更新时间"
@@ -126,9 +126,9 @@ input DictSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "编码"
   code: String
   code_like: String
@@ -148,13 +148,11 @@ input DictSearch {
   is_locked: [Int!]
   "创建人"
   create_usr_id: [String!]
-  create_usr_id_lbl: [String!]
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
   "更新人"
   update_usr_id: [String!]
-  update_usr_id_lbl: [String!]
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
@@ -169,23 +167,23 @@ type Query {
   "根据条件查找第一条数据"
   findOneDict(search: DictSearch, sort: [SortInput!]): DictModel
   "根据id查找一条数据"
-  findByIdDict(id: ID!): DictModel
+  findByIdDict(id: String!): DictModel
   "查找order_by字段的最大值"
   findLastOrderByDict: Int!
 }
 type Mutation {
   "创建一条数据"
-  createDict(model: DictInput!): ID!
+  createDict(model: DictInput!): String!
   "根据id修改一条数据"
-  updateByIdDict(id: ID!, model: DictInput!): ID!
+  updateByIdDict(id: String!, model: DictInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsDict(ids: [ID!]!): Int!
+  deleteByIdsDict(ids: [String!]!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsDict(ids: [ID!]!, is_locked: Int!): Int!
+  lockByIdsDict(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsDict(ids: [ID!]!): Int!
+  revertByIdsDict(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsDict(ids: [ID!]!): Int!
+  forceDeleteByIdsDict(ids: [String!]!): Int!
 }
 
 `);

@@ -5,14 +5,14 @@ import * as menuResolver from "./menu.resolver.ts";
 defineGraphql(menuResolver, /* GraphQL */ `
 
 type MenuModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "类型"
   type: String!
   "类型"
   type_lbl: String
   "父菜单"
-  menu_id: ID!
+  menu_id: String!
   "父菜单"
   menu_id_lbl: String
   "名称"
@@ -56,13 +56,13 @@ type MenuFieldComment {
 }
 input MenuInput {
   ""
-  id: ID
+  id: String
   "类型"
   type: String
   "类型"
   type_lbl: String
   "父菜单"
-  menu_id: ID
+  menu_id: String
   "父菜单"
   menu_id_lbl: String
   "名称"
@@ -84,14 +84,13 @@ input MenuSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "类型"
   type: [String!]
   "父菜单"
   menu_id: [String!]
-  menu_id_lbl: [String!]
   menu_id_is_null: Boolean
   "名称"
   lbl: String
@@ -120,21 +119,21 @@ type Query {
   "根据条件查找第一条数据"
   findOneMenu(search: MenuSearch, sort: [SortInput!]): MenuModel
   "根据id查找一条数据"
-  findByIdMenu(id: ID!): MenuModel
+  findByIdMenu(id: String!): MenuModel
   "查找order_by字段的最大值"
   findLastOrderByMenu: Int!
 }
 type Mutation {
   "创建一条数据"
-  createMenu(model: MenuInput!): ID!
+  createMenu(model: MenuInput!): String!
   "根据id修改一条数据"
-  updateByIdMenu(id: ID!, model: MenuInput!): ID!
+  updateByIdMenu(id: String!, model: MenuInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsMenu(ids: [ID!]!): Int!
+  deleteByIdsMenu(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsMenu(ids: [ID!]!): Int!
+  revertByIdsMenu(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsMenu(ids: [ID!]!): Int!
+  forceDeleteByIdsMenu(ids: [String!]!): Int!
 }
 
 `);

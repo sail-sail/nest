@@ -5,8 +5,8 @@ import * as langResolver from "./lang.resolver.ts";
 defineGraphql(langResolver, /* GraphQL */ `
 
 type LangModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "编码"
   code: String!
   "名称"
@@ -36,7 +36,7 @@ type LangFieldComment {
 }
 input LangInput {
   ""
-  id: ID
+  id: String
   "编码"
   code: String
   "名称"
@@ -54,9 +54,9 @@ input LangSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "编码"
   code: String
   code_like: String
@@ -81,21 +81,21 @@ type Query {
   "根据条件查找第一条数据"
   findOneLang(search: LangSearch, sort: [SortInput!]): LangModel
   "根据id查找一条数据"
-  findByIdLang(id: ID!): LangModel
+  findByIdLang(id: String!): LangModel
   "查找order_by字段的最大值"
   findLastOrderByLang: Int!
 }
 type Mutation {
   "创建一条数据"
-  createLang(model: LangInput!): ID!
+  createLang(model: LangInput!): String!
   "根据id修改一条数据"
-  updateByIdLang(id: ID!, model: LangInput!): ID!
+  updateByIdLang(id: String!, model: LangInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsLang(ids: [ID!]!): Int!
+  deleteByIdsLang(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsLang(ids: [ID!]!): Int!
+  revertByIdsLang(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsLang(ids: [ID!]!): Int!
+  forceDeleteByIdsLang(ids: [String!]!): Int!
 }
 
 `);

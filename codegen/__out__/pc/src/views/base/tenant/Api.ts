@@ -127,7 +127,7 @@ export async function updateById(
     updateByIdTenant: Mutation["updateByIdTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: TenantInput!) {
+      mutation($id: String!, $model: TenantInput!) {
         updateByIdTenant(id: $id, model: $model)
       }
     `,
@@ -154,7 +154,7 @@ export async function findById(
     findByIdTenant: Query["findByIdTenant"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdTenant(id: $id) {
           id
           lbl
@@ -193,7 +193,7 @@ export async function deleteByIds(
     deleteByIdsTenant: Mutation["deleteByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsTenant(ids: $ids)
       }
     `,
@@ -219,7 +219,7 @@ export async function revertByIds(
     revertByIdsTenant: Mutation["revertByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsTenant(ids: $ids)
       }
     `,
@@ -245,7 +245,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsTenant: Mutation["forceDeleteByIdsTenant"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsTenant(ids: $ids)
       }
     `,
