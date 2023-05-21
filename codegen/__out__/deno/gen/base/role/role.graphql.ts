@@ -5,8 +5,8 @@ import * as roleResolver from "./role.resolver.ts";
 defineGraphql(roleResolver, /* GraphQL */ `
 
 type RoleModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "名称"
   lbl: String!
   "备注"
@@ -16,7 +16,7 @@ type RoleModel {
   "启用"
   is_enabled_lbl: String
   "菜单"
-  menu_ids: [ID!]
+  menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
 }
@@ -36,7 +36,7 @@ type RoleFieldComment {
 }
 input RoleInput {
   ""
-  id: ID
+  id: String
   "名称"
   lbl: String
   "备注"
@@ -46,7 +46,7 @@ input RoleInput {
   "启用"
   is_enabled_lbl: String
   "菜单"
-  menu_ids: [ID!]
+  menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
 }
@@ -54,9 +54,9 @@ input RoleSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "名称"
   lbl: String
   lbl_like: String
@@ -67,7 +67,6 @@ input RoleSearch {
   is_enabled: [Int!]
   "菜单"
   menu_ids: [String!]
-  menu_ids_lbl: [String!]
   menu_ids_is_null: Boolean
 }
 type Query {
@@ -80,19 +79,19 @@ type Query {
   "根据条件查找第一条数据"
   findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
   "根据id查找一条数据"
-  findByIdRole(id: ID!): RoleModel
+  findByIdRole(id: String!): RoleModel
 }
 type Mutation {
   "创建一条数据"
-  createRole(model: RoleInput!): ID!
+  createRole(model: RoleInput!): String!
   "根据id修改一条数据"
-  updateByIdRole(id: ID!, model: RoleInput!): ID!
+  updateByIdRole(id: String!, model: RoleInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsRole(ids: [ID!]!): Int!
+  deleteByIdsRole(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsRole(ids: [ID!]!): Int!
+  revertByIdsRole(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsRole(ids: [ID!]!): Int!
+  forceDeleteByIdsRole(ids: [String!]!): Int!
 }
 
 `);

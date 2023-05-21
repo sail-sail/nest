@@ -249,7 +249,7 @@ export async function updateById(
     updateById<#=Table_Up#>: Mutation["updateById<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: <#=Table_Up#>Input!) {
+      mutation($id: String!, $model: <#=Table_Up#>Input!) {
         updateById<#=Table_Up#>(id: $id, model: $model)
       }
     `,
@@ -278,7 +278,7 @@ export async function findById(
     findById<#=Table_Up#>: Query["findById<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findById<#=Table_Up#>(id: $id) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -351,7 +351,7 @@ export async function deleteByIds(
     deleteByIds<#=Table_Up#>: Mutation["deleteByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIds<#=Table_Up#>(ids: $ids)
       }
     `,
@@ -383,7 +383,7 @@ export async function lockByIds(
     lockByIds<#=Table_Up#>: Mutation["lockByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!, $is_locked: Int!) {
+      mutation($ids: [String!]!, $is_locked: Int!) {
         lockByIds<#=Table_Up#>(ids: $ids, is_locked: $is_locked)
       }
     `,
@@ -414,7 +414,7 @@ export async function revertByIds(
     revertByIds<#=Table_Up#>: Mutation["revertByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIds<#=Table_Up#>(ids: $ids)
       }
     `,
@@ -440,7 +440,7 @@ export async function forceDeleteByIds(
     forceDeleteByIds<#=Table_Up#>: Mutation["forceDeleteByIds<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIds<#=Table_Up#>(ids: $ids)
       }
     `,

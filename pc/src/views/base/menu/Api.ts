@@ -127,7 +127,7 @@ export async function updateById(
     updateByIdMenu: Mutation["updateByIdMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: ID!, $model: MenuInput!) {
+      mutation($id: String!, $model: MenuInput!) {
         updateByIdMenu(id: $id, model: $model)
       }
     `,
@@ -154,7 +154,7 @@ export async function findById(
     findByIdMenu: Query["findByIdMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query($id: ID!) {
+      query($id: String!) {
         findByIdMenu(id: $id) {
           id
           type
@@ -196,7 +196,7 @@ export async function deleteByIds(
     deleteByIdsMenu: Mutation["deleteByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         deleteByIdsMenu(ids: $ids)
       }
     `,
@@ -222,7 +222,7 @@ export async function revertByIds(
     revertByIdsMenu: Mutation["revertByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         revertByIdsMenu(ids: $ids)
       }
     `,
@@ -248,7 +248,7 @@ export async function forceDeleteByIds(
     forceDeleteByIdsMenu: Mutation["forceDeleteByIdsMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [ID!]!) {
+      mutation($ids: [String!]!) {
         forceDeleteByIdsMenu(ids: $ids)
       }
     `,

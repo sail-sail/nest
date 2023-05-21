@@ -5,8 +5,8 @@ import * as usrResolver from "./usr.resolver.ts";
 defineGraphql(usrResolver, /* GraphQL */ `
 
 type UsrModel {
-  "ID"
-  id: ID!
+  "String"
+  id: String!
   "名称"
   lbl: String!
   "用户名"
@@ -14,7 +14,7 @@ type UsrModel {
   "密码"
   password: String!
   "默认部门"
-  default_dept_id: ID!
+  default_dept_id: String!
   "默认部门"
   default_dept_id_lbl: String
   "启用"
@@ -24,7 +24,7 @@ type UsrModel {
   "备注"
   rem: String!
   "拥有部门"
-  dept_ids: [ID!]
+  dept_ids: [String!]
   "拥有部门"
   dept_ids_lbl: [String!]
   "锁定"
@@ -32,7 +32,7 @@ type UsrModel {
   "锁定"
   is_locked_lbl: String
   "拥有角色"
-  role_ids: [ID!]
+  role_ids: [String!]
   "拥有角色"
   role_ids_lbl: [String!]
 }
@@ -66,7 +66,7 @@ type UsrFieldComment {
 }
 input UsrInput {
   ""
-  id: ID
+  id: String
   "名称"
   lbl: String
   "用户名"
@@ -74,7 +74,7 @@ input UsrInput {
   "密码"
   password: String
   "默认部门"
-  default_dept_id: ID
+  default_dept_id: String
   "默认部门"
   default_dept_id_lbl: String
   "启用"
@@ -84,7 +84,7 @@ input UsrInput {
   "备注"
   rem: String
   "拥有部门"
-  dept_ids: [ID!]
+  dept_ids: [String!]
   "拥有部门"
   dept_ids_lbl: [String!]
   "锁定"
@@ -92,7 +92,7 @@ input UsrInput {
   "锁定"
   is_locked_lbl: String
   "拥有角色"
-  role_ids: [ID!]
+  role_ids: [String!]
   "拥有角色"
   role_ids_lbl: [String!]
 }
@@ -100,9 +100,9 @@ input UsrSearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
-  ids: [ID]
-  "ID"
-  id: ID
+  ids: [String]
+  "String"
+  id: String
   "名称"
   lbl: String
   lbl_like: String
@@ -111,7 +111,6 @@ input UsrSearch {
   username_like: String
   "默认部门"
   default_dept_id: [String!]
-  default_dept_id_lbl: [String!]
   default_dept_id_is_null: Boolean
   "启用"
   is_enabled: [Int!]
@@ -120,13 +119,11 @@ input UsrSearch {
   rem_like: String
   "拥有部门"
   dept_ids: [String!]
-  dept_ids_lbl: [String!]
   dept_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "拥有角色"
   role_ids: [String!]
-  role_ids_lbl: [String!]
   role_ids_is_null: Boolean
 }
 type Query {
@@ -139,21 +136,21 @@ type Query {
   "根据条件查找第一条数据"
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据id查找一条数据"
-  findByIdUsr(id: ID!): UsrModel
+  findByIdUsr(id: String!): UsrModel
 }
 type Mutation {
   "创建一条数据"
-  createUsr(model: UsrInput!): ID!
+  createUsr(model: UsrInput!): String!
   "根据id修改一条数据"
-  updateByIdUsr(id: ID!, model: UsrInput!): ID!
+  updateByIdUsr(id: String!, model: UsrInput!): String!
   "根据 ids 删除数据"
-  deleteByIdsUsr(ids: [ID!]!): Int!
+  deleteByIdsUsr(ids: [String!]!): Int!
   "根据 ids 锁定或者解锁数据"
-  lockByIdsUsr(ids: [ID!]!, is_locked: Int!): Int!
+  lockByIdsUsr(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
-  revertByIdsUsr(ids: [ID!]!): Int!
+  revertByIdsUsr(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsUsr(ids: [ID!]!): Int!
+  forceDeleteByIdsUsr(ids: [String!]!): Int!
 }
 
 `);
