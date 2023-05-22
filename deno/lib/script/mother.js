@@ -201,7 +201,6 @@ function start() {
   const arr = [
     "run",
     "--inspect",
-    "--unstable",
     "-A",
     // `--allow-read=${ allowReads.join(",") }`,
     // `--allow-write=${ allowWrites.join(",") }`,
