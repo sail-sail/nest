@@ -187,7 +187,7 @@ impl DictbizGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: DictbizInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dictbiz_service::update_by_id(

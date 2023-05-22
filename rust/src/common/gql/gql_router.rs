@@ -2,14 +2,13 @@ use tracing::error;
 
 use poem::{
   handler, IntoResponse, Response,
-  web::{Data, Html, Json, Query},
+  web::{Data, Json, Query},
 };
 
 use poem::http::{StatusCode, header};
 
 use async_graphql::{
   Request, Variables,
-  http::{playground_source, GraphQLPlaygroundConfig},
 };
 
 use crate::common::auth::auth_model::{AUTHORIZATION, AuthToken};
@@ -137,9 +136,9 @@ pub async fn graphql_handler(
 #[handler]
 pub fn graphql_playground(
 ) -> impl IntoResponse {
-  Html(
-    playground_source(
-      GraphQLPlaygroundConfig::new("/graphql")
+  poem::web::Html(
+    async_graphql::http::playground_source(
+      async_graphql::http::GraphQLPlaygroundConfig::new("/graphql")
     )
   )
 }

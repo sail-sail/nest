@@ -27,10 +27,10 @@ async function copyEnv() {
 
 async function gqlgen() {
   console.log("gqlgen");
-  // child_process.execSync("npm run gqlgen", {
-  //   cwd: process.cwd(),
-  //   stdio: "inherit",
-  // });
+  child_process.execSync("npm run gqlgen", {
+    cwd: process.cwd(),
+    stdio: "inherit",
+  });
 }
 
 async function pc() {
@@ -96,8 +96,8 @@ async function compile() {
   //   cwd,
   //   stdio: "inherit",
   // });
-  await mkdir(`${ buildDir }/rust/rust`, { recursive: true });
-  await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/server`, `${ buildDir }/rust/rust/server`);
+  await mkdir(`${ buildDir }/rust`, { recursive: true });
+  await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/server`, `${ buildDir }/rust/server`);
 }
 
 (async function() {

@@ -260,7 +260,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'a>,
     id: String,
     model: <#=tableUP#>Input,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = <#=table#>_service::update_by_id(

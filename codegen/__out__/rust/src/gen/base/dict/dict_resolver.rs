@@ -168,7 +168,7 @@ impl DictGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: DictInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dict_service::update_by_id(

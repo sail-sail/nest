@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
 use async_graphql::{SimpleObject, InputObject};
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DeptModel {
   /// ID
@@ -216,12 +216,16 @@ pub struct DeptInput {
   pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: Option<String>,
   /// 更新人
   pub update_usr_id: Option<String>,
   /// 更新人
   pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<DeptInput> for DeptSearch {

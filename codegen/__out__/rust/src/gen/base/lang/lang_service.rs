@@ -100,16 +100,16 @@ pub async fn update_by_id<'a>(
   id: String,
   input: LangInput,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<String> {
   
-  let num = lang_dao::update_by_id(
+  let res = lang_dao::update_by_id(
     ctx,
     id,
     input,
     options,
   ).await?;
   
-  Ok(num)
+  Ok(res)
 }
 
 /// 根据 ids 删除数据

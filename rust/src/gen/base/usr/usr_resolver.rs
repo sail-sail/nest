@@ -172,7 +172,7 @@ impl UsrGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: UsrInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = usr_service::update_by_id(

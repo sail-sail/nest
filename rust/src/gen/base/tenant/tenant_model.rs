@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
 use async_graphql::{SimpleObject, InputObject};
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct TenantModel {
   /// ID
@@ -148,6 +148,8 @@ pub struct TenantInput {
   pub host: Option<String>,
   /// 到期日
   pub expiration: Option<chrono::NaiveDate>,
+  /// 到期日
+  pub expiration_lbl: Option<String>,
   /// 最大用户数
   pub max_usr_num: Option<u32>,
   /// 启用

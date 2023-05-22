@@ -923,8 +923,8 @@ pub async fn check_by_unique<'a>(
   if (opts.unique && opts.unique.length > 0) {
   #>
   let is_equals = equals_by_unique(
-    input,
-    model,
+    input.clone(),
+    model.clone(),
   );
   if !is_equals {
     return Ok(None);
@@ -933,8 +933,13 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    // TODO
-    return Ok(None);
+    let res = update_by_id(
+      ctx,
+      model.id.clone(),
+      input,
+      None,
+    ).await?;
+    return Ok(res.into());
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
@@ -1487,7 +1492,7 @@ pub async fn update_by_id<'a>(
   id: String,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<String> {
   
   input = set_id_by_lbl(
     ctx,
@@ -1555,7 +1560,7 @@ pub async fn update_by_id<'a>(
   #>
   
   if field_num == 0 {
-    return Ok(0);
+    return Ok(id);
   }<#
   if (hasVersion) {
   #>if let Some(version) = input.version {
@@ -1601,7 +1606,7 @@ pub async fn update_by_id<'a>(
   
   let options = options.into();
   
-  let num = ctx.execute(
+  ctx.execute(
     sql,
     args,
     options,
@@ -1654,7 +1659,7 @@ pub async fn update_by_id<'a>(
     }
   #>
   
-  Ok(num)
+  Ok(id)
 }
 
 /// 获取外键关联表, 第一个是主表

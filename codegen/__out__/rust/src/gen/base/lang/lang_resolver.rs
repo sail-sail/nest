@@ -149,7 +149,7 @@ impl LangGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: LangInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = lang_service::update_by_id(

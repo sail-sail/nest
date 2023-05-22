@@ -6,7 +6,7 @@ const tableUP = tableUp.split("_").map(function(item) {
 use sqlx::{FromRow, mysql::MySqlRow, Row};
 use async_graphql::{SimpleObject, InputObject};
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
   for (let i = 0; i < columns.length; i++) {
@@ -458,6 +458,12 @@ pub struct <#=tableUP#>Input {
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+  #>
+  /// <#=column_comment#>
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  /// <#=column_comment#>
+  pub <#=column_name#>_lbl: Option<String>,<#
+  } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,

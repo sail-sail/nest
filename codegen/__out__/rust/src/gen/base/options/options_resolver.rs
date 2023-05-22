@@ -168,7 +168,7 @@ impl OptionsGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: OptionsInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = options_service::update_by_id(
