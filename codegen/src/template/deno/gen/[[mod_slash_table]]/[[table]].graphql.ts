@@ -73,7 +73,7 @@ type <#=Table_Up#>Model {<#
     if (column_comment.includes("[")) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') column_comment = 'String';
+    if (column_name === 'id') column_comment = 'ID';
     if (!is_nullable) {
       data_type += "!";
     }

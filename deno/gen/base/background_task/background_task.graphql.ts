@@ -5,7 +5,7 @@ import * as background_taskResolver from "./background_task.resolver.ts";
 defineGraphql(background_taskResolver, /* GraphQL */ `
 
 type BackgroundTaskModel {
-  "String"
+  "ID"
   id: String!
   "名称"
   lbl: String!

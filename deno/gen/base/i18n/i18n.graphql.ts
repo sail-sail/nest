@@ -5,7 +5,7 @@ import * as i18nResolver from "./i18n.resolver.ts";
 defineGraphql(i18nResolver, /* GraphQL */ `
 
 type I18nModel {
-  "String"
+  "ID"
   id: String!
   "语言"
   lang_id: String!

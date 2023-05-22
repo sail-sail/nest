@@ -5,7 +5,7 @@ import * as tenantResolver from "./tenant.resolver.ts";
 defineGraphql(tenantResolver, /* GraphQL */ `
 
 type TenantModel {
-  "String"
+  "ID"
   id: String!
   "名称"
   lbl: String!

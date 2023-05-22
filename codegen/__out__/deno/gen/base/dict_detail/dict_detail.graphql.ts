@@ -5,7 +5,7 @@ import * as dict_detailResolver from "./dict_detail.resolver.ts";
 defineGraphql(dict_detailResolver, /* GraphQL */ `
 
 type DictDetailModel {
-  "String"
+  "ID"
   id: String!
   "系统字典"
   dict_id: String!

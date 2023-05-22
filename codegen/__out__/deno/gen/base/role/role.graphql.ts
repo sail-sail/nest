@@ -5,7 +5,7 @@ import * as roleResolver from "./role.resolver.ts";
 defineGraphql(roleResolver, /* GraphQL */ `
 
 type RoleModel {
-  "String"
+  "ID"
   id: String!
   "名称"
   lbl: String!
