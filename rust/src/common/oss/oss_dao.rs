@@ -13,11 +13,13 @@ pub struct StatObject {
   pub etag: Option<String>,
 }
 
+#[allow(dead_code)]
 pub async fn init() -> Result<()> {
   create_bucket(&new_bucket()?).await?;
   Ok(())
 }
 
+#[allow(dead_code)]
 async fn create_bucket(
   bucket: &Bucket,
 ) -> Result<()> {
