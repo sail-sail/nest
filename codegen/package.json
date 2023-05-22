@@ -4,7 +4,7 @@
   "description": "codegen",
   "license": "MIT",
   "scripts": {
-    "codegen": "ts-node src/bin/codegen.ts",
+    "codegen": "ts-node src/bin/codegen.ts && cd ../deno && npm run gqlgen",
     "codeapply": "ts-node src/bin/codeapply.ts",
     "coderemove": "ts-node src/bin/coderemove.ts",
     "initdb": "ts-node src/util/npmInitDB.ts",
