@@ -9,6 +9,7 @@
     "start:deno": "cd deno && npm start",
     "mother": "cd nest && node src/Mother.js",
     "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts && cd ../rust && npm run gqlgen",
+    "gqlgen": "cd rust && npm run gqlgen",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
     "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
     "initdb": "cd codegen && node -r ts-node/register src/util/npmInitDB.ts",
