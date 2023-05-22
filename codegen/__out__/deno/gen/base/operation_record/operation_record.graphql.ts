@@ -5,7 +5,7 @@ import * as operation_recordResolver from "./operation_record.resolver.ts";
 defineGraphql(operation_recordResolver, /* GraphQL */ `
 
 type OperationRecordModel {
-  "String"
+  "ID"
   id: String!
   "模块"
   mod: String!

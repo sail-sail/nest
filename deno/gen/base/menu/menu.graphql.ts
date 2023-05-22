@@ -5,7 +5,7 @@ import * as menuResolver from "./menu.resolver.ts";
 defineGraphql(menuResolver, /* GraphQL */ `
 
 type MenuModel {
-  "String"
+  "ID"
   id: String!
   "类型"
   type: String!
