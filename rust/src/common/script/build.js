@@ -15,13 +15,14 @@ const argv = minimist(process.argv.slice(2));
 
 const target = argv.target || "";
 
+const projectDir = `${ __dirname }/../../../../`;
 const buildDir = process.cwd() + "/../build/" + target;
 const commands = (argv.command || "").split(",").filter((v) => v);
 
 async function copyEnv() {
   console.log("copyEnv");
-  await copy(process.cwd() + "/ecosystem.config.js", buildDir + "/ecosystem.config.js");
-  await copy(process.cwd() + "/.env", buildDir + "/.env");
+  await copy(`${ projectDir }/rust` + "/ecosystem.config.js", buildDir + "/rust/ecosystem.config.js");
+  await copy(`${ projectDir }/rust` + "/.env.prod", buildDir + "/rust/.env");
 }
 
 async function gqlgen() {
@@ -35,7 +36,7 @@ async function gqlgen() {
 async function pc() {
   console.log("pc");
   child_process.execSync("npm run build", {
-    cwd: `${ __dirname }/../../../../pc`,
+    cwd: `${ projectDir }/pc`,
     stdio: "inherit",
   });
 }
@@ -76,8 +77,8 @@ async function compile_temp() {
   } catch (err) {
     console.log(err);
   }
-  await mkdir(`${ buildDir }/rust`, { recursive: true });
-  await sftp.fastGet(`${ publishPath }/rust/target/release/server`, `${ buildDir }/rust/server`);
+  await mkdir(`${ buildDir }/rust/rust`, { recursive: true });
+  await sftp.fastGet(`${ publishPath }/rust/target/release/server`, `${ buildDir }/rust/rust/server`);
   await ssh.close();
   if (data) {
     console.log(data);
@@ -86,17 +87,17 @@ async function compile_temp() {
 
 async function compile() {
   console.log("compile");
-  const cwd = `${ __dirname }/../../../`;
-  let cmd = "";
-  cmd += "wsl";
-  cmd += " && rustup target add x86_64-unknown-linux-musl";
-  cmd += " && cargo build --release --target=x86_64-unknown-linux-musl";
-  child_process.execSync(cmd, {
-    cwd,
-    stdio: "inherit",
-  });
-  await mkdir(`${ buildDir }/rust`, { recursive: true });
-  await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/server`, `${ buildDir }/rust/server`);
+  const cwd = `${ projectDir }/rust/`;
+  // let cmd = "";
+  // cmd += "wsl source /etc/profile";
+  // cmd += " && rustup target add x86_64-unknown-linux-musl";
+  // cmd += " && cargo build --release --target=x86_64-unknown-linux-musl";
+  // child_process.execSync(cmd, {
+  //   cwd,
+  //   stdio: "inherit",
+  // });
+  await mkdir(`${ buildDir }/rust/rust`, { recursive: true });
+  await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/server`, `${ buildDir }/rust/rust/server`);
 }
 
 (async function() {
