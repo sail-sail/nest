@@ -12,8 +12,10 @@ export function uniqueID() {
   return (UID++).toString(36);
 }
 
+const _randomUUID: any = window.crypto?.randomUUID;
+
 export function uuid() {
-  if (typeof crypto !== "undefined") {
+  if (typeof crypto !== "undefined" && _randomUUID) {
     return crypto.randomUUID();
   }
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
