@@ -5,7 +5,7 @@ rust 静态链接:
   
   # unbuntu
   sudo apt install build-essential
-  # sudo apt install musl-tools musl-dev
+  sudo apt install musl-tools musl-dev
   # sudo apt install openssl libssl-dev
   
   # centos
