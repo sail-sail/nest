@@ -28,7 +28,7 @@ async function copyEnv() {
 async function gqlgen() {
   console.log("gqlgen");
   child_process.execSync("npm run gqlgen", {
-    cwd: process.cwd(),
+    cwd: `${ projectDir }/rust`,
     stdio: "inherit",
   });
 }
