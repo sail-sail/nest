@@ -187,7 +187,7 @@ impl DeptGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: DeptInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = dept_service::update_by_id(

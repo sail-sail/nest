@@ -119,16 +119,16 @@ pub async fn update_by_id<'a>(
   id: String,
   input: OperationRecordInput,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<String> {
   
-  let num = operation_record_dao::update_by_id(
+  let res = operation_record_dao::update_by_id(
     ctx,
     id,
     input,
     options,
   ).await?;
   
-  Ok(num)
+  Ok(res)
 }
 
 /// 根据 ids 删除数据

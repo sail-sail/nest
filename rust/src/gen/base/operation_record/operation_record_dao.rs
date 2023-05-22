@@ -712,7 +712,7 @@ pub async fn update_by_id<'a>(
   id: String,
   mut input: OperationRecordInput,
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<String> {
   
   input = set_id_by_lbl(
     ctx,
@@ -768,7 +768,7 @@ pub async fn update_by_id<'a>(
   }
   
   if field_num == 0 {
-    return Ok(0);
+    return Ok(id);
   }
   
   if let Some(auth_model) = ctx.get_auth_model() {
@@ -793,13 +793,13 @@ pub async fn update_by_id<'a>(
   
   let options = options.into();
   
-  let num = ctx.execute(
+  ctx.execute(
     sql,
     args,
     options,
   ).await?;
   
-  Ok(num)
+  Ok(id)
 }
 
 /// 获取外键关联表, 第一个是主表

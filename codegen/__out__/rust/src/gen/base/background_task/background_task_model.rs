@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
 use async_graphql::{SimpleObject, InputObject};
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
   /// ID
@@ -185,8 +185,12 @@ pub struct BackgroundTaskInput {
   pub err_msg: Option<String>,
   /// 开始时间
   pub begin_time: Option<chrono::NaiveDateTime>,
+  /// 开始时间
+  pub begin_time_lbl: Option<String>,
   /// 结束时间
   pub end_time: Option<chrono::NaiveDateTime>,
+  /// 结束时间
+  pub end_time_lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人

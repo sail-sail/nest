@@ -134,7 +134,7 @@ impl I18nGenMutation {
     ctx: &Context<'a>,
     id: String,
     model: I18nInput,
-  ) -> Result<u64> {
+  ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
     let res = i18n_service::update_by_id(
