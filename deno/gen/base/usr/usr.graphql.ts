@@ -5,7 +5,7 @@ import * as usrResolver from "./usr.resolver.ts";
 defineGraphql(usrResolver, /* GraphQL */ `
 
 type UsrModel {
-  "String"
+  "ID"
   id: String!
   "名称"
   lbl: String!

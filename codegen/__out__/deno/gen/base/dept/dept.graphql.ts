@@ -5,7 +5,7 @@ import * as deptResolver from "./dept.resolver.ts";
 defineGraphql(deptResolver, /* GraphQL */ `
 
 type DeptModel {
-  "String"
+  "ID"
   id: String!
   "父部门"
   parent_id: String!

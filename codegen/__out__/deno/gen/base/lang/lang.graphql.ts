@@ -5,7 +5,7 @@ import * as langResolver from "./lang.resolver.ts";
 defineGraphql(langResolver, /* GraphQL */ `
 
 type LangModel {
-  "String"
+  "ID"
   id: String!
   "编码"
   code: String!

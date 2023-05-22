@@ -7,3 +7,5 @@ yarn.lock
 
 /lib/script/publish_cnf.js
 /tmp/*
+
+/gen/types.ts

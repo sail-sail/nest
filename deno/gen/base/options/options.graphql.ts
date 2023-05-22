@@ -5,7 +5,7 @@ import * as optionsResolver from "./options.resolver.ts";
 defineGraphql(optionsResolver, /* GraphQL */ `
 
 type OptionsModel {
-  "String"
+  "ID"
   id: String!
   "名称"
   lbl: String!

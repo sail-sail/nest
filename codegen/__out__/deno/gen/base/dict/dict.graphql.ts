@@ -5,7 +5,7 @@ import * as dictResolver from "./dict.resolver.ts";
 defineGraphql(dictResolver, /* GraphQL */ `
 
 type DictModel {
-  "String"
+  "ID"
   id: String!
   "编码"
   code: String!

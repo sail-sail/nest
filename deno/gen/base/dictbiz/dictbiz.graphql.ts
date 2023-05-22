@@ -5,7 +5,7 @@ import * as dictbizResolver from "./dictbiz.resolver.ts";
 defineGraphql(dictbizResolver, /* GraphQL */ `
 
 type DictbizModel {
-  "String"
+  "ID"
   id: String!
   "编码"
   code: String!
