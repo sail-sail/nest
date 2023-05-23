@@ -610,8 +610,9 @@ pub async fn check_by_unique<'a>(
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
     let err_msg: String = format!(
-      "{} 已经存在",
+      "{}: {} 已经存在",
       field_comments.code,
+      input.code.unwrap_or_default(),
     );
     return Err(SrvErr::msg(err_msg).into());
   }
@@ -705,7 +706,7 @@ pub async fn create<'a>(
       ctx,
       input.clone().into(),
       old_model.unwrap(),
-      UniqueType::Throw,
+      UniqueType::Update,
     ).await?;
     match id {
       Some(id) => return Ok(id),

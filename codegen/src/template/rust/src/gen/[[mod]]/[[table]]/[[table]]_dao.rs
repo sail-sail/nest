@@ -947,7 +947,7 @@ pub async fn check_by_unique<'a>(
       "<#
       for (let i = 0; i < (opts.unique || []).length; i++) {
         const uniqueKey = opts.unique[i];
-      #>{}<#
+      #>{}: {}<#
         if (i !== (opts.unique || []).length - 1) {
       #>, <#
         }
@@ -957,7 +957,8 @@ pub async fn check_by_unique<'a>(
       for (let i = 0; i < (opts.unique || []).length; i++) {
         const uniqueKey = opts.unique[i];
       #>
-      field_comments.<#=uniqueKey#>,<#
+      field_comments.<#=uniqueKey#>,
+      input.<#=uniqueKey#>.unwrap_or_default(),<#
       }
       #>
     );
@@ -1212,7 +1213,7 @@ pub async fn create<'a>(
       ctx,
       input.clone().into(),
       old_model.unwrap(),
-      UniqueType::Throw,
+      UniqueType::Update,
     ).await?;
     match id {
       Some(id) => return Ok(id),
