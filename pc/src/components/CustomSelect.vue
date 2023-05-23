@@ -35,6 +35,8 @@ import {
   type OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
+const t = getCurrentInstance();
+
 const usrStore = useUsrStore();
 
 let emit = defineEmits<{
@@ -55,6 +57,8 @@ const props = withDefaults(
     height?: number;
     modelValue?: string | string[] | null;
     options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
+    autoWidth?: boolean;
+    maxWidth?: number;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -64,10 +68,12 @@ const props = withDefaults(
         value: item2.id,
       };
     },
-    pinyinFilterable: true,
+    pinyinFilterable: false,
     height: 300,
     options4SelectV2: () => [ ],
     modelValue: undefined,
+    autoWidth: true,
+    maxWidth: 550,
   },
 );
 
@@ -92,6 +98,49 @@ function clearClk() {
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
 
+async function refreshDropdownWidth() {
+  if (!props.autoWidth) {
+    return;
+  }
+  if (!t || !t.proxy || !t.proxy.$el) {
+    return;
+  }
+  await nextTick();
+  const el = t.proxy.$el as HTMLDivElement;
+  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement;
+  const id = wrapperEl.getAttribute("aria-describedby");
+  if (!id) {
+    return;
+  }
+  const popperEl = document.getElementById(id) as HTMLDivElement | null;
+  if (!popperEl) {
+    return;
+  }
+  const optionItemEls = popperEl.querySelectorAll(".el-select-dropdown__option-item");
+  if (!optionItemEls || optionItemEls.length === 0) {
+    return;
+  }
+  const dropdownListEl = popperEl.querySelector(".el-select-dropdown__list") as HTMLDivElement | null;
+  if (!dropdownListEl) {
+    return;
+  }
+  const popperWidth = parseInt(dropdownListEl.style.width);
+  if (!popperWidth) {
+    return;
+  }
+  let maxWidth = 0;
+  for (let i = 0; i < optionItemEls.length; i++) {
+    const item = optionItemEls[i];
+    const width = item.scrollWidth;
+    if (width > maxWidth) {
+      maxWidth = width;
+    }
+  }
+  if (maxWidth > popperWidth) {
+    dropdownListEl.style.minWidth = `${ maxWidth }px`;
+  }
+}
+
 function filterMethod(value: string) {
   if (!options4SelectV2 || options4SelectV2.length === 0) {
     options4SelectV2 = data.map((item) => {
@@ -110,11 +159,13 @@ function filterMethod(value: string) {
 }
 
 function handleVisibleChange(visible: boolean) {
-  if (!props.pinyinFilterable) {
-    return;
-  }
   if (visible) {
-    filterMethod("");
+    refreshDropdownWidth();
+  }
+  if (props.pinyinFilterable) {
+    if (visible) {
+      filterMethod("");
+    }
   }
 }
 
