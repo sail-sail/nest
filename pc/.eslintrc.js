@@ -32,5 +32,6 @@ module.exports = {
     "vue/html-closing-bracket-newline": [ 0 ],
     "vue/attributes-order": [ 0 ],
     "vue/valid-v-model": [ 0 ],
+    "vue/no-dupe-keys": [ 0 ],
   },
 };

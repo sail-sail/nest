@@ -37,6 +37,9 @@ export default defineConfig({
     },
   },
   plugins: [
+    Inspector({
+      toggleButtonPos: "top-left",
+    }),
     VueDevTools(),
     vue(),
     reactivityTransform(),
@@ -196,9 +199,6 @@ export default defineConfig({
         }),
       ],
       dts: "./src/typings/components.d.ts",
-    }),
-    Inspector({
-      toggleButtonPos: "top-left",
     }),
     // VitePWA({
     //   registerType: "autoUpdate",
