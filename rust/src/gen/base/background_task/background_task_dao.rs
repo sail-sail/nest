@@ -586,7 +586,7 @@ pub async fn create<'a>(
       ctx,
       input.clone().into(),
       old_model.unwrap(),
-      UniqueType::Throw,
+      UniqueType::Update,
     ).await?;
     match id {
       Some(id) => return Ok(id),
