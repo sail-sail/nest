@@ -7,6 +7,7 @@ dist-ssr
 *.local
 package-lock.json
 pnpm-lock.yaml
+.eslintrc-auto-import.json
 
 yarn.lock
 
