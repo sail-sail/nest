@@ -1,7 +1,7 @@
 use tracing::error;
 
 use poem::{
-  handler, IntoResponse, Response,
+  handler, Response,
   web::{Data, Json, Query},
 };
 
@@ -135,7 +135,7 @@ pub async fn graphql_handler(
 #[cfg(debug_assertions)]
 #[handler]
 pub fn graphql_playground(
-) -> impl IntoResponse {
+) -> impl poem::IntoResponse {
   poem::web::Html(
     async_graphql::http::playground_source(
       async_graphql::http::GraphQLPlaygroundConfig::new("/graphql")

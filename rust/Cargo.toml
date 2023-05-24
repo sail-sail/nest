@@ -61,6 +61,9 @@ rayon = "1.7.0"
 regex = "1.8.1"
 yarte = "0.15.7"
 
+[target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
+version = "0.5.0"
+
 [build.dependencies]
 protobuf = "3.2.0"
 protobuf-codegen = "3.2.0"
