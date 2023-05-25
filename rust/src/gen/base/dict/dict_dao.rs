@@ -112,12 +112,12 @@ fn get_where_query<'a>(
     };
     if !r#type.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in r#type {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(r#type.len());
+        for item in r#type {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.type in ({})", arg);
     }
@@ -150,12 +150,12 @@ fn get_where_query<'a>(
     };
     if !is_enabled.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in is_enabled {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
     }
@@ -183,12 +183,12 @@ fn get_where_query<'a>(
     };
     if !is_locked.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in is_locked {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(is_locked.len());
+        for item in is_locked {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.is_locked in ({})", arg);
     }
@@ -200,12 +200,12 @@ fn get_where_query<'a>(
     };
     if !create_usr_id.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in create_usr_id {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(create_usr_id.len());
+        for item in create_usr_id {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
     }
@@ -247,12 +247,12 @@ fn get_where_query<'a>(
     };
     if !update_usr_id.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in update_usr_id {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
     }
@@ -566,14 +566,14 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: DictInput,
-  model: DictModel,
+  input: &DictInput,
+  model: &DictModel,
 ) -> bool {
-  if input.id.is_some() {
-    return input.id.unwrap() == model.id;
+  if input.id.as_ref().is_some() {
+    return input.id.as_ref().unwrap() == &model.id;
   }
   if
-    input.code != model.code.into()
+    input.code.as_ref().is_none() || input.code.as_ref().unwrap() != &model.code
   {
     return false;
   }
@@ -589,8 +589,8 @@ pub async fn check_by_unique<'a>(
   unique_type: UniqueType,
 ) -> Result<Option<String>> {
   let is_equals = equals_by_unique(
-    input.clone(),
-    model.clone(),
+    &input,
+    &model,
   );
   if !is_equals {
     return Ok(None);

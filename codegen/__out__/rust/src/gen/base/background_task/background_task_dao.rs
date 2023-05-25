@@ -115,12 +115,12 @@ fn get_where_query<'a>(
     };
     if !state.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in state {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(state.len());
+        for item in state {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.state in ({})", arg);
     }
@@ -132,12 +132,12 @@ fn get_where_query<'a>(
     };
     if !r#type.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in r#type {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(r#type.len());
+        for item in r#type {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.type in ({})", arg);
     }
@@ -239,12 +239,12 @@ fn get_where_query<'a>(
     };
     if !create_usr_id.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in create_usr_id {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(create_usr_id.len());
+        for item in create_usr_id {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
     }
@@ -493,11 +493,11 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: BackgroundTaskInput,
-  model: BackgroundTaskModel,
+  input: &BackgroundTaskInput,
+  model: &BackgroundTaskModel,
 ) -> bool {
-  if input.id.is_some() {
-    return input.id.unwrap() == model.id;
+  if input.id.as_ref().is_some() {
+    return input.id.as_ref().unwrap() == &model.id;
   }
   false
 }

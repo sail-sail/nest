@@ -155,12 +155,12 @@ fn get_where_query<'a>(
     };
     if !is_enabled.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in is_enabled {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
     }
@@ -172,12 +172,12 @@ fn get_where_query<'a>(
     };
     if !menu_ids.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in menu_ids {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(menu_ids.len());
+        for item in menu_ids {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and base_menu.id in ({})", arg);
     }
@@ -493,14 +493,14 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: TenantInput,
-  model: TenantModel,
+  input: &TenantInput,
+  model: &TenantModel,
 ) -> bool {
-  if input.id.is_some() {
-    return input.id.unwrap() == model.id;
+  if input.id.as_ref().is_some() {
+    return input.id.as_ref().unwrap() == &model.id;
   }
   if
-    input.lbl != model.lbl.into()
+    input.lbl.as_ref().is_none() || input.lbl.as_ref().unwrap() != &model.lbl
   {
     return false;
   }
@@ -516,8 +516,8 @@ pub async fn check_by_unique<'a>(
   unique_type: UniqueType,
 ) -> Result<Option<String>> {
   let is_equals = equals_by_unique(
-    input.clone(),
-    model.clone(),
+    &input,
+    &model,
   );
   if !is_equals {
     return Ok(None);

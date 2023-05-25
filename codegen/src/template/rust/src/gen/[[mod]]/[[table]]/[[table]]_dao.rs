@@ -243,12 +243,12 @@ fn get_where_query<'a>(
     };
     if !<#=column_name_rust#>.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in <#=column_name_rust#> {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+        for item in <#=column_name_rust#> {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and <#=column_name#>_lbl.id in ({})", arg);
     }
@@ -271,12 +271,12 @@ fn get_where_query<'a>(
     };
     if !<#=column_name_rust#>.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in <#=column_name_rust#> {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+        for item in <#=column_name_rust#> {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ({})", arg);
     }
@@ -299,12 +299,12 @@ fn get_where_query<'a>(
     };
     if !<#=column_name_rust#>.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in <#=column_name_rust#> {
-          item += &format!("{},", args.push(tmp.into()));
+        let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+        for item in <#=column_name_rust#> {
+          args.push(item.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and t.<#=column_name#> in ({})", arg);
     }
@@ -882,11 +882,11 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: <#=tableUP#>Input,
-  model: <#=tableUP#>Model,
+  input: &<#=tableUP#>Input,
+  model: &<#=tableUP#>Model,
 ) -> bool {
-  if input.id.is_some() {
-    return input.id.unwrap() == model.id;
+  if input.id.as_ref().is_some() {
+    return input.id.as_ref().unwrap() == &model.id;
   }<#
   if (opts.unique && opts.unique.length > 0) {
   #>
@@ -894,7 +894,7 @@ fn equals_by_unique(
     for (let i = 0; i < opts.unique.length; i++) {
       const uniqueKey = opts.unique[i];
     #>
-    input.<#=uniqueKey#> != model.<#=uniqueKey#>.into()<#
+    input.<#=uniqueKey#>.as_ref().is_none() || input.<#=uniqueKey#>.as_ref().unwrap() != &model.<#=uniqueKey#><#
       if (i !== opts.unique.length - 1) {
       #> ||<#
       }
@@ -923,8 +923,8 @@ pub async fn check_by_unique<'a>(
   if (opts.unique && opts.unique.length > 0) {
   #>
   let is_equals = equals_by_unique(
-    input.clone(),
-    model.clone(),
+    &input,
+    &model,
   );
   if !is_equals {
     return Ok(None);
