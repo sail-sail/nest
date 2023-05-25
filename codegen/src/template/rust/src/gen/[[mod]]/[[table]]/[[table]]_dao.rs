@@ -119,13 +119,12 @@ fn get_where_query<'a>(
     };
     if !ids.is_empty() {
       let arg = {
-        let mut item = "".to_owned();
-        for tmp in ids {
-          item += "?,";
-          args.push(tmp.into());
+        let mut items = Vec::with_capacity(ids.len());
+        for id in ids {
+          args.push(id.into());
+          items.push("?");
         }
-        item = item.trim_end_matches(",").to_owned();
-        item
+        items.join(",")
       };
       where_query += &format!(" and id in ({})", arg);
     }
