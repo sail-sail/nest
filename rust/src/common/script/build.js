@@ -104,6 +104,7 @@ async function compile() {
   if (commands.length === 0) {
     await remove(buildDir);
     await mkdir(buildDir, { recursive: true });
+    await remove(buildDir + "/../deno");
     await copyEnv();
     await gqlgen();
     await compile();
