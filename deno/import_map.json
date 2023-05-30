@@ -2,8 +2,8 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.187.0/",
-    "oak": "https://deno.land/x/oak@v12.4.0/mod.ts",
+    "std/": "https://deno.land/std@0.190.0/",
+    "oak": "https://deno.land/x/oak@v12.5.0/mod.ts",
     "graphql": "https://esm.sh/graphql@16.6.0",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
     "redis": "https://deno.land/x/redis@v0.29.4/mod.ts",
@@ -17,7 +17,6 @@
     "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
     "wasm_image_decoder": "https://deno.land/x/wasm_image_decoder@v0.0.7/mod.js",
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
-    "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts",
-    "wechatpay-node-v3": "https://esm.sh/wechatpay-node-v3@2.1.4"
+    "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts"
   }
 }

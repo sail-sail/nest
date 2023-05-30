@@ -235,6 +235,7 @@ export default defineConfig({
   base: "/",
   build: {
     outDir: "../build/pc",
+    chunkSizeWarningLimit: 2000,
     reportCompressedSize: false,
     sourcemap: true,
   },
