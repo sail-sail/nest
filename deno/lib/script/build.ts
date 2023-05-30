@@ -249,6 +249,7 @@ for (let i = 0; i < commands.length; i++) {
 if (commands.length === 0) {
   await Deno.remove(`${ buildDir }/`, { recursive: true });
   await Deno.mkdir(`${ buildDir }/`, { recursive: true });
+  await Deno.remove(`${ buildDir }/../rust`, { recursive: true });
   await copyEnv();
   await gqlgen();
   await compile();

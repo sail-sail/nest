@@ -295,25 +295,21 @@
 import { filesize } from "filesize";
 import { baseURL } from '@/utils/axios';
 
-import VueOfficeExcel0 from "@vue-office/excel";
-import VueOfficeDocx0 from "@vue-office/docx";
-
 import {
   getStatsOss,
 } from "./Api";
-// import usrTenantStore from "@/store/tenant";
 
-const VueOfficeExcel = VueOfficeExcel0 as any;
-const VueOfficeDocx = VueOfficeDocx0 as any;
+const VueOfficeExcel = defineAsyncComponent(() => import("@vue-office/excel"));
+const VueOfficeDocx = defineAsyncComponent(() => import("@vue-office/docx"));
 
 const {
   ns,
+  nsAsync,
 } = useI18n();
 
 const emit = defineEmits([
   "change",
 ]);
-
 
 // 文件名列表
 let fileStats = $ref<{
@@ -590,14 +586,14 @@ async function inputChg() {
   const ids = modelValue.split(",").filter((x) => x);
   if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
     fileRef.value = "";
-    ElMessage.error(`最多只能上传 ${ dialogModel.maxSize } 个附件`);
+    ElMessage.error(await nsAsync(`最多只能上传 {0} 个附件`, dialogModel.maxSize));
     return;
   }
   const file = fileRef?.files?.[0];
   fileRef.value = "";
   if (!file) return;
   if (dialogModel?.maxFileSize && file.size > dialogModel.maxFileSize) {
-    ElMessage.error(`文件大小不能超过 ${ dialogModel.maxFileSize / 1024 / 1024 }M`);
+    ElMessage.error(await nsAsync(`文件大小不能超过 {0}M`, dialogModel.maxFileSize / 1024 / 1024));
     return;
   }
   const id = await uploadFile(file);
