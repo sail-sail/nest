@@ -25,7 +25,7 @@ import defineOptions from "unplugin-vue-define-options/vite";
 // @ts-ignore
 import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import VueDevTools from "vite-plugin-vue-devtools";
+// import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -40,7 +40,7 @@ export default defineConfig({
     Inspector({
       toggleButtonPos: "top-left",
     }),
-    VueDevTools(),
+    // VueDevTools(),
     vue(),
     reactivityTransform(),
     defineOptions(),
