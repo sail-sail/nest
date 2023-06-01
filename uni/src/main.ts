@@ -2,6 +2,8 @@ import { createSSRApp } from "vue";
 import App from "./App.vue";
 import { createPinia, setActivePinia } from "pinia";
 
+import tmui from "./tmui";
+
 import "uno.css";
 
 globalThis.process = globalThis.process || { };
@@ -12,6 +14,7 @@ export function createApp() {
   const pinia = createPinia();
   app.use(pinia);
   setActivePinia(pinia);
+  app.use(tmui, { } as Tmui.tmuiConfig);
   return {
     app,
   };

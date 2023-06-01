@@ -17,7 +17,8 @@
     "**/pnpm-lock.yaml": true,
     "**/node_modules/**": true,
     "dist": true,
-    "**/__unconfig_vite.config.ts": true
+    "**/__unconfig_vite.config.ts": true,
+    ".eslintrc-auto-import.json": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -37,7 +38,8 @@
     "**/pnpm-lock.yaml": true,
     "**/node_modules/**": true,
     "dist": true,
-    "**/__unconfig_vite.config.ts": true
+    "**/__unconfig_vite.config.ts": true,
+    ".eslintrc-auto-import.json": true
   },
   "deno.enable": false,
   "css.validate": false,

@@ -41,6 +41,14 @@ onLaunch((async(options: any) => {
 </script>
 <style lang="scss">
 @import "@/uni_modules/uni-scss/index.scss";
+
+/* #ifdef APP-NVUE */
+@import "./tmui/scss/nvue.css";
+/* #endif */
+/* #ifndef APP-NVUE */
+@import "./tmui/scss/noNvue.css";
+/* #endif */
+
 page {
   display: flex;
   flex-direction: column;
