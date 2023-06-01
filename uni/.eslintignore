@@ -1,3 +1,4 @@
 src/uni_modules/*
 env.d.ts
 src\pages\index\index.vue
+src/tmui/*

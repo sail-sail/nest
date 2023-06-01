@@ -1,0 +1,251 @@
+<template>
+    <tm-drawer
+        :round="props.round"
+        ref="drawer"
+        :height="dHeight"
+        @update:show="_show = $event"
+        :show="_show"
+        @close="close"
+        :ok-color="props.color"
+        @open="open"
+        :hide-header="true"
+        :closable="true"
+        :foot-height="footerBarHeight"
+    >
+        <template v-slot:default>
+            <view class="pa-24">
+                <view class="flex flex-row flex-row-center-start">
+                    <tm-image :preview="true" v-if="nowItemInfo" :width="120" :height="120" :src="nowItemInfo.img"></tm-image>
+                    <view class="pl-24">
+                        <view class="flex flex-row flex-row-center-start">
+                            <tm-text :font-size="24" :color="props.color" label="￥"></tm-text>
+                            <tm-text :font-size="42"  _class="text-weight-b" :color="props.color" :label="nowItemInfo?.salePrice??'0'"></tm-text>
+                            <tm-sheet linear="left" linear-deep="accent" :color="props.color" :margin="[24,0]" :padding="[18,4]" :round="24">
+                                <view class="flex flex-row flex-row-center-start">
+                                    <tm-text :font-size="24" label="优惠价￥"></tm-text>
+                                    <tm-text :font-size="42" _class="text-weight-b" :label="nowItemInfo?.price??'0'"></tm-text>
+                                </view>
+                            </tm-sheet>
+                        </view>
+                        <tm-text color="grey" :font-size="24" :label="nowItemInfo&&nowItemInfo?.num>0?'有货'+' | 库存 '+nowItemInfo?.num:'无货'"></tm-text>
+                        <tm-text color="grey" :font-size="24" :label="nowItemInfo?.title??''"></tm-text>
+                    </view>
+                </view>
+                <tm-divider :margin="[0,24]"></tm-divider>
+                <view class="mb-24 " >
+                    <view @click="addNumberClick" class="flex flex-row flex-row-center-between mb-24">
+                        <tm-text :font-size="28" label="购买数量"></tm-text>
+                        <tm-stepper @change="numberChange" :max="maxCount" :disabled="nowInputNumber>maxCount" 
+                        v-model="nowInputNumber"
+                        :default-value="nowInputNumber"
+                        ></tm-stepper>
+                    </view>
+					<tm-divider :margin="[0,0]"></tm-divider>
+                </view>
+				<view v-if="_list">
+					<view class="" v-for="(item,index) in _list.data" :key="index">
+					    <tm-text _class="mb-24" :font-size="28" :label="item.title"></tm-text>
+					    <tm-radio-group v-model="nowSelected[index]" v-if="item?.children" direction="row">
+							<tm-radio :disabled="!item2.num" :value="item2.id" v-for="(item2,index2) in item.children" :key="index2" :custom="false">
+								<template v-slot:default="{checked}">
+									<tm-badge :count="!item2.num?'缺货':0" >
+									    <view :class="[!item2.num?'opacity-6':'','']" >
+									        <tm-tag :shadow="0"
+									        :color="checked.checked&&item2.num?'red':'grey'" 
+									        :round="24" 
+									        :font-size="26" 
+									        size="n"
+									        outlined
+									        text :label="item2.title"></tm-tag>
+									    </view>
+									</tm-badge>
+								</template>
+							</tm-radio>
+						</tm-radio-group>
+						<tm-divider :margin="[0,24]"></tm-divider>
+					</view>
+					
+				</view>
+                
+                
+            </view>
+            <slot></slot>
+        </template>
+        <template v-slot:foot>
+            <view class="mb-20 px-24">
+                <view style="height:40rpx" class="flex flex-row flex-row-center-center">
+                    <tm-text v-if="nowItemInfo?.tip" :color="props.color" :label="nowItemInfo.tip+'，'"></tm-text>
+                    <tm-text v-if="nowInputNumber>maxCount&&nowInputNumber&&nowItemInfo" :color="props.color" label="库存不足"></tm-text>
+                </view>
+                <view class="flex flex-row">
+                    <view style="width:363rpx">
+                        <tm-button @click="addGou" block  :is-disabled-round-andriod="true" _class="round-l-24 round-r-0"  
+                        linear="left" linear-deep="accent" :color="props.color" :font-size="32"  label="加购物车" :height="80" ></tm-button>
+                    </view>
+                    <view style="width:363rpx">
+						<tm-button  @click="buyGou" block :disabled="!nowItemInfo||nowInputNumber==0||nowInputNumber>maxCount||!nowItemInfo?.num"
+						 :is-disabled-round-andriod="true" _class="round-r-24 round-l-0"   
+						linear="left" linear-deep="accent" :color="props.color" :font-size="32"  
+						:label="!nowItemInfo?.num?'缺货，提醒我':'购买'+(nowItemInfo?.salePrice?'￥'+(nowItemInfo?.salePrice*(nowInputNumber)):'')" 
+						:height="80" ></tm-button>
+                    </view>
+                </view>
+            </view>
+            <view :style="{height:sysinfo.bottom+'px'}"></view>
+        </template>
+    </tm-drawer>
+</template>
+<script lang="ts" setup>
+import {computed,ref,inject, PropType, toRaw,nextTick, watch} from "vue"
+import tmDrawer from '../tm-drawer/tm-drawer.vue';
+import tmButton from "../tm-button/tm-button.vue";
+import tmText from "../tm-text/tm-text.vue";
+import tmDivider from "../tm-divider/tm-divider.vue";
+import tmTag from "../tm-tag/tm-tag.vue";
+import tmSheet from "../tm-sheet/tm-sheet.vue";
+import tmImage from "../tm-image/tm-image.vue";
+import tmStepper from "../tm-stepper/tm-stepper.vue";
+import tmRadioGroup from "../tm-radio-group/tm-radio-group.vue";
+import tmRadio from "../tm-radio/tm-radio.vue";
+import tmBadge from "../tm-badge/tm-badge.vue";
+const emits  = defineEmits(["open","close","update:show","add","buy"])
+const props = defineProps({
+    round:{
+        type:Number,
+        default:6
+    },
+    show:{
+        type:Boolean,
+        default:false
+    },
+    color:{
+        type:String,
+        default:"red"
+    },
+    height:{
+        type:Number,
+        default:650
+    },
+    //购物车数量
+    num:{
+        type:Number,
+        default:1
+    },
+    list:{
+        type:Object as PropType<Tmui.sku>,
+        default:():any=>null
+    }
+})
+const sysinfo = inject(
+  "tmuiSysInfo",
+  computed(() => {
+    return {
+      bottom: 0,
+      height: 750,
+      width: uni.upx2px(750),
+      top: 0,
+      isCustomHeader: false,
+      sysinfo: null,
+    };
+  })
+);
+const _show = ref(props.show)
+const footerBarHeight = ref(160)
+const dHeight = computed(()=>{
+    return props.height+footerBarHeight.value+uni.$tm.u.torpx(sysinfo.value.bottom)
+})
+const nowSelectedItem:any = ref(null);
+const nowSelected = ref<string[]>([]);
+
+const nowInputNumber = ref(props.num)
+let textcm = toRaw(props.list)
+const _list = ref(props.list)
+const maxCount = computed(()=>{
+	if(nowSelected.value.length==0) return 0;
+	if(!props.list) return 0;
+	if(!props.list?.data) return 0;
+	if(props.list.data.length==0) return 0;
+	if(!props.list?.product?.length) return 0;
+	let item = props.list?.product.filter((el)=>el.id==nowSelected.value.join("-"))
+	if(!item.length) return 0;
+	return item[0].max_buy||0
+})
+const nowItemInfo = computed(()=>{
+	if(!props.list?.product|| !props.list.data) return null;
+	let item = props.list?.product.filter((el)=>el.id==nowSelected.value.join("-"))
+	if(!item.length) return null;
+	return item[0]
+})
+init()
+function init(){
+	if(!props.list) return;
+    let MaxLen = props.list.data.length;
+    nowSelected.value = new Array(MaxLen).fill("");
+}
+
+
+
+
+
+watch(()=>props.num,()=>{
+    nowInputNumber.value = props.num
+})
+watch(()=>props.list,()=>{
+    textcm = uni.$tm.u.deepClone(toRaw(props.list))
+    _list.value = textcm
+    init()
+},{deep:true})
+watch(()=>props.show,()=>{
+    _show.value = props.show;
+})
+//加入购物车触发。
+function addGou(){
+    if(nowSelected.value.length!==props.list?.data?.length){
+        uni.showToast({title:'未选择完整',icon:'none'})
+        return;
+    }
+    emits('add',{
+        buyNumber:nowInputNumber.value,
+        data:toRaw(nowItemInfo.value)
+    })
+    nextTick(()=>{
+        _show.value = false;
+    })
+}
+//购买时触发。
+function buyGou(){
+    if(nowSelected.value.length!==props.list?.data?.length){
+        uni.showToast({title:'未选择完整',icon:'none'})
+        return;
+    }
+    emits('buy',{
+        buyNumber:nowInputNumber.value,
+        data:toRaw(nowItemInfo.value)
+    })
+    nextTick(()=>{
+        _show.value = false;
+    })
+}
+function numberChange(num:number){
+    
+}
+function addNumberClick(){
+    if(nowSelected.value.length!==props.list?.data?.length){
+        uni.showToast({title:'未选择完整',icon:'none'})
+        return;
+    }
+}
+
+function close(){
+    emits("close")
+    emits("update:show",false)
+}
+function open(){
+    emits('open')
+    emits('update:show',true)
+}
+
+
+</script>
+<style>
+</style>

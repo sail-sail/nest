@@ -12,7 +12,7 @@ import {
 
 import {
   presetApplet,
-  presetRemToRpx,
+  presetRemRpx,
   transformerApplet,
   transformerAttributify,
 } from "unocss-applet";
@@ -40,7 +40,7 @@ const presets = [
     prefix: "un-",
     prefixedOnly: true,
   }),
-  presetRemToRpx({ enable: true }),
+  presetRemRpx({ enable: true }),
 ];
 
 export default defineConfig({
