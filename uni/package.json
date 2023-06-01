@@ -83,6 +83,7 @@
     "sass": "1.62.1",
     "stylus": "0.59.0",
     "terser": "5.17.6",
+    "tmui-cli": "1.1.2",
     "typescript": "5.0.4",
     "unocss": "0.52.7",
     "unocss-applet": "0.5.1",
