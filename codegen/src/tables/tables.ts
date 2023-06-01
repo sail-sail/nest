@@ -220,12 +220,6 @@ export default defineConfig({
       },
     ]
   },
-  // base_permit: {
-  //   opts: {
-  //     cache: true,
-  //     unique: [ "menu_id", "lbl" ],
-  //   },
-  // },
   base_background_task: {
     opts: {
       noAdd: true,
@@ -360,6 +354,60 @@ export default defineConfig({
         headerAlign: "center",
         align: "left",
         width: 300,
+      },
+    ],
+  },
+  // 权限
+  base_permit: {
+    opts: {
+      cache: true,
+      unique: [ "role_id", "menu_id", "code" ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "role_id",
+        require: true,
+        search: true,
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "menu_id",
+        require: true,
+        search: true,
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "code",
+        require: true,
+        search: true,
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "is_visible",
+        require: true,
+        width: 60,
+      },
+      {
+        COLUMN_NAME: "rem",
+        width: 300,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },
