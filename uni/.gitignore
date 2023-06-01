@@ -5,7 +5,9 @@ dist-ssr
 *.local
 package-lock.json
 pnpm-lock.yaml
+.eslintrc-auto-import.json
 
 yarn.lock
 
 src/typings/types.ts
+src/typings/auto-imports.d.ts
