@@ -9,6 +9,7 @@ pub mod lang;
 pub mod menu;
 pub mod operation_record;
 pub mod options;
+pub mod permit;
 pub mod role;
 pub mod tenant;
 pub mod usr;
