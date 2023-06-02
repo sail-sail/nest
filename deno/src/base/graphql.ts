@@ -7,3 +7,4 @@ import "./dictbiz_detail/dictbiz_detail.graphql.ts";
 import "./i18n/i18n.graphql.ts";
 import "./options/options.graphql.ts";
 import "./lang/lang.graphql.ts";
+import "./permit/permit.graphql.ts";

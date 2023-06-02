@@ -219,7 +219,9 @@ async function loginClk() {
   usrStore.dept_id = loginModel.dept_id ?? undefined;
   usrStore.authorization = loginModel.authorization;
   tabsStore.clearKeepAliveNames();
-  await indexStore.initI18nVersion();
+  await Promise.all([
+    indexStore.initI18nVersion(),
+  ]);
   window.location.reload();
 }
 

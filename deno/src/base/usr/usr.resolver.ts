@@ -27,6 +27,7 @@ export async function login(
   } = await import("./usr.service.ts");
   const context = useContext();
   
+  context.notVerifyToken = true;
   context.is_tran = true;
   return await login(username, password, tenant_id, dept_id, lang);
 }

@@ -2,6 +2,7 @@ import {
   type MenuModel as MenuModel0,
   type GetLoginInfo,
   type Mutation,
+  type Query,
 } from "#/types";
 
 type MenuModel = MenuModel0 & {
@@ -93,6 +94,26 @@ export async function getLoginInfo(
     `,
   }, opt);
   return data?.getLoginInfo;
+}
+
+/** 获取当前用户的权限列表 */
+export async function getUsrPermits(
+  opt?: GqlOpt,
+) {
+  const data: {
+    getUsrPermits: Query["getUsrPermits"],
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getUsrPermits {
+          route_path
+          code
+          is_visible
+        }
+      }
+    `,
+  }, opt);
+  return data.getUsrPermits;
 }
 
 export async function deptLoginSelect(
