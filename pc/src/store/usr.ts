@@ -1,6 +1,12 @@
+import {
+  type GetUsrPermits,
+} from "@/typings/types";
+
 export default defineStore("usr", function() {
   
   const tabsStore = useTabsStore();
+  
+  const permitsStore = usePermitStore();
   
   let authorization = $ref("");
   
@@ -20,6 +26,7 @@ export default defineStore("usr", function() {
   
   function logout() {
     authorization = "";
+    permitsStore.permits = [ ];
   }
   
   let lang = $ref("");

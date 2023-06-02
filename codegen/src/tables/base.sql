@@ -172,16 +172,20 @@ CREATE TABLE if not exists `base_i18n` (
 drop table if exists `base_permit`;
 CREATE TABLE if not exists `base_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
+  `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `is_visible` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '可见,dict:yes_no',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`),
+  INDEX (`role_id`, `menu_id`, `code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='权限';
 

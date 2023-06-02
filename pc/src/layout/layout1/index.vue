@@ -283,6 +283,7 @@ import {
   deptLoginSelect,
   clearCache,
   selectLang,
+  getUsrPermits,
 } from "./Api";
 
 import {
@@ -299,6 +300,7 @@ const {
 const route = useRoute();
 
 const tabsStore = useTabsStore();
+const permitStore = usePermitStore();
 const usrStore = useUsrStore();
 const menuStore = useMenuStore();
 
@@ -487,12 +489,20 @@ async function deptSelectClk(dept_id: string) {
   }
 }
 
+/** 获取当前用户的权限列表 */
+async function getUsrPermitsEfc() {
+  const permits = await getUsrPermits();
+  permitStore.permits = permits;
+}
+
+
 async function initFrame() {
   if (usrStore.authorization) {
     const [
       loginInfoTmp,
     ] = await Promise.all([
       getLoginInfo({ notLoading: true }),
+      getUsrPermitsEfc(),
     ]);
     loginInfo = loginInfoTmp;
   }

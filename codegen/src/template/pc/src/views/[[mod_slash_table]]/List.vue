@@ -298,6 +298,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
+        v-if="permit('add')"
         plain
         type="primary"
         @click="openAdd"
@@ -309,6 +310,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button>
       
       <el-button
+        v-if="permit('add')"
         plain
         type="primary"
         @click="openCopy"
@@ -324,6 +326,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
+        v-if="permit('edit')"
         plain
         type="primary"
         @click="openEdit"
@@ -339,6 +342,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
+        v-if="permit('delete')"
         plain
         type="danger"
         @click="deleteByIdsEfc"
@@ -432,6 +436,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
+              v-if="permit('lock')"
               un-justify-center
               @click="lockByIdsClk(1)"
             >
@@ -439,6 +444,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
+              v-if="permit('lock')"
               un-justify-center
               @click="lockByIdsClk(0)"
             >
@@ -458,6 +464,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     #>
       
       <el-button
+        v-if="permit('delete')"
         plain
         type="primary"
         @click="revertByIdsEfc"
@@ -473,6 +480,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
+        v-if="permit('force_delete')"
         plain
         type="danger"
         @click="forceDeleteByIdsClk"
@@ -1041,6 +1049,9 @@ const {
 } = useI18n();
 
 const usrStore = useUsrStore();
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
 
 let inited = $ref(false);
 

@@ -146,6 +146,9 @@ export default defineConfig({
           "@/store/usr": [
             [ "default", "useUsrStore" ],
           ],
+          "@/store/permit": [
+            [ "default", "usePermitStore" ],
+          ],
           "@/store/tabs": [
             [ "default", "useTabsStore" ],
           ],

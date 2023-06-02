@@ -15,7 +15,9 @@ export async function getLoginTenants(
   variables: { host: string },
   opt?: GqlOpt,
 ): Promise<{ id: string, lbl: string }[]> {
-  const data = await query({
+  const data: {
+    getLoginTenants: Query["getLoginTenants"],
+  } = await query({
     query: /* GraphQL */ `
       query($host: String!) {
         getLoginTenants(host: $host) {
@@ -26,7 +28,7 @@ export async function getLoginTenants(
     `,
     variables,
   },opt);
-  return data?.getLoginTenants;
+  return data.getLoginTenants;
 }
 
 /**
