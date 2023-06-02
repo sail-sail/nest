@@ -31,26 +31,6 @@ export async function getLoginTenants(
   return data.getLoginTenants;
 }
 
-/** 获取当前用户的权限列表 */
-export async function getUsrPermits(
-  opt?: GqlOpt,
-) {
-  const data: {
-    getUsrPermits: Query["getUsrPermits"],
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getUsrPermits {
-          route_path
-          code
-          is_visible
-        }
-      }
-    `,
-  }, opt);
-  return data.getUsrPermits;
-}
-
 /**
  * 获取语言列表
  */

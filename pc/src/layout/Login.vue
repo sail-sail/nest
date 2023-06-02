@@ -139,7 +139,6 @@ import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
   getLoginLangs,
-  getUsrPermits,
 } from "./Api";
 
 import {
@@ -150,7 +149,6 @@ import {
 let i18n = $ref(useI18n("/usr"));
 
 const usrStore = useUsrStore();
-const permitStore = usePermitStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
 
@@ -223,7 +221,6 @@ async function loginClk() {
   tabsStore.clearKeepAliveNames();
   await Promise.all([
     indexStore.initI18nVersion(),
-    getUsrPermitsEfc(),
   ]);
   window.location.reload();
 }
@@ -238,12 +235,6 @@ async function getLoginTenantsEfc() {
   if (tenants.length > 0) {
     model.tenant_id = tenants[0].id;
   }
-}
-
-/** 获取当前用户的权限列表 */
-async function getUsrPermitsEfc() {
-  const permits = await getUsrPermits();
-  permitStore.permits = permits;
 }
 
 async function initI18nEfc() {

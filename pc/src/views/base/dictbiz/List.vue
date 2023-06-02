@@ -146,6 +146,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
+        v-if="permit('add')"
         plain
         type="primary"
         @click="openAdd"
@@ -157,6 +158,7 @@
       </el-button>
       
       <el-button
+        v-if="permit('add')"
         plain
         type="primary"
         @click="openCopy"
@@ -168,6 +170,7 @@
       </el-button>
       
       <el-button
+        v-if="permit('edit')"
         plain
         type="primary"
         @click="openEdit"
@@ -179,6 +182,7 @@
       </el-button>
       
       <el-button
+        v-if="permit('delete')"
         plain
         type="danger"
         @click="deleteByIdsEfc"
@@ -251,6 +255,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
+              v-if="permit('lock')"
               un-justify-center
               @click="lockByIdsClk(1)"
             >
@@ -258,6 +263,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
+              v-if="permit('lock')"
               un-justify-center
               @click="lockByIdsClk(0)"
             >
@@ -273,6 +279,7 @@
     <template v-else>
       
       <el-button
+        v-if="permit('delete')"
         plain
         type="primary"
         @click="revertByIdsEfc"
@@ -284,6 +291,7 @@
       </el-button>
       
       <el-button
+        v-if="permit('force_delete')"
         plain
         type="danger"
         @click="forceDeleteByIdsClk"
@@ -568,6 +576,9 @@ const {
 } = useI18n();
 
 const usrStore = useUsrStore();
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/base/dictbiz");
 
 let inited = $ref(false);
 
