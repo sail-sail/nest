@@ -465,18 +465,19 @@ pub async fn set_id_by_lbl<'a>(
     "is_enabled",
   ]).await?;
   
-  
   // 启用
-  let is_enabled_dict = &dict_vec[0];
-  if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-    input.is_enabled = is_enabled_dict.into_iter()
-      .find(|item| {
-        item.lbl == is_enabled_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.is_enabled.is_none() {
+    let is_enabled_dict = &dict_vec[0];
+    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+      input.is_enabled = is_enabled_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   Ok(input)

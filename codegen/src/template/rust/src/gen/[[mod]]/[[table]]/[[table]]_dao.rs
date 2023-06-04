@@ -999,8 +999,7 @@ pub async fn set_id_by_lbl<'a>(
     "<#=column.dict#>",<#
   }
   #>
-  ]).await?;
-  <#
+  ]).await?;<#
   let dictNum = 0;
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1021,16 +1020,18 @@ pub async fn set_id_by_lbl<'a>(
   #>
   
   // <#=column_comment#>
-  let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];
-  if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-    input.<#=column_name_rust#> = <#=column_name#>_dict.into_iter()
-      .find(|item| {
-        item.lbl == <#=column_name#>_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.<#=column_name_rust#>.is_none() {
+    let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
+      input.<#=column_name_rust#> = <#=column_name#>_dict.into_iter()
+        .find(|item| {
+          item.lbl == <#=column_name#>_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }<#
     dictNum++;
   }
@@ -1082,16 +1083,18 @@ pub async fn set_id_by_lbl<'a>(
   #>
   
   // <#=column_comment#>
-  let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
-  if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-    input.<#=column_name_rust#> = <#=column_name#>_dictbiz.into_iter()
-      .find(|item| {
-        item.lbl == <#=column_name#>_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.<#=column_name_rust#>.is_none() {
+    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
+      input.<#=column_name_rust#> = <#=column_name#>_dictbiz.into_iter()
+        .find(|item| {
+          item.lbl == <#=column_name#>_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }<#
   dictBizNum++;
   }
@@ -1126,53 +1129,57 @@ pub async fn set_id_by_lbl<'a>(
   #>
   
   // <#=column_comment#>
-  if is_not_empty_opt(&input.<#=column_name#>_lbl) && input.<#=column_name_rust#>.is_none() {
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = <#=daoStr#>find_one(
-      ctx,
-      crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.<#=column_name_rust#> = model.id.into();
-    }
-  }<#
-    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
-  #>
-  
-  // <#=column_comment#>
-  if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
-    input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .collect::<Vec<String>>()
-    );
-    let mut models = vec![];
-    for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
+  if input.<#=column_name_rust#>.is_none() {
+    if is_not_empty_opt(&input.<#=column_name#>_lbl) && input.<#=column_name_rust#>.is_none() {
+      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
+        item.trim().to_owned()
+      );
       let model = <#=daoStr#>find_one(
         ctx,
         crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-          lbl: lbl.into(),
+          <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
           ..Default::default()
         }.into(),
         None,
         None,
       ).await?;
       if let Some(model) = model {
-        models.push(model);
+        input.<#=column_name_rust#> = model.id.into();
       }
     }
-    if !models.is_empty() {
-      input.<#=column_name_rust#> = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<String>>()
-        .into();
+  }<#
+    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+  #>
+  
+  // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_none() {
+    if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
+      input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
+        let model = <#=daoStr#>find_one(
+          ctx,
+          crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
+      }
+      if !models.is_empty() {
+        input.<#=column_name_rust#> = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
     }
   }<#
     }

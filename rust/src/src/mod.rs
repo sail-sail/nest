@@ -12,6 +12,7 @@ pub struct SrcQuery(
   crate::src::base::options::options_resolver::OptionsQuery,
   crate::src::base::tenant::tenant_resolver::TenantQuery,
   crate::src::base::usr::usr_resolver::UsrQuery,
+  crate::src::base::permit::permit_resolver::PermitQuery,
 );
 
 #[derive(MergedObject, Default)]

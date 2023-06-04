@@ -493,47 +493,50 @@ pub async fn set_id_by_lbl<'a>(
     "is_enabled",
   ]).await?;
   
-  
   // 启用
-  let is_enabled_dict = &dict_vec[0];
-  if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-    input.is_enabled = is_enabled_dict.into_iter()
-      .find(|item| {
-        item.lbl == is_enabled_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.is_enabled.is_none() {
+    let is_enabled_dict = &dict_vec[0];
+    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+      input.is_enabled = is_enabled_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   // 菜单
-  if input.menu_ids_lbl.is_some() && input.menu_ids.is_none() {
-    input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .collect::<Vec<String>>()
-    );
-    let mut models = vec![];
-    for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::menu::menu_dao::find_one(
-        ctx,
-        crate::gen::base::menu::menu_model::MenuSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
+  if input.menu_ids.is_none() {
+    if input.menu_ids_lbl.is_some() && input.menu_ids.is_none() {
+      input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::menu::menu_dao::find_one(
+          ctx,
+          crate::gen::base::menu::menu_model::MenuSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
       }
-    }
-    if !models.is_empty() {
-      input.menu_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<String>>()
-        .into();
+      if !models.is_empty() {
+        input.menu_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
     }
   }
   
