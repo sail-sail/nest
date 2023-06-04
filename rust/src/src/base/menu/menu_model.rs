@@ -1,11 +1,11 @@
 use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, ID};
+use async_graphql::SimpleObject;
 
 #[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetMenus {
-  pub id: ID,
+  pub id: String,
   pub r#type: String,
   pub menu_id: String,
   pub lbl: String,
@@ -18,7 +18,6 @@ impl FromRow<'_, MySqlRow> for GetMenus {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    let id: ID = id.into();
     // 类型
     let r#type: String = row.try_get("type")?;
     // 菜单ID

@@ -644,55 +644,60 @@ pub async fn set_id_by_lbl<'a>(
     "yes_no",
   ]).await?;
   
-  
   // 可见
-  let is_visible_dict = &dict_vec[0];
-  if let Some(is_visible_lbl) = input.is_visible_lbl.clone() {
-    input.is_visible = is_visible_dict.into_iter()
-      .find(|item| {
-        item.lbl == is_visible_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.is_visible.is_none() {
+    let is_visible_dict = &dict_vec[0];
+    if let Some(is_visible_lbl) = input.is_visible_lbl.clone() {
+      input.is_visible = is_visible_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_visible_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   // 角色
-  if is_not_empty_opt(&input.role_id_lbl) && input.role_id.is_none() {
-    input.role_id_lbl = input.role_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = crate::gen::base::role::role_dao::find_one(
-      ctx,
-      crate::gen::base::role::role_model::RoleSearch {
-        lbl: input.role_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.role_id = model.id.into();
+  if input.role_id.is_none() {
+    if is_not_empty_opt(&input.role_id_lbl) && input.role_id.is_none() {
+      input.role_id_lbl = input.role_id_lbl.map(|item| 
+        item.trim().to_owned()
+      );
+      let model = crate::gen::base::role::role_dao::find_one(
+        ctx,
+        crate::gen::base::role::role_model::RoleSearch {
+          lbl: input.role_id_lbl.clone(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        input.role_id = model.id.into();
+      }
     }
   }
   
   // 菜单
-  if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
-    input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = crate::gen::base::menu::menu_dao::find_one(
-      ctx,
-      crate::gen::base::menu::menu_model::MenuSearch {
-        lbl: input.menu_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.menu_id = model.id.into();
+  if input.menu_id.is_none() {
+    if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
+      input.menu_id_lbl = input.menu_id_lbl.map(|item| 
+        item.trim().to_owned()
+      );
+      let model = crate::gen::base::menu::menu_dao::find_one(
+        ctx,
+        crate::gen::base::menu::menu_model::MenuSearch {
+          lbl: input.menu_id_lbl.clone(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        input.menu_id = model.id.into();
+      }
     }
   }
   

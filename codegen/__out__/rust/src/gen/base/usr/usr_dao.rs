@@ -619,109 +619,118 @@ pub async fn set_id_by_lbl<'a>(
     "is_locked",
   ]).await?;
   
-  
   // 启用
-  let is_enabled_dict = &dict_vec[0];
-  if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-    input.is_enabled = is_enabled_dict.into_iter()
-      .find(|item| {
-        item.lbl == is_enabled_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.is_enabled.is_none() {
+    let is_enabled_dict = &dict_vec[0];
+    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+      input.is_enabled = is_enabled_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   // 锁定
-  let is_locked_dict = &dict_vec[1];
-  if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-    input.is_locked = is_locked_dict.into_iter()
-      .find(|item| {
-        item.lbl == is_locked_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.is_locked.is_none() {
+    let is_locked_dict = &dict_vec[1];
+    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
+      input.is_locked = is_locked_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_locked_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   // 默认部门
-  if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-    input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = crate::gen::base::dept::dept_dao::find_one(
-      ctx,
-      crate::gen::base::dept::dept_model::DeptSearch {
-        lbl: input.default_dept_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.default_dept_id = model.id.into();
+  if input.default_dept_id.is_none() {
+    if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
+      input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+        item.trim().to_owned()
+      );
+      let model = crate::gen::base::dept::dept_dao::find_one(
+        ctx,
+        crate::gen::base::dept::dept_model::DeptSearch {
+          lbl: input.default_dept_id_lbl.clone(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        input.default_dept_id = model.id.into();
+      }
     }
   }
   
   // 拥有部门
-  if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
-    input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .collect::<Vec<String>>()
-    );
-    let mut models = vec![];
-    for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::dept::dept_dao::find_one(
-        ctx,
-        crate::gen::base::dept::dept_model::DeptSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
+  if input.dept_ids.is_none() {
+    if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
+      input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::dept::dept_dao::find_one(
+          ctx,
+          crate::gen::base::dept::dept_model::DeptSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
       }
-    }
-    if !models.is_empty() {
-      input.dept_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<String>>()
-        .into();
+      if !models.is_empty() {
+        input.dept_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
     }
   }
   
   // 拥有角色
-  if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
-    input.role_ids_lbl = input.role_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| item.trim().to_owned())
-        .collect::<Vec<String>>()
-    );
-    let mut models = vec![];
-    for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::role::role_dao::find_one(
-        ctx,
-        crate::gen::base::role::role_model::RoleSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
+  if input.role_ids.is_none() {
+    if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
+      input.role_ids_lbl = input.role_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::role::role_dao::find_one(
+          ctx,
+          crate::gen::base::role::role_model::RoleSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
       }
-    }
-    if !models.is_empty() {
-      input.role_ids = models.into_iter()
-        .map(|item| item.id)
-        .collect::<Vec<String>>()
-        .into();
+      if !models.is_empty() {
+        input.role_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
     }
   }
   

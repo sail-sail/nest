@@ -542,49 +542,54 @@ pub async fn set_id_by_lbl<'a>(
     "is_enabled",
   ]).await?;
   
-  
   // 类型
-  let type_dict = &dict_vec[0];
-  if let Some(type_lbl) = input.type_lbl.clone() {
-    input.r#type = type_dict.into_iter()
-      .find(|item| {
-        item.lbl == type_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.r#type.is_none() {
+    let type_dict = &dict_vec[0];
+    if let Some(type_lbl) = input.type_lbl.clone() {
+      input.r#type = type_dict.into_iter()
+        .find(|item| {
+          item.lbl == type_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   // 启用
-  let is_enabled_dict = &dict_vec[1];
-  if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-    input.is_enabled = is_enabled_dict.into_iter()
-      .find(|item| {
-        item.lbl == is_enabled_lbl
-      })
-      .map(|item| {
-        item.val.parse().unwrap_or_default()
-      })
-      .into();
+  if input.is_enabled.is_none() {
+    let is_enabled_dict = &dict_vec[1];
+    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+      input.is_enabled = is_enabled_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
   }
   
   // 父菜单
-  if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
-    input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      item.trim().to_owned()
-    );
-    let model = find_one(
-      ctx,
-      crate::gen::base::menu::menu_model::MenuSearch {
-        lbl: input.menu_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?;
-    if let Some(model) = model {
-      input.menu_id = model.id.into();
+  if input.menu_id.is_none() {
+    if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
+      input.menu_id_lbl = input.menu_id_lbl.map(|item| 
+        item.trim().to_owned()
+      );
+      let model = find_one(
+        ctx,
+        crate::gen::base::menu::menu_model::MenuSearch {
+          lbl: input.menu_id_lbl.clone(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        input.menu_id = model.id.into();
+      }
     }
   }
   

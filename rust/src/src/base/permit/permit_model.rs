@@ -1,0 +1,19 @@
+use serde::{Serialize, Deserialize};
+use async_graphql::SimpleObject;
+
+#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[graphql(rename_fields = "snake_case")]
+pub struct GetUsrPermits {
+  /// ID
+  pub id: String,
+  /// 菜单
+  pub menu_id: String,
+  /// 路由
+  pub route_path: String,
+  /// 编码
+  pub code: String,
+  /// 名称
+  pub lbl: String,
+  /// 可见
+  pub is_visible: bool,
+}
