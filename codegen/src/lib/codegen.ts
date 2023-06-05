@@ -167,7 +167,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
         return;
       }
-      if (dir === "/pc/src/views/[[table]]/ForeignTabs.vue") {
+      if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
         if (!hasForeignTabs) {
           return;
         }
