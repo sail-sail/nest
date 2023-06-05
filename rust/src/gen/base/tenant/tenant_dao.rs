@@ -380,7 +380,7 @@ pub async fn get_field_comments<'a>(
 ) -> Result<TenantFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/tenant".to_owned().into(),
+    route_path: "/base/tenant".to_owned().into(),
   };
   
   let field_comments = TenantFieldComment {
@@ -535,8 +535,12 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
+    let n_route = NRoute {
+      route_path: "/base/tenant".to_owned().into(),
+    };
+    let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
-      "{}: {} 已经存在",
+      "{}: {} {str}",
       field_comments.lbl,
       input.lbl.unwrap_or_default(),
     );

@@ -721,7 +721,7 @@ pub async fn get_field_comments<'a>(
 ) -> Result<<#=tableUP#>FieldComment> {
   
   let n_route = NRoute {
-    route_path: "/<#=table#>".to_owned().into(),
+    route_path: "/<#=mod#>/<#=table#>".to_owned().into(),
   };
   
   let field_comments = <#=tableUP#>FieldComment {<#
@@ -942,6 +942,10 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
+    let n_route = NRoute {
+      route_path: "/<#=mod#>/<#=table#>".to_owned().into(),
+    };
+    let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
       "<#
       for (let i = 0; i < (opts.unique || []).length; i++) {
@@ -952,7 +956,7 @@ pub async fn check_by_unique<'a>(
         }
       #><#
       }
-      #> 已经存在",<#
+      #> {str}",<#
       for (let i = 0; i < (opts.unique || []).length; i++) {
         const uniqueKey = opts.unique[i];
       #>

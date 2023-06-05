@@ -39,9 +39,10 @@ export function useSelect<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
-    isRadio?: boolean,
+    multiple?: boolean,
   },
 ) {
+  const multiple = opts?.multiple ?? true;
   
   /** 当前多行选中的数据 */
   let selectedIds: string[] = $ref([ ]);
@@ -112,7 +113,7 @@ export function useSelect<T>(
       if (list.length === 0) {
         selectedIds = [ ];
       } else {
-        if (opts?.isRadio) {
+        if (!multiple) {
           tableRef.value?.clearSelection();
           selectedIds = [ list[0].id ];
         } else {
@@ -127,7 +128,7 @@ export function useSelect<T>(
     } else {
       if (list.includes(row)) {
         if (!selectedIds.includes(row.id)) {
-          if (opts?.isRadio) {
+          if (!multiple) {
             selectedIds = [ row.id ];
           } else {
             selectedIds = [ ...selectedIds, row.id ];
@@ -159,7 +160,7 @@ export function useSelect<T>(
       if (selectedIds.includes(row.id)) {
         selectedIds = selectedIds.filter((id) => id !== row.id);
       } else {
-        if (!opts?.isRadio) {
+        if (multiple) {
           selectedIds = [
             ...selectedIds,
             row.id,
@@ -185,7 +186,11 @@ export function useSelect<T>(
     const id = selectedIds[0];
     if (id) {
       if (!prevSelectedIds.includes(id)) {
-        selectedIds = [ ...prevSelectedIds, id ];
+        if (multiple) {
+          selectedIds = [ ...prevSelectedIds, id ];
+        } else {
+          selectedIds = [ id ];
+        }
       } else {
         selectedIds = prevSelectedIds.filter((item) => item !== id);
       }

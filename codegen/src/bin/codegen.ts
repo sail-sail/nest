@@ -24,7 +24,7 @@ async function exec(context: Context, table_names0: string[]) {
     if (!tables[table_name]) continue;
     const schema = await getSchema(context, table_name, table_names);
     if (schema.opts.ignoreCodegen) continue;
-    await codegen(context, schema);
+    await codegen(context, schema, table_names);
   }
   await genRouter(context);
   // await genMenu(context);

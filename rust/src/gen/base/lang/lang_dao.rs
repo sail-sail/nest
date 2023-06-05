@@ -292,7 +292,7 @@ pub async fn get_field_comments<'a>(
 ) -> Result<LangFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/lang".to_owned().into(),
+    route_path: "/base/lang".to_owned().into(),
   };
   
   let field_comments = LangFieldComment {
@@ -442,8 +442,12 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
+    let n_route = NRoute {
+      route_path: "/base/lang".to_owned().into(),
+    };
+    let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
-      "{}: {} 已经存在",
+      "{}: {} {str}",
       field_comments.code,
       input.code.unwrap_or_default(),
     );

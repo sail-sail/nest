@@ -61,6 +61,7 @@ for (let i = 0; i < columns.length; i++) {
         }
         #>
       ><#
+        const selectInputForeign_Table_Ups = [ ];
         for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
@@ -130,7 +131,7 @@ for (let i = 0; i < columns.length; i++) {
             }
             #>
             ></UploadImage><#
-            } else if (foreignKey) {
+            } else if (foreignKey && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
             #>
             <CustomSelect<#
               if (foreignKey.multiple) {
@@ -154,6 +155,25 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
             ></CustomSelect><#
+            } else if (foreignKey && foreignKey.selectType === "selectInput") {
+              if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+                selectInputForeign_Table_Ups.push(Foreign_Table_Up);
+              }
+            #>
+            <SelectInput<#=Foreign_Table_Up#><#
+              if (foreignKey.multiple) {
+              #>
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
+              }
+              #>
+              v-model="dialogModel.<#=column_name#>"
+              :placeholder="`${ n('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (foreignKey.multiple) {
+              #>
+              multiple<#
+              }
+              #>
+            ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (selectList.length > 0) {
             #>
             <el-select
@@ -409,6 +429,9 @@ import {
   if (column.noAdd && column.noEdit) {
     continue;
   }
+  if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+    continue;
+  }
 #>
   type <#=Foreign_Table_Up#>Model,<#
 }
@@ -440,6 +463,9 @@ import {<#
     if (column.noAdd && column.noEdit) {
       continue;
     }
+    if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+      continue;
+    }
   #><#
     if (foreignKey) {
   #>
@@ -447,7 +473,33 @@ import {<#
     }
   }
   #>
-} from "./Api";
+} from "./Api";<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+      continue;
+    }
+#>
+
+import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/SelectInput.vue";<#
+}
+#>
 
 const emit = defineEmits<
   (
