@@ -607,6 +607,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
+  isMultiple?: boolean; //是否多选
   id?: string; // ID
   type?: string|string[]; // 类型
   menu_id?: string|string[]; // 父菜单
@@ -637,6 +638,7 @@ const builtInSearchType: { [key: string]: string } = {
 
 const propsNotInSearch: string[] = [
   "selectedIds",
+  "isMultiple",
 ];
 
 /** 内置搜索条件 */
@@ -710,7 +712,12 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<MenuModel>($$(tableRef)));
+} = $(useSelect<MenuModel>(
+  $$(tableRef),
+  {
+    multiple: props.isMultiple,
+  },
+));
 
 watch(
   () => selectedIds,

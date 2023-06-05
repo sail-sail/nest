@@ -57,18 +57,10 @@
             prop="menu_id"
             un-h="full"
           >
-            <CustomSelect
+            <SelectInputMenu
               v-model="dialogModel.menu_id"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              un-w="full"
               :placeholder="`${ n('请选择') } ${ n('菜单') }`"
-            ></CustomSelect>
+            ></SelectInputMenu>
           </el-form-item>
         </template>
         
@@ -208,13 +200,13 @@ import {
 import {
   type PermitInput,
   type RoleModel,
-  type MenuModel,
 } from "#/types";
 
 import {
   getRoleList,
-  getMenuList,
 } from "./Api";
+
+import SelectInputMenu from "@/views/base/menu/SelectInput.vue";
 
 const emit = defineEmits<
   (

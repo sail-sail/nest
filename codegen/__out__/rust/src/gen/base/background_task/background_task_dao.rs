@@ -400,7 +400,7 @@ pub async fn get_field_comments<'a>(
 ) -> Result<BackgroundTaskFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/background_task".to_owned().into(),
+    route_path: "/base/background_task".to_owned().into(),
   };
   
   let field_comments = BackgroundTaskFieldComment {

@@ -613,6 +613,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
+  isMultiple?: boolean; //是否多选
   id?: string; // ID
   dictbiz_id?: string|string[]; // 业务字典
   dictbiz_id_lbl?: string|string[]; // 业务字典
@@ -641,6 +642,7 @@ const builtInSearchType: { [key: string]: string } = {
 
 const propsNotInSearch: string[] = [
   "selectedIds",
+  "isMultiple",
 ];
 
 /** 内置搜索条件 */
@@ -714,7 +716,12 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<DictbizDetailModel>($$(tableRef)));
+} = $(useSelect<DictbizDetailModel>(
+  $$(tableRef),
+  {
+    multiple: props.isMultiple,
+  },
+));
 
 watch(
   () => selectedIds,

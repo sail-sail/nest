@@ -348,7 +348,7 @@ pub async fn get_field_comments<'a>(
 ) -> Result<DictDetailFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/dict_detail".to_owned().into(),
+    route_path: "/base/dict_detail".to_owned().into(),
   };
   
   let field_comments = DictDetailFieldComment {
@@ -506,8 +506,12 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
+    let n_route = NRoute {
+      route_path: "/base/dict_detail".to_owned().into(),
+    };
+    let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
-      "{}: {}, {}: {} 已经存在",
+      "{}: {}, {}: {} {str}",
       field_comments.dict_id,
       input.dict_id.unwrap_or_default(),
       field_comments.lbl,

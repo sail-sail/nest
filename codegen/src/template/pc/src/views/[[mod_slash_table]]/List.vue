@@ -1138,7 +1138,8 @@ async function idsCheckedChg() {
 const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
-  selectedIds?: string[]; //已选择行的id列表<#
+  selectedIds?: string[]; //已选择行的id列表
+  isMultiple?: boolean; //是否多选<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1277,6 +1278,7 @@ const builtInSearchType: { [key: string]: string } = {
 
 const propsNotInSearch: string[] = [
   "selectedIds",
+  "isMultiple",
 ];
 
 /** 内置搜索条件 */
@@ -1350,7 +1352,12 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<<#=Table_Up#>Model>($$(tableRef)));
+} = $(useSelect<<#=Table_Up#>Model>(
+  $$(tableRef),
+  {
+    multiple: props.isMultiple,
+  },
+));
 
 watch(
   () => selectedIds,

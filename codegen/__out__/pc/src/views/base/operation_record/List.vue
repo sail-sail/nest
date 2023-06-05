@@ -557,6 +557,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
+  isMultiple?: boolean; //是否多选
   id?: string; // ID
   mod?: string; // 模块
   mod_like?: string; // 模块
@@ -589,6 +590,7 @@ const builtInSearchType: { [key: string]: string } = {
 
 const propsNotInSearch: string[] = [
   "selectedIds",
+  "isMultiple",
 ];
 
 /** 内置搜索条件 */
@@ -662,7 +664,12 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<OperationRecordModel>($$(tableRef)));
+} = $(useSelect<OperationRecordModel>(
+  $$(tableRef),
+  {
+    multiple: props.isMultiple,
+  },
+));
 
 watch(
   () => selectedIds,

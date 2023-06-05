@@ -401,7 +401,7 @@ pub async fn get_field_comments<'a>(
 ) -> Result<OperationRecordFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/operation_record".to_owned().into(),
+    route_path: "/base/operation_record".to_owned().into(),
   };
   
   let field_comments = OperationRecordFieldComment {
