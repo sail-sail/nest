@@ -10,6 +10,7 @@ import tables from "../tables/tables";
 import { createHash } from "crypto";
 import { unlink } from "fs/promises";
 import { TablesConfigItem } from "../config";
+import { getSchema } from "./information_schema";
 
 if (!shelljs.which("git")) {
   shelljs.echo("请先安装git: https://git-scm.com");
@@ -41,7 +42,33 @@ function rustKeyEscape(key: string) {
   return key;
 }
 
-export async function codegen(context: Context, schema: TablesConfigItem) {
+/**
+ * 检查此表是否有selectInput
+ * @param table 
+ */
+function hasSelectInputFn(table_name: string) {
+  const keys = Object.keys(tables);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const columns = tables[key].columns;
+    let hasSelectInput = false;
+    for (const column of columns) {
+      if (!column.foreignKey) continue;
+      if (column.foreignKey.table === table_name) {
+        if (column.foreignKey.selectType === "selectInput") {
+          hasSelectInput = true;
+          break;
+        }
+      }
+    }
+    if (hasSelectInput) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export async function codegen(context: Context, schema: TablesConfigItem, table_names: string[]) {
   const opts = schema.opts;
   let { table, table_comment, defaultSort, hasTenant_id, cache } = opts;
   const columns = schema.columns;
@@ -77,6 +104,7 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
     const fileTng = `${rootPh}${dir}`;
     const stats = await stat(fileTng);
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
+    const hasSelectInput = hasSelectInputFn(table);
     if (stats.isFile()) {
       if(dir.endsWith(".xlsx")) {
 				const buffer = await readFile(fileTng);
@@ -169,6 +197,16 @@ export async function codegen(context: Context, schema: TablesConfigItem) {
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
         if (!hasForeignTabs) {
+          return;
+        }
+      }
+      if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue") {
+        if (!hasSelectInput) {
+          return;
+        }
+      }
+      if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
+        if (!hasSelectInput) {
           return;
         }
       }

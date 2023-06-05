@@ -375,6 +375,11 @@ export default defineConfig({
         require: true,
         search: true,
         width: 160,
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+          selectType: "selectInput",
+        },
       },
       {
         COLUMN_NAME: "code",

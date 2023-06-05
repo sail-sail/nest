@@ -270,6 +270,14 @@ export interface TableCloumn {
     type?: "json"|"many2many",
     
     /**
+     * Detail中选择数据的方式
+     *   select: 下拉框 (默认)
+     *   selectInput: 弹框选择
+     *   tree: 树形选择 (尚未实现)
+     */
+    selectType?: "select"|"selectInput"|"tree",
+    
+    /**
      * 外键关联的默认排序
      * @type {{ prop: string, order: "ascending" | "descending" }}
      */
@@ -280,7 +288,7 @@ export interface TableCloumn {
     },
     
     /**
-     * 页面上的显示方式
+     * 列表页面上的显示方式
      * @type {string} tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
      */
     showType?: string;
