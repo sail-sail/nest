@@ -127,7 +127,7 @@ fn get_where_query<'a>(
         }
         items.join(",")
       };
-      where_query += &format!(" and id in ({})", arg);
+      where_query += &format!(" and t.id in ({})", arg);
     }
   }<#
     if (hasTenant_id) {
