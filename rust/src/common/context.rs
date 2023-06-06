@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::env;
 use tracing::{info, error, event_enabled, Level};
 use anyhow::{Result, anyhow};
@@ -256,6 +257,9 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::String(s) => {
               query = query.bind(s);
             }
+            ArgType::CowStr(s) => {
+              query = query.bind(s);
+            }
             ArgType::TimeStamp(s) => {
               query = query.bind(s);
             }
@@ -321,6 +325,9 @@ pub trait Ctx<'a>: Send + Sized {
               query = query.bind(s);
             }
             ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::CowStr(s) => {
               query = query.bind(s);
             }
             ArgType::TimeStamp(s) => {
@@ -406,6 +413,9 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::CowStr(s) => {
+            query = query.bind(s);
+          }
           ArgType::TimeStamp(s) => {
             query = query.bind(s);
           }
@@ -471,6 +481,9 @@ pub trait Ctx<'a>: Send + Sized {
             query = query.bind(s);
           }
           ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::CowStr(s) => {
             query = query.bind(s);
           }
           ArgType::TimeStamp(s) => {
@@ -596,6 +609,9 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::String(s) => {
               query = query.bind(s);
             }
+            ArgType::CowStr(s) => {
+              query = query.bind(s);
+            }
             ArgType::TimeStamp(s) => {
               query = query.bind(s);
             }
@@ -661,6 +677,9 @@ pub trait Ctx<'a>: Send + Sized {
               query = query.bind(s);
             }
             ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::CowStr(s) => {
               query = query.bind(s);
             }
             ArgType::TimeStamp(s) => {
@@ -747,6 +766,9 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::CowStr(s) => {
+            query = query.bind(s);
+          }
           ArgType::TimeStamp(s) => {
             query = query.bind(s);
           }
@@ -812,6 +834,9 @@ pub trait Ctx<'a>: Send + Sized {
             query = query.bind(s);
           }
           ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::CowStr(s) => {
             query = query.bind(s);
           }
           ArgType::TimeStamp(s) => {
@@ -937,6 +962,9 @@ pub trait Ctx<'a>: Send + Sized {
             ArgType::String(s) => {
               query = query.bind(s);
             }
+            ArgType::CowStr(s) => {
+              query = query.bind(s);
+            }
             ArgType::TimeStamp(s) => {
               query = query.bind(s);
             }
@@ -1000,6 +1028,9 @@ pub trait Ctx<'a>: Send + Sized {
               query = query.bind(s);
             }
             ArgType::String(s) => {
+              query = query.bind(s);
+            }
+            ArgType::CowStr(s) => {
               query = query.bind(s);
             }
             ArgType::TimeStamp(s) => {
@@ -1087,6 +1118,9 @@ pub trait Ctx<'a>: Send + Sized {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::CowStr(s) => {
+            query = query.bind(s);
+          }
           ArgType::TimeStamp(s) => {
             query = query.bind(s);
           }
@@ -1150,6 +1184,9 @@ pub trait Ctx<'a>: Send + Sized {
             query = query.bind(s);
           }
           ArgType::String(s) => {
+            query = query.bind(s);
+          }
+          ArgType::CowStr(s) => {
             query = query.bind(s);
           }
           ArgType::TimeStamp(s) => {
@@ -1374,6 +1411,7 @@ pub enum ArgType {
   F32(f32),
   F64(f64),
   String(String),
+  CowStr(Cow<'static, str>),
   TimeStamp(DateTime<Local>),
   Date(NaiveDate),
   DateTime(NaiveDateTime),
@@ -1401,6 +1439,7 @@ impl Serialize for ArgType {
       ArgType::F32(value) => serializer.serialize_f32(*value),
       ArgType::F64(value) => serializer.serialize_f64(*value),
       ArgType::String(value) => serializer.serialize_str(value),
+      ArgType::CowStr(value) => serializer.serialize_str(value),
       ArgType::TimeStamp(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Date(value) => serializer.serialize_str(&value.format("%Y-%m-%d").to_string()),
       ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
@@ -1427,6 +1466,7 @@ impl Display for ArgType {
       ArgType::F32(value) => write!(f, "{}", value),
       ArgType::F64(value) => write!(f, "{}", value),
       ArgType::String(value) => write!(f, "{}", value),
+      ArgType::CowStr(value) => write!(f, "{}", value),
       ArgType::TimeStamp(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Date(value) => write!(f, "{}", value.format("%Y-%m-%d")),
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
@@ -1554,6 +1594,12 @@ impl From<String> for ArgType {
 impl From<&str> for ArgType {
   fn from(value: &str) -> Self {
     ArgType::String(value.to_string())
+  }
+}
+
+impl From<Cow<'static, str>> for ArgType {
+  fn from(value: Cow<'static, str>) -> Self {
+    ArgType::CowStr(value)
   }
 }
 
