@@ -864,15 +864,11 @@ pub async fn create<'a>(
   
   let options = options.into();
   
-  let num = ctx.execute(
+  ctx.execute(
     sql,
     args,
     options,
   ).await?;
-  
-  if num != 1 {
-    return Err(SrvErr::msg("创建失败".to_owned()).into());
-  }
   
   // 拥有部门
   if let Some(dept_ids) = input.dept_ids {

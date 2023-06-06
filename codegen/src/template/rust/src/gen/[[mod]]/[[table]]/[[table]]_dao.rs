@@ -1337,15 +1337,11 @@ pub async fn create<'a>(
   
   let options = options.into();
   
-  let num = ctx.execute(
+  ctx.execute(
     sql,
     args,
     options,
-  ).await?;
-  
-  if num != 1 {
-    return Err(SrvErr::msg("创建失败".to_owned()).into());
-  }<#
+  ).await?;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
