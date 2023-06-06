@@ -2,10 +2,7 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
-
 import {
-  type DictDetailInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";

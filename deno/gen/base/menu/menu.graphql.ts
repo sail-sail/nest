@@ -1,8 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as menuResolver from "./menu.resolver.ts";
+import * as resolver from "./menu.resolver.ts";
 
-defineGraphql(menuResolver, /* GraphQL */ `
+defineGraphql(resolver, /* GraphQL */ `
 
 type MenuModel {
   "ID"

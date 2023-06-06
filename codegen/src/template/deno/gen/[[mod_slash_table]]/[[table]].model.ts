@@ -3,19 +3,37 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 #>import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
 
 import {
-  type <#=Table_Up#>Model as <#=Table_Up#>ModelType,
-  type <#=Table_Up#>Search as <#=Table_Up#>SearchType,
+  type <#=modelName#> as <#=modelName#>Type,
+  type <#=searchName#> as <#=searchName#>Type,
 } from "/gen/types.ts";
 
-export interface <#=Table_Up#>Search extends <#=Table_Up#>SearchType {<#
+export interface <#=searchName#> extends <#=searchName#>Type {<#
   if (hasTenant_id) {
   #>
   tenant_id?: string | null;<#
@@ -29,7 +47,7 @@ export interface <#=Table_Up#>Search extends <#=Table_Up#>SearchType {<#
   $extra?: SearchExtra[];
 }
 
-export interface <#=Table_Up#>Model extends <#=Table_Up#>ModelType {<#
+export interface <#=modelName#> extends <#=modelName#>Type {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

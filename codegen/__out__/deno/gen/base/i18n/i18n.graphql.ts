@@ -1,10 +1,10 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as i18nResolver from "./i18n.resolver.ts";
+import * as resolver from "./i18n.resolver.ts";
 
-defineGraphql(i18nResolver, /* GraphQL */ `
+defineGraphql(resolver, /* GraphQL */ `
 
-type I18nModel {
+type I18Nmodel {
   "ID"
   id: String!
   "语言"
@@ -22,7 +22,7 @@ type I18nModel {
   "备注"
   rem: String!
 }
-type I18nFieldComment {
+type I18NfieldComment {
   "语言"
   lang_id: String!
   "语言"
@@ -38,7 +38,7 @@ type I18nFieldComment {
   "备注"
   rem: String!
 }
-input I18nInput {
+input I18Ninput {
   ""
   id: String
   "语言"
@@ -56,7 +56,7 @@ input I18nInput {
   "备注"
   rem: String
 }
-input I18nSearch {
+input I18Nsearch {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -81,27 +81,27 @@ input I18nSearch {
 }
 type Query {
   "根据条件查找据数总数"
-  findCountI18n(search: I18nSearch): Int!
+  findCountI18N(search: I18Nsearch): Int!
   "根据搜索条件和分页查找数据"
-  findAllI18n(search: I18nSearch, page: PageInput, sort: [SortInput!]): [I18nModel!]!
+  findAllI18N(search: I18Nsearch, page: PageInput, sort: [SortInput!]): [I18Nmodel!]!
   "获取字段对应的名称"
-  getFieldCommentsI18n: I18nFieldComment!
+  getFieldCommentsI18N: I18NfieldComment!
   "根据条件查找第一条数据"
-  findOneI18n(search: I18nSearch, sort: [SortInput!]): I18nModel
+  findOneI18N(search: I18Nsearch, sort: [SortInput!]): I18Nmodel
   "根据id查找一条数据"
-  findByIdI18n(id: String!): I18nModel
+  findByIdI18N(id: String!): I18Nmodel
 }
 type Mutation {
   "创建一条数据"
-  createI18n(model: I18nInput!): String!
+  createI18N(model: I18Ninput!): String!
   "根据id修改一条数据"
-  updateByIdI18n(id: String!, model: I18nInput!): String!
+  updateByIdI18N(id: String!, model: I18Ninput!): String!
   "根据 ids 删除数据"
-  deleteByIdsI18n(ids: [String!]!): Int!
+  deleteByIdsI18N(ids: [String!]!): Int!
   "根据 ids 还原数据"
-  revertByIdsI18n(ids: [String!]!): Int!
+  revertByIdsI18N(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
-  forceDeleteByIdsI18n(ids: [String!]!): Int!
+  forceDeleteByIdsI18N(ids: [String!]!): Int!
 }
 
 `);

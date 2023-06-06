@@ -5,7 +5,6 @@ import {
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  type BackgroundTaskInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";

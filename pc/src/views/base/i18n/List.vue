@@ -518,9 +518,9 @@ import {
 } from "./Api";
 
 import {
-  type I18nModel,
-  type I18nInput,
-  type I18nSearch,
+  type I18Nmodel,
+  type I18Ninput,
+  type I18Nsearch,
   type LangModel,
   type MenuModel,
 } from "#/types";
@@ -566,7 +566,7 @@ function initSearch() {
     is_deleted: 0,
     lang_id: [ ],
     menu_id: [ ],
-  } as I18nSearch;
+  } as I18Nsearch;
 }
 
 let search = $ref(initSearch());
@@ -654,7 +654,7 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as I18nSearch;
+  return Object.fromEntries(entries) as unknown as I18Nsearch;
 });
 
 /** 内置变量 */
@@ -684,7 +684,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as I18nModel;
+  return Object.fromEntries(entries) as unknown as I18Nmodel;
 });
 
 /** 分页功能 */
@@ -693,7 +693,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<I18nModel>(dataGrid));
+} = $(usePage<I18Nmodel>(dataGrid));
 
 /** 表格选择功能 */
 let {
@@ -703,7 +703,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<I18nModel>(
+} = $(useSelect<I18Nmodel>(
   $$(tableRef),
   {
     multiple: props.isMultiple,
@@ -754,7 +754,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<I18nModel[]>([ ]);
+let tableData = $ref<I18Nmodel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
@@ -821,7 +821,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<I18nModel>(
+} = $(useTableColumns<I18Nmodel>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -874,7 +874,7 @@ let sort: Sort = $ref({
 
 /** 排序 */
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<I18nModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<I18Nmodel> } & Sort,
 ) {
   sort.prop = prop || "";
   sort.order = order || "ascending";
@@ -980,7 +980,7 @@ async function importExcelClk() {
   let succNum = 0;
   try {
     ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<I18nInput>(
+    const models = await getExcelData<I18Ninput>(
       file,
       header,
       {
