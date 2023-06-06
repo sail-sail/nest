@@ -1,9 +1,27 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #><#
@@ -13,9 +31,9 @@ importForeignTables.push(Table_Up);
   type Query,
   type Mutation,
   type PageInput,
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
-  type <#=Table_Up#>Input,
+  type <#=modelName#>,
+  type <#=searchName#>,
+  type <#=inputName#>,
 } from "#/types";
 
 import {<#
@@ -46,13 +64,13 @@ for (let i = 0; i < columns.length; i++) {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {<#=Table_Up#>Search} search?
+ * @param {<#=searchName#>} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -61,7 +79,7 @@ export async function findAll(
     findAll<#=Table_Up#>: Query["findAll<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Table_Up#>Search, $page: PageInput, $sort: [SortInput!]) {
+      query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
         findAll<#=Table_Up#>(search: $search, page: $page, sort: $sort) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -134,18 +152,18 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {<#=Table_Up#>Search} search?
+ * @param {<#=searchName#>} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     findCount<#=Table_Up#>: Query["findCount<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Table_Up#>Search) {
+      query($search: <#=searchName#>) {
         findCount<#=Table_Up#>(search: $search)
       }
     `,
@@ -161,18 +179,18 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找合计
- * @param {<#=Table_Up#>Search} search
+ * @param {<#=searchName#>} search
  * @param {GqlOpt} opt?
  */
 export async function findSummary(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     findSummary<#=Table_Up#>: Query["findSummary<#=Table_Up#>"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: <#=Table_Up#>Search) {
+      query($search: <#=searchName#>) {
         findSummary<#=Table_Up#>(search: $search) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
@@ -206,18 +224,18 @@ if (opts.noAdd !== true) {
 /**
  * 创建一条数据
  * @export create
- * @param {<#=Table_Up#>Input} model
+ * @param {<#=inputName#>} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: <#=Table_Up#>Input,
+  model: <#=inputName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     create<#=Table_Up#>: Mutation["create<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: <#=Table_Up#>Input!) {
+      mutation($model: <#=inputName#>!) {
         create<#=Table_Up#>(model: $model)
       }
     `,
@@ -237,19 +255,19 @@ if (opts.noEdit !== true) {
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
- * @param {<#=Table_Up#>Input} model
+ * @param {<#=inputName#>} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: <#=Table_Up#>Input,
+  model: <#=inputName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     updateById<#=Table_Up#>: Mutation["updateById<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: <#=Table_Up#>Input!) {
+      mutation($id: String!, $model: <#=inputName#>!) {
         updateById<#=Table_Up#>(id: $id, model: $model)
       }
     `,
@@ -534,13 +552,13 @@ export function useExportExcel() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: <#=Table_Up#>Search,
+    search?: <#=searchName#>,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: <#=Table_Up#>Search, $sort: [SortInput!]) {
+        query($search: <#=searchName#>, $sort: [SortInput!]) {
           findAll<#=Table_Up#>(search: $search, sort: $sort) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
@@ -639,11 +657,11 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 
 /**
  * 批量导入
- * @param {<#=Table_Up#>Input[]} models
+ * @param {<#=inputName#>[]} models
  * @export importModels
  */
 export async function importModels(
-  models: <#=Table_Up#>Input[],
+  models: <#=inputName#>[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
   opt?: GqlOpt,

@@ -1,8 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as dictResolver from "./dict.resolver.ts";
+import * as resolver from "./dict.resolver.ts";
 
-defineGraphql(dictResolver, /* GraphQL */ `
+defineGraphql(resolver, /* GraphQL */ `
 
 type DictModel {
   "ID"

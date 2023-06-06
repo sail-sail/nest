@@ -1,8 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as langResolver from "./lang.resolver.ts";
+import * as resolver from "./lang.resolver.ts";
 
-defineGraphql(langResolver, /* GraphQL */ `
+defineGraphql(resolver, /* GraphQL */ `
 
 type LangModel {
   "ID"

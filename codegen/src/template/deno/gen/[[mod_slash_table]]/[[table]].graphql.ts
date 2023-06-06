@@ -1,18 +1,36 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import { defineGraphql } from "/lib/context.ts";
 
-import * as <#=table#>Resolver from "./<#=table#>.resolver.ts";
+import * as resolver from "./<#=table#>.resolver.ts";
 
-defineGraphql(<#=table#>Resolver, /* GraphQL */ `
+defineGraphql(resolver, /* GraphQL */ `
 
-type <#=Table_Up#>Model {<#
+type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -100,7 +118,7 @@ type <#=Table_Up#>Model {<#
   }
   #>
 }
-type <#=Table_Up#>FieldComment {<#
+type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -145,7 +163,7 @@ type <#=Table_Up#>FieldComment {<#
   }
   #>
 }
-input <#=Table_Up#>Input {<#
+input <#=inputName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -230,7 +248,7 @@ input <#=Table_Up#>Input {<#
   }
   #>
 }
-input <#=Table_Up#>Search {
+input <#=searchName#> {
   "是否已删除"
   is_deleted: Int
   "ID列表"
@@ -390,21 +408,21 @@ type <#=Table_Up#>Summary {<#
 #>
 type Query {
   "根据条件查找据数总数"
-  findCount<#=Table_Up#>(search: <#=Table_Up#>Search): Int!
+  findCount<#=Table_Up#>(search: <#=searchName#>): Int!
   "根据搜索条件和分页查找数据"
-  findAll<#=Table_Up#>(search: <#=Table_Up#>Search, page: PageInput, sort: [SortInput!]): [<#=Table_Up#>Model!]!
+  findAll<#=Table_Up#>(search: <#=searchName#>, page: PageInput, sort: [SortInput!]): [<#=modelName#>!]!
   "获取字段对应的名称"
-  getFieldComments<#=Table_Up#>: <#=Table_Up#>FieldComment!<#
+  getFieldComments<#=Table_Up#>: <#=fieldCommentName#>!<#
   if (hasSummary) {
   #>
   "根据搜索条件查找合计"
-  findSummary<#=Table_Up#>(search: <#=Table_Up#>Search): <#=Table_Up#>Summary!<#
+  findSummary<#=Table_Up#>(search: <#=searchName#>): <#=Table_Up#>Summary!<#
   }
   #>
   "根据条件查找第一条数据"
-  findOne<#=Table_Up#>(search: <#=Table_Up#>Search, sort: [SortInput!]): <#=Table_Up#>Model
+  findOne<#=Table_Up#>(search: <#=searchName#>, sort: [SortInput!]): <#=modelName#>
   "根据id查找一条数据"
-  findById<#=Table_Up#>(id: String!): <#=Table_Up#>Model<#
+  findById<#=Table_Up#>(id: String!): <#=modelName#><#
   if (hasOrderBy) {
   #>
   "查找order_by字段的最大值"
@@ -421,13 +439,13 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建一条数据"
-  create<#=Table_Up#>(model: <#=Table_Up#>Input!): String!<#
+  create<#=Table_Up#>(model: <#=inputName#>!): String!<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
   "根据id修改一条数据"
-  updateById<#=Table_Up#>(id: String!, model: <#=Table_Up#>Input!): String!<#
+  updateById<#=Table_Up#>(id: String!, model: <#=inputName#>!): String!<#
   }
   #><#
   if (opts.noDelete !== true) {

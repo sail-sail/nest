@@ -2,28 +2,25 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
-
 import {
-  type I18nInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type I18nModel,
-  type I18nSearch,
+  type I18Nmodel,
+  type I18Nsearch,
 } from "./i18n.model.ts";
 
 import * as i18nDao from "./i18n.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {I18nSearch} search? 搜索条件
+ * @param {I18Nsearch} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: I18nSearch,
+  search?: I18Nsearch,
 ): Promise<number> {
   search = search || { };
   const data = await i18nDao.findCount(search);
@@ -32,27 +29,27 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {I18nSearch} search? 搜索条件
+ * @param {I18Nsearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<I18nModel[]>} 
+ * @return {Promise<I18Nmodel[]>} 
  */
 export async function findAll(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<I18nModel[]> {
+): Promise<I18Nmodel[]> {
   search = search || { };
-  const data: I18nModel[] = await i18nDao.findAll(search, page, sort);
+  const data: I18Nmodel[] = await i18nDao.findAll(search, page, sort);
   return data;
 }
 
 /**
  * 根据条件查找第一条数据
- * @param {I18nSearch} search? 搜索条件
+ * @param {I18Nsearch} search? 搜索条件
  */
 export async function findOne(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   sort?: SortInput|SortInput[],
 ) {
   search = search || { };
@@ -73,10 +70,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {I18nSearch} search? 搜索条件
+ * @param {I18Nsearch} search? 搜索条件
  */
 export async function exist(
-  search?: I18nSearch,
+  search?: I18Nsearch,
 ) {
   search = search || { };
   const data = await i18nDao.exist(search);
@@ -96,11 +93,11 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {I18nModel} model
+ * @param {I18Nmodel} model
  * @return {Promise<string>} id
  */
 export async function create(
-  model: I18nModel,
+  model: I18Nmodel,
 ): Promise<string> {
   const data = await i18nDao.create(model);
   return data;
@@ -109,12 +106,12 @@ export async function create(
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {I18nModel} model
+ * @param {I18Nmodel} model
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: I18nModel,
+  model: I18Nmodel,
 ): Promise<string> {
   const data = await i18nDao.updateById(id, model);
   

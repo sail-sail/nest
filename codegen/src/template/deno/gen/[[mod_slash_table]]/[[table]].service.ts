@@ -2,26 +2,47 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {
   ns,
-} from "/src/base/i18n/i18n.ts";
+} from "/src/base/i18n/i18n.ts";<#
+if (opts.filterDataByCreateUsr) {
+#>
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import * as authDao from "/lib/auth/auth.dao.ts";<#
+}
+#>
 
 import {
-  type <#=Table_Up#>Input,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
+  type <#=modelName#>,
+  type <#=searchName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -36,11 +57,11 @@ import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
 /**
  * 根据条件查找总数
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
 ): Promise<number> {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
@@ -58,16 +79,16 @@ export async function findCount(
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<<#=Table_Up#>Model[]>} 
+ * @return {Promise<<#=modelName#>[]>} 
  */
 export async function findAll(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   page?: PageInput,
   sort?: SortInput|SortInput[],
-): Promise<<#=Table_Up#>Model[]> {
+): Promise<<#=modelName#>[]> {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
   #>
@@ -78,7 +99,7 @@ export async function findAll(
   }<#
     }
   #>
-  const data: <#=Table_Up#>Model[] = await <#=table#>Dao.findAll(search, page, sort);
+  const data: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);
   return data;
 }<#
 if (hasSummary) {
@@ -86,11 +107,11 @@ if (hasSummary) {
 
 /**
  * 根据条件和分页查找数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>} 
  */
 export async function findSummary(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
@@ -110,10 +131,10 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  */
 export async function findOne(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   sort?: SortInput|SortInput[],
 ) {
   search = search || { };<#
@@ -143,10 +164,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  */
 export async function exist(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
 ) {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
@@ -175,11 +196,11 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {<#=Table_Up#>Model} model
+ * @param {<#=modelName#>} model
  * @return {Promise<string>} id
  */
 export async function create(
-  model: <#=Table_Up#>Model,
+  model: <#=modelName#>,
 ): Promise<string> {
   const data = await <#=table#>Dao.create(model);
   return data;
@@ -200,12 +221,12 @@ export async function getVersionById(id: string) {
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {<#=Table_Up#>Model} model
+ * @param {<#=modelName#>} model
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: <#=Table_Up#>Model,
+  model: <#=modelName#>,
 ): Promise<string> {<#
   if (hasLocked) {
   #>

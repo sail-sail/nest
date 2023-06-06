@@ -1,9 +1,27 @@
 <#
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
@@ -955,9 +973,9 @@ import {
 } from "./Api";
 
 import {
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Input,
-  type <#=Table_Up#>Search,<#
+  type <#=modelName#>,
+  type <#=inputName#>,
+  type <#=searchName#>,<#
 {
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
@@ -1101,7 +1119,7 @@ function initSearch() {
     #><#
     }
     #>
-  } as <#=Table_Up#>Search;
+  } as <#=searchName#>;
 }
 
 let search = $ref(initSearch());
@@ -1303,7 +1321,7 @@ const builtInSearch = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as <#=Table_Up#>Search;
+  return Object.fromEntries(entries) as unknown as <#=searchName#>;
 });
 
 /** 内置变量 */
@@ -1333,7 +1351,7 @@ const builtInModel = $computed(() => {
       continue;
     }
   }
-  return Object.fromEntries(entries) as unknown as <#=Table_Up#>Model;
+  return Object.fromEntries(entries) as unknown as <#=modelName#>;
 });
 
 /** 分页功能 */
@@ -1342,7 +1360,7 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<<#=Table_Up#>Model>(dataGrid));
+} = $(usePage<<#=modelName#>>(dataGrid));
 
 /** 表格选择功能 */
 let {
@@ -1352,7 +1370,7 @@ let {
   rowClk,
   rowClkCtrl,
   rowClkShift,
-} = $(useSelect<<#=Table_Up#>Model>(
+} = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
     multiple: props.isMultiple,
@@ -1403,7 +1421,7 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<<#=Table_Up#>Model[]>([ ]);
+let tableData = $ref<<#=modelName#>[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [<#
@@ -1630,7 +1648,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<<#=Table_Up#>Model>(
+} = $(useTableColumns<<#=modelName#>>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -1695,7 +1713,7 @@ let sort: Sort = $ref({
 
 /** 排序 */
 async function sortChange(
-  { prop, order, column }: { column: TableColumnCtx<<#=Table_Up#>Model> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
 ) {
   sort.prop = prop || "";
   sort.order = order || "ascending";
@@ -1742,7 +1760,7 @@ async function dataSummary() {
 function summaryMethod(
   summary: any,
 ) {
-  const columns: TableColumnCtx<<#=Table_Up#>Model>[] = summary.columns;
+  const columns: TableColumnCtx<<#=modelName#>>[] = summary.columns;
   const sums: string[] = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1876,7 +1894,7 @@ async function importExcelClk() {
   let succNum = 0;
   try {
     ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<<#=Table_Up#>Input>(
+    const models = await getExcelData<<#=inputName#>>(
       file,
       header,
       {
@@ -2224,7 +2242,7 @@ for (let i = 0; i < columns.length; i++) {
 
 let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
-async function <#=column_name#>Clk(row: <#=Table_Up#>Model) {
+async function <#=column_name#>Clk(row: <#=modelName#>) {
   if (!<#=column_name#>ListSelectDialogRef) return;
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   let {

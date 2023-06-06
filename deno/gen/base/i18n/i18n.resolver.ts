@@ -7,21 +7,20 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type I18nInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type I18nModel,
-  type I18nSearch,
+  type I18Nmodel,
+  type I18Nsearch,
 } from "./i18n.model.ts";
 
 /**
  * 根据条件查找据数总数
  */
-export async function findCountI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
+export async function findCountI18N(
+  search?: I18Nsearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./i18n.service.ts");
   const data = await findCount(search);
@@ -31,8 +30,8 @@ export async function findCountI18n(
 /**
  * 根据搜索条件和分页查找数据
  */
-export async function findAllI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
+export async function findAllI18N(
+  search?: I18Nsearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
@@ -44,7 +43,7 @@ export async function findAllI18n(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsI18n() {
+export async function getFieldCommentsI18N() {
   const { getFieldComments } = await import("./i18n.service.ts");
   const data = await getFieldComments();
   return data;
@@ -53,8 +52,8 @@ export async function getFieldCommentsI18n() {
 /**
  * 根据条件查找第一条数据
  */
-export async function findOneI18n(
-  search?: I18nSearch & { $extra?: SearchExtra[] },
+export async function findOneI18N(
+  search?: I18Nsearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./i18n.service.ts");
@@ -65,7 +64,7 @@ export async function findOneI18n(
 /**
  * 根据 id 查找一条数据
  */
-export async function findByIdI18n(
+export async function findByIdI18N(
   id: string,
 ) {
   const { findById } = await import("./i18n.service.ts");
@@ -76,8 +75,8 @@ export async function findByIdI18n(
 /**
  * 创建一条数据
  */
-export async function createI18n(
-  model: I18nModel,
+export async function createI18N(
+  model: I18Nmodel,
 ) {
   const context = useContext();
   
@@ -90,9 +89,9 @@ export async function createI18n(
 /**
  * 根据id修改一条数据
  */
-export async function updateByIdI18n(
+export async function updateByIdI18N(
   id: string,
-  model: I18nModel,
+  model: I18Nmodel,
 ) {
   const context = useContext();
   
@@ -105,7 +104,7 @@ export async function updateByIdI18n(
 /**
  * 根据 ids 删除数据
  */
-export async function deleteByIdsI18n(
+export async function deleteByIdsI18N(
   ids: string[],
 ) {
   const context = useContext();
@@ -119,7 +118,7 @@ export async function deleteByIdsI18n(
 /**
  * 根据 ids 还原数据
  */
-export async function revertByIdsI18n(
+export async function revertByIdsI18N(
   ids: string[],
 ) {
   const context = useContext();
@@ -133,7 +132,7 @@ export async function revertByIdsI18n(
 /**
  * 根据 ids 彻底删除数据
  */
-export async function forceDeleteByIdsI18n(
+export async function forceDeleteByIdsI18N(
   ids: string[],
 ) {
   const context = useContext();

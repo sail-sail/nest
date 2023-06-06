@@ -1,7 +1,25 @@
 <#
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 #><template>
 <CustomDialog
   ref="customDialogRef"
@@ -55,11 +73,11 @@ import {
 import List from "./List.vue";
 
 import {
-  type <#=Table_Up#>Model,
+  type <#=modelName#>,
 } from "#/types";
 
 const emit = defineEmits<{
-  (e: "change", value?: <#=Table_Up#>Model | (<#=Table_Up#>Model | undefined)[] | null): void,
+  (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
 }>();
 
 let inited = $ref(false);

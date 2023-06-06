@@ -2,9 +2,9 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type I18nModel,
-  type I18nSearch,
-  type I18nInput,
+  type I18Nmodel,
+  type I18Nsearch,
+  type I18Ninput,
 } from "#/types";
 
 import {
@@ -15,23 +15,23 @@ import {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {I18nSearch} search?
+ * @param {I18Nsearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllI18n: Query["findAllI18n"];
+    findAllI18N: Query["findAllI18N"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllI18n(search: $search, page: $page, sort: $sort) {
+      query($search: I18Nsearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllI18N(search: $search, page: $page, sort: $sort) {
           id
           lang_id
           lang_id_lbl
@@ -49,7 +49,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllI18n;
+  const result = data.findAllI18N;
   for (let i = 0; i < result.length; i++) {
     const item = result[i];
   }
@@ -59,52 +59,52 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {I18nSearch} search?
+ * @param {I18Nsearch} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   opt?: GqlOpt,
 ) {
   const data: {
-    findCountI18n: Query["findCountI18n"];
+    findCountI18N: Query["findCountI18N"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: I18nSearch) {
-        findCountI18n(search: $search)
+      query($search: I18Nsearch) {
+        findCountI18N(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const result = data.findCountI18n;
+  const result = data.findCountI18N;
   return result;
 }
 
 /**
  * 创建一条数据
  * @export create
- * @param {I18nInput} model
+ * @param {I18Ninput} model
  * @param {GqlOpt} opt?
  */
 export async function create(
-  model: I18nInput,
+  model: I18Ninput,
   opt?: GqlOpt,
 ) {
   const data: {
-    createI18n: Mutation["createI18n"];
+    createI18N: Mutation["createI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: I18nInput!) {
-        createI18n(model: $model)
+      mutation($model: I18Ninput!) {
+        createI18N(model: $model)
       }
     `,
     variables: {
       model,
     },
   }, opt);
-  const result = data.createI18n;
+  const result = data.createI18N;
   return result;
 }
 
@@ -112,20 +112,20 @@ export async function create(
  * 根据id修改一条数据
  * @export updateById
  * @param {string} id
- * @param {I18nInput} model
+ * @param {I18Ninput} model
  * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: string,
-  model: I18nInput,
+  model: I18Ninput,
   opt?: GqlOpt,
 ) {
   const data: {
-    updateByIdI18n: Mutation["updateByIdI18n"];
+    updateByIdI18N: Mutation["updateByIdI18N"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: String!, $model: I18nInput!) {
-        updateByIdI18n(id: $id, model: $model)
+      mutation($id: String!, $model: I18Ninput!) {
+        updateByIdI18N(id: $id, model: $model)
       }
     `,
     variables: {
@@ -133,7 +133,7 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdI18n;
+  const result = data.updateByIdI18N;
   return result;
 }
 
@@ -148,11 +148,11 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdI18n: Query["findByIdI18n"];
+    findByIdI18N: Query["findByIdI18N"];
   } = await query({
     query: /* GraphQL */ `
       query($id: String!) {
-        findByIdI18n(id: $id) {
+        findByIdI18N(id: $id) {
           id
           lang_id
           lang_id_lbl
@@ -168,7 +168,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdI18n;
+  const result = data.findByIdI18N;
   return result;
 }
 
@@ -183,18 +183,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIdsI18n: Mutation["deleteByIdsI18n"];
+    deleteByIdsI18N: Mutation["deleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [String!]!) {
-        deleteByIdsI18n(ids: $ids)
+        deleteByIdsI18N(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsI18n;
+  const result = data.deleteByIdsI18N;
   return result;
 }
 
@@ -209,18 +209,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIdsI18n: Mutation["revertByIdsI18n"];
+    revertByIdsI18N: Mutation["revertByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [String!]!) {
-        revertByIdsI18n(ids: $ids)
+        revertByIdsI18N(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.revertByIdsI18n;
+  const result = data.revertByIdsI18N;
   return result;
 }
 
@@ -235,18 +235,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIdsI18n: Mutation["forceDeleteByIdsI18n"];
+    forceDeleteByIdsI18N: Mutation["forceDeleteByIdsI18N"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [String!]!) {
-        forceDeleteByIdsI18n(ids: $ids)
+        forceDeleteByIdsI18N(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsI18n;
+  const result = data.forceDeleteByIdsI18N;
   return result;
 }
 
@@ -355,14 +355,14 @@ export function useExportExcel() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: I18nSearch,
+    search?: I18Nsearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: I18nSearch, $sort: [SortInput!]) {
-          findAllI18n(search: $search, sort: $sort) {
+        query($search: I18Nsearch, $sort: [SortInput!]) {
+          findAllI18N(search: $search, sort: $sort) {
             id
             lang_id
             lang_id_lbl
@@ -372,7 +372,7 @@ export function useExportExcel() {
             lbl
             rem
           }
-          getFieldCommentsI18n {
+          getFieldCommentsI18N {
             lang_id
             lang_id_lbl
             menu_id
@@ -408,11 +408,11 @@ export function useExportExcel() {
 
 /**
  * 批量导入
- * @param {I18nInput[]} models
+ * @param {I18Ninput[]} models
  * @export importModels
  */
 export async function importModels(
-  models: I18nInput[],
+  models: I18Ninput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
   opt?: GqlOpt,

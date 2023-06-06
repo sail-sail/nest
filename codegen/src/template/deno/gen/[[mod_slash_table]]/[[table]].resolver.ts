@@ -1,9 +1,27 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {
@@ -15,21 +33,20 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type <#=Table_Up#>Input,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
+  type <#=modelName#>,
+  type <#=searchName#>,
 } from "./<#=table#>.model.ts";
 
 /**
  * 根据条件查找据数总数
  */
 export async function findCount<#=Table_Up#>(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./<#=table#>.service.ts");
   const data = await findCount(search);
@@ -40,7 +57,7 @@ export async function findCount<#=Table_Up#>(
  * 根据搜索条件和分页查找数据
  */
 export async function findAll<#=Table_Up#>(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=searchName#> & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
 ) {
@@ -64,7 +81,7 @@ if (hasSummary) {
  * 根据搜索条件查找合计
  */
 export async function findSummary<#=Table_Up#>(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ) {
   const { findSummary } = await import("./<#=table#>.service.ts");
   const data = await findSummary(search);
@@ -77,7 +94,7 @@ export async function findSummary<#=Table_Up#>(
  * 根据条件查找第一条数据
  */
 export async function findOne<#=Table_Up#>(
-  search?: <#=Table_Up#>Search & { $extra?: SearchExtra[] },
+  search?: <#=searchName#> & { $extra?: SearchExtra[] },
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./<#=table#>.service.ts");
@@ -102,7 +119,7 @@ if (opts.noAdd !== true) {
  * 创建一条数据
  */
 export async function create<#=Table_Up#>(
-  model: <#=Table_Up#>Model,
+  model: <#=modelName#>,
 ) {
   const context = useContext();
   
@@ -121,7 +138,7 @@ if (opts.noEdit !== true) {
  */
 export async function updateById<#=Table_Up#>(
   id: string,
-  model: <#=Table_Up#>Model,
+  model: <#=modelName#>,
 ) {
   const context = useContext();
   
