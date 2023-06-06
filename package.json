@@ -8,7 +8,7 @@
     "start:pc": "cd pc && npm start",
     "start:deno": "cd deno && npm start",
     "mother": "cd nest && node src/Mother.js",
-    "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts && cd ../rust && npm run gqlgen",
+    "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts",
     "gqlgen": "cd rust && npm run gqlgen",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
     "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
