@@ -49,7 +49,7 @@ const options = program.opts();
     const context = await initContext();
     await exec(context, table);
     await gitDiffOut();
-    await denoGenTypes();
+    // await denoGenTypes();
   } catch(err) {
     console.error(err);
   } finally {

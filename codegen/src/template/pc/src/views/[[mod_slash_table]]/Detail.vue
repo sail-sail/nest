@@ -1,9 +1,27 @@
 <template><#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 let columnNum = 0;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -408,7 +426,7 @@ import {<#
 } from "./Api";
 
 import {
-  type <#=Table_Up#>Input,<#
+  type <#=inputName#>,<#
   const foreignTableArr = [];
   for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -546,7 +564,7 @@ let dialogModel = $ref({<#
     }
   }
   #>
-} as <#=Table_Up#>Input);
+} as <#=inputName#>);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -617,11 +635,11 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<<#=Table_Up#>Input>();
+let builtInModel = $ref<<#=inputName#>>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: <#=Table_Up#>Input = {<#
+  const defaultInput: <#=inputName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -666,7 +684,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: <#=Table_Up#>Input;
+    builtInModel?: <#=inputName#>;
     model?: {
       id?: string;
       ids?: string[];

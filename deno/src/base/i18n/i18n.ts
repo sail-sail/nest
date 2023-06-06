@@ -1,5 +1,5 @@
 import {
-  type I18nModel,
+  type I18Nmodel,
 } from "/gen/base/i18n/i18n.model.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -79,7 +79,7 @@ export async function nLang(
     menu_id = menuModel?.id;
   }
   if (langModel) {
-    let i18nModel: I18nModel | undefined
+    let i18nModel: I18Nmodel | undefined
     if (menu_id) {
       i18nModel = await findOneI18n({
         lang_id: [ langModel.id ],

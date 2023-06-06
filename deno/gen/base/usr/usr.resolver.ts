@@ -7,7 +7,6 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
-  type UsrInput,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";

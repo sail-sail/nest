@@ -190,7 +190,7 @@ import {
 } from "./Api";
 
 import {
-  type I18nInput,
+  type I18Ninput,
   type LangModel,
   type MenuModel,
 } from "#/types";
@@ -223,7 +223,7 @@ type DialogAction = "add" | "copy" | "edit";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
-} as I18nInput);
+} as I18Ninput);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -269,11 +269,11 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<I18nInput>();
+let builtInModel = $ref<I18Ninput>();
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: I18nInput = {
+  const defaultInput: I18Ninput = {
   };
   return defaultInput;
 }
@@ -284,7 +284,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: I18nInput;
+    builtInModel?: I18Ninput;
     model?: {
       id?: string;
       ids?: string[];
