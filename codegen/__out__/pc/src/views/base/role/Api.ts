@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type RoleModel,
   type RoleSearch,
   type RoleInput,
 } from "#/types";
@@ -47,11 +46,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllRole;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllRole;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -76,8 +75,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountRole;
-  return result;
+  const res = data.findCountRole;
+  return res;
 }
 
 /**
@@ -102,8 +101,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createRole;
-  return result;
+  const res = data.createRole;
+  return res;
 }
 
 /**
@@ -131,8 +130,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdRole;
-  return result;
+  const res = data.updateByIdRole;
+  return res;
 }
 
 /**
@@ -165,8 +164,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdRole;
-  return result;
+  const res = data.findByIdRole;
+  return res;
 }
 
 /**
@@ -191,8 +190,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsRole;
-  return result;
+  const res = data.deleteByIdsRole;
+  return res;
 }
 
 /**
@@ -217,8 +216,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsRole;
-  return result;
+  const res = data.revertByIdsRole;
+  return res;
 }
 
 /**
@@ -243,8 +242,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsRole;
-  return result;
+  const res = data.forceDeleteByIdsRole;
+  return res;
 }
 
 export async function findAllMenu(
@@ -270,8 +269,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result = data.findAllMenu;
-  return result;
+  const res = data.findAllMenu;
+  return res;
 }
 
 export async function getMenuList() {

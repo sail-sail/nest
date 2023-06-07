@@ -31,9 +31,12 @@ importForeignTables.push(Table_Up);
   type Query,
   type Mutation,
   type PageInput,
-  type <#=modelName#>,
-  type <#=searchName#>,
-  type <#=inputName#>,
+  type <#=searchName#>,<#
+  if (opts.noAdd !== true || opts.noEdit !== true) {
+  #>
+  type <#=inputName#>,<#
+  }
+  #>
 } from "#/types";
 
 import {<#
@@ -122,9 +125,9 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAll<#=Table_Up#>;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];<#
+  const res = data.findAll<#=Table_Up#>;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -146,7 +149,7 @@ export async function findAll(
   }
   #>
   }
-  return result;
+  return res;
 }
 
 /**
@@ -171,8 +174,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCount<#=Table_Up#>;
-  return result;
+  const res = data.findCount<#=Table_Up#>;
+  return res;
 }<#
 if (hasSummary) {
 #>
@@ -213,8 +216,8 @@ export async function findSummary(
       search,
     },
   }, opt);
-  const result = data.findSummary<#=Table_Up#>;
-  return result;
+  const res = data.findSummary<#=Table_Up#>;
+  return res;
 }<#
 }
 #><#
@@ -243,8 +246,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.create<#=Table_Up#>;
-  return result;
+  const res = data.create<#=Table_Up#>;
+  return res;
 }<#
 }
 #><#
@@ -276,8 +279,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateById<#=Table_Up#>;
-  return result;
+  const res = data.updateById<#=Table_Up#>;
+  return res;
 }<#
 }
 #>
@@ -335,7 +338,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findById<#=Table_Up#>;<#
+  const res = data.findById<#=Table_Up#>;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -344,13 +347,13 @@ export async function findById(
     let data_type = column.DATA_TYPE;
     if (data_type === "json") {
   #>
-  if (result?.<#=column_name#>) {
-    result.<#=column_name#> = JSON.stringify(result.<#=column_name#>);
+  if (res?.<#=column_name#>) {
+    res.<#=column_name#> = JSON.stringify(res.<#=column_name#>);
   }<#
     }
   }
   #>
-  return result;
+  return res;
 }<#
 if (opts.noDelete !== true) {
 #>
@@ -377,8 +380,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIds<#=Table_Up#>;
-  return result;
+  const res = data.deleteByIds<#=Table_Up#>;
+  return res;
 }<#
 }
 #><#
@@ -410,8 +413,8 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result = data.lockByIds<#=Table_Up#>;
-  return result;
+  const res = data.lockByIds<#=Table_Up#>;
+  return res;
 }<#
 }
 #><#
@@ -440,8 +443,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIds<#=Table_Up#>;
-  return result;
+  const res = data.revertByIds<#=Table_Up#>;
+  return res;
 }
 
 /**
@@ -466,8 +469,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIds<#=Table_Up#>;
-  return result;
+  const res = data.forceDeleteByIds<#=Table_Up#>;
+  return res;
 }<#
 }
 #><#
@@ -513,8 +516,8 @@ export async function findAll<#=Foreign_Table_Up#>(
       sort,
     },
   }, opt);
-  const result = data.findAll<#=Foreign_Table_Up#>;
-  return result;
+  const res = data.findAll<#=Foreign_Table_Up#>;
+  return res;
 }
 
 export async function get<#=Foreign_Table_Up#>List() {
@@ -721,8 +724,8 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result = data.findLastOrderBy<#=Table_Up#>;
-  return result;
+  const res = data.findLastOrderBy<#=Table_Up#>;
+  return res;
 }<#
 }
 #>

@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type TenantModel,
   type TenantSearch,
   type TenantInput,
 } from "#/types";
@@ -52,11 +51,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllTenant;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllTenant;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -81,8 +80,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountTenant;
-  return result;
+  const res = data.findCountTenant;
+  return res;
 }
 
 /**
@@ -107,8 +106,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createTenant;
-  return result;
+  const res = data.createTenant;
+  return res;
 }
 
 /**
@@ -136,8 +135,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdTenant;
-  return result;
+  const res = data.updateByIdTenant;
+  return res;
 }
 
 /**
@@ -175,8 +174,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdTenant;
-  return result;
+  const res = data.findByIdTenant;
+  return res;
 }
 
 /**
@@ -201,8 +200,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsTenant;
-  return result;
+  const res = data.deleteByIdsTenant;
+  return res;
 }
 
 /**
@@ -227,8 +226,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsTenant;
-  return result;
+  const res = data.revertByIdsTenant;
+  return res;
 }
 
 /**
@@ -253,8 +252,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsTenant;
-  return result;
+  const res = data.forceDeleteByIdsTenant;
+  return res;
 }
 
 export async function findAllMenu(
@@ -280,8 +279,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result = data.findAllMenu;
-  return result;
+  const res = data.findAllMenu;
+  return res;
 }
 
 export async function getMenuList() {
@@ -438,6 +437,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result = data.findLastOrderByTenant;
-  return result;
+  const res = data.findLastOrderByTenant;
+  return res;
 }
