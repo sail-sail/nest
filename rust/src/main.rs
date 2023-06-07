@@ -41,10 +41,9 @@ async fn main() -> Result<(), std::io::Error> {
     std::env::set_var("RUST_LOG", "server=info");
   }
   
-  let log_path = std::env::var_os("log_path");
-  
   #[cfg(debug_assertions)]
   {
+    let log_path = std::env::var_os("log_path");
     if log_path.is_none() {
       tracing_subscriber::fmt::init();
     } else {
@@ -59,6 +58,7 @@ async fn main() -> Result<(), std::io::Error> {
   
   #[cfg(release_assertions)]
   {
+    let log_path = std::env::var_os("log_path");
     if log_path.is_none() {
       tracing_subscriber::fmt.with_ansi(false).init();
     } else {
@@ -71,7 +71,6 @@ async fn main() -> Result<(), std::io::Error> {
         .init();
     }
   }
-  
   
   // oss
   tokio::spawn(async move {
