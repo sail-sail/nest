@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type DictDetailModel,
   type DictDetailSearch,
   type DictDetailInput,
 } from "#/types";
@@ -51,11 +50,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllDictDetail;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllDictDetail;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -80,8 +79,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountDictDetail;
-  return result;
+  const res = data.findCountDictDetail;
+  return res;
 }
 
 /**
@@ -106,8 +105,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createDictDetail;
-  return result;
+  const res = data.createDictDetail;
+  return res;
 }
 
 /**
@@ -135,8 +134,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdDictDetail;
-  return result;
+  const res = data.updateByIdDictDetail;
+  return res;
 }
 
 /**
@@ -173,8 +172,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdDictDetail;
-  return result;
+  const res = data.findByIdDictDetail;
+  return res;
 }
 
 /**
@@ -199,8 +198,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsDictDetail;
-  return result;
+  const res = data.deleteByIdsDictDetail;
+  return res;
 }
 
 /**
@@ -228,8 +227,8 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result = data.lockByIdsDictDetail;
-  return result;
+  const res = data.lockByIdsDictDetail;
+  return res;
 }
 
 /**
@@ -254,8 +253,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsDictDetail;
-  return result;
+  const res = data.revertByIdsDictDetail;
+  return res;
 }
 
 /**
@@ -280,8 +279,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsDictDetail;
-  return result;
+  const res = data.forceDeleteByIdsDictDetail;
+  return res;
 }
 
 export async function findAllDict(
@@ -307,8 +306,8 @@ export async function findAllDict(
       sort,
     },
   }, opt);
-  const result = data.findAllDict;
-  return result;
+  const res = data.findAllDict;
+  return res;
 }
 
 export async function getDictList() {
@@ -463,6 +462,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result = data.findLastOrderByDictDetail;
-  return result;
+  const res = data.findLastOrderByDictDetail;
+  return res;
 }

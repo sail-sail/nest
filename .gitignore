@@ -9,6 +9,7 @@ unpackage
 ~$*.xlsx
 
 /build
+/log
 /error.js
 pnpm-lock.yaml
 codegening.txt
