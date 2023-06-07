@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use tracing::error;
 
 use poem::{
@@ -35,6 +37,7 @@ pub async fn graphql_handler_get(
   Query(gql_params): Query<GglParams>,
   req: &poem::Request,
 ) -> Response {
+  let now0 = Instant::now();
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
   match req.header(AUTHORIZATION).map(ToString::to_string) {
@@ -82,6 +85,19 @@ pub async fn graphql_handler_get(
   for (key, value) in gql_res.http_headers.iter() {
     headers.insert(key, value.to_owned());
   }
+  let now1 = Instant::now();
+  let response_time = format!("t;dur={}", now1.saturating_duration_since(now0).as_millis());
+  let response_time = poem::http::header::HeaderValue::from_str(&response_time);
+  let response_time = match response_time {
+    Ok(response_time) => response_time,
+    Err(err) => {
+      error!("{}", err);
+      return Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(err.to_string())
+    }
+  };
+  headers.insert("Server-Timing", response_time);
   response
 }
 
@@ -92,6 +108,7 @@ pub async fn graphql_handler(
   data: Json<Request>,
   req: &poem::Request,
 ) -> Response {
+  let now0 = Instant::now();
   let mut gql_req = data.0;
   match req.header(AUTHORIZATION).map(ToString::to_string) {
     None => {
@@ -129,6 +146,19 @@ pub async fn graphql_handler(
   for (key, value) in gql_res.http_headers.iter() {
     headers.insert(key, value.to_owned());
   }
+  let now1 = Instant::now();
+  let response_time = format!("t;dur={}", now1.saturating_duration_since(now0).as_millis());
+  let response_time = poem::http::header::HeaderValue::from_str(&response_time);
+  let response_time = match response_time {
+    Ok(response_time) => response_time,
+    Err(err) => {
+      error!("{}", err);
+      return Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(err.to_string())
+    }
+  };
+  headers.insert("Server-Timing", response_time);
   response
 }
 
