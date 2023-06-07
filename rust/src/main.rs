@@ -42,35 +42,42 @@ async fn main() -> Result<(), std::io::Error> {
   }
   
   #[cfg(debug_assertions)]
-  {
+  let _guard = {
     let log_path = std::env::var_os("log_path");
     if log_path.is_none() {
       tracing_subscriber::fmt::init();
+      None
     } else {
       let log_path = log_path.unwrap();
       let file_appender = tracing_appender::rolling::daily(log_path, "server.log");
-      let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-      tracing_subscriber::fmt()
-        .with_writer(non_blocking)
-        .init();
-    }
-  }
-  
-  #[cfg(release_assertions)]
-  {
-    let log_path = std::env::var_os("log_path");
-    if log_path.is_none() {
-      tracing_subscriber::fmt.with_ansi(false).init();
-    } else {
-      let log_path = log_path.unwrap();
-      let file_appender = tracing_appender::rolling::daily(log_path, "server.log");
-      let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+      let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
       tracing_subscriber::fmt()
         .with_writer(non_blocking)
         .with_ansi(false)
         .init();
+      Some(guard)
     }
-  }
+  };
+  
+  #[cfg(not(debug_assertions))]
+  let _guard = {
+    let log_path = std::env::var_os("log_path");
+    if log_path.is_none() {
+      tracing_subscriber::fmt()
+        .with_ansi(false)
+        .init();
+      None
+    } else {
+      let log_path = log_path.unwrap();
+      let file_appender = tracing_appender::rolling::daily(log_path, "server.log");
+      let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
+      tracing_subscriber::fmt()
+        .with_writer(non_blocking)
+        .with_ansi(false)
+        .init();
+      Some(guard)
+    }
+  };
   
   // oss
   tokio::spawn(async move {
