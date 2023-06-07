@@ -1938,8 +1938,8 @@ if (hasOrderBy) {
 /// 查找 order_by 字段的最大值
 pub async fn find_last_order_by<'a>(
   ctx: &mut impl Ctx<'a>,
-  _options: Option<Options>,
-) -> Result<i64> {
+  options: Option<Options>,
+) -> Result<u32> {
   
   let table = "<#=mod#>_<#=table#>";
   let _method = "find_last_order_by";
@@ -1976,10 +1976,16 @@ pub async fn find_last_order_by<'a>(
   
   let args = args.into();
   
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = options.into();
+  
   let model = ctx.query_one::<OrderByModel>(
     sql,
     args,
-    None,
+    options,
   ).await?;
   
   let order_by = {

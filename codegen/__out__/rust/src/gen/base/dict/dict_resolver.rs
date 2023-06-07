@@ -126,7 +126,7 @@ impl DictGenQuery {
   pub async fn find_last_order_by_dict<'a>(
     &self,
     ctx: &Context<'a>,
-  ) -> Result<i64> {
+  ) -> Result<u32> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let res = dict_service::find_last_order_by(

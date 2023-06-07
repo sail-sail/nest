@@ -126,7 +126,7 @@ impl OptionsGenQuery {
   pub async fn find_last_order_by_options<'a>(
     &self,
     ctx: &Context<'a>,
-  ) -> Result<i64> {
+  ) -> Result<u32> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let res = options_service::find_last_order_by(

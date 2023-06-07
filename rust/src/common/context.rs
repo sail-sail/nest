@@ -178,7 +178,7 @@ pub trait Ctx<'a>: Send + Sized {
   
   async fn ok<T>(self, res: Result<T>) -> Result<T>
   where
-    T: Send,
+    T: Send + Sized,
   {
     if let Err(e) = res {
       let req_id = self.get_req_id().to_owned();
@@ -527,7 +527,7 @@ pub trait Ctx<'a>: Send + Sized {
     options: Option<Options>,
   ) -> Result<Vec<R>>
   where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
   {
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -880,7 +880,7 @@ pub trait Ctx<'a>: Send + Sized {
     options: Option<Options>,
   ) -> Result<Option<R>>
   where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Unpin + Serialize + for<'r> Deserialize<'r> + Debug + Sync,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Debug + Sync,
   {
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -1352,7 +1352,7 @@ pub struct CountModel {
 #[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
 pub struct OrderByModel {
   
-  pub order_by: i64,
+  pub order_by: u32,
   
 }
 
