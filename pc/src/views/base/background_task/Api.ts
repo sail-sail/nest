@@ -2,9 +2,7 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type BackgroundTaskModel,
   type BackgroundTaskSearch,
-  type BackgroundTaskInput,
 } from "#/types";
 
 import {
@@ -55,11 +53,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllBackgroundTask;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllBackgroundTask;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -84,8 +82,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountBackgroundTask;
-  return result;
+  const res = data.findCountBackgroundTask;
+  return res;
 }
 
 /**
@@ -126,8 +124,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdBackgroundTask;
-  return result;
+  const res = data.findByIdBackgroundTask;
+  return res;
 }
 
 /**
@@ -152,8 +150,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsBackgroundTask;
-  return result;
+  const res = data.deleteByIdsBackgroundTask;
+  return res;
 }
 
 /**
@@ -178,8 +176,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsBackgroundTask;
-  return result;
+  const res = data.revertByIdsBackgroundTask;
+  return res;
 }
 
 /**
@@ -204,8 +202,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsBackgroundTask;
-  return result;
+  const res = data.forceDeleteByIdsBackgroundTask;
+  return res;
 }
 
 export async function findAllUsr(
@@ -231,8 +229,8 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const result = data.findAllUsr;
-  return result;
+  const res = data.findAllUsr;
+  return res;
 }
 
 export async function getUsrList() {

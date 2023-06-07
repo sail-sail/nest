@@ -2,9 +2,7 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type OperationRecordModel,
   type OperationRecordSearch,
-  type OperationRecordInput,
 } from "#/types";
 
 import {
@@ -55,11 +53,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllOperationRecord;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllOperationRecord;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -84,8 +82,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountOperationRecord;
-  return result;
+  const res = data.findCountOperationRecord;
+  return res;
 }
 
 /**
@@ -126,8 +124,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdOperationRecord;
-  return result;
+  const res = data.findByIdOperationRecord;
+  return res;
 }
 
 /**
@@ -152,8 +150,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsOperationRecord;
-  return result;
+  const res = data.deleteByIdsOperationRecord;
+  return res;
 }
 
 /**
@@ -178,8 +176,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsOperationRecord;
-  return result;
+  const res = data.revertByIdsOperationRecord;
+  return res;
 }
 
 /**
@@ -204,8 +202,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsOperationRecord;
-  return result;
+  const res = data.forceDeleteByIdsOperationRecord;
+  return res;
 }
 
 export async function findAllUsr(
@@ -231,8 +229,8 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const result = data.findAllUsr;
-  return result;
+  const res = data.findAllUsr;
+  return res;
 }
 
 export async function getUsrList() {

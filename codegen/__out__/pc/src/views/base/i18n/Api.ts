@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type I18Nmodel,
   type I18Nsearch,
   type I18Ninput,
 } from "#/types";
@@ -49,11 +48,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllI18N;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllI18N;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -78,8 +77,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountI18N;
-  return result;
+  const res = data.findCountI18N;
+  return res;
 }
 
 /**
@@ -104,8 +103,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createI18N;
-  return result;
+  const res = data.createI18N;
+  return res;
 }
 
 /**
@@ -133,8 +132,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdI18N;
-  return result;
+  const res = data.updateByIdI18N;
+  return res;
 }
 
 /**
@@ -168,8 +167,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdI18N;
-  return result;
+  const res = data.findByIdI18N;
+  return res;
 }
 
 /**
@@ -194,8 +193,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsI18N;
-  return result;
+  const res = data.deleteByIdsI18N;
+  return res;
 }
 
 /**
@@ -220,8 +219,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsI18N;
-  return result;
+  const res = data.revertByIdsI18N;
+  return res;
 }
 
 /**
@@ -246,8 +245,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsI18N;
-  return result;
+  const res = data.forceDeleteByIdsI18N;
+  return res;
 }
 
 export async function findAllLang(
@@ -273,8 +272,8 @@ export async function findAllLang(
       sort,
     },
   }, opt);
-  const result = data.findAllLang;
-  return result;
+  const res = data.findAllLang;
+  return res;
 }
 
 export async function getLangList() {
@@ -318,8 +317,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result = data.findAllMenu;
-  return result;
+  const res = data.findAllMenu;
+  return res;
 }
 
 export async function getMenuList() {

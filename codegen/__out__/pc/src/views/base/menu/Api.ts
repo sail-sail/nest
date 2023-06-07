@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type MenuModel,
   type MenuSearch,
   type MenuInput,
 } from "#/types";
@@ -51,12 +50,12 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllMenu;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllMenu;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
-  return result;
+  return res;
 }
 
 /**
@@ -81,8 +80,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountMenu;
-  return result;
+  const res = data.findCountMenu;
+  return res;
 }
 
 /**
@@ -107,8 +106,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createMenu;
-  return result;
+  const res = data.createMenu;
+  return res;
 }
 
 /**
@@ -136,8 +135,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdMenu;
-  return result;
+  const res = data.updateByIdMenu;
+  return res;
 }
 
 /**
@@ -175,11 +174,11 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdMenu;
-  if (result?.route_query) {
-    result.route_query = JSON.stringify(result.route_query);
+  const res = data.findByIdMenu;
+  if (res?.route_query) {
+    res.route_query = JSON.stringify(res.route_query);
   }
-  return result;
+  return res;
 }
 
 /**
@@ -204,8 +203,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsMenu;
-  return result;
+  const res = data.deleteByIdsMenu;
+  return res;
 }
 
 /**
@@ -230,8 +229,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsMenu;
-  return result;
+  const res = data.revertByIdsMenu;
+  return res;
 }
 
 /**
@@ -256,8 +255,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsMenu;
-  return result;
+  const res = data.forceDeleteByIdsMenu;
+  return res;
 }
 
 export async function findAllMenu(
@@ -283,8 +282,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result = data.findAllMenu;
-  return result;
+  const res = data.findAllMenu;
+  return res;
 }
 
 export async function getMenuList() {
@@ -441,6 +440,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result = data.findLastOrderByMenu;
-  return result;
+  const res = data.findLastOrderByMenu;
+  return res;
 }

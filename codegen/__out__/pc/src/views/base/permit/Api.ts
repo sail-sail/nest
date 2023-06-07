@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type PermitModel,
   type PermitSearch,
   type PermitInput,
 } from "#/types";
@@ -60,11 +59,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllPermit;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllPermit;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -89,8 +88,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountPermit;
-  return result;
+  const res = data.findCountPermit;
+  return res;
 }
 
 /**
@@ -115,8 +114,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createPermit;
-  return result;
+  const res = data.createPermit;
+  return res;
 }
 
 /**
@@ -144,8 +143,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdPermit;
-  return result;
+  const res = data.updateByIdPermit;
+  return res;
 }
 
 /**
@@ -189,8 +188,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdPermit;
-  return result;
+  const res = data.findByIdPermit;
+  return res;
 }
 
 /**
@@ -215,8 +214,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsPermit;
-  return result;
+  const res = data.deleteByIdsPermit;
+  return res;
 }
 
 /**
@@ -241,8 +240,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsPermit;
-  return result;
+  const res = data.revertByIdsPermit;
+  return res;
 }
 
 /**
@@ -267,8 +266,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsPermit;
-  return result;
+  const res = data.forceDeleteByIdsPermit;
+  return res;
 }
 
 export async function findAllRole(
@@ -294,8 +293,8 @@ export async function findAllRole(
       sort,
     },
   }, opt);
-  const result = data.findAllRole;
-  return result;
+  const res = data.findAllRole;
+  return res;
 }
 
 export async function getRoleList() {
@@ -339,8 +338,8 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const result = data.findAllMenu;
-  return result;
+  const res = data.findAllMenu;
+  return res;
 }
 
 export async function getMenuList() {
@@ -384,8 +383,8 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const result = data.findAllUsr;
-  return result;
+  const res = data.findAllUsr;
+  return res;
 }
 
 export async function getUsrList() {

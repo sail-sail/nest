@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type LangModel,
   type LangSearch,
   type LangInput,
 } from "#/types";
@@ -46,11 +45,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllLang;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllLang;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -75,8 +74,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountLang;
-  return result;
+  const res = data.findCountLang;
+  return res;
 }
 
 /**
@@ -101,8 +100,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createLang;
-  return result;
+  const res = data.createLang;
+  return res;
 }
 
 /**
@@ -130,8 +129,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdLang;
-  return result;
+  const res = data.updateByIdLang;
+  return res;
 }
 
 /**
@@ -164,8 +163,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdLang;
-  return result;
+  const res = data.findByIdLang;
+  return res;
 }
 
 /**
@@ -190,8 +189,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsLang;
-  return result;
+  const res = data.deleteByIdsLang;
+  return res;
 }
 
 /**
@@ -216,8 +215,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsLang;
-  return result;
+  const res = data.revertByIdsLang;
+  return res;
 }
 
 /**
@@ -242,8 +241,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsLang;
-  return result;
+  const res = data.forceDeleteByIdsLang;
+  return res;
 }
 
 /**
@@ -372,6 +371,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result = data.findLastOrderByLang;
-  return result;
+  const res = data.findLastOrderByLang;
+  return res;
 }

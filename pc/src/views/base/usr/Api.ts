@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type UsrModel,
   type UsrSearch,
   type UsrInput,
 } from "#/types";
@@ -55,11 +54,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllUsr;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllUsr;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -84,8 +83,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountUsr;
-  return result;
+  const res = data.findCountUsr;
+  return res;
 }
 
 /**
@@ -110,8 +109,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createUsr;
-  return result;
+  const res = data.createUsr;
+  return res;
 }
 
 /**
@@ -139,8 +138,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdUsr;
-  return result;
+  const res = data.updateByIdUsr;
+  return res;
 }
 
 /**
@@ -181,8 +180,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdUsr;
-  return result;
+  const res = data.findByIdUsr;
+  return res;
 }
 
 /**
@@ -207,8 +206,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsUsr;
-  return result;
+  const res = data.deleteByIdsUsr;
+  return res;
 }
 
 /**
@@ -236,8 +235,8 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result = data.lockByIdsUsr;
-  return result;
+  const res = data.lockByIdsUsr;
+  return res;
 }
 
 /**
@@ -262,8 +261,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsUsr;
-  return result;
+  const res = data.revertByIdsUsr;
+  return res;
 }
 
 /**
@@ -288,8 +287,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsUsr;
-  return result;
+  const res = data.forceDeleteByIdsUsr;
+  return res;
 }
 
 export async function findAllDept(
@@ -315,8 +314,8 @@ export async function findAllDept(
       sort,
     },
   }, opt);
-  const result = data.findAllDept;
-  return result;
+  const res = data.findAllDept;
+  return res;
 }
 
 export async function getDeptList() {
@@ -360,8 +359,8 @@ export async function findAllRole(
       sort,
     },
   }, opt);
-  const result = data.findAllRole;
-  return result;
+  const res = data.findAllRole;
+  return res;
 }
 
 export async function getRoleList() {

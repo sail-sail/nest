@@ -2,7 +2,6 @@ import {
   type Query,
   type Mutation,
   type PageInput,
-  type DictbizDetailModel,
   type DictbizDetailSearch,
   type DictbizDetailInput,
 } from "#/types";
@@ -51,11 +50,11 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const result = data.findAllDictbizDetail;
-  for (let i = 0; i < result.length; i++) {
-    const item = result[i];
+  const res = data.findAllDictbizDetail;
+  for (let i = 0; i < res.length; i++) {
+    const item = res[i];
   }
-  return result;
+  return res;
 }
 
 /**
@@ -80,8 +79,8 @@ export async function findCount(
       search,
     },
   }, opt);
-  const result = data.findCountDictbizDetail;
-  return result;
+  const res = data.findCountDictbizDetail;
+  return res;
 }
 
 /**
@@ -106,8 +105,8 @@ export async function create(
       model,
     },
   }, opt);
-  const result = data.createDictbizDetail;
-  return result;
+  const res = data.createDictbizDetail;
+  return res;
 }
 
 /**
@@ -135,8 +134,8 @@ export async function updateById(
       model,
     },
   }, opt);
-  const result = data.updateByIdDictbizDetail;
-  return result;
+  const res = data.updateByIdDictbizDetail;
+  return res;
 }
 
 /**
@@ -173,8 +172,8 @@ export async function findById(
       id,
     },
   }, opt);
-  const result = data.findByIdDictbizDetail;
-  return result;
+  const res = data.findByIdDictbizDetail;
+  return res;
 }
 
 /**
@@ -199,8 +198,8 @@ export async function deleteByIds(
       ids,
     },
   }, opt);
-  const result = data.deleteByIdsDictbizDetail;
-  return result;
+  const res = data.deleteByIdsDictbizDetail;
+  return res;
 }
 
 /**
@@ -228,8 +227,8 @@ export async function lockByIds(
       is_locked,
     },
   }, opt);
-  const result = data.lockByIdsDictbizDetail;
-  return result;
+  const res = data.lockByIdsDictbizDetail;
+  return res;
 }
 
 /**
@@ -254,8 +253,8 @@ export async function revertByIds(
       ids,
     },
   }, opt);
-  const result = data.revertByIdsDictbizDetail;
-  return result;
+  const res = data.revertByIdsDictbizDetail;
+  return res;
 }
 
 /**
@@ -280,8 +279,8 @@ export async function forceDeleteByIds(
       ids,
     },
   }, opt);
-  const result = data.forceDeleteByIdsDictbizDetail;
-  return result;
+  const res = data.forceDeleteByIdsDictbizDetail;
+  return res;
 }
 
 export async function findAllDictbiz(
@@ -307,8 +306,8 @@ export async function findAllDictbiz(
       sort,
     },
   }, opt);
-  const result = data.findAllDictbiz;
-  return result;
+  const res = data.findAllDictbiz;
+  return res;
 }
 
 export async function getDictbizList() {
@@ -463,6 +462,6 @@ export async function findLastOrderBy(
       }
     `,
   }, opt);
-  const result = data.findLastOrderByDictbizDetail;
-  return result;
+  const res = data.findLastOrderByDictbizDetail;
+  return res;
 }
