@@ -238,7 +238,7 @@ pub async fn force_delete_by_ids<'a>(
 pub async fn find_last_order_by<'a>(
   ctx: &mut impl Ctx<'a>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u32> {
   
   let res = dictbiz_dao::find_last_order_by(
     ctx,

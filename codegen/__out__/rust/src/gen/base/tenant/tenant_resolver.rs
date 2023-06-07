@@ -107,7 +107,7 @@ impl TenantGenQuery {
   pub async fn find_last_order_by_tenant<'a>(
     &self,
     ctx: &Context<'a>,
-  ) -> Result<i64> {
+  ) -> Result<u32> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let res = tenant_service::find_last_order_by(

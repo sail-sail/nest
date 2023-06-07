@@ -126,7 +126,7 @@ impl DictbizDetailGenQuery {
   pub async fn find_last_order_by_dictbiz_detail<'a>(
     &self,
     ctx: &Context<'a>,
-  ) -> Result<i64> {
+  ) -> Result<u32> {
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
     let res = dictbiz_detail_service::find_last_order_by(
