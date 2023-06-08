@@ -48,6 +48,29 @@
   return rows;
 }
 
+/**
+ * 渲染excel模板
+ */
+export function useRenderExcel() {
+  return useWebWorkerFn(
+    async function (exlBuf: Buffer | string, _data_: any | string) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return await ejsexcel.renderExcel(exlBuf, _data_);
+      } catch (err) {
+        console.error("useRenderExcel", exlBuf);
+        throw err;
+      }
+    },
+    {
+      dependencies: [
+        `${ location.origin }/ejsexcel.min.js`,
+      ],
+    },
+  );
+}
+
 function date2Num(date: Date) {
   const time = date.getTime();
   let valTmp = time + 25567.33 * 86400000;
