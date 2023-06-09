@@ -1,6 +1,4 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
+
 
 import {
   type PageInput,
@@ -8,6 +6,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type MenuInput,
   type MenuModel,
   type MenuSearch,
 } from "./menu.model.ts";
@@ -93,27 +92,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {MenuModel} model
+ * @param {MenuInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: MenuModel,
+  input: MenuInput,
 ): Promise<string> {
-  const data = await menuDao.create(model);
+  const data = await menuDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {MenuModel} model
+ * @param {MenuInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: MenuModel,
+  input: MenuInput,
 ): Promise<string> {
-  const data = await menuDao.updateById(id, model);
+  const data = await menuDao.updateById(id, input);
   return data;
 }
 

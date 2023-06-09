@@ -8,6 +8,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type UsrInput,
   type UsrModel,
   type UsrSearch,
 } from "./usr.model.ts";
@@ -93,32 +94,32 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {UsrModel} model
+ * @param {UsrInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: UsrModel,
+  input: UsrInput,
 ): Promise<string> {
-  const data = await usrDao.create(model);
+  const data = await usrDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {UsrModel} model
+ * @param {UsrInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: UsrModel,
+  input: UsrInput,
 ): Promise<string> {
   
   const is_locked = await usrDao.getIs_lockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
-  const data = await usrDao.updateById(id, model);
+  const data = await usrDao.updateById(id, input);
   return data;
 }
 

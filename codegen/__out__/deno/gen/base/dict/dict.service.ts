@@ -8,6 +8,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type DictInput,
   type DictModel,
   type DictSearch,
 } from "./dict.model.ts";
@@ -93,32 +94,32 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {DictModel} model
+ * @param {DictInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: DictModel,
+  input: DictInput,
 ): Promise<string> {
-  const data = await dictDao.create(model);
+  const data = await dictDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {DictModel} model
+ * @param {DictInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: DictModel,
+  input: DictInput,
 ): Promise<string> {
   
   const is_locked = await dictDao.getIs_lockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
-  const data = await dictDao.updateById(id, model);
+  const data = await dictDao.updateById(id, input);
   return data;
 }
 

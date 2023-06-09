@@ -44,22 +44,16 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  many2manyUpdate,
-  setModelIds,
-} from "/lib/util/dao_util.ts";
-
-import {
   SortOrderEnum,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
+  type DeptInput,
   type DeptModel,
   type DeptSearch,
 } from "./dept.model.ts";
-
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -466,13 +460,13 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<DeptModel>} model
+ * @param {DeptInput} model
  * @param {DeptModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<DeptModel>,
+  model: DeptInput,
   oldModel: DeptModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -599,7 +593,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<DeptModel>} model
+ * @param {DeptInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -609,7 +603,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<DeptModel>,
+  model: DeptInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -825,7 +819,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<DeptModel>} model
+ * @param {DeptInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -836,7 +830,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: PartialNull<DeptModel>,
+  model: DeptInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

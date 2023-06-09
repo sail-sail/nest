@@ -256,11 +256,13 @@ CREATE TABLE if not exists `base_options` (
 drop table if exists `base_operation_record`;
 CREATE TABLE if not exists `base_operation_record` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `mod` varchar(50) NOT NULL DEFAULT '' COMMENT '模块',
-  `mod_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '模块名称',
+  `module` varchar(50) NOT NULL DEFAULT '' COMMENT '模块',
+  `module_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '模块名称',
   `method` varchar(50) NOT NULL DEFAULT '' COMMENT '方法',
   `method_lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '方法名称',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '操作',
+  `old_data` varchar(5000) NOT NULL DEFAULT '' COMMENT '操作前数据',
+  `new_data` varchar(5000) NOT NULL DEFAULT '' COMMENT '操作后数据',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -269,6 +271,7 @@ CREATE TABLE if not exists `base_operation_record` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`create_time`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='操作记录';
 

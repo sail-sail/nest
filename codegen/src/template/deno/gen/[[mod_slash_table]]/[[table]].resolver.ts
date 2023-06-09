@@ -22,7 +22,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
 }
-#><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {
   useContext,
@@ -38,7 +37,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type <#=modelName#>,
+  type <#=inputName#>,
   type <#=searchName#>,
 } from "./<#=table#>.model.ts";
 
@@ -49,8 +48,8 @@ export async function findCount<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./<#=table#>.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -62,8 +61,8 @@ export async function findAll<#=Table_Up#>(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./<#=table#>.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -71,8 +70,8 @@ export async function findAll<#=Table_Up#>(
  */
 export async function getFieldComments<#=Table_Up#>() {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }<#
 if (hasSummary) {
 #>
@@ -84,8 +83,8 @@ export async function findSummary<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
 ) {
   const { findSummary } = await import("./<#=table#>.service.ts");
-  const data = await findSummary(search);
-  return data;
+  const res = await findSummary(search);
+  return res;
 }<#
 }
 #>
@@ -98,8 +97,8 @@ export async function findOne<#=Table_Up#>(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./<#=table#>.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -109,8 +108,8 @@ export async function findById<#=Table_Up#>(
   id: string,
 ) {
   const { findById } = await import("./<#=table#>.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }<#
 if (opts.noAdd !== true) {
 #>
@@ -119,14 +118,43 @@ if (opts.noAdd !== true) {
  * 创建一条数据
  */
 export async function create<#=Table_Up#>(
-  model: <#=modelName#>,
+  input: <#=inputName#>,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./<#=table#>.service.ts");
-  const data = await create(model);
-  return data;
+  const {<#
+    if (log) {
+    #>
+    findById,<#
+    }
+    #>
+    create,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  }
+  #>
+  const res = await create(input);<#
+  if (log) {
+  #>
+  
+  const new_data = await findById(res);
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "create",
+    method_lbl: "创建",
+    lbl: "创建",
+    old_data: "{}",
+    new_data: JSON.stringify(new_data),
+  });<#
+  }
+  #>
+  return res;
 }<#
 }
 #><#
@@ -138,14 +166,44 @@ if (opts.noEdit !== true) {
  */
 export async function updateById<#=Table_Up#>(
   id: string,
-  model: <#=modelName#>,
+  input: <#=inputName#>,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./<#=table#>.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  const {<#
+    if (log) {
+    #>
+    findById,<#
+    }
+    #>
+    updateById,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const old_data = await findById<#=Table_Up#>(id);<#
+  }
+  #>
+  const res = await updateById(id, input);<#
+  if (log) {
+  #>
+  
+  const new_data = await findById(res);
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "updateById",
+    method_lbl: "修改",
+    lbl: "修改",
+    old_data: JSON.stringify(old_data),
+    new_data: JSON.stringify(new_data),
+  });<#
+  }
+  #>
+  return res;
 }<#
 }
 #><#
@@ -161,9 +219,39 @@ export async function deleteByIds<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./<#=table#>.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  const {<#
+    if (log) {
+    #>
+    findAll,<#
+    }
+    #>
+    deleteByIds,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const old_data = await findAll({
+    ids,
+  });<#
+  }
+  #>
+  const res = await deleteByIds(ids);<#
+  if (log) {
+  #>
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "deleteByIds",
+    method_lbl: "删除",
+    lbl: "删除",
+    old_data: JSON.stringify(old_data),
+    new_data: "{}",
+  });<#
+  }
+  #>
+  return res;
 }<#
 }
 #><#
@@ -183,9 +271,31 @@ export async function lockByIds<#=Table_Up#>(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=Table_Up#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const { lockByIds } = await import("./<#=table#>.service.ts");
-  const data = await lockByIds(ids, is_locked);
-  return data;
+  const {
+    lockByIds,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  }
+  #>
+  const res = await lockByIds(ids, is_locked);<#
+  if (log) {
+  #>
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "lockByIds",
+    method_lbl: "锁定",
+    lbl: "锁定",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });<#
+  }
+  #>
+  return res;
 }<#
   }
 #><#
@@ -201,9 +311,31 @@ export async function revertByIds<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./<#=table#>.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  const {
+    revertByIds,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  }
+  #>
+  const res = await revertByIds(ids);<#
+  if (log) {
+  #>
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "revertByIds",
+    method_lbl: "还原",
+    lbl: "还原",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });<#
+  }
+  #>
+  return res;
 }
 
 /**
@@ -215,9 +347,31 @@ export async function forceDeleteByIds<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./<#=table#>.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  const {
+    forceDeleteByIds,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  }
+  #>
+  const res = await forceDeleteByIds(ids);<#
+  if (log) {
+  #>
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "forceDeleteByIds",
+    method_lbl: "彻底删除",
+    lbl: "彻底删除",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });<#
+  }
+  #>
+  return res;
 }<#
 }
 #><#
@@ -229,8 +383,8 @@ if (hasOrderBy) {
  */
 export async function findLastOrderBy<#=Table_Up#>() {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");
-  const data = findLastOrderBy();
-  return data;
+  const res = findLastOrderBy();
+  return res;
 }<#
 }
 #>

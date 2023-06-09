@@ -12,7 +12,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type PermitModel,
+  type PermitInput,
   type PermitSearch,
 } from "./permit.model.ts";
 
@@ -23,8 +23,8 @@ export async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./permit.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +36,8 @@ export async function findAllPermit(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./permit.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +45,8 @@ export async function findAllPermit(
  */
 export async function getFieldCommentsPermit() {
   const { getFieldComments } = await import("./permit.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +57,8 @@ export async function findOnePermit(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./permit.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +68,24 @@ export async function findByIdPermit(
   id: string,
 ) {
   const { findById } = await import("./permit.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createPermit(
-  model: PermitModel,
+  input: PermitInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./permit.service.ts");
-  const data = await create(model);
-  return data;
+  const {
+    create,
+  } = await import("./permit.service.ts");
+  const res = await create(input);
+  return res;
 }
 
 /**
@@ -91,14 +93,16 @@ export async function createPermit(
  */
 export async function updateByIdPermit(
   id: string,
-  model: PermitModel,
+  input: PermitInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./permit.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  const {
+    updateById,
+  } = await import("./permit.service.ts");
+  const res = await updateById(id, input);
+  return res;
 }
 
 /**
@@ -110,9 +114,11 @@ export async function deleteByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./permit.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  const {
+    deleteByIds,
+  } = await import("./permit.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -124,9 +130,11 @@ export async function revertByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./permit.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  const {
+    revertByIds,
+  } = await import("./permit.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -138,7 +146,9 @@ export async function forceDeleteByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./permit.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  const {
+    forceDeleteByIds,
+  } = await import("./permit.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }

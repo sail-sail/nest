@@ -12,7 +12,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type DeptModel,
+  type DeptInput,
   type DeptSearch,
 } from "./dept.model.ts";
 
@@ -23,8 +23,8 @@ export async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./dept.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +36,8 @@ export async function findAllDept(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./dept.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +45,8 @@ export async function findAllDept(
  */
 export async function getFieldCommentsDept() {
   const { getFieldComments } = await import("./dept.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +57,8 @@ export async function findOneDept(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./dept.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +68,39 @@ export async function findByIdDept(
   id: string,
 ) {
   const { findById } = await import("./dept.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createDept(
-  model: DeptModel,
+  input: DeptInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./dept.service.ts");
-  const data = await create(model);
-  return data;
+  const {
+    findById,
+    create,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const res = await create(input);
+  
+  const new_data = await findById(res);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "create",
+    method_lbl: "创建",
+    lbl: "创建",
+    old_data: "{}",
+    new_data: JSON.stringify(new_data),
+  });
+  return res;
 }
 
 /**
@@ -91,14 +108,32 @@ export async function createDept(
  */
 export async function updateByIdDept(
   id: string,
-  model: DeptModel,
+  input: DeptInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./dept.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  const {
+    findById,
+    updateById,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const old_data = await findByIdDept(id);
+  const res = await updateById(id, input);
+  
+  const new_data = await findById(res);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "updateById",
+    method_lbl: "修改",
+    lbl: "修改",
+    old_data: JSON.stringify(old_data),
+    new_data: JSON.stringify(new_data),
+  });
+  return res;
 }
 
 /**
@@ -110,9 +145,27 @@ export async function deleteByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./dept.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  const {
+    findAll,
+    deleteByIds,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const old_data = await findAll({
+    ids,
+  });
+  const res = await deleteByIds(ids);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "deleteByIds",
+    method_lbl: "删除",
+    lbl: "删除",
+    old_data: JSON.stringify(old_data),
+    new_data: "{}",
+  });
+  return res;
 }
 
 /**
@@ -128,9 +181,23 @@ export async function lockByIdsDept(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDept.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const { lockByIds } = await import("./dept.service.ts");
-  const data = await lockByIds(ids, is_locked);
-  return data;
+  const {
+    lockByIds,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const res = await lockByIds(ids, is_locked);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "lockByIds",
+    method_lbl: "锁定",
+    lbl: "锁定",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });
+  return res;
 }
 
 /**
@@ -142,9 +209,23 @@ export async function revertByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./dept.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  const {
+    revertByIds,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const res = await revertByIds(ids);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "revertByIds",
+    method_lbl: "还原",
+    lbl: "还原",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });
+  return res;
 }
 
 /**
@@ -156,9 +237,23 @@ export async function forceDeleteByIdsDept(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./dept.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  const {
+    forceDeleteByIds,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const res = await forceDeleteByIds(ids);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "forceDeleteByIds",
+    method_lbl: "彻底删除",
+    lbl: "彻底删除",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });
+  return res;
 }
 
 /**
@@ -166,6 +261,6 @@ export async function forceDeleteByIdsDept(
  */
 export async function findLastOrderByDept() {
   const { findLastOrderBy } = await import("./dept.service.ts");
-  const data = findLastOrderBy();
-  return data;
+  const res = findLastOrderBy();
+  return res;
 }

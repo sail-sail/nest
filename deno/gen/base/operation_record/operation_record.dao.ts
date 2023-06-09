@@ -42,22 +42,16 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  many2manyUpdate,
-  setModelIds,
-} from "/lib/util/dao_util.ts";
-
-import {
   SortOrderEnum,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
+  type OperationRecordInput,
   type OperationRecordModel,
   type OperationRecordSearch,
 } from "./operation_record.model.ts";
-
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -85,23 +79,23 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.mod !== undefined) {
-    whereQuery += ` and t.mod = ${ args.push(search.mod) }`;
+  if (search?.module !== undefined) {
+    whereQuery += ` and t.module = ${ args.push(search.module) }`;
   }
-  if (search?.mod === null) {
-    whereQuery += ` and t.mod is null`;
+  if (search?.module === null) {
+    whereQuery += ` and t.module is null`;
   }
-  if (isNotEmpty(search?.mod_like)) {
-    whereQuery += ` and t.mod like ${ args.push(sqlLike(search?.mod_like) + "%") }`;
+  if (isNotEmpty(search?.module_like)) {
+    whereQuery += ` and t.module like ${ args.push(sqlLike(search?.module_like) + "%") }`;
   }
-  if (search?.mod_lbl !== undefined) {
-    whereQuery += ` and t.mod_lbl = ${ args.push(search.mod_lbl) }`;
+  if (search?.module_lbl !== undefined) {
+    whereQuery += ` and t.module_lbl = ${ args.push(search.module_lbl) }`;
   }
-  if (search?.mod_lbl === null) {
-    whereQuery += ` and t.mod_lbl is null`;
+  if (search?.module_lbl === null) {
+    whereQuery += ` and t.module_lbl is null`;
   }
-  if (isNotEmpty(search?.mod_lbl_like)) {
-    whereQuery += ` and t.mod_lbl like ${ args.push(sqlLike(search?.mod_lbl_like) + "%") }`;
+  if (isNotEmpty(search?.module_lbl_like)) {
+    whereQuery += ` and t.module_lbl like ${ args.push(sqlLike(search?.module_lbl_like) + "%") }`;
   }
   if (search?.method !== undefined) {
     whereQuery += ` and t.method = ${ args.push(search.method) }`;
@@ -129,6 +123,24 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.old_data !== undefined) {
+    whereQuery += ` and t.old_data = ${ args.push(search.old_data) }`;
+  }
+  if (search?.old_data === null) {
+    whereQuery += ` and t.old_data is null`;
+  }
+  if (isNotEmpty(search?.old_data_like)) {
+    whereQuery += ` and t.old_data like ${ args.push(sqlLike(search?.old_data_like) + "%") }`;
+  }
+  if (search?.new_data !== undefined) {
+    whereQuery += ` and t.new_data = ${ args.push(search.new_data) }`;
+  }
+  if (search?.new_data === null) {
+    whereQuery += ` and t.new_data is null`;
+  }
+  if (isNotEmpty(search?.new_data_like)) {
+    whereQuery += ` and t.new_data like ${ args.push(sqlLike(search?.new_data_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -270,11 +282,16 @@ export async function findAll(
   
   // 排序
   if (!sort) {
-    sort = [ ];
+    sort = [
+      {
+        prop: "create_time",
+        order: SortOrderEnum.Desc,
+      },
+    ];
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
+  sort = sort.filter((item) => item.prop);
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -328,11 +345,13 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/operation_record");
   const fieldComments = {
-    mod: await n("模块"),
-    mod_lbl: await n("模块名称"),
+    module: await n("模块"),
+    module_lbl: await n("模块名称"),
     method: await n("方法"),
     method_lbl: await n("方法名称"),
     lbl: await n("操作"),
+    old_data: await n("操作前数据"),
+    new_data: await n("操作后数据"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -419,13 +438,13 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<OperationRecordModel>} model
+ * @param {OperationRecordInput} model
  * @param {OperationRecordModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<OperationRecordModel>,
+  model: OperationRecordInput,
   oldModel: OperationRecordModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -549,7 +568,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<OperationRecordModel>} model
+ * @param {OperationRecordInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -559,7 +578,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<OperationRecordModel>,
+  model: OperationRecordInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -602,11 +621,11 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
-  if (model.mod !== undefined) {
-    sql += `,mod`;
+  if (model.module !== undefined) {
+    sql += `,module`;
   }
-  if (model.mod_lbl !== undefined) {
-    sql += `,mod_lbl`;
+  if (model.module_lbl !== undefined) {
+    sql += `,module_lbl`;
   }
   if (model.method !== undefined) {
     sql += `,method`;
@@ -616,6 +635,12 @@ export async function create(
   }
   if (model.lbl !== undefined) {
     sql += `,lbl`;
+  }
+  if (model.old_data !== undefined) {
+    sql += `,old_data`;
+  }
+  if (model.new_data !== undefined) {
+    sql += `,new_data`;
   }
   if (model.rem !== undefined) {
     sql += `,rem`;
@@ -644,11 +669,11 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.mod !== undefined) {
-    sql += `,${ args.push(model.mod) }`;
+  if (model.module !== undefined) {
+    sql += `,${ args.push(model.module) }`;
   }
-  if (model.mod_lbl !== undefined) {
-    sql += `,${ args.push(model.mod_lbl) }`;
+  if (model.module_lbl !== undefined) {
+    sql += `,${ args.push(model.module_lbl) }`;
   }
   if (model.method !== undefined) {
     sql += `,${ args.push(model.method) }`;
@@ -658,6 +683,12 @@ export async function create(
   }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
+  }
+  if (model.old_data !== undefined) {
+    sql += `,${ args.push(model.old_data) }`;
+  }
+  if (model.new_data !== undefined) {
+    sql += `,${ args.push(model.new_data) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -715,7 +746,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<OperationRecordModel>} model
+ * @param {OperationRecordInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -726,7 +757,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: PartialNull<OperationRecordModel>,
+  model: OperationRecordInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -763,15 +794,15 @@ export async function updateById(
     update base_operation_record set
   `;
   let updateFldNum = 0;
-  if (model.mod !== undefined) {
-    if (model.mod != oldModel?.mod) {
-      sql += `mod = ${ args.push(model.mod) },`;
+  if (model.module !== undefined) {
+    if (model.module != oldModel?.module) {
+      sql += `module = ${ args.push(model.module) },`;
       updateFldNum++;
     }
   }
-  if (model.mod_lbl !== undefined) {
-    if (model.mod_lbl != oldModel?.mod_lbl) {
-      sql += `mod_lbl = ${ args.push(model.mod_lbl) },`;
+  if (model.module_lbl !== undefined) {
+    if (model.module_lbl != oldModel?.module_lbl) {
+      sql += `module_lbl = ${ args.push(model.module_lbl) },`;
       updateFldNum++;
     }
   }
@@ -790,6 +821,18 @@ export async function updateById(
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel?.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.old_data !== undefined) {
+    if (model.old_data != oldModel?.old_data) {
+      sql += `old_data = ${ args.push(model.old_data) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.new_data !== undefined) {
+    if (model.new_data != oldModel?.new_data) {
+      sql += `new_data = ${ args.push(model.new_data) },`;
       updateFldNum++;
     }
   }

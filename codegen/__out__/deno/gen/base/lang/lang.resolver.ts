@@ -12,7 +12,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type LangModel,
+  type LangInput,
   type LangSearch,
 } from "./lang.model.ts";
 
@@ -23,8 +23,8 @@ export async function findCountLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./lang.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +36,8 @@ export async function findAllLang(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./lang.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +45,8 @@ export async function findAllLang(
  */
 export async function getFieldCommentsLang() {
   const { getFieldComments } = await import("./lang.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +57,8 @@ export async function findOneLang(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./lang.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +68,24 @@ export async function findByIdLang(
   id: string,
 ) {
   const { findById } = await import("./lang.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createLang(
-  model: LangModel,
+  input: LangInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./lang.service.ts");
-  const data = await create(model);
-  return data;
+  const {
+    create,
+  } = await import("./lang.service.ts");
+  const res = await create(input);
+  return res;
 }
 
 /**
@@ -91,14 +93,16 @@ export async function createLang(
  */
 export async function updateByIdLang(
   id: string,
-  model: LangModel,
+  input: LangInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./lang.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  const {
+    updateById,
+  } = await import("./lang.service.ts");
+  const res = await updateById(id, input);
+  return res;
 }
 
 /**
@@ -110,9 +114,11 @@ export async function deleteByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./lang.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  const {
+    deleteByIds,
+  } = await import("./lang.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -124,9 +130,11 @@ export async function revertByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./lang.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  const {
+    revertByIds,
+  } = await import("./lang.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -138,9 +146,11 @@ export async function forceDeleteByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./lang.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  const {
+    forceDeleteByIds,
+  } = await import("./lang.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }
 
 /**
@@ -148,6 +158,6 @@ export async function forceDeleteByIdsLang(
  */
 export async function findLastOrderByLang() {
   const { findLastOrderBy } = await import("./lang.service.ts");
-  const data = findLastOrderBy();
-  return data;
+  const res = findLastOrderBy();
+  return res;
 }

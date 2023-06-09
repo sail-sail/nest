@@ -480,21 +480,24 @@ export default defineConfig({
       noAdd: true,
       noEdit: true,
       noImport: true,
+      defaultSort: {
+        prop: "create_time",
+        order: "descending",
+      },
     },
     columns: [
       {
-        COLUMN_NAME: "mod",
-        noList: true,
+        COLUMN_NAME: "module",
         width: 120,
       },
       {
-        COLUMN_NAME: "mod_lbl",
+        COLUMN_NAME: "module_lbl",
         search: true,
         width: 180,
       },
       {
         COLUMN_NAME: "method",
-        noList: true,
+        width: 120,
       },
       {
         COLUMN_NAME: "method_lbl",
@@ -505,6 +508,14 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         search: true,
         width: 180,
+      },
+      {
+        COLUMN_NAME: "old_data",
+        width: 280,
+      },
+      {
+        COLUMN_NAME: "new_data",
+        width: 280,
       },
       {
         COLUMN_NAME: "rem",
@@ -534,6 +545,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      log: true,
     },
     columns: [
       {

@@ -1571,7 +1571,7 @@ function getTableColumns(): ColumnType[] {
       #><#
       if (column.showOverflowTooltip != null) {
       #>
-      showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
       if (column.fixed !== undefined) {
@@ -1612,7 +1612,7 @@ function getTableColumns(): ColumnType[] {
       #><#
       if (column.showOverflowTooltip != null) {
       #>
-      showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
       if (column.fixed !== undefined) {

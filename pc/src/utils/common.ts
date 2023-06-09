@@ -2,8 +2,6 @@ import {
   type Query,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 export async function getDict(
   codes: string[],
 ) {
@@ -58,17 +56,6 @@ export async function getDictbiz(
   });
   const result = data.getDictbiz;
   return result;
-}
-
-/** 下载Excel文件 */
-export function saveAsExcel(
-  buffer:  Uint32Array,
-  name: string,
-) {
-  const blob = new Blob([ buffer ], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  saveAs(blob, name);
 }
 
 export function showUploadMsg(

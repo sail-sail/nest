@@ -12,7 +12,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type BackgroundTaskModel,
+  type BackgroundTaskInput,
   type BackgroundTaskSearch,
 } from "./background_task.model.ts";
 
@@ -23,8 +23,8 @@ export async function findCountBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./background_task.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +36,8 @@ export async function findAllBackgroundTask(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./background_task.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +45,8 @@ export async function findAllBackgroundTask(
  */
 export async function getFieldCommentsBackgroundTask() {
   const { getFieldComments } = await import("./background_task.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +57,8 @@ export async function findOneBackgroundTask(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./background_task.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,8 +68,8 @@ export async function findByIdBackgroundTask(
   id: string,
 ) {
   const { findById } = await import("./background_task.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
@@ -81,9 +81,11 @@ export async function deleteByIdsBackgroundTask(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./background_task.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  const {
+    deleteByIds,
+  } = await import("./background_task.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -95,9 +97,11 @@ export async function revertByIdsBackgroundTask(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./background_task.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  const {
+    revertByIds,
+  } = await import("./background_task.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -109,7 +113,9 @@ export async function forceDeleteByIdsBackgroundTask(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./background_task.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  const {
+    forceDeleteByIds,
+  } = await import("./background_task.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }

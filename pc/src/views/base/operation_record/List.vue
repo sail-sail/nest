@@ -26,13 +26,13 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.mod_lbl_like == null && builtInSearch?.mod_lbl == null">
+      <template v-if="builtInSearch?.module_lbl_like == null && builtInSearch?.module_lbl == null">
         <el-form-item
           :label="n('模块名称')"
-          prop="mod_lbl_like"
+          prop="module_lbl_like"
         >
           <el-input
-            v-model="search.mod_lbl_like"
+            v-model="search.module_lbl_like"
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
             clearable
@@ -357,8 +357,26 @@
           :key="col.prop"
         >
           
+          <!-- 模块 -->
+          <template v-if="'module' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 模块名称 -->
-          <template v-if="'mod_lbl' === col.prop">
+          <template v-else-if="'module_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 方法 -->
+          <template v-else-if="'method' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -377,6 +395,24 @@
           
           <!-- 操作 -->
           <template v-else-if="'lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 操作前数据 -->
+          <template v-else-if="'old_data' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 操作后数据 -->
+          <template v-else-if="'new_data' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -559,16 +595,20 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: boolean; //是否多选
   id?: string; // ID
-  mod?: string; // 模块
-  mod_like?: string; // 模块
-  mod_lbl?: string; // 模块名称
-  mod_lbl_like?: string; // 模块名称
+  module?: string; // 模块
+  module_like?: string; // 模块
+  module_lbl?: string; // 模块名称
+  module_lbl_like?: string; // 模块名称
   method?: string; // 方法
   method_like?: string; // 方法
   method_lbl?: string; // 方法名称
   method_lbl_like?: string; // 方法名称
   lbl?: string; // 操作
   lbl_like?: string; // 操作
+  old_data?: string; // 操作前数据
+  old_data_like?: string; // 操作前数据
+  new_data?: string; // 操作后数据
+  new_data_like?: string; // 操作后数据
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -720,9 +760,25 @@ let tableData = $ref<OperationRecordModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "模块",
+      prop: "module",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "模块名称",
-      prop: "mod_lbl",
+      prop: "module_lbl",
       width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "方法",
+      prop: "method",
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -739,6 +795,22 @@ function getTableColumns(): ColumnType[] {
       label: "操作",
       prop: "lbl",
       width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "操作前数据",
+      prop: "old_data",
+      width: 280,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "操作后数据",
+      prop: "new_data",
+      width: 280,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -853,8 +925,8 @@ async function useFindCount() {
 
 /** 排序 */
 let sort: Sort = $ref({
-  prop: "",
-  order: "ascending",
+  prop: "create_time",
+  order: "descending",
 });
 
 /** 排序 */
@@ -958,9 +1030,13 @@ async function revertByIdsEfc() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "模块",
     "模块名称",
+    "方法",
     "方法名称",
     "操作",
+    "操作前数据",
+    "操作后数据",
     "备注",
     "创建人",
     "创建时间",

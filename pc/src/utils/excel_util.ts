@@ -1,3 +1,5 @@
+import saveAs from "file-saver";
+
 /**
  * 第一行作为表头, 获得文件数据
  */
@@ -69,6 +71,17 @@ export function useRenderExcel() {
       ],
     },
   );
+}
+
+/** 下载Excel文件 */
+export function saveAsExcel(
+  buffer:  Uint32Array,
+  name: string,
+) {
+  const blob = new Blob([ buffer ], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  saveAs(blob, name);
 }
 
 function date2Num(date: Date) {
