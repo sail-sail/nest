@@ -16,6 +16,10 @@ import {
   type RoleSearch,
 } from "./role.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createRole(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/role",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./role.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdRole(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/role",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./role.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/role",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./role.service.ts");
@@ -130,6 +152,12 @@ export async function revertByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/role",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./role.service.ts");
@@ -146,6 +174,12 @@ export async function forceDeleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/role",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./role.service.ts");

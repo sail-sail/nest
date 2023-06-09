@@ -16,6 +16,10 @@ import {
   type DictbizSearch,
 } from "./dictbiz.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createDictbiz(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dictbiz",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./dictbiz.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdDictbiz(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dictbiz",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./dictbiz.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dictbiz",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./dictbiz.service.ts");
@@ -134,6 +156,12 @@ export async function lockByIdsDictbiz(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDictbiz.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  await usePermit(
+    "/base/dictbiz",
+    "lock",
+  );
+  
   const {
     lockByIds,
   } = await import("./dictbiz.service.ts");
@@ -150,6 +178,12 @@ export async function revertByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dictbiz",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./dictbiz.service.ts");
@@ -166,6 +200,12 @@ export async function forceDeleteByIdsDictbiz(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dictbiz",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./dictbiz.service.ts");

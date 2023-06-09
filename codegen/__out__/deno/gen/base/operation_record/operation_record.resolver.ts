@@ -16,6 +16,10 @@ import {
   type OperationRecordSearch,
 } from "./operation_record.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function deleteByIdsOperationRecord(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/operation_record",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./operation_record.service.ts");
@@ -97,6 +107,12 @@ export async function revertByIdsOperationRecord(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/operation_record",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./operation_record.service.ts");
@@ -113,6 +129,12 @@ export async function forceDeleteByIdsOperationRecord(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/operation_record",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./operation_record.service.ts");

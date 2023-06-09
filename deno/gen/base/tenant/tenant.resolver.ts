@@ -16,6 +16,10 @@ import {
   type TenantSearch,
 } from "./tenant.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createTenant(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/tenant",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./tenant.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdTenant(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/tenant",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./tenant.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/tenant",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./tenant.service.ts");
@@ -130,6 +152,12 @@ export async function revertByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/tenant",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./tenant.service.ts");
@@ -146,6 +174,12 @@ export async function forceDeleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/tenant",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./tenant.service.ts");

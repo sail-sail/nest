@@ -16,6 +16,10 @@ import {
   type PermitSearch,
 } from "./permit.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createPermit(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/permit",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./permit.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdPermit(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/permit",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./permit.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/permit",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./permit.service.ts");
@@ -130,6 +152,12 @@ export async function revertByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/permit",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./permit.service.ts");
@@ -146,6 +174,12 @@ export async function forceDeleteByIdsPermit(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/permit",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./permit.service.ts");

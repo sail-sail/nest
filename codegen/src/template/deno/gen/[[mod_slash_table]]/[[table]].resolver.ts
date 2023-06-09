@@ -41,6 +41,10 @@ import {
   type <#=searchName#>,
 } from "./<#=table#>.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -123,6 +127,12 @@ export async function create<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "add",
+  );
+  
   const {<#
     if (log) {
     #>
@@ -171,6 +181,12 @@ export async function updateById<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "edit",
+  );
+  
   const {<#
     if (log) {
     #>
@@ -219,6 +235,12 @@ export async function deleteByIds<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "delete",
+  );
+  
   const {<#
     if (log) {
     #>
@@ -271,6 +293,12 @@ export async function lockByIds<#=Table_Up#>(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=Table_Up#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "lock",
+  );
+  
   const {
     lockByIds,
   } = await import("./<#=table#>.service.ts");<#
@@ -311,6 +339,12 @@ export async function revertByIds<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./<#=table#>.service.ts");<#
@@ -347,6 +381,12 @@ export async function forceDeleteByIds<#=Table_Up#>(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./<#=table#>.service.ts");<#

@@ -16,6 +16,10 @@ import {
   type BackgroundTaskSearch,
 } from "./background_task.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function deleteByIdsBackgroundTask(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/background_task",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./background_task.service.ts");
@@ -97,6 +107,12 @@ export async function revertByIdsBackgroundTask(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/background_task",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./background_task.service.ts");
@@ -113,6 +129,12 @@ export async function forceDeleteByIdsBackgroundTask(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/background_task",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./background_task.service.ts");

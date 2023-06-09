@@ -16,6 +16,10 @@ import {
   type MenuSearch,
 } from "./menu.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createMenu(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/menu",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./menu.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdMenu(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/menu",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./menu.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/menu",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./menu.service.ts");
@@ -130,6 +152,12 @@ export async function revertByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/menu",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./menu.service.ts");
@@ -146,6 +174,12 @@ export async function forceDeleteByIdsMenu(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/menu",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./menu.service.ts");

@@ -16,6 +16,10 @@ import {
   type I18Nsearch,
 } from "./i18n.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createI18N(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/i18n",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./i18n.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdI18N(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/i18n",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./i18n.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsI18N(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/i18n",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./i18n.service.ts");
@@ -130,6 +152,12 @@ export async function revertByIdsI18N(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/i18n",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./i18n.service.ts");
@@ -146,6 +174,12 @@ export async function forceDeleteByIdsI18N(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/i18n",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./i18n.service.ts");

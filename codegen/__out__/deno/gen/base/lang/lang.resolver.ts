@@ -16,6 +16,10 @@ import {
   type LangSearch,
 } from "./lang.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createLang(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/lang",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./lang.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdLang(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/lang",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./lang.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/lang",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./lang.service.ts");
@@ -130,6 +152,12 @@ export async function revertByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/lang",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./lang.service.ts");
@@ -146,6 +174,12 @@ export async function forceDeleteByIdsLang(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/lang",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./lang.service.ts");

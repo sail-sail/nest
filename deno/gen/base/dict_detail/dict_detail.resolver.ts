@@ -16,6 +16,10 @@ import {
   type DictDetailSearch,
 } from "./dict_detail.model.ts";
 
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
 /**
  * 根据条件查找据数总数
  */
@@ -81,6 +85,12 @@ export async function createDictDetail(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dict_detail",
+    "add",
+  );
+  
   const {
     create,
   } = await import("./dict_detail.service.ts");
@@ -98,6 +108,12 @@ export async function updateByIdDictDetail(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dict_detail",
+    "edit",
+  );
+  
   const {
     updateById,
   } = await import("./dict_detail.service.ts");
@@ -114,6 +130,12 @@ export async function deleteByIdsDictDetail(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dict_detail",
+    "delete",
+  );
+  
   const {
     deleteByIds,
   } = await import("./dict_detail.service.ts");
@@ -134,6 +156,12 @@ export async function lockByIdsDictDetail(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDictDetail.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  await usePermit(
+    "/base/dict_detail",
+    "lock",
+  );
+  
   const {
     lockByIds,
   } = await import("./dict_detail.service.ts");
@@ -150,6 +178,12 @@ export async function revertByIdsDictDetail(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dict_detail",
+    "delete",
+  );
+  
   const {
     revertByIds,
   } = await import("./dict_detail.service.ts");
@@ -166,6 +200,12 @@ export async function forceDeleteByIdsDictDetail(
   const context = useContext();
   
   context.is_tran = true;
+  
+  await usePermit(
+    "/base/dict_detail",
+    "force_delete",
+  );
+  
   const {
     forceDeleteByIds,
   } = await import("./dict_detail.service.ts");
