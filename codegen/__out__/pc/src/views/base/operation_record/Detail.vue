@@ -39,6 +39,7 @@
               v-model="dialogModel.module"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('模块') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -53,6 +54,7 @@
               v-model="dialogModel.module_lbl"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -67,6 +69,7 @@
               v-model="dialogModel.method"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('方法') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -81,6 +84,7 @@
               v-model="dialogModel.method_lbl"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -95,6 +99,7 @@
               v-model="dialogModel.lbl"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('操作') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -109,6 +114,7 @@
               v-model="dialogModel.old_data"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -123,6 +129,7 @@
               v-model="dialogModel.new_data"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -137,6 +144,7 @@
               v-model="dialogModel.rem"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>

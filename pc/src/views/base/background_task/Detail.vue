@@ -39,6 +39,7 @@
               v-model="dialogModel.lbl"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -85,6 +86,7 @@
               v-model="dialogModel.result"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('执行结果') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -99,6 +101,7 @@
               v-model="dialogModel.err_msg"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('错误信息') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -147,6 +150,7 @@
               v-model="dialogModel.rem"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>

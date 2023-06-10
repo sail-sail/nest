@@ -82,6 +82,7 @@
               v-model="dialogModel.code"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('编码') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -96,6 +97,7 @@
               v-model="dialogModel.lbl"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -110,6 +112,7 @@
               v-model="dialogModel.rem"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
