@@ -104,7 +104,7 @@
               un-m="l-1"
               type="primary"
               :href="template"
-              download="客户导入.xlsx"
+              :download="templateName || '导入.xlsx'"
             >
               点击下载导入模板
             </el-link>
@@ -147,21 +147,25 @@
   <input
     ref="fileRef"
     type="file"
-    
     un-display-none
-    
     @change="inputChg"
   />
 </el-dialog>
 </template>
 
 <script lang="ts" setup>
+const {
+  ns,
+  nsAsync,
+} = useI18n();
+
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
-let dialogTitle = $ref("导入");
+let dialogTitle = $ref(ns("上传"));
 let dialogVisible = $ref(false);
 
 let template = $ref("");
+let templateName = $ref("");
 
 let fileRef = $ref<HTMLInputElement>();
 
@@ -177,14 +181,19 @@ async function showDialog(
   arg?: {
     title?: string,
     template?: string,
+    templateName?: string,
   },
 ) {
   if (arg) {
-    dialogTitle = arg.title || "导入";
+    dialogTitle = arg.title || await nsAsync("上传");
   }
   if (arg?.template) {
     template = arg.template;
   }
+  if (arg?.templateName) {
+    templateName = arg.templateName;
+  }
+  
   fileInfo = {
     name: "",
     size: 0,
@@ -230,9 +239,9 @@ async function confirmClk() {
 async function cancelClk() {
   if (fileObj && fileInfo.name) {
     try {
-      await ElMessageBox.confirm(`文件 ${ fileInfo.name } 尚未导入, 取消导入? `, {
-        confirmButtonText: "取消导入",
-        cancelButtonText: "我再想想",
+      await ElMessageBox.confirm(await nsAsync(`文件 {0} 尚未上传, 确定取消? `, fileInfo.name), {
+        confirmButtonText: await nsAsync("取消"),
+        cancelButtonText: await nsAsync("我再想想"),
         type: "warning",
       });
     } catch (err) {
@@ -246,9 +255,9 @@ async function cancelClk() {
 async function beforeClose(done: (cancel: boolean) => void) {
   if (fileObj && fileInfo.name) {
     try {
-      await ElMessageBox.confirm(`文件 ${ fileInfo.name } 尚未导入, 取消导入? `, {
-        confirmButtonText: "取消导入",
-        cancelButtonText: "我再想想",
+      await ElMessageBox.confirm(await nsAsync(`文件 {0} 尚未上传, 确定取消? `, fileInfo.name), {
+        confirmButtonText: await nsAsync("取消"),
+        cancelButtonText: await nsAsync("我再想想"),
         type: "warning",
       });
     } catch (err) {

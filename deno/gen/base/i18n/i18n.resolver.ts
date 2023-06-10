@@ -12,9 +12,13 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type I18Nmodel,
+  type I18Ninput,
   type I18Nsearch,
 } from "./i18n.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
 
 /**
  * 根据条件查找据数总数
@@ -23,8 +27,8 @@ export async function findCountI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./i18n.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +40,8 @@ export async function findAllI18N(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./i18n.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +49,8 @@ export async function findAllI18N(
  */
 export async function getFieldCommentsI18N() {
   const { getFieldComments } = await import("./i18n.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +61,8 @@ export async function findOneI18N(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./i18n.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +72,30 @@ export async function findByIdI18N(
   id: string,
 ) {
   const { findById } = await import("./i18n.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createI18N(
-  model: I18Nmodel,
+  input: I18Ninput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./i18n.service.ts");
-  const data = await create(model);
-  return data;
+  
+  await usePermit(
+    "/base/i18n",
+    "add",
+  );
+  
+  const {
+    create,
+  } = await import("./i18n.service.ts");
+  const res = await create(input);
+  return res;
 }
 
 /**
@@ -91,14 +103,22 @@ export async function createI18N(
  */
 export async function updateByIdI18N(
   id: string,
-  model: I18Nmodel,
+  input: I18Ninput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./i18n.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  
+  await usePermit(
+    "/base/i18n",
+    "edit",
+  );
+  
+  const {
+    updateById,
+  } = await import("./i18n.service.ts");
+  const res = await updateById(id, input);
+  return res;
 }
 
 /**
@@ -110,9 +130,17 @@ export async function deleteByIdsI18N(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./i18n.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/i18n",
+    "delete",
+  );
+  
+  const {
+    deleteByIds,
+  } = await import("./i18n.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -124,9 +152,17 @@ export async function revertByIdsI18N(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./i18n.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/i18n",
+    "delete",
+  );
+  
+  const {
+    revertByIds,
+  } = await import("./i18n.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -138,7 +174,15 @@ export async function forceDeleteByIdsI18N(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./i18n.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/i18n",
+    "force_delete",
+  );
+  
+  const {
+    forceDeleteByIds,
+  } = await import("./i18n.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }

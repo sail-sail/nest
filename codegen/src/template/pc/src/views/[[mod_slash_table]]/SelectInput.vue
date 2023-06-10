@@ -53,17 +53,40 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       #suffix
       v-if="!$slots.suffix"
     >
-      <el-icon
-        class="mx-1 hover:text-red-500"
-        @click="clearClk"
+      <template
+        v-if="!props.disabled"
       >
-        <ElIconCircleClose
-          v-if="isHover"
-        />
-        <ElIconSearch
+        <template
+          v-if="modelValue && modelValue.length > 0"
+        >
+          <el-icon
+            @click="clearClk"
+            un-cursor-pointer
+            un-text="hover:red-500"
+            un-m="r-0.5"
+            size="14"
+          >
+            <ElIconCircleClose
+              v-if="isHover"
+            />
+            <ElIconArrowDown
+              v-else
+            />
+          </el-icon>
+        </template>
+        <template
           v-else
-        />
-      </el-icon>
+        >
+          <el-icon
+            @click="inputClk"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
+          >
+            <ElIconArrowDown />
+          </el-icon>
+        </template>
+      </template>
     </template>
   </el-input>
   <SelectList
@@ -87,18 +110,26 @@ import {
 let emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
+  (e: "clear"): void,
 }>();
+
+const {
+  n,
+  ns,
+} = useI18n("/<#=mod#>/<#=table#>");
 
 const props = withDefaults(
   defineProps<{
     modelValue?: string | string[] | null;
     multiple?: boolean;
     placeholder?: string;
+    disabled?: boolean;
   }>(),
   {
     modelValue: undefined,
     multiple: false,
-    placeholder: "请选择 菜单",
+    placeholder: "`${ ns('请选择') } ${ n('<#=table_comment#>') }`",
+    disabled: false,
   },
 );
 
@@ -172,6 +203,8 @@ function clearClk() {
   modelValue = "";
   inputValue = "";
   emit("update:modelValue", modelValue);
+  emit("change", undefined);
+  emit("clear");
 }
 
 let dialog_visible = $ref(false);

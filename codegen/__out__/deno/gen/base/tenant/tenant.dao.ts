@@ -41,7 +41,6 @@ import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
   many2manyUpdate,
-  setModelIds,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -51,6 +50,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type TenantInput,
   type TenantModel,
   type TenantSearch,
 } from "./tenant.model.ts";
@@ -416,13 +416,13 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<TenantModel>} model
+ * @param {TenantInput} model
  * @param {TenantModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<TenantModel>,
+  model: TenantInput,
   oldModel: TenantModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -549,7 +549,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<TenantModel>} model
+ * @param {TenantInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -559,7 +559,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<TenantModel>,
+  model: TenantInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -716,7 +716,7 @@ export async function delCache() {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<TenantModel>} model
+ * @param {TenantInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -727,7 +727,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: string,
-  model: PartialNull<TenantModel>,
+  model: TenantInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

@@ -392,7 +392,6 @@
         @select="selectChg"
         @select-all="selectChg"
         @row-click="rowClk"
-        @row-dblclick="openEdit"
         @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
@@ -586,7 +585,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n();
+} = useI18n("/base/permit");
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -650,7 +649,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: Boolean; //是否多选
   id?: string; // ID
   role_id?: string|string[]; // 角色
   role_id_lbl?: string|string[]; // 角色
@@ -965,7 +964,6 @@ async function useFindCount() {
   page.total = await findCount(search2);
 }
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "",
   order: "ascending",
@@ -980,7 +978,7 @@ async function sortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel());
+let exportExcel = $ref(useExportExcel("/base/permit"));
 
 /** 导出Excel */
 async function exportClk() {

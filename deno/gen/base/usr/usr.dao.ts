@@ -45,7 +45,6 @@ import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   many2manyUpdate,
-  setModelIds,
 } from "/lib/util/dao_util.ts";
 
 import {
@@ -55,6 +54,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type UsrInput,
   type UsrModel,
   type UsrSearch,
 } from "./usr.model.ts";
@@ -464,13 +464,13 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} model
  * @param {UsrModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<UsrModel>,
+  model: UsrInput,
   oldModel: UsrModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -597,7 +597,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -607,7 +607,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<UsrModel>,
+  model: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -867,7 +867,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<UsrModel>} model
+ * @param {UsrInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -878,7 +878,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: PartialNull<UsrModel>,
+  model: UsrInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

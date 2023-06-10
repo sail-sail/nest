@@ -70,7 +70,7 @@ function hasSelectInputFn(table_name: string) {
 
 export async function codegen(context: Context, schema: TablesConfigItem, table_names: string[]) {
   const opts = schema.opts;
-  let { table, table_comment, defaultSort, hasTenant_id, cache } = opts;
+  let { table, table_comment, defaultSort, hasTenant_id, cache, log } = opts;
   const columns = schema.columns;
   const formatMsg = formatMsg0;
   const uniqueID = uniqueID0;

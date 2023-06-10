@@ -1,6 +1,3 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
@@ -10,6 +7,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type BackgroundTaskInput,
   type BackgroundTaskModel,
   type BackgroundTaskSearch,
 } from "./background_task.model.ts";
@@ -115,27 +113,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {BackgroundTaskModel} model
+ * @param {BackgroundTaskInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: BackgroundTaskModel,
+  input: BackgroundTaskInput,
 ): Promise<string> {
-  const data = await background_taskDao.create(model);
+  const data = await background_taskDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {BackgroundTaskModel} model
+ * @param {BackgroundTaskInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: BackgroundTaskModel,
+  input: BackgroundTaskInput,
 ): Promise<string> {
-  const data = await background_taskDao.updateById(id, model);
+  const data = await background_taskDao.updateById(id, input);
   return data;
 }
 

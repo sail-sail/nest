@@ -8,6 +8,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type DictbizInput,
   type DictbizModel,
   type DictbizSearch,
 } from "./dictbiz.model.ts";
@@ -93,32 +94,32 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {DictbizModel} model
+ * @param {DictbizInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: DictbizModel,
+  input: DictbizInput,
 ): Promise<string> {
-  const data = await dictbizDao.create(model);
+  const data = await dictbizDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {DictbizModel} model
+ * @param {DictbizInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: DictbizModel,
+  input: DictbizInput,
 ): Promise<string> {
   
   const is_locked = await dictbizDao.getIs_lockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
-  const data = await dictbizDao.updateById(id, model);
+  const data = await dictbizDao.updateById(id, input);
   return data;
 }
 

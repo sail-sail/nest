@@ -25,12 +25,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
+#><#
+if (hasLocked) {
 #>import {
   ns,
 } from "/src/base/i18n/i18n.ts";<#
+}
+#><#
 if (opts.filterDataByCreateUsr) {
 #>
-
 import * as authDao from "/lib/auth/auth.dao.ts";<#
 }
 #>
@@ -41,6 +44,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type <#=inputName#>,
   type <#=modelName#>,
   type <#=searchName#>,
 } from "./<#=table#>.model.ts";<#
@@ -196,13 +200,13 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {<#=modelName#>} model
+ * @param {<#=inputName#>} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: <#=modelName#>,
+  input: <#=inputName#>,
 ): Promise<string> {
-  const data = await <#=table#>Dao.create(model);
+  const data = await <#=table#>Dao.create(input);
   return data;
 }<#
 if (hasVersion) {
@@ -221,12 +225,12 @@ export async function getVersionById(id: string) {
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {<#=modelName#>} model
+ * @param {<#=inputName#>} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: <#=modelName#>,
+  input: <#=inputName#>,
 ): Promise<string> {<#
   if (hasLocked) {
   #>
@@ -237,7 +241,7 @@ export async function updateById(
   }<#
   }
   #>
-  const data = await <#=table#>Dao.updateById(id, model);<#
+  const data = await <#=table#>Dao.updateById(id, input);<#
   if (table === "i18n") {
   #>
   

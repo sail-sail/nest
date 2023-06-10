@@ -12,9 +12,13 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type OperationRecordModel,
+  type OperationRecordInput,
   type OperationRecordSearch,
 } from "./operation_record.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
 
 /**
  * 根据条件查找据数总数
@@ -23,8 +27,8 @@ export async function findCountOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./operation_record.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +40,8 @@ export async function findAllOperationRecord(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./operation_record.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +49,8 @@ export async function findAllOperationRecord(
  */
 export async function getFieldCommentsOperationRecord() {
   const { getFieldComments } = await import("./operation_record.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +61,8 @@ export async function findOneOperationRecord(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./operation_record.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,8 +72,8 @@ export async function findByIdOperationRecord(
   id: string,
 ) {
   const { findById } = await import("./operation_record.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
@@ -81,9 +85,17 @@ export async function deleteByIdsOperationRecord(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./operation_record.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/operation_record",
+    "delete",
+  );
+  
+  const {
+    deleteByIds,
+  } = await import("./operation_record.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -95,9 +107,17 @@ export async function revertByIdsOperationRecord(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./operation_record.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/operation_record",
+    "delete",
+  );
+  
+  const {
+    revertByIds,
+  } = await import("./operation_record.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -109,7 +129,15 @@ export async function forceDeleteByIdsOperationRecord(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./operation_record.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/operation_record",
+    "force_delete",
+  );
+  
+  const {
+    forceDeleteByIds,
+  } = await import("./operation_record.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }

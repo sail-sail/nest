@@ -1,6 +1,4 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
+
 
 import {
   type PageInput,
@@ -8,6 +6,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type LangInput,
   type LangModel,
   type LangSearch,
 } from "./lang.model.ts";
@@ -93,27 +92,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {LangModel} model
+ * @param {LangInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: LangModel,
+  input: LangInput,
 ): Promise<string> {
-  const data = await langDao.create(model);
+  const data = await langDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {LangModel} model
+ * @param {LangInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: LangModel,
+  input: LangInput,
 ): Promise<string> {
-  const data = await langDao.updateById(id, model);
+  const data = await langDao.updateById(id, input);
   return data;
 }
 

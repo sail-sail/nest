@@ -50,6 +50,12 @@ export interface TableCloumn {
   noList?: boolean;
   
   /**
+   * List页面表格是否 showOverflowTooltip
+   * 默认为true
+   */
+  showOverflowTooltip?: boolean;
+  
+  /**
    * 是否虚拟字段, 虚拟自动不会在dao中生成增加, 修改操作
    * @type {boolean}
    * @memberof TableCloumn
@@ -490,6 +496,11 @@ export interface TablesConfigItem {
      * @type {boolean}
      */
     cache?: boolean;
+    
+    /**
+     * 是否启用日志记录
+     */
+    log?: boolean;
     
     /**
      * 是否忽略代码生成

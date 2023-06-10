@@ -12,9 +12,13 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type TenantModel,
+  type TenantInput,
   type TenantSearch,
 } from "./tenant.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
 
 /**
  * 根据条件查找据数总数
@@ -23,8 +27,8 @@ export async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./tenant.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +40,8 @@ export async function findAllTenant(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./tenant.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +49,8 @@ export async function findAllTenant(
  */
 export async function getFieldCommentsTenant() {
   const { getFieldComments } = await import("./tenant.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +61,8 @@ export async function findOneTenant(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./tenant.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +72,30 @@ export async function findByIdTenant(
   id: string,
 ) {
   const { findById } = await import("./tenant.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createTenant(
-  model: TenantModel,
+  input: TenantInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./tenant.service.ts");
-  const data = await create(model);
-  return data;
+  
+  await usePermit(
+    "/base/tenant",
+    "add",
+  );
+  
+  const {
+    create,
+  } = await import("./tenant.service.ts");
+  const res = await create(input);
+  return res;
 }
 
 /**
@@ -91,14 +103,22 @@ export async function createTenant(
  */
 export async function updateByIdTenant(
   id: string,
-  model: TenantModel,
+  input: TenantInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./tenant.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  
+  await usePermit(
+    "/base/tenant",
+    "edit",
+  );
+  
+  const {
+    updateById,
+  } = await import("./tenant.service.ts");
+  const res = await updateById(id, input);
+  return res;
 }
 
 /**
@@ -110,9 +130,17 @@ export async function deleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./tenant.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/tenant",
+    "delete",
+  );
+  
+  const {
+    deleteByIds,
+  } = await import("./tenant.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -124,9 +152,17 @@ export async function revertByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./tenant.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/tenant",
+    "delete",
+  );
+  
+  const {
+    revertByIds,
+  } = await import("./tenant.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -138,9 +174,17 @@ export async function forceDeleteByIdsTenant(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./tenant.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/tenant",
+    "force_delete",
+  );
+  
+  const {
+    forceDeleteByIds,
+  } = await import("./tenant.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }
 
 /**
@@ -148,6 +192,6 @@ export async function forceDeleteByIdsTenant(
  */
 export async function findLastOrderByTenant() {
   const { findLastOrderBy } = await import("./tenant.service.ts");
-  const data = findLastOrderBy();
-  return data;
+  const res = findLastOrderBy();
+  return res;
 }

@@ -14,6 +14,6 @@ export {
 
 export {
   replaceParams,
-} from "https://deno.land/x/sql_builder@v1.9.1/util.ts";
+} from "https://deno.land/x/sql_builder@v1.9.2/util.ts";
 
 export * as log from "std/log/mod.ts";

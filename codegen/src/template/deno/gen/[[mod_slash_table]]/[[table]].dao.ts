@@ -4,9 +4,27 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
-const Table_Up = tableUp.split("_").map(function(item) {
+let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+let modelName = "";
+let fieldCommentName = "";
+let inputName = "";
+let searchName = "";
+if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+) {
+  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+  modelName = Table_Up + "model";
+  fieldCommentName = Table_Up + "fieldComment";
+  inputName = Table_Up + "input";
+  searchName = Table_Up + "search";
+} else {
+  modelName = Table_Up + "Model";
+  fieldCommentName = Table_Up + "FieldComment";
+  inputName = Table_Up + "Input";
+  searchName = Table_Up + "Search";
+}
 const hasDict = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -26,6 +44,26 @@ const hasDictbiz = columns.some((column) => {
     return false;
   }
   return column.dictbiz;
+});
+const hasMany2many = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "many2many") {
+    return true;
+  }
+  return false;
+});
+const hasForeignJson = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.type === "json") {
+    return true;
+  }
+  return false;
 });
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
@@ -92,12 +130,23 @@ if (hasDeptId) {
 
 import * as deptDao from "/gen/base/dept/dept.dao.ts";<#
 }
+#><#
+if (hasMany2many) {
 #>
 
 import {
   many2manyUpdate,
+} from "/lib/util/dao_util.ts";<#
+}
+#><#
+if (hasForeignJson) {
+#>
+
+import {
   setModelIds,
-} from "/lib/util/dao_util.ts";
+} from "/lib/util/dao_util.ts";<#
+}
+#>
 
 import {
   SortOrderEnum,
@@ -106,8 +155,9 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type <#=Table_Up#>Model,
-  type <#=Table_Up#>Search,
+  type <#=inputName#>,
+  type <#=modelName#>,
+  type <#=searchName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -123,6 +173,11 @@ for (let i = 0; i < columns.length; i++) {
   if (column.ignoreCodegen) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
+  if (column_name === "create_usr_id"
+    || column_name === "update_usr_id"
+  ) {
+    continue;
+  }
   let data_type = column.DATA_TYPE;
   let column_type = column.COLUMN_TYPE;
   let column_comment = column.COLUMN_COMMENT || "";
@@ -158,7 +213,7 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignKey.mod#>/<#=foreignTable#
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   options?: {
   },
 ) {
@@ -370,11 +425,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { <#=Table_Up#>Search } search?
+ * @param { <#=searchName#> } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   options?: {
   },
 ): Promise<number> {
@@ -419,11 +474,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -523,7 +578,7 @@ export async function findAll(
   }
   #>
   
-  let result = await query<<#=Table_Up#>Model>(sql, args<#
+  let result = await query<<#=modelName#>>(sql, args<#
   if (cache) {
   #>, { cacheKey1, cacheKey2 }<#
   }
@@ -827,11 +882,11 @@ export async function getFieldComments() {
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof <#=Table_Up#>Model)[];
+  uniqueKeys: (keyof <#=modelName#>)[];
   uniqueComments: { [key: string]: string };
 }> {
   const n = initN("/i18n");
-  const uniqueKeys: (keyof <#=Table_Up#>Model)[] = [<#
+  const uniqueKeys: (keyof <#=modelName#>)[] = [<#
   for (let i = 0; i < (opts.unique || []).length; i++) {
     const uniqueKey = opts.unique[i];
   #>
@@ -864,10 +919,10 @@ export async function getUniqueKeys(): Promise<{
 
 /**
  * 通过唯一约束获得一行数据
- * @param {<#=Table_Up#>Search | PartialNull<<#=Table_Up#>Model>} search0
+ * @param {<#=searchName#> | PartialNull<<#=modelName#>>} search0
  */
 export async function findByUnique(
-  search0: <#=Table_Up#>Search | PartialNull<<#=Table_Up#>Model>,
+  search0: <#=searchName#> | PartialNull<<#=modelName#>>,
   options?: {
   },
 ) {
@@ -879,7 +934,7 @@ export async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: <#=Table_Up#>Search = { };
+  const search: <#=searchName#> = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -894,13 +949,13 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {<#=Table_Up#>Model} oldModel
- * @param {PartialNull<<#=Table_Up#>Model>} model
+ * @param {<#=modelName#>} oldModel
+ * @param {PartialNull<<#=modelName#>>} model
  * @return {boolean}
  */
 export async function equalsByUnique(
-  oldModel: <#=Table_Up#>Model,
-  model: PartialNull<<#=Table_Up#>Model>,
+  oldModel: <#=modelName#>,
+  model: PartialNull<<#=modelName#>>,
 ): Promise<boolean> {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = await getUniqueKeys();
@@ -920,14 +975,14 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<<#=Table_Up#>Model>} model
- * @param {<#=Table_Up#>Model} oldModel
+ * @param {<#=inputName#>} model
+ * @param {<#=modelName#>} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<<#=Table_Up#>Model>,
-  oldModel: <#=Table_Up#>Model,
+  model: <#=inputName#>,
+  oldModel: <#=modelName#>,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
@@ -963,11 +1018,11 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找合计
- * @param {<#=Table_Up#>Search} search? 搜索条件
+ * @param {<#=searchName#>} search? 搜索条件
  * @return {Promise<<#=Table_Up#>Summary>}
  */
 export async function findSummary(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   options?: {
   },
 ): Promise<<#=Table_Up#>Summary> {
@@ -1017,10 +1072,10 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一条数据
- * @param {<#=Table_Up#>Search} search?
+ * @param {<#=searchName#>} search?
  */
 export async function findOne(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   sort?: SortInput | SortInput[],
   options?: {
   },
@@ -1054,10 +1109,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {<#=Table_Up#>Search} search?
+ * @param {<#=searchName#>} search?
  */
 export async function exist(
-  search?: <#=Table_Up#>Search,
+  search?: <#=searchName#>,
   options?: {
   },
 ) {
@@ -1117,7 +1172,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<<#=Table_Up#>Model>} model
+ * @param {<#=inputName#>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -1127,7 +1182,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<<#=Table_Up#>Model>,
+  model: <#=inputName#>,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -1726,7 +1781,7 @@ export async function getVersionById(id: string) {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<<#=Table_Up#>Model>} model
+ * @param {<#=inputName#>} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -1737,7 +1792,7 @@ export async function getVersionById(id: string) {
  */
 export async function updateById(
   id: string,
-  model: PartialNull<<#=Table_Up#>Model>,
+  model: <#=inputName#>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

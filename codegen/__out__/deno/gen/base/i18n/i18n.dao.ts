@@ -38,19 +38,15 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  many2manyUpdate,
-  setModelIds,
-} from "/lib/util/dao_util.ts";
-
-import {
   SortOrderEnum,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
-  type I18nModel,
-  type I18nSearch,
+  type I18Ninput,
+  type I18Nmodel,
+  type I18Nsearch,
 } from "./i18n.model.ts";
 
 import * as langDao from "/gen/base/lang/lang.dao.ts";
@@ -59,7 +55,7 @@ import * as menuDao from "/gen/base/menu/menu.dao.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: I18nSearch,
+  search?: I18Nsearch,
   options?: {
   },
 ) {
@@ -151,11 +147,11 @@ function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { I18nSearch } search?
+ * @param { I18Nsearch } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   options?: {
   },
 ): Promise<number> {
@@ -192,11 +188,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {I18nSearch} search? 搜索条件
+ * @param {I18Nsearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
@@ -243,7 +239,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await query<I18nModel>(sql, args, { cacheKey1, cacheKey2 });
+  let result = await query<I18Nmodel>(sql, args, { cacheKey1, cacheKey2 });
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
   }
@@ -272,11 +268,11 @@ export async function getFieldComments() {
  * 获得表的唯一字段名列表
  */
 export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof I18nModel)[];
+  uniqueKeys: (keyof I18Nmodel)[];
   uniqueComments: { [key: string]: string };
 }> {
   const n = initN("/i18n");
-  const uniqueKeys: (keyof I18nModel)[] = [
+  const uniqueKeys: (keyof I18Nmodel)[] = [
     "lang_id",
     "menu_id",
     "code",
@@ -291,10 +287,10 @@ export async function getUniqueKeys(): Promise<{
 
 /**
  * 通过唯一约束获得一行数据
- * @param {I18nSearch | PartialNull<I18nModel>} search0
+ * @param {I18Nsearch | PartialNull<I18Nmodel>} search0
  */
 export async function findByUnique(
-  search0: I18nSearch | PartialNull<I18nModel>,
+  search0: I18Nsearch | PartialNull<I18Nmodel>,
   options?: {
   },
 ) {
@@ -306,7 +302,7 @@ export async function findByUnique(
   if (!uniqueKeys || uniqueKeys.length === 0) {
     return;
   }
-  const search: I18nSearch = { };
+  const search: I18Nsearch = { };
   for (let i = 0; i < uniqueKeys.length; i++) {
     const key = uniqueKeys[i];
     const val = (search0 as any)[key];
@@ -321,13 +317,13 @@ export async function findByUnique(
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {I18nModel} oldModel
- * @param {PartialNull<I18nModel>} model
+ * @param {I18Nmodel} oldModel
+ * @param {PartialNull<I18Nmodel>} model
  * @return {boolean}
  */
 export async function equalsByUnique(
-  oldModel: I18nModel,
-  model: PartialNull<I18nModel>,
+  oldModel: I18Nmodel,
+  model: PartialNull<I18Nmodel>,
 ): Promise<boolean> {
   if (!oldModel || !model) return false;
   const { uniqueKeys } = await getUniqueKeys();
@@ -347,14 +343,14 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<I18nModel>} model
- * @param {I18nModel} oldModel
+ * @param {I18Ninput} model
+ * @param {I18Nmodel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<I18nModel>,
-  oldModel: I18nModel,
+  model: I18Ninput,
+  oldModel: I18Nmodel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
   },
@@ -388,10 +384,10 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {I18nSearch} search?
+ * @param {I18Nsearch} search?
  */
 export async function findOne(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   sort?: SortInput | SortInput[],
   options?: {
   },
@@ -425,10 +421,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {I18nSearch} search?
+ * @param {I18Nsearch} search?
  */
 export async function exist(
-  search?: I18nSearch,
+  search?: I18Nsearch,
   options?: {
   },
 ) {
@@ -480,7 +476,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<I18nModel>} model
+ * @param {I18Ninput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -490,7 +486,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<I18nModel>,
+  model: I18Ninput,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -614,7 +610,7 @@ export async function delCache() {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<I18nModel>} model
+ * @param {I18Ninput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -625,7 +621,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: string,
-  model: PartialNull<I18nModel>,
+  model: I18Ninput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

@@ -12,9 +12,13 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type RoleModel,
+  type RoleInput,
   type RoleSearch,
 } from "./role.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
 
 /**
  * 根据条件查找据数总数
@@ -23,8 +27,8 @@ export async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./role.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +40,8 @@ export async function findAllRole(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./role.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +49,8 @@ export async function findAllRole(
  */
 export async function getFieldCommentsRole() {
   const { getFieldComments } = await import("./role.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +61,8 @@ export async function findOneRole(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./role.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +72,30 @@ export async function findByIdRole(
   id: string,
 ) {
   const { findById } = await import("./role.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createRole(
-  model: RoleModel,
+  input: RoleInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./role.service.ts");
-  const data = await create(model);
-  return data;
+  
+  await usePermit(
+    "/base/role",
+    "add",
+  );
+  
+  const {
+    create,
+  } = await import("./role.service.ts");
+  const res = await create(input);
+  return res;
 }
 
 /**
@@ -91,14 +103,22 @@ export async function createRole(
  */
 export async function updateByIdRole(
   id: string,
-  model: RoleModel,
+  input: RoleInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./role.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  
+  await usePermit(
+    "/base/role",
+    "edit",
+  );
+  
+  const {
+    updateById,
+  } = await import("./role.service.ts");
+  const res = await updateById(id, input);
+  return res;
 }
 
 /**
@@ -110,9 +130,17 @@ export async function deleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./role.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/role",
+    "delete",
+  );
+  
+  const {
+    deleteByIds,
+  } = await import("./role.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -124,9 +152,17 @@ export async function revertByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./role.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/role",
+    "delete",
+  );
+  
+  const {
+    revertByIds,
+  } = await import("./role.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -138,7 +174,15 @@ export async function forceDeleteByIdsRole(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./role.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/role",
+    "force_delete",
+  );
+  
+  const {
+    forceDeleteByIds,
+  } = await import("./role.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }

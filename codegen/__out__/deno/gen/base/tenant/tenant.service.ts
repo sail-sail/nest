@@ -1,6 +1,4 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
+
 
 import {
   type PageInput,
@@ -8,6 +6,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type TenantInput,
   type TenantModel,
   type TenantSearch,
 } from "./tenant.model.ts";
@@ -93,27 +92,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {TenantModel} model
+ * @param {TenantInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: TenantModel,
+  input: TenantInput,
 ): Promise<string> {
-  const data = await tenantDao.create(model);
+  const data = await tenantDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {TenantModel} model
+ * @param {TenantInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: TenantModel,
+  input: TenantInput,
 ): Promise<string> {
-  const data = await tenantDao.updateById(id, model);
+  const data = await tenantDao.updateById(id, input);
   return data;
 }
 

@@ -46,7 +46,7 @@
                 };
               })"
               un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('系统字典') }`"
+              :placeholder="`${ ns('请选择') } ${ n('系统字典') }`"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -60,7 +60,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -74,7 +74,7 @@
             <el-input
               v-model="dialogModel.val"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('值') }`"
+              :placeholder="`${ ns('请输入') } ${ n('值') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -93,7 +93,7 @@
               :step="1"
               :step-strictly="true"
               :controls="false"
-              :placeholder="`${ n('请输入') } ${ n('排序') }`"
+              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -107,7 +107,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('备注') }`"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -212,7 +212,7 @@ const {
   ns,
   initI18ns,
   initSysI18ns,
-} = useI18n();
+} = useI18n("/base/dict_detail");
 
 let inited = $ref(false);
 
