@@ -40,6 +40,7 @@
               v-model="dialogModel.lbl"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -54,6 +55,7 @@
               v-model="dialogModel.host"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('域名绑定') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
@@ -90,6 +92,7 @@
               :step-strictly="true"
               :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('最大用户数') }`"
+              :clearable="true"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -132,6 +135,7 @@
               :step-strictly="true"
               :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              :clearable="true"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -146,6 +150,7 @@
               v-model="dialogModel.rem"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
             ></el-input>
           </el-form-item>
         </template>
