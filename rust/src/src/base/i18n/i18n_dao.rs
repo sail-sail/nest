@@ -27,7 +27,7 @@ impl NRoute {
     &self,
     ctx: &mut impl Ctx<'a>,
     code: String,
-    map: Option<&HashMap<&'a str, &'a str>>,
+    map: Option<HashMap<String, String>>,
   ) -> Result<String> {
     let res = n(ctx, self.route_path.clone().into(), code, map).await?;
     Ok(res)
@@ -40,7 +40,7 @@ pub async fn n<'a>(
   ctx: &mut impl Ctx<'a>,
   route_path: Option<String>,
   code: String,
-  map: Option<&HashMap<&'a str, &'a str>>,
+  map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
@@ -58,7 +58,7 @@ pub async fn n<'a>(
 pub async fn ns<'a>(
   ctx: &mut impl Ctx<'a>,
   code: String,
-  map: Option<&HashMap<&'a str, &'a str>>,
+  map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   let lang_code = ctx.get_auth_lang();
   if lang_code.is_none() {
@@ -77,7 +77,7 @@ pub async fn n_lang<'a>(
   lang_code: String,
   route_path: Option<String>,
   code: String,
-  map: Option<&HashMap<&'a str, &'a str>>,
+  map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   let mut i18n_lbl = code.clone();
   let lang_model = lang_dao::find_one(
@@ -153,8 +153,8 @@ pub async fn n_lang<'a>(
   }
   if let Some(map) = map {
     let res: Cow<str> = REG.replace_all(&i18n_lbl, |caps: &Captures| {
-      let key = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
-      let value = map.get(key).unwrap_or(&"");
+      let key = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
+      let value = map.get(&key).unwrap_or(&"".to_owned()).clone();
       value
     });
     i18n_lbl = res.to_string();
@@ -168,14 +168,14 @@ fn test_regex() {
     use std::collections::HashMap;
 
   let mut map = HashMap::new();
-  map.insert("name", "黄智勇");
-  map.insert("0", "黄0");
+  map.insert("name".to_owned(), "黄智勇".to_owned());
+  map.insert("0".to_owned(), "黄0".to_owned());
   let re = Regex::new(r"\{([\s\S]*?)\}").unwrap();
   let text = "Hello {name} {name2} {0}!";
   let result = re.replace_all(text, |caps: &Captures| {
     println!("{:#?}", caps);
     let key = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
-    let value = map.get(key).unwrap_or(&"");
+    let value = map.get(key).unwrap_or(&"".to_owned()).clone();
     value
   });
   println!("{}", result);

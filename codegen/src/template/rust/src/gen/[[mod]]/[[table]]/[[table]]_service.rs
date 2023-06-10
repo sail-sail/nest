@@ -34,9 +34,18 @@ const hasDictbiz = columns.some((column) => {
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
-use super::<#=table#>_dao;
+use super::<#=table#>_dao;<#
+if (log) {
+#>
+
+use crate::src::base::i18n::i18n_dao::ns;
+use crate::src::base::operation_record::operation_record_service::log;
+use crate::gen::base::operation_record::operation_record_model::OperationRecordInput;<#
+}
+#>
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all<'a>(
@@ -81,7 +90,7 @@ pub async fn find_one<'a>(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
-    
+  
   let model = <#=table#>_dao::find_one(
     ctx,
     search,
@@ -116,11 +125,44 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
   let id = <#=table#>_dao::create(
     ctx,
     input,
     options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let new_data = <#=table#>_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
   ).await?;
+  
+  let method_lbl = ns(ctx, "新增".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "create".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: "{}".to_owned().into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
   
   Ok(id)
 }<#
@@ -180,12 +222,55 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "edit".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = <#=table#>_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;<#
+  }
+  #>
+  
   let res = <#=table#>_dao::update_by_id(
     ctx,
     id,
     input,
     options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let new_data = <#=table#>_dao::find_by_id(
+    ctx,
+    res.clone(),
+    None,
   ).await?;
+  
+  let method_lbl = ns(ctx, "修改".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "update".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
   
   Ok(res)
 }
@@ -198,11 +283,53 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "delete".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = <#=table#>_dao::find_all(
+    ctx,
+    <#=Table_Up#>Search {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;<#
+  }
+  #>
+  
   let num = <#=table#>_dao::delete_by_ids(
     ctx,
     ids,
     options,
-  ).await?;
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "删除".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "delete".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
@@ -237,12 +364,45 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "lock".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
   let num = <#=table#>_dao::lock_by_ids(
     ctx,
     ids,
     is_locked,
     options,
-  ).await?;
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "锁定".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "lock".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
@@ -271,11 +431,44 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "delete".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
   let num = <#=table#>_dao::revert_by_ids(
     ctx,
     ids,
     options,
-  ).await?;
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "还原".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "revert".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
   
   Ok(num)
 }
@@ -288,11 +481,44 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "force_delete".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
   let num = <#=table#>_dao::force_delete_by_ids(
     ctx,
     ids,
     options,
-  ).await?;
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "彻底删除".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "force_delete".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
