@@ -219,7 +219,7 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
     } else {
   #>
   /** <#=column_comment#> */
-  <#=column_name#>: <#=data_type#>;<#
+  <#=column_name#>?: <#=data_type#>;<#
     }
   #><#
   }
