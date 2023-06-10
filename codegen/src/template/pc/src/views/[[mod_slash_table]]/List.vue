@@ -1064,7 +1064,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n();
+} = useI18n("/<#=mod#>/<#=table#>");
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -1695,7 +1695,6 @@ async function useFindCount() {
 if (defaultSort && defaultSort.prop) {
 #>
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
@@ -1703,7 +1702,6 @@ let sort: Sort = $ref({
 } else {
 #>
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "",
   order: "ascending",
@@ -1722,7 +1720,7 @@ async function sortChange(
   if (opts.noExport !== true) {
 #>
 
-let exportExcel = $ref(useExportExcel());
+let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
 
 /** 导出Excel */
 async function exportClk() {

@@ -38,7 +38,7 @@
             <el-input
               v-model="dialogModel.module"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('模块') }`"
+              :placeholder="`${ ns('请输入') } ${ n('模块') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -52,7 +52,7 @@
             <el-input
               v-model="dialogModel.module_lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('模块名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -66,7 +66,7 @@
             <el-input
               v-model="dialogModel.method"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('方法') }`"
+              :placeholder="`${ ns('请输入') } ${ n('方法') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -80,7 +80,7 @@
             <el-input
               v-model="dialogModel.method_lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('方法名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -94,7 +94,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('操作') }`"
+              :placeholder="`${ ns('请输入') } ${ n('操作') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -108,7 +108,7 @@
             <el-input
               v-model="dialogModel.old_data"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('操作前数据') }`"
+              :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -122,7 +122,7 @@
             <el-input
               v-model="dialogModel.new_data"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('操作后数据') }`"
+              :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -136,7 +136,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('备注') }`"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -225,7 +225,7 @@ const {
   ns,
   initI18ns,
   initSysI18ns,
-} = useI18n();
+} = useI18n("/base/operation_record");
 
 let inited = $ref(false);
 

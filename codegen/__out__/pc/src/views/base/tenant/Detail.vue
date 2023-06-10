@@ -39,7 +39,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -53,7 +53,7 @@
             <el-input
               v-model="dialogModel.host"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('域名绑定') }`"
+              :placeholder="`${ ns('请输入') } ${ n('域名绑定') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -70,7 +70,7 @@
               un-w="full"
               type="date"
               format="YYYY-MM-DD"
-              :placeholder="`${ n('请选择') } ${ n('到期日') }`"
+              :placeholder="`${ ns('请选择') } ${ n('到期日') }`"
             ></el-date-picker>
           </el-form-item>
         </template>
@@ -89,7 +89,7 @@
               :step="1"
               :step-strictly="true"
               :controls="false"
-              :placeholder="`${ n('请输入') } ${ n('最大用户数') }`"
+              :placeholder="`${ ns('请输入') } ${ n('最大用户数') }`"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -111,7 +111,7 @@
                 };
               })"
               un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('菜单') }`"
+              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               multiple
             ></CustomSelect>
           </el-form-item>
@@ -131,7 +131,7 @@
               :step="1"
               :step-strictly="true"
               :controls="false"
-              :placeholder="`${ n('请输入') } ${ n('排序') }`"
+              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
             ></el-input-number>
           </el-form-item>
         </template>
@@ -145,7 +145,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('备注') }`"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -250,7 +250,7 @@ const {
   ns,
   initI18ns,
   initSysI18ns,
-} = useI18n();
+} = useI18n("/base/tenant");
 
 let inited = $ref(false);
 

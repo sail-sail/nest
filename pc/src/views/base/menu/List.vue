@@ -544,7 +544,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n();
+} = useI18n("/base/menu");
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -899,7 +899,6 @@ async function useFindCount() {
   page.total = await findCount(search2);
 }
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "order_by",
   order: "ascending",
@@ -914,7 +913,7 @@ async function sortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel());
+let exportExcel = $ref(useExportExcel("/base/menu"));
 
 /** 导出Excel */
 async function exportClk() {

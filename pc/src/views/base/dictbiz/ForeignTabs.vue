@@ -71,7 +71,7 @@ import {
 const {
   n,
   initI18ns,
-} = useI18n();
+} = useI18n("/base/dictbiz");
 
 let inited = $ref(false);
 

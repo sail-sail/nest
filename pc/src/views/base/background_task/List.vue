@@ -476,7 +476,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n();
+} = useI18n("/base/background_task");
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -840,7 +840,6 @@ async function useFindCount() {
   page.total = await findCount(search2);
 }
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "begin_time",
   order: "descending",

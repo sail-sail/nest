@@ -46,7 +46,7 @@
                 };
               })"
               un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('角色') }`"
+              :placeholder="`${ ns('请选择') } ${ n('角色') }`"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -59,7 +59,7 @@
           >
             <SelectInputMenu
               v-model="dialogModel.menu_id"
-              :placeholder="`${ n('请选择') } ${ n('菜单') }`"
+              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
             ></SelectInputMenu>
           </el-form-item>
         </template>
@@ -73,7 +73,7 @@
             <el-input
               v-model="dialogModel.code"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('编码') }`"
+              :placeholder="`${ ns('请输入') } ${ n('编码') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -87,7 +87,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -103,7 +103,7 @@
               v-model="dialogModel.is_visible"
               code="yes_no"
               un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('可见') }`"
+              :placeholder="`${ ns('请选择') } ${ n('可见') }`"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -117,7 +117,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('备注') }`"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -223,7 +223,7 @@ const {
   ns,
   initI18ns,
   initSysI18ns,
-} = useI18n();
+} = useI18n("/base/permit");
 
 let inited = $ref(false);
 
