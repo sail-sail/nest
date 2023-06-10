@@ -8,15 +8,19 @@ pub struct OperationRecordModel {
   /// ID
   pub id: String,
   /// 模块
-  pub r#mod: String,
+  pub module: String,
   /// 模块名称
-  pub mod_lbl: String,
+  pub module_lbl: String,
   /// 方法
   pub method: String,
   /// 方法名称
   pub method_lbl: String,
   /// 操作
   pub lbl: String,
+  /// 操作前数据
+  pub old_data: String,
+  /// 操作后数据
+  pub new_data: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -42,15 +46,19 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     // ID
     let id: String = row.try_get("id")?;
     // 模块
-    let r#mod: String = row.try_get("mod")?;
+    let module: String = row.try_get("module")?;
     // 模块名称
-    let mod_lbl: String = row.try_get("mod_lbl")?;
+    let module_lbl: String = row.try_get("module_lbl")?;
     // 方法
     let method: String = row.try_get("method")?;
     // 方法名称
     let method_lbl: String = row.try_get("method_lbl")?;
     // 操作
     let lbl: String = row.try_get("lbl")?;
+    // 操作前数据
+    let old_data: String = row.try_get("old_data")?;
+    // 操作后数据
+    let new_data: String = row.try_get("new_data")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -76,11 +84,13 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
     
     let model = Self {
       id,
-      r#mod,
-      mod_lbl,
+      module,
+      module_lbl,
       method,
       method_lbl,
       lbl,
+      old_data,
+      new_data,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -100,15 +110,19 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordFieldComment {
   /// 模块
-  pub r#mod: String,
+  pub module: String,
   /// 模块名称
-  pub mod_lbl: String,
+  pub module_lbl: String,
   /// 方法
   pub method: String,
   /// 方法名称
   pub method_lbl: String,
   /// 操作
   pub lbl: String,
+  /// 操作前数据
+  pub old_data: String,
+  /// 操作后数据
+  pub new_data: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -138,13 +152,13 @@ pub struct OperationRecordSearch {
   pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
   /// 模块
-  pub r#mod: Option<String>,
+  pub module: Option<String>,
   /// 模块
-  pub mod_like: Option<String>,
+  pub module_like: Option<String>,
   /// 模块名称
-  pub mod_lbl: Option<String>,
+  pub module_lbl: Option<String>,
   /// 模块名称
-  pub mod_lbl_like: Option<String>,
+  pub module_lbl_like: Option<String>,
   /// 方法
   pub method: Option<String>,
   /// 方法
@@ -157,6 +171,14 @@ pub struct OperationRecordSearch {
   pub lbl: Option<String>,
   /// 操作
   pub lbl_like: Option<String>,
+  /// 操作前数据
+  pub old_data: Option<String>,
+  /// 操作前数据
+  pub old_data_like: Option<String>,
+  /// 操作后数据
+  pub new_data: Option<String>,
+  /// 操作后数据
+  pub new_data_like: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -180,15 +202,19 @@ pub struct OperationRecordSearch {
 pub struct OperationRecordInput {
   pub id: Option<String>,
   /// 模块
-  pub r#mod: Option<String>,
+  pub module: Option<String>,
   /// 模块名称
-  pub mod_lbl: Option<String>,
+  pub module_lbl: Option<String>,
   /// 方法
   pub method: Option<String>,
   /// 方法名称
   pub method_lbl: Option<String>,
   /// 操作
   pub lbl: Option<String>,
+  /// 操作前数据
+  pub old_data: Option<String>,
+  /// 操作后数据
+  pub new_data: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -217,15 +243,19 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       tenant_id: None,
       is_deleted: None,
       // 模块
-      r#mod: input.r#mod,
+      module: input.module,
       // 模块名称
-      mod_lbl: input.mod_lbl,
+      module_lbl: input.module_lbl,
       // 方法
       method: input.method,
       // 方法名称
       method_lbl: input.method_lbl,
       // 操作
       lbl: input.lbl,
+      // 操作前数据
+      old_data: input.old_data,
+      // 操作后数据
+      new_data: input.new_data,
       // 备注
       rem: input.rem,
       // 创建人
