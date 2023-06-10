@@ -30,11 +30,13 @@ export async function findAll(
       query($search: OperationRecordSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllOperationRecord(search: $search, page: $page, sort: $sort) {
           id
-          mod
-          mod_lbl
+          module
+          module_lbl
           method
           method_lbl
           lbl
+          old_data
+          new_data
           rem
           create_usr_id
           create_usr_id_lbl
@@ -103,11 +105,13 @@ export async function findById(
       query($id: String!) {
         findByIdOperationRecord(id: $id) {
           id
-          mod
-          mod_lbl
+          module
+          module_lbl
           method
           method_lbl
           lbl
+          old_data
+          new_data
           rem
           create_usr_id
           create_usr_id_lbl
@@ -254,12 +258,11 @@ export async function getUsrList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
-  const route = useRoute();
+export function useExportExcel(routePath: string) {
   const {
     nAsync,
     nsAsync,
-  } = useI18n(route.path);
+  } = useI18n(routePath);
   const {
     workerFn,
     workerStatus,
@@ -275,11 +278,13 @@ export function useExportExcel() {
         query($search: OperationRecordSearch, $sort: [SortInput!]) {
           findAllOperationRecord(search: $search, sort: $sort) {
             id
-            mod
-            mod_lbl
+            module
+            module_lbl
             method
             method_lbl
             lbl
+            old_data
+            new_data
             rem
             create_usr_id
             create_usr_id_lbl
@@ -291,11 +296,13 @@ export function useExportExcel() {
             update_time_lbl
           }
           getFieldCommentsOperationRecord {
-            mod
-            mod_lbl
+            module
+            module_lbl
             method
             method_lbl
             lbl
+            old_data
+            new_data
             rem
             create_usr_id
             create_usr_id_lbl

@@ -8,15 +8,19 @@ type OperationRecordModel {
   "ID"
   id: String!
   "模块"
-  mod: String!
+  module: String!
   "模块名称"
-  mod_lbl: String!
+  module_lbl: String!
   "方法"
   method: String!
   "方法名称"
   method_lbl: String!
   "操作"
   lbl: String!
+  "操作前数据"
+  old_data: String!
+  "操作后数据"
+  new_data: String!
   "备注"
   rem: String!
   "创建人"
@@ -38,15 +42,19 @@ type OperationRecordModel {
 }
 type OperationRecordFieldComment {
   "模块"
-  mod: String!
+  module: String!
   "模块名称"
-  mod_lbl: String!
+  module_lbl: String!
   "方法"
   method: String!
   "方法名称"
   method_lbl: String!
   "操作"
   lbl: String!
+  "操作前数据"
+  old_data: String!
+  "操作后数据"
+  new_data: String!
   "备注"
   rem: String!
   "创建人"
@@ -70,15 +78,19 @@ input OperationRecordInput {
   ""
   id: String
   "模块"
-  mod: String
+  module: String
   "模块名称"
-  mod_lbl: String
+  module_lbl: String
   "方法"
   method: String
   "方法名称"
   method_lbl: String
   "操作"
   lbl: String
+  "操作前数据"
+  old_data: String
+  "操作后数据"
+  new_data: String
   "备注"
   rem: String
   "创建人"
@@ -106,11 +118,11 @@ input OperationRecordSearch {
   "String"
   id: String
   "模块"
-  mod: String
-  mod_like: String
+  module: String
+  module_like: String
   "模块名称"
-  mod_lbl: String
-  mod_lbl_like: String
+  module_lbl: String
+  module_lbl_like: String
   "方法"
   method: String
   method_like: String
@@ -120,6 +132,12 @@ input OperationRecordSearch {
   "操作"
   lbl: String
   lbl_like: String
+  "操作前数据"
+  old_data: String
+  old_data_like: String
+  "操作后数据"
+  new_data: String
+  new_data_like: String
   "备注"
   rem: String
   rem_like: String

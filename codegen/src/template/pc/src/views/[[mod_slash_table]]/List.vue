@@ -580,12 +580,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         #>
         @select="selectChg"
         @select-all="selectChg"
-        @row-click="rowClk"<#
-        if (opts.noEdit !== true) {
-        #>
-        @row-dblclick="openEdit"<#
-        }
-        #>
+        @row-click="rowClk"
         @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
@@ -1064,7 +1059,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n();
+} = useI18n("/<#=mod#>/<#=table#>");
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -1157,7 +1152,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选<#
+  isMultiple?: Boolean; //是否多选<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1571,7 +1566,7 @@ function getTableColumns(): ColumnType[] {
       #><#
       if (column.showOverflowTooltip != null) {
       #>
-      showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
       if (column.fixed !== undefined) {
@@ -1612,7 +1607,7 @@ function getTableColumns(): ColumnType[] {
       #><#
       if (column.showOverflowTooltip != null) {
       #>
-      showOverflowTooltip: <#=column.showOverflowTooltip#>,<#
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
       }
       #><#
       if (column.fixed !== undefined) {
@@ -1695,7 +1690,6 @@ async function useFindCount() {
 if (defaultSort && defaultSort.prop) {
 #>
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
@@ -1703,7 +1697,6 @@ let sort: Sort = $ref({
 } else {
 #>
 
-/** 排序 */
 let sort: Sort = $ref({
   prop: "",
   order: "ascending",
@@ -1722,7 +1715,7 @@ async function sortChange(
   if (opts.noExport !== true) {
 #>
 
-let exportExcel = $ref(useExportExcel());
+let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
 
 /** 导出Excel */
 async function exportClk() {

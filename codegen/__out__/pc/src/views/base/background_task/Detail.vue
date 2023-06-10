@@ -38,7 +38,7 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -54,7 +54,7 @@
               v-model="dialogModel.state"
               code="background_task_state"
               un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('状态') }`"
+              :placeholder="`${ ns('请选择') } ${ n('状态') }`"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -70,7 +70,7 @@
               v-model="dialogModel.type"
               code="background_task_type"
               un-w="full"
-              :placeholder="`${ n('请选择') } ${ n('类型') }`"
+              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -84,7 +84,7 @@
             <el-input
               v-model="dialogModel.result"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('执行结果') }`"
+              :placeholder="`${ ns('请输入') } ${ n('执行结果') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -98,7 +98,7 @@
             <el-input
               v-model="dialogModel.err_msg"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('错误信息') }`"
+              :placeholder="`${ ns('请输入') } ${ n('错误信息') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -115,7 +115,7 @@
               un-w="full"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ n('请选择') } ${ n('开始时间') }`"
+              :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
             ></el-date-picker>
           </el-form-item>
         </template>
@@ -132,7 +132,7 @@
               un-w="full"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ n('请选择') } ${ n('结束时间') }`"
+              :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
             ></el-date-picker>
           </el-form-item>
         </template>
@@ -146,7 +146,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('备注') }`"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -235,7 +235,7 @@ const {
   ns,
   initI18ns,
   initSysI18ns,
-} = useI18n();
+} = useI18n("/base/background_task");
 
 let inited = $ref(false);
 

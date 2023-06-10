@@ -1,3 +1,5 @@
+import saveAs from "file-saver";
+
 /**
  * 第一行作为表头, 获得文件数据
  */
@@ -46,6 +48,40 @@
     rows.push(row);
   }
   return rows;
+}
+
+/**
+ * 渲染excel模板
+ */
+export function useRenderExcel() {
+  return useWebWorkerFn(
+    async function (exlBuf: Buffer | string, _data_: any | string) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return await ejsexcel.renderExcel(exlBuf, _data_);
+      } catch (err) {
+        console.error("useRenderExcel", exlBuf);
+        throw err;
+      }
+    },
+    {
+      dependencies: [
+        `${ location.origin }/ejsexcel.min.js`,
+      ],
+    },
+  );
+}
+
+/** 下载Excel文件 */
+export function saveAsExcel(
+  buffer:  Uint32Array,
+  name: string,
+) {
+  const blob = new Blob([ buffer ], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  saveAs(blob, name);
 }
 
 function date2Num(date: Date) {

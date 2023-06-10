@@ -1,6 +1,4 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
+
 
 import {
   type PageInput,
@@ -8,6 +6,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type OperationRecordInput,
   type OperationRecordModel,
   type OperationRecordSearch,
 } from "./operation_record.model.ts";
@@ -93,27 +92,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {OperationRecordModel} model
+ * @param {OperationRecordInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: OperationRecordModel,
+  input: OperationRecordInput,
 ): Promise<string> {
-  const data = await operation_recordDao.create(model);
+  const data = await operation_recordDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {OperationRecordModel} model
+ * @param {OperationRecordInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: OperationRecordModel,
+  input: OperationRecordInput,
 ): Promise<string> {
-  const data = await operation_recordDao.updateById(id, model);
+  const data = await operation_recordDao.updateById(id, input);
   return data;
 }
 

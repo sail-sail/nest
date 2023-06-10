@@ -3,6 +3,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type MenuInput as MenuInputType,
   type MenuModel as MenuModelType,
   type MenuSearch as MenuSearchType,
 } from "/gen/types.ts";
@@ -15,5 +16,12 @@ export interface MenuModel extends MenuModelType {
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
+  update_time?: string | null;
+}
+
+export interface MenuInput extends MenuInputType {
+  create_usr_id?: string;
+  create_time?: string | null;
+  update_usr_id?: string;
   update_time?: string | null;
 }

@@ -88,7 +88,7 @@ import {
 const {
   n,
   initI18ns,
-} = useI18n();
+} = useI18n("/<#=mod#>/<#=table#>");
 
 let inited = $ref(false);
 

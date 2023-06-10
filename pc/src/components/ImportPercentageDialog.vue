@@ -41,6 +41,11 @@
 </template>
 
 <script lang="ts" setup>
+const {
+  ns,
+  nsAsync,
+} = useI18n();
+
 const props = defineProps<{
   percentage: number;
   dialog_visible: boolean;
@@ -52,7 +57,7 @@ const emit = defineEmits<
   ) => void
 >();
 
-let dialogTitle = $ref("正在导入");
+let dialogTitle = $ref(ns("正在导入"));
 let dialogVisible = $ref(false);
 
 watch(
@@ -64,9 +69,9 @@ watch(
 
 async function beforeClose(done: (cancel: boolean) => void) {
   try {
-    await ElMessageBox.confirm(`确定取消导入? `, {
-      confirmButtonText: "取消导入",
-      cancelButtonText: "我再想想",
+    await ElMessageBox.confirm(await nsAsync(`确定取消导入?`), {
+      confirmButtonText: await nsAsync("取消导入"),
+      cancelButtonText: await nsAsync("我再想想"),
       type: "warning",
     });
   } catch (err) {

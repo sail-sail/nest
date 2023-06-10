@@ -2,8 +2,6 @@ import {
   type Query,
 } from "#/types";
 
-import saveAs from "file-saver";
-
 export async function getDict(
   codes: string[],
 ) {
@@ -58,40 +56,6 @@ export async function getDictbiz(
   });
   const result = data.getDictbiz;
   return result;
-}
-
-/**
- * 渲染excel模板
- */
-export function useRenderExcel() {
-  return useWebWorkerFn(
-    async function (exlBuf: Buffer | string, _data_: any | string) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return await ejsexcel.renderExcel(exlBuf, _data_);
-      } catch (err) {
-        console.error("useRenderExcel", exlBuf);
-        throw err;
-      }
-    },
-    {
-      dependencies: [
-        `${ location.origin }/ejsexcel.min.js`,
-      ],
-    },
-  );
-}
-
-/** 下载Excel文件 */
-export function saveAsExcel(
-  buffer:  Uint32Array,
-  name: string,
-) {
-  const blob = new Blob([ buffer ], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  saveAs(blob, name);
 }
 
 export function showUploadMsg(

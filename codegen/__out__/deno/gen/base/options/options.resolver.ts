@@ -12,9 +12,13 @@ import {
 } from "/gen/types.ts";
 
 import {
-  type OptionsModel,
+  type OptionsInput,
   type OptionsSearch,
 } from "./options.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
 
 /**
  * 根据条件查找据数总数
@@ -23,8 +27,8 @@ export async function findCountOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
 ) {
   const { findCount } = await import("./options.service.ts");
-  const data = await findCount(search);
-  return data;
+  const res = await findCount(search);
+  return res;
 }
 
 /**
@@ -36,8 +40,8 @@ export async function findAllOptions(
   sort?: SortInput[],
 ) {
   const { findAll } = await import("./options.service.ts");
-  const data = await findAll(search, page, sort);
-  return data;
+  const res = await findAll(search, page, sort);
+  return res;
 }
 
 /**
@@ -45,8 +49,8 @@ export async function findAllOptions(
  */
 export async function getFieldCommentsOptions() {
   const { getFieldComments } = await import("./options.service.ts");
-  const data = await getFieldComments();
-  return data;
+  const res = await getFieldComments();
+  return res;
 }
 
 /**
@@ -57,8 +61,8 @@ export async function findOneOptions(
   sort?: SortInput[],
 ) {
   const { findOne } = await import("./options.service.ts");
-  const data = await findOne(search, sort);
-  return data;
+  const res = await findOne(search, sort);
+  return res;
 }
 
 /**
@@ -68,22 +72,30 @@ export async function findByIdOptions(
   id: string,
 ) {
   const { findById } = await import("./options.service.ts");
-  const data = await findById(id);
-  return data;
+  const res = await findById(id);
+  return res;
 }
 
 /**
  * 创建一条数据
  */
 export async function createOptions(
-  model: OptionsModel,
+  input: OptionsInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { create } = await import("./options.service.ts");
-  const data = await create(model);
-  return data;
+  
+  await usePermit(
+    "/base/options",
+    "add",
+  );
+  
+  const {
+    create,
+  } = await import("./options.service.ts");
+  const res = await create(input);
+  return res;
 }
 
 /**
@@ -91,14 +103,22 @@ export async function createOptions(
  */
 export async function updateByIdOptions(
   id: string,
-  model: OptionsModel,
+  input: OptionsInput,
 ) {
   const context = useContext();
   
   context.is_tran = true;
-  const { updateById } = await import("./options.service.ts");
-  const data = await updateById(id, model);
-  return data;
+  
+  await usePermit(
+    "/base/options",
+    "edit",
+  );
+  
+  const {
+    updateById,
+  } = await import("./options.service.ts");
+  const res = await updateById(id, input);
+  return res;
 }
 
 /**
@@ -110,9 +130,17 @@ export async function deleteByIdsOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const { deleteByIds } = await import("./options.service.ts");
-  const data = await deleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/options",
+    "delete",
+  );
+  
+  const {
+    deleteByIds,
+  } = await import("./options.service.ts");
+  const res = await deleteByIds(ids);
+  return res;
 }
 
 /**
@@ -128,9 +156,17 @@ export async function lockByIdsOptions(
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsOptions.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
-  const { lockByIds } = await import("./options.service.ts");
-  const data = await lockByIds(ids, is_locked);
-  return data;
+  
+  await usePermit(
+    "/base/options",
+    "lock",
+  );
+  
+  const {
+    lockByIds,
+  } = await import("./options.service.ts");
+  const res = await lockByIds(ids, is_locked);
+  return res;
 }
 
 /**
@@ -142,9 +178,17 @@ export async function revertByIdsOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const { revertByIds } = await import("./options.service.ts");
-  const data = await revertByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/options",
+    "delete",
+  );
+  
+  const {
+    revertByIds,
+  } = await import("./options.service.ts");
+  const res = await revertByIds(ids);
+  return res;
 }
 
 /**
@@ -156,9 +200,17 @@ export async function forceDeleteByIdsOptions(
   const context = useContext();
   
   context.is_tran = true;
-  const { forceDeleteByIds } = await import("./options.service.ts");
-  const data = await forceDeleteByIds(ids);
-  return data;
+  
+  await usePermit(
+    "/base/options",
+    "force_delete",
+  );
+  
+  const {
+    forceDeleteByIds,
+  } = await import("./options.service.ts");
+  const res = await forceDeleteByIds(ids);
+  return res;
 }
 
 /**
@@ -166,6 +218,6 @@ export async function forceDeleteByIdsOptions(
  */
 export async function findLastOrderByOptions() {
   const { findLastOrderBy } = await import("./options.service.ts");
-  const data = findLastOrderBy();
-  return data;
+  const res = findLastOrderBy();
+  return res;
 }

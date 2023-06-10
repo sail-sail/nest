@@ -8,6 +8,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type OptionsInput,
   type OptionsModel,
   type OptionsSearch,
 } from "./options.model.ts";
@@ -93,13 +94,13 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {OptionsModel} model
+ * @param {OptionsInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: OptionsModel,
+  input: OptionsInput,
 ): Promise<string> {
-  const data = await optionsDao.create(model);
+  const data = await optionsDao.create(input);
   return data;
 }
 
@@ -114,19 +115,19 @@ export async function getVersionById(id: string) {
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {OptionsModel} model
+ * @param {OptionsInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: OptionsModel,
+  input: OptionsInput,
 ): Promise<string> {
   
   const is_locked = await optionsDao.getIs_lockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
-  const data = await optionsDao.updateById(id, model);
+  const data = await optionsDao.updateById(id, input);
   return data;
 }
 

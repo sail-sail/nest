@@ -70,14 +70,14 @@ export default defineConfig({
           "@/utils/common": [
             "getDict",
             "getDictbiz",
-            "useRenderExcel",
-            "saveAsExcel",
             "showUploadMsg",
           ],
         },
         {
           "@/utils/excel_util": [
             "getExcelData",
+            "useRenderExcel",
+            "saveAsExcel",
           ],
         },
         {

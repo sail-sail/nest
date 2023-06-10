@@ -40,22 +40,16 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
-  many2manyUpdate,
-  setModelIds,
-} from "/lib/util/dao_util.ts";
-
-import {
   SortOrderEnum,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
 
 import {
+  type DictInput,
   type DictModel,
   type DictSearch,
 } from "./dict.model.ts";
-
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -466,13 +460,13 @@ export async function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PartialNull<DictModel>} model
+ * @param {DictInput} model
  * @param {DictModel} oldModel
  * @param {("ignore" | "throw" | "update")} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PartialNull<DictModel>,
+  model: DictInput,
   oldModel: DictModel,
   uniqueType: "ignore" | "throw" | "update" = "throw",
   options?: {
@@ -599,7 +593,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PartialNull<DictModel>} model
+ * @param {DictInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -609,7 +603,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: PartialNull<DictModel>,
+  model: DictInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "update";
   },
@@ -774,7 +768,7 @@ export async function delCache() {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {PartialNull<DictModel>} model
+ * @param {DictInput} model
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -785,7 +779,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: string,
-  model: PartialNull<DictModel>,
+  model: DictInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },

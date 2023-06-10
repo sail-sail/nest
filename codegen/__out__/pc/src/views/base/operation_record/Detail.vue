@@ -29,30 +29,30 @@
         :validate-on-rule-change="false"
       >
         
-        <template v-if="builtInModel?.mod == null">
+        <template v-if="builtInModel?.module == null">
           <el-form-item
             :label="n('模块')"
-            prop="mod"
+            prop="module"
             un-h="full"
           >
             <el-input
-              v-model="dialogModel.mod"
+              v-model="dialogModel.module"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('模块') }`"
+              :placeholder="`${ ns('请输入') } ${ n('模块') }`"
             ></el-input>
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.mod_lbl == null">
+        <template v-if="builtInModel?.module_lbl == null">
           <el-form-item
             :label="n('模块名称')"
-            prop="mod_lbl"
+            prop="module_lbl"
             un-h="full"
           >
             <el-input
-              v-model="dialogModel.mod_lbl"
+              v-model="dialogModel.module_lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('模块名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -66,7 +66,7 @@
             <el-input
               v-model="dialogModel.method"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('方法') }`"
+              :placeholder="`${ ns('请输入') } ${ n('方法') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -80,7 +80,7 @@
             <el-input
               v-model="dialogModel.method_lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('方法名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -94,7 +94,35 @@
             <el-input
               v-model="dialogModel.lbl"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('操作') }`"
+              :placeholder="`${ ns('请输入') } ${ n('操作') }`"
+            ></el-input>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.old_data == null">
+          <el-form-item
+            :label="n('操作前数据')"
+            prop="old_data"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.old_data"
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
+            ></el-input>
+          </el-form-item>
+        </template>
+        
+        <template v-if="builtInModel?.new_data == null">
+          <el-form-item
+            :label="n('操作后数据')"
+            prop="new_data"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.new_data"
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -108,7 +136,7 @@
             <el-input
               v-model="dialogModel.rem"
               un-w="full"
-              :placeholder="`${ n('请输入') } ${ n('备注') }`"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
             ></el-input>
           </el-form-item>
         </template>
@@ -197,7 +225,7 @@ const {
   ns,
   initI18ns,
   initSysI18ns,
-} = useI18n();
+} = useI18n("/base/operation_record");
 
 let inited = $ref(false);
 
@@ -402,9 +430,13 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "模块",
     "模块名称",
+    "方法",
     "方法名称",
     "操作",
+    "操作前数据",
+    "操作后数据",
     "备注",
     "创建人",
     "创建时间",

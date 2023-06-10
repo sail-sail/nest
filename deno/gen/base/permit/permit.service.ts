@@ -1,6 +1,4 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
+
 
 import {
   type PageInput,
@@ -8,6 +6,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type PermitInput,
   type PermitModel,
   type PermitSearch,
 } from "./permit.model.ts";
@@ -93,27 +92,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {PermitModel} model
+ * @param {PermitInput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: PermitModel,
+  input: PermitInput,
 ): Promise<string> {
-  const data = await permitDao.create(model);
+  const data = await permitDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {PermitModel} model
+ * @param {PermitInput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: PermitModel,
+  input: PermitInput,
 ): Promise<string> {
-  const data = await permitDao.updateById(id, model);
+  const data = await permitDao.updateById(id, input);
   return data;
 }
 

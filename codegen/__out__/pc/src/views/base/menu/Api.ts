@@ -307,12 +307,11 @@ export async function getMenuList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
-  const route = useRoute();
+export function useExportExcel(routePath: string) {
   const {
     nAsync,
     nsAsync,
-  } = useI18n(route.path);
+  } = useI18n(routePath);
   const {
     workerFn,
     workerStatus,

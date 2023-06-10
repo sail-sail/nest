@@ -1,6 +1,4 @@
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
+
 
 import {
   type PageInput,
@@ -8,6 +6,7 @@ import {
 } from "/gen/types.ts";
 
 import {
+  type I18Ninput,
   type I18Nmodel,
   type I18Nsearch,
 } from "./i18n.model.ts";
@@ -93,27 +92,27 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {I18Nmodel} model
+ * @param {I18Ninput} input
  * @return {Promise<string>} id
  */
 export async function create(
-  model: I18Nmodel,
+  input: I18Ninput,
 ): Promise<string> {
-  const data = await i18nDao.create(model);
+  const data = await i18nDao.create(input);
   return data;
 }
 
 /**
  * 根据 id 修改数据
  * @param {string} id
- * @param {I18Nmodel} model
+ * @param {I18Ninput} input
  * @return {Promise<string>}
  */
 export async function updateById(
   id: string,
-  model: I18Nmodel,
+  input: I18Ninput,
 ): Promise<string> {
-  const data = await i18nDao.updateById(id, model);
+  const data = await i18nDao.updateById(id, input);
   
   {
     const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
