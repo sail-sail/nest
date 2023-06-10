@@ -91,35 +91,35 @@ fn get_where_query<'a>(
     }
   }
   {
-    let r#mod = match &search {
-      Some(item) => item.r#mod.clone(),
+    let module = match &search {
+      Some(item) => item.module.clone(),
       None => None,
     };
-    if let Some(r#mod) = r#mod {
-      where_query += &format!(" and t.mod = {}", args.push(r#mod.into()));
+    if let Some(module) = module {
+      where_query += &format!(" and t.module = {}", args.push(module.into()));
     }
-    let mod_like = match &search {
-      Some(item) => item.mod_like.clone(),
+    let module_like = match &search {
+      Some(item) => item.module_like.clone(),
       None => None,
     };
-    if let Some(mod_like) = mod_like {
-      where_query += &format!(" and t.mod like {}", args.push((sql_like(&mod_like) + "%").into()));
+    if let Some(module_like) = module_like {
+      where_query += &format!(" and t.module like {}", args.push((sql_like(&module_like) + "%").into()));
     }
   }
   {
-    let mod_lbl = match &search {
-      Some(item) => item.mod_lbl.clone(),
+    let module_lbl = match &search {
+      Some(item) => item.module_lbl.clone(),
       None => None,
     };
-    if let Some(mod_lbl) = mod_lbl {
-      where_query += &format!(" and t.mod_lbl = {}", args.push(mod_lbl.into()));
+    if let Some(module_lbl) = module_lbl {
+      where_query += &format!(" and t.module_lbl = {}", args.push(module_lbl.into()));
     }
-    let mod_lbl_like = match &search {
-      Some(item) => item.mod_lbl_like.clone(),
+    let module_lbl_like = match &search {
+      Some(item) => item.module_lbl_like.clone(),
       None => None,
     };
-    if let Some(mod_lbl_like) = mod_lbl_like {
-      where_query += &format!(" and t.mod_lbl like {}", args.push((sql_like(&mod_lbl_like) + "%").into()));
+    if let Some(module_lbl_like) = module_lbl_like {
+      where_query += &format!(" and t.module_lbl like {}", args.push((sql_like(&module_lbl_like) + "%").into()));
     }
   }
   {
@@ -168,6 +168,38 @@ fn get_where_query<'a>(
     };
     if let Some(lbl_like) = lbl_like {
       where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
+    }
+  }
+  {
+    let old_data = match &search {
+      Some(item) => item.old_data.clone(),
+      None => None,
+    };
+    if let Some(old_data) = old_data {
+      where_query += &format!(" and t.old_data = {}", args.push(old_data.into()));
+    }
+    let old_data_like = match &search {
+      Some(item) => item.old_data_like.clone(),
+      None => None,
+    };
+    if let Some(old_data_like) = old_data_like {
+      where_query += &format!(" and t.old_data like {}", args.push((sql_like(&old_data_like) + "%").into()));
+    }
+  }
+  {
+    let new_data = match &search {
+      Some(item) => item.new_data.clone(),
+      None => None,
+    };
+    if let Some(new_data) = new_data {
+      where_query += &format!(" and t.new_data = {}", args.push(new_data.into()));
+    }
+    let new_data_like = match &search {
+      Some(item) => item.new_data_like.clone(),
+      None => None,
+    };
+    if let Some(new_data_like) = new_data_like {
+      where_query += &format!(" and t.new_data like {}", args.push((sql_like(&new_data_like) + "%").into()));
     }
   }
   {
@@ -406,11 +438,13 @@ pub async fn get_field_comments<'a>(
   };
   
   let field_comments = OperationRecordFieldComment {
-    r#mod: n_route.n(ctx, "模块".to_owned(), None).await?,
-    mod_lbl: n_route.n(ctx, "模块名称".to_owned(), None).await?,
+    module: n_route.n(ctx, "模块".to_owned(), None).await?,
+    module_lbl: n_route.n(ctx, "模块名称".to_owned(), None).await?,
     method: n_route.n(ctx, "方法".to_owned(), None).await?,
     method_lbl: n_route.n(ctx, "方法名称".to_owned(), None).await?,
     lbl: n_route.n(ctx, "操作".to_owned(), None).await?,
+    old_data: n_route.n(ctx, "操作前数据".to_owned(), None).await?,
+    new_data: n_route.n(ctx, "操作后数据".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
@@ -592,16 +626,16 @@ pub async fn create<'a>(
     args.push(usr_id.into());
   }
   // 模块
-  if let Some(r#mod) = input.r#mod {
-    sql_fields += ",mod";
+  if let Some(module) = input.module {
+    sql_fields += ",module";
     sql_values += ",?";
-    args.push(r#mod.into());
+    args.push(module.into());
   }
   // 模块名称
-  if let Some(mod_lbl) = input.mod_lbl {
-    sql_fields += ",mod_lbl";
+  if let Some(module_lbl) = input.module_lbl {
+    sql_fields += ",module_lbl";
     sql_values += ",?";
-    args.push(mod_lbl.into());
+    args.push(module_lbl.into());
   }
   // 方法
   if let Some(method) = input.method {
@@ -620,6 +654,18 @@ pub async fn create<'a>(
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
+  }
+  // 操作前数据
+  if let Some(old_data) = input.old_data {
+    sql_fields += ",old_data";
+    sql_values += ",?";
+    args.push(old_data.into());
+  }
+  // 操作后数据
+  if let Some(new_data) = input.new_data {
+    sql_fields += ",new_data";
+    sql_values += ",?";
+    args.push(new_data.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -727,16 +773,16 @@ pub async fn update_by_id<'a>(
   
   let mut field_num: usize = 0;
   // 模块
-  if let Some(r#mod) = input.r#mod {
+  if let Some(module) = input.module {
     field_num += 1;
-    sql_fields += ",mod = ?";
-    args.push(r#mod.into());
+    sql_fields += ",module = ?";
+    args.push(module.into());
   }
   // 模块名称
-  if let Some(mod_lbl) = input.mod_lbl {
+  if let Some(module_lbl) = input.module_lbl {
     field_num += 1;
-    sql_fields += ",mod_lbl = ?";
-    args.push(mod_lbl.into());
+    sql_fields += ",module_lbl = ?";
+    args.push(module_lbl.into());
   }
   // 方法
   if let Some(method) = input.method {
@@ -755,6 +801,18 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
+  }
+  // 操作前数据
+  if let Some(old_data) = input.old_data {
+    field_num += 1;
+    sql_fields += ",old_data = ?";
+    args.push(old_data.into());
+  }
+  // 操作后数据
+  if let Some(new_data) = input.new_data {
+    field_num += 1;
+    sql_fields += ",new_data = ?";
+    args.push(new_data.into());
   }
   // 备注
   if let Some(rem) = input.rem {
