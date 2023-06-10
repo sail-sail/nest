@@ -10,7 +10,7 @@ pub async fn n<'a>(
   ctx: &mut impl Ctx<'a>,
   route_path: Option<String>,
   code: String,
-  map: Option<&HashMap<&'a str, &'a str>>,
+  map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   let res = i18n_dao::n(ctx, route_path, code, map).await?;
   Ok(res)
@@ -20,7 +20,7 @@ pub async fn n<'a>(
 pub async fn ns<'a>(
   ctx: &mut impl Ctx<'a>,
   code: String,
-  map: Option<&HashMap<&'a str, &'a str>>,
+  map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   let res = i18n_dao::ns(ctx, code, map).await?;
   Ok(res)
@@ -31,7 +31,7 @@ pub async fn n_lang<'a>(
   lang_code: String,
   route_path: Option<String>,
   code: String,
-  map: Option<&HashMap<&'a str, &'a str>>,
+  map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   let res = i18n_dao::n_lang(ctx, lang_code, route_path, code, map).await?;
   Ok(res)

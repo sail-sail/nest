@@ -8,3 +8,4 @@ pub mod menu;
 pub mod options;
 pub mod tenant;
 pub mod permit;
+pub mod operation_record;

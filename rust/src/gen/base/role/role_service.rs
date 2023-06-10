@@ -2,6 +2,7 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::role_model::*;
 use super::role_dao;
@@ -49,7 +50,7 @@ pub async fn find_one<'a>(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
-    
+  
   let model = role_dao::find_one(
     ctx,
     search,
@@ -83,6 +84,12 @@ pub async fn create<'a>(
   input: RoleInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  use_permit(
+    ctx,
+    "/base/role".to_owned(),
+    "add".to_owned(),
+  ).await?;
   
   let id = role_dao::create(
     ctx,
@@ -121,6 +128,12 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  use_permit(
+    ctx,
+    "/base/role".to_owned(),
+    "edit".to_owned(),
+  ).await?;
+  
   let res = role_dao::update_by_id(
     ctx,
     id,
@@ -138,6 +151,12 @@ pub async fn delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/role".to_owned(),
+    "delete".to_owned(),
+  ).await?;
   
   let num = role_dao::delete_by_ids(
     ctx,
@@ -170,6 +189,12 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/base/role".to_owned(),
+    "delete".to_owned(),
+  ).await?;
+  
   let num = role_dao::revert_by_ids(
     ctx,
     ids,
@@ -186,6 +211,12 @@ pub async fn force_delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/role".to_owned(),
+    "force_delete".to_owned(),
+  ).await?;
   
   let num = role_dao::force_delete_by_ids(
     ctx,
