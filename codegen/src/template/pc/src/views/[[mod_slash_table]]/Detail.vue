@@ -201,7 +201,7 @@ for (let i = 0; i < columns.length; i++) {
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
               filterable
               default-first-option
-              clearable
+              :clearable="true"
               @keyup.enter.stop
             ><#
               for (let item of selectList) {
@@ -278,6 +278,7 @@ for (let i = 0; i < columns.length; i++) {
               :step-strictly="true"
               :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+              :clearable="true"
             ></el-input-number><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -306,6 +307,7 @@ for (let i = 0; i < columns.length; i++) {
               :precision="<#=precision#>"
               :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+              :clearable="true"
             ></el-input-number><#
             } else {
             #>
@@ -313,6 +315,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+              :clearable="true"
             ></el-input><#
             }
             #>
