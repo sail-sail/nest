@@ -39,10 +39,13 @@ export function useSelect<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
-    multiple?: boolean,
+    multiple?: Boolean,
   },
 ) {
-  const multiple = opts?.multiple ?? true;
+  let multiple = true;
+  if (opts?.multiple === false) {
+    multiple = false;
+  }
   
   /** 当前多行选中的数据 */
   let selectedIds: string[] = $ref([ ]);

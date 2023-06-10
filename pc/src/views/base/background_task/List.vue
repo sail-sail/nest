@@ -538,7 +538,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: Boolean; //是否多选
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称

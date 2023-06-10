@@ -385,7 +385,6 @@
         @select="selectChg"
         @select-all="selectChg"
         @row-click="rowClk"
-        @row-dblclick="openEdit"
         @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
@@ -613,7 +612,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: Boolean; //是否多选
   id?: string; // ID
   dict_id?: string|string[]; // 系统字典
   dict_id_lbl?: string|string[]; // 系统字典

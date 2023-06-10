@@ -580,12 +580,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         #>
         @select="selectChg"
         @select-all="selectChg"
-        @row-click="rowClk"<#
-        if (opts.noEdit !== true) {
-        #>
-        @row-dblclick="openEdit"<#
-        }
-        #>
+        @row-click="rowClk"
         @sort-change="sortChange"
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
@@ -1157,7 +1152,7 @@ const props = defineProps<{
   is_deleted?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选<#
+  isMultiple?: Boolean; //是否多选<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
