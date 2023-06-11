@@ -1642,13 +1642,11 @@ impl From<Uuid> for ArgType {
 #[derive(Default, new, Clone)]
 pub struct Options {
   
-  /** 是否打印sql语句 */
+  /// 是否打印sql调试语句
   #[new(value = "true")]
   pub is_debug: bool,
   
-  /**
-   * 指定当前函数的sql是否开启事务
-   */
+  /// 指定当前函数的sql是否开启事务
   #[new(default)]
   pub is_tran: Option<bool>,
   

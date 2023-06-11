@@ -31,330 +31,512 @@ const hasDictbiz = columns.some((column) => {
   return column.dictbiz;
 });
 #>use anyhow::Result;
-use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
-use super::<#=table#>_service;
+use super::<#=table#>_service;<#
+if (log) {
+#>
 
+use crate::src::base::i18n::i18n_service::ns;
+use crate::src::base::operation_record::operation_record_service::log;
+use crate::gen::base::operation_record::operation_record_model::OperationRecordInput;<#
+}
+#>
 
-#[derive(Default)]
-pub struct <#=tableUP#>GenQuery;
-
-#[Object(rename_args = "snake_case")]
-impl <#=tableUP#>GenQuery {
+/// 根据搜索条件和分页查找数据
+pub async fn find_all<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<<#=tableUP#>Search>,
+  page: Option<PageInput>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Vec<<#=tableUP#>Model>> {
   
-  /// 根据搜索条件和分页查找数据
-  async fn find_all_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    search: Option<<#=tableUP#>Search>,
-    page: Option<PageInput>,
-    sort: Option<Vec<SortInput>>,
-  ) -> Result<Vec<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::find_all(
-      &mut ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  let res = <#=table#>_service::find_all(
+    ctx,
+    search,
+    page,
+    sort,
+    options,
+  ).await?;
   
-  /// 根据搜索条件查询数据总数
-  async fn find_count_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    search: Option<<#=tableUP#>Search>,
-  ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::find_count(
-      &mut ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据条件查找第一条数据
-  pub async fn find_one_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    search: Option<<#=tableUP#>Search>,
-    sort: Option<Vec<SortInput>>,
-  ) -> Result<Option<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::find_one(
-      &mut ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据ID查找第一条数据
-  pub async fn find_by_id_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-  ) -> Result<Option<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::find_by_id(
-      &mut ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-  if (hasLocked) {
-  #>
-  
-  /// 根据 ID 查找是否已锁定
-  /// 已锁定的记录不能修改和删除
-  /// 记录不存在则返回 false
-  pub async fn get_is_locked_by_id_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-  ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::get_is_locked_by_id(
-      &mut ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-  }
-  #>
-  
-  /// 获取字段对应的名称
-  pub async fn get_field_comments_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-  ) -> Result<<#=tableUP#>FieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::get_field_comments(
-      &mut ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-  if (hasOrderBy) {
-  #>
-  
-  /// 查找 order_by 字段的最大值
-  pub async fn find_last_order_by_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-  ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = <#=table#>_service::find_last_order_by(
-      &mut ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-  }
-  #>
-  
+  Ok(res)
 }
 
-#[derive(Default)]
-pub struct <#=tableUP#>GenMutation;
-
-#[Object(rename_args = "snake_case")]
-impl <#=tableUP#>GenMutation {<#
-    if (opts.noAdd !== true) {
-  #>
+/// 根据搜索条件查找总数
+pub async fn find_count<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
+) -> Result<i64> {
   
-  /// 创建数据
-  pub async fn create_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    model: <#=tableUP#>Input,
-  ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let id = <#=table#>_service::create(
-      &mut ctx,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(id).await
-  }<#
-    }
-  #><#
-  if (hasTenant_id) {
-  #>
+  let res = <#=table#>_service::find_count(
+    ctx,
+    search,
+    options,
+  ).await?;
   
-  /// 根据id修改租户id
-  pub async fn update_tenant_by_id_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    tenant_id: String,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::update_tenant_by_id(
-      &mut ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-  }
-  #><#
-  if (hasDeptId) {
-  #>
-  
-  /// 根据id修改部门id
-  pub async fn update_dept_by_id_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    dept_id: String,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::update_dept_by_id(
-      &mut ctx,
-      id,
-      dept_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-  }
-  #><#
-    if (opts.noEdit !== true) {
-  #>
-  
-  /// 根据id修改数据
-  pub async fn update_by_id_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    model: <#=tableUP#>Input,
-  ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::update_by_id(
-      &mut ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-    }
-  #><#
-    if (opts.noDelete !== true) {
-  #>
-  
-  /// 根据 ids 删除数据
-  pub async fn delete_by_ids_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::delete_by_ids(
-      &mut ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-    }
-  #><#
-    if (hasLocked && opts.noEdit !== true) {
-  #>
-  
-  /// 根据 ids 锁定或者解锁数据
-  pub async fn lock_by_ids_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-    is_locked: u8,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::lock_by_ids(
-      &mut ctx,
-      ids,
-      is_locked,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-    }
-  #><#
-    if (opts.noDelete !== true) {
-  #>
-  
-  /// 根据 ids 还原数据
-  pub async fn revert_by_ids_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::revert_by_ids(
-      &mut ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据 ids 彻底删除数据
-  pub async fn force_delete_by_ids_<#=table#><'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = <#=table#>_service::force_delete_by_ids(
-      &mut ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }<#
-    }
-  #>
-  
+  Ok(res)
 }
+
+/// 根据条件查找第一条数据
+pub async fn find_one<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<<#=tableUP#>Search>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  let model = <#=table#>_service::find_one(
+    ctx,
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
+/// 根据ID查找第一条数据
+pub async fn find_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  let model = <#=table#>_service::find_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
+/// 创建数据
+#[allow(dead_code)]
+pub async fn create<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
+  let id = <#=table#>_service::create(
+    ctx,
+    input,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let new_data = <#=table#>_service::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  let method_lbl = ns(ctx, "新增".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "create".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: "{}".to_owned().into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(id)
+}<#
+if (hasTenant_id) {
+#>
+
+/// 根据id修改租户id
+#[allow(dead_code)]
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_service::update_tenant_by_id(
+    ctx,
+    id,
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#><#
+if (hasDeptId) {
+#>
+
+/// 根据id修改部门id
+#[allow(dead_code)]
+pub async fn update_dept_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  dept_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_service::update_dept_by_id(
+    ctx,
+    id,
+    dept_id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#>
+
+/// 根据id修改数据
+#[allow(dead_code)]
+pub async fn update_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "edit".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = <#=table#>_service::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;<#
+  }
+  #>
+  
+  let res = <#=table#>_service::update_by_id(
+    ctx,
+    id,
+    input,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let new_data = <#=table#>_service::find_by_id(
+    ctx,
+    res.clone(),
+    None,
+  ).await?;
+  
+  let method_lbl = ns(ctx, "修改".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "update".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
+      new_data: serde_json::to_string(&new_data)?.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(res)
+}
+
+/// 根据 ids 删除数据
+#[allow(dead_code)]
+pub async fn delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "delete".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = <#=table#>_service::find_all(
+    ctx,
+    <#=Table_Up#>Search {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;<#
+  }
+  #>
+  
+  let num = <#=table#>_service::delete_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "删除".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "delete".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: serde_json::to_string(&old_data)?.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(num)
+}<#
+if (hasLocked) {
+#>
+
+/// 根据 ID 查找是否已锁定
+/// 已锁定的记录不能修改和删除
+/// 记录不存在则返回 false
+#[allow(dead_code)]
+pub async fn get_is_locked_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let is_locked = <#=table#>_service::get_is_locked_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(is_locked)
+}
+
+/// 根据 ids 锁定或者解锁数据
+#[allow(dead_code)]
+pub async fn lock_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  is_locked: u8,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "lock".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
+  let num = <#=table#>_service::lock_by_ids(
+    ctx,
+    ids,
+    is_locked,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "锁定".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "lock".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(num)
+}<#
+}
+#>
+
+/// 获取字段对应的名称
+pub async fn get_field_comments<'a>(
+  ctx: &mut impl Ctx<'a>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>FieldComment> {
+  
+  let comments = <#=table#>_service::get_field_comments(
+    ctx,
+    options,
+  ).await?;
+  
+  Ok(comments)
+}
+
+/// 根据 ids 还原数据
+#[allow(dead_code)]
+pub async fn revert_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "delete".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
+  let num = <#=table#>_service::revert_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "还原".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "revert".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(num)
+}
+
+/// 根据 ids 彻底删除数据
+#[allow(dead_code)]
+pub async fn force_delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "force_delete".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
+  let num = <#=table#>_service::force_delete_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "彻底删除".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "force_delete".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(num)
+}<#
+if (hasOrderBy) {
+#>
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by<'a>(
+  ctx: &mut impl Ctx<'a>,
+  options: Option<Options>,
+) -> Result<u32> {
+  
+  let res = <#=table#>_service::find_last_order_by(
+    ctx,
+    options,
+  ).await?;
+  
+  Ok(res)
+}<#
+}
+#>

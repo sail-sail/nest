@@ -1,273 +1,286 @@
 use anyhow::Result;
-use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::dictbiz_model::*;
 use super::dictbiz_service;
 
-
-#[derive(Default)]
-pub struct DictbizGenQuery;
-
-#[Object(rename_args = "snake_case")]
-impl DictbizGenQuery {
+/// 根据搜索条件和分页查找数据
+pub async fn find_all<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<DictbizSearch>,
+  page: Option<PageInput>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Vec<DictbizModel>> {
   
-  /// 根据搜索条件和分页查找数据
-  async fn find_all_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    search: Option<DictbizSearch>,
-    page: Option<PageInput>,
-    sort: Option<Vec<SortInput>>,
-  ) -> Result<Vec<DictbizModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::find_all(
-      &mut ctx,
-      search,
-      page,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  let res = dictbiz_service::find_all(
+    ctx,
+    search,
+    page,
+    sort,
+    options,
+  ).await?;
   
-  /// 根据搜索条件查询数据总数
-  async fn find_count_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    search: Option<DictbizSearch>,
-  ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::find_count(
-      &mut ctx,
-      search,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据条件查找第一条数据
-  pub async fn find_one_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    search: Option<DictbizSearch>,
-    sort: Option<Vec<SortInput>>,
-  ) -> Result<Option<DictbizModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::find_one(
-      &mut ctx,
-      search,
-      sort,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据ID查找第一条数据
-  pub async fn find_by_id_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-  ) -> Result<Option<DictbizModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::find_by_id(
-      &mut ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 根据 ID 查找是否已锁定
-  /// 已锁定的记录不能修改和删除
-  /// 记录不存在则返回 false
-  pub async fn get_is_locked_by_id_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-  ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::get_is_locked_by_id(
-      &mut ctx,
-      id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 获取字段对应的名称
-  pub async fn get_field_comments_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-  ) -> Result<DictbizFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::get_field_comments(
-      &mut ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
-  /// 查找 order_by 字段的最大值
-  pub async fn find_last_order_by_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-  ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = dictbiz_service::find_last_order_by(
-      &mut ctx,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
+  Ok(res)
 }
 
-#[derive(Default)]
-pub struct DictbizGenMutation;
+/// 根据搜索条件查找总数
+pub async fn find_count<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<DictbizSearch>,
+  options: Option<Options>,
+) -> Result<i64> {
+  
+  let res = dictbiz_service::find_count(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
 
-#[Object(rename_args = "snake_case")]
-impl DictbizGenMutation {
+/// 根据条件查找第一条数据
+pub async fn find_one<'a>(
+  ctx: &mut impl Ctx<'a>,
+  search: Option<DictbizSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Option<DictbizModel>> {
   
-  /// 创建数据
-  pub async fn create_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    model: DictbizInput,
-  ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let id = dictbiz_service::create(
-      &mut ctx,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(id).await
-  }
+  let model = dictbiz_service::find_one(
+    ctx,
+    search,
+    sort,
+    options,
+  ).await?;
   
-  /// 根据id修改租户id
-  pub async fn update_tenant_by_id_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    tenant_id: String,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = dictbiz_service::update_tenant_by_id(
-      &mut ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  Ok(model)
+}
+
+/// 根据ID查找第一条数据
+pub async fn find_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<Option<DictbizModel>> {
   
-  /// 根据id修改数据
-  pub async fn update_by_id_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    model: DictbizInput,
-  ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = dictbiz_service::update_by_id(
-      &mut ctx,
-      id,
-      model,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  let model = dictbiz_service::find_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
   
-  /// 根据 ids 删除数据
-  pub async fn delete_by_ids_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = dictbiz_service::delete_by_ids(
-      &mut ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  Ok(model)
+}
+
+/// 创建数据
+#[allow(dead_code)]
+pub async fn create<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: DictbizInput,
+  options: Option<Options>,
+) -> Result<String> {
   
-  /// 根据 ids 锁定或者解锁数据
-  pub async fn lock_by_ids_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-    is_locked: u8,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = dictbiz_service::lock_by_ids(
-      &mut ctx,
-      ids,
-      is_locked,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  use_permit(
+    ctx,
+    "/base/dictbiz".to_owned(),
+    "add".to_owned(),
+  ).await?;
   
-  /// 根据 ids 还原数据
-  pub async fn revert_by_ids_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = dictbiz_service::revert_by_ids(
-      &mut ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  let id = dictbiz_service::create(
+    ctx,
+    input,
+    options,
+  ).await?;
   
-  /// 根据 ids 彻底删除数据
-  pub async fn force_delete_by_ids_dictbiz<'a>(
-    &self,
-    ctx: &Context<'a>,
-    ids: Vec<String>,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = dictbiz_service::force_delete_by_ids(
-      &mut ctx,
-      ids,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  Ok(id)
+}
+
+/// 根据id修改租户id
+#[allow(dead_code)]
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
   
+  let num = dictbiz_service::update_tenant_by_id(
+    ctx,
+    id,
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据id修改数据
+#[allow(dead_code)]
+pub async fn update_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  input: DictbizInput,
+  options: Option<Options>,
+) -> Result<String> {
+  
+  use_permit(
+    ctx,
+    "/base/dictbiz".to_owned(),
+    "edit".to_owned(),
+  ).await?;
+  
+  let res = dictbiz_service::update_by_id(
+    ctx,
+    id,
+    input,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
+/// 根据 ids 删除数据
+#[allow(dead_code)]
+pub async fn delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/dictbiz".to_owned(),
+    "delete".to_owned(),
+  ).await?;
+  
+  let num = dictbiz_service::delete_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据 ID 查找是否已锁定
+/// 已锁定的记录不能修改和删除
+/// 记录不存在则返回 false
+#[allow(dead_code)]
+pub async fn get_is_locked_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let is_locked = dictbiz_service::get_is_locked_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(is_locked)
+}
+
+/// 根据 ids 锁定或者解锁数据
+#[allow(dead_code)]
+pub async fn lock_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  is_locked: u8,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/dictbiz".to_owned(),
+    "lock".to_owned(),
+  ).await?;
+  
+  let num = dictbiz_service::lock_by_ids(
+    ctx,
+    ids,
+    is_locked,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 获取字段对应的名称
+pub async fn get_field_comments<'a>(
+  ctx: &mut impl Ctx<'a>,
+  options: Option<Options>,
+) -> Result<DictbizFieldComment> {
+  
+  let comments = dictbiz_service::get_field_comments(
+    ctx,
+    options,
+  ).await?;
+  
+  Ok(comments)
+}
+
+/// 根据 ids 还原数据
+#[allow(dead_code)]
+pub async fn revert_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/dictbiz".to_owned(),
+    "delete".to_owned(),
+  ).await?;
+  
+  let num = dictbiz_service::revert_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 根据 ids 彻底删除数据
+#[allow(dead_code)]
+pub async fn force_delete_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/dictbiz".to_owned(),
+    "force_delete".to_owned(),
+  ).await?;
+  
+  let num = dictbiz_service::force_delete_by_ids(
+    ctx,
+    ids,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
+/// 查找 order_by 字段的最大值
+pub async fn find_last_order_by<'a>(
+  ctx: &mut impl Ctx<'a>,
+  options: Option<Options>,
+) -> Result<u32> {
+  
+  let res = dictbiz_service::find_last_order_by(
+    ctx,
+    options,
+  ).await?;
+  
+  Ok(res)
 }
