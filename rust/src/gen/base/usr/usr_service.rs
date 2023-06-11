@@ -2,7 +2,6 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::src::base::permit::permit_service::use_permit;
 
 use super::usr_model::*;
 use super::usr_dao;
@@ -85,12 +84,6 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
-  use_permit(
-    ctx,
-    "/base/usr".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
   let id = usr_dao::create(
     ctx,
     input,
@@ -128,12 +121,6 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
-  use_permit(
-    ctx,
-    "/base/usr".to_owned(),
-    "edit".to_owned(),
-  ).await?;
-  
   let res = usr_dao::update_by_id(
     ctx,
     id,
@@ -151,12 +138,6 @@ pub async fn delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  use_permit(
-    ctx,
-    "/base/usr".to_owned(),
-    "delete".to_owned(),
-  ).await?;
   
   let num = usr_dao::delete_by_ids(
     ctx,
@@ -195,12 +176,6 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/usr".to_owned(),
-    "lock".to_owned(),
-  ).await?;
-  
   let num = usr_dao::lock_by_ids(
     ctx,
     ids,
@@ -233,12 +208,6 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/usr".to_owned(),
-    "delete".to_owned(),
-  ).await?;
-  
   let num = usr_dao::revert_by_ids(
     ctx,
     ids,
@@ -255,12 +224,6 @@ pub async fn force_delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  use_permit(
-    ctx,
-    "/base/usr".to_owned(),
-    "force_delete".to_owned(),
-  ).await?;
   
   let num = usr_dao::force_delete_by_ids(
     ctx,

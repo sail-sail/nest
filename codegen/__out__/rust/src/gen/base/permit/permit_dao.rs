@@ -1095,12 +1095,23 @@ pub async fn force_delete_by_ids<'a>(
   let mut num = 0;
   for id in ids {
     
-    let model = find_by_id(ctx, id.clone(), None).await?;
-    info!("force_delete_by_ids: {:?}", model);
+    let model = find_all(
+      ctx,
+      PermitSearch {
+        id: id.clone().into(),
+        is_deleted: 1.into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None, 
+      options.clone().into(),
+    ).await?.into_iter().next();
     
     if model.is_none() {
       continue;
     }
+    
+    info!("force_delete_by_ids: {}", serde_json::to_string(&model)?);
     
     let mut args = QueryArgs::new();
     
