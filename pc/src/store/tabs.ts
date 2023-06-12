@@ -10,7 +10,6 @@ export interface TabInf {
 
 export default defineStore("tabs", function() {
   
-  const route = useRoute();
   const router = useRouter();
   
   let tabs = $ref<TabInf[]>([ ]);
@@ -144,6 +143,7 @@ export default defineStore("tabs", function() {
   }
   
   async function refreshTab() {
+    const route = useRoute();
     const routes = router.getRoutes();
     if (actTab && routes.some((item) => item.path === actTab?.path)) {
       activeTab(actTab);
@@ -163,8 +163,12 @@ export default defineStore("tabs", function() {
       return navFail;
     }
     const navFail = await router.replace("/");
+    let name = route.meta?.name as string;
+    if (!name) {
+      name = String(route.name);
+    }
     activeTab({
-      name: "首页",
+      name,
       path: route.path,
       query: route.query,
     });

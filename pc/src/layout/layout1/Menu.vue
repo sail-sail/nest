@@ -79,6 +79,8 @@ async function menuSelect(id: string) {
       path,
       query,
     });
+    const comp = route.matched[1].instances?.default as any;
+    comp?.refreshEfc?.();
   }
   setTimeout(() => {
     selectedRouteNext = false;
