@@ -32,8 +32,8 @@ export async function findAll(
           id
           type
           type_lbl
-          menu_id
-          menu_id_lbl
+          parent_id
+          parent_id_lbl
           lbl
           route_path
           route_query
@@ -158,8 +158,8 @@ export async function findById(
           id
           type
           type_lbl
-          menu_id
-          menu_id_lbl
+          parent_id
+          parent_id_lbl
           lbl
           route_path
           route_query
@@ -329,8 +329,8 @@ export function useExportExcel(routePath: string) {
             id
             type
             type_lbl
-            menu_id
-            menu_id_lbl
+            parent_id
+            parent_id_lbl
             lbl
             route_path
             route_query
@@ -342,8 +342,8 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsMenu {
             type
             type_lbl
-            menu_id
-            menu_id_lbl
+            parent_id
+            parent_id_lbl
             lbl
             route_path
             route_query

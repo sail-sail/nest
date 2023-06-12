@@ -46,14 +46,14 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.menu_id == null">
+        <template v-if="builtInModel?.parent_id == null">
           <el-form-item
             :label="n('父菜单')"
-            prop="menu_id"
+            prop="parent_id"
             un-h="full"
           >
             <CustomSelect
-              v-model="dialogModel.menu_id"
+              v-model="dialogModel.parent_id"
               :method="getMenuList"
               :options-map="((item: MenuModel) => {
                 return {

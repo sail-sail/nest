@@ -74,17 +74,17 @@ async function getWhereQuery(
   if (search?.type && search?.type?.length > 0) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
-  if (search?.menu_id && !Array.isArray(search?.menu_id)) {
-    search.menu_id = [ search.menu_id ];
+  if (search?.parent_id && !Array.isArray(search?.parent_id)) {
+    search.parent_id = [ search.parent_id ];
   }
-  if (search?.menu_id && search?.menu_id.length > 0) {
-    whereQuery += ` and menu_id_lbl.id in ${ args.push(search.menu_id) }`;
+  if (search?.parent_id && search?.parent_id.length > 0) {
+    whereQuery += ` and parent_id_lbl.id in ${ args.push(search.parent_id) }`;
   }
-  if (search?.menu_id === null) {
-    whereQuery += ` and menu_id_lbl.id is null`;
+  if (search?.parent_id === null) {
+    whereQuery += ` and parent_id_lbl.id is null`;
   }
-  if (search?.menu_id_is_null) {
-    whereQuery += ` and menu_id_lbl.id is null`;
+  if (search?.parent_id_is_null) {
+    whereQuery += ` and parent_id_lbl.id is null`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -152,8 +152,8 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_menu t
-    left join base_menu menu_id_lbl
-      on menu_id_lbl.id = t.menu_id
+    left join base_menu parent_id_lbl
+      on parent_id_lbl.id = t.parent_id
   `;
   return fromQuery;
 }
@@ -217,7 +217,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,menu_id_lbl.lbl menu_id_lbl
+      ,parent_id_lbl.lbl parent_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -301,8 +301,8 @@ export async function getFieldComments() {
   const fieldComments = {
     type: await n("类型"),
     type_lbl: await n("类型"),
-    menu_id: await n("父菜单"),
-    menu_id_lbl: await n("父菜单"),
+    parent_id: await n("父菜单"),
+    parent_id_lbl: await n("父菜单"),
     lbl: await n("名称"),
     route_path: await n("路由"),
     route_query: await n("参数"),
@@ -323,11 +323,11 @@ export async function getUniqueKeys(): Promise<{
 }> {
   const n = initN("/i18n");
   const uniqueKeys: (keyof MenuModel)[] = [
-    "menu_id",
+    "parent_id",
     "lbl",
   ];
   const uniqueComments = {
-    menu_id: await n("父菜单"),
+    parent_id: await n("父菜单"),
     lbl: await n("名称"),
   };
   return { uniqueKeys, uniqueComments };
@@ -560,11 +560,11 @@ export async function create(
   }
   
   // 父菜单
-  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
-    model.menu_id_lbl = String(model.menu_id_lbl).trim();
-    const menuModel = await findOne({ lbl: model.menu_id_lbl });
+  if (isNotEmpty(model.parent_id_lbl) && model.parent_id === undefined) {
+    model.parent_id_lbl = String(model.parent_id_lbl).trim();
+    const menuModel = await findOne({ lbl: model.parent_id_lbl });
     if (menuModel) {
-      model.menu_id = menuModel.id;
+      model.parent_id = menuModel.id;
     }
   }
   
@@ -605,8 +605,8 @@ export async function create(
   if (model.type !== undefined) {
     sql += `,type`;
   }
-  if (model.menu_id !== undefined) {
-    sql += `,menu_id`;
+  if (model.parent_id !== undefined) {
+    sql += `,parent_id`;
   }
   if (model.lbl !== undefined) {
     sql += `,lbl`;
@@ -638,8 +638,8 @@ export async function create(
   if (model.type !== undefined) {
     sql += `,${ args.push(model.type) }`;
   }
-  if (model.menu_id !== undefined) {
-    sql += `,${ args.push(model.menu_id) }`;
+  if (model.parent_id !== undefined) {
+    sql += `,${ args.push(model.parent_id) }`;
   }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
@@ -731,11 +731,11 @@ export async function updateById(
   }
   
   // 父菜单
-  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
-    model.menu_id_lbl = String(model.menu_id_lbl).trim();
-    const menuModel = await findOne({ lbl: model.menu_id_lbl });
+  if (isNotEmpty(model.parent_id_lbl) && model.parent_id === undefined) {
+    model.parent_id_lbl = String(model.parent_id_lbl).trim();
+    const menuModel = await findOne({ lbl: model.parent_id_lbl });
     if (menuModel) {
-      model.menu_id = menuModel.id;
+      model.parent_id = menuModel.id;
     }
   }
   
@@ -773,9 +773,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.menu_id !== undefined) {
-    if (model.menu_id != oldModel?.menu_id) {
-      sql += `menu_id = ${ args.push(model.menu_id) },`;
+  if (model.parent_id !== undefined) {
+    if (model.parent_id != oldModel?.parent_id) {
+      sql += `parent_id = ${ args.push(model.parent_id) },`;
       updateFldNum++;
     }
   }

@@ -44,15 +44,15 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.menu_id == null">
+      <template v-if="builtInSearch?.parent_id == null">
         <el-form-item
           label="父菜单"
-          prop="menu_id"
+          prop="parent_id"
         >
           <CustomSelect
-            :set="search.menu_id = search.menu_id || [ ]"
+            :set="search.parent_id = search.parent_id || [ ]"
             un-w="full"
-            v-model="search.menu_id"
+            v-model="search.parent_id"
             :method="getMenuList"
             :options-map="((item: MenuModel) => {
               return {
@@ -400,7 +400,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop">
+          <template v-else-if="'parent_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -567,7 +567,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
-    menu_id: [ ],
+    parent_id: [ ],
   } as MenuSearch;
 }
 
@@ -609,8 +609,8 @@ const props = defineProps<{
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
   type?: string|string[]; // 类型
-  menu_id?: string|string[]; // 父菜单
-  menu_id_lbl?: string|string[]; // 父菜单
+  parent_id?: string|string[]; // 父菜单
+  parent_id_lbl?: string|string[]; // 父菜单
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   route_path?: string; // 路由
@@ -628,8 +628,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   type: "string[]",
   type_lbl: "string[]",
-  menu_id: "string[]",
-  menu_id_lbl: "string[]",
+  parent_id: "string[]",
+  parent_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   order_by: "number",
@@ -776,7 +776,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "父菜单",
-      prop: "menu_id_lbl",
+      prop: "parent_id_lbl",
       width: 140,
       sortable: "custom",
       align: "center",
@@ -994,7 +994,7 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("类型") ]: "type_lbl",
-    [ n("父菜单") ]: "menu_id_lbl",
+    [ n("父菜单") ]: "parent_id_lbl",
     [ n("名称") ]: "lbl",
     [ n("路由") ]: "route_path",
     [ n("参数") ]: "route_query",
