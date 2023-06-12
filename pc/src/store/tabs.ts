@@ -25,17 +25,13 @@ export default defineStore("tabs", function() {
     }
   }
   
-  function tabEqual(tab1: TabInf, tab2: TabInf) {
+  function tabEqual(tab1: Pick<TabInf, "path" | "query">, tab2: Pick<TabInf, "path" | "query">) {
     if (tab1.path !== tab2.path) {
       return false;
     }
     tab1.query = tab1.query || { };
     tab2.query = tab2.query || { };
-    const keys1 = Object.keys(tab1.query);
-    const keys2 = Object.keys(tab2.query);
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
+    const keys1 = [ "path", "query" ];
     for (let i = 0; i < keys1.length; i++) {
       const key1 = keys1[i];
       const val1 = tab1.query[key1];
@@ -45,6 +41,10 @@ export default defineStore("tabs", function() {
       }
     }
     return true;
+  }
+  
+  function hasTab(tab: Pick<TabInf, "path" | "query">) {
+    return tabs.some((item) => tabEqual(item, tab));
   }
   
   function activeTab(tab?: TabInf) {
@@ -183,6 +183,7 @@ export default defineStore("tabs", function() {
     tabs,
     actTab,
     activeTab,
+    hasTab,
     unshiftTab,
     refreshTab,
     removeTab,

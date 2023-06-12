@@ -2284,4 +2284,8 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
 #><#
 }
 #>
+
+defineExpose({
+  refresh: searchClk,
+});
 </script>

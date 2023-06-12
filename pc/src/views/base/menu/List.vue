@@ -1201,4 +1201,8 @@ watch(
 usrStore.onLogin(initFrame);
 
 initFrame();
+
+defineExpose({
+  refresh: searchClk,
+});
 </script>

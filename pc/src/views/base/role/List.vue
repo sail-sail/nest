@@ -1154,4 +1154,8 @@ async function menu_idsClk(row: RoleModel) {
     }
   }
 }
+
+defineExpose({
+  refresh: searchClk,
+});
 </script>

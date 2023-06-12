@@ -1239,4 +1239,8 @@ async function menu_idsClk(row: TenantModel) {
     }
   }
 }
+
+defineExpose({
+  refresh: searchClk,
+});
 </script>

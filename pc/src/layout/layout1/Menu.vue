@@ -30,6 +30,7 @@ import {
 
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
+const tabsStore = useTabsStore();
 
 let openedIndex = $ref<string[]>([ ]);
 let selectedRouteNext = $ref(false);
@@ -75,12 +76,18 @@ async function menuSelect(id: string) {
     if (model.route_query) {
       query = JSON.parse(model.route_query);
     }
+    const hasTab = tabsStore.hasTab({
+      path,
+      query,
+    });
     await router.push({
       path,
       query,
     });
-    const comp = route.matched[1].instances?.default as any;
-    comp?.refreshEfc?.();
+    if (hasTab) {
+      const comp = route.matched[1].instances?.default as any;
+      await comp?.refresh?.();
+    }
   }
   setTimeout(() => {
     selectedRouteNext = false;
