@@ -299,7 +299,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: DictInput;
-    showBuildIn: string;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];

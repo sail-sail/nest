@@ -269,7 +269,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: LangInput;
-    showBuildIn: string;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];

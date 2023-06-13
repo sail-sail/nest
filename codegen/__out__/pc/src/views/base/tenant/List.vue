@@ -649,7 +649,7 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置搜索条件 */
-const builtInSearch = $computed(() => {
+const builtInSearch: TenantSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {

@@ -286,7 +286,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: OptionsInput;
-    showBuildIn: string;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];

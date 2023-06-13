@@ -292,7 +292,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: I18Ninput;
-    showBuildIn: string;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];

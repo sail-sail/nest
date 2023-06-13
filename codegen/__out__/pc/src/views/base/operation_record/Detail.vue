@@ -289,7 +289,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: OperationRecordInput;
-    showBuildIn: string;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];

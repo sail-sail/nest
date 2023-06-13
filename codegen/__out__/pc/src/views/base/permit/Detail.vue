@@ -313,7 +313,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: PermitInput;
-    showBuildIn: string;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];
