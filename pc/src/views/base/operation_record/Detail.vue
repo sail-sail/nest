@@ -29,7 +29,7 @@
         :validate-on-rule-change="false"
       >
         
-        <template v-if="builtInModel?.module == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.module == null)">
           <el-form-item
             :label="n('模块')"
             prop="module"
@@ -44,7 +44,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.module_lbl == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.module_lbl == null)">
           <el-form-item
             :label="n('模块名称')"
             prop="module_lbl"
@@ -59,7 +59,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.method == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.method == null)">
           <el-form-item
             :label="n('方法')"
             prop="method"
@@ -74,7 +74,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.method_lbl == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.method_lbl == null)">
           <el-form-item
             :label="n('方法名称')"
             prop="method_lbl"
@@ -89,7 +89,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.lbl == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('操作')"
             prop="lbl"
@@ -104,7 +104,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.old_data == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.old_data == null)">
           <el-form-item
             :label="n('操作前数据')"
             prop="old_data"
@@ -119,7 +119,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.new_data == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.new_data == null)">
           <el-form-item
             :label="n('操作后数据')"
             prop="new_data"
@@ -134,7 +134,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.rem == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -231,6 +231,7 @@ const emit = defineEmits<
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n("/base/operation_record");
@@ -271,6 +272,9 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<OperationRecordInput>();
 
+/** 是否显示内置变量, 0不显示(默认), 1显示 */
+let showBuildIn = $ref<string>("0");
+
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: OperationRecordInput = {
@@ -285,6 +289,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: OperationRecordInput;
+    showBuildIn: string;
     model?: {
       id?: string;
       ids?: string[];
@@ -303,6 +308,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = arg?.showBuildIn || "0";
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -319,6 +325,7 @@ async function showDialog(
     ]);
     dialogModel = {
       ...defaultModel,
+      ...builtInModel,
       ...model,
     };
   } else if (dialogAction === "copy") {

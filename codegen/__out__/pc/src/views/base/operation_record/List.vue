@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.module_lbl_like == null && builtInSearch?.module_lbl == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.module_lbl_like == null && builtInSearch?.module_lbl == null)">
         <el-form-item
           :label="n('模块名称')"
           prop="module_lbl_like"
@@ -41,7 +41,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.method_lbl_like == null && builtInSearch?.method_lbl == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.method_lbl_like == null && builtInSearch?.method_lbl == null)">
         <el-form-item
           :label="n('方法名称')"
           prop="method_lbl_like"
@@ -56,7 +56,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
         <el-form-item
           :label="n('操作')"
           prop="lbl_like"
@@ -71,7 +71,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.create_time == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.create_time == null)">
         <el-form-item
           :label="n('创建时间')"
           prop="create_time"
@@ -92,7 +92,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.is_deleted == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -358,7 +358,7 @@
         >
           
           <!-- 模块 -->
-          <template v-if="'module' === col.prop && builtInSearch?.module == null">
+          <template v-if="'module' === col.prop && (showBuildIn == '1' || builtInSearch?.module == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -367,7 +367,7 @@
           </template>
           
           <!-- 模块名称 -->
-          <template v-else-if="'module_lbl' === col.prop && builtInSearch?.module_lbl == null">
+          <template v-else-if="'module_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.module_lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -376,7 +376,7 @@
           </template>
           
           <!-- 方法 -->
-          <template v-else-if="'method' === col.prop && builtInSearch?.method == null">
+          <template v-else-if="'method' === col.prop && (showBuildIn == '1' || builtInSearch?.method == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -385,7 +385,7 @@
           </template>
           
           <!-- 方法名称 -->
-          <template v-else-if="'method_lbl' === col.prop && builtInSearch?.method_lbl == null">
+          <template v-else-if="'method_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.method_lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -394,7 +394,7 @@
           </template>
           
           <!-- 操作 -->
-          <template v-else-if="'lbl' === col.prop && builtInSearch?.lbl == null">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -403,7 +403,7 @@
           </template>
           
           <!-- 操作前数据 -->
-          <template v-else-if="'old_data' === col.prop && builtInSearch?.old_data == null">
+          <template v-else-if="'old_data' === col.prop && (showBuildIn == '1' || builtInSearch?.old_data == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -412,7 +412,7 @@
           </template>
           
           <!-- 操作后数据 -->
-          <template v-else-if="'new_data' === col.prop && builtInSearch?.new_data == null">
+          <template v-else-if="'new_data' === col.prop && (showBuildIn == '1' || builtInSearch?.new_data == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -421,7 +421,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
+          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -430,7 +430,7 @@
           </template>
           
           <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && builtInSearch?.create_usr_id == null">
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -439,7 +439,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop && builtInSearch?.create_time == null">
+          <template v-else-if="'create_time' === col.prop && (showBuildIn == '1' || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -448,7 +448,7 @@
           </template>
           
           <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && builtInSearch?.update_usr_id == null">
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.update_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -457,7 +457,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop && builtInSearch?.update_time == null">
+          <template v-else-if="'update_time' === col.prop && (showBuildIn == '1' || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -593,6 +593,7 @@ async function idsCheckedChg() {
 
 const props = defineProps<{
   is_deleted?: string;
+  showBuildIn?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -623,6 +624,7 @@ const props = defineProps<{
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
+  showBuildIn: "0|1",
   ids: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
@@ -633,6 +635,7 @@ const builtInSearchType: { [key: string]: string } = {
 const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
+  "showBuildIn",
 ];
 
 /** 内置搜索条件 */
@@ -904,9 +907,10 @@ async function dataGrid(isCount = false) {
 function getDataSearch() {
   let search2 = {
     ...search,
-    ...builtInSearch,
-    idsChecked: undefined,
   };
+  if (props.showBuildIn == "0") {
+    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  }
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1067,10 +1071,15 @@ async function initFrame() {
 
 watch(
   () => builtInSearch,
-  async (newVal, oldVal) => {
-    if (!deepCompare(oldVal, newVal)) {
-      await initFrame();
-    }
+  async function() {
+    search = {
+      ...search,
+      ...builtInSearch,
+    };
+    await searchClk();
+  },
+  {
+    deep: true,
   },
 );
 

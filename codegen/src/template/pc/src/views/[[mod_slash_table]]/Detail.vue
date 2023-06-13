@@ -118,7 +118,7 @@ for (let i = 0; i < columns.length; i++) {
           const vIfStr = vIf.join(" && ");
         #>
         
-        <template v-if="builtInModel?.<#=column_name#> == null<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="(showBuildIn == '1' || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -535,6 +535,7 @@ const emit = defineEmits<
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
@@ -610,7 +611,7 @@ watchEffect(async () => {
     <#=column_name#>: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("<#=column_comment#>") }`,
+        message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
       },
     ],<#
         } else {
@@ -618,7 +619,7 @@ watchEffect(async () => {
     <#=column_name#>: [
       {
         required: true,
-        message: `${ ns("请选择") } ${ n("<#=column_comment#>") }`,
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
       },
     ],<#
         }
@@ -639,6 +640,9 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<<#=inputName#>>();
+
+/** 是否显示内置变量, 0不显示(默认), 1显示 */
+let showBuildIn = $ref<string>("0");
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -688,6 +692,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: <#=inputName#>;
+    showBuildIn: string;
     model?: {
       id?: string;
       ids?: string[];
@@ -713,6 +718,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = arg?.showBuildIn || "0";
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -739,6 +745,7 @@ async function showDialog(
     ]);
     dialogModel = {
       ...defaultModel,
+      ...builtInModel,
       ...model,<#
       if (hasOrderBy) {
       #>
@@ -867,12 +874,15 @@ async function saveClk() {
   if (opts.noAdd !== true) {
   #>
   if (dialogAction === "add" || dialogAction === "copy") {
-    id = await create({
+    const dialogModel2 = {
       ...dialogModel,
-      ...builtInModel,
-    });
+    };
+    if (showBuildIn == "0") {
+      Object.assign(dialogModel2, builtInModel);
+    }
+    id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = ns("添加成功");
+    msg = await nsAsync("添加成功");
   }<#
   }
   #><#
@@ -892,7 +902,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = ns("修改成功");
+    msg = await nsAsync("修改成功");
   }<#
   }
   #>

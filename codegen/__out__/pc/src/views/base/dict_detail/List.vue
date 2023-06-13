@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.dict_id == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.dict_id == null)">
         <el-form-item
           label="系统字典"
           prop="dict_id"
@@ -49,7 +49,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -64,7 +64,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.val_like == null && builtInSearch?.val == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.val_like == null && builtInSearch?.val == null)">
         <el-form-item
           :label="n('值')"
           prop="val_like"
@@ -79,7 +79,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.is_deleted == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -404,7 +404,7 @@
         >
           
           <!-- 系统字典 -->
-          <template v-if="'dict_id_lbl' === col.prop && builtInSearch?.dict_id == null">
+          <template v-if="'dict_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.dict_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -413,7 +413,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && builtInSearch?.lbl == null">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -422,7 +422,7 @@
           </template>
           
           <!-- 值 -->
-          <template v-else-if="'val' === col.prop && builtInSearch?.val == null">
+          <template v-else-if="'val' === col.prop && (showBuildIn == '1' || builtInSearch?.val == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -431,7 +431,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && builtInSearch?.order_by == null">
+          <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -440,7 +440,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && builtInSearch?.is_enabled == null">
+          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -449,7 +449,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
+          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -458,7 +458,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked' === col.prop && builtInSearch?.is_locked == null">
+          <template v-else-if="'is_locked' === col.prop && (showBuildIn == '1' || builtInSearch?.is_locked == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -612,6 +612,7 @@ async function idsCheckedChg() {
 
 const props = defineProps<{
   is_deleted?: string;
+  showBuildIn?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -631,6 +632,7 @@ const props = defineProps<{
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
+  showBuildIn: "0|1",
   ids: "string[]",
   dict_id: "string[]",
   dict_id_lbl: "string[]",
@@ -644,6 +646,7 @@ const builtInSearchType: { [key: string]: string } = {
 const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
+  "showBuildIn",
 ];
 
 /** 内置搜索条件 */
@@ -876,9 +879,10 @@ async function dataGrid(isCount = false) {
 function getDataSearch() {
   let search2 = {
     ...search,
-    ...builtInSearch,
-    idsChecked: undefined,
   };
+  if (props.showBuildIn == "0") {
+    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  }
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -935,6 +939,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
+    showBuildIn: props.showBuildIn,
   });
   if (type === "cancel") {
     return;
@@ -964,6 +969,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
+    showBuildIn: props.showBuildIn,
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -1062,6 +1068,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
+    showBuildIn: props.showBuildIn,
     model: {
       ids: selectedIds,
     },
@@ -1213,10 +1220,15 @@ async function initFrame() {
 
 watch(
   () => builtInSearch,
-  async (newVal, oldVal) => {
-    if (!deepCompare(oldVal, newVal)) {
-      await initFrame();
-    }
+  async function() {
+    search = {
+      ...search,
+      ...builtInSearch,
+    };
+    await searchClk();
+  },
+  {
+    deep: true,
   },
 );
 

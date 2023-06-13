@@ -81,6 +81,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   >
     <List
       ref="listRef"
+      :show-build-in="'1'"
       v-bind="$attrs"
       :parent_id="parent_id"
       @before-search-reset="beforeSearchReset"

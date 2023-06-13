@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -41,7 +41,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.state == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.state == null)">
         <el-form-item
           :label="n('状态')"
           prop="state"
@@ -59,7 +59,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.type == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.type == null)">
         <el-form-item
           :label="n('类型')"
           prop="type"
@@ -77,7 +77,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.begin_time == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.begin_time == null)">
         <el-form-item
           :label="n('开始时间')"
           prop="begin_time"
@@ -98,7 +98,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.is_deleted == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -331,7 +331,7 @@
         >
           
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && builtInSearch?.lbl == null">
+          <template v-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -340,7 +340,7 @@
           </template>
           
           <!-- 状态 -->
-          <template v-else-if="'state' === col.prop && builtInSearch?.state == null">
+          <template v-else-if="'state' === col.prop && (showBuildIn == '1' || builtInSearch?.state == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -349,7 +349,7 @@
           </template>
           
           <!-- 类型 -->
-          <template v-else-if="'type' === col.prop && builtInSearch?.type == null">
+          <template v-else-if="'type' === col.prop && (showBuildIn == '1' || builtInSearch?.type == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -358,7 +358,7 @@
           </template>
           
           <!-- 执行结果 -->
-          <template v-else-if="'result' === col.prop && builtInSearch?.result == null">
+          <template v-else-if="'result' === col.prop && (showBuildIn == '1' || builtInSearch?.result == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -367,7 +367,7 @@
           </template>
           
           <!-- 错误信息 -->
-          <template v-else-if="'err_msg' === col.prop && builtInSearch?.err_msg == null">
+          <template v-else-if="'err_msg' === col.prop && (showBuildIn == '1' || builtInSearch?.err_msg == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -376,7 +376,7 @@
           </template>
           
           <!-- 开始时间 -->
-          <template v-else-if="'begin_time' === col.prop && builtInSearch?.begin_time == null">
+          <template v-else-if="'begin_time' === col.prop && (showBuildIn == '1' || builtInSearch?.begin_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -385,7 +385,7 @@
           </template>
           
           <!-- 结束时间 -->
-          <template v-else-if="'end_time' === col.prop && builtInSearch?.end_time == null">
+          <template v-else-if="'end_time' === col.prop && (showBuildIn == '1' || builtInSearch?.end_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -394,7 +394,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
+          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -403,7 +403,7 @@
           </template>
           
           <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && builtInSearch?.create_usr_id == null">
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -538,6 +538,7 @@ async function idsCheckedChg() {
 
 const props = defineProps<{
   is_deleted?: string;
+  showBuildIn?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -560,6 +561,7 @@ const props = defineProps<{
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
+  showBuildIn: "0|1",
   ids: "string[]",
   state: "string[]",
   state_lbl: "string[]",
@@ -572,6 +574,7 @@ const builtInSearchType: { [key: string]: string } = {
 const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
+  "showBuildIn",
 ];
 
 /** 内置搜索条件 */
@@ -821,9 +824,10 @@ async function dataGrid(isCount = false) {
 function getDataSearch() {
   let search2 = {
     ...search,
-    ...builtInSearch,
-    idsChecked: undefined,
   };
+  if (props.showBuildIn == "0") {
+    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  }
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -969,10 +973,15 @@ async function initFrame() {
 
 watch(
   () => builtInSearch,
-  async (newVal, oldVal) => {
-    if (!deepCompare(oldVal, newVal)) {
-      await initFrame();
-    }
+  async function() {
+    search = {
+      ...search,
+      ...builtInSearch,
+    };
+    await searchClk();
+  },
+  {
+    deep: true,
   },
 );
 

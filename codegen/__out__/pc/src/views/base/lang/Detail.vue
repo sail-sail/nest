@@ -30,7 +30,7 @@
         @keyup.enter="saveClk"
       >
         
-        <template v-if="builtInModel?.code == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.code == null)">
           <el-form-item
             :label="n('编码')"
             prop="code"
@@ -45,7 +45,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.lbl == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -60,7 +60,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.rem == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -75,7 +75,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.order_by == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -191,6 +191,7 @@ const emit = defineEmits<
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n("/base/lang");
@@ -221,19 +222,19 @@ watchEffect(async () => {
     code: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("编码") }`,
+        message: `${ await nsAsync("请输入") } ${ n("编码") }`,
       },
     ],
     lbl: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("名称") }`,
+        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
     is_enabled: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
       },
     ],
   };
@@ -248,6 +249,9 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<LangInput>();
+
+/** 是否显示内置变量, 0不显示(默认), 1显示 */
+let showBuildIn = $ref<string>("0");
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -265,6 +269,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: LangInput;
+    showBuildIn: string;
     model?: {
       id?: string;
       ids?: string[];
@@ -283,6 +288,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = arg?.showBuildIn || "0";
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -301,6 +307,7 @@ async function showDialog(
     ]);
     dialogModel = {
       ...defaultModel,
+      ...builtInModel,
       ...model,
       order_by: order_by + 1,
     };
@@ -415,12 +422,15 @@ async function saveClk() {
   let id: string | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
-    id = await create({
+    const dialogModel2 = {
       ...dialogModel,
-      ...builtInModel,
-    });
+    };
+    if (showBuildIn == "0") {
+      Object.assign(dialogModel2, builtInModel);
+    }
+    id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = ns("添加成功");
+    msg = await nsAsync("添加成功");
   } else if (dialogAction === "edit") {
     if (!dialogModel.id) {
       return;
@@ -432,7 +442,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = ns("修改成功");
+    msg = await nsAsync("修改成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {
