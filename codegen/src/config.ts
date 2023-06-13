@@ -503,6 +503,17 @@ export interface TablesConfigItem {
     log?: boolean;
     
     /**
+     * 列表页中的表格是否分页, 默认为true
+     */
+    list_page?: boolean;
+    
+    /**
+     * 列表页中的表格是否为树, 默认为false
+     * 如果为true, 则list_page自动设置为false
+     */
+    list_tree?: boolean;
+    
+    /**
      * 是否忽略代码生成
      * @type {boolean}
      */

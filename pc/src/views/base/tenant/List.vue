@@ -373,7 +373,7 @@
         >
           
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop">
+          <template v-if="'lbl' === col.prop && builtInSearch?.lbl == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -382,7 +382,7 @@
           </template>
           
           <!-- 域名绑定 -->
-          <template v-else-if="'host' === col.prop">
+          <template v-else-if="'host' === col.prop && builtInSearch?.host == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -391,7 +391,7 @@
           </template>
           
           <!-- 到期日 -->
-          <template v-else-if="'expiration' === col.prop">
+          <template v-else-if="'expiration' === col.prop && builtInSearch?.expiration == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -400,7 +400,7 @@
           </template>
           
           <!-- 最大用户数 -->
-          <template v-else-if="'max_usr_num' === col.prop">
+          <template v-else-if="'max_usr_num' === col.prop && builtInSearch?.max_usr_num == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -409,7 +409,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop && builtInSearch?.is_enabled == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -418,7 +418,7 @@
           </template>
           
           <!-- 菜单 -->
-          <template v-else-if="'menu_ids_lbl' === col.prop">
+          <template v-else-if="'menu_ids_lbl' === col.prop && builtInSearch?.menu_ids == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -438,7 +438,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop">
+          <template v-else-if="'order_by' === col.prop && builtInSearch?.order_by == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -447,7 +447,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -563,6 +563,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -594,6 +595,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 

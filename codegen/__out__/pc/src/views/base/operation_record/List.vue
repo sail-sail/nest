@@ -358,7 +358,7 @@
         >
           
           <!-- 模块 -->
-          <template v-if="'module' === col.prop">
+          <template v-if="'module' === col.prop && builtInSearch?.module == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -367,7 +367,7 @@
           </template>
           
           <!-- 模块名称 -->
-          <template v-else-if="'module_lbl' === col.prop">
+          <template v-else-if="'module_lbl' === col.prop && builtInSearch?.module_lbl == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -376,7 +376,7 @@
           </template>
           
           <!-- 方法 -->
-          <template v-else-if="'method' === col.prop">
+          <template v-else-if="'method' === col.prop && builtInSearch?.method == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -385,7 +385,7 @@
           </template>
           
           <!-- 方法名称 -->
-          <template v-else-if="'method_lbl' === col.prop">
+          <template v-else-if="'method_lbl' === col.prop && builtInSearch?.method_lbl == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -394,7 +394,7 @@
           </template>
           
           <!-- 操作 -->
-          <template v-else-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop && builtInSearch?.lbl == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -403,7 +403,7 @@
           </template>
           
           <!-- 操作前数据 -->
-          <template v-else-if="'old_data' === col.prop">
+          <template v-else-if="'old_data' === col.prop && builtInSearch?.old_data == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -412,7 +412,7 @@
           </template>
           
           <!-- 操作后数据 -->
-          <template v-else-if="'new_data' === col.prop">
+          <template v-else-if="'new_data' === col.prop && builtInSearch?.new_data == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -421,7 +421,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -430,7 +430,7 @@
           </template>
           
           <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop">
+          <template v-else-if="'create_usr_id_lbl' === col.prop && builtInSearch?.create_usr_id == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -439,7 +439,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop">
+          <template v-else-if="'create_time' === col.prop && builtInSearch?.create_time == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -448,7 +448,7 @@
           </template>
           
           <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop">
+          <template v-else-if="'update_usr_id_lbl' === col.prop && builtInSearch?.update_usr_id == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -457,7 +457,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop">
+          <template v-else-if="'update_time' === col.prop && builtInSearch?.update_time == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -546,6 +546,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -576,6 +577,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 

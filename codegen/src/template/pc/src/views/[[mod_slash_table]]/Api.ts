@@ -36,6 +36,12 @@ importForeignTables.push(Table_Up);
   #>
   type <#=inputName#>,<#
   }
+  #><#
+  if (list_tree) {
+  #>
+  type <#=modelName#>,
+  <#
+  }
   #>
 } from "#/types";
 
@@ -150,7 +156,51 @@ export async function findAll(
   #>
   }
   return res;
+}<#
+if (list_tree) {
+#>
+
+export interface <#=modelName#>Tree extends <#=modelName#> {
+  children: <#=modelName#>Tree[];
 }
+
+/**
+ * 查找树形数据
+ * @param sort 
+ * @param opt 
+ * @returns 
+ */
+export async function findTree(
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAll(
+    undefined,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData: <#=modelName#>Tree[] = [ ];
+  function treeFn(parent_id: string, children: <#=modelName#>Tree[]) {
+    for (let i = 0; i < res.length; i++) {
+      const item = res[i];
+      if (item.parent_id === parent_id) {
+        children.push({
+          ...item,
+          children: [ ],
+        });
+      }
+    }
+    for (let i = 0; i < children.length; i++) {
+      const item = children[i];
+      treeFn(item.id, item.children);
+    }
+  }
+  treeFn("", treeData);
+  return treeData;
+}<#
+}
+#>
 
 /**
  * 根据搜索条件查找数据总数

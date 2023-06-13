@@ -627,7 +627,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && builtInSearch?.<#=column_name#> == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -643,7 +643,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && builtInSearch?.<#=column_name#> == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -675,7 +675,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && builtInSearch?.<#=column_name#> == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -698,7 +698,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && builtInSearch?.<#=column_name#> == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -721,7 +721,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && builtInSearch?.<#=column_name#> == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -792,7 +792,9 @@ const hasAtt = columns.some((item) => item.isAtt);
       un-flex
       un-justify-end
       un-p="t-0.5 b-0.5"
-    >
+    ><#
+      if (list_page) {
+      #>
       <el-pagination
         background
         :page-sizes="pageSizes"
@@ -802,7 +804,16 @@ const hasAtt = columns.some((item) => item.isAtt);
         :total="page.total"
         @size-change="pgSizeChg"
         @current-change="pgCurrentChg"
-      ></el-pagination>
+      ></el-pagination><#
+      } else {
+      #>
+      <el-pagination
+        background
+        layout="total"
+        :total="page.total"
+      ></el-pagination><#
+      }
+      #>
     </div>
   </div><#
   for (let i = 0; i < columns.length; i++) {
@@ -1047,10 +1058,15 @@ if (hasForeignTabs > 0) {
 
 import ForeignTabs from "./ForeignTabs.vue";<#
 }
+#><#
+let optionsName = table_comment;
+if (list_tree) {
+  optionsName = optionsName + "List";
+}
 #>
 
 defineOptions({
-  name: "<#=table_comment#>",
+  name: "<#=optionsName#>",
 });
 
 const {
@@ -1074,6 +1090,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -1135,6 +1152,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 
@@ -1351,10 +1369,14 @@ const builtInModel = $computed(() => {
 
 /** 分页功能 */
 let {
-  page,
+  page,<#
+  if (list_page) {
+  #>
   pageSizes,
   pgSizeChg,
-  pgCurrentChg,
+  pgCurrentChg,<#
+  }
+  #>
 } = $(usePage<<#=modelName#>>(dataGrid));
 
 /** 表格选择功能 */
@@ -1674,14 +1696,25 @@ function getDataSearch() {
     search2.ids = selectedIds;
   }
   return search2;
-}
+}<#
+if (list_page) {
+#>
 
 async function useFindAll() {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
   tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+}<#
+} else {
+#>
+
+async function useFindAll() {
+  const search2 = getDataSearch();
+  tableData = await findAll(search2, undefined, [ sort ]);
+}<#
 }
+#>
 
 async function useFindCount() {
   const search2 = getDataSearch();

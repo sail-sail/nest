@@ -70,7 +70,22 @@ function hasSelectInputFn(table_name: string) {
 
 export async function codegen(context: Context, schema: TablesConfigItem, table_names: string[]) {
   const opts = schema.opts;
-  let { table, table_comment, defaultSort, hasTenant_id, cache, log } = opts;
+  let {
+    table,
+    table_comment,
+    defaultSort,
+    hasTenant_id,
+    cache,
+    log,
+    list_page,
+    list_tree,
+  } = opts;
+  if (list_tree) {
+    list_page = false;
+  }
+  if (list_page == null) {
+    list_page = true;
+  }
   const columns = schema.columns;
   const formatMsg = formatMsg0;
   const uniqueID = uniqueID0;
@@ -210,6 +225,11 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           return;
         }
       }
+      if (dir === "/pc/src/views/[[mod_slash_table]]/TreeList.vue") {
+        if (!list_tree) {
+          return;
+        }
+      }
       let htmlStr = includeFtl(await readFile(fileTng ,"utf8"), "<#", "#>");
       try {
         let str2 = eval(htmlStr);
@@ -314,6 +334,13 @@ export async function genRouter(context: Context) {
     where t.table_schema = (select database())
   `);
   const records: any = result[0];
+  for (let i = 0; i < records.length; i++) {
+    const record = records[i];
+    if (optTables[record.TABLE_NAME] == null) {
+      continue;
+    }
+    Object.assign(record, optTables[record.TABLE_NAME]);
+  }
   const files = [
     "pc/src/router/gen.ts",
     "deno/gen/graphql.ts",

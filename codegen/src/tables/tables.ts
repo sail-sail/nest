@@ -167,6 +167,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      list_tree: true,
     },
     columns: [
       {

@@ -391,7 +391,7 @@
         >
           
           <!-- 类型 -->
-          <template v-if="'type' === col.prop">
+          <template v-if="'type' === col.prop && builtInSearch?.type == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -400,7 +400,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-else-if="'parent_id_lbl' === col.prop">
+          <template v-else-if="'parent_id_lbl' === col.prop && builtInSearch?.parent_id == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -409,7 +409,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop && builtInSearch?.lbl == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -418,7 +418,7 @@
           </template>
           
           <!-- 路由 -->
-          <template v-else-if="'route_path' === col.prop">
+          <template v-else-if="'route_path' === col.prop && builtInSearch?.route_path == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -427,7 +427,7 @@
           </template>
           
           <!-- 参数 -->
-          <template v-else-if="'route_query' === col.prop">
+          <template v-else-if="'route_query' === col.prop && builtInSearch?.route_query == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -436,7 +436,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop && builtInSearch?.is_enabled == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -445,7 +445,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop">
+          <template v-else-if="'order_by' === col.prop && builtInSearch?.order_by == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -454,7 +454,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -481,13 +481,8 @@
     >
       <el-pagination
         background
-        :page-sizes="pageSizes"
-        :page-size="page.size"
-        layout="total, sizes, prev, pager, next, jumper"
-        :current-page="page.current"
+        layout="total"
         :total="page.total"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div>
@@ -534,7 +529,7 @@ import {
 } from "./Api";
 
 defineOptions({
-  name: "菜单",
+  name: "菜单List",
 });
 
 const {
@@ -558,6 +553,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -589,6 +585,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 
@@ -698,9 +695,6 @@ const builtInModel = $computed(() => {
 /** 分页功能 */
 let {
   page,
-  pageSizes,
-  pgSizeChg,
-  pgCurrentChg,
 } = $(usePage<MenuModel>(dataGrid));
 
 /** 表格选择功能 */
@@ -887,10 +881,8 @@ function getDataSearch() {
 }
 
 async function useFindAll() {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, undefined, [ sort ]);
 }
 
 async function useFindCount() {

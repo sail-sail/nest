@@ -411,7 +411,7 @@
         >
           
           <!-- 语言 -->
-          <template v-if="'lang_id_lbl' === col.prop">
+          <template v-if="'lang_id_lbl' === col.prop && builtInSearch?.lang_id == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -420,7 +420,7 @@
           </template>
           
           <!-- 菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop">
+          <template v-else-if="'menu_id_lbl' === col.prop && builtInSearch?.menu_id == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -429,7 +429,7 @@
           </template>
           
           <!-- 编码 -->
-          <template v-else-if="'code' === col.prop">
+          <template v-else-if="'code' === col.prop && builtInSearch?.code == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -438,7 +438,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop && builtInSearch?.lbl == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -447,7 +447,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && builtInSearch?.rem == null">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -554,6 +554,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -586,6 +587,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 

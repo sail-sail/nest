@@ -4,6 +4,8 @@ import {
   type PageInput,
   type MenuSearch,
   type MenuInput,
+  type MenuModel,
+  
 } from "#/types";
 
 import {
@@ -56,6 +58,46 @@ export async function findAll(
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
   return res;
+}
+
+export interface MenuModelTree extends MenuModel {
+  children: MenuModelTree[];
+}
+
+/**
+ * 查找树形数据
+ * @param sort 
+ * @param opt 
+ * @returns 
+ */
+export async function findTree(
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAll(
+    undefined,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData: MenuModelTree[] = [ ];
+  function treeFn(parent_id: string, children: MenuModelTree[]) {
+    for (let i = 0; i < res.length; i++) {
+      const item = res[i];
+      if (item.parent_id === parent_id) {
+        children.push({
+          ...item,
+          children: [ ],
+        });
+      }
+    }
+    for (let i = 0; i < children.length; i++) {
+      const item = children[i];
+      treeFn(item.id, item.children);
+    }
+  }
+  treeFn("", treeData);
+  return treeData;
 }
 
 /**
