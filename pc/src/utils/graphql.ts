@@ -291,7 +291,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   }
   let rvData: any = undefined;
   try {
-    rvData = await axios.request(<any> {
+    rvData = await axios.request({
       method: "post",
       url: `/graphql`,
       data: gqlArg,
@@ -301,19 +301,24 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       headers,
       // showErrMsg: opt?.showErrMsg,
       // duration: opt?.duration,
-    });
-  } catch (err) {
-    if ((<any>err).response && (<any>err).response.data) {
-      rvData = (<any>err).response;
+      isMutation: opt?.isMutation,
+    } as any);
+  } catch (err0) {
+    const err = err0 as any;
+    if (err.response && err.response.data) {
+      rvData = err.response;
     } else {
       if (!opt || opt.showErrMsg !== false) {
-        ElMessage({
-          offset: 0,
-          type: "error",
-          showClose: true,
-          message: (<any>err).toString(),
-          duration,
-        });
+        const errMsg = err.message || err.toString();
+        if (errMsg) {
+          ElMessage({
+            offset: 0,
+            type: "error",
+            showClose: true,
+            message: errMsg,
+            duration,
+          });
+        }
       }
       throw err;
     }
