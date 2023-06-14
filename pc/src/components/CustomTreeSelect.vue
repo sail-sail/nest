@@ -16,6 +16,7 @@
   @update:model-value="modelValueUpdate"
   @clear="clearClk"
   @change="valueChg"
+  @check="checkClk"
   :multiple="props.multiple"
   :props="props.props"
 >
@@ -59,7 +60,7 @@ const props = withDefaults(
     maxWidth?: number;
     multiple?: boolean;
     init?: boolean;
-    props: ExtractPropTypes<TreeOptionProps>;
+    props?: ExtractPropTypes<TreeOptionProps>;
   }>(),
   {
     height: 300,
@@ -68,6 +69,10 @@ const props = withDefaults(
     maxWidth: 550,
     multiple: false,
     init: true,
+    props: () => ({
+      label: 'lbl',
+      children: 'children',
+    }),
   },
 );
 
@@ -88,23 +93,50 @@ watch(
 function clearClk() {
   modelValue = "";
   emit("update:modelValue", modelValue);
+  emit("change", undefined);
   emit("clear");
 }
 
-function valueChg(value: string | string[] | null) {
-  // if (!props.multiple) {
-  //   const model = data.find((item) => props.optionsMap(item).value === value);
-  //   emit("change", model);
-  //   return;
-  // }
-  // let models: any[] = [ ];
-  // let modelValues = (modelValue || [ ]) as string[];
-  // for (const value of modelValues) {
-  //   const model = data.find((item) => props.optionsMap(item).value === value);
-  //   models.push(model);
-  // }
-  // emit("change", models);
-  console.log(value);
+function valueChg() {
+}
+
+function treeSelectFn<
+  T extends {
+    id: string;
+    children?: T[];
+  },
+>(data: T[], id: string): T | undefined {
+  for (const item of data) {
+    if (item.id === id) {
+      return item;
+    }
+    if (item.children) {
+      const item2 = treeSelectFn(item.children, id);
+      if (item2) {
+        return item2;
+      }
+    }
+  }
+  return;
+}
+
+function checkClk() {
+  if (!props.multiple) {
+    if (!modelValue) {
+      emit("change", undefined);
+      return;
+    }
+    const model = treeSelectFn(data, modelValue as string)!;
+    emit("change", model);
+    return;
+  }
+  let models: any[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const id of modelValues) {
+    const model = treeSelectFn(data, id)!;
+    models.push(model);
+  }
+  emit("change", models);
 }
 
 async function refreshEfc() {
