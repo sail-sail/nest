@@ -747,19 +747,10 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -768,49 +759,49 @@ export async function updateById(
   `;
   let updateFldNum = 0;
   if (model.type !== undefined) {
-    if (model.type != oldModel?.type) {
+    if (model.type != oldModel.type) {
       sql += `type = ${ args.push(model.type) },`;
       updateFldNum++;
     }
   }
   if (model.parent_id !== undefined) {
-    if (model.parent_id != oldModel?.parent_id) {
+    if (model.parent_id != oldModel.parent_id) {
       sql += `parent_id = ${ args.push(model.parent_id) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
+    if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.route_path !== undefined) {
-    if (model.route_path != oldModel?.route_path) {
+    if (model.route_path != oldModel.route_path) {
       sql += `route_path = ${ args.push(model.route_path) },`;
       updateFldNum++;
     }
   }
   if (model.route_query !== undefined) {
-    if (model.route_query != oldModel?.route_query) {
+    if (model.route_query != oldModel.route_query) {
       sql += `route_query = ${ args.push(model.route_query) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
+    if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.order_by !== undefined) {
-    if (model.order_by != oldModel?.order_by) {
+    if (model.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
+    if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }

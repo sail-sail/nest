@@ -972,19 +972,10 @@ export async function updateById(
     model.role_ids = models.map((item: { id: string }) => item.id);
   }
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -993,13 +984,13 @@ export async function updateById(
   `;
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
+    if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.username !== undefined) {
-    if (model.username != oldModel?.username) {
+    if (model.username != oldModel.username) {
       sql += `username = ${ args.push(model.username) },`;
       updateFldNum++;
     }
@@ -1010,25 +1001,25 @@ export async function updateById(
     updateFldNum++;
   }
   if (model.default_dept_id !== undefined) {
-    if (model.default_dept_id != oldModel?.default_dept_id) {
+    if (model.default_dept_id != oldModel.default_dept_id) {
       sql += `default_dept_id = ${ args.push(model.default_dept_id) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
+    if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
+    if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
   if (model.is_locked !== undefined) {
-    if (model.is_locked != oldModel?.is_locked) {
+    if (model.is_locked != oldModel.is_locked) {
       sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }

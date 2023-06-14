@@ -801,19 +801,10 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -822,49 +813,49 @@ export async function updateById(
   `;
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
+    if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.state !== undefined) {
-    if (model.state != oldModel?.state) {
+    if (model.state != oldModel.state) {
       sql += `state = ${ args.push(model.state) },`;
       updateFldNum++;
     }
   }
   if (model.type !== undefined) {
-    if (model.type != oldModel?.type) {
+    if (model.type != oldModel.type) {
       sql += `type = ${ args.push(model.type) },`;
       updateFldNum++;
     }
   }
   if (model.result !== undefined) {
-    if (model.result != oldModel?.result) {
+    if (model.result != oldModel.result) {
       sql += `result = ${ args.push(model.result) },`;
       updateFldNum++;
     }
   }
   if (model.err_msg !== undefined) {
-    if (model.err_msg != oldModel?.err_msg) {
+    if (model.err_msg != oldModel.err_msg) {
       sql += `err_msg = ${ args.push(model.err_msg) },`;
       updateFldNum++;
     }
   }
   if (model.begin_time !== undefined) {
-    if (model.begin_time != oldModel?.begin_time) {
+    if (model.begin_time != oldModel.begin_time) {
       sql += `begin_time = ${ args.push(model.begin_time) },`;
       updateFldNum++;
     }
   }
   if (model.end_time !== undefined) {
-    if (model.end_time != oldModel?.end_time) {
+    if (model.end_time != oldModel.end_time) {
       sql += `end_time = ${ args.push(model.end_time) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
+    if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
