@@ -17,6 +17,8 @@
   @keyup.enter.stop
   :loading="!inited"
   class="custom_select"
+  @change="valueChg"
+  :multiple="props.multiple"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -39,8 +41,10 @@ const t = getCurrentInstance();
 
 const usrStore = useUsrStore();
 
-let emit = defineEmits<{
+const emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "change", value?: any | any[] | null): void,
+  (e: "clear"): void,
 }>();
 
 let inited = $ref(false);
@@ -59,6 +63,8 @@ const props = withDefaults(
     options4SelectV2?: (OptionType & { __pinyin_label?: string })[];
     autoWidth?: boolean;
     maxWidth?: number;
+    multiple?: boolean;
+    init?: boolean;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -74,6 +80,8 @@ const props = withDefaults(
     modelValue: undefined,
     autoWidth: true,
     maxWidth: 550,
+    multiple: false,
+    init: true,
   },
 );
 
@@ -94,6 +102,7 @@ watch(
 function clearClk() {
   modelValue = "";
   emit("update:modelValue", modelValue);
+  emit("clear");
 }
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>(props.options4SelectV2);
@@ -197,7 +206,28 @@ async function refreshEfc() {
   inited = true;
 }
 
-refreshEfc();
+function valueChg(value: string | string[] | null) {
+  if (!props.multiple) {
+    const model = data.find((item) => props.optionsMap(item).value === value);
+    emit("change", model);
+    return;
+  }
+  let models: any[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const model = data.find((item) => props.optionsMap(item).value === value);
+    models.push(model);
+  }
+  emit("change", models);
+}
+
+if (props.init) {
+  refreshEfc();
+}
 
 usrStore.onLogin(refreshEfc);
+
+defineExpose({
+  refresh: refreshEfc,
+});
 </script>

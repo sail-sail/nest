@@ -85,7 +85,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #><#
       } else if (foreignKey) {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -109,7 +109,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dict) {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -128,7 +128,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dictbiz) {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -147,7 +147,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -169,7 +169,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column_type === "int(1)") {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -184,7 +184,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column_type.startsWith("int")) {
       #>
-      <template v-if="builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -200,7 +200,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else {
       #>
-      <template v-if="builtInSearch?.<#=column_name#>_like == null && builtInSearch?.<#=column_name#> == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#>_like == null && builtInSearch?.<#=column_name#> == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
@@ -222,7 +222,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       <#
       if (opts.noDelete !== true && opts.noRevert !== true) {
       #>
-      <template v-if="builtInSearch?.is_deleted == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -627,7 +627,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -643,7 +643,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -675,7 +675,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -698,7 +698,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -721,7 +721,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -792,7 +792,9 @@ const hasAtt = columns.some((item) => item.isAtt);
       un-flex
       un-justify-end
       un-p="t-0.5 b-0.5"
-    >
+    ><#
+      if (list_page) {
+      #>
       <el-pagination
         background
         :page-sizes="pageSizes"
@@ -802,7 +804,16 @@ const hasAtt = columns.some((item) => item.isAtt);
         :total="page.total"
         @size-change="pgSizeChg"
         @current-change="pgCurrentChg"
-      ></el-pagination>
+      ></el-pagination><#
+      } else {
+      #>
+      <el-pagination
+        background
+        layout="total"
+        :total="page.total"
+      ></el-pagination><#
+      }
+      #>
     </div>
   </div><#
   for (let i = 0; i < columns.length; i++) {
@@ -1047,10 +1058,15 @@ if (hasForeignTabs > 0) {
 
 import ForeignTabs from "./ForeignTabs.vue";<#
 }
+#><#
+let optionsName = table_comment;
+if (list_tree) {
+  optionsName = optionsName + "List";
+}
 #>
 
 defineOptions({
-  name: "<#=table_comment#>",
+  name: "<#=optionsName#>",
 });
 
 const {
@@ -1074,6 +1090,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -1135,6 +1152,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 
@@ -1150,6 +1168,7 @@ async function idsCheckedChg() {
 
 const props = defineProps<{
   is_deleted?: string;
+  showBuildIn?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
@@ -1241,6 +1260,7 @@ const props = defineProps<{
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
+  showBuildIn: "0|1",
   ids: "string[]",<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1292,10 +1312,11 @@ const builtInSearchType: { [key: string]: string } = {
 const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
+  "showBuildIn",
 ];
 
 /** 内置搜索条件 */
-const builtInSearch = $computed(() => {
+const builtInSearch: <#=searchName#> = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -1351,10 +1372,14 @@ const builtInModel = $computed(() => {
 
 /** 分页功能 */
 let {
-  page,
+  page,<#
+  if (list_page) {
+  #>
   pageSizes,
   pgSizeChg,
-  pgCurrentChg,
+  pgCurrentChg,<#
+  }
+  #>
 } = $(usePage<<#=modelName#>>(dataGrid));
 
 /** 表格选择功能 */
@@ -1667,21 +1692,33 @@ async function dataGrid(isCount = false) {
 function getDataSearch() {
   let search2 = {
     ...search,
-    ...builtInSearch,
-    idsChecked: undefined,
   };
+  if (props.showBuildIn == "0") {
+    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  }
   if (idsChecked) {
     search2.ids = selectedIds;
   }
   return search2;
-}
+}<#
+if (list_page) {
+#>
 
 async function useFindAll() {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
   tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+}<#
+} else {
+#>
+
+async function useFindAll() {
+  const search2 = getDataSearch();
+  tableData = await findAll(search2, undefined, [ sort ]);
+}<#
 }
+#>
 
 async function useFindCount() {
   const search2 = getDataSearch();
@@ -1782,6 +1819,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
+    showBuildIn: props.showBuildIn,
   });
   if (type === "cancel") {
     return;
@@ -1816,6 +1854,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
+    showBuildIn: props.showBuildIn,
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -1970,6 +2009,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
+    showBuildIn: props.showBuildIn,
     model: {
       ids: selectedIds,
     },
@@ -2194,10 +2234,15 @@ async function initFrame() {
 
 watch(
   () => builtInSearch,
-  async (newVal, oldVal) => {
-    if (!deepCompare(oldVal, newVal)) {
-      await initFrame();
-    }
+  async function() {
+    search = {
+      ...search,
+      ...builtInSearch,
+    };
+    await searchClk();
+  },
+  {
+    deep: true,
   },
 );
 
@@ -2284,4 +2329,8 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
 #><#
 }
 #>
+
+defineExpose({
+  refresh: searchClk,
+});
 </script>

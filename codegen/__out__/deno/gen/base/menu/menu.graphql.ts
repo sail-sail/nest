@@ -12,9 +12,9 @@ type MenuModel {
   "类型"
   type_lbl: String
   "父菜单"
-  menu_id: String!
+  parent_id: String!
   "父菜单"
-  menu_id_lbl: String
+  parent_id_lbl: String
   "名称"
   lbl: String!
   "路由"
@@ -36,9 +36,9 @@ type MenuFieldComment {
   "类型"
   type_lbl: String!
   "父菜单"
-  menu_id: String!
+  parent_id: String!
   "父菜单"
-  menu_id_lbl: String!
+  parent_id_lbl: String!
   "名称"
   lbl: String!
   "路由"
@@ -62,9 +62,9 @@ input MenuInput {
   "类型"
   type_lbl: String
   "父菜单"
-  menu_id: String
+  parent_id: String
   "父菜单"
-  menu_id_lbl: String
+  parent_id_lbl: String
   "名称"
   lbl: String
   "路由"
@@ -90,8 +90,8 @@ input MenuSearch {
   "类型"
   type: [String!]
   "父菜单"
-  menu_id: [String!]
-  menu_id_is_null: Boolean
+  parent_id: [String!]
+  parent_id_is_null: Boolean
   "名称"
   lbl: String
   lbl_like: String

@@ -279,7 +279,7 @@ export interface TableCloumn {
      * Detail中选择数据的方式
      *   select: 下拉框 (默认)
      *   selectInput: 弹框选择
-     *   tree: 树形选择 (尚未实现)
+     *   tree: 树形选择
      */
     selectType?: "select"|"selectInput"|"tree",
     
@@ -501,6 +501,17 @@ export interface TablesConfigItem {
      * 是否启用日志记录
      */
     log?: boolean;
+    
+    /**
+     * 列表页中的表格是否分页, 默认为true
+     */
+    list_page?: boolean;
+    
+    /**
+     * 列表页中的表格是否为树, 默认为false
+     * 如果为true, 则list_page自动设置为false
+     */
+    list_tree?: boolean;
     
     /**
      * 是否忽略代码生成

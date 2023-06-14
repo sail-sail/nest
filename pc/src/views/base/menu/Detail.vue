@@ -30,7 +30,7 @@
         @keyup.enter="saveClk"
       >
         
-        <template v-if="builtInModel?.type == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.type == null)">
           <el-form-item
             :label="n('类型')"
             prop="type"
@@ -46,28 +46,31 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.menu_id == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.parent_id == null)">
           <el-form-item
             :label="n('父菜单')"
-            prop="menu_id"
+            prop="parent_id"
             un-h="full"
           >
-            <CustomSelect
-              v-model="dialogModel.menu_id"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+            <CustomTreeSelect
+              v-model="dialogModel.parent_id"
+              :method="getMenuTree"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('父菜单') }`"
-            ></CustomSelect>
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.lbl == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -82,7 +85,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.route_path == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.route_path == null)">
           <el-form-item
             :label="n('路由')"
             prop="route_path"
@@ -97,7 +100,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.route_query == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.route_query == null)">
           <el-form-item
             :label="n('参数')"
             prop="route_query"
@@ -112,7 +115,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.order_by == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -132,7 +135,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="builtInModel?.rem == null">
+        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -232,6 +235,10 @@ import {
   getMenuList,
 } from "./Api";
 
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
+
 const emit = defineEmits<
   (
     e: "nextId",
@@ -245,6 +252,7 @@ const emit = defineEmits<
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n("/base/menu");
@@ -275,13 +283,13 @@ watchEffect(async () => {
     lbl: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("名称") }`,
+        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
     is_enabled: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("启用") }`,
+        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
       },
     ],
   };
@@ -296,6 +304,9 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<MenuInput>();
+
+/** 是否显示内置变量, 0不显示(默认), 1显示 */
+let showBuildIn = $ref<string>("0");
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -314,6 +325,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: MenuInput;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];
@@ -332,6 +344,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = arg?.showBuildIn || "0";
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -350,6 +363,7 @@ async function showDialog(
     ]);
     dialogModel = {
       ...defaultModel,
+      ...builtInModel,
       ...model,
       order_by: order_by + 1,
     };
@@ -464,12 +478,15 @@ async function saveClk() {
   let id: string | undefined = undefined;
   let msg = "";
   if (dialogAction === "add" || dialogAction === "copy") {
-    id = await create({
+    const dialogModel2 = {
       ...dialogModel,
-      ...builtInModel,
-    });
+    };
+    if (showBuildIn == "0") {
+      Object.assign(dialogModel2, builtInModel);
+    }
+    id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = ns("添加成功");
+    msg = await nsAsync("添加成功");
   } else if (dialogAction === "edit") {
     if (!dialogModel.id) {
       return;
@@ -481,7 +498,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = ns("修改成功");
+    msg = await nsAsync("修改成功");
   }
   if (id) {
     if (!changedIds.includes(id)) {

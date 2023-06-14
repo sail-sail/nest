@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="builtInSearch?.type == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.type == null)">
         <el-form-item
           :label="n('类型')"
           prop="type"
@@ -44,15 +44,15 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.menu_id == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.parent_id == null)">
         <el-form-item
           label="父菜单"
-          prop="menu_id"
+          prop="parent_id"
         >
           <CustomSelect
-            :set="search.menu_id = search.menu_id || [ ]"
+            :set="search.parent_id = search.parent_id || [ ]"
             un-w="full"
-            v-model="search.menu_id"
+            v-model="search.parent_id"
             :method="getMenuList"
             :options-map="((item: MenuModel) => {
               return {
@@ -67,7 +67,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -82,7 +82,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.is_deleted == null">
+      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -391,7 +391,7 @@
         >
           
           <!-- 类型 -->
-          <template v-if="'type' === col.prop">
+          <template v-if="'type' === col.prop && (showBuildIn == '1' || builtInSearch?.type == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -400,7 +400,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop">
+          <template v-else-if="'parent_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.parent_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -409,7 +409,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -418,7 +418,7 @@
           </template>
           
           <!-- 路由 -->
-          <template v-else-if="'route_path' === col.prop">
+          <template v-else-if="'route_path' === col.prop && (showBuildIn == '1' || builtInSearch?.route_path == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -427,7 +427,7 @@
           </template>
           
           <!-- 参数 -->
-          <template v-else-if="'route_query' === col.prop">
+          <template v-else-if="'route_query' === col.prop && (showBuildIn == '1' || builtInSearch?.route_query == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -436,7 +436,7 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop">
+          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -445,7 +445,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop">
+          <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -454,7 +454,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -481,13 +481,8 @@
     >
       <el-pagination
         background
-        :page-sizes="pageSizes"
-        :page-size="page.size"
-        layout="total, sizes, prev, pager, next, jumper"
-        :current-page="page.current"
+        layout="total"
         :total="page.total"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div>
@@ -534,7 +529,7 @@ import {
 } from "./Api";
 
 defineOptions({
-  name: "菜单",
+  name: "菜单List",
 });
 
 const {
@@ -558,6 +553,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "beforeSearchReset",
 ]);
 
 /** 表格 */
@@ -567,7 +563,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
-    menu_id: [ ],
+    parent_id: [ ],
   } as MenuSearch;
 }
 
@@ -589,6 +585,7 @@ async function searchReset() {
   search = initSearch();
   idsChecked = 0;
   resetSelectedIds();
+  emit("beforeSearchReset");
   await searchClk();
 }
 
@@ -604,13 +601,14 @@ async function idsCheckedChg() {
 
 const props = defineProps<{
   is_deleted?: string;
+  showBuildIn?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
   type?: string|string[]; // 类型
-  menu_id?: string|string[]; // 父菜单
-  menu_id_lbl?: string|string[]; // 父菜单
+  parent_id?: string|string[]; // 父菜单
+  parent_id_lbl?: string|string[]; // 父菜单
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   route_path?: string; // 路由
@@ -625,11 +623,12 @@ const props = defineProps<{
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
+  showBuildIn: "0|1",
   ids: "string[]",
   type: "string[]",
   type_lbl: "string[]",
-  menu_id: "string[]",
-  menu_id_lbl: "string[]",
+  parent_id: "string[]",
+  parent_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   order_by: "number",
@@ -638,10 +637,11 @@ const builtInSearchType: { [key: string]: string } = {
 const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
+  "showBuildIn",
 ];
 
 /** 内置搜索条件 */
-const builtInSearch = $computed(() => {
+const builtInSearch: MenuSearch = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
   for (const item of entries) {
     if (builtInSearchType[item[0]] === "0|1") {
@@ -698,9 +698,6 @@ const builtInModel = $computed(() => {
 /** 分页功能 */
 let {
   page,
-  pageSizes,
-  pgSizeChg,
-  pgCurrentChg,
 } = $(usePage<MenuModel>(dataGrid));
 
 /** 表格选择功能 */
@@ -776,7 +773,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "父菜单",
-      prop: "menu_id_lbl",
+      prop: "parent_id_lbl",
       width: 140,
       sortable: "custom",
       align: "center",
@@ -877,9 +874,10 @@ async function dataGrid(isCount = false) {
 function getDataSearch() {
   let search2 = {
     ...search,
-    ...builtInSearch,
-    idsChecked: undefined,
   };
+  if (props.showBuildIn == "0") {
+    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  }
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -887,10 +885,8 @@ function getDataSearch() {
 }
 
 async function useFindAll() {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, undefined, [ sort ]);
 }
 
 async function useFindCount() {
@@ -936,6 +932,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
+    showBuildIn: props.showBuildIn,
   });
   if (type === "cancel") {
     return;
@@ -965,6 +962,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
+    showBuildIn: props.showBuildIn,
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -994,7 +992,7 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("类型") ]: "type_lbl",
-    [ n("父菜单") ]: "menu_id_lbl",
+    [ n("父菜单") ]: "parent_id_lbl",
     [ n("名称") ]: "lbl",
     [ n("路由") ]: "route_path",
     [ n("参数") ]: "route_query",
@@ -1064,6 +1062,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
+    showBuildIn: props.showBuildIn,
     model: {
       ids: selectedIds,
     },
@@ -1191,14 +1190,23 @@ async function initFrame() {
 
 watch(
   () => builtInSearch,
-  async (newVal, oldVal) => {
-    if (!deepCompare(oldVal, newVal)) {
-      await initFrame();
-    }
+  async function() {
+    search = {
+      ...search,
+      ...builtInSearch,
+    };
+    await searchClk();
+  },
+  {
+    deep: true,
   },
 );
 
 usrStore.onLogin(initFrame);
 
 initFrame();
+
+defineExpose({
+  refresh: searchClk,
+});
 </script>

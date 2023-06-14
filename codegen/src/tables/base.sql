@@ -114,7 +114,7 @@ drop table if exists `base_menu`;
 CREATE TABLE if not exists `base_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `type` varchar(10) NOT NULL DEFAULT 'pc' COMMENT '类型,dict:menu_type',
-  `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父菜单',
+  `parent_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父菜单',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `route_path` varchar(255) NOT NULL DEFAULT '' COMMENT '路由',
   `route_query` json COMMENT '参数',

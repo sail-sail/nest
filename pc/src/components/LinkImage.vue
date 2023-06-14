@@ -9,8 +9,9 @@
       v-for="(url, i) in urlList"
       :key="url"
       :src="url"
-      un-rounded
       :un-m="i > 0 ? 'l-1' : ''"
+      un-rounded
+      un-object-contain
     >
       <template #placeholder>
         <div

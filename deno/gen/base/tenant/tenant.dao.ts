@@ -775,19 +775,10 @@ export async function updateById(
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -796,43 +787,43 @@ export async function updateById(
   `;
   let updateFldNum = 0;
   if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
+    if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.host !== undefined) {
-    if (model.host != oldModel?.host) {
+    if (model.host != oldModel.host) {
       sql += `host = ${ args.push(model.host) },`;
       updateFldNum++;
     }
   }
   if (model.expiration !== undefined) {
-    if (model.expiration != oldModel?.expiration) {
+    if (model.expiration != oldModel.expiration) {
       sql += `expiration = ${ args.push(model.expiration) },`;
       updateFldNum++;
     }
   }
   if (model.max_usr_num !== undefined) {
-    if (model.max_usr_num != oldModel?.max_usr_num) {
+    if (model.max_usr_num != oldModel.max_usr_num) {
       sql += `max_usr_num = ${ args.push(model.max_usr_num) },`;
       updateFldNum++;
     }
   }
   if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel?.is_enabled) {
+    if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
   if (model.order_by !== undefined) {
-    if (model.order_by != oldModel?.order_by) {
+    if (model.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
+    if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }

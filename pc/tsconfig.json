@@ -31,10 +31,8 @@
     "strictTemplates": true
   },
   "include": [
-    "node_modules/vue/ref-macros.d.ts",
     "**/*.ts",
     "**/*.d.ts",
-    "**/*.tsx",
     "**/*.vue"
   ]
 }

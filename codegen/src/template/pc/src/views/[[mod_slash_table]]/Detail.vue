@@ -118,7 +118,7 @@ for (let i = 0; i < columns.length; i++) {
           const vIfStr = vIf.join(" && ");
         #>
         
-        <template v-if="builtInModel?.<#=column_name#> == null<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="(showBuildIn == '1' || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -192,6 +192,33 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
             ></SelectInput<#=Foreign_Table_Up#>><#
+            } else if (foreignKey && foreignKey.selectType === "tree") {
+            #>
+            <CustomTreeSelect<#
+              if (foreignKey.multiple) {
+              #>
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
+              }
+              #>
+              v-model="dialogModel.<#=column_name#>"
+              :method="get<#=Foreign_Table_Up#>Tree"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :props="{
+                label: '<#=foreignKey.lbl#>',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node<#
+              if (foreignKey.multiple) {
+              #>
+              multiple<#
+              }
+              #>
+            ></CustomTreeSelect><#
             } else if (selectList.length > 0) {
             #>
             <el-select
@@ -441,15 +468,15 @@ import {
   if (!foreignKey) continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
   // if (table === foreignTable) continue;
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
-  if (column.noAdd && column.noEdit) {
-    continue;
-  }
   if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
     continue;
   }
@@ -474,6 +501,10 @@ import {<#
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     const foreignKey = column.foreignKey;
+    if (!foreignKey) continue;
+    if (column.noAdd && column.noEdit) {
+      continue;
+    }
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -481,20 +512,49 @@ import {<#
     }).join("");
     if (foreignTableArr2.includes(foreignTable)) continue;
     foreignTableArr2.push(foreignTable);
-    if (column.noAdd && column.noEdit) {
-      continue;
-    }
     if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
       continue;
     }
-  #><#
-    if (foreignKey) {
   #>
   get<#=Foreign_Table_Up#>List,<#
-    }
   }
   #>
 } from "./Api";<#
+const foreignTableArr3 = [];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (foreignTableArr3.includes(foreignTable)) continue;
+  foreignTableArr3.push(foreignTable);
+#><#
+if (foreignKey && foreignKey.selectType === "tree") {
+#>
+
+import {
+  get<#=Foreign_Table_Up#>Tree,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+}
+#><#
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -535,6 +595,7 @@ const emit = defineEmits<
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
@@ -610,7 +671,7 @@ watchEffect(async () => {
     <#=column_name#>: [
       {
         required: true,
-        message: `${ ns("请输入") } ${ n("<#=column_comment#>") }`,
+        message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
       },
     ],<#
         } else {
@@ -618,7 +679,7 @@ watchEffect(async () => {
     <#=column_name#>: [
       {
         required: true,
-        message: `${ ns("请选择") } ${ n("<#=column_comment#>") }`,
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
       },
     ],<#
         }
@@ -639,6 +700,9 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
 let builtInModel = $ref<<#=inputName#>>();
+
+/** 是否显示内置变量, 0不显示(默认), 1显示 */
+let showBuildIn = $ref<string>("0");
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -688,6 +752,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: <#=inputName#>;
+    showBuildIn?: string;
     model?: {
       id?: string;
       ids?: string[];
@@ -713,6 +778,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = arg?.showBuildIn || "0";
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -739,6 +805,7 @@ async function showDialog(
     ]);
     dialogModel = {
       ...defaultModel,
+      ...builtInModel,
       ...model,<#
       if (hasOrderBy) {
       #>
@@ -867,12 +934,15 @@ async function saveClk() {
   if (opts.noAdd !== true) {
   #>
   if (dialogAction === "add" || dialogAction === "copy") {
-    id = await create({
+    const dialogModel2 = {
       ...dialogModel,
-      ...builtInModel,
-    });
+    };
+    if (showBuildIn == "0") {
+      Object.assign(dialogModel2, builtInModel);
+    }
+    id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = ns("添加成功");
+    msg = await nsAsync("添加成功");
   }<#
   }
   #><#
@@ -892,7 +962,7 @@ async function saveClk() {
         ...builtInModel,
       },
     );
-    msg = ns("修改成功");
+    msg = await nsAsync("修改成功");
   }<#
   }
   #>

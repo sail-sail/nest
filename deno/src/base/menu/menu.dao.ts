@@ -9,14 +9,14 @@ import * as usrDao from "/src/base/usr/usr.dao.ts";
 
 async function _getMenus(
   type?: string,
-  menu_id?: string,
+  parent_id?: string,
 ) {
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select
       t.id,
       t.type,
-      t.menu_id,
+      t.parent_id,
       t.lbl,
       t.route_path
     from base_menu t
@@ -45,8 +45,8 @@ async function _getMenus(
   if (tenant_id) {
     sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
-  if (menu_id) {
-    sql += ` and t.menu_id = ${ args.push(menu_id) }`;
+  if (parent_id) {
+    sql += ` and t.parent_id = ${ args.push(parent_id) }`;
   }
   if (authModel?.id) {
     sql += ` and base_usr_role.usr_id = ${ args.push(authModel.id) }`;
@@ -61,7 +61,7 @@ async function _getMenus(
   const result = await query<{
     id: string,
     type: string,
-    menu_id: string,
+    parent_id: string,
     lbl: string,
     route_path: string,
   }>(sql, args, { cacheKey1, cacheKey2 });
@@ -77,7 +77,7 @@ export async function getMenus(
   // deno-lint-ignore no-explicit-any
   async function tmpFn(parent?: any) {
     // let models = await t.menu2Dao.getMenus(parent && parent.id || "", type);
-    let models = allModels.filter((item) => item.menu_id === (parent && parent.id || ""));
+    let models = allModels.filter((item) => item.parent_id === (parent && parent.id || ""));
     if (!parent) {
       menus = models;
     } else {

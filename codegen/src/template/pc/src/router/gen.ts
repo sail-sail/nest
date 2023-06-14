@@ -14,6 +14,12 @@ export const routesGen: Array<RouteRecordRaw> = [<#
     const mod = table_name.substring(0, table_name.indexOf("_"));
     const mod_slash_table = table_name.replace("_", "/");
     table_name = table_name.substring(table_name.indexOf("_") + 1);
+    record.opts = record.opts || { };
+    const list_tree = record.opts.list_tree;
+    let fileNameVue = "List.vue";
+    if (list_tree) {
+      fileNameVue = "TreeList.vue";
+    }
   #>
   {
     path: "/<#=mod_slash_table#>",
@@ -22,7 +28,7 @@ export const routesGen: Array<RouteRecordRaw> = [<#
       {
         path: "",
         name: "<#=table_comment || mod+'_'+table_name#>",
-        component: () => import("@/views/<#=mod#>/<#=table_name#>/List.vue"),
+        component: () => import("@/views/<#=mod#>/<#=table_name#>/<#=fileNameVue#>"),
         props: (route) => route.query,
       },
     ],

@@ -2034,19 +2034,10 @@ export async function updateById(
   }
   #>
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -2089,7 +2080,7 @@ export async function updateById(
     if (isEmpty(model.<#=column_name#>)) {
       model.<#=column_name#> = null;
     }
-    if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
+    if (model.<#=column_name#> != oldModel.<#=column_name#>) {
       sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
@@ -2099,7 +2090,7 @@ export async function updateById(
     } else if (!foreignKey) {
   #>
   if (model.<#=column_name#> !== undefined) {
-    if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
+    if (model.<#=column_name#> != oldModel.<#=column_name#>) {
       sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }
@@ -2107,7 +2098,7 @@ export async function updateById(
     } else {
   #>
   if (model.<#=column_name#> !== undefined) {
-    if (model.<#=column_name#> != oldModel?.<#=column_name#>) {
+    if (model.<#=column_name#> != oldModel.<#=column_name#>) {
       sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
       updateFldNum++;
     }

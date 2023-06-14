@@ -774,19 +774,10 @@ export async function updateById(
     await updateTenantById(id, model.tenant_id);
   }
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -795,49 +786,49 @@ export async function updateById(
   `;
   let updateFldNum = 0;
   if (model.module !== undefined) {
-    if (model.module != oldModel?.module) {
+    if (model.module != oldModel.module) {
       sql += `module = ${ args.push(model.module) },`;
       updateFldNum++;
     }
   }
   if (model.module_lbl !== undefined) {
-    if (model.module_lbl != oldModel?.module_lbl) {
+    if (model.module_lbl != oldModel.module_lbl) {
       sql += `module_lbl = ${ args.push(model.module_lbl) },`;
       updateFldNum++;
     }
   }
   if (model.method !== undefined) {
-    if (model.method != oldModel?.method) {
+    if (model.method != oldModel.method) {
       sql += `method = ${ args.push(model.method) },`;
       updateFldNum++;
     }
   }
   if (model.method_lbl !== undefined) {
-    if (model.method_lbl != oldModel?.method_lbl) {
+    if (model.method_lbl != oldModel.method_lbl) {
       sql += `method_lbl = ${ args.push(model.method_lbl) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
+    if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.old_data !== undefined) {
-    if (model.old_data != oldModel?.old_data) {
+    if (model.old_data != oldModel.old_data) {
       sql += `old_data = ${ args.push(model.old_data) },`;
       updateFldNum++;
     }
   }
   if (model.new_data !== undefined) {
-    if (model.new_data != oldModel?.new_data) {
+    if (model.new_data != oldModel.new_data) {
       sql += `new_data = ${ args.push(model.new_data) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
+    if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
