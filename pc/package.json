@@ -43,10 +43,10 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.6.4",
     "@types/file-saver": "2.0.5",
-    "@types/node": "20.3.0",
+    "@types/node": "20.3.1",
     "@types/sortablejs": "1.15.1",
-    "@typescript-eslint/eslint-plugin": "5.59.9",
-    "@typescript-eslint/parser": "5.59.9",
+    "@typescript-eslint/eslint-plugin": "5.59.11",
+    "@typescript-eslint/parser": "5.59.11",
     "@unocss/preset-rem-to-px": "0.53.1",
     "@vitejs/plugin-vue": "4.2.3",
     "@vitejs/plugin-vue-jsx": "3.0.1",
@@ -67,7 +67,7 @@
     "vite": "4.3.9",
     "vite-plugin-inspect": "0.7.28",
     "vite-plugin-pwa": "0.16.4",
-    "vite-plugin-vue-devtools": "0.1.7",
+    "vite-plugin-vue-devtools": "0.2.0",
     "vite-plugin-vue-inspector": "3.4.2",
     "vitest": "0.32.0",
     "vue-tsc": "1.6.5"

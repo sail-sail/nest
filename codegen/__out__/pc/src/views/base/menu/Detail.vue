@@ -52,18 +52,21 @@
             prop="parent_id"
             un-h="full"
           >
-            <CustomSelect
+            <CustomTreeSelect
               v-model="dialogModel.parent_id"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getMenuTree"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('父菜单') }`"
-            ></CustomSelect>
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -231,6 +234,10 @@ import {
 import {
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 const emit = defineEmits<
   (

@@ -5,11 +5,14 @@ import {
   type MenuSearch,
   type MenuInput,
   type MenuModel,
-  
 } from "#/types";
 
 import {
 } from "#/types";
+
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -60,10 +63,6 @@ export async function findAll(
   return res;
 }
 
-export interface MenuModelTree extends MenuModel {
-  children: MenuModelTree[];
-}
-
 /**
  * 查找树形数据
  * @param sort 
@@ -80,23 +79,7 @@ export async function findTree(
     sort,
     opt,
   );
-  const treeData: MenuModelTree[] = [ ];
-  function treeFn(parent_id: string, children: MenuModelTree[]) {
-    for (let i = 0; i < res.length; i++) {
-      const item = res[i];
-      if (item.parent_id === parent_id) {
-        children.push({
-          ...item,
-          children: [ ],
-        });
-      }
-    }
-    for (let i = 0; i < children.length; i++) {
-      const item = children[i];
-      treeFn(item.id, item.children);
-    }
-  }
-  treeFn("", treeData);
+  const treeData = list2tree(res);
   return treeData;
 }
 
@@ -333,6 +316,21 @@ export async function getMenuList() {
     undefined,
     {
     },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getMenuTree() {
+  const data = await findMenuTree(
     [
       {
         prop: "order_by",

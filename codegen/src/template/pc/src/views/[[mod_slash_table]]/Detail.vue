@@ -192,6 +192,33 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
             ></SelectInput<#=Foreign_Table_Up#>><#
+            } else if (foreignKey && foreignKey.selectType === "tree") {
+            #>
+            <CustomTreeSelect<#
+              if (foreignKey.multiple) {
+              #>
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
+              }
+              #>
+              v-model="dialogModel.<#=column_name#>"
+              :method="get<#=Foreign_Table_Up#>Tree"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :props="{
+                label: '<#=foreignKey.lbl#>',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node<#
+              if (foreignKey.multiple) {
+              #>
+              multiple<#
+              }
+              #>
+            ></CustomTreeSelect><#
             } else if (selectList.length > 0) {
             #>
             <el-select
@@ -441,15 +468,15 @@ import {
   if (!foreignKey) continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
   // if (table === foreignTable) continue;
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
-  if (column.noAdd && column.noEdit) {
-    continue;
-  }
   if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
     continue;
   }
@@ -474,6 +501,10 @@ import {<#
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     const foreignKey = column.foreignKey;
+    if (!foreignKey) continue;
+    if (column.noAdd && column.noEdit) {
+      continue;
+    }
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -481,20 +512,49 @@ import {<#
     }).join("");
     if (foreignTableArr2.includes(foreignTable)) continue;
     foreignTableArr2.push(foreignTable);
-    if (column.noAdd && column.noEdit) {
-      continue;
-    }
     if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
       continue;
     }
-  #><#
-    if (foreignKey) {
   #>
   get<#=Foreign_Table_Up#>List,<#
-    }
   }
   #>
 } from "./Api";<#
+const foreignTableArr3 = [];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (foreignTableArr3.includes(foreignTable)) continue;
+  foreignTableArr3.push(foreignTable);
+#><#
+if (foreignKey && foreignKey.selectType === "tree") {
+#>
+
+import {
+  get<#=Foreign_Table_Up#>Tree,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+}
+#><#
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

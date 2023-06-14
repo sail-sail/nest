@@ -186,6 +186,7 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
           multiple: false,
+          selectType: "tree",
           defaultSort: {
             prop: "order_by",
             order: "ascending",

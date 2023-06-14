@@ -279,7 +279,7 @@ export interface TableCloumn {
      * Detail中选择数据的方式
      *   select: 下拉框 (默认)
      *   selectInput: 弹框选择
-     *   tree: 树形选择 (尚未实现)
+     *   tree: 树形选择
      */
     selectType?: "select"|"selectInput"|"tree",
     
