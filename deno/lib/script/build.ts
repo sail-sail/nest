@@ -255,9 +255,8 @@ if (commands.length === 0) {
   await Deno.mkdir(`${ buildDir }/`, { recursive: true });
   try {
     await Deno.remove(`${ buildDir }/../rust`, { recursive: true });
-  } catch (err) {
-    console.error(err);
-  }
+  // deno-lint-ignore no-empty
+  } catch (_err) { }
   await copyEnv();
   await gqlgen();
   await compile();
