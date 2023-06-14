@@ -7,7 +7,7 @@ use async_graphql::SimpleObject;
 pub struct GetMenus {
   pub id: String,
   pub r#type: String,
-  pub menu_id: String,
+  pub parent_id: String,
   pub lbl: String,
   pub route_path: Option<String>,
   pub route_query: Option<String>,
@@ -21,7 +21,7 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     // 类型
     let r#type: String = row.try_get("type")?;
     // 菜单ID
-    let menu_id: String = row.try_get("menu_id")?;
+    let parent_id: String = row.try_get("parent_id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     let route_path: Option<String> = row.try_get("route_path")?;
@@ -31,7 +31,7 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     let model = Self {
       id,
       r#type,
-      menu_id,
+      parent_id,
       lbl,
       route_path,
       route_query,

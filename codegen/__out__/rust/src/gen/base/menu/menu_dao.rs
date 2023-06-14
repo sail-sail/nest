@@ -91,29 +91,29 @@ fn get_where_query<'a>(
     }
   }
   {
-    let menu_id: Vec<String> = match &search {
-      Some(item) => item.menu_id.clone().unwrap_or_default(),
+    let parent_id: Vec<String> = match &search {
+      Some(item) => item.parent_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !menu_id.is_empty() {
+    if !parent_id.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(menu_id.len());
-        for item in menu_id {
+        let mut items = Vec::with_capacity(parent_id.len());
+        for item in parent_id {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and menu_id_lbl.id in ({})", arg);
+      where_query += &format!(" and parent_id_lbl.id in ({})", arg);
     }
   }
   {
-    let menu_id_is_null: bool = match &search {
-      Some(item) => item.menu_id_is_null.unwrap_or(false),
+    let parent_id_is_null: bool = match &search {
+      Some(item) => item.parent_id_is_null.unwrap_or(false),
       None => false,
     };
-    if menu_id_is_null {
-      where_query += &format!(" and menu_id_lbl.id is null");
+    if parent_id_is_null {
+      where_query += &format!(" and parent_id_lbl.id is null");
     }
   }
   {
@@ -216,8 +216,8 @@ fn get_where_query<'a>(
 
 fn get_from_query() -> &'static str {
   let from_query = r#"base_menu t
-    left join base_menu menu_id_lbl
-      on menu_id_lbl.id = t.menu_id"#;
+    left join base_menu parent_id_lbl
+      on parent_id_lbl.id = t.parent_id"#;
   from_query
 }
 
@@ -245,7 +245,7 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,menu_id_lbl.lbl menu_id_lbl
+      ,parent_id_lbl.lbl parent_id_lbl
     from
       {from_query}
     where
@@ -364,8 +364,8 @@ pub async fn get_field_comments<'a>(
   let field_comments = MenuFieldComment {
     r#type: n_route.n(ctx, "类型".to_owned(), None).await?,
     r#type_lbl: n_route.n(ctx, "类型".to_owned(), None).await?,
-    menu_id: n_route.n(ctx, "父菜单".to_owned(), None).await?,
-    menu_id_lbl: n_route.n(ctx, "父菜单".to_owned(), None).await?,
+    parent_id: n_route.n(ctx, "父菜单".to_owned(), None).await?,
+    parent_id_lbl: n_route.n(ctx, "父菜单".to_owned(), None).await?,
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     route_path: n_route.n(ctx, "路由".to_owned(), None).await?,
     route_query: n_route.n(ctx, "参数".to_owned(), None).await?,
@@ -381,7 +381,7 @@ pub async fn get_field_comments<'a>(
 #[allow(dead_code)]
 pub fn get_unique_keys() -> Vec<&'static str> {
   let unique_keys = vec![
-    "menu_id",
+    "parent_id",
     "lbl",
   ];
   unique_keys
@@ -446,7 +446,7 @@ pub async fn find_by_unique<'a>(
   
   if search.id.is_none() {
     if
-      search.menu_id.is_none() ||
+      search.parent_id.is_none() ||
       search.lbl.is_none()
     {
       return Ok(None);
@@ -455,7 +455,7 @@ pub async fn find_by_unique<'a>(
   
   let search = MenuSearch {
     id: search.id,
-    menu_id: search.menu_id,
+    parent_id: search.parent_id,
     lbl: search.lbl,
     ..Default::default()
   }.into();
@@ -480,7 +480,7 @@ fn equals_by_unique(
     return input.id.as_ref().unwrap() == &model.id;
   }
   if
-    input.menu_id.as_ref().is_none() || input.menu_id.as_ref().unwrap() != &model.menu_id ||
+    input.parent_id.as_ref().is_none() || input.parent_id.as_ref().unwrap() != &model.parent_id ||
     input.lbl.as_ref().is_none() || input.lbl.as_ref().unwrap() != &model.lbl
   {
     return false;
@@ -523,8 +523,8 @@ pub async fn check_by_unique<'a>(
     let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
       "{}: {}, {}: {} {str}",
-      field_comments.menu_id,
-      input.menu_id.unwrap_or_default(),
+      field_comments.parent_id,
+      input.parent_id.unwrap_or_default(),
       field_comments.lbl,
       input.lbl.unwrap_or_default(),
     );
@@ -578,22 +578,22 @@ pub async fn set_id_by_lbl<'a>(
   }
   
   // 父菜单
-  if input.menu_id.is_none() {
-    if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
-      input.menu_id_lbl = input.menu_id_lbl.map(|item| 
+  if input.parent_id.is_none() {
+    if is_not_empty_opt(&input.parent_id_lbl) && input.parent_id.is_none() {
+      input.parent_id_lbl = input.parent_id_lbl.map(|item| 
         item.trim().to_owned()
       );
       let model = find_one(
         ctx,
         crate::gen::base::menu::menu_model::MenuSearch {
-          lbl: input.menu_id_lbl.clone(),
+          lbl: input.parent_id_lbl.clone(),
           ..Default::default()
         }.into(),
         None,
         None,
       ).await?;
       if let Some(model) = model {
-        input.menu_id = model.id.into();
+        input.parent_id = model.id.into();
       }
     }
   }
@@ -667,10 +667,10 @@ pub async fn create<'a>(
     args.push(r#type.into());
   }
   // 父菜单
-  if let Some(menu_id) = input.menu_id {
-    sql_fields += ",menu_id";
+  if let Some(parent_id) = input.parent_id {
+    sql_fields += ",parent_id";
     sql_values += ",?";
-    args.push(menu_id.into());
+    args.push(parent_id.into());
   }
   // 名称
   if let Some(lbl) = input.lbl {
@@ -764,10 +764,10 @@ pub async fn update_by_id<'a>(
     args.push(r#type.into());
   }
   // 父菜单
-  if let Some(menu_id) = input.menu_id {
+  if let Some(parent_id) = input.parent_id {
     field_num += 1;
-    sql_fields += ",menu_id = ?";
-    args.push(menu_id.into());
+    sql_fields += ",parent_id = ?";
+    args.push(parent_id.into());
   }
   // 名称
   if let Some(lbl) = input.lbl {

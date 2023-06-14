@@ -12,9 +12,9 @@ pub struct MenuModel {
   /// 类型
   pub r#type_lbl: String,
   /// 父菜单
-  pub menu_id: String,
+  pub parent_id: String,
   /// 父菜单
-  pub menu_id_lbl: String,
+  pub parent_id_lbl: String,
   /// 名称
   pub lbl: String,
   /// 路由
@@ -39,9 +39,9 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let r#type: String = row.try_get("type")?;
     let type_lbl: String = r#type.to_string();
     // 父菜单
-    let menu_id: String = row.try_get("menu_id")?;
-    let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
-    let menu_id_lbl = menu_id_lbl.unwrap_or_default();
+    let parent_id: String = row.try_get("parent_id")?;
+    let parent_id_lbl: Option<String> = row.try_get("parent_id_lbl")?;
+    let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 路由
@@ -60,8 +60,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       id,
       r#type,
       type_lbl,
-      menu_id,
-      menu_id_lbl,
+      parent_id,
+      parent_id_lbl,
       lbl,
       route_path,
       route_query,
@@ -83,9 +83,9 @@ pub struct MenuFieldComment {
   /// 类型
   pub r#type_lbl: String,
   /// 父菜单
-  pub menu_id: String,
+  pub parent_id: String,
   /// 父菜单
-  pub menu_id_lbl: String,
+  pub parent_id_lbl: String,
   /// 名称
   pub lbl: String,
   /// 路由
@@ -111,9 +111,9 @@ pub struct MenuSearch {
   /// 类型
   pub r#type: Option<Vec<String>>,
   /// 父菜单
-  pub menu_id: Option<Vec<String>>,
+  pub parent_id: Option<Vec<String>>,
   /// 父菜单
-  pub menu_id_is_null: Option<bool>,
+  pub parent_id_is_null: Option<bool>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
@@ -143,9 +143,9 @@ pub struct MenuInput {
   /// 类型
   pub type_lbl: Option<String>,
   /// 父菜单
-  pub menu_id: Option<String>,
+  pub parent_id: Option<String>,
   /// 父菜单
-  pub menu_id_lbl: Option<String>,
+  pub parent_id_lbl: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 路由
@@ -171,7 +171,7 @@ impl From<MenuInput> for MenuSearch {
       // 类型
       r#type: input.r#type.map(|x| vec![x.into()]),
       // 父菜单
-      menu_id: input.menu_id.map(|x| vec![x.into()]),
+      parent_id: input.parent_id.map(|x| vec![x.into()]),
       // 名称
       lbl: input.lbl,
       // 路由
