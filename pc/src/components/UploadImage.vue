@@ -11,6 +11,7 @@
   <el-image
     v-bind="$attrs"
     :src="urlList[nowIndex]"
+    un-object-contain
   >
     <template #placeholder>
       <div

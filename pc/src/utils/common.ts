@@ -58,6 +58,40 @@ export async function getDictbiz(
   return result;
 }
 
+export function list2tree<
+  R extends {
+    id: string;
+    parent_id: string;
+  },
+>(
+  list: R[],
+) {
+  type T = R & {
+    children: T[];
+  };
+  const treeData: T[] = [ ];
+  function treeFn(parent_id: string, children: T[]) {
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i];
+      const children2: T[] = [ ];
+      if (item.parent_id === parent_id) {
+        children.push({
+          ...item,
+          children: children2,
+        });
+      }
+    }
+    for (let i = 0; i < children.length; i++) {
+      const item = children[i];
+      item.children = item.children || [ ];
+      treeFn(item.id, item.children);
+    }
+  }
+  treeFn("", treeData);
+  return treeData;
+}
+  
+
 export function showUploadMsg(
   succNum: number,
   failNum: number,

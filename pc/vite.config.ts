@@ -71,6 +71,7 @@ export default defineConfig({
             "getDict",
             "getDictbiz",
             "showUploadMsg",
+            "list2tree",
           ],
         },
         {

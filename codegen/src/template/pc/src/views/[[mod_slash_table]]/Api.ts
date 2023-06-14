@@ -36,6 +36,11 @@ importForeignTables.push(Table_Up);
   #>
   type <#=inputName#>,<#
   }
+  #><#
+  if (list_tree) {
+  #>
+  type <#=modelName#>,<#
+  }
   #>
 } from "#/types";
 
@@ -62,7 +67,35 @@ for (let i = 0; i < columns.length; i++) {
   type <#=Foreign_Table_Up#>Search,<#
 }
 #>
-} from "#/types";
+} from "#/types";<#
+const importForeignTablesTree = [ ];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const foreignKey = column.foreignKey;
+  const data_type = column.DATA_TYPE;
+  if (!foreignKey) continue;
+  const foreignTable = foreignKey.table;
+  const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (importForeignTablesTree.includes(Foreign_Table_Up)) {
+    continue;
+  }
+  importForeignTablesTree.push(Foreign_Table_Up);
+  if (foreignKey.selectType !== "tree") {
+    continue;
+  }
+#>
+
+import {
+  findTree as find<#=Foreign_Table_Up#>Tree,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+}
+#>
 
 /**
  * 根据搜索条件查找数据
@@ -150,7 +183,31 @@ export async function findAll(
   #>
   }
   return res;
+}<#
+if (list_tree) {
+#>
+
+/**
+ * 查找树形数据
+ * @param sort 
+ * @param opt 
+ * @returns 
+ */
+export async function findTree(
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAll(
+    undefined,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData = list2tree(res);
+  return treeData;
+}<#
 }
+#>
 
 /**
  * 根据搜索条件查找数据总数
@@ -537,6 +594,25 @@ export async function get<#=Foreign_Table_Up#>List() {
   );
   return data;
 }<#
+if (foreignKey.selectType === "tree") {
+#>
+
+export async function get<#=Foreign_Table_Up#>Tree() {
+  const data = await find<#=Foreign_Table_Up#>Tree(
+    [
+      {
+        prop: "<#=defaultSort && defaultSort.prop || ""#>",
+        order: "<#=defaultSort && defaultSort.order || "ascending"#>",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}<#
+}
+#><#
 }
 #>
 

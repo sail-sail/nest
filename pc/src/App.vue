@@ -394,24 +394,20 @@ body .el-input-number.is-without-controls .el-input__inner {
   }
 }
 
-body .el-tree {
-  .el-tree-node.is-current .el-tree-node__content {
+.el-tree {
+  .el-tree-node.is-current>.el-tree-node__content {
     background-color: rgba(210,210,210,.8);
   }
-  .el-tree-node {
-    .el-tree-node__content:hover {
-      background-color: rgba(210,210,210,.8);
-    }
+  .el-tree-node>.el-tree-node__content:hover {
+    background-color: rgba(210,210,210,.8);
   }
 }
 .dark .el-tree {
-  .el-tree-node.is-current .el-tree-node__content {
+  .el-tree-node.is-current>.el-tree-node__content {
     background-color: rgba(81, 81, 81,.8);
   }
-  .el-tree-node {
-    .el-tree-node__content:hover {
-      background-color: rgba(81, 81, 81,.8);
-    }
+  .el-tree-node>.el-tree-node__content:hover {
+    background-color: rgba(81, 81, 81,.8);
   }
 }
 .el-flex-card.el-card {

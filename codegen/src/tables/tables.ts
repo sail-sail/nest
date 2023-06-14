@@ -165,11 +165,12 @@ export default defineConfig({
   base_menu: {
     opts: {
       cache: true,
-      unique: [ "menu_id", "lbl" ],
+      unique: [ "parent_id", "lbl" ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
       },
+      list_tree: true,
     },
     columns: [
       {
@@ -178,7 +179,7 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "menu_id",
+        COLUMN_NAME: "parent_id",
         require: false,
         search: true,
         sortable: true,
@@ -188,6 +189,7 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
           multiple: false,
+          selectType: "tree",
           defaultSort: {
             prop: "order_by",
             order: "ascending",

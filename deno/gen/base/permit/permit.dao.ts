@@ -880,19 +880,10 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findByUnique(model);
-  if (oldModel) {
-    if (oldModel.id !== id && options?.uniqueType !== "create") {
-      const result = await checkByUnique(model, oldModel, options?.uniqueType);
-      if (result) {
-        return result;
-      }
-    }
-  } else {
-    if (options?.uniqueType === "create") {
-      const result = await create({ ...model, id });
-      return result;
-    }
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
   }
   
   const args = new QueryArgs();
@@ -901,37 +892,37 @@ export async function updateById(
   `;
   let updateFldNum = 0;
   if (model.role_id !== undefined) {
-    if (model.role_id != oldModel?.role_id) {
+    if (model.role_id != oldModel.role_id) {
       sql += `role_id = ${ args.push(model.role_id) },`;
       updateFldNum++;
     }
   }
   if (model.menu_id !== undefined) {
-    if (model.menu_id != oldModel?.menu_id) {
+    if (model.menu_id != oldModel.menu_id) {
       sql += `menu_id = ${ args.push(model.menu_id) },`;
       updateFldNum++;
     }
   }
   if (model.code !== undefined) {
-    if (model.code != oldModel?.code) {
+    if (model.code != oldModel.code) {
       sql += `code = ${ args.push(model.code) },`;
       updateFldNum++;
     }
   }
   if (model.lbl !== undefined) {
-    if (model.lbl != oldModel?.lbl) {
+    if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
       updateFldNum++;
     }
   }
   if (model.is_visible !== undefined) {
-    if (model.is_visible != oldModel?.is_visible) {
+    if (model.is_visible != oldModel.is_visible) {
       sql += `is_visible = ${ args.push(model.is_visible) },`;
       updateFldNum++;
     }
   }
   if (model.rem !== undefined) {
-    if (model.rem != oldModel?.rem) {
+    if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }

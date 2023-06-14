@@ -4,10 +4,15 @@ import {
   type PageInput,
   type MenuSearch,
   type MenuInput,
+  type MenuModel,
 } from "#/types";
 
 import {
 } from "#/types";
+
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -32,8 +37,8 @@ export async function findAll(
           id
           type
           type_lbl
-          menu_id
-          menu_id_lbl
+          parent_id
+          parent_id_lbl
           lbl
           route_path
           route_query
@@ -56,6 +61,26 @@ export async function findAll(
     item.route_query = item.route_query && JSON.stringify(item.route_query) || "";
   }
   return res;
+}
+
+/**
+ * 查找树形数据
+ * @param sort 
+ * @param opt 
+ * @returns 
+ */
+export async function findTree(
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAll(
+    undefined,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData = list2tree(res);
+  return treeData;
 }
 
 /**
@@ -158,8 +183,8 @@ export async function findById(
           id
           type
           type_lbl
-          menu_id
-          menu_id_lbl
+          parent_id
+          parent_id_lbl
           lbl
           route_path
           route_query
@@ -304,6 +329,21 @@ export async function getMenuList() {
   return data;
 }
 
+export async function getMenuTree() {
+  const data = await findMenuTree(
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  */
@@ -329,8 +369,8 @@ export function useExportExcel(routePath: string) {
             id
             type
             type_lbl
-            menu_id
-            menu_id_lbl
+            parent_id
+            parent_id_lbl
             lbl
             route_path
             route_query
@@ -342,8 +382,8 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsMenu {
             type
             type_lbl
-            menu_id
-            menu_id_lbl
+            parent_id
+            parent_id_lbl
             lbl
             route_path
             route_query

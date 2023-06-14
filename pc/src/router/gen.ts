@@ -105,7 +105,7 @@ export const routesGen: Array<RouteRecordRaw> = [
       {
         path: "",
         name: "菜单",
-        component: () => import("@/views/base/menu/List.vue"),
+        component: () => import("@/views/base/menu/TreeList.vue"),
         props: (route) => route.query,
       },
     ],
