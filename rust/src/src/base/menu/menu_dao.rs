@@ -37,7 +37,7 @@ async fn find_menus<'a>(
     r#"select
       t.id,
       t.type,
-      t.menu_id,
+      t.parent_id,
       t.lbl,
       t.route_path,
       t.route_query
@@ -87,9 +87,9 @@ fn tmp_fn(
   let mut models: Vec<GetMenus> = all_models.clone().into_iter()
     .filter(|item| {
       if let Some(parent_id) = parent_id.clone() {
-        item.menu_id == parent_id
+        item.parent_id == parent_id
       } else {
-        item.menu_id == ""
+        item.parent_id == ""
       }
     })
     .collect::<Vec<GetMenus>>();
@@ -100,7 +100,7 @@ fn tmp_fn(
     models = models.clone().into_iter()
       .filter(|item| -> bool {
         let id = item.id.to_string();
-        !menus.iter().any(|menu| menu.menu_id == id)
+        !menus.iter().any(|menu| menu.parent_id == id)
       })
       .collect::<Vec<GetMenus>>();
     let parent = menus.iter_mut()
