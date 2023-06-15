@@ -36,8 +36,8 @@ async fn find_menus<'a>(
   let sql = format!(
     r#"select
       t.id,
-      t.type,
       t.parent_id,
+      t.type,
       t.lbl,
       t.route_path,
       t.route_query
@@ -79,50 +79,51 @@ async fn find_menus<'a>(
   Ok(res)
 }
 
-fn tmp_fn(
-  parent_id: Option<String>,
-  all_models: Vec<GetMenus>,
-  menus: &mut Vec<GetMenus>,
-) {
-  let mut models: Vec<GetMenus> = all_models.clone().into_iter()
-    .filter(|item| {
-      if let Some(parent_id) = parent_id.clone() {
-        item.parent_id == parent_id
-      } else {
-        item.parent_id == ""
-      }
-    })
-    .collect::<Vec<GetMenus>>();
-  if parent_id.is_none() {
-    *menus = models.clone();
-  } else {
-    let parent_id = parent_id.unwrap();
-    models = models.clone().into_iter()
-      .filter(|item| -> bool {
-        let id = item.id.to_string();
-        !menus.iter().any(|menu| menu.parent_id == id)
-      })
-      .collect::<Vec<GetMenus>>();
-    let parent = menus.iter_mut()
-      .find(|item| {
-        item.id.to_string() == parent_id
-      });
-    if parent.is_some() {
-      let parent = parent.unwrap();
-      parent.children = models.clone();
-    }
-  }
-  for item in &models {
-    tmp_fn(Some(item.id.to_string()), all_models.clone(), menus);
-  }
-}
+// fn tmp_fn(
+//   parent_id: Option<String>,
+//   all_models: Vec<GetMenus>,
+//   menus: &mut Vec<GetMenus>,
+// ) {
+//   let mut models: Vec<GetMenus> = all_models.clone().into_iter()
+//     .filter(|item| {
+//       if let Some(parent_id) = parent_id.clone() {
+//         item.parent_id == parent_id
+//       } else {
+//         item.parent_id == ""
+//       }
+//     })
+//     .collect::<Vec<GetMenus>>();
+//   if parent_id.is_none() {
+//     *menus = models.clone();
+//   } else {
+//     let parent_id = parent_id.unwrap();
+//     models = models.clone().into_iter()
+//       .filter(|item| -> bool {
+//         let id = item.id.to_string();
+//         !menus.iter().any(|menu| menu.parent_id == id)
+//       })
+//       .collect::<Vec<GetMenus>>();
+//     let parent = menus.iter_mut()
+//       .find(|item| {
+//         item.id.to_string() == parent_id
+//       });
+//     if parent.is_some() {
+//       let parent = parent.unwrap();
+//       parent.children = models.clone();
+//     }
+//   }
+//   for item in &models {
+//     tmp_fn(Some(item.id.to_string()), all_models.clone(), menus);
+//   }
+// }
 
 pub async fn get_menus<'a>(
   ctx: &mut impl Ctx<'a>,
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
   let all_models: Vec<GetMenus> = find_menus(ctx, r#type).await?;
-  let mut menus: Vec<GetMenus> = vec![];
-  tmp_fn(None, all_models, &mut menus);
-  Ok(menus)
+  // let mut menus: Vec<GetMenus> = vec![];
+  // tmp_fn(None, all_models, &mut menus);
+  // Ok(menus)
+  Ok(all_models)
 }

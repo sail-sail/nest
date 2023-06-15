@@ -11,7 +11,6 @@ pub struct GetMenus {
   pub lbl: String,
   pub route_path: Option<String>,
   pub route_query: Option<String>,
-  pub children: Vec<GetMenus>,
 }
 
 impl FromRow<'_, MySqlRow> for GetMenus {
@@ -20,13 +19,12 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     let id: String = row.try_get("id")?;
     // 类型
     let r#type: String = row.try_get("type")?;
-    // 菜单ID
+    // 父菜单
     let parent_id: String = row.try_get("parent_id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     let route_path: Option<String> = row.try_get("route_path")?;
     let route_query: Option<String> = row.try_get("route_query")?;
-    let children: Vec<GetMenus> = Vec::new();
     
     let model = Self {
       id,
@@ -35,7 +33,6 @@ impl FromRow<'_, MySqlRow> for GetMenus {
       lbl,
       route_path,
       route_query,
-      children,
     };
     
     Ok(model)
