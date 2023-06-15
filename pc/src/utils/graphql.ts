@@ -5,6 +5,7 @@ import { axios } from "./axios";
 import {
   type FieldNode,
   type OperationDefinitionNode,
+  type FragmentDefinitionNode,
   Kind,
   parse,
   print,
@@ -123,7 +124,17 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         const queryTmp = queryInfo.gqlArg!.query!;
         const variablesTmp = queryInfo.gqlArg?.variables;
         const queryDoc = parse(queryTmp);
-        const operationDefinitionNode = queryDoc.definitions[0] as OperationDefinitionNode;
+        let operationDefinitionNode: OperationDefinitionNode | FragmentDefinitionNode | undefined = undefined;
+        for (const definition of queryDoc.definitions) {
+          if (definition.kind !== Kind.OPERATION_DEFINITION) {
+            continue;
+          }
+          operationDefinitionNode = definition;
+          break;
+        }
+        if (!operationDefinitionNode) {
+          throw new Error("operationDefinitionNode is undefined");
+        }
         const selections = operationDefinitionNode.selectionSet.selections as FieldNode[];
         const variableDefinitions = operationDefinitionNode.variableDefinitions;
         if (variableDefinitions) {
