@@ -14,6 +14,8 @@ export default defineStore("index", function() {
   
   let loading = $ref(0);
   
+  let mutationLoading = $ref(0);
+  
   let version: string | null = $ref(localStorage.getItem("__version"));
   
   /** 国际化版本号 */
@@ -75,6 +77,7 @@ export default defineStore("index", function() {
   return $$({
     notLoading,
     loading,
+    mutationLoading,
     version,
     i18n_version,
     initI18nVersion,

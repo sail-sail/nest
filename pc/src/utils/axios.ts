@@ -4,6 +4,8 @@ import useUsrStore from "../store/usr";
 import useIndexStore from "../store/index";
 import { saveAs } from "file-saver";
 
+// const CancelToken = Axios.CancelToken;
+
 export const baseURL = "";
 
 export const axios = Axios.create({
@@ -27,8 +29,19 @@ axios.interceptors.request.use(
         (config.headers as any).Authorization = authorization;
       }
     }
-    if ((<any>config).notLoading !== true) {
+    const configAny = config as any;
+    if (configAny.notLoading !== true) {
       indexStore.addLoading();
+      if (configAny.isMutation) {
+        if (indexStore.mutationLoading > 0) {
+          console.error("正在执行其他修改操作");
+          throw "";
+          // const source = CancelToken.source();
+          // config.cancelToken = source.token;
+          // return config;
+        }
+        indexStore.mutationLoading++;
+      }
     }
     return config;
   },
@@ -45,7 +58,13 @@ axios.interceptors.response.use(
     const indexStore = useIndexStore();
     const usrStore = useUsrStore();
     const config = response.config;
-    if ((<any>config).notLoading !== true) {
+    const configAny = config as any;
+    if (configAny.isMutation) {
+      if (indexStore.mutationLoading > 0) {
+        indexStore.mutationLoading--;
+      }
+    }
+    if (configAny.notLoading !== true) {
       indexStore.minusLoading();
     }
     const headers = response.headers;
@@ -56,7 +75,7 @@ axios.interceptors.response.use(
       }
       usrStore.refreshToken(authorization);
     }
-    if ((<any>config).reqType === "graphql") {
+    if (configAny.reqType === "graphql") {
       return response;
     }
     const data: any = response.data;
@@ -66,14 +85,14 @@ axios.interceptors.response.use(
     }
     if (data.code !== 0) {
       const errMsg = <string>data.msg;
-      if ((<any>config).showErrMsg !== false) {
+      if (configAny.showErrMsg !== false) {
         if (errMsg) {
           ElMessage({
             offset: 0,
             type: "error",
             showClose: true,
             message: errMsg,
-            duration: (<any>config).duration,
+            duration: configAny.duration,
           });
         }
       }
@@ -83,6 +102,10 @@ axios.interceptors.response.use(
   },
   (error) => {
     const indexStore = useIndexStore();
+    indexStore.mutationLoading--;
+    if (indexStore.mutationLoading > 0) {
+      indexStore.mutationLoading--;
+    }
     indexStore.minusLoading();
     let errMsg = "";
     if (error.code === "ERR_NETWORK") {

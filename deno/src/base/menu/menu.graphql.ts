@@ -6,10 +6,10 @@ defineGraphql(menuResolver, /* GraphQL */`
   
   type GetMenus {
     id: String!
+    parent_id: String!
     lbl: String!
     route_path: String
     route_query: String
-    children: [GetMenus!]
   }
 
   type Query {

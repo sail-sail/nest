@@ -3,9 +3,10 @@ import {
   type GetLoginInfo,
   type Mutation,
   type Query,
+  type GetMenus,
 } from "#/types";
 
-type MenuModel = MenuModel0 & {
+type MenuModel = GetMenus & {
   children?: MenuModel[];
   oldRoute_path?: string;
 }
@@ -28,33 +29,29 @@ export async function getMenus(
   variables?: { type?: string },
   opt?: GqlOpt,
 ): Promise<any> {
-  const data = await query({
+  const res: {
+    getMenus: Query["getMenus"]
+  } = await query({
     query: /* GraphQL */ `
+      fragment GetMenusFragment on GetMenus {
+        id
+        parent_id
+        lbl
+        route_path
+        route_query
+      }
       query($type: String) {
         getMenus(type: $type) {
           ...GetMenusFragment
         }
       }
-      fragment GetMenusFragment on GetMenus {
-        id
-        lbl
-        route_path
-        route_query
-        children {
-          id
-          lbl
-          route_path
-          route_query
-        }
-      }
     `,
     variables,
   }, opt);
-  const result = data?.getMenus;
-  if (result) {
-    treeMenusUrl(result);
-  }
-  return result;
+  const data = res.getMenus;
+  const dataTree = list2tree(data);
+  treeMenusUrl(dataTree);
+  return dataTree;
 }
 
 // 清空缓存
