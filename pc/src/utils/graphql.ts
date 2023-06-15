@@ -5,6 +5,7 @@ import { axios } from "./axios";
 import {
   type FieldNode,
   type OperationDefinitionNode,
+  type FragmentDefinitionNode,
   Kind,
   parse,
   print,
@@ -123,7 +124,17 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         const queryTmp = queryInfo.gqlArg!.query!;
         const variablesTmp = queryInfo.gqlArg?.variables;
         const queryDoc = parse(queryTmp);
-        const operationDefinitionNode = queryDoc.definitions[0] as OperationDefinitionNode;
+        let operationDefinitionNode: OperationDefinitionNode | FragmentDefinitionNode | undefined = undefined;
+        for (const definition of queryDoc.definitions) {
+          if (definition.kind !== Kind.OPERATION_DEFINITION) {
+            continue;
+          }
+          operationDefinitionNode = definition;
+          break;
+        }
+        if (!operationDefinitionNode) {
+          throw new Error("operationDefinitionNode is undefined");
+        }
         const selections = operationDefinitionNode.selectionSet.selections as FieldNode[];
         const variableDefinitions = operationDefinitionNode.variableDefinitions;
         if (variableDefinitions) {
@@ -291,7 +302,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   }
   let rvData: any = undefined;
   try {
-    rvData = await axios.request(<any> {
+    rvData = await axios.request({
       method: "post",
       url: `/graphql`,
       data: gqlArg,
@@ -301,19 +312,24 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       headers,
       // showErrMsg: opt?.showErrMsg,
       // duration: opt?.duration,
-    });
-  } catch (err) {
-    if ((<any>err).response && (<any>err).response.data) {
-      rvData = (<any>err).response;
+      isMutation: opt?.isMutation,
+    } as any);
+  } catch (err0) {
+    const err = err0 as any;
+    if (err.response && err.response.data) {
+      rvData = err.response;
     } else {
       if (!opt || opt.showErrMsg !== false) {
-        ElMessage({
-          offset: 0,
-          type: "error",
-          showClose: true,
-          message: (<any>err).toString(),
-          duration,
-        });
+        const errMsg = err.message || err.toString();
+        if (errMsg) {
+          ElMessage({
+            offset: 0,
+            type: "error",
+            showClose: true,
+            message: errMsg,
+            duration,
+          });
+        }
       }
       throw err;
     }
