@@ -18,7 +18,8 @@ async function _getMenus(
       t.type,
       t.parent_id,
       t.lbl,
-      t.route_path
+      t.route_path,
+      t.route_query
     from base_menu t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
@@ -45,7 +46,7 @@ async function _getMenus(
   if (tenant_id) {
     sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
   }
-  if (parent_id) {
+  if (parent_id != null) {
     sql += ` and t.parent_id = ${ args.push(parent_id) }`;
   }
   if (authModel?.id) {
@@ -58,13 +59,16 @@ async function _getMenus(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  const result = await query<{
+  type Result = {
     id: string,
     type: string,
     parent_id: string,
     lbl: string,
     route_path: string,
-  }>(sql, args, { cacheKey1, cacheKey2 });
+    route_query?: string,
+  };
+  
+  const result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
   
   return result;
 }
@@ -73,22 +77,23 @@ export async function getMenus(
   type = "pc",
 ) {
   const allModels = await _getMenus(type);
-  let menus: typeof allModels = [ ];
-  // deno-lint-ignore no-explicit-any
-  async function tmpFn(parent?: any) {
-    // let models = await t.menu2Dao.getMenus(parent && parent.id || "", type);
-    let models = allModels.filter((item) => item.parent_id === (parent && parent.id || ""));
-    if (!parent) {
-      menus = models;
-    } else {
-      models = models.filter((item) => !menus.some((item2) => item.id === item2.id));
-      parent.children = models;
-    }
-    for (let i = 0; i < models.length; i++) {
-      const item = models[i];
-      await tmpFn(item);
-    }
-  }
-  await tmpFn();
-  return menus;
+  // let menus: typeof allModels = [ ];
+  // // deno-lint-ignore no-explicit-any
+  // async function tmpFn(parent?: any) {
+  //   // let models = await t.menu2Dao.getMenus(parent && parent.id || "", type);
+  //   let models = allModels.filter((item) => item.parent_id === (parent && parent.id || ""));
+  //   if (!parent) {
+  //     menus = models;
+  //   } else {
+  //     models = models.filter((item) => !menus.some((item2) => item.id === item2.id));
+  //     parent.children = models;
+  //   }
+  //   for (let i = 0; i < models.length; i++) {
+  //     const item = models[i];
+  //     await tmpFn(item);
+  //   }
+  // }
+  // await tmpFn();
+  // return menus;
+  return allModels;
 }
