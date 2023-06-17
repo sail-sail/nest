@@ -12,22 +12,27 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
-        width: 140,
+        align: "left",
+        width: 240,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单",
-        ORDINAL_POSITION: 5,
+        ORDINAL_POSITION: 2,
         require: false,
         search: true,
-        minWidth: 50,
+        width: 80,
         foreignKey: {
           showType: "dialog",
         },
       },
       {
         COLUMN_NAME: "rem",
-        width: 180,
+        width: 280,
+        
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -47,7 +52,10 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
+        
+        align: "left",
         width: 140,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "host",
@@ -76,14 +84,16 @@ export default defineConfig({
         ORDINAL_POSITION: 6,
         require: false,
         search: true,
-        minWidth: 50,
+        width: 80,
         foreignKey: {
           showType: "dialog",
         },
       },
       {
         COLUMN_NAME: "rem",
-        width: 180,
+        width: 240,
+        align: "left",
+        isTextarea: true,
       },
     ],
   },
@@ -100,7 +110,9 @@ export default defineConfig({
         require: true,
         search: true,
         sortable: true,
+        align: "left",
         width: 140,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "username",
@@ -139,7 +151,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "dept_ids",
         COLUMN_COMMENT: "拥有部门",
-        ORDINAL_POSITION: 7,
+        ORDINAL_POSITION: 5,
         require: false,
         search: true,
         width: 140,
@@ -147,7 +159,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "拥有角色",
-        ORDINAL_POSITION: 8,
+        ORDINAL_POSITION: 6,
         require: false,
         search: true,
         width: 140,
@@ -155,6 +167,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 140,
+        align: "left",
+        isTextarea: true,
       },
     ],
   },
@@ -219,6 +233,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 180,
+        isTextarea: true,
       },
     ]
   },
@@ -239,7 +254,9 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
-        width: 120,
+        width: 140,
+        align: "left",
+        fixed: "left",
       },
       {
         COLUMN_NAME: "state",
@@ -255,10 +272,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "result",
+        align: "left",
         width: 140,
       },
       {
         COLUMN_NAME: "err_msg",
+        align: "left",
         width: 160,
       },
       {
@@ -278,6 +297,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 180,
+        align: "left",
+        isTextarea: true,
       },
     ]
   },
@@ -293,12 +314,15 @@ export default defineConfig({
         require: true,
         search: true,
         width: 140,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
         width: 140,
+        align: "left",
+        fixed: "left",
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -312,6 +336,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 300,
+        align: "left",
+        isTextarea: true,
       },
     ],
   },
@@ -331,7 +357,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "menu_id",
         search: true,
-        headerAlign: "center",
         align: "left",
         width: 160,
       },
@@ -339,7 +364,6 @@ export default defineConfig({
         COLUMN_NAME: "code",
         require: true,
         search: true,
-        headerAlign: "center",
         align: "left",
         width: 300,
       },
@@ -347,15 +371,14 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
-        headerAlign: "center",
         align: "left",
         width: 300,
       },
       {
         COLUMN_NAME: "rem",
-        headerAlign: "center",
         align: "left",
         width: 300,
+        isTextarea: true,
       },
     ],
   },
@@ -371,12 +394,14 @@ export default defineConfig({
         require: true,
         search: true,
         width: 160,
+        align: "left",
       },
       {
         COLUMN_NAME: "menu_id",
         require: true,
         search: true,
         width: 160,
+        align: "left",
         foreignKey: {
           mod: "base",
           table: "menu",
@@ -388,12 +413,14 @@ export default defineConfig({
         require: true,
         search: true,
         width: 160,
+        align: "left",
       },
       {
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
         width: 160,
+        align: "left",
       },
       {
         COLUMN_NAME: "is_visible",
@@ -403,6 +430,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 300,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -429,6 +458,8 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         search: true,
         width: 140,
+        align: "left",
+        fixed: "left",
       },
       {
         COLUMN_NAME: "ky",
@@ -454,6 +485,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 180,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -513,15 +546,19 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "old_data",
+        align: "left",
         width: 280,
       },
       {
         COLUMN_NAME: "new_data",
+        align: "left",
         width: 280,
       },
       {
         COLUMN_NAME: "rem",
         width: 180,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -557,13 +594,16 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
         },
-        width: 120,
+        width: 140,
+        align: "left",
+        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
         width: 180,
+        align: "left",
         fixed: "left",
       },
       {
@@ -577,6 +617,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 180,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -648,6 +691,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 120,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -683,6 +728,7 @@ export default defineConfig({
         require: true,
         search: true,
         width: 240,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
@@ -690,6 +736,7 @@ export default defineConfig({
         require: true,
         search: true,
         width: 240,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "val",
@@ -710,6 +757,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 120,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -765,6 +814,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 140,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -826,6 +878,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 140,
+        align: "left",
+        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",

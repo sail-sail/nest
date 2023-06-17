@@ -32,11 +32,11 @@ export async function findAll(
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
+          menu_ids
+          menu_ids_lbl
           rem
           is_enabled
           is_enabled_lbl
-          menu_ids
-          menu_ids_lbl
         }
       }
     `,
@@ -152,11 +152,11 @@ export async function findById(
         findByIdRole(id: $id) {
           id
           lbl
+          menu_ids
+          menu_ids_lbl
           rem
           is_enabled
           is_enabled_lbl
-          menu_ids
-          menu_ids_lbl
         }
       }
     `,
@@ -315,19 +315,19 @@ export function useExportExcel(routePath: string) {
           findAllRole(search: $search, sort: $sort) {
             id
             lbl
+            menu_ids
+            menu_ids_lbl
             rem
             is_enabled
             is_enabled_lbl
-            menu_ids
-            menu_ids_lbl
           }
           getFieldCommentsRole {
             lbl
+            menu_ids
+            menu_ids_lbl
             rem
             is_enabled
             is_enabled_lbl
-            menu_ids
-            menu_ids_lbl
           }
         }
       `,

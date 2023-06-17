@@ -36,15 +36,15 @@ export async function findAll(
           username
           default_dept_id
           default_dept_id_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
           dept_ids
           dept_ids_lbl
-          is_locked
-          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
           role_ids
           role_ids_lbl
+          rem
+          is_locked
+          is_locked_lbl
         }
       }
     `,
@@ -164,15 +164,15 @@ export async function findById(
           password
           default_dept_id
           default_dept_id_lbl
-          is_enabled
-          is_enabled_lbl
-          rem
           dept_ids
           dept_ids_lbl
-          is_locked
-          is_locked_lbl
+          is_enabled
+          is_enabled_lbl
           role_ids
           role_ids_lbl
+          rem
+          is_locked
+          is_locked_lbl
         }
       }
     `,
@@ -409,30 +409,30 @@ export function useExportExcel(routePath: string) {
             password
             default_dept_id
             default_dept_id_lbl
-            is_enabled
-            is_enabled_lbl
-            rem
             dept_ids
             dept_ids_lbl
-            is_locked
-            is_locked_lbl
+            is_enabled
+            is_enabled_lbl
             role_ids
             role_ids_lbl
+            rem
+            is_locked
+            is_locked_lbl
           }
           getFieldCommentsUsr {
             lbl
             username
             default_dept_id
             default_dept_id_lbl
-            is_enabled
-            is_enabled_lbl
-            rem
             dept_ids
             dept_ids_lbl
-            is_locked
-            is_locked_lbl
+            is_enabled
+            is_enabled_lbl
             role_ids
             role_ids_lbl
+            rem
+            is_locked
+            is_locked_lbl
           }
         }
       `,

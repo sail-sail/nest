@@ -45,21 +45,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-h="full"
-          >
-            <el-input
-              v-model="dialogModel.rem"
-              un-w="full"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn == '1' || builtInModel?.menu_ids == null)">
           <el-form-item
             :label="n('菜单')"
@@ -80,6 +65,25 @@
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               multiple
             ></CustomSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
+          <el-form-item
+            :label="n('备注')"
+            prop="rem"
+            un-grid="col-span-1"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.rem"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              @keyup.enter.stop
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
+            ></el-input>
           </el-form-item>
         </template>
         
@@ -460,9 +464,9 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "菜单",
     "备注",
     "启用",
-    "菜单",
   ];
   await Promise.all([
     initDetailI18ns(),

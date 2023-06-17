@@ -9,46 +9,46 @@ type RoleModel {
   id: String!
   "名称"
   lbl: String!
+  "菜单"
+  menu_ids: [String!]
+  "菜单"
+  menu_ids_lbl: [String!]
   "备注"
   rem: String!
   "启用"
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
-  "菜单"
-  menu_ids: [String!]
-  "菜单"
-  menu_ids_lbl: [String!]
 }
 type RoleFieldComment {
   "名称"
   lbl: String!
+  "菜单"
+  menu_ids: String!
+  "菜单"
+  menu_ids_lbl: String!
   "备注"
   rem: String!
   "启用"
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
-  "菜单"
-  menu_ids: String!
-  "菜单"
-  menu_ids_lbl: String!
 }
 input RoleInput {
   ""
   id: String
   "名称"
   lbl: String
+  "菜单"
+  menu_ids: [String!]
+  "菜单"
+  menu_ids_lbl: [String!]
   "备注"
   rem: String
   "启用"
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
-  "菜单"
-  menu_ids: [String!]
-  "菜单"
-  menu_ids_lbl: [String!]
 }
 input RoleSearch {
   "是否已删除"
@@ -60,14 +60,14 @@ input RoleSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "菜单"
+  menu_ids: [String!]
+  menu_ids_is_null: Boolean
   "备注"
   rem: String
   rem_like: String
   "启用"
   is_enabled: [Int!]
-  "菜单"
-  menu_ids: [String!]
-  menu_ids_is_null: Boolean
 }
 type Query {
   "根据条件查找据数总数"
