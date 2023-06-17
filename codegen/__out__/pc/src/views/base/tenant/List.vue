@@ -778,9 +778,10 @@ function getTableColumns(): ColumnType[] {
       label: "名称",
       prop: "lbl",
       width: 140,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "域名绑定",
@@ -817,7 +818,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单",
       prop: "menu_ids_lbl",
-      minWidth: 50,
+      width: 80,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -834,8 +835,8 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 180,
-      align: "center",
+      width: 240,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

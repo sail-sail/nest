@@ -144,10 +144,14 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
+            un-grid="col-span-2"
             un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              @keyup.enter.stop
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :clearable="true"

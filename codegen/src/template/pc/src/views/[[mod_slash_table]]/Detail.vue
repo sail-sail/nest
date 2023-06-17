@@ -123,10 +123,18 @@ for (let i = 0; i < columns.length; i++) {
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
             if (column.isImg) {
-          #>
+            #>
             class="img_form_item"<#
-          }
-          #>
+            }
+            #><#
+            if (column.isTextarea && columnNum <= 4) {
+            #>
+            un-grid="col-span-1"<#
+            } else if (column.isTextarea && columnNum > 4) {
+            #>
+            un-grid="col-span-2"<#
+            }
+            #>
             un-h="full"
           ><#
             if (column.isImg) {
@@ -339,7 +347,14 @@ for (let i = 0; i < columns.length; i++) {
             } else {
             #>
             <el-input
-              v-model="dialogModel.<#=column_name#>"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (column.isTextarea) {
+              #>
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              @keyup.enter.stop<#
+              }
+              #>
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
               :clearable="true"
