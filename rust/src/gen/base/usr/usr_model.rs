@@ -17,24 +17,24 @@ pub struct UsrModel {
   pub default_dept_id: String,
   /// 默认部门
   pub default_dept_id_lbl: String,
-  /// 启用
-  pub is_enabled: u8,
-  /// 启用
-  pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 拥有部门
   pub dept_ids: Vec<String>,
   /// 拥有部门
   pub dept_ids_lbl: Vec<String>,
-  /// 锁定
-  pub is_locked: u8,
-  /// 锁定
-  pub is_locked_lbl: String,
+  /// 启用
+  pub is_enabled: u8,
+  /// 启用
+  pub is_enabled_lbl: String,
   /// 拥有角色
   pub role_ids: Vec<String>,
   /// 拥有角色
   pub role_ids_lbl: Vec<String>,
+  /// 备注
+  pub rem: String,
+  /// 锁定
+  pub is_locked: u8,
+  /// 锁定
+  pub is_locked_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for UsrModel {
@@ -51,24 +51,24 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let default_dept_id: String = row.try_get("default_dept_id")?;
     let default_dept_id_lbl: Option<String> = row.try_get("default_dept_id_lbl")?;
     let default_dept_id_lbl = default_dept_id_lbl.unwrap_or_default();
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
-    // 备注
-    let rem: String = row.try_get("rem")?;
     // 拥有部门
     let dept_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
     let dept_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
+    // 启用
+    let is_enabled: u8 = row.try_get("is_enabled")?;
+    let is_enabled_lbl: String = is_enabled.to_string();
     // 拥有角色
     let role_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
     let role_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
+    // 备注
+    let rem: String = row.try_get("rem")?;
+    // 锁定
+    let is_locked: u8 = row.try_get("is_locked")?;
+    let is_locked_lbl: String = is_locked.to_string();
     
     let model = Self {
       id,
@@ -77,15 +77,15 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       password,
       default_dept_id,
       default_dept_id_lbl,
-      is_enabled,
-      is_enabled_lbl,
-      rem,
       dept_ids,
       dept_ids_lbl,
-      is_locked,
-      is_locked_lbl,
+      is_enabled,
+      is_enabled_lbl,
       role_ids,
       role_ids_lbl,
+      rem,
+      is_locked,
+      is_locked_lbl,
     };
     
     Ok(model)
@@ -103,24 +103,24 @@ pub struct UsrFieldComment {
   pub default_dept_id: String,
   /// 默认部门
   pub default_dept_id_lbl: String,
-  /// 启用
-  pub is_enabled: String,
-  /// 启用
-  pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 拥有部门
   pub dept_ids: String,
   /// 拥有部门
   pub dept_ids_lbl: String,
-  /// 锁定
-  pub is_locked: String,
-  /// 锁定
-  pub is_locked_lbl: String,
+  /// 启用
+  pub is_enabled: String,
+  /// 启用
+  pub is_enabled_lbl: String,
   /// 拥有角色
   pub role_ids: String,
   /// 拥有角色
   pub role_ids_lbl: String,
+  /// 备注
+  pub rem: String,
+  /// 锁定
+  pub is_locked: String,
+  /// 锁定
+  pub is_locked_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -147,22 +147,22 @@ pub struct UsrSearch {
   pub default_dept_id: Option<Vec<String>>,
   /// 默认部门
   pub default_dept_id_is_null: Option<bool>,
-  /// 启用
-  pub is_enabled: Option<Vec<u8>>,
-  /// 备注
-  pub rem: Option<String>,
-  /// 备注
-  pub rem_like: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
   /// 拥有部门
   pub dept_ids_is_null: Option<bool>,
-  /// 锁定
-  pub is_locked: Option<Vec<u8>>,
+  /// 启用
+  pub is_enabled: Option<Vec<u8>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   /// 拥有角色
   pub role_ids_is_null: Option<bool>,
+  /// 备注
+  pub rem: Option<String>,
+  /// 备注
+  pub rem_like: Option<String>,
+  /// 锁定
+  pub is_locked: Option<Vec<u8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -179,24 +179,24 @@ pub struct UsrInput {
   pub default_dept_id: Option<String>,
   /// 默认部门
   pub default_dept_id_lbl: Option<String>,
-  /// 启用
-  pub is_enabled: Option<u8>,
-  /// 启用
-  pub is_enabled_lbl: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
   /// 拥有部门
   pub dept_ids: Option<Vec<String>>,
   /// 拥有部门
   pub dept_ids_lbl: Option<Vec<String>>,
-  /// 锁定
-  pub is_locked: Option<u8>,
-  /// 锁定
-  pub is_locked_lbl: Option<String>,
+  /// 启用
+  pub is_enabled: Option<u8>,
+  /// 启用
+  pub is_enabled_lbl: Option<String>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   /// 拥有角色
   pub role_ids_lbl: Option<Vec<String>>,
+  /// 备注
+  pub rem: Option<String>,
+  /// 锁定
+  pub is_locked: Option<u8>,
+  /// 锁定
+  pub is_locked_lbl: Option<String>,
 }
 
 impl From<UsrInput> for UsrSearch {
@@ -214,16 +214,16 @@ impl From<UsrInput> for UsrSearch {
       password: input.password,
       // 默认部门
       default_dept_id: input.default_dept_id.map(|x| vec![x.into()]),
-      // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 备注
-      rem: input.rem,
       // 拥有部门
       dept_ids: input.dept_ids,
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      // 启用
+      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 拥有角色
       role_ids: input.role_ids,
+      // 备注
+      rem: input.rem,
+      // 锁定
+      is_locked: input.is_locked.map(|x| vec![x.into()]),
       ..Default::default()
     }
   }

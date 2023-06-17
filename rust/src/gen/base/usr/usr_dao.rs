@@ -153,39 +153,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_enabled.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
-    }
-  }
-  {
-    let rem = match &search {
-      Some(item) => item.rem.clone(),
-      None => None,
-    };
-    if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
-    }
-    let rem_like = match &search {
-      Some(item) => item.rem_like.clone(),
-      None => None,
-    };
-    if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
-    }
-  }
-  {
     let dept_ids: Vec<String> = match &search {
       Some(item) => item.dept_ids.clone().unwrap_or_default(),
       None => Default::default(),
@@ -212,20 +179,20 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_locked: Vec<u8> = match &search {
-      Some(item) => item.is_locked.clone().unwrap_or_default(),
+    let is_enabled: Vec<u8> = match &search {
+      Some(item) => item.is_enabled.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !is_locked.is_empty() {
+    if !is_enabled.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(is_locked.len());
-        for item in is_locked {
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and t.is_locked in ({})", arg);
+      where_query += &format!(" and t.is_enabled in ({})", arg);
     }
   }
   {
@@ -252,6 +219,39 @@ fn get_where_query<'a>(
     };
     if role_ids_is_null {
       where_query += &format!(" and role_ids_lbl.id is null");
+    }
+  }
+  {
+    let rem = match &search {
+      Some(item) => item.rem.clone(),
+      None => None,
+    };
+    if let Some(rem) = rem {
+      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
+    }
+    let rem_like = match &search {
+      Some(item) => item.rem_like.clone(),
+      None => None,
+    };
+    if let Some(rem_like) = rem_like {
+      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+    }
+  }
+  {
+    let is_locked: Vec<u8> = match &search {
+      Some(item) => item.is_locked.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_locked.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_locked.len());
+        for item in is_locked {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_locked in ({})", arg);
     }
   }
   where_query
@@ -447,15 +447,15 @@ pub async fn get_field_comments<'a>(
     username: n_route.n(ctx, "用户名".to_owned(), None).await?,
     default_dept_id: n_route.n(ctx, "默认部门".to_owned(), None).await?,
     default_dept_id_lbl: n_route.n(ctx, "默认部门".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     dept_ids: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
     dept_ids_lbl: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
+    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
     role_ids: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
     role_ids_lbl: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
