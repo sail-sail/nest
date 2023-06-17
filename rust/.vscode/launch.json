@@ -6,10 +6,9 @@
   "configurations": [
     {
       "name": "server",
-      "type": "lldb",
+      "type": "cppvsdbg",
       "request": "attach",
-      "sourceLanguages": ["rust"],
-      "program": "${workspaceFolder}/target/debug/server"
+      "processId": "${command:pickProcess}"
     }
   ]
 }

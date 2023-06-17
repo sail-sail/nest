@@ -31,10 +31,10 @@ async fn create_bucket(
 }
 
 fn new_bucket() -> Result<OssBucket> {
-  let bucket_name = env::var("oss_bucket")?;
-  let endpoint = env::var("oss_endpoint").unwrap_or("http://localhost:9000".to_owned());
-  let accesskey = env::var("oss_accesskey").unwrap_or_default();
-  let secretkey = env::var("oss_secretkey").unwrap_or_default();
+  let bucket_name = env::var("tmpfile_bucket")?;
+  let endpoint = env::var("tmpfile_endpoint").unwrap_or("http://localhost:9000".to_owned());
+  let accesskey = env::var("tmpfile_accesskey").unwrap_or_default();
+  let secretkey = env::var("tmpfile_secretkey").unwrap_or_default();
   let credentials = Credentials::new(
     Some(&accesskey),
     Some(&secretkey),
