@@ -453,24 +453,6 @@
             </el-table-column>
           </template>
           
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 拥有部门 -->
           <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.dept_ids == null)">
             <el-table-column
@@ -485,8 +467,8 @@
             </el-table-column>
           </template>
           
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked' === col.prop && (showBuildIn == '1' || builtInSearch?.is_locked == null)">
+          <!-- 启用 -->
+          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -505,6 +487,24 @@
                   v-model="row[column.property]"
                 ></LinkList>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked' === col.prop && (showBuildIn == '1' || builtInSearch?.is_locked == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -670,14 +670,14 @@ const props = defineProps<{
   password_like?: string; // 密码
   default_dept_id?: string|string[]; // 默认部门
   default_dept_id_lbl?: string|string[]; // 默认部门
-  is_enabled?: string|string[]; // 启用
-  rem?: string; // 备注
-  rem_like?: string; // 备注
   dept_ids?: string|string[]; // 拥有部门
   dept_ids_lbl?: string|string[]; // 拥有部门
-  is_locked?: string|string[]; // 锁定
+  is_enabled?: string|string[]; // 启用
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+  is_locked?: string|string[]; // 锁定
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -686,14 +686,14 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   default_dept_id: "string[]",
   default_dept_id_lbl: "string[]",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
   role_ids: "string[]",
   role_ids_lbl: "string[]",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -833,9 +833,10 @@ function getTableColumns(): ColumnType[] {
       prop: "lbl",
       width: 140,
       sortable: "custom",
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "用户名",
@@ -855,22 +856,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "启用",
-      prop: "is_enabled_lbl",
-      width: 80,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "备注",
-      prop: "rem",
-      width: 140,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "拥有部门",
       prop: "dept_ids_lbl",
       width: 140,
@@ -879,9 +864,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      width: 60,
+      label: "启用",
+      prop: "is_enabled_lbl",
+      width: 80,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -890,6 +875,22 @@ function getTableColumns(): ColumnType[] {
       label: "拥有角色",
       prop: "role_ids_lbl",
       width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "备注",
+      prop: "rem",
+      width: 140,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "锁定",
+      prop: "is_locked_lbl",
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1063,11 +1064,11 @@ async function importExcelClk() {
     [ n("名称") ]: "lbl",
     [ n("用户名") ]: "username",
     [ n("默认部门") ]: "default_dept_id_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("备注") ]: "rem",
     [ n("拥有部门") ]: "dept_ids_lbl",
-    [ n("锁定") ]: "is_locked_lbl",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("拥有角色") ]: "role_ids_lbl",
+    [ n("备注") ]: "rem",
+    [ n("锁定") ]: "is_locked_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1255,11 +1256,11 @@ async function initI18nsEfc() {
     "名称",
     "用户名",
     "默认部门",
-    "启用",
-    "备注",
     "拥有部门",
-    "锁定",
+    "启用",
     "拥有角色",
+    "备注",
+    "锁定",
   ];
   await Promise.all([
     initListI18ns(),

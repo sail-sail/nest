@@ -782,6 +782,7 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "名称",
@@ -790,6 +791,7 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "值",
@@ -820,7 +822,7 @@ function getTableColumns(): ColumnType[] {
       label: "备注",
       prop: "rem",
       width: 120,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

@@ -373,6 +373,11 @@ export interface TableCloumn {
   isImg?: boolean,
   
   /**
+   * 是否文本域
+   */
+  isTextarea?: boolean,
+  
+  /**
    * 是否为附件
    * 如果字段名是 att 或者 _att 结尾, 并且 isAtt == null，则认 isAtt 默认为true,并且此时width默认为80
    * @type {boolean}

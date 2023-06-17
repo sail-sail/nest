@@ -94,6 +94,18 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
+    search.menu_ids = [ search.menu_ids ];
+  }
+  if (search?.menu_ids && search?.menu_ids.length > 0) {
+    whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
+  }
+  if (search?.menu_ids === null) {
+    whereQuery += ` and base_menu.id is null`;
+  }
+  if (search?.menu_ids_is_null) {
+    whereQuery += ` and base_menu.id is null`;
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -108,18 +120,6 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
-  if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
-    search.menu_ids = [ search.menu_ids ];
-  }
-  if (search?.menu_ids && search?.menu_ids.length > 0) {
-    whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
-  }
-  if (search?.menu_ids === null) {
-    whereQuery += ` and base_menu.id is null`;
-  }
-  if (search?.menu_ids_is_null) {
-    whereQuery += ` and base_menu.id is null`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -290,11 +290,11 @@ export async function getFieldComments() {
   const n = initN("/role");
   const fieldComments = {
     lbl: await n("名称"),
+    menu_ids: await n("菜单"),
+    menu_ids_lbl: await n("菜单"),
     rem: await n("备注"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    menu_ids: await n("菜单"),
-    menu_ids_lbl: await n("菜单"),
   };
   return fieldComments;
 }
@@ -532,14 +532,6 @@ export async function create(
   ]);
   
   
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
-  
   // 菜单
   if (!model.menu_ids && model.menu_ids_lbl) {
     if (typeof model.menu_ids_lbl === "string" || model.menu_ids_lbl instanceof String) {
@@ -560,6 +552,14 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
+    }
   }
   
   const oldModel = await findByUnique(model, options);
@@ -740,14 +740,6 @@ export async function updateById(
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(id, model.tenant_id);
   }
-  
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
 
   // 菜单
   if (!model.menu_ids && model.menu_ids_lbl) {
@@ -769,6 +761,14 @@ export async function updateById(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
+    }
   }
   
   const oldModel = await findById(id);

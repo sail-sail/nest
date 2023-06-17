@@ -381,24 +381,6 @@
             </el-table-column>
           </template>
           
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 菜单 -->
           <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.menu_ids == null)">
             <el-table-column
@@ -416,6 +398,24 @@
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 启用 -->
+          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -582,21 +582,21 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  menu_ids?: string|string[]; // 菜单
+  menu_ids_lbl?: string|string[]; // 菜单
   rem?: string; // 备注
   rem_like?: string; // 备注
   is_enabled?: string|string[]; // 启用
-  menu_ids?: string|string[]; // 菜单
-  menu_ids_lbl?: string|string[]; // 菜单
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   ids: "string[]",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -734,7 +734,16 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 140,
+      width: 240,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+      fixed: "left",
+    },
+    {
+      label: "菜单",
+      prop: "menu_ids_lbl",
+      width: 80,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -742,8 +751,8 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 180,
-      align: "center",
+      width: 280,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -751,14 +760,6 @@ function getTableColumns(): ColumnType[] {
       label: "启用",
       prop: "is_enabled_lbl",
       width: 80,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "菜单",
-      prop: "menu_ids_lbl",
-      minWidth: 50,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -930,9 +931,9 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
+    [ n("菜单") ]: "menu_ids_lbl",
     [ n("备注") ]: "rem",
     [ n("启用") ]: "is_enabled_lbl",
-    [ n("菜单") ]: "menu_ids_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1093,9 +1094,9 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "菜单",
     "备注",
     "启用",
-    "菜单",
   ];
   await Promise.all([
     initListI18ns(),

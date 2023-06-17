@@ -117,21 +117,6 @@ async function getWhereQuery(
   if (search?.default_dept_id_is_null) {
     whereQuery += ` and default_dept_id_lbl.id is null`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
-  }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
-  if (search?.rem !== undefined) {
-    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
-  }
-  if (search?.rem === null) {
-    whereQuery += ` and t.rem is null`;
-  }
-  if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
-  }
   if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
     search.dept_ids = [ search.dept_ids ];
   }
@@ -144,11 +129,11 @@ async function getWhereQuery(
   if (search?.dept_ids_is_null) {
     whereQuery += ` and base_dept.id is null`;
   }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
   }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.role_ids && !Array.isArray(search?.role_ids)) {
     search.role_ids = [ search.role_ids ];
@@ -161,6 +146,21 @@ async function getWhereQuery(
   }
   if (search?.role_ids_is_null) {
     whereQuery += ` and base_role.id is null`;
+  }
+  if (search?.rem !== undefined) {
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+  }
+  if (search?.rem === null) {
+    whereQuery += ` and t.rem is null`;
+  }
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+  }
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -376,15 +376,15 @@ export async function getFieldComments() {
     username: await n("用户名"),
     default_dept_id: await n("默认部门"),
     default_dept_id_lbl: await n("默认部门"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
     dept_ids: await n("拥有部门"),
     dept_ids_lbl: await n("拥有部门"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
+    is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     role_ids: await n("拥有角色"),
     role_ids_lbl: await n("拥有角色"),
+    rem: await n("备注"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
   };
   return fieldComments;
 }
@@ -633,14 +633,6 @@ export async function create(
     }
   }
   
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
-  
   // 拥有部门
   if (!model.dept_ids && model.dept_ids_lbl) {
     if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
@@ -663,11 +655,11 @@ export async function create(
     model.dept_ids = models.map((item: { id: string }) => item.id);
   }
   
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      model.is_enabled = Number(val);
     }
   }
   
@@ -691,6 +683,14 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.role_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
   }
   
   const oldModel = await findByUnique(model, options);
@@ -911,14 +911,6 @@ export async function updateById(
       model.default_dept_id = deptModel.id;
     }
   }
-  
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
 
   // 拥有部门
   if (!model.dept_ids && model.dept_ids_lbl) {
@@ -942,11 +934,11 @@ export async function updateById(
     model.dept_ids = models.map((item: { id: string }) => item.id);
   }
   
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      model.is_enabled = Number(val);
     }
   }
 
@@ -970,6 +962,14 @@ export async function updateById(
     }
     const models = await query<Result>(sql, args);
     model.role_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
   }
   
   const oldModel = await findById(id);

@@ -96,21 +96,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-h="full"
-          >
-            <el-input
-              v-model="dialogModel.rem"
-              un-w="full"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn == '1' || builtInModel?.dept_ids == null)">
           <el-form-item
             :label="n('拥有部门')"
@@ -154,6 +139,25 @@
               :placeholder="`${ ns('请选择') } ${ n('拥有角色') }`"
               multiple
             ></CustomSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
+          <el-form-item
+            :label="n('备注')"
+            prop="rem"
+            un-grid="col-span-2"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.rem"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              @keyup.enter.stop
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
+            ></el-input>
           </el-form-item>
         </template>
         
@@ -554,11 +558,11 @@ async function initI18nsEfc() {
     "名称",
     "用户名",
     "默认部门",
-    "启用",
-    "备注",
     "拥有部门",
-    "锁定",
+    "启用",
     "拥有角色",
+    "备注",
+    "锁定",
   ];
   await Promise.all([
     initDetailI18ns(),
