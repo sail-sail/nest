@@ -4,10 +4,16 @@ use poem::{
   handler, web::{Multipart, Path, Query}, Response,
 };
 use reqwest::StatusCode;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::common::context::get_short_uuid;
+use std::io::Cursor;
+use image::io::Reader as ImageReader;
+use image::ImageOutputFormat;
+use image::imageops::FilterType;
+use image::GenericImageView;
+
+use crate::common::{context::get_short_uuid, tmpfile::tmpfile_dao};
 
 use super::oss_service;
 
@@ -64,21 +70,32 @@ async fn _download(
   inline: Option<String>,
   req: &poem::Request,
 ) -> Result<Response> {
+  if id.is_empty() {
+    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+  }
+  let if_none_match = req.header("if-none-match");
+  drop(req);
   let inline = inline.unwrap_or("1".to_owned());
   let attachment = match inline.as_str() {
     "1" => "inline",
     _ => "attachment",
   };
-  let if_none_match = req.header("if-none-match");
   let stat = oss_service::head_object(&id).await?;
   if stat.is_none() {
     return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
   }
   let stat = stat.unwrap();
   let mut response = Response::builder();
+  if let Some(content_length) = stat.content_length {
+    if content_length <= 0 {
+      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    }
+  }
   match stat.content_type {
     Some(content_type) => {
-      response = response.content_type(content_type);
+      if !content_type.is_empty() {
+        response = response.content_type(content_type);
+      }
     },
     None => {},
   };
@@ -93,13 +110,14 @@ async fn _download(
   }
   response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
   if let Some(last_modified) = &stat.last_modified {
-    response = response.header("Last-Modified", last_modified);
+    if !last_modified.is_empty() {
+      response = response.header("Last-Modified", last_modified);
+    }
   }
   if let Some(etag) = &stat.etag {
-    response = response.header("ETag", etag);
-  }
-  if let Some(content_length) = stat.content_length {
-    response = response.header("Content-Length", content_length.to_string());
+    if !etag.is_empty() {
+      response = response.header("ETag", etag);
+    }
   }
   if let Some(if_none_match) = if_none_match {
     if let Some(etag) = stat.etag {
@@ -110,6 +128,7 @@ async fn _download(
     }
   }
   let content = oss_service::get_object(&id).await?;
+  response = response.header("Content-Length", content.len().to_string());
   let response = response.body(content);
   Ok(response)
 }
@@ -130,4 +149,171 @@ pub async fn download(
 ) -> Result<Response> {
   let filename = "".to_owned();
   _download(filename, id, inline, req).await
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct ImgQuery {
+  id: String,
+  inline: Option<String>,
+  f: Option<String>,
+  w: Option<u32>,
+  h: Option<u32>,
+  q: Option<u8>,
+}
+
+#[handler]
+pub async fn img(
+  Query(ImgQuery {
+    id,
+    inline,
+    f,
+    w,
+    h,
+    q,
+  }): Query<ImgQuery>,
+  req: &poem::Request,
+) -> Result<Response> {
+  if id.is_empty() {
+    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+  }
+  let if_none_match = req.header("if-none-match");
+  drop(req);
+  let mut filename = "".to_owned();
+  let inline = inline.unwrap_or("1".to_owned());
+  let attachment = match inline.as_str() {
+    "1" => "inline",
+    _ => "attachment",
+  };
+  let stat = oss_service::head_object(&id).await?;
+  if stat.is_none() {
+    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+  }
+  let stat = stat.unwrap();
+  let mut response = Response::builder();
+  if let Some(content_length) = stat.content_length {
+    if content_length <= 0 {
+      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    }
+  }
+  match &stat.content_type {
+    Some(content_type) => {
+      response = response.content_type(content_type);
+    },
+    None => {},
+  };
+  filename = filename.trim().to_string();
+  if filename.is_empty() {
+    filename = stat.filename;
+    if filename.is_empty() {
+      filename = urlencoding::encode(id.as_str()).to_string();
+    }
+  } else {
+    filename = urlencoding::encode(filename.as_str()).to_string();
+  }
+  response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
+  if let Some(last_modified) = &stat.last_modified {
+    if !last_modified.is_empty() {
+      response = response.header("Last-Modified", last_modified);
+    }
+  }
+  if let Some(etag) = &stat.etag {
+    if !etag.is_empty() {
+      response = response.header("ETag", etag);
+    }
+  }
+  if let Some(if_none_match) = if_none_match {
+    if let Some(etag) = stat.etag {
+      if if_none_match == etag {
+        response = response.status(StatusCode::from_u16(304)?);
+        return Ok(response.finish());
+      }
+    }
+  }
+  let content = oss_service::get_object(&id).await?;
+  let len = content.len();
+  let is_img = match &stat.content_type {
+    Some(content_type) => {
+      content_type.starts_with("image/")
+    },
+    None => false,
+  };
+  if f.is_none() || !is_img {
+    response = response.header("Content-Length", len.to_string());
+    let response = response.body(content);
+    return Ok(response);
+  }
+  
+  let cache_id = {
+    let mut id = id.clone();
+    if let Some(f) = &f {
+      id.push_str("-f");
+      id.push_str(f);
+    }
+    if let Some(w) = w {
+      id.push_str("-w");
+      id.push_str(w.to_string().as_str());
+    }
+    if let Some(h) = h {
+      id.push_str("-h");
+      id.push_str(h.to_string().as_str());
+    }
+    if let Some(q) = q {
+      id.push_str("-q");
+      id.push_str(q.to_string().as_str());
+    }
+    id
+  };
+  let cache_stat = tmpfile_dao::head_object(&cache_id).await?;
+  if cache_stat.is_some() {
+    let content = tmpfile_dao::get_object(&cache_id).await?;
+    response = response.header("Content-Length", content.len().to_string());
+    let response = response.body(content);
+    return Ok(response);
+  }
+  let format = f.unwrap_or("webp".to_owned());
+  let mut img = ImageReader::new(Cursor::new(&content)).with_guessed_format()?.decode()?;
+  let (width, height) = img.dimensions();
+  let mut nwidth = w.unwrap_or(width);
+  let mut nheight = h.unwrap_or(height);
+  if nwidth > width || nheight > height {
+    response = response.header("Content-Length", len.to_string());
+    let response = response.body(content);
+    return Ok(response);
+  }
+  drop(content);
+  let output_format = match format.as_str() {
+    "jpg" => ImageOutputFormat::Jpeg(q.unwrap_or(80)),
+    "png" => ImageOutputFormat::Png,
+    "ico" => ImageOutputFormat::Ico,
+    "webp" => ImageOutputFormat::WebP,
+    _ => ImageOutputFormat::WebP,
+  };
+  img = img.resize(nwidth, nheight, FilterType::Lanczos3);
+  let mut content: Vec<u8> = Vec::with_capacity(len);
+  img.write_to(&mut Cursor::new(&mut content), output_format)?;
+  
+  let content_type = match format.as_str() {
+    "jpg" => "image/jpeg",
+    "png" => "image/png",
+    "ico" => "image/x-icon",
+    "webp" => "image/webp",
+    _ => "image/webp",
+  };
+  drop(format);
+  
+  let len = content.len();
+  
+  // 缓存图片到tmpfile
+  tmpfile_dao::put_object(
+    &cache_id,
+    &content,
+    &content_type,
+    &filename,
+  ).await?;
+  
+  drop(content_type);
+  
+  response = response.header("Content-Length", len.to_string());
+  let response = response.body(content);
+  Ok(response)
 }

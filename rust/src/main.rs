@@ -32,6 +32,7 @@ use dotenv::dotenv;
 use tracing::info;
 
 use crate::common::oss::oss_dao;
+use crate::common::tmpfile::tmpfile_dao;
 use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
 
 #[tokio::main]
@@ -79,9 +80,13 @@ async fn main() -> Result<(), std::io::Error> {
     }
   };
   
-  // oss
+  // oss, tmpfile
   tokio::spawn(async move {
     match oss_dao::init().await {
+      Ok(_) => {},
+      Err(_) => {},
+    };
+    match tmpfile_dao::init().await {
       Ok(_) => {},
       Err(_) => {},
     };
@@ -140,10 +145,18 @@ async fn main() -> Result<(), std::io::Error> {
       post(common::gql::gql_router::graphql_handler)
       .get(common::gql::gql_router::graphql_handler_get)
     );
+    
     app = app.at("/api/oss/upload", post(common::oss::oss_router::upload));
     app = app.at("/api/oss/delete", post(common::oss::oss_router::delete));
     app = app.at("/api/oss/download/:filename", get(common::oss::oss_router::download_filename));
     app = app.at("/api/oss/download/", get(common::oss::oss_router::download));
+    app = app.at("/api/oss/img", get(common::oss::oss_router::img));
+    
+    app = app.at("/api/tmpfile/upload", post(common::tmpfile::tmpfile_router::upload));
+    app = app.at("/api/tmpfile/delete", post(common::tmpfile::tmpfile_router::delete));
+    app = app.at("/api/tmpfile/download/:filename", get(common::tmpfile::tmpfile_router::download_filename));
+    app = app.at("/api/tmpfile/download/", get(common::tmpfile::tmpfile_router::download));
+    
     app
   };
   let app = app
