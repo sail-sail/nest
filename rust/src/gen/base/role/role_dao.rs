@@ -110,6 +110,32 @@ fn get_where_query<'a>(
     }
   }
   {
+    let menu_ids: Vec<String> = match &search {
+      Some(item) => item.menu_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !menu_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(menu_ids.len());
+        for item in menu_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_menu.id in ({})", arg);
+    }
+  }
+  {
+    let menu_ids_is_null: bool = match &search {
+      Some(item) => item.menu_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if menu_ids_is_null {
+      where_query += &format!(" and menu_ids_lbl.id is null");
+    }
+  }
+  {
     let rem = match &search {
       Some(item) => item.rem.clone(),
       None => None,
@@ -140,32 +166,6 @@ fn get_where_query<'a>(
         items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
-    }
-  }
-  {
-    let menu_ids: Vec<String> = match &search {
-      Some(item) => item.menu_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !menu_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(menu_ids.len());
-        for item in menu_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_menu.id in ({})", arg);
-    }
-  }
-  {
-    let menu_ids_is_null: bool = match &search {
-      Some(item) => item.menu_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if menu_ids_is_null {
-      where_query += &format!(" and menu_ids_lbl.id is null");
     }
   }
   where_query
@@ -326,11 +326,11 @@ pub async fn get_field_comments<'a>(
   
   let field_comments = RoleFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
+    menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
   };
   Ok(field_comments)
 }

@@ -9,16 +9,16 @@ pub struct RoleModel {
   pub id: String,
   /// 名称
   pub lbl: String,
+  /// 菜单
+  pub menu_ids: Vec<String>,
+  /// 菜单
+  pub menu_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
   /// 启用
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 菜单
-  pub menu_ids: Vec<String>,
-  /// 菜单
-  pub menu_ids_lbl: Vec<String>,
 }
 
 impl FromRow<'_, MySqlRow> for RoleModel {
@@ -27,25 +27,25 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 备注
-    let rem: String = row.try_get("rem")?;
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
     // 菜单
     let menu_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
+    // 备注
+    let rem: String = row.try_get("rem")?;
+    // 启用
+    let is_enabled: u8 = row.try_get("is_enabled")?;
+    let is_enabled_lbl: String = is_enabled.to_string();
     
     let model = Self {
       id,
       lbl,
+      menu_ids,
+      menu_ids_lbl,
       rem,
       is_enabled,
       is_enabled_lbl,
-      menu_ids,
-      menu_ids_lbl,
     };
     
     Ok(model)
@@ -57,16 +57,16 @@ impl FromRow<'_, MySqlRow> for RoleModel {
 pub struct RoleFieldComment {
   /// 名称
   pub lbl: String,
+  /// 菜单
+  pub menu_ids: String,
+  /// 菜单
+  pub menu_ids_lbl: String,
   /// 备注
   pub rem: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 菜单
-  pub menu_ids: String,
-  /// 菜单
-  pub menu_ids_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -81,16 +81,16 @@ pub struct RoleSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
+  /// 菜单
+  pub menu_ids: Option<Vec<String>>,
+  /// 菜单
+  pub menu_ids_is_null: Option<bool>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
-  /// 菜单
-  pub menu_ids: Option<Vec<String>>,
-  /// 菜单
-  pub menu_ids_is_null: Option<bool>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -99,16 +99,16 @@ pub struct RoleInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 菜单
+  pub menu_ids: Option<Vec<String>>,
+  /// 菜单
+  pub menu_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 菜单
-  pub menu_ids: Option<Vec<String>>,
-  /// 菜单
-  pub menu_ids_lbl: Option<Vec<String>>,
 }
 
 impl From<RoleInput> for RoleSearch {
@@ -120,12 +120,12 @@ impl From<RoleInput> for RoleSearch {
       is_deleted: None,
       // 名称
       lbl: input.lbl,
+      // 菜单
+      menu_ids: input.menu_ids,
       // 备注
       rem: input.rem,
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 菜单
-      menu_ids: input.menu_ids,
       ..Default::default()
     }
   }
