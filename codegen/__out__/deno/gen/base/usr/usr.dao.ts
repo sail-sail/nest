@@ -886,8 +886,11 @@ export async function updateById(
   const table = "base_usr";
   const method = "updateById";
   
-  if (!id || !model) {
-    return id;
+  if (!id) {
+    throw new Error("updateById: id cannot be empty");
+  }
+  if (!model) {
+    throw new Error("updateById: model cannot be empty");
   }
   
   const [
