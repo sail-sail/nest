@@ -53,7 +53,7 @@
     "@vue-macros/reactivity-transform": "0.3.10",
     "@vue/runtime-core": "3.3.4",
     "eslint": "8.43.0",
-    "eslint-plugin-vue": "9.14.1",
+    "eslint-plugin-vue": "9.15.0",
     "husky": "8.0.3",
     "postcss": "8.4.24",
     "sass": "1.63.4",
