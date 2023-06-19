@@ -13,6 +13,14 @@ export async function upload(file: FormDataFile) {
   return result;
 }
 
+export async function putObject(
+  id: string,
+  content: Uint8Array,
+  contentType?: string,
+) {
+  return await tmpfileDao.putObject(id, content, contentType);
+}
+
 export async function statObject(id: string) {
   return await tmpfileDao.statObject(id);
 }

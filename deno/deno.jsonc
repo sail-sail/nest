@@ -9,7 +9,8 @@
     "lib": [
       "esnext",
       "deno.window",
-      "deno.ns"
+      "deno.ns",
+      "deno.unstable"
     ],
     "types": [
       "./typings/types.ts"

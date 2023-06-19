@@ -35,9 +35,6 @@ export async function getBucket() {
 
 export async function upload(
   file: FormDataFile,
-  opt?: {
-    notDownloadMulti?: boolean,
-  },
 ) {
   const bucket = await getBucket();
   let content = file.content;
@@ -46,13 +43,9 @@ export async function upload(
   }
   const meta: {
     filename?: string;
-    once?: string;
   } = { };
   if (file.originalName) {
     meta.filename = encodeURIComponent(file.originalName);
-  }
-  if (opt?.notDownloadMulti) {
-    meta.once = "1";
   }
   const id = shortUuidV4();
   await bucket.putObject(id, content, {
@@ -60,6 +53,17 @@ export async function upload(
     meta,
   })
   return id;
+}
+
+export async function putObject(
+  id: string,
+  content: Uint8Array,
+  contentType?: string,
+) {
+  const bucket = await getBucket();
+  await bucket.putObject(id, content, {
+    contentType,
+  });
 }
 
 export async function statObject(id: string) {
