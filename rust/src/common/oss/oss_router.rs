@@ -309,8 +309,8 @@ pub async fn img(
   let format = f.unwrap_or("webp".to_owned());
   let mut img = ImageReader::new(Cursor::new(&content)).with_guessed_format()?.decode()?;
   let (width, height) = img.dimensions();
-  let mut nwidth = w.unwrap_or(width);
-  let mut nheight = h.unwrap_or(height);
+  let nwidth = w.unwrap_or(width);
+  let nheight = h.unwrap_or(height);
   if nwidth > width || nheight > height {
     response = response.header("Content-Length", len.to_string());
     let response = response.body(content);
