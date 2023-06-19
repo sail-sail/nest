@@ -1800,8 +1800,11 @@ export async function updateById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
-  if (!id || !model) {
-    return id;
+  if (!id) {
+    throw new Error("updateById: id cannot be empty");
+  }
+  if (!model) {
+    throw new Error("updateById: model cannot be empty");
   }<#
   if (hasDict) {
   #>
