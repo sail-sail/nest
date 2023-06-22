@@ -474,13 +474,8 @@
     >
       <el-pagination
         background
-        :page-sizes="pageSizes"
-        :page-size="page.size"
-        layout="total, sizes, prev, pager, next, jumper"
-        :current-page="page.current"
+        layout="total"
         :total="page.total"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div>
@@ -525,7 +520,7 @@ import {
 } from "#/types";
 
 defineOptions({
-  name: "部门",
+  name: "部门List",
 });
 
 const {
@@ -699,9 +694,6 @@ const builtInModel = $computed(() => {
 /** 分页功能 */
 let {
   page,
-  pageSizes,
-  pgSizeChg,
-  pgCurrentChg,
 } = $(usePage<DeptModel>(dataGrid));
 
 /** 表格选择功能 */
@@ -908,10 +900,8 @@ function getDataSearch() {
 }
 
 async function useFindAll() {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, undefined, [ sort ]);
 }
 
 async function useFindCount() {

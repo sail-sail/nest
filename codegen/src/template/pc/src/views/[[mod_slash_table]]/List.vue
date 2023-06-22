@@ -671,7 +671,25 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-          } else if (!foreignKey && selectList.length === 0) {
+            } else if (column.whitespacePre) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <div
+                  un-whitespace-pre
+                >
+                  {{ row[column.property] }}
+                </div>
+              </template>
+            </el-table-column>
+          </template><#
+            } else if (!foreignKey && selectList.length === 0) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -682,12 +700,12 @@ const hasAtt = columns.some((item) => item.isAtt);
             ><#
               if (foreignTabs.length > 0) {
               #>
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(row.id, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template><#
               }
@@ -705,12 +723,12 @@ const hasAtt = columns.some((item) => item.isAtt);
             ><#
               if (foreignTabs.length > 0) {
               #>
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(row.id, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template><#
               }
@@ -758,12 +776,12 @@ const hasAtt = columns.some((item) => item.isAtt);
                   return item.substring(0, 1).toUpperCase() + item.substring(1);
                 }).join("");
             #>
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="open<#=Foreign_Table_Up#>ForeignTabs(scope.row.<#=column_name#>, scope.row[scope.column.property])"
+                  @click="open<#=Foreign_Table_Up#>ForeignTabs(row.<#=column_name#>, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template><#
               }

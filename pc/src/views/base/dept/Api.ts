@@ -4,11 +4,16 @@ import {
   type PageInput,
   type DeptSearch,
   type DeptInput,
+  type DeptModel,
 } from "#/types";
 
 import {
   type UsrSearch,
 } from "#/types";
+
+import {
+  findTree as findDeptTree,
+} from "@/views/base/dept/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -62,6 +67,26 @@ export async function findAll(
     const item = res[i];
   }
   return res;
+}
+
+/**
+ * 查找树形数据
+ * @param sort 
+ * @param opt 
+ * @returns 
+ */
+export async function findTree(
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAll(
+    undefined,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData = list2tree(res);
+  return treeData;
 }
 
 /**
@@ -329,6 +354,21 @@ export async function getDeptList() {
     undefined,
     {
     },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getDeptTree() {
+  const data = await findDeptTree(
     [
       {
         prop: "order_by",

@@ -9,14 +9,20 @@ type TenantModel {
   id: String!
   "名称"
   lbl: String!
-  "域名绑定"
-  host: String!
+  "租户管理员"
+  usr_id: String!
+  "租户管理员"
+  usr_id_lbl: String
   "到期日"
   expiration: Date
   "到期日"
   expiration_lbl: String!
   "最大用户数"
   max_usr_num: Int!
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int!
   "启用"
@@ -27,20 +33,44 @@ type TenantModel {
   menu_ids_lbl: [String!]
   "排序"
   order_by: Int!
+  "域名绑定"
+  domain: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
 }
 type TenantFieldComment {
   "名称"
   lbl: String!
-  "域名绑定"
-  host: String!
+  "租户管理员"
+  usr_id: String!
+  "租户管理员"
+  usr_id_lbl: String!
   "到期日"
   expiration: String!
   "到期日"
   expiration_lbl: String!
   "最大用户数"
   max_usr_num: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -51,22 +81,46 @@ type TenantFieldComment {
   menu_ids_lbl: String!
   "排序"
   order_by: String!
+  "域名绑定"
+  domain: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input TenantInput {
   ""
   id: String
   "名称"
   lbl: String
-  "域名绑定"
-  host: String
+  "租户管理员"
+  usr_id: String
+  "租户管理员"
+  usr_id_lbl: String
   "到期日"
   expiration: NaiveDate
   "到期日"
   expiration_lbl: String
   "最大用户数"
   max_usr_num: Int
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -77,8 +131,26 @@ input TenantInput {
   menu_ids_lbl: [String!]
   "排序"
   order_by: Int
+  "域名绑定"
+  domain: String
   "备注"
   rem: String
+  "创建人"
+  create_usr_id: String
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
 }
 input TenantSearch {
   "是否已删除"
@@ -90,13 +162,15 @@ input TenantSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "域名绑定"
-  host: String
-  host_like: String
+  "租户管理员"
+  usr_id: [String!]
+  usr_id_is_null: Boolean
   "到期日"
   expiration: [NaiveDate!]
   "最大用户数"
   max_usr_num: [Int!]
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
   "菜单"
@@ -104,9 +178,22 @@ input TenantSearch {
   menu_ids_is_null: Boolean
   "排序"
   order_by: [Int!]
+  "域名绑定"
+  domain: String
+  domain_like: String
   "备注"
   rem: String
   rem_like: String
+  "创建人"
+  create_usr_id: [String!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [String!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
 }
 type Query {
   "根据条件查找据数总数"
@@ -129,6 +216,8 @@ type Mutation {
   updateByIdTenant(id: String!, model: TenantInput!): String!
   "根据 ids 删除数据"
   deleteByIdsTenant(ids: [String!]!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsTenant(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsTenant(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"

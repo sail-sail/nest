@@ -386,12 +386,12 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(row.id, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template>
             </el-table-column>

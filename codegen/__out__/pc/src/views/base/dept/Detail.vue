@@ -36,18 +36,21 @@
             prop="parent_id"
             un-h="full"
           >
-            <CustomSelect
+            <CustomTreeSelect
               v-model="dialogModel.parent_id"
-              :method="getDeptList"
-              :options-map="((item: DeptModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getDeptTree"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('父部门') }`"
-            ></CustomSelect>
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -189,6 +192,10 @@ import {
 import {
   getDeptList,
 } from "./Api";
+
+import {
+  getDeptTree,
+} from "@/views/base/dept/Api";
 
 const emit = defineEmits<
   (

@@ -21,7 +21,7 @@ export const routesGen: Array<RouteRecordRaw> = [
       {
         path: "",
         name: "部门",
-        component: () => import("@/views/base/dept/List.vue"),
+        component: () => import("@/views/base/dept/TreeList.vue"),
         props: (route) => route.query,
       },
     ],

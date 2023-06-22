@@ -7,8 +7,13 @@ import {
 } from "#/types";
 
 import {
+  type UsrSearch,
   type MenuSearch,
 } from "#/types";
+
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -32,16 +37,28 @@ export async function findAll(
         findAllTenant(search: $search, page: $page, sort: $sort) {
           id
           lbl
-          host
+          usr_id
+          usr_id_lbl
           expiration
           expiration_lbl
           max_usr_num
+          is_locked
+          is_locked_lbl
           is_enabled
           is_enabled_lbl
           menu_ids
           menu_ids_lbl
           order_by
+          domain
           rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
         }
       }
     `,
@@ -157,16 +174,28 @@ export async function findById(
         findByIdTenant(id: $id) {
           id
           lbl
-          host
+          usr_id
+          usr_id_lbl
           expiration
           expiration_lbl
           max_usr_num
+          is_locked
+          is_locked_lbl
           is_enabled
           is_enabled_lbl
           menu_ids
           menu_ids_lbl
           order_by
+          domain
           rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
         }
       }
     `,
@@ -201,6 +230,35 @@ export async function deleteByIds(
     },
   }, opt);
   const res = data.deleteByIdsTenant;
+  return res;
+}
+
+/**
+ * 根据 ids 删除数据
+ * @export lockByIds
+ * @param {string[]} ids
+ * @param {0 | 1} lockByIds
+ * @param {GqlOpt} opt?
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data: {
+    lockByIdsTenant: Mutation["lockByIdsTenant"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [String!]!, $is_locked: Int!) {
+        lockByIdsTenant(ids: $ids, is_locked: $is_locked)
+      }
+    `,
+    variables: {
+      ids,
+      is_locked,
+    },
+  }, opt);
+  const res = data.lockByIdsTenant;
   return res;
 }
 
@@ -256,6 +314,51 @@ export async function forceDeleteByIds(
   return res;
 }
 
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllUsr;
+  return res;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllMenu(
   search?: MenuSearch,
   page?: PageInput,
@@ -301,6 +404,21 @@ export async function getMenuList() {
   return data;
 }
 
+export async function getMenuTree() {
+  const data = await findMenuTree(
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  */
@@ -325,29 +443,53 @@ export function useExportExcel(routePath: string) {
           findAllTenant(search: $search, sort: $sort) {
             id
             lbl
-            host
+            usr_id
+            usr_id_lbl
             expiration
             expiration_lbl
             max_usr_num
+            is_locked
+            is_locked_lbl
             is_enabled
             is_enabled_lbl
             menu_ids
             menu_ids_lbl
             order_by
+            domain
             rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
           getFieldCommentsTenant {
             lbl
-            host
+            usr_id
+            usr_id_lbl
             expiration
             expiration_lbl
             max_usr_num
+            is_locked
+            is_locked_lbl
             is_enabled
             is_enabled_lbl
             menu_ids
             menu_ids_lbl
             order_by
+            domain
             rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
         }
       `,

@@ -75,47 +75,53 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.default_dept_id == null)">
-          <el-form-item
-            :label="n('默认部门')"
-            prop="default_dept_id"
-            un-h="full"
-          >
-            <CustomSelect
-              v-model="dialogModel.default_dept_id"
-              :method="getDeptList"
-              :options-map="((item: DeptModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn == '1' || builtInModel?.dept_ids == null)">
           <el-form-item
             :label="n('拥有部门')"
             prop="dept_ids"
             un-h="full"
           >
-            <CustomSelect
+            <CustomTreeSelect
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
               v-model="dialogModel.dept_ids"
-              :method="getDeptList"
-              :options-map="((item: DeptModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getDeptTree"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('拥有部门') }`"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
               multiple
-            ></CustomSelect>
+            ></CustomTreeSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn == '1' || builtInModel?.default_dept_id == null)">
+          <el-form-item
+            :label="n('默认部门')"
+            prop="default_dept_id"
+            un-h="full"
+          >
+            <CustomTreeSelect
+              v-model="dialogModel.default_dept_id"
+              :method="getDeptTree"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -246,6 +252,10 @@ import {
   getDeptList,
   getRoleList,
 } from "./Api";
+
+import {
+  getDeptTree,
+} from "@/views/base/dept/Api";
 
 const emit = defineEmits<
   (
@@ -557,8 +567,8 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "用户名",
-    "默认部门",
     "拥有部门",
+    "默认部门",
     "启用",
     "拥有角色",
     "备注",

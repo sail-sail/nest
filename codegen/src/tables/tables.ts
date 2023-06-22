@@ -52,15 +52,15 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         search: true,
-        
         align: "left",
         width: 140,
         fixed: "left",
       },
       {
-        COLUMN_NAME: "host",
+        COLUMN_NAME: "usr_id",
         require: true,
-        width: 280,
+        align: "left",
+        width: 140,
       },
       {
         COLUMN_NAME: "expiration",
@@ -71,8 +71,10 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "is_locked",
+      },
+      {
         COLUMN_NAME: "order_by",
-        width: 100,
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -81,19 +83,40 @@ export default defineConfig({
       {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单",
-        ORDINAL_POSITION: 6,
+        ORDINAL_POSITION: 7,
         require: false,
         search: true,
         width: 80,
         foreignKey: {
           showType: "dialog",
+          selectType: "tree",
         },
       },
       {
+        COLUMN_NAME: "domain",
+        require: true,
+        align: "left",
+        width: 280,
+        isTextarea: true,
+        whitespacePre: true,
+      },
+      {
         COLUMN_NAME: "rem",
-        width: 240,
+        width: 280,
         align: "left",
         isTextarea: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -120,6 +143,7 @@ export default defineConfig({
         search: true,
         sortable: true,
         width: 140,
+        align: "left",
       },
       {
         COLUMN_NAME: "password",
@@ -134,11 +158,13 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
           multiple: false,
+          selectType: "tree",
           defaultSort: {
             prop: "order_by",
             order: "ascending",
           },
         },
+        align: "left",
       },
       {
         COLUMN_NAME: "is_locked",
@@ -151,10 +177,24 @@ export default defineConfig({
       {
         COLUMN_NAME: "dept_ids",
         COLUMN_COMMENT: "拥有部门",
-        ORDINAL_POSITION: 5,
+        ORDINAL_POSITION: 4,
         require: false,
         search: true,
-        width: 140,
+        width: 280,
+        align: "left",
+        foreignKey: {
+          mod: "base",
+          table: "dept",
+          column: "id",
+          lbl: "lbl",
+          multiple: true,
+          type: "many2many",
+          defaultSort: {
+            prop: "order_by",
+            order: "ascending",
+          },
+          selectType: "tree",
+        },
       },
       {
         COLUMN_NAME: "role_ids",
@@ -162,11 +202,12 @@ export default defineConfig({
         ORDINAL_POSITION: 6,
         require: false,
         search: true,
-        width: 140,
+        width: 280,
+        align: "left",
       },
       {
         COLUMN_NAME: "rem",
-        width: 140,
+        width: 180,
         align: "left",
         isTextarea: true,
       },
@@ -585,6 +626,7 @@ export default defineConfig({
         order: "ascending",
       },
       log: true,
+      list_tree: true,
     },
     columns: [
       {
@@ -593,6 +635,12 @@ export default defineConfig({
           table: "dept",
           column: "id",
           lbl: "lbl",
+          multiple: false,
+          selectType: "tree",
+          defaultSort: {
+            prop: "order_by",
+            order: "ascending",
+          },
         },
         width: 140,
         align: "left",

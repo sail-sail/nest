@@ -55,6 +55,8 @@ import {
   type TenantSearch,
 } from "./tenant.model.ts";
 
+import * as usrDao from "/gen/base/usr/usr.dao.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: TenantSearch,
@@ -81,14 +83,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.host !== undefined) {
-    whereQuery += ` and t.host = ${ args.push(search.host) }`;
+  if (search?.usr_id && !Array.isArray(search?.usr_id)) {
+    search.usr_id = [ search.usr_id ];
   }
-  if (search?.host === null) {
-    whereQuery += ` and t.host is null`;
+  if (search?.usr_id && search?.usr_id.length > 0) {
+    whereQuery += ` and usr_id_lbl.id in ${ args.push(search.usr_id) }`;
   }
-  if (isNotEmpty(search?.host_like)) {
-    whereQuery += ` and t.host like ${ args.push(sqlLike(search?.host_like) + "%") }`;
+  if (search?.usr_id === null) {
+    whereQuery += ` and usr_id_lbl.id is null`;
+  }
+  if (search?.usr_id_is_null) {
+    whereQuery += ` and usr_id_lbl.id is null`;
   }
   if (search?.expiration && search?.expiration?.length > 0) {
     if (search.expiration[0] != null) {
@@ -105,6 +110,12 @@ async function getWhereQuery(
     if (search.max_usr_num[1] != null) {
       whereQuery += ` and t.max_usr_num <= ${ args.push(search.max_usr_num[1]) }`;
     }
+  }
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -132,6 +143,15 @@ async function getWhereQuery(
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
   }
+  if (search?.domain !== undefined) {
+    whereQuery += ` and t.domain = ${ args.push(search.domain) }`;
+  }
+  if (search?.domain === null) {
+    whereQuery += ` and t.domain is null`;
+  }
+  if (isNotEmpty(search?.domain_like)) {
+    whereQuery += ` and t.domain like ${ args.push(sqlLike(search?.domain_like) + "%") }`;
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -140,6 +160,46 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+  }
+  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
+  }
+  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id === null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_time && search?.create_time?.length > 0) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id === null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time && search?.update_time?.length > 0) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -157,6 +217,8 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_tenant t
+    left join base_usr usr_id_lbl
+      on usr_id_lbl.id = t.usr_id
     left join base_tenant_menu
       on base_tenant_menu.tenant_id = t.id
       and base_tenant_menu.is_deleted = 0
@@ -180,6 +242,10 @@ function getFromQuery() {
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -243,8 +309,11 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
+      ,usr_id_lbl.lbl usr_id_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -286,8 +355,10 @@ export async function findAll(
   let result = await query<TenantModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
@@ -306,6 +377,16 @@ export async function findAll(
       model.expiration_lbl = "";
     }
     
+    // 锁定
+    let is_locked_lbl = model.is_locked.toString();
+    if (model.is_locked !== undefined && model.is_locked !== null) {
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      if (dictItem) {
+        is_locked_lbl = dictItem.lbl;
+      }
+    }
+    model.is_locked_lbl = is_locked_lbl;
+    
     // 启用
     let is_enabled_lbl = model.is_enabled.toString();
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
@@ -315,6 +396,30 @@ export async function findAll(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl;
+    
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (isNaN(create_time.toDate().getTime())) {
+        model.create_time_lbl = (model.create_time || "").toString();
+      } else {
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.create_time_lbl = "";
+    }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -327,16 +432,28 @@ export async function getFieldComments() {
   const n = initN("/tenant");
   const fieldComments = {
     lbl: await n("名称"),
-    host: await n("域名绑定"),
+    usr_id: await n("租户管理员"),
+    usr_id_lbl: await n("租户管理员"),
     expiration: await n("到期日"),
     expiration_lbl: await n("到期日"),
     max_usr_num: await n("最大用户数"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     menu_ids: await n("菜单"),
     menu_ids_lbl: await n("菜单"),
     order_by: await n("排序"),
+    domain: await n("域名绑定"),
     rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -568,11 +685,30 @@ export async function create(
   const method = "create";
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
+  
+  // 租户管理员
+  if (isNotEmpty(model.usr_id_lbl) && model.usr_id === undefined) {
+    model.usr_id_lbl = String(model.usr_id_lbl).trim();
+    const usrModel = await usrDao.findOne({ lbl: model.usr_id_lbl });
+    if (usrModel) {
+      model.usr_id = usrModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
   
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
@@ -633,8 +769,8 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.host !== undefined) {
-    sql += `,host`;
+  if (model.usr_id !== undefined) {
+    sql += `,usr_id`;
   }
   if (model.expiration !== undefined) {
     sql += `,expiration`;
@@ -642,14 +778,26 @@ export async function create(
   if (model.max_usr_num !== undefined) {
     sql += `,max_usr_num`;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,is_locked`;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
   if (model.order_by !== undefined) {
     sql += `,order_by`;
   }
+  if (model.domain !== undefined) {
+    sql += `,domain`;
+  }
   if (model.rem !== undefined) {
     sql += `,rem`;
+  }
+  if (model.update_usr_id !== undefined) {
+    sql += `,update_usr_id`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,update_time`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -663,8 +811,8 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
-  if (model.host !== undefined) {
-    sql += `,${ args.push(model.host) }`;
+  if (model.usr_id !== undefined) {
+    sql += `,${ args.push(model.usr_id) }`;
   }
   if (model.expiration !== undefined) {
     sql += `,${ args.push(model.expiration) }`;
@@ -672,14 +820,26 @@ export async function create(
   if (model.max_usr_num !== undefined) {
     sql += `,${ args.push(model.max_usr_num) }`;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,${ args.push(model.is_locked) }`;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.order_by !== undefined) {
     sql += `,${ args.push(model.order_by) }`;
   }
+  if (model.domain !== undefined) {
+    sql += `,${ args.push(model.domain) }`;
+  }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
+  }
+  if (model.update_usr_id !== undefined) {
+    sql += `,${ args.push(model.update_usr_id) }`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,${ args.push(model.update_time) }`;
   }
   sql += `)`;
   
@@ -702,8 +862,11 @@ export async function delCache() {
   const cacheKey1 = `dao.sql.${ table }`;
   await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [
+    "usr",
     "tenant_menu",
     "menu",
+    "usr",
+    "usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -743,10 +906,29 @@ export async function updateById(
   }
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
+  
+  // 租户管理员
+  if (isNotEmpty(model.usr_id_lbl) && model.usr_id === undefined) {
+    model.usr_id_lbl = String(model.usr_id_lbl).trim();
+    const usrModel = await usrDao.findOne({ lbl: model.usr_id_lbl });
+    if (usrModel) {
+      model.usr_id = usrModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
   
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
@@ -795,9 +977,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.host !== undefined) {
-    if (model.host != oldModel.host) {
-      sql += `host = ${ args.push(model.host) },`;
+  if (model.usr_id !== undefined) {
+    if (model.usr_id != oldModel.usr_id) {
+      sql += `usr_id = ${ args.push(model.usr_id) },`;
       updateFldNum++;
     }
   }
@@ -813,6 +995,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (model.is_locked !== undefined) {
+    if (model.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
+      updateFldNum++;
+    }
+  }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
@@ -822,6 +1010,12 @@ export async function updateById(
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(model.order_by) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.domain !== undefined) {
+    if (model.domain != oldModel.domain) {
+      sql += `domain = ${ args.push(model.domain) },`;
       updateFldNum++;
     }
   }
@@ -880,6 +1074,11 @@ export async function deleteByIds(
     if (!isExist) {
       continue;
     }
+    
+    const is_locked = await getIs_lockedById(id);
+    if (is_locked) {
+      continue;
+    }
     const args = new QueryArgs();
     const sql = /*sql*/ `
       update
@@ -894,6 +1093,72 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 ID 查找是否已锁定
+ * 已锁定的记录不能修改和删除
+ * 记录不存在则返回 undefined
+ * @param {string} id
+ * @return {Promise<0 | 1 | undefined>}
+ */
+export async function getIs_lockedById(
+  id: string,
+  options?: {
+  },
+): Promise<0 | 1 | undefined> {
+  const model = await findById(
+    id,
+    options,
+  );
+  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  return is_locked;
+}
+
+/**
+ * 根据 ids 锁定或者解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_tenant";
+  const method = "lockByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      base_tenant
+    set
+      is_locked = ${ args.push(is_locked) }
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id in ${ args.push(ids) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
   
   await delCache();
   

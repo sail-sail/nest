@@ -11,6 +11,10 @@ import {
   type RoleSearch,
 } from "#/types";
 
+import {
+  findTree as findDeptTree,
+} from "@/views/base/dept/Api";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -34,10 +38,10 @@ export async function findAll(
           id
           lbl
           username
-          default_dept_id
-          default_dept_id_lbl
           dept_ids
           dept_ids_lbl
+          default_dept_id
+          default_dept_id_lbl
           is_enabled
           is_enabled_lbl
           role_ids
@@ -162,10 +166,10 @@ export async function findById(
           lbl
           username
           password
-          default_dept_id
-          default_dept_id_lbl
           dept_ids
           dept_ids_lbl
+          default_dept_id
+          default_dept_id_lbl
           is_enabled
           is_enabled_lbl
           role_ids
@@ -336,6 +340,21 @@ export async function getDeptList() {
   return data;
 }
 
+export async function getDeptTree() {
+  const data = await findDeptTree(
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllRole(
   search?: RoleSearch,
   page?: PageInput,
@@ -407,10 +426,10 @@ export function useExportExcel(routePath: string) {
             lbl
             username
             password
-            default_dept_id
-            default_dept_id_lbl
             dept_ids
             dept_ids_lbl
+            default_dept_id
+            default_dept_id_lbl
             is_enabled
             is_enabled_lbl
             role_ids
@@ -422,10 +441,10 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsUsr {
             lbl
             username
-            default_dept_id
-            default_dept_id_lbl
             dept_ids
             dept_ids_lbl
+            default_dept_id
+            default_dept_id_lbl
             is_enabled
             is_enabled_lbl
             role_ids

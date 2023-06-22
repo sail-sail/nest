@@ -552,6 +552,9 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   const foreignKey = column.foreignKey;
+  if (!foreignKey || foreignKey.selectType !== "tree") {
+    continue;
+  }
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -559,15 +562,11 @@ for (let i = 0; i < columns.length; i++) {
   }).join("");
   if (foreignTableArr3.includes(foreignTable)) continue;
   foreignTableArr3.push(foreignTable);
-#><#
-if (foreignKey && foreignKey.selectType === "tree") {
 #>
 
 import {
   get<#=Foreign_Table_Up#>Tree,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
-}
-#><#
 }
 #><#
 const selectInputNoRepeats = [ ];
