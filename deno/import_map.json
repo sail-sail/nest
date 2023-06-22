@@ -4,7 +4,7 @@
     "./": "./",
     "std/": "https://deno.land/std@0.192.0/",
     "oak": "https://deno.land/x/oak@v12.5.0/mod.ts",
-    "graphql": "https://esm.sh/graphql@16.6.0",
+    "graphql": "https://esm.sh/graphql@16.7.0",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
     "redis": "https://deno.land/x/redis@v0.29.4/mod.ts",
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
