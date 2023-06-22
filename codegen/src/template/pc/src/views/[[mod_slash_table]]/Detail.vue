@@ -570,6 +570,7 @@ import {
 #><#
 }
 #><#
+const selectInputNoRepeats = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -589,8 +590,12 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
-      continue;
-    }
+    continue;
+  }
+  if (selectInputNoRepeats.includes(Foreign_Table_Up)) {
+    continue;
+  }
+  selectInputNoRepeats.push(Foreign_Table_Up);
 #>
 
 import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/SelectInput.vue";<#
