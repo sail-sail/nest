@@ -146,7 +146,7 @@ import {
   type MutationLoginArgs,
 } from "#/types";
 
-let i18n = $ref(useI18n("/usr"));
+let i18n = $ref(useI18n("/base/usr"));
 
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
@@ -216,6 +216,14 @@ async function loginClk() {
   if (!loginModel.authorization) {
     return;
   }
+  localStorage.setItem(
+    "oldLoginModel",
+    JSON.stringify({
+      username: model.username,
+      tenant_id: model.tenant_id,
+      dept_id: model.dept_id,
+    }),
+  );
   usrStore.dept_id = loginModel.dept_id ?? undefined;
   usrStore.authorization = loginModel.authorization;
   tabsStore.clearKeepAliveNames();
@@ -230,9 +238,12 @@ let tenants = $ref<{
   lbl: string;
 }[]>([ ]);
 
+/**
+ * 获取租户列表
+ */
 async function getLoginTenantsEfc() {
   tenants = await getLoginTenants({ host: window.location.host });
-  if (tenants.length > 0) {
+  if (!model.tenant_id && tenants.length > 0) {
     model.tenant_id = tenants[0].id;
   }
 }
@@ -253,6 +264,21 @@ async function initI18nEfc() {
 }
 
 async function initFrame() {
+  const oldLoginModelStr = localStorage.getItem("oldLoginModel");
+  let oldLoginModel: any = undefined;
+  if (oldLoginModelStr) {
+    try {
+      oldLoginModel = JSON.parse(oldLoginModelStr);
+    } catch (err) {
+      localStorage.removeItem("oldLoginModel");
+    }
+  }
+  if (oldLoginModel) {
+    model = {
+      ...model,
+      ...oldLoginModel,
+    };
+  }
   await Promise.all([
     initI18nEfc(),
     getLoginTenantsEfc(),
