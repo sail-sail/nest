@@ -727,6 +727,40 @@ const builtInSearch: UsrSearch = $computed(() => {
   return Object.fromEntries(entries) as unknown as UsrSearch;
 });
 
+/** 是否多选 */
+let multiple = $ref(true);
+
+watch(
+  () => props.isMultiple,
+  () => {
+    if (props.isMultiple === false) {
+      multiple = false;
+    } else {
+      multiple = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
+
+watch(
+  () => props.showBuildIn,
+  () => {
+    if (props.showBuildIn === "1") {
+      showBuildIn = true;
+    } else {
+      showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
 /** 内置变量 */
 const builtInModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
@@ -776,7 +810,7 @@ let {
 } = $(useSelect<UsrModel>(
   $$(tableRef),
   {
-    multiple: props.isMultiple,
+    multiple: $$(multiple),
   },
 ));
 
@@ -1002,7 +1036,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
   });
   if (type === "cancel") {
     return;
@@ -1032,7 +1066,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -1132,7 +1166,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       ids: selectedIds,
     },

@@ -118,7 +118,7 @@ for (let i = 0; i < columns.length; i++) {
           const vIfStr = vIf.join(" && ");
         #>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -720,8 +720,8 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<<#=inputName#>>();
 
-/** 是否显示内置变量, 0不显示(默认), 1显示 */
-let showBuildIn = $ref<string>("0");
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -771,7 +771,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: <#=inputName#>;
-    showBuildIn?: string;
+    showBuildIn?: Ref<boolean> | boolean;
     model?: {
       id?: string;
       ids?: string[];
@@ -797,7 +797,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = arg?.showBuildIn || "0";
+  showBuildIn = unref(arg?.showBuildIn) ?? false;
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -956,7 +956,7 @@ async function saveClk() {
     const dialogModel2 = {
       ...dialogModel,
     };
-    if (showBuildIn == "0") {
+    if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
     id = await create(dialogModel2);
