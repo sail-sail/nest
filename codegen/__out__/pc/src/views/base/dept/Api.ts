@@ -367,21 +367,6 @@ export async function getDeptList() {
   return data;
 }
 
-export async function getDeptTree() {
-  const data = await findDeptTree(
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -417,6 +402,21 @@ export async function getUsrList() {
     [
       {
         prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getDeptTree() {
+  const data = await findDeptTree(
+    [
+      {
+        prop: "order_by",
         order: "ascending",
       },
     ],

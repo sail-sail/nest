@@ -340,21 +340,6 @@ export async function getDeptList() {
   return data;
 }
 
-export async function getDeptTree() {
-  const data = await findDeptTree(
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function findAllRole(
   search?: RoleSearch,
   page?: PageInput,
@@ -390,6 +375,21 @@ export async function getRoleList() {
     [
       {
         prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getDeptTree() {
+  const data = await findDeptTree(
+    [
+      {
+        prop: "order_by",
         order: "ascending",
       },
     ],
