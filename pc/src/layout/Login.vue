@@ -242,7 +242,7 @@ let tenants = $ref<{
  * 获取租户列表
  */
 async function getLoginTenantsEfc() {
-  tenants = await getLoginTenants({ host: window.location.host });
+  tenants = await getLoginTenants({ domain: window.location.host });
   if (!model.tenant_id && tenants.length > 0) {
     model.tenant_id = tenants[0].id;
   }

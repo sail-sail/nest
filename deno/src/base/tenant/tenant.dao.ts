@@ -23,7 +23,7 @@ export async function getHostTenant(): Promise<typeof result> {
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
-      t.host
+      t.domain
     from base_tenant t
     where
       t.is_deleted = 0
@@ -51,7 +51,7 @@ export async function getLoginTenants(
       and t.is_enabled = 1
   `;
   // if (window.process.env.NODE_ENV === "production") {
-  //   sql += ` and t.host = ${ args.push(host) }`;
+  //   sql += ` and t.domain = ${ args.push(domain) }`;
   // }
   interface Result {
     id: string,

@@ -12,7 +12,7 @@ import {
  * @return {Promise<{ id: string, lbl: string }[]>}
  */
 export async function getLoginTenants(
-  variables: { host: string },
+  variables: { domain: string },
   opt?: GqlOpt,
 ): Promise<{ id: string, lbl: string }[]> {
   const data: {
