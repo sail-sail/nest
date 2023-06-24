@@ -107,21 +107,21 @@
             prop="default_dept_id"
             un-h="full"
           >
-            <CustomTreeSelect
+            <CustomSelect
+              ref="default_dept_idRef"
+              :init="false"
+              @change="old_default_dept_id = dialogModel.default_dept_id;"
               v-model="dialogModel.default_dept_id"
-              :method="getDeptTree"
+              :method="getDeptListApi"
+              :options-map="((item: DeptModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
-              :props="{
-                label: 'lbl',
-                children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node
-            ></CustomTreeSelect>
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -312,6 +312,12 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("用户名") }`,
       },
     ],
+    default_dept_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("默认部门") }`,
+      },
+    ],
     is_enabled: [
       {
         required: true,
@@ -430,6 +436,7 @@ async function refreshEfc() {
   const data = await findById(dialogModel.id);
   if (data) {
     dialogModel = data;
+    old_default_dept_id = dialogModel.default_dept_id;
   }
 }
 
@@ -545,6 +552,36 @@ async function saveClk() {
     });
   }
 }
+
+let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();
+let old_default_dept_id: string | null | undefined = undefined;
+
+async function getDeptListApi() {
+  let dept_ids = dialogModel.dept_ids || [ ];
+  if (!dialogModel.default_dept_id && old_default_dept_id) {
+    if (dept_ids.includes(old_default_dept_id)) {
+      dialogModel.default_dept_id = old_default_dept_id;
+    }
+  }
+  if (!dialogModel.default_dept_id || !dept_ids.includes(dialogModel.default_dept_id)) {
+    dialogModel.default_dept_id = undefined;
+  }
+  let data = await getDeptList();
+  data = data.filter((item) => {
+    return dept_ids.includes(item.id);
+  });
+  return data;
+}
+
+watch(
+  () => dialogModel.dept_ids,
+  async () => {
+    if (!default_dept_idRef) {
+      return;
+    }
+    await default_dept_idRef.refresh();
+  },
+);
 
 /** 点击取消关闭按钮 */
 function cancelClk() {

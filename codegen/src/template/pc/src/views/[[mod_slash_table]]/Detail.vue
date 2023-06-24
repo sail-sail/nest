@@ -160,13 +160,27 @@ for (let i = 0; i < columns.length; i++) {
             } else if (foreignKey && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
             #>
             <CustomSelect<#
+              if (table === "usr" && column_name === "default_dept_id") {
+              #>
+              ref="default_dept_idRef"
+              :init="false"
+              @change="old_default_dept_id = dialogModel.default_dept_id;"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
-              v-model="dialogModel.<#=column_name#>"
-              :method="get<#=Foreign_Table_Up#>List"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (table === "usr" && column_name === "default_dept_id") {
+              #>
+              :method="getDeptListApi"<#
+              } else {
+              #>
+              :method="get<#=Foreign_Table_Up#>List"<#
+              }
+              #>
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
                   label: item.<#=foreignKey.lbl#>,
@@ -870,7 +884,12 @@ async function refreshEfc() {
   }
   const data = await findById(dialogModel.id);
   if (data) {
-    dialogModel = data;
+    dialogModel = data;<#
+    if (table === "usr") {
+    #>
+    old_default_dept_id = dialogModel.default_dept_id;<#
+    }
+    #>
   }
 }
 
@@ -1000,6 +1019,40 @@ async function saveClk() {
     });
   }
 }<#
+}
+#><#
+if (table === "usr") {
+#>
+
+let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();
+let old_default_dept_id: string | null | undefined = undefined;
+
+async function getDeptListApi() {
+  let dept_ids = dialogModel.dept_ids || [ ];
+  if (!dialogModel.default_dept_id && old_default_dept_id) {
+    if (dept_ids.includes(old_default_dept_id)) {
+      dialogModel.default_dept_id = old_default_dept_id;
+    }
+  }
+  if (!dialogModel.default_dept_id || !dept_ids.includes(dialogModel.default_dept_id)) {
+    dialogModel.default_dept_id = undefined;
+  }
+  let data = await getDeptList();
+  data = data.filter((item) => {
+    return dept_ids.includes(item.id);
+  });
+  return data;
+}
+
+watch(
+  () => dialogModel.dept_ids,
+  async () => {
+    if (!default_dept_idRef) {
+      return;
+    }
+    await default_dept_idRef.refresh();
+  },
+);<#
 }
 #>
 

@@ -135,6 +135,9 @@ export default defineConfig({
           "@/components/UploadFileDialog.vue": [
             [ "default", "UploadFileDialog" ],
           ],
+          "@/components/CustomSelect.vue": [
+            [ "default", "CustomSelect" ],
+          ],
           "@/components/MessageBox": [
             "MessageBox",
           ],

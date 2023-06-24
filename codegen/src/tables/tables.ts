@@ -153,12 +153,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "default_dept_id",
         width: 140,
+        require: true,
         foreignKey: {
           table: "dept",
           column: "id",
           lbl: "lbl",
           multiple: false,
-          selectType: "tree",
           defaultSort: {
             prop: "order_by",
             order: "ascending",
