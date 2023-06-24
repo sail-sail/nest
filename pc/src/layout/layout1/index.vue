@@ -100,7 +100,7 @@
         un-flex="~"
         un-items-center
         un-gap="x-3"
-        un-m="r-4"
+        un-m="r-2"
       >
         <template v-if="loginInfo && loginInfo.dept_id_models">
           <el-dropdown
@@ -128,44 +128,6 @@
             </template>
           </el-dropdown>
         </template>
-        <div
-          un-flex="~"
-          un-items-center
-          un-h="full"
-          un-m="r-1"
-        >
-          <el-dropdown
-            trigger="click"
-          >
-            <IconFontLocales
-              un-w="4"
-              un-h="4"
-              un-pos-relative
-              un-top="0.5"
-              un-text="white hover:[var(--el-color-primary)]"
-              un-cursor-pointer
-            ></IconFontLocales>
-            <template #dropdown>
-              <el-dropdown-menu
-                un-whitespace-nowrap
-              >
-                <el-dropdown-item
-                  v-for="item of locales"
-                  :key="item.code"
-                  @click="selectLangClk(item.code)"
-                >
-                  <span
-                    :style="{
-                      color: item.code === loginInfo?.lang ? 'var(--el-color-primary)' : ''
-                    }"
-                  >
-                    {{ item.lbl }}
-                  </span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
         <div
           un-pos-relative
           un-top="[1px]"
@@ -236,6 +198,43 @@
                   <span>{{ ns('退出登录') }}</span>
                 </el-dropdown-item>
                 
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+        <div
+          un-flex="~"
+          un-items-center
+          un-h="full"
+        >
+          <el-dropdown
+            trigger="click"
+          >
+            <IconFontLocales
+              un-w="3.5"
+              un-h="3.5"
+              un-pos-relative
+              un-top="0.5"
+              un-text="white hover:[var(--el-color-primary)]"
+              un-cursor-pointer
+            ></IconFontLocales>
+            <template #dropdown>
+              <el-dropdown-menu
+                un-whitespace-nowrap
+              >
+                <el-dropdown-item
+                  v-for="item of locales"
+                  :key="item.code"
+                  @click="selectLangClk(item.code)"
+                >
+                  <span
+                    :style="{
+                      color: item.code === loginInfo?.lang ? 'var(--el-color-primary)' : ''
+                    }"
+                  >
+                    {{ item.lbl }}
+                  </span>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
