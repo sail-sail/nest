@@ -37,6 +37,7 @@ export async function findAll(
         findAllTenant(search: $search, page: $page, sort: $sort) {
           id
           lbl
+          domain
           usr_id
           usr_id_lbl
           expiration
@@ -44,12 +45,11 @@ export async function findAll(
           max_usr_num
           is_locked
           is_locked_lbl
-          is_enabled
-          is_enabled_lbl
           menu_ids
           menu_ids_lbl
+          is_enabled
+          is_enabled_lbl
           order_by
-          domain
           rem
           create_usr_id
           create_usr_id_lbl
@@ -174,6 +174,7 @@ export async function findById(
         findByIdTenant(id: $id) {
           id
           lbl
+          domain
           usr_id
           usr_id_lbl
           expiration
@@ -181,12 +182,11 @@ export async function findById(
           max_usr_num
           is_locked
           is_locked_lbl
-          is_enabled
-          is_enabled_lbl
           menu_ids
           menu_ids_lbl
+          is_enabled
+          is_enabled_lbl
           order_by
-          domain
           rem
           create_usr_id
           create_usr_id_lbl
@@ -443,6 +443,7 @@ export function useExportExcel(routePath: string) {
           findAllTenant(search: $search, sort: $sort) {
             id
             lbl
+            domain
             usr_id
             usr_id_lbl
             expiration
@@ -450,12 +451,11 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
-            is_enabled
-            is_enabled_lbl
             menu_ids
             menu_ids_lbl
+            is_enabled
+            is_enabled_lbl
             order_by
-            domain
             rem
             create_usr_id
             create_usr_id_lbl
@@ -468,6 +468,7 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsTenant {
             lbl
+            domain
             usr_id
             usr_id_lbl
             expiration
@@ -475,12 +476,11 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
-            is_enabled
-            is_enabled_lbl
             menu_ids
             menu_ids_lbl
+            is_enabled
+            is_enabled_lbl
             order_by
-            domain
             rem
             create_usr_id
             create_usr_id_lbl

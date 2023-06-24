@@ -57,6 +57,12 @@ export default defineConfig({
         fixed: "left",
       },
       {
+        COLUMN_NAME: "domain",
+        require: true,
+        align: "left",
+        width: 280,
+      },
+      {
         COLUMN_NAME: "usr_id",
         require: true,
         align: "left",
@@ -91,14 +97,6 @@ export default defineConfig({
           showType: "dialog",
           selectType: "tree",
         },
-      },
-      {
-        COLUMN_NAME: "domain",
-        require: true,
-        align: "left",
-        width: 280,
-        isTextarea: true,
-        whitespacePre: true,
       },
       {
         COLUMN_NAME: "rem",

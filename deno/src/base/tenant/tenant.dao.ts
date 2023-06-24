@@ -38,7 +38,7 @@ export async function getHostTenant(): Promise<typeof result> {
 }
 
 export async function getLoginTenants(
-  _host: string,
+  _domain: string,
 ): Promise<typeof result> {
   const args = new QueryArgs();
   const sql = /*sql*/ `

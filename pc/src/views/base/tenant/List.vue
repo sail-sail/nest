@@ -397,6 +397,15 @@
             </el-table-column>
           </template>
           
+          <!-- 域名绑定 -->
+          <template v-else-if="'domain' === col.prop && (showBuildIn == '1' || builtInSearch?.domain == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 租户管理员 -->
           <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.usr_id == null)">
             <el-table-column
@@ -433,15 +442,6 @@
             </el-table-column>
           </template>
           
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 菜单 -->
           <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.menu_ids == null)">
             <el-table-column
@@ -462,8 +462,8 @@
             </el-table-column>
           </template>
           
-          <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
+          <!-- 启用 -->
+          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -471,19 +471,12 @@
             </el-table-column>
           </template>
           
-          <!-- 域名绑定 -->
-          <template v-else-if="'domain' === col.prop && (showBuildIn == '1' || builtInSearch?.domain == null)">
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
-                <div
-                  un-whitespace-pre
-                >
-                  {{ row[column.property] }}
-                </div>
-              </template>
             </el-table-column>
           </template>
           
@@ -697,17 +690,17 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  domain?: string; // 域名绑定
+  domain_like?: string; // 域名绑定
   usr_id?: string|string[]; // 租户管理员
   usr_id_lbl?: string|string[]; // 租户管理员
   expiration?: string; // 到期日
   max_usr_num?: string; // 最大用户数
   is_locked?: string|string[]; // 锁定
-  is_enabled?: string|string[]; // 启用
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单
+  is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
-  domain?: string; // 域名绑定
-  domain_like?: string; // 域名绑定
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -727,10 +720,10 @@ const builtInSearchType: { [key: string]: string } = {
   max_usr_num: "number",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
   order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
@@ -914,6 +907,14 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
+      label: "域名绑定",
+      prop: "domain",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "租户管理员",
       prop: "usr_id_lbl",
       width: 140,
@@ -946,17 +947,17 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "启用",
-      prop: "is_enabled_lbl",
-      width: 60,
+      label: "菜单",
+      prop: "menu_ids_lbl",
+      width: 80,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "菜单",
-      prop: "menu_ids_lbl",
-      width: 80,
+      label: "启用",
+      prop: "is_enabled_lbl",
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -966,14 +967,6 @@ function getTableColumns(): ColumnType[] {
       prop: "order_by",
       sortable: "custom",
       align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "域名绑定",
-      prop: "domain",
-      width: 280,
-      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1184,14 +1177,14 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
+    [ n("域名绑定") ]: "domain",
     [ n("租户管理员") ]: "usr_id_lbl",
     [ n("到期日") ]: "expiration",
     [ n("最大用户数") ]: "max_usr_num",
     [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
     [ n("菜单") ]: "menu_ids_lbl",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
-    [ n("域名绑定") ]: "domain",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time",
@@ -1385,14 +1378,14 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "域名绑定",
     "租户管理员",
     "到期日",
     "最大用户数",
     "锁定",
-    "启用",
     "菜单",
+    "启用",
     "排序",
-    "域名绑定",
     "备注",
     "创建人",
     "创建时间",

@@ -45,6 +45,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.domain == null)">
+          <el-form-item
+            :label="n('域名绑定')"
+            prop="domain"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.domain"
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('域名绑定') }`"
+              :clearable="true"
+            ></el-input>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
             :label="n('租户管理员')"
@@ -146,25 +161,6 @@
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
               :clearable="true"
             ></el-input-number>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.domain == null)">
-          <el-form-item
-            :label="n('域名绑定')"
-            prop="domain"
-            un-grid="col-span-2"
-            un-h="full"
-          >
-            <el-input
-              v-model="dialogModel.domain"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
-              @keyup.enter.stop
-              un-w="full"
-              :placeholder="`${ ns('请输入') } ${ n('域名绑定') }`"
-              :clearable="true"
-            ></el-input>
           </el-form-item>
         </template>
         
@@ -326,6 +322,12 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
+    domain: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("域名绑定") }`,
+      },
+    ],
     usr_id: [
       {
         required: true,
@@ -342,12 +344,6 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("启用") }`,
-      },
-    ],
-    domain: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("域名绑定") }`,
       },
     ],
   };
@@ -597,14 +593,14 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "域名绑定",
     "租户管理员",
     "到期日",
     "最大用户数",
     "锁定",
-    "启用",
     "菜单",
+    "启用",
     "排序",
-    "域名绑定",
     "备注",
     "创建人",
     "创建时间",

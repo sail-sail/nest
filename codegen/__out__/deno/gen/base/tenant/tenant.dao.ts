@@ -83,6 +83,15 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.domain !== undefined) {
+    whereQuery += ` and t.domain = ${ args.push(search.domain) }`;
+  }
+  if (search?.domain === null) {
+    whereQuery += ` and t.domain is null`;
+  }
+  if (isNotEmpty(search?.domain_like)) {
+    whereQuery += ` and t.domain like ${ args.push(sqlLike(search?.domain_like) + "%") }`;
+  }
   if (search?.usr_id && !Array.isArray(search?.usr_id)) {
     search.usr_id = [ search.usr_id ];
   }
@@ -117,12 +126,6 @@ async function getWhereQuery(
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
-  }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
   if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
   }
@@ -135,6 +138,12 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
@@ -142,15 +151,6 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
-  }
-  if (search?.domain !== undefined) {
-    whereQuery += ` and t.domain = ${ args.push(search.domain) }`;
-  }
-  if (search?.domain === null) {
-    whereQuery += ` and t.domain is null`;
-  }
-  if (isNotEmpty(search?.domain_like)) {
-    whereQuery += ` and t.domain like ${ args.push(sqlLike(search?.domain_like) + "%") }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -432,6 +432,7 @@ export async function getFieldComments() {
   const n = initN("/tenant");
   const fieldComments = {
     lbl: await n("名称"),
+    domain: await n("域名绑定"),
     usr_id: await n("租户管理员"),
     usr_id_lbl: await n("租户管理员"),
     expiration: await n("到期日"),
@@ -439,12 +440,11 @@ export async function getFieldComments() {
     max_usr_num: await n("最大用户数"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
     menu_ids: await n("菜单"),
     menu_ids_lbl: await n("菜单"),
+    is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
-    domain: await n("域名绑定"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -710,14 +710,6 @@ export async function create(
     }
   }
   
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
-  
   // 菜单
   if (!model.menu_ids && model.menu_ids_lbl) {
     if (typeof model.menu_ids_lbl === "string" || model.menu_ids_lbl instanceof String) {
@@ -738,6 +730,14 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
+    }
   }
   
   const oldModel = await findByUnique(model, options);
@@ -769,6 +769,9 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (model.domain !== undefined) {
+    sql += `,domain`;
+  }
   if (model.usr_id !== undefined) {
     sql += `,usr_id`;
   }
@@ -786,9 +789,6 @@ export async function create(
   }
   if (model.order_by !== undefined) {
     sql += `,order_by`;
-  }
-  if (model.domain !== undefined) {
-    sql += `,domain`;
   }
   if (model.rem !== undefined) {
     sql += `,rem`;
@@ -811,6 +811,9 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
+  if (model.domain !== undefined) {
+    sql += `,${ args.push(model.domain) }`;
+  }
   if (model.usr_id !== undefined) {
     sql += `,${ args.push(model.usr_id) }`;
   }
@@ -828,9 +831,6 @@ export async function create(
   }
   if (model.order_by !== undefined) {
     sql += `,${ args.push(model.order_by) }`;
-  }
-  if (model.domain !== undefined) {
-    sql += `,${ args.push(model.domain) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -929,14 +929,6 @@ export async function updateById(
       model.is_locked = Number(val);
     }
   }
-  
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
 
   // 菜单
   if (!model.menu_ids && model.menu_ids_lbl) {
@@ -960,6 +952,14 @@ export async function updateById(
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
+    }
+  }
+  
   const oldModel = await findById(id);
   
   if (!oldModel) {
@@ -974,6 +974,12 @@ export async function updateById(
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.domain !== undefined) {
+    if (model.domain != oldModel.domain) {
+      sql += `domain = ${ args.push(model.domain) },`;
       updateFldNum++;
     }
   }
@@ -1010,12 +1016,6 @@ export async function updateById(
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(model.order_by) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.domain !== undefined) {
-    if (model.domain != oldModel.domain) {
-      sql += `domain = ${ args.push(model.domain) },`;
       updateFldNum++;
     }
   }

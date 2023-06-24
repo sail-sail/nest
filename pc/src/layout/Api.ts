@@ -19,8 +19,8 @@ export async function getLoginTenants(
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
     query: /* GraphQL */ `
-      query($host: String!) {
-        getLoginTenants(host: $host) {
+      query($domain: String!) {
+        getLoginTenants(domain: $domain) {
           id
           lbl
         }
