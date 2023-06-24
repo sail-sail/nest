@@ -179,15 +179,22 @@
           <el-dropdown
             trigger="click"
           >
-            <el-icon
-              :size="16"
-              color="#FFF"
+            <div
+              un-flex="~"
+              un-text="hover:[var(--el-color-primary)]"
             >
-              <ElIconSetting />
-            </el-icon>
+              <div>
+                {{ loginInfo?.lbl }}
+              </div>
+              <el-icon
+                :size="14"
+              >
+                <ElIconCaretBottom />
+              </el-icon>
+            </div>
             <template #dropdown>
               <el-dropdown-menu
-                whitespace-nowrap
+                un-whitespace-nowrap
               >
                 
                 <el-dropdown-item @click="toggleDark(!isDark)">
@@ -462,7 +469,7 @@ async function logoutClk() {
   usrStore.logout();
 }
 
-let loginInfo = $ref<GetLoginInfo>();
+let loginInfo = $ref(usrStore.loginInfo);
 
 async function selectLangClk(lang: string) {
   const authorization = await selectLang({
@@ -505,6 +512,7 @@ async function initFrame() {
       getUsrPermitsEfc(),
     ]);
     loginInfo = loginInfoTmp;
+    usrStore.loginInfo = loginInfo;
   }
   inited = true;
 }
