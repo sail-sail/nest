@@ -444,15 +444,6 @@
             </el-table-column>
           </template>
           
-          <!-- 默认部门 -->
-          <template v-else-if="'default_dept_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.default_dept_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 拥有部门 -->
           <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.dept_ids == null)">
             <el-table-column
@@ -464,6 +455,15 @@
                   v-model="row[column.property]"
                 ></LinkList>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 默认部门 -->
+          <template v-else-if="'default_dept_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.default_dept_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -668,10 +668,10 @@ const props = defineProps<{
   username_like?: string; // 用户名
   password?: string; // 密码
   password_like?: string; // 密码
-  default_dept_id?: string|string[]; // 默认部门
-  default_dept_id_lbl?: string|string[]; // 默认部门
   dept_ids?: string|string[]; // 拥有部门
   dept_ids_lbl?: string|string[]; // 拥有部门
+  default_dept_id?: string|string[]; // 默认部门
+  default_dept_id_lbl?: string|string[]; // 默认部门
   is_enabled?: string|string[]; // 启用
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
@@ -684,10 +684,10 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   ids: "string[]",
-  default_dept_id: "string[]",
-  default_dept_id_lbl: "string[]",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",
+  default_dept_id: "string[]",
+  default_dept_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   role_ids: "string[]",
@@ -726,6 +726,40 @@ const builtInSearch: UsrSearch = $computed(() => {
   }
   return Object.fromEntries(entries) as unknown as UsrSearch;
 });
+
+/** 是否多选 */
+let multiple = $ref(true);
+
+watch(
+  () => props.isMultiple,
+  () => {
+    if (props.isMultiple === false) {
+      multiple = false;
+    } else {
+      multiple = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
+
+watch(
+  () => props.showBuildIn,
+  () => {
+    if (props.showBuildIn === "1") {
+      showBuildIn = true;
+    } else {
+      showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 /** 内置变量 */
 const builtInModel = $computed(() => {
@@ -776,7 +810,7 @@ let {
 } = $(useSelect<UsrModel>(
   $$(tableRef),
   {
-    multiple: props.isMultiple,
+    multiple: $$(multiple),
   },
 ));
 
@@ -843,7 +877,15 @@ function getTableColumns(): ColumnType[] {
       prop: "username",
       width: 140,
       sortable: "custom",
-      align: "center",
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "拥有部门",
+      prop: "dept_ids_lbl",
+      width: 280,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -851,15 +893,7 @@ function getTableColumns(): ColumnType[] {
       label: "默认部门",
       prop: "default_dept_id_lbl",
       width: 140,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "拥有部门",
-      prop: "dept_ids_lbl",
-      width: 140,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -874,15 +908,15 @@ function getTableColumns(): ColumnType[] {
     {
       label: "拥有角色",
       prop: "role_ids_lbl",
-      width: 140,
-      align: "center",
+      width: 280,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
       label: "备注",
       prop: "rem",
-      width: 140,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1002,7 +1036,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
   });
   if (type === "cancel") {
     return;
@@ -1032,7 +1066,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -1063,8 +1097,8 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("用户名") ]: "username",
-    [ n("默认部门") ]: "default_dept_id_lbl",
     [ n("拥有部门") ]: "dept_ids_lbl",
+    [ n("默认部门") ]: "default_dept_id_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("拥有角色") ]: "role_ids_lbl",
     [ n("备注") ]: "rem",
@@ -1132,7 +1166,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       ids: selectedIds,
     },
@@ -1255,8 +1289,8 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "用户名",
-    "默认部门",
     "拥有部门",
+    "默认部门",
     "启用",
     "拥有角色",
     "备注",

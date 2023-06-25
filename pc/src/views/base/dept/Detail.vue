@@ -30,28 +30,31 @@
         @keyup.enter="saveClk"
       >
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.parent_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.parent_id == null)">
           <el-form-item
             :label="n('父部门')"
             prop="parent_id"
             un-h="full"
           >
-            <CustomSelect
+            <CustomTreeSelect
               v-model="dialogModel.parent_id"
-              :method="getDeptList"
-              :options-map="((item: DeptModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getDeptTree"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('父部门') }`"
-            ></CustomSelect>
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -66,7 +69,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.order_by == null)">
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -86,7 +89,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -190,6 +193,10 @@ import {
   getDeptList,
 } from "./Api";
 
+import {
+  getDeptTree,
+} from "@/views/base/dept/Api";
+
 const emit = defineEmits<
   (
     e: "nextId",
@@ -262,8 +269,8 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<DeptInput>();
 
-/** 是否显示内置变量, 0不显示(默认), 1显示 */
-let showBuildIn = $ref<string>("0");
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -282,7 +289,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: DeptInput;
-    showBuildIn?: string;
+    showBuildIn?: Ref<boolean> | boolean;
     model?: {
       id?: string;
       ids?: string[];
@@ -301,7 +308,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = arg?.showBuildIn || "0";
+  showBuildIn = unref(arg?.showBuildIn) ?? false;
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -440,7 +447,7 @@ async function saveClk() {
     const dialogModel2 = {
       ...dialogModel,
     };
-    if (showBuildIn == "0") {
+    if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
     id = await create(dialogModel2);

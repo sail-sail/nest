@@ -13,12 +13,12 @@ defineGraphql(tenantResolver, /* GraphQL */`
   
   #type GetHostTenant {
   #  ""
-  #  host: String
+  #  domain: String
   #}
 
   type Query {
     "根据 当前网址的域名+端口 获取 租户列表"
-    getLoginTenants(host: String!): [GetLoginTenants!]!
+    getLoginTenants(domain: String!): [GetLoginTenants!]!
     # getHostTenant: GetHostTenant!
   }
   

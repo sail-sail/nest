@@ -474,13 +474,8 @@
     >
       <el-pagination
         background
-        :page-sizes="pageSizes"
-        :page-size="page.size"
-        layout="total, sizes, prev, pager, next, jumper"
-        :current-page="page.current"
+        layout="total"
         :total="page.total"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div>
@@ -525,7 +520,7 @@ import {
 } from "#/types";
 
 defineOptions({
-  name: "部门",
+  name: "部门List",
 });
 
 const {
@@ -666,6 +661,40 @@ const builtInSearch: DeptSearch = $computed(() => {
   return Object.fromEntries(entries) as unknown as DeptSearch;
 });
 
+/** 是否多选 */
+let multiple = $ref(true);
+
+watch(
+  () => props.isMultiple,
+  () => {
+    if (props.isMultiple === false) {
+      multiple = false;
+    } else {
+      multiple = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
+
+watch(
+  () => props.showBuildIn,
+  () => {
+    if (props.showBuildIn === "1") {
+      showBuildIn = true;
+    } else {
+      showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
 /** 内置变量 */
 const builtInModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
@@ -699,9 +728,6 @@ const builtInModel = $computed(() => {
 /** 分页功能 */
 let {
   page,
-  pageSizes,
-  pgSizeChg,
-  pgCurrentChg,
 } = $(usePage<DeptModel>(dataGrid));
 
 /** 表格选择功能 */
@@ -715,7 +741,7 @@ let {
 } = $(useSelect<DeptModel>(
   $$(tableRef),
   {
-    multiple: props.isMultiple,
+    multiple: $$(multiple),
   },
 ));
 
@@ -908,10 +934,8 @@ function getDataSearch() {
 }
 
 async function useFindAll() {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, undefined, [ sort ]);
 }
 
 async function useFindCount() {
@@ -957,7 +981,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
   });
   if (type === "cancel") {
     return;
@@ -987,7 +1011,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -1091,7 +1115,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       ids: selectedIds,
     },
