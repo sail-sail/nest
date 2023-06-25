@@ -12,15 +12,15 @@ import {
  * @return {Promise<{ id: string, lbl: string }[]>}
  */
 export async function getLoginTenants(
-  variables: { host: string },
+  variables: { domain: string },
   opt?: GqlOpt,
 ): Promise<{ id: string, lbl: string }[]> {
   const data: {
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
     query: /* GraphQL */ `
-      query($host: String!) {
-        getLoginTenants(host: $host) {
+      query($domain: String!) {
+        getLoginTenants(domain: $domain) {
           id
           lbl
         }

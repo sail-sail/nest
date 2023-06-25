@@ -118,7 +118,7 @@ for (let i = 0; i < columns.length; i++) {
           const vIfStr = vIf.join(" && ");
         #>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -160,13 +160,27 @@ for (let i = 0; i < columns.length; i++) {
             } else if (foreignKey && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
             #>
             <CustomSelect<#
+              if (table === "usr" && column_name === "default_dept_id") {
+              #>
+              ref="default_dept_idRef"
+              :init="false"
+              @change="old_default_dept_id = dialogModel.default_dept_id;"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
-              v-model="dialogModel.<#=column_name#>"
-              :method="get<#=Foreign_Table_Up#>List"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (table === "usr" && column_name === "default_dept_id") {
+              #>
+              :method="getDeptListApi"<#
+              } else {
+              #>
+              :method="get<#=Foreign_Table_Up#>List"<#
+              }
+              #>
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
                   label: item.<#=foreignKey.lbl#>,
@@ -552,6 +566,9 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   const foreignKey = column.foreignKey;
+  if (!foreignKey || foreignKey.selectType !== "tree") {
+    continue;
+  }
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -559,8 +576,6 @@ for (let i = 0; i < columns.length; i++) {
   }).join("");
   if (foreignTableArr3.includes(foreignTable)) continue;
   foreignTableArr3.push(foreignTable);
-#><#
-if (foreignKey && foreignKey.selectType === "tree") {
 #>
 
 import {
@@ -568,8 +583,7 @@ import {
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
 }
 #><#
-}
-#><#
+const selectInputNoRepeats = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -589,8 +603,12 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
-      continue;
-    }
+    continue;
+  }
+  if (selectInputNoRepeats.includes(Foreign_Table_Up)) {
+    continue;
+  }
+  selectInputNoRepeats.push(Foreign_Table_Up);
 #>
 
 import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/SelectInput.vue";<#
@@ -716,8 +734,8 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<<#=inputName#>>();
 
-/** 是否显示内置变量, 0不显示(默认), 1显示 */
-let showBuildIn = $ref<string>("0");
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -767,7 +785,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: <#=inputName#>;
-    showBuildIn?: string;
+    showBuildIn?: Ref<boolean> | boolean;
     model?: {
       id?: string;
       ids?: string[];
@@ -793,7 +811,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = arg?.showBuildIn || "0";
+  showBuildIn = unref(arg?.showBuildIn) ?? false;
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -866,7 +884,12 @@ async function refreshEfc() {
   }
   const data = await findById(dialogModel.id);
   if (data) {
-    dialogModel = data;
+    dialogModel = data;<#
+    if (table === "usr") {
+    #>
+    old_default_dept_id = dialogModel.default_dept_id;<#
+    }
+    #>
   }
 }
 
@@ -952,7 +975,7 @@ async function saveClk() {
     const dialogModel2 = {
       ...dialogModel,
     };
-    if (showBuildIn == "0") {
+    if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
     id = await create(dialogModel2);
@@ -996,6 +1019,40 @@ async function saveClk() {
     });
   }
 }<#
+}
+#><#
+if (table === "usr") {
+#>
+
+let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();
+let old_default_dept_id: string | null | undefined = undefined;
+
+async function getDeptListApi() {
+  let dept_ids = dialogModel.dept_ids || [ ];
+  if (!dialogModel.default_dept_id && old_default_dept_id) {
+    if (dept_ids.includes(old_default_dept_id)) {
+      dialogModel.default_dept_id = old_default_dept_id;
+    }
+  }
+  if (!dialogModel.default_dept_id || !dept_ids.includes(dialogModel.default_dept_id)) {
+    dialogModel.default_dept_id = undefined;
+  }
+  let data = await getDeptList();
+  data = data.filter((item) => {
+    return dept_ids.includes(item.id);
+  });
+  return data;
+}
+
+watch(
+  () => dialogModel.dept_ids,
+  async () => {
+    if (!default_dept_idRef) {
+      return;
+    }
+    await default_dept_idRef.refresh();
+  },
+);<#
 }
 #>
 

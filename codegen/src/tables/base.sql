@@ -4,9 +4,11 @@ drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `host` varchar(255) NOT NULL DEFAULT '' COMMENT '域名绑定',
+  `domain` varchar(45) NOT NULL DEFAULT '' COMMENT '域名绑定',
+  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户管理员',
   `expiration` date DEFAULT NULL COMMENT '到期日',
   `max_usr_num` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '最大用户数',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',

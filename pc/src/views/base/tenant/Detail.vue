@@ -30,7 +30,7 @@
         @keyup.enter="saveClk"
       >
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -45,14 +45,14 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.host == null)">
+        <template v-if="(showBuildIn || builtInModel?.domain == null)">
           <el-form-item
             :label="n('域名绑定')"
-            prop="host"
+            prop="domain"
             un-h="full"
           >
             <el-input
-              v-model="dialogModel.host"
+              v-model="dialogModel.domain"
               un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('域名绑定') }`"
               :clearable="true"
@@ -60,7 +60,28 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.expiration == null)">
+        <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
+          <el-form-item
+            :label="n('租户管理员')"
+            prop="usr_id"
+            un-h="full"
+          >
+            <CustomSelect
+              v-model="dialogModel.usr_id"
+              :method="getUsrList"
+              :options-map="((item: UsrModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('租户管理员') }`"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.expiration == null)">
           <el-form-item
             :label="n('到期日')"
             prop="expiration"
@@ -77,7 +98,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.max_usr_num == null)">
+        <template v-if="(showBuildIn || builtInModel?.max_usr_num == null)">
           <el-form-item
             :label="n('最大用户数')"
             prop="max_usr_num"
@@ -97,30 +118,33 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.menu_ids == null)">
+        <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
           <el-form-item
             :label="n('菜单')"
             prop="menu_ids"
             un-h="full"
           >
-            <CustomSelect
+            <CustomTreeSelect
               :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
               v-model="dialogModel.menu_ids"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getMenuTree"
               un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
               multiple
-            ></CustomSelect>
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.order_by == null)">
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -140,7 +164,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -237,12 +261,18 @@ import {
 
 import {
   type TenantInput,
+  type UsrModel,
   type MenuModel,
 } from "#/types";
 
 import {
+  getUsrList,
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 const emit = defineEmits<
   (
@@ -292,10 +322,22 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
-    host: [
+    domain: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("域名绑定") }`,
+      },
+    ],
+    usr_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("租户管理员") }`,
+      },
+    ],
+    is_locked: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
     is_enabled: [
@@ -317,13 +359,14 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<TenantInput>();
 
-/** 是否显示内置变量, 0不显示(默认), 1显示 */
-let showBuildIn = $ref<string>("0");
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: TenantInput = {
     max_usr_num: 0,
+    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };
@@ -337,7 +380,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: TenantInput;
-    showBuildIn?: string;
+    showBuildIn?: Ref<boolean> | boolean;
     model?: {
       id?: string;
       ids?: string[];
@@ -356,7 +399,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = arg?.showBuildIn || "0";
+  showBuildIn = unref(arg?.showBuildIn) ?? false;
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -388,6 +431,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_locked: undefined,
+        is_locked_lbl: undefined,
       };
     }
   } else if (action === "edit") {
@@ -493,7 +538,7 @@ async function saveClk() {
     const dialogModel2 = {
       ...dialogModel,
     };
-    if (showBuildIn == "0") {
+    if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
     id = await create(dialogModel2);
@@ -549,12 +594,18 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "域名绑定",
+    "租户管理员",
     "到期日",
     "最大用户数",
-    "启用",
+    "锁定",
     "菜单",
+    "启用",
     "排序",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

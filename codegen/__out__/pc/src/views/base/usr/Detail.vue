@@ -30,7 +30,7 @@
         @keyup.enter="saveClk"
       >
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -45,7 +45,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.username == null)">
+        <template v-if="(showBuildIn || builtInModel?.username == null)">
           <el-form-item
             :label="n('用户名')"
             prop="username"
@@ -60,7 +60,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.password == null)">
+        <template v-if="(showBuildIn || builtInModel?.password == null)">
           <el-form-item
             :label="n('密码')"
             prop="password"
@@ -75,15 +75,44 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.default_dept_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
+          <el-form-item
+            :label="n('拥有部门')"
+            prop="dept_ids"
+            un-h="full"
+          >
+            <CustomTreeSelect
+              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
+              v-model="dialogModel.dept_ids"
+              :method="getDeptTree"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('拥有部门') }`"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+              multiple
+            ></CustomTreeSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.default_dept_id == null)">
           <el-form-item
             :label="n('默认部门')"
             prop="default_dept_id"
             un-h="full"
           >
             <CustomSelect
+              ref="default_dept_idRef"
+              :init="false"
+              @change="old_default_dept_id = dialogModel.default_dept_id;"
               v-model="dialogModel.default_dept_id"
-              :method="getDeptList"
+              :method="getDeptListApi"
               :options-map="((item: DeptModel) => {
                 return {
                   label: item.lbl,
@@ -96,30 +125,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.dept_ids == null)">
-          <el-form-item
-            :label="n('拥有部门')"
-            prop="dept_ids"
-            un-h="full"
-          >
-            <CustomSelect
-              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
-              v-model="dialogModel.dept_ids"
-              :method="getDeptList"
-              :options-map="((item: DeptModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('拥有部门') }`"
-              multiple
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn == '1' || builtInModel?.role_ids == null)">
+        <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
           <el-form-item
             :label="n('拥有角色')"
             prop="role_ids"
@@ -142,7 +148,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -247,6 +253,10 @@ import {
   getRoleList,
 } from "./Api";
 
+import {
+  getDeptTree,
+} from "@/views/base/dept/Api";
+
 const emit = defineEmits<
   (
     e: "nextId",
@@ -302,6 +312,12 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("用户名") }`,
       },
     ],
+    default_dept_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("默认部门") }`,
+      },
+    ],
     is_enabled: [
       {
         required: true,
@@ -327,8 +343,8 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<UsrInput>();
 
-/** 是否显示内置变量, 0不显示(默认), 1显示 */
-let showBuildIn = $ref<string>("0");
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -346,7 +362,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: UsrInput;
-    showBuildIn?: string;
+    showBuildIn?: Ref<boolean> | boolean;
     model?: {
       id?: string;
       ids?: string[];
@@ -365,7 +381,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = arg?.showBuildIn || "0";
+  showBuildIn = unref(arg?.showBuildIn) ?? false;
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -420,6 +436,7 @@ async function refreshEfc() {
   const data = await findById(dialogModel.id);
   if (data) {
     dialogModel = data;
+    old_default_dept_id = dialogModel.default_dept_id;
   }
 }
 
@@ -501,7 +518,7 @@ async function saveClk() {
     const dialogModel2 = {
       ...dialogModel,
     };
-    if (showBuildIn == "0") {
+    if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
     id = await create(dialogModel2);
@@ -536,6 +553,36 @@ async function saveClk() {
   }
 }
 
+let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();
+let old_default_dept_id: string | null | undefined = undefined;
+
+async function getDeptListApi() {
+  let dept_ids = dialogModel.dept_ids || [ ];
+  if (!dialogModel.default_dept_id && old_default_dept_id) {
+    if (dept_ids.includes(old_default_dept_id)) {
+      dialogModel.default_dept_id = old_default_dept_id;
+    }
+  }
+  if (!dialogModel.default_dept_id || !dept_ids.includes(dialogModel.default_dept_id)) {
+    dialogModel.default_dept_id = undefined;
+  }
+  let data = await getDeptList();
+  data = data.filter((item) => {
+    return dept_ids.includes(item.id);
+  });
+  return data;
+}
+
+watch(
+  () => dialogModel.dept_ids,
+  async () => {
+    if (!default_dept_idRef) {
+      return;
+    }
+    await default_dept_idRef.refresh();
+  },
+);
+
 /** 点击取消关闭按钮 */
 function cancelClk() {
   onCloseResolve({
@@ -557,8 +604,8 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "用户名",
-    "默认部门",
     "拥有部门",
+    "默认部门",
     "启用",
     "拥有角色",
     "备注",

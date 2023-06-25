@@ -1,8 +1,8 @@
 import * as tenantDao from "/src/base/tenant/tenant.dao.ts";
 
 export async function getLoginTenants(
-  host: string,
+  domain: string,
 ): Promise<{ id: string, lbl: string }[]> {
-  const result = await tenantDao.getLoginTenants(host);
+  const result = await tenantDao.getLoginTenants(domain);
   return result;
 }

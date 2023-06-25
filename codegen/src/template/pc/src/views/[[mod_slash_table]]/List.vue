@@ -671,7 +671,25 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-          } else if (!foreignKey && selectList.length === 0) {
+            } else if (column.whitespacePre) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <div
+                  un-whitespace-pre
+                >
+                  {{ row[column.property] }}
+                </div>
+              </template>
+            </el-table-column>
+          </template><#
+            } else if (!foreignKey && selectList.length === 0) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -682,12 +700,12 @@ const hasAtt = columns.some((item) => item.isAtt);
             ><#
               if (foreignTabs.length > 0) {
               #>
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(row.id, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template><#
               }
@@ -705,12 +723,12 @@ const hasAtt = columns.some((item) => item.isAtt);
             ><#
               if (foreignTabs.length > 0) {
               #>
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(scope.row.id, scope.row[scope.column.property])"
+                  @click="openForeignTabs(row.id, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template><#
               }
@@ -758,12 +776,12 @@ const hasAtt = columns.some((item) => item.isAtt);
                   return item.substring(0, 1).toUpperCase() + item.substring(1);
                 }).join("");
             #>
-              <template #default="scope">
+              <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="open<#=Foreign_Table_Up#>ForeignTabs(scope.row.<#=column_name#>, scope.row[scope.column.property])"
+                  @click="open<#=Foreign_Table_Up#>ForeignTabs(row.<#=column_name#>, row[column.property])"
                 >
-                  {{ scope.row[scope.column.property] }}
+                  {{ row[column.property] }}
                 </el-link>
               </template><#
               }
@@ -1340,6 +1358,40 @@ const builtInSearch: <#=searchName#> = $computed(() => {
   return Object.fromEntries(entries) as unknown as <#=searchName#>;
 });
 
+/** 是否多选 */
+let multiple = $ref(true);
+
+watch(
+  () => props.isMultiple,
+  () => {
+    if (props.isMultiple === false) {
+      multiple = false;
+    } else {
+      multiple = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
+
+watch(
+  () => props.showBuildIn,
+  () => {
+    if (props.showBuildIn === "1") {
+      showBuildIn = true;
+    } else {
+      showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
 /** 内置变量 */
 const builtInModel = $computed(() => {
   const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
@@ -1393,7 +1445,7 @@ let {
 } = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
-    multiple: props.isMultiple,
+    multiple: $$(multiple),
   },
 ));
 
@@ -1819,7 +1871,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
   });
   if (type === "cancel") {
     return;
@@ -1854,7 +1906,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -2009,7 +2061,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       ids: selectedIds,
     },

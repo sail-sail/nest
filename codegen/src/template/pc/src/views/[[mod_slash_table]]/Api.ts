@@ -594,7 +594,26 @@ export async function get<#=Foreign_Table_Up#>List() {
   );
   return data;
 }<#
-if (foreignKey.selectType === "tree") {
+}
+#><#
+const foreignTableTreeArr = [];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  const foreignKey = column.foreignKey;
+  const data_type = column.DATA_TYPE;
+  if (!foreignKey) continue;
+  if (foreignKey.selectType !== "tree") continue;
+  const foreignTable = foreignKey.table;
+  const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (foreignTableTreeArr.includes(foreignTable)) continue;
+  foreignTableTreeArr.push(foreignTable);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const defaultSort = foreignKey && foreignKey.defaultSort;
 #>
 
 export async function get<#=Foreign_Table_Up#>Tree() {
@@ -611,8 +630,6 @@ export async function get<#=Foreign_Table_Up#>Tree() {
   );
   return data;
 }<#
-}
-#><#
 }
 #>
 

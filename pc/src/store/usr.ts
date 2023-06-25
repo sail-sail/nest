@@ -1,5 +1,5 @@
 import {
-  type GetUsrPermits,
+  type GetLoginInfo,
 } from "@/typings/types";
 
 export default defineStore("usr", function() {
@@ -11,6 +11,8 @@ export default defineStore("usr", function() {
   let authorization = $ref("");
   
   let dept_id = $ref<string>();
+  
+  let loginInfo = $ref<GetLoginInfo>();
   
   function refreshToken(authorization0: typeof authorization) {
     authorization = authorization0;
@@ -67,6 +69,7 @@ export default defineStore("usr", function() {
   return $$({
     authorization,
     dept_id,
+    loginInfo,
     lang,
     refreshToken,
     login,

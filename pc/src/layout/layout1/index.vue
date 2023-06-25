@@ -129,44 +129,6 @@
           </el-dropdown>
         </template>
         <div
-          un-flex="~"
-          un-items-center
-          un-h="full"
-          un-m="r-1"
-        >
-          <el-dropdown
-            trigger="click"
-          >
-            <IconFontLocales
-              un-w="4"
-              un-h="4"
-              un-pos-relative
-              un-top="0.5"
-              un-text="white hover:[var(--el-color-primary)]"
-              un-cursor-pointer
-            ></IconFontLocales>
-            <template #dropdown>
-              <el-dropdown-menu
-                un-whitespace-nowrap
-              >
-                <el-dropdown-item
-                  v-for="item of locales"
-                  :key="item.code"
-                  @click="selectLangClk(item.code)"
-                >
-                  <span
-                    :style="{
-                      color: item.code === loginInfo?.lang ? 'var(--el-color-primary)' : ''
-                    }"
-                  >
-                    {{ item.lbl }}
-                  </span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-        <div
           un-pos-relative
           un-top="[1px]"
           un-border-1px
@@ -179,15 +141,22 @@
           <el-dropdown
             trigger="click"
           >
-            <el-icon
-              :size="16"
-              color="#FFF"
+            <div
+              un-flex="~"
+              un-text="white hover:[var(--el-color-primary)]"
             >
-              <ElIconSetting />
-            </el-icon>
+              <div>
+                {{ loginInfo?.lbl }}
+              </div>
+              <el-icon
+                :size="14"
+              >
+                <ElIconCaretBottom />
+              </el-icon>
+            </div>
             <template #dropdown>
               <el-dropdown-menu
-                whitespace-nowrap
+                un-whitespace-nowrap
               >
                 
                 <el-dropdown-item @click="toggleDark(!isDark)">
@@ -229,6 +198,43 @@
                   <span>{{ ns('退出登录') }}</span>
                 </el-dropdown-item>
                 
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+        <div
+          un-flex="~"
+          un-items-center
+          un-h="full"
+        >
+          <el-dropdown
+            trigger="click"
+          >
+            <IconFontLocales
+              un-w="3.5"
+              un-h="3.5"
+              un-pos-relative
+              un-top="0.5"
+              un-text="white hover:[var(--el-color-primary)]"
+              un-cursor-pointer
+            ></IconFontLocales>
+            <template #dropdown>
+              <el-dropdown-menu
+                un-whitespace-nowrap
+              >
+                <el-dropdown-item
+                  v-for="item of locales"
+                  :key="item.code"
+                  @click="selectLangClk(item.code)"
+                >
+                  <span
+                    :style="{
+                      color: item.code === loginInfo?.lang ? 'var(--el-color-primary)' : ''
+                    }"
+                  >
+                    {{ item.lbl }}
+                  </span>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -462,7 +468,7 @@ async function logoutClk() {
   usrStore.logout();
 }
 
-let loginInfo = $ref<GetLoginInfo>();
+let loginInfo = $ref(usrStore.loginInfo);
 
 async function selectLangClk(lang: string) {
   const authorization = await selectLang({
@@ -505,6 +511,7 @@ async function initFrame() {
       getUsrPermitsEfc(),
     ]);
     loginInfo = loginInfoTmp;
+    usrStore.loginInfo = loginInfo;
   }
   inited = true;
 }

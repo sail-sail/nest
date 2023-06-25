@@ -262,6 +262,22 @@
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
             
+            <el-dropdown-item
+              v-if="permit('lock')"
+              un-justify-center
+              @click="lockByIdsClk(1)"
+            >
+              <span>{{ ns('锁定') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('lock')"
+              un-justify-center
+              @click="lockByIdsClk(0)"
+            >
+              <span>{{ ns('解锁') }}</span>
+            </el-dropdown-item>
+            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -382,7 +398,16 @@
           </template>
           
           <!-- 域名绑定 -->
-          <template v-else-if="'host' === col.prop && (showBuildIn == '1' || builtInSearch?.host == null)">
+          <template v-else-if="'domain' === col.prop && (showBuildIn == '1' || builtInSearch?.domain == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 租户管理员 -->
+          <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -408,8 +433,8 @@
             </el-table-column>
           </template>
           
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked' === col.prop && (showBuildIn == '1' || builtInSearch?.is_locked == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -437,6 +462,15 @@
             </el-table-column>
           </template>
           
+          <!-- 启用 -->
+          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
             <el-table-column
@@ -448,6 +482,42 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.create_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop && (showBuildIn == '1' || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop && (showBuildIn == '1' || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -522,6 +592,7 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
+  lockByIds,
   useExportExcel,
   updateById,
   importModels,
@@ -531,6 +602,7 @@ import {
   type TenantModel,
   type TenantInput,
   type TenantSearch,
+  type UsrModel,
   type MenuModel,
 } from "#/types";
 
@@ -618,28 +690,45 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  host?: string; // 域名绑定
-  host_like?: string; // 域名绑定
+  domain?: string; // 域名绑定
+  domain_like?: string; // 域名绑定
+  usr_id?: string|string[]; // 租户管理员
+  usr_id_lbl?: string|string[]; // 租户管理员
   expiration?: string; // 到期日
   max_usr_num?: string; // 最大用户数
-  is_enabled?: string|string[]; // 启用
+  is_locked?: string|string[]; // 锁定
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单
+  is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   ids: "string[]",
+  usr_id: "string[]",
+  usr_id_lbl: "string[]",
   max_usr_num: "number",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
   order_by: "number",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -672,6 +761,40 @@ const builtInSearch: TenantSearch = $computed(() => {
   }
   return Object.fromEntries(entries) as unknown as TenantSearch;
 });
+
+/** 是否多选 */
+let multiple = $ref(true);
+
+watch(
+  () => props.isMultiple,
+  () => {
+    if (props.isMultiple === false) {
+      multiple = false;
+    } else {
+      multiple = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
+
+watch(
+  () => props.showBuildIn,
+  () => {
+    if (props.showBuildIn === "1") {
+      showBuildIn = true;
+    } else {
+      showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 /** 内置变量 */
 const builtInModel = $computed(() => {
@@ -722,7 +845,7 @@ let {
 } = $(useSelect<TenantModel>(
   $$(tableRef),
   {
-    multiple: props.isMultiple,
+    multiple: $$(multiple),
   },
 ));
 
@@ -785,9 +908,17 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "域名绑定",
-      prop: "host",
+      prop: "domain",
       width: 280,
-      align: "center",
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "租户管理员",
+      prop: "usr_id_lbl",
+      width: 140,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -808,8 +939,8 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "启用",
-      prop: "is_enabled_lbl",
+      label: "锁定",
+      prop: "is_locked_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -824,9 +955,16 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "启用",
+      prop: "is_enabled_lbl",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "排序",
       prop: "order_by",
-      width: 100,
       sortable: "custom",
       align: "right",
       headerAlign: "center",
@@ -835,8 +973,40 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 240,
+      width: 280,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      width: 150,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -947,7 +1117,7 @@ async function openAdd() {
     title: await nsAsync("增加"),
     action: "add",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
   });
   if (type === "cancel") {
     return;
@@ -977,7 +1147,7 @@ async function openCopy() {
     title: await nsAsync("复制"),
     action: "copy",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       id: selectedIds[selectedIds.length - 1],
     },
@@ -1007,13 +1177,19 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
-    [ n("域名绑定") ]: "host",
+    [ n("域名绑定") ]: "domain",
+    [ n("租户管理员") ]: "usr_id_lbl",
     [ n("到期日") ]: "expiration",
     [ n("最大用户数") ]: "max_usr_num",
-    [ n("启用") ]: "is_enabled_lbl",
+    [ n("锁定") ]: "is_locked_lbl",
     [ n("菜单") ]: "menu_ids_lbl",
+    [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
+    [ n("创建人") ]: "create_usr_id_lbl",
+    [ n("创建时间") ]: "create_time",
+    [ n("更新人") ]: "update_usr_id_lbl",
+    [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1033,6 +1209,8 @@ async function importExcelClk() {
       {
         date_keys: [
           n("到期日"),
+          n("创建时间"),
+          n("更新时间"),
         ],
       },
     );
@@ -1078,7 +1256,7 @@ async function openEdit() {
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
-    showBuildIn: props.showBuildIn,
+    showBuildIn: $$(showBuildIn),
     model: {
       ids: selectedIds,
     },
@@ -1145,6 +1323,31 @@ async function forceDeleteByIdsClk() {
   }
 }
 
+/** 点击锁定或者解锁 */
+async function lockByIdsClk(is_locked: 0 | 1) {
+  if (selectedIds.length === 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("请选择需要 锁定 的数据");
+    } else {
+      msg = await nsAsync("请选择需要 解锁 的数据");
+    }
+    ElMessage.warning(msg);
+    return;
+  }
+  const num = await lockByIds(selectedIds, is_locked);
+  if (num) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("锁定 {0} 条数据成功", num);
+    } else {
+      msg = await nsAsync("解锁 {0} 条数据成功", num);
+    }
+    ElMessage.success(msg);
+    await dataGrid(true);
+  }
+}
+
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (selectedIds.length === 0) {
@@ -1176,12 +1379,18 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "域名绑定",
+    "租户管理员",
     "到期日",
     "最大用户数",
-    "启用",
+    "锁定",
     "菜单",
+    "启用",
     "排序",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),

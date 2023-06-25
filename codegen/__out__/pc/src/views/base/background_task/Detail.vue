@@ -29,7 +29,7 @@
         :validate-on-rule-change="false"
       >
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -44,7 +44,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.state == null)">
+        <template v-if="(showBuildIn || builtInModel?.state == null)">
           <el-form-item
             :label="n('状态')"
             prop="state"
@@ -60,7 +60,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.type == null)">
+        <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
             :label="n('类型')"
             prop="type"
@@ -76,7 +76,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.result == null)">
+        <template v-if="(showBuildIn || builtInModel?.result == null)">
           <el-form-item
             :label="n('执行结果')"
             prop="result"
@@ -91,7 +91,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.err_msg == null)">
+        <template v-if="(showBuildIn || builtInModel?.err_msg == null)">
           <el-form-item
             :label="n('错误信息')"
             prop="err_msg"
@@ -106,7 +106,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.begin_time == null)">
+        <template v-if="(showBuildIn || builtInModel?.begin_time == null)">
           <el-form-item
             :label="n('开始时间')"
             prop="begin_time"
@@ -123,7 +123,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.end_time == null)">
+        <template v-if="(showBuildIn || builtInModel?.end_time == null)">
           <el-form-item
             :label="n('结束时间')"
             prop="end_time"
@@ -140,7 +140,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn == '1' || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -300,8 +300,8 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 /** 内置变量 */
 let builtInModel = $ref<BackgroundTaskInput>();
 
-/** 是否显示内置变量, 0不显示(默认), 1显示 */
-let showBuildIn = $ref<string>("0");
+/** 是否显示内置变量 */
+let showBuildIn = $ref(false);
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
@@ -317,7 +317,7 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: BackgroundTaskInput;
-    showBuildIn?: string;
+    showBuildIn?: Ref<boolean> | boolean;
     model?: {
       id?: string;
       ids?: string[];
@@ -336,7 +336,7 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = arg?.showBuildIn || "0";
+  showBuildIn = unref(arg?.showBuildIn) ?? false;
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];

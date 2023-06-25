@@ -2,10 +2,6 @@ import {
   useI18n,
 } from "@/locales/i18n";
 
-import {
-  type Ref,
-} from "vue";
-
 export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
   // 分页
@@ -39,13 +35,9 @@ export function useSelect<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
-    multiple?: Boolean,
+    multiple?: Ref<boolean> | ComputedRef<boolean> | boolean,
   },
 ) {
-  let multiple = true;
-  if (opts?.multiple === false) {
-    multiple = false;
-  }
   
   /** 当前多行选中的数据 */
   let selectedIds: string[] = $ref([ ]);
@@ -112,6 +104,13 @@ export function useSelect<T>(
    * @param {(T & { id: string })} row?
    */
   function selectChg(list: (T & { id: string })[], row?: (T & { id: string })) {
+    let multiple = true;
+    if (opts?.multiple === false) {
+      multiple = false;
+    }
+    if (isRef(opts?.multiple) && opts?.multiple.value === false) {
+      multiple = false;
+    }
     if (!row) {
       if (list.length === 0) {
         selectedIds = [ ];
@@ -152,6 +151,13 @@ export function useSelect<T>(
    * @param {PointerEvent?} _event
    */
   async function rowClk(row: T & { id: string }, column?: TableColumnCtx<T>, _event?: PointerEvent) {
+    let multiple = true;
+    if (opts?.multiple === false) {
+      multiple = false;
+    }
+    if (isRef(opts?.multiple) && opts?.multiple.value === false) {
+      multiple = false;
+    }
     const tableSelectable = opts?.tableSelectable;
     if (tableSelectable && !tableSelectable(row)) {
       if (column && column.type !== "selection") {
@@ -186,6 +192,13 @@ export function useSelect<T>(
    * @param {MouseEvent} _event
    */
   function rowClkCtrl(_event?: MouseEvent) {
+    let multiple = true;
+    if (opts?.multiple === false) {
+      multiple = false;
+    }
+    if (isRef(opts?.multiple) && opts?.multiple.value === false) {
+      multiple = false;
+    }
     const id = selectedIds[0];
     if (id) {
       if (!prevSelectedIds.includes(id)) {
