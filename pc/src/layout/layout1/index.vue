@@ -100,7 +100,7 @@
         un-flex="~"
         un-items-center
         un-gap="x-3"
-        un-m="r-2"
+        un-m="r-4"
       >
         <template v-if="loginInfo && loginInfo.dept_id_models">
           <el-dropdown
@@ -143,7 +143,7 @@
           >
             <div
               un-flex="~"
-              un-text="hover:[var(--el-color-primary)]"
+              un-text="white hover:[var(--el-color-primary)]"
             >
               <div>
                 {{ loginInfo?.lbl }}

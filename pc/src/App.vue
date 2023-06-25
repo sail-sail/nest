@@ -370,7 +370,7 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .img_form_item {
   height: 200px;
-  border: 1px solid #EEE;
+  // border: 1px solid #EEE;
   width: auto;
   justify-self: self-start;
   min-width: 100%;
