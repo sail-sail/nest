@@ -36,22 +36,22 @@ use crate::gen::base::tenant::tenant_model::{
   
 //   let model = model.unwrap();
   
-//   let host = model.host;
+//   let domain = model.domain;
   
-//   Ok(host)
+//   Ok(domain)
 // }
 
 /// 根据 当前网址的域名+端口 获取 租户列表
 #[allow(unused_variables)]
 pub async fn get_login_tenants<'a>(
   ctx: &mut impl Ctx<'a>,
-  host: String,
+  domain: String,
 ) -> Result<Vec<TenantModel>> {
   
   let res = tenant_dao::find_all(
     ctx,
     TenantSearch {
-      // host: host.into(),
+      // domain: domain.into(),
       is_enabled: vec![1].into(),
       ..Default::default()
     }.into(),
