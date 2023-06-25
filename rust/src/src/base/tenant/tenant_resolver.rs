@@ -16,10 +16,10 @@ impl TenantQuery {
   async fn get_login_tenants<'a>(
     &self,
     ctx: &Context<'a>,
-    host: String,
+    domain: String,
   ) -> Result<Vec<TenantModel>> {
     let mut ctx = CtxImpl::new(ctx);
-    let res = tenant_service::get_login_tenants(&mut ctx, host).await?;
+    let res = tenant_service::get_login_tenants(&mut ctx, domain).await?;
     Ok(res)
   }
   
