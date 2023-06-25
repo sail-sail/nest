@@ -48,10 +48,24 @@ pub async fn get_login_tenants<'a>(
   domain: String,
 ) -> Result<Vec<TenantModel>> {
   
+  #[cfg(debug_assertions)]
   let res = tenant_dao::find_all(
     ctx,
     TenantSearch {
       // domain: domain.into(),
+      is_enabled: vec![1].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  
+  #[cfg(not(debug_assertions))]
+  let res = tenant_dao::find_all(
+    ctx,
+    TenantSearch {
+      domain: domain.into(),
       is_enabled: vec![1].into(),
       ..Default::default()
     }.into(),
