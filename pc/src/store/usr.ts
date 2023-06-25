@@ -10,6 +10,8 @@ export default defineStore("usr", function() {
   
   let authorization = $ref("");
   
+  let isLogining = $ref(false);
+  
   let dept_id = $ref<string>();
   
   let loginInfo = $ref<GetLoginInfo>();
@@ -68,6 +70,7 @@ export default defineStore("usr", function() {
   
   return $$({
     authorization,
+    isLogining,
     dept_id,
     loginInfo,
     lang,
@@ -80,4 +83,13 @@ export default defineStore("usr", function() {
     reset,
   });
   
-}, { persist: true });
+}, {
+  persist: {
+    paths: [
+      "authorization",
+      "dept_id",
+      "loginInfo",
+      "lang",
+    ],
+  },
+});

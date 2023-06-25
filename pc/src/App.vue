@@ -3,8 +3,13 @@
   :locale="locale"
   :button="{ autoInsertSpace: false }"
 >
-  <Login v-if="!usrStore.authorization"></Login>
-  <router-view v-slot="{ Component }">
+  <Login
+    v-if="!usrStore.authorization || usrStore.isLogining"
+  ></Login>
+  <router-view
+    v-else
+    v-slot="{ Component }"
+  >
     <template v-if="Component">
       <component :is="Component"></component>
     </template>

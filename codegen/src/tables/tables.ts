@@ -57,7 +57,9 @@ export default defineConfig({
         fixed: "left",
       },
       {
-        COLUMN_NAME: "domain",
+        COLUMN_NAME: "domain_ids",
+        COLUMN_COMMENT: "域名",
+        ORDINAL_POSITION: 2,
         require: true,
         align: "left",
         width: 280,
@@ -84,7 +86,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-        width: 60,
       },
       {
         COLUMN_NAME: "menu_ids",
@@ -100,9 +101,47 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        width: 280,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 域名
+  base_domain: {
+    opts: {
+      cache: true,
+      unique: [ "lbl" ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
         align: "left",
-        isTextarea: true,
+        width: 280,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "is_default",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "create_usr_id",

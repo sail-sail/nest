@@ -112,6 +112,7 @@
         type="primary"
         style="width: 100%;margin-top: 20px;"
         @click="loginClk"
+        :disabled="!usrStore.isLogining"
       >
         {{ i18n.ns("登录") }}
       </el-button>
@@ -151,6 +152,8 @@ let i18n = $ref(useI18n("/base/usr"));
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
+
+usrStore.isLogining = true;
 
 const inputStyle = {
   backgroundColor: 'transparent',
@@ -224,13 +227,14 @@ async function loginClk() {
       dept_id: model.dept_id,
     }),
   );
+  usrStore.isLogining = false;
   usrStore.dept_id = loginModel.dept_id ?? undefined;
   usrStore.authorization = loginModel.authorization;
   tabsStore.clearKeepAliveNames();
   await Promise.all([
     indexStore.initI18nVersion(),
   ]);
-  window.location.reload();
+  window.history.go(0);
 }
 
 let tenants = $ref<{
