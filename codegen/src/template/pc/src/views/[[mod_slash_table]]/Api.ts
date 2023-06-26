@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -442,14 +443,47 @@ export async function deleteByIds(
 }<#
 }
 #><#
+if (hasEnabled && opts.noEdit !== true) {
+#>
+
+/**
+ * 根据 ids 启用或禁用数据
+ * @export enableByIds
+ * @param {string[]} ids
+ * @param {0 | 1} is_enabled
+ * @param {GqlOpt} opt?
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data: {
+    enableByIds<#=Table_Up#>: Mutation["enableByIds<#=Table_Up#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [String!]!, $is_enabled: Int!) {
+        enableByIds<#=Table_Up#>(ids: $ids, is_enabled: $is_enabled)
+      }
+    `,
+    variables: {
+      ids,
+      is_enabled,
+    },
+  }, opt);
+  const res = data.enableByIds<#=Table_Up#>;
+  return res;
+}<#
+}
+#><#
 if (hasLocked && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 锁定或解锁数据
  * @export lockByIds
  * @param {string[]} ids
- * @param {0 | 1} lockByIds
+ * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(

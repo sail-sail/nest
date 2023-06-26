@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -452,6 +453,12 @@ type Mutation {<#
   #>
   "根据 ids 删除数据"
   deleteByIds<#=Table_Up#>(ids: [String!]!): Int!<#
+  }
+  #><#
+  if (hasEnabled && opts.noEdit !== true) {
+  #>
+  "根据 ids 启用或者禁用数据"
+  enableByIds<#=Table_Up#>(ids: [String!]!, is_enabled: Int!): Int!<#
   }
   #><#
   if (hasLocked && opts.noEdit !== true) {

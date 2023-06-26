@@ -92,6 +92,8 @@ type Mutation {
   updateByIdLang(id: String!, model: LangInput!): String!
   "根据 ids 删除数据"
   deleteByIdsLang(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsLang(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsLang(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
