@@ -25,7 +25,7 @@
           <ElIconRefreshLeft />
         </el-icon>
         <span>
-          还原
+          {{ ns("还原") }}
         </span>
       </el-dropdown-item>
       <el-dropdown-item
@@ -47,6 +47,11 @@
 </template>
 
 <script setup lang="ts">
+const {
+  ns,
+  nsAsync,
+} = useI18n();
+
 interface ColumnType {
   prop: string,
   label: string,
