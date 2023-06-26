@@ -75,6 +75,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/domain",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "域名",
+        component: () => import("@/views/base/domain/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/base/i18n",
     component: Layout1,
     children: [

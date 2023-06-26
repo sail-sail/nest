@@ -36,27 +36,3 @@ export async function getHostTenant(): Promise<typeof result> {
   const result = await queryOne<Result>(sql, args)
   return result;
 }
-
-export async function getLoginTenants(
-  _domain: string,
-): Promise<typeof result> {
-  const args = new QueryArgs();
-  const sql = /*sql*/ `
-    select
-      t.id,
-      t.lbl
-    from base_tenant t
-    where
-      t.is_deleted = 0
-      and t.is_enabled = 1
-  `;
-  // if (window.process.env.NODE_ENV === "production") {
-  //   sql += ` and t.domain = ${ args.push(domain) }`;
-  // }
-  interface Result {
-    id: string,
-    lbl: string,
-  }
-  const result = await query<Result>(sql, args)
-  return result;
-}

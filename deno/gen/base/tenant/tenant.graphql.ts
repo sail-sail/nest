@@ -9,8 +9,10 @@ type TenantModel {
   id: String!
   "名称"
   lbl: String!
-  "域名绑定"
-  domain: String!
+  "域名"
+  domain_ids: [String!]
+  "域名"
+  domain_ids_lbl: [String!]
   "租户管理员"
   usr_id: String!
   "租户管理员"
@@ -25,14 +27,14 @@ type TenantModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
-  "菜单"
-  menu_ids: [String!]
-  "菜单"
-  menu_ids_lbl: [String!]
   "启用"
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "菜单"
+  menu_ids: [String!]
+  "菜单"
+  menu_ids_lbl: [String!]
   "排序"
   order_by: Int!
   "备注"
@@ -57,8 +59,10 @@ type TenantModel {
 type TenantFieldComment {
   "名称"
   lbl: String!
-  "域名绑定"
-  domain: String!
+  "域名"
+  domain_ids: String!
+  "域名"
+  domain_ids_lbl: String!
   "租户管理员"
   usr_id: String!
   "租户管理员"
@@ -73,14 +77,14 @@ type TenantFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
-  "菜单"
-  menu_ids: String!
-  "菜单"
-  menu_ids_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "菜单"
+  menu_ids: String!
+  "菜单"
+  menu_ids_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -107,8 +111,10 @@ input TenantInput {
   id: String
   "名称"
   lbl: String
-  "域名绑定"
-  domain: String
+  "域名"
+  domain_ids: [String!]
+  "域名"
+  domain_ids_lbl: [String!]
   "租户管理员"
   usr_id: String
   "租户管理员"
@@ -123,14 +129,14 @@ input TenantInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
-  "菜单"
-  menu_ids: [String!]
-  "菜单"
-  menu_ids_lbl: [String!]
   "启用"
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "菜单"
+  menu_ids: [String!]
+  "菜单"
+  menu_ids_lbl: [String!]
   "排序"
   order_by: Int
   "备注"
@@ -162,9 +168,9 @@ input TenantSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "域名绑定"
-  domain: String
-  domain_like: String
+  "域名"
+  domain_ids: [String!]
+  domain_ids_is_null: Boolean
   "租户管理员"
   usr_id: [String!]
   usr_id_is_null: Boolean
@@ -174,11 +180,11 @@ input TenantSearch {
   max_usr_num: [Int!]
   "锁定"
   is_locked: [Int!]
+  "启用"
+  is_enabled: [Int!]
   "菜单"
   menu_ids: [String!]
   menu_ids_is_null: Boolean
-  "启用"
-  is_enabled: [Int!]
   "排序"
   order_by: [Int!]
   "备注"

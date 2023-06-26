@@ -145,6 +145,11 @@
 </template>
 
 <script lang="ts" setup>
+const {
+  ns,
+  nsAsync,
+} = useI18n();
+
 import {
   type InputMaybe,
 } from "#/types";
@@ -203,7 +208,7 @@ async function inputChg() {
   if (props.maxSize > 1) {
     if (idArr.length >= props.maxSize) {
       fileRef.value = "";
-      ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
+      ElMessage.error(await nsAsync("最多只能上传 {0} 张图片", props.maxSize));
       return;
     }
   }
@@ -213,7 +218,7 @@ async function inputChg() {
     return;
   }
   if (file.size > props.maxFileSize) {
-    ElMessage.error(`文件大小不能超过 ${ props.maxFileSize / 1024 / 1024 }M`);
+    ElMessage.error(await nsAsync("文件大小不能超过 {0}M", props.maxFileSize / 1024 / 1024));
     return;
   }
   const id = await uploadFile(file);
@@ -239,7 +244,7 @@ function uploadClk() {
   if (props.maxSize > 1) {
     if (idArr.length >= props.maxSize) {
       fileRef.value = "";
-      ElMessage.error(`最多只能上传 ${ props.maxSize } 张图片`);
+      ElMessage.error(await nsAsync("最多只能上传 {0} 张图片", props.maxSize));
       return;
     }
   }
@@ -249,7 +254,7 @@ function uploadClk() {
 // 删除图片
 async function deleteClk() {
   try {
-    await ElMessageBox.confirm("确定删除当前图片吗？");
+    await ElMessageBox.confirm(await nsAsync("确定删除当前图片吗？"));
   } catch (err) {
     return;
   }

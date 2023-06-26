@@ -1,7 +1,8 @@
-id,type,menu_id,lbl,route_path,route_query,is_enabled,order_by
+id,type,parent_id,lbl,route_path,route_query,is_enabled,order_by
 6ZeQOSTtRpGy+467HJZuBw,pc,,系统管理,,NULL,1,10000
 LiRTLUICQA2SRlJgYoNmnA,pc,6ZeQOSTtRpGy+467HJZuBw,菜单,/base/menu,NULL,1,10001
 1oTQS2N4TsKhvk7Rnq4hAg,pc,6ZeQOSTtRpGy+467HJZuBw,角色,/base/role,NULL,1,10002
+39x+H1+ORkq2kagjfYlSgw,pc,6ZeQOSTtRpGy+467HJZuBw,域名,/base/domain,NULL,1,10003
 TO8DBpthSvG2/XDWOwAqtA,pc,6ZeQOSTtRpGy+467HJZuBw,租户,/base/tenant,NULL,1,10031
 AE6NzvHDQ3CSMdhPlSHCdg,pc,6ZeQOSTtRpGy+467HJZuBw,用户,/base/usr,NULL,1,10041
 9mMZgzvwTNWB8glB+h4KFg,pc,6ZeQOSTtRpGy+467HJZuBw,后台任务,/base/background_task,NULL,1,10043

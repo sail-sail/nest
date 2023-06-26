@@ -1,2 +1,2 @@
-id,lbl,domain,usr_id,expiration,max_usr_num,is_locked,is_enabled,order_by,rem
-ZDbZlC1OT8KaDg6soxMCBQ,超级管理员,180.76.246.215:4000\nlocalhost:4000,9LmnqhLITzKskFO/lcXRqA,NULL,0,1,1,1,
+id,lbl,usr_id,expiration,max_usr_num,is_locked,is_enabled,order_by,rem
+ZDbZlC1OT8KaDg6soxMCBQ,超级管理员,9LmnqhLITzKskFO/lcXRqA,NULL,0,1,1,1,

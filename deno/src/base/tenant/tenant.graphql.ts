@@ -1,8 +1,8 @@
 import { defineGraphql } from "/lib/context.ts";
 
-import * as tenantResolver from "./tenant.resolver.ts";
+import * as resolver from "./tenant.resolver.ts";
 
-defineGraphql(tenantResolver, /* GraphQL */`
+defineGraphql(resolver, /* GraphQL */`
   
   type GetLoginTenants {
     "ID"

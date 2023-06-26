@@ -133,6 +133,9 @@ async function getSchema0(
       if (item.width == null) {
         item.width = 120;
       }
+      if (item.align == null) {
+        item.align = "left";
+      }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
       if (item.width == null) {
@@ -165,6 +168,30 @@ async function getSchema0(
       }
       if (item.width == null) {
         item.width = 60;
+      }
+    }
+    if (column_name.startsWith("is_")) {
+      if (item.width == null) {
+        item.width = 60;
+      }
+    }
+    if ([ "order_by" ].includes(column_name)) {
+      if (item.width == null) {
+        item.width = 80;
+      }
+      if (item.align == null) {
+        item.align = "right";
+      }
+    }
+    if ([ "rem" ].includes(column_name)) {
+      if (item.width == null) {
+        item.width = 280;
+      }
+      if (item.align == null) {
+        item.align = "left";
+      }
+      if (item.isTextarea == null) {
+        item.isTextarea = true;
       }
     }
   }

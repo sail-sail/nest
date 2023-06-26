@@ -83,14 +83,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.domain !== undefined) {
-    whereQuery += ` and t.domain = ${ args.push(search.domain) }`;
+  if (search?.domain_ids && !Array.isArray(search?.domain_ids)) {
+    search.domain_ids = [ search.domain_ids ];
   }
-  if (search?.domain === null) {
-    whereQuery += ` and t.domain is null`;
+  if (search?.domain_ids && search?.domain_ids.length > 0) {
+    whereQuery += ` and base_domain.id in ${ args.push(search.domain_ids) }`;
   }
-  if (isNotEmpty(search?.domain_like)) {
-    whereQuery += ` and t.domain like ${ args.push(sqlLike(search?.domain_like) + "%") }`;
+  if (search?.domain_ids === null) {
+    whereQuery += ` and base_domain.id is null`;
+  }
+  if (search?.domain_ids_is_null) {
+    whereQuery += ` and base_domain.id is null`;
   }
   if (search?.usr_id && !Array.isArray(search?.usr_id)) {
     search.usr_id = [ search.usr_id ];
@@ -126,6 +129,12 @@ async function getWhereQuery(
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
   if (search?.menu_ids && !Array.isArray(search?.menu_ids)) {
     search.menu_ids = [ search.menu_ids ];
   }
@@ -137,12 +146,6 @@ async function getWhereQuery(
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
-  }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
-  }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
@@ -217,6 +220,29 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_tenant t
+    left join base_tenant_domain
+      on base_tenant_domain.tenant_id = t.id
+      and base_tenant_domain.is_deleted = 0
+    left join base_domain
+      on base_tenant_domain.domain_id = base_domain.id
+      and base_domain.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_domain.id) domain_ids,
+        json_arrayagg(base_domain.lbl) domain_ids_lbl,
+        base_tenant.id tenant_id
+      from base_tenant_domain
+      inner join base_domain
+        on base_domain.id = base_tenant_domain.domain_id
+        and base_domain.is_deleted = 0
+      inner join base_tenant
+        on base_tenant.id = base_tenant_domain.tenant_id
+        and base_tenant.is_deleted = 0
+      where
+      base_tenant_domain.is_deleted = 0
+      group by tenant_id
+    ) _domain
+      on _domain.tenant_id = t.id
     left join base_usr usr_id_lbl
       on usr_id_lbl.id = t.usr_id
     left join base_tenant_menu
@@ -309,6 +335,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
+      ,max(domain_ids) domain_ids
+      ,max(domain_ids_lbl) domain_ids_lbl
       ,usr_id_lbl.lbl usr_id_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
@@ -432,7 +460,8 @@ export async function getFieldComments() {
   const n = initN("/tenant");
   const fieldComments = {
     lbl: await n("名称"),
-    domain: await n("域名绑定"),
+    domain_ids: await n("域名"),
+    domain_ids_lbl: await n("域名"),
     usr_id: await n("租户管理员"),
     usr_id_lbl: await n("租户管理员"),
     expiration: await n("到期日"),
@@ -440,10 +469,10 @@ export async function getFieldComments() {
     max_usr_num: await n("最大用户数"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
-    menu_ids: await n("菜单"),
-    menu_ids_lbl: await n("菜单"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    menu_ids: await n("菜单"),
+    menu_ids_lbl: await n("菜单"),
     order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
@@ -693,6 +722,28 @@ export async function create(
   ]);
   
   
+  // 域名
+  if (!model.domain_ids && model.domain_ids_lbl) {
+    if (typeof model.domain_ids_lbl === "string" || model.domain_ids_lbl instanceof String) {
+      model.domain_ids_lbl = model.domain_ids_lbl.split(",");
+    }
+    model.domain_ids_lbl = model.domain_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_domain t
+      where
+        t.lbl in ${ args.push(model.domain_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    model.domain_ids = models.map((item: { id: string }) => item.id);
+  }
+  
   // 租户管理员
   if (isNotEmpty(model.usr_id_lbl) && model.usr_id === undefined) {
     model.usr_id_lbl = String(model.usr_id_lbl).trim();
@@ -707,6 +758,14 @@ export async function create(
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
   
@@ -730,14 +789,6 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
   }
   
   const oldModel = await findByUnique(model, options);
@@ -768,9 +819,6 @@ export async function create(
   }
   if (model.lbl !== undefined) {
     sql += `,lbl`;
-  }
-  if (model.domain !== undefined) {
-    sql += `,domain`;
   }
   if (model.usr_id !== undefined) {
     sql += `,usr_id`;
@@ -811,9 +859,6 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
-  if (model.domain !== undefined) {
-    sql += `,${ args.push(model.domain) }`;
-  }
   if (model.usr_id !== undefined) {
     sql += `,${ args.push(model.usr_id) }`;
   }
@@ -844,6 +889,8 @@ export async function create(
   sql += `)`;
   
   const result = await execute(sql, args);
+  // 域名
+  await many2manyUpdate(model, "domain_ids", { mod: "base", table: "tenant_domain", column1: "tenant_id", column2: "domain_id" });
   // 菜单
   await many2manyUpdate(model, "menu_ids", { mod: "base", table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
   
@@ -862,6 +909,8 @@ export async function delCache() {
   const cacheKey1 = `dao.sql.${ table }`;
   await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [
+    "tenant_domain",
+    "domain",
     "usr",
     "tenant_menu",
     "menu",
@@ -912,6 +961,28 @@ export async function updateById(
     "is_locked",
     "is_enabled",
   ]);
+
+  // 域名
+  if (!model.domain_ids && model.domain_ids_lbl) {
+    if (typeof model.domain_ids_lbl === "string" || model.domain_ids_lbl instanceof String) {
+      model.domain_ids_lbl = model.domain_ids_lbl.split(",");
+    }
+    model.domain_ids_lbl = model.domain_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_domain t
+      where
+        t.lbl in ${ args.push(model.domain_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    model.domain_ids = models.map((item: { id: string }) => item.id);
+  }
   
   // 租户管理员
   if (isNotEmpty(model.usr_id_lbl) && model.usr_id === undefined) {
@@ -927,6 +998,14 @@ export async function updateById(
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
     if (val !== undefined) {
       model.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      model.is_enabled = Number(val);
     }
   }
 
@@ -952,14 +1031,6 @@ export async function updateById(
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
-  // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      model.is_enabled = Number(val);
-    }
-  }
-  
   const oldModel = await findById(id);
   
   if (!oldModel) {
@@ -974,12 +1045,6 @@ export async function updateById(
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.domain !== undefined) {
-    if (model.domain != oldModel.domain) {
-      sql += `domain = ${ args.push(model.domain) },`;
       updateFldNum++;
     }
   }
@@ -1038,6 +1103,10 @@ export async function updateById(
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }
+  
+  updateFldNum++;
+  // 域名
+  await many2manyUpdate({ ...model, id }, "domain_ids", { mod: "base", table: "tenant_domain", column1: "tenant_id", column2: "domain_id" });
   
   updateFldNum++;
   // 菜单

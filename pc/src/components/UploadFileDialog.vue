@@ -42,14 +42,14 @@
       >
         
         <label
-          un-m="l-[3px]"
+          un-m="l-1"
           un-text-right
           un-self-center
           un-whitespace-nowrap
           un-after="content-[quoted::]"
         >
           <span style="color: red;">*</span>
-          <span>文件</span>
+          <span>{{ ns("文件") }}</span>
         </label>
         <div
           un-w="full"
@@ -88,13 +88,13 @@
         
         <template v-if="template">
           <label
-            un-m="l-[3px]"
+            un-m="l-1"
             un-text-right
             un-self-center
             un-whitespace-nowrap
             un-after="content-[quoted::]"
           >
-            <span>导入模板</span>
+            <span>{{ ns("导入模板") }}</span>
           </label>
           <div
             un-w="full"
@@ -104,9 +104,9 @@
               un-m="l-1"
               type="primary"
               :href="template"
-              :download="templateName || '导入.xlsx'"
+              :download="templateName || ns('导入模板') + '.xlsx'"
             >
-              点击下载导入模板
+              {{ ns("下载导入模板") }}
             </el-link>
           </div>
         </template>
@@ -127,7 +127,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ ns("取消") }}</span>
       </el-button>
       
       <el-button
@@ -139,7 +139,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>确定</span>
+        <span>{{ ns("确定") }}</span>
       </el-button>
       
     </div>

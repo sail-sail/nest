@@ -808,7 +808,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建人",
       prop: "create_usr_id_lbl",
       width: 120,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
