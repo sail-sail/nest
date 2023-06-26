@@ -4,39 +4,21 @@ use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct TenantModel {
+pub struct DomainModel {
   /// ID
   pub id: String,
   /// 名称
   pub lbl: String,
-  /// 域名
-  pub domain_ids: Vec<String>,
-  /// 域名
-  pub domain_ids_lbl: Vec<String>,
-  /// 租户管理员
-  pub usr_id: String,
-  /// 租户管理员
-  pub usr_id_lbl: String,
-  /// 到期日
-  pub expiration: Option<chrono::NaiveDate>,
-  /// 到期日
-  pub expiration_lbl: String,
-  /// 最大用户数
-  pub max_usr_num: u32,
-  /// 锁定
-  pub is_locked: u8,
-  /// 锁定
-  pub is_locked_lbl: String,
+  /// 排序
+  pub order_by: u32,
+  /// 默认
+  pub is_default: u8,
+  /// 默认
+  pub is_default_lbl: String,
   /// 启用
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 菜单
-  pub menu_ids: Vec<String>,
-  /// 菜单
-  pub menu_ids_lbl: Vec<String>,
-  /// 排序
-  pub order_by: u32,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -57,42 +39,20 @@ pub struct TenantModel {
   pub update_time_lbl: String,
 }
 
-impl FromRow<'_, MySqlRow> for TenantModel {
+impl FromRow<'_, MySqlRow> for DomainModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 域名
-    let domain_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("domain_ids")?;
-    let domain_ids = domain_ids.unwrap_or_default().0;
-    let domain_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("domain_ids_lbl")?;
-    let domain_ids_lbl = domain_ids_lbl.unwrap_or_default().0;
-    // 租户管理员
-    let usr_id: String = row.try_get("usr_id")?;
-    let usr_id_lbl: Option<String> = row.try_get("usr_id_lbl")?;
-    let usr_id_lbl = usr_id_lbl.unwrap_or_default();
-    // 到期日
-    let expiration: Option<chrono::NaiveDate> = row.try_get("expiration")?;
-    let expiration_lbl: String = match expiration {
-      Some(expiration) => expiration.format("%Y-%m-%d").to_string(),
-      None => "".to_owned(),
-    };
-    // 最大用户数
-    let max_usr_num: u32 = row.try_get("max_usr_num")?;
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
+    // 默认
+    let is_default: u8 = row.try_get("is_default")?;
+    let is_default_lbl: String = is_default.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    // 菜单
-    let menu_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids")?;
-    let menu_ids = menu_ids.unwrap_or_default().0;
-    let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
-    let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
-    // 排序
-    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -119,20 +79,11 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     let model = Self {
       id,
       lbl,
-      domain_ids,
-      domain_ids_lbl,
-      usr_id,
-      usr_id_lbl,
-      expiration,
-      expiration_lbl,
-      max_usr_num,
-      is_locked,
-      is_locked_lbl,
+      order_by,
+      is_default,
+      is_default_lbl,
       is_enabled,
       is_enabled_lbl,
-      menu_ids,
-      menu_ids_lbl,
-      order_by,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -150,37 +101,19 @@ impl FromRow<'_, MySqlRow> for TenantModel {
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
-pub struct TenantFieldComment {
+pub struct DomainFieldComment {
   /// 名称
   pub lbl: String,
-  /// 域名
-  pub domain_ids: String,
-  /// 域名
-  pub domain_ids_lbl: String,
-  /// 租户管理员
-  pub usr_id: String,
-  /// 租户管理员
-  pub usr_id_lbl: String,
-  /// 到期日
-  pub expiration: String,
-  /// 到期日
-  pub expiration_lbl: String,
-  /// 最大用户数
-  pub max_usr_num: String,
-  /// 锁定
-  pub is_locked: String,
-  /// 锁定
-  pub is_locked_lbl: String,
+  /// 排序
+  pub order_by: String,
+  /// 默认
+  pub is_default: String,
+  /// 默认
+  pub is_default_lbl: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 菜单
-  pub menu_ids: String,
-  /// 菜单
-  pub menu_ids_lbl: String,
-  /// 排序
-  pub order_by: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -203,7 +136,7 @@ pub struct TenantFieldComment {
 
 #[derive(InputObject, Debug, Default)]
 #[graphql(rename_fields = "snake_case")]
-pub struct TenantSearch {
+pub struct DomainSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
   pub is_deleted: Option<u8>,
@@ -211,28 +144,12 @@ pub struct TenantSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
-  /// 域名
-  pub domain_ids: Option<Vec<String>>,
-  /// 域名
-  pub domain_ids_is_null: Option<bool>,
-  /// 租户管理员
-  pub usr_id: Option<Vec<String>>,
-  /// 租户管理员
-  pub usr_id_is_null: Option<bool>,
-  /// 到期日
-  pub expiration: Option<Vec<chrono::NaiveDate>>,
-  /// 最大用户数
-  pub max_usr_num: Option<Vec<u32>>,
-  /// 锁定
-  pub is_locked: Option<Vec<u8>>,
-  /// 启用
-  pub is_enabled: Option<Vec<u8>>,
-  /// 菜单
-  pub menu_ids: Option<Vec<String>>,
-  /// 菜单
-  pub menu_ids_is_null: Option<bool>,
   /// 排序
   pub order_by: Option<Vec<u32>>,
+  /// 默认
+  pub is_default: Option<Vec<u8>>,
+  /// 启用
+  pub is_enabled: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -253,38 +170,20 @@ pub struct TenantSearch {
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct TenantInput {
+pub struct DomainInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
-  /// 域名
-  pub domain_ids: Option<Vec<String>>,
-  /// 域名
-  pub domain_ids_lbl: Option<Vec<String>>,
-  /// 租户管理员
-  pub usr_id: Option<String>,
-  /// 租户管理员
-  pub usr_id_lbl: Option<String>,
-  /// 到期日
-  pub expiration: Option<chrono::NaiveDate>,
-  /// 到期日
-  pub expiration_lbl: Option<String>,
-  /// 最大用户数
-  pub max_usr_num: Option<u32>,
-  /// 锁定
-  pub is_locked: Option<u8>,
-  /// 锁定
-  pub is_locked_lbl: Option<String>,
+  /// 排序
+  pub order_by: Option<u32>,
+  /// 默认
+  pub is_default: Option<u8>,
+  /// 默认
+  pub is_default_lbl: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 菜单
-  pub menu_ids: Option<Vec<String>>,
-  /// 菜单
-  pub menu_ids_lbl: Option<Vec<String>>,
-  /// 排序
-  pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -305,30 +204,20 @@ pub struct TenantInput {
   pub update_time_lbl: Option<String>,
 }
 
-impl From<TenantInput> for TenantSearch {
-  fn from(input: TenantInput) -> Self {
+impl From<DomainInput> for DomainSearch {
+  fn from(input: DomainInput) -> Self {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
       is_deleted: None,
       // 名称
       lbl: input.lbl,
-      // 域名
-      domain_ids: input.domain_ids,
-      // 租户管理员
-      usr_id: input.usr_id.map(|x| vec![x.into()]),
-      // 到期日
-      expiration: input.expiration.map(|x| vec![x.clone().into(), x.clone().into()]),
-      // 最大用户数
-      max_usr_num: input.max_usr_num.map(|x| vec![x.clone().into(), x.clone().into()]),
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
-      // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 菜单
-      menu_ids: input.menu_ids,
       // 排序
       order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 默认
+      is_default: input.is_default.map(|x| vec![x.into()]),
+      // 启用
+      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 备注
       rem: input.rem,
       // 创建人

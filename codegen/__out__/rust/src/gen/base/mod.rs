@@ -4,6 +4,7 @@ pub mod dict;
 pub mod dict_detail;
 pub mod dictbiz;
 pub mod dictbiz_detail;
+pub mod domain;
 pub mod i18n;
 pub mod lang;
 pub mod menu;

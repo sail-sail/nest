@@ -2,7 +2,6 @@ use anyhow::Result;
 use tracing::info;
 
 use crate::common::util::string::*;
-use crate::common::util::dao::{many2many_update, ManyOpts};
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -24,13 +23,13 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
-use super::tenant_model::*;
+use super::domain_model::*;
 
 #[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
-  search: Option<TenantSearch>,
+  search: Option<DomainSearch>,
 ) -> String {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
@@ -91,160 +90,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let domain_ids: Vec<String> = match &search {
-      Some(item) => item.domain_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !domain_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(domain_ids.len());
-        for item in domain_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_domain.id in ({})", arg);
-    }
-  }
-  {
-    let domain_ids_is_null: bool = match &search {
-      Some(item) => item.domain_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if domain_ids_is_null {
-      where_query += &format!(" and domain_ids_lbl.id is null");
-    }
-  }
-  {
-    let usr_id: Vec<String> = match &search {
-      Some(item) => item.usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !usr_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(usr_id.len());
-        for item in usr_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and usr_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let usr_id_is_null: bool = match &search {
-      Some(item) => item.usr_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if usr_id_is_null {
-      where_query += &format!(" and usr_id_lbl.id is null");
-    }
-  }
-  {
-    let expiration: Vec<chrono::NaiveDate> = match &search {
-      Some(item) => item.expiration.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let expiration_gt: Option<chrono::NaiveDate> = match &expiration.len() {
-      0 => None,
-      _ => expiration[0].clone().into(),
-    };
-    let expiration_lt: Option<chrono::NaiveDate> = match &expiration.len() {
-      0 => None,
-      1 => None,
-      _ => expiration[1].clone().into(),
-    };
-    if let Some(expiration_gt) = expiration_gt {
-      where_query += &format!(" and t.expiration >= {}", args.push(expiration_gt.into()));
-    }
-    if let Some(expiration_lt) = expiration_lt {
-      where_query += &format!(" and t.expiration <= {}", args.push(expiration_lt.into()));
-    }
-  }
-  {
-    let max_usr_num: Vec<u32> = match &search {
-      Some(item) => item.max_usr_num.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let max_usr_num_gt: Option<u32> = match &max_usr_num.len() {
-      0 => None,
-      _ => max_usr_num[0].clone().into(),
-    };
-    let max_usr_num_lt: Option<u32> = match &max_usr_num.len() {
-      0 => None,
-      1 => None,
-      _ => max_usr_num[1].clone().into(),
-    };
-    if let Some(max_usr_num_gt) = max_usr_num_gt {
-      where_query += &format!(" and t.max_usr_num >= {}", args.push(max_usr_num_gt.into()));
-    }
-    if let Some(max_usr_num_lt) = max_usr_num_lt {
-      where_query += &format!(" and t.max_usr_num <= {}", args.push(max_usr_num_lt.into()));
-    }
-  }
-  {
-    let is_locked: Vec<u8> = match &search {
-      Some(item) => item.is_locked.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_locked.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_locked.len());
-        for item in is_locked {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_locked in ({})", arg);
-    }
-  }
-  {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_enabled.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
-    }
-  }
-  {
-    let menu_ids: Vec<String> = match &search {
-      Some(item) => item.menu_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !menu_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(menu_ids.len());
-        for item in menu_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_menu.id in ({})", arg);
-    }
-  }
-  {
-    let menu_ids_is_null: bool = match &search {
-      Some(item) => item.menu_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if menu_ids_is_null {
-      where_query += &format!(" and menu_ids_lbl.id is null");
-    }
-  }
-  {
     let order_by: Vec<u32> = match &search {
       Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
@@ -263,6 +108,40 @@ fn get_where_query<'a>(
     }
     if let Some(order_by_lt) = order_by_lt {
       where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
+    }
+  }
+  {
+    let is_default: Vec<u8> = match &search {
+      Some(item) => item.is_default.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_default.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_default.len());
+        for item in is_default {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_default in ({})", arg);
+    }
+  }
+  {
+    let is_enabled: Vec<u8> = match &search {
+      Some(item) => item.is_enabled.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_enabled.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_enabled in ({})", arg);
     }
   }
   {
@@ -379,43 +258,7 @@ fn get_where_query<'a>(
 }
 
 fn get_from_query() -> &'static str {
-  let from_query = r#"base_tenant t
-    left join base_tenant_domain
-      on base_tenant_domain.tenant_id = t.id
-    left join base_domain
-      on base_tenant_domain.domain_id = base_domain.id
-    left join (
-      select
-        json_arrayagg(base_domain.id) domain_ids,
-        json_arrayagg(base_domain.lbl) domain_ids_lbl,
-        base_tenant.id tenant_id
-      from base_tenant_domain
-      inner join base_domain
-        on base_domain.id = base_tenant_domain.domain_id
-      inner join base_tenant
-        on base_tenant.id = base_tenant_domain.tenant_id
-      group by tenant_id
-    ) _domain
-      on _domain.tenant_id = t.id
-    left join base_usr usr_id_lbl
-      on usr_id_lbl.id = t.usr_id
-    left join base_tenant_menu
-      on base_tenant_menu.tenant_id = t.id
-    left join base_menu
-      on base_tenant_menu.menu_id = base_menu.id
-    left join (
-      select
-        json_arrayagg(base_menu.id) menu_ids,
-        json_arrayagg(base_menu.lbl) menu_ids_lbl,
-        base_tenant.id tenant_id
-      from base_tenant_menu
-      inner join base_menu
-        on base_menu.id = base_tenant_menu.menu_id
-      inner join base_tenant
-        on base_tenant.id = base_tenant_menu.tenant_id
-      group by tenant_id
-    ) _menu
-      on _menu.tenant_id = t.id
+  let from_query = r#"base_domain t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -427,14 +270,14 @@ fn get_from_query() -> &'static str {
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<TenantSearch>,
+  search: Option<DomainSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<TenantModel>> {
+) -> Result<Vec<DomainModel>> {
   
   #[allow(unused_variables)]
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "find_all";
   
   let mut args = QueryArgs::new();
@@ -447,11 +290,6 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,max(domain_ids) domain_ids
-      ,max(domain_ids_lbl) domain_ids_lbl
-      ,usr_id_lbl.lbl usr_id_lbl
-      ,max(menu_ids) menu_ids
-      ,max(menu_ids_lbl) menu_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -469,28 +307,28 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
-  let mut res: Vec<TenantModel> = ctx.query(
+  let mut res: Vec<DomainModel> = ctx.query(
     sql,
     args,
     options,
   ).await?;
   
   let dict_vec = get_dict(ctx, &vec![
-    "is_locked",
+    "is_default",
     "is_enabled",
   ]).await?;
   
-  let is_locked_dict = &dict_vec[0];
+  let is_default_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
   
   for model in &mut res {
     
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict.iter()
-        .find(|item| item.val == model.is_locked.to_string())
+    // 默认
+    model.is_default_lbl = {
+      is_default_dict.iter()
+        .find(|item| item.val == model.is_default.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
+        .unwrap_or_else(|| model.is_default.to_string())
     };
     
     // 启用
@@ -509,12 +347,12 @@ pub async fn find_all<'a>(
 /// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<TenantSearch>,
+  search: Option<DomainSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   #[allow(unused_variables)]
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "find_count";
   
   let mut args = QueryArgs::new();
@@ -563,28 +401,19 @@ pub async fn find_count<'a>(
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
-) -> Result<TenantFieldComment> {
+) -> Result<DomainFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/base/tenant".to_owned().into(),
+    route_path: "/base/domain".to_owned().into(),
   };
   
-  let field_comments = TenantFieldComment {
+  let field_comments = DomainFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    domain_ids: n_route.n(ctx, "域名".to_owned(), None).await?,
-    domain_ids_lbl: n_route.n(ctx, "域名".to_owned(), None).await?,
-    usr_id: n_route.n(ctx, "租户管理员".to_owned(), None).await?,
-    usr_id_lbl: n_route.n(ctx, "租户管理员".to_owned(), None).await?,
-    expiration: n_route.n(ctx, "到期日".to_owned(), None).await?,
-    expiration_lbl: n_route.n(ctx, "到期日".to_owned(), None).await?,
-    max_usr_num: n_route.n(ctx, "最大用户数".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    is_default: n_route.n(ctx, "默认".to_owned(), None).await?,
+    is_default_lbl: n_route.n(ctx, "默认".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
@@ -610,10 +439,10 @@ pub fn get_unique_keys() -> Vec<&'static str> {
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<TenantSearch>,
+  search: Option<DomainSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<TenantModel>> {
+) -> Result<Option<DomainModel>> {
   
   let page = PageInput {
     pg_offset: 0.into(),
@@ -628,7 +457,7 @@ pub async fn find_one<'a>(
     options,
   ).await?;
   
-  let model: Option<TenantModel> = res.into_iter().next();
+  let model: Option<DomainModel> = res.into_iter().next();
   
   Ok(model)
 }
@@ -638,9 +467,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<TenantModel>> {
+) -> Result<Option<DomainModel>> {
   
-  let search = TenantSearch {
+  let search = DomainSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -659,10 +488,10 @@ pub async fn find_by_id<'a>(
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: TenantSearch,
+  search: DomainSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<TenantModel>> {
+) -> Result<Option<DomainModel>> {
   
   if search.id.is_none() {
     if
@@ -672,7 +501,7 @@ pub async fn find_by_unique<'a>(
     }
   }
   
-  let search = TenantSearch {
+  let search = DomainSearch {
     id: search.id,
     lbl: search.lbl,
     ..Default::default()
@@ -691,8 +520,8 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: &TenantInput,
-  model: &TenantModel,
+  input: &DomainInput,
+  model: &DomainModel,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
@@ -709,8 +538,8 @@ fn equals_by_unique(
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: TenantInput,
-  model: TenantModel,
+  input: DomainInput,
+  model: DomainModel,
   unique_type: UniqueType,
 ) -> Result<Option<String>> {
   let is_equals = equals_by_unique(
@@ -735,7 +564,7 @@ pub async fn check_by_unique<'a>(
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
     let n_route = NRoute {
-      route_path: "/base/tenant".to_owned().into(),
+      route_path: "/base/domain".to_owned().into(),
     };
     let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
@@ -751,24 +580,24 @@ pub async fn check_by_unique<'a>(
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: TenantInput,
-) -> Result<TenantInput> {
+  input: DomainInput,
+) -> Result<DomainInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
   
   let dict_vec = get_dict(ctx, &vec![
-    "is_locked",
+    "is_default",
     "is_enabled",
   ]).await?;
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[0];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict.into_iter()
+  // 默认
+  if input.is_default.is_none() {
+    let is_default_dict = &dict_vec[0];
+    if let Some(is_default_lbl) = input.is_default_lbl.clone() {
+      input.is_default = is_default_dict.into_iter()
         .find(|item| {
-          item.lbl == is_locked_lbl
+          item.lbl == is_default_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -792,102 +621,17 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 域名
-  if input.domain_ids.is_none() {
-    if input.domain_ids_lbl.is_some() && input.domain_ids.is_none() {
-      input.domain_ids_lbl = input.domain_ids_lbl.map(|item| 
-        item.into_iter()
-          .map(|item| item.trim().to_owned())
-          .collect::<Vec<String>>()
-      );
-      let mut models = vec![];
-      for lbl in input.domain_ids_lbl.clone().unwrap_or_default() {
-        let model = crate::gen::base::domain::domain_dao::find_one(
-          ctx,
-          crate::gen::base::domain::domain_model::DomainSearch {
-            lbl: lbl.into(),
-            ..Default::default()
-          }.into(),
-          None,
-          None,
-        ).await?;
-        if let Some(model) = model {
-          models.push(model);
-        }
-      }
-      if !models.is_empty() {
-        input.domain_ids = models.into_iter()
-          .map(|item| item.id)
-          .collect::<Vec<String>>()
-          .into();
-      }
-    }
-  }
-  
-  // 租户管理员
-  if input.usr_id.is_none() {
-    if is_not_empty_opt(&input.usr_id_lbl) && input.usr_id.is_none() {
-      input.usr_id_lbl = input.usr_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::base::usr::usr_dao::find_one(
-        ctx,
-        crate::gen::base::usr::usr_model::UsrSearch {
-          lbl: input.usr_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.usr_id = model.id.into();
-      }
-    }
-  }
-  
-  // 菜单
-  if input.menu_ids.is_none() {
-    if input.menu_ids_lbl.is_some() && input.menu_ids.is_none() {
-      input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
-        item.into_iter()
-          .map(|item| item.trim().to_owned())
-          .collect::<Vec<String>>()
-      );
-      let mut models = vec![];
-      for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
-        let model = crate::gen::base::menu::menu_dao::find_one(
-          ctx,
-          crate::gen::base::menu::menu_model::MenuSearch {
-            lbl: lbl.into(),
-            ..Default::default()
-          }.into(),
-          None,
-          None,
-        ).await?;
-        if let Some(model) = model {
-          models.push(model);
-        }
-      }
-      if !models.is_empty() {
-        input.menu_ids = models.into_iter()
-          .map(|item| item.id)
-          .collect::<Vec<String>>()
-          .into();
-      }
-    }
-  }
-  
   Ok(input)
 }
 
 /// 创建数据
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  mut input: TenantInput,
+  mut input: DomainInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "create";
   
   let now = ctx.get_now();
@@ -945,41 +689,23 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(lbl.into());
   }
-  // 租户管理员
-  if let Some(usr_id) = input.usr_id {
-    sql_fields += ",usr_id";
+  // 排序
+  if let Some(order_by) = input.order_by {
+    sql_fields += ",order_by";
     sql_values += ",?";
-    args.push(usr_id.into());
+    args.push(order_by.into());
   }
-  // 到期日
-  if let Some(expiration) = input.expiration {
-    sql_fields += ",expiration";
+  // 默认
+  if let Some(is_default) = input.is_default {
+    sql_fields += ",is_default";
     sql_values += ",?";
-    args.push(expiration.into());
-  }
-  // 最大用户数
-  if let Some(max_usr_num) = input.max_usr_num {
-    sql_fields += ",max_usr_num";
-    sql_values += ",?";
-    args.push(max_usr_num.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    sql_fields += ",is_locked";
-    sql_values += ",?";
-    args.push(is_locked.into());
+    args.push(is_default.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     sql_fields += ",is_enabled";
     sql_values += ",?";
     args.push(is_enabled.into());
-  }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
-    sql_values += ",?";
-    args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -1021,36 +747,6 @@ pub async fn create<'a>(
     options,
   ).await?;
   
-  // 域名
-  if let Some(domain_ids) = input.domain_ids {
-    many2many_update(
-      ctx,
-      id.clone(),
-      domain_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "tenant_domain",
-        column1: "tenant_id",
-        column2: "domain_id",
-      },
-    ).await?;
-  }
-  
-  // 菜单
-  if let Some(menu_ids) = input.menu_ids {
-    many2many_update(
-      ctx,
-      id.clone(),
-      menu_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "tenant_menu",
-        column1: "tenant_id",
-        column2: "menu_id",
-      },
-    ).await?;
-  }
-  
   Ok(id)
 }
 
@@ -1058,7 +754,7 @@ pub async fn create<'a>(
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  mut input: TenantInput,
+  mut input: DomainInput,
   options: Option<Options>,
 ) -> Result<String> {
   
@@ -1067,7 +763,7 @@ pub async fn update_by_id<'a>(
     input,
   ).await?;
   
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "update_by_id";
   
   let now = ctx.get_now();
@@ -1084,41 +780,23 @@ pub async fn update_by_id<'a>(
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
   }
-  // 租户管理员
-  if let Some(usr_id) = input.usr_id {
+  // 排序
+  if let Some(order_by) = input.order_by {
     field_num += 1;
-    sql_fields += ",usr_id = ?";
-    args.push(usr_id.into());
+    sql_fields += ",order_by = ?";
+    args.push(order_by.into());
   }
-  // 到期日
-  if let Some(expiration) = input.expiration {
+  // 默认
+  if let Some(is_default) = input.is_default {
     field_num += 1;
-    sql_fields += ",expiration = ?";
-    args.push(expiration.into());
-  }
-  // 最大用户数
-  if let Some(max_usr_num) = input.max_usr_num {
-    field_num += 1;
-    sql_fields += ",max_usr_num = ?";
-    args.push(max_usr_num.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    field_num += 1;
-    sql_fields += ",is_locked = ?";
-    args.push(is_locked.into());
+    sql_fields += ",is_default = ?";
+    args.push(is_default.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
-  }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    field_num += 1;
-    sql_fields += ",order_by = ?";
-    args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -1161,50 +839,16 @@ pub async fn update_by_id<'a>(
     options,
   ).await?;
   
-  // 域名
-  if let Some(domain_ids) = input.domain_ids {
-    many2many_update(
-      ctx,
-      id.clone(),
-      domain_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "tenant_domain",
-        column1: "tenant_id",
-        column2: "domain_id",
-      },
-    ).await?;
-  }
-  
-  // 菜单
-  if let Some(menu_ids) = input.menu_ids {
-    many2many_update(
-      ctx,
-      id.clone(),
-      menu_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "tenant_menu",
-        column1: "tenant_id",
-        column2: "menu_id",
-      },
-    ).await?;
-  }
-  
   Ok(id)
 }
 
 /// 获取外键关联表, 第一个是主表
 #[allow(dead_code)]
 fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_tenant";
+  let table = "base_domain";
   vec![
     table,
-    "tenant_domain",
-    "domain",
     "usr",
-    "tenant_menu",
-    "menu",
   ]
 }
 
@@ -1215,7 +859,7 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "delete_by_ids";
   
   let options = Options::from(options);
@@ -1250,67 +894,6 @@ pub async fn delete_by_ids<'a>(
   Ok(num)
 }
 
-/// 根据 ID 查找是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-pub async fn get_is_locked_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
-  id: String,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let model = find_by_id(ctx, id, options).await?;
-  
-  let is_locked = {
-    if let Some(model) = model {
-      model.is_locked == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁数据
-pub async fn lock_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
-  ids: Vec<String>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_tenant";
-  let _method = "lock_by_ids";
-  
-  let options = Options::from(options);
-  
-  let mut num = 0;
-  for id in ids {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!(
-      "update {} set is_locked=? where id=? limit 1",
-      table,
-    );
-    
-    args.push(is_locked.into());
-    args.push(id.into());
-    
-    let args = args.into();
-    
-    let options = options.clone().into();
-    
-    num += ctx.execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  Ok(num)
-}
-
 /// 根据 ids 还原数据
 pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -1318,7 +901,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "revert_by_ids";
   
   let options = Options::from(options);
@@ -1359,7 +942,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "force_delete_by_ids";
   
   let options = Options::from(options);
@@ -1369,7 +952,7 @@ pub async fn force_delete_by_ids<'a>(
     
     let model = find_all(
       ctx,
-      TenantSearch {
+      DomainSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
         ..Default::default()
@@ -1418,7 +1001,7 @@ pub async fn find_last_order_by<'a>(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_tenant";
+  let table = "base_domain";
   let _method = "find_last_order_by";
   
   #[allow(unused_mut)]
