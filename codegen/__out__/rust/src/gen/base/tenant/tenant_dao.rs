@@ -91,19 +91,29 @@ fn get_where_query<'a>(
     }
   }
   {
-    let domain = match &search {
-      Some(item) => item.domain.clone(),
-      None => None,
+    let domain_ids: Vec<String> = match &search {
+      Some(item) => item.domain_ids.clone().unwrap_or_default(),
+      None => Default::default(),
     };
-    if let Some(domain) = domain {
-      where_query += &format!(" and t.domain = {}", args.push(domain.into()));
+    if !domain_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(domain_ids.len());
+        for item in domain_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_domain.id in ({})", arg);
     }
-    let domain_like = match &search {
-      Some(item) => item.domain_like.clone(),
-      None => None,
+  }
+  {
+    let domain_ids_is_null: bool = match &search {
+      Some(item) => item.domain_ids_is_null.unwrap_or(false),
+      None => false,
     };
-    if let Some(domain_like) = domain_like {
-      where_query += &format!(" and t.domain like {}", args.push((sql_like(&domain_like) + "%").into()));
+    if domain_ids_is_null {
+      where_query += &format!(" and domain_ids_lbl.id is null");
     }
   }
   {
@@ -192,6 +202,23 @@ fn get_where_query<'a>(
     }
   }
   {
+    let is_enabled: Vec<u8> = match &search {
+      Some(item) => item.is_enabled.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_enabled.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_enabled in ({})", arg);
+    }
+  }
+  {
     let menu_ids: Vec<String> = match &search {
       Some(item) => item.menu_ids.clone().unwrap_or_default(),
       None => Default::default(),
@@ -215,23 +242,6 @@ fn get_where_query<'a>(
     };
     if menu_ids_is_null {
       where_query += &format!(" and menu_ids_lbl.id is null");
-    }
-  }
-  {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_enabled.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
     }
   }
   {
@@ -370,6 +380,23 @@ fn get_where_query<'a>(
 
 fn get_from_query() -> &'static str {
   let from_query = r#"base_tenant t
+    left join base_tenant_domain
+      on base_tenant_domain.tenant_id = t.id
+    left join base_domain
+      on base_tenant_domain.domain_id = base_domain.id
+    left join (
+      select
+        json_arrayagg(base_domain.id) domain_ids,
+        json_arrayagg(base_domain.lbl) domain_ids_lbl,
+        base_tenant.id tenant_id
+      from base_tenant_domain
+      inner join base_domain
+        on base_domain.id = base_tenant_domain.domain_id
+      inner join base_tenant
+        on base_tenant.id = base_tenant_domain.tenant_id
+      group by tenant_id
+    ) _domain
+      on _domain.tenant_id = t.id
     left join base_usr usr_id_lbl
       on usr_id_lbl.id = t.usr_id
     left join base_tenant_menu
@@ -420,6 +447,8 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
+      ,max(domain_ids) domain_ids
+      ,max(domain_ids_lbl) domain_ids_lbl
       ,usr_id_lbl.lbl usr_id_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
@@ -542,7 +571,8 @@ pub async fn get_field_comments<'a>(
   
   let field_comments = TenantFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    domain: n_route.n(ctx, "域名绑定".to_owned(), None).await?,
+    domain_ids: n_route.n(ctx, "域名".to_owned(), None).await?,
+    domain_ids_lbl: n_route.n(ctx, "域名".to_owned(), None).await?,
     usr_id: n_route.n(ctx, "租户管理员".to_owned(), None).await?,
     usr_id_lbl: n_route.n(ctx, "租户管理员".to_owned(), None).await?,
     expiration: n_route.n(ctx, "到期日".to_owned(), None).await?,
@@ -550,10 +580,10 @@ pub async fn get_field_comments<'a>(
     max_usr_num: n_route.n(ctx, "最大用户数".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
+    menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
     order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
@@ -762,6 +792,38 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 域名
+  if input.domain_ids.is_none() {
+    if input.domain_ids_lbl.is_some() && input.domain_ids.is_none() {
+      input.domain_ids_lbl = input.domain_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.domain_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::domain::domain_dao::find_one(
+          ctx,
+          crate::gen::base::domain::domain_model::DomainSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
+      }
+      if !models.is_empty() {
+        input.domain_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
+    }
+  }
+  
   // 租户管理员
   if input.usr_id.is_none() {
     if is_not_empty_opt(&input.usr_id_lbl) && input.usr_id.is_none() {
@@ -883,12 +945,6 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(lbl.into());
   }
-  // 域名绑定
-  if let Some(domain) = input.domain {
-    sql_fields += ",domain";
-    sql_values += ",?";
-    args.push(domain.into());
-  }
   // 租户管理员
   if let Some(usr_id) = input.usr_id {
     sql_fields += ",usr_id";
@@ -965,6 +1021,21 @@ pub async fn create<'a>(
     options,
   ).await?;
   
+  // 域名
+  if let Some(domain_ids) = input.domain_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      domain_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "tenant_domain",
+        column1: "tenant_id",
+        column2: "domain_id",
+      },
+    ).await?;
+  }
+  
   // 菜单
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
@@ -1012,12 +1083,6 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
-  }
-  // 域名绑定
-  if let Some(domain) = input.domain {
-    field_num += 1;
-    sql_fields += ",domain = ?";
-    args.push(domain.into());
   }
   // 租户管理员
   if let Some(usr_id) = input.usr_id {
@@ -1096,6 +1161,21 @@ pub async fn update_by_id<'a>(
     options,
   ).await?;
   
+  // 域名
+  if let Some(domain_ids) = input.domain_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      domain_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "tenant_domain",
+        column1: "tenant_id",
+        column2: "domain_id",
+      },
+    ).await?;
+  }
+  
   // 菜单
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
@@ -1120,6 +1200,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_tenant";
   vec![
     table,
+    "tenant_domain",
+    "domain",
     "usr",
     "tenant_menu",
     "menu",
