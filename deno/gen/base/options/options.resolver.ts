@@ -144,6 +144,32 @@ export async function deleteByIdsOptions(
 }
 
 /**
+ * 根据 ids 启用或者禁用数据
+ */
+export async function enableByIdsOptions(
+  ids: string[],
+  is_enabled: 0 | 1,
+) {
+  const context = useContext();
+  
+  context.is_tran = true;
+  if (is_enabled !== 0 && is_enabled !== 1) {
+    throw new Error(`enableByIdsOptions.is_enabled expect 0 or 1 but got ${ is_enabled }`);
+  }
+  
+  await usePermit(
+    "/base/options",
+    "lock",
+  );
+  
+  const {
+    enableByIds,
+  } = await import("./options.service.ts");
+  const res = await enableByIds(ids, is_enabled);
+  return res;
+}
+
+/**
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsOptions(

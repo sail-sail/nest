@@ -238,7 +238,7 @@ async function inputChg() {
 }
 
 // 点击上传图片
-function uploadClk() {
+async function uploadClk() {
   if (!fileRef) return;
   const idArr = modelValue.split(",").filter((x) => x);
   if (props.maxSize > 1) {

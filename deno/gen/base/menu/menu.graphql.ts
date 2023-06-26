@@ -130,6 +130,8 @@ type Mutation {
   updateByIdMenu(id: String!, model: MenuInput!): String!
   "根据 ids 删除数据"
   deleteByIdsMenu(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsMenu(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsMenu(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"

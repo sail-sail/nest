@@ -280,6 +280,22 @@
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
             
+            <el-dropdown-item
+              v-if="permit('enable')"
+              un-justify-center
+              @click="enableByIdsClk(1)"
+            >
+              <span>{{ ns('启用') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('enable')"
+              un-justify-center
+              @click="enableByIdsClk(0)"
+            >
+              <span>{{ ns('禁用') }}</span>
+            </el-dropdown-item>
+            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -513,6 +529,7 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
+  enableByIds,
   useExportExcel,
   updateById,
   importModels,
@@ -1160,6 +1177,31 @@ async function forceDeleteByIdsClk() {
     await Promise.all([
       dataGrid(true),
     ]);
+  }
+}
+
+/** 点击启用或者禁用 */
+async function enableByIdsClk(is_enabled: 0 | 1) {
+  if (selectedIds.length === 0) {
+    let msg = "";
+    if (is_enabled === 1) {
+      msg = await nsAsync("请选择需要 启用 的数据");
+    } else {
+      msg = await nsAsync("请选择需要 禁用 的数据");
+    }
+    ElMessage.warning(msg);
+    return;
+  }
+  const num = await enableByIds(selectedIds, is_enabled);
+  if (num > 0) {
+    let msg = "";
+    if (is_enabled === 1) {
+      msg = await nsAsync("启用 {0} 条数据成功", num);
+    } else {
+      msg = await nsAsync("禁用 {0} 条数据成功", num);
+    }
+    ElMessage.success(msg);
+    await dataGrid(true);
   }
 }
 

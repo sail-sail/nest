@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -276,6 +277,56 @@ export async function deleteByIds<#=Table_Up#>(
   return res;
 }<#
 }
+#><#
+  if (hasEnabled && opts.noEdit !== true) {
+#>
+
+/**
+ * 根据 ids 启用或者禁用数据
+ */
+export async function enableByIds<#=Table_Up#>(
+  ids: string[],
+  is_enabled: 0 | 1,
+) {
+  const context = useContext();
+  
+  context.is_tran = true;
+  if (is_enabled !== 0 && is_enabled !== 1) {
+    throw new Error(`enableByIds<#=Table_Up#>.is_enabled expect 0 or 1 but got ${ is_enabled }`);
+  }
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "lock",
+  );
+  
+  const {
+    enableByIds,
+  } = await import("./<#=table#>.service.ts");<#
+  if (log) {
+  #>
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
+  }
+  #>
+  const res = await enableByIds(ids, is_enabled);<#
+  if (log) {
+  #>
+  
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "enableByIds",
+    method_lbl: "启用",
+    lbl: "启用",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });<#
+  }
+  #>
+  return res;
+}<#
+  }
 #><#
   if (hasLocked && opts.noEdit !== true) {
 #>

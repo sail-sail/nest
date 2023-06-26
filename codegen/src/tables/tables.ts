@@ -211,8 +211,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-        require: true,
-        width: 80,
       },
       {
         COLUMN_NAME: "dept_ids",

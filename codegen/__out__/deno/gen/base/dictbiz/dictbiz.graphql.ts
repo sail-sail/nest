@@ -178,6 +178,8 @@ type Mutation {
   updateByIdDictbiz(id: String!, model: DictbizInput!): String!
   "根据 ids 删除数据"
   deleteByIdsDictbiz(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsDictbiz(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
   lockByIdsDictbiz(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"

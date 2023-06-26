@@ -14,6 +14,7 @@ export async function getLoginTenants(
     const domain_ids = domainModels.map((item) => item.id);
     const tenantModels = await tenantDao.findAll({
       domain_ids,
+      is_enabled: [ 1 ],
     });
     res = tenantModels.map((item) => ({
       id: item.id,

@@ -88,6 +88,8 @@ type Mutation {
   updateByIdRole(id: String!, model: RoleInput!): String!
   "根据 ids 删除数据"
   deleteByIdsRole(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsRole(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsRole(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"

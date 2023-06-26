@@ -191,6 +191,44 @@ export async function deleteByIdsDept(
 }
 
 /**
+ * 根据 ids 启用或者禁用数据
+ */
+export async function enableByIdsDept(
+  ids: string[],
+  is_enabled: 0 | 1,
+) {
+  const context = useContext();
+  
+  context.is_tran = true;
+  if (is_enabled !== 0 && is_enabled !== 1) {
+    throw new Error(`enableByIdsDept.is_enabled expect 0 or 1 but got ${ is_enabled }`);
+  }
+  
+  await usePermit(
+    "/base/dept",
+    "lock",
+  );
+  
+  const {
+    enableByIds,
+  } = await import("./dept.service.ts");
+  
+  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
+  const res = await enableByIds(ids, is_enabled);
+  
+  await log({
+    module: "base_dept",
+    module_lbl: "部门",
+    method: "enableByIds",
+    method_lbl: "启用",
+    lbl: "启用",
+    old_data: JSON.stringify(ids),
+    new_data: "[]",
+  });
+  return res;
+}
+
+/**
  * 根据 ids 锁定或者解锁数据
  */
 export async function lockByIdsDept(

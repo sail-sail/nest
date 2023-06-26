@@ -129,6 +129,20 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 ids 启用或禁用数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+): Promise<number> {
+  const data = await menuDao.enableByIds(ids, is_enabled);
+  return data;
+}
+
+/**
  * 根据 ids 还原数据
  * @param {string[]} ids
  * @return {Promise<number>}

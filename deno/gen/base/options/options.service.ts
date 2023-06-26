@@ -123,7 +123,7 @@ export async function updateById(
   input: OptionsInput,
 ): Promise<string> {
   
-  const is_locked = await optionsDao.getIs_lockedById(id);
+  const is_locked = await optionsDao.getIsLockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
@@ -143,7 +143,7 @@ export async function deleteByIds(
   const lockedIds: string[] = [ ];
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const is_locked = await optionsDao.getIs_lockedById(id);
+    const is_locked = await optionsDao.getIsLockedById(id);
     if (is_locked) {
       lockedIds.push(id);
     }
@@ -152,6 +152,20 @@ export async function deleteByIds(
     throw await ns("不能删除已经锁定的数据");
   }
   const data = await optionsDao.deleteByIds(ids);
+  return data;
+}
+
+/**
+ * 根据 ids 启用或禁用数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+): Promise<number> {
+  const data = await optionsDao.enableByIds(ids, is_enabled);
   return data;
 }
 
