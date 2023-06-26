@@ -21,6 +21,10 @@ type UsrModel {
   default_dept_id: String!
   "默认部门"
   default_dept_id_lbl: String
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int!
   "启用"
@@ -31,10 +35,6 @@ type UsrModel {
   role_ids_lbl: [String!]
   "备注"
   rem: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String
 }
 type UsrFieldComment {
   "名称"
@@ -49,6 +49,10 @@ type UsrFieldComment {
   default_dept_id: String!
   "默认部门"
   default_dept_id_lbl: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -59,10 +63,6 @@ type UsrFieldComment {
   role_ids_lbl: String!
   "备注"
   rem: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
 }
 input UsrInput {
   ""
@@ -81,6 +81,10 @@ input UsrInput {
   default_dept_id: String
   "默认部门"
   default_dept_id_lbl: String
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -91,10 +95,6 @@ input UsrInput {
   role_ids_lbl: [String!]
   "备注"
   rem: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
 }
 input UsrSearch {
   "是否已删除"
@@ -115,6 +115,8 @@ input UsrSearch {
   "默认部门"
   default_dept_id: [String!]
   default_dept_id_is_null: Boolean
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
   "拥有角色"
@@ -123,8 +125,6 @@ input UsrSearch {
   "备注"
   rem: String
   rem_like: String
-  "锁定"
-  is_locked: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

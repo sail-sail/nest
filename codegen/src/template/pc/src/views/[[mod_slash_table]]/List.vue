@@ -86,7 +86,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #><#
       } else if (foreignKey) {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
           label="<#=column_comment#>"
           prop="<#=column_name#>"
@@ -110,7 +110,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dict) {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -129,7 +129,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column.dictbiz) {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -148,7 +148,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -170,7 +170,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column_type === "int(1)") {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -185,7 +185,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else if (column_type.startsWith("int")) {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -201,7 +201,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.<#=column_name#>_like == null && builtInSearch?.<#=column_name#> == null)">
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#>_like == null && builtInSearch?.<#=column_name#> == null">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
@@ -223,7 +223,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       <#
       if (opts.noDelete !== true && opts.noRevert !== true) {
       #>
-      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -648,7 +648,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -664,7 +664,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -696,7 +696,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -710,11 +710,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-            } else if (!foreignKey && selectList.length === 0) {
+            } else if (selectList.length > 0 || column.dict || column.dictbiz) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -729,15 +729,25 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if(column.isSwitch && opts.noEdit !== true) {
+              #>
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.<#=column_name#>"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="<#=column_name#>Chg(row.id, row.<#=column_name#>)"
+                ></el-switch>
+              </template><#
               }
               #>
             </el-table-column>
           </template><#
-            } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+            } else if (!foreignKey && selectList.length === 0) {
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -760,7 +770,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.<#=column_name#> == null)">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2069,6 +2079,69 @@ async function cancelImport() {
 }
 #><#
 if (opts.noEdit !== true) {
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  let selectList = [ ];
+  let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+  if (selectStr) {
+    selectList = eval(`(${ selectStr })`);
+  }
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (!column.isSwitch) {
+    continue;
+  }
+#><#
+if (column_name === "is_enabled") {
+#>
+
+/** <#=column_comment#> */
+async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  await enableByIds(
+    [ id ],
+    <#=column_name#>,
+  );
+  await dataGrid(true);
+}<#
+} else if (column_name === "is_locked") {
+#>
+
+/** <#=column_comment#> */
+async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  await lockByIds(
+    [ id ],
+    <#=column_name#>,
+  );
+  await dataGrid(true);
+}<#
+} else {
+#>
+
+/** <#=column_comment#> */
+async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  await updateById(
+    id,
+    {
+      <#=column_name#>,
+    },
+  );
+  await dataGrid(true);
+}<#
+}
+#><#
+}
 #>
 
 /** 打开修改页面 */
