@@ -174,6 +174,9 @@ async function getSchema0(
       if (item.width == null) {
         item.width = 60;
       }
+      if (item.isSwitch == null) {
+        item.isSwitch = true;
+      }
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {

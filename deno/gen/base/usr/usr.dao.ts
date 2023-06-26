@@ -129,6 +129,12 @@ async function getWhereQuery(
   if (search?.default_dept_id_is_null) {
     whereQuery += ` and default_dept_id_lbl.id is null`;
   }
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
@@ -155,12 +161,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
-  }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -330,27 +330,17 @@ export async function findAll(
   let result = await query<UsrModel>(sql, args, { cacheKey1, cacheKey2 });
   
   const [
-    is_enabledDict, // 启用
     is_lockedDict, // 锁定
+    is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
-    "is_enabled",
     "is_locked",
+    "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     // 密码
     model.password = "";
-    
-    // 启用
-    let is_enabled_lbl = model.is_enabled.toString();
-    if (model.is_enabled !== undefined && model.is_enabled !== null) {
-      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
-      if (dictItem) {
-        is_enabled_lbl = dictItem.lbl;
-      }
-    }
-    model.is_enabled_lbl = is_enabled_lbl;
     
     // 锁定
     let is_locked_lbl = model.is_locked.toString();
@@ -361,6 +351,16 @@ export async function findAll(
       }
     }
     model.is_locked_lbl = is_locked_lbl;
+    
+    // 启用
+    let is_enabled_lbl = model.is_enabled.toString();
+    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      if (dictItem) {
+        is_enabled_lbl = dictItem.lbl;
+      }
+    }
+    model.is_enabled_lbl = is_enabled_lbl;
   }
   
   return result;
@@ -378,13 +378,13 @@ export async function getFieldComments() {
     dept_ids_lbl: await n("拥有部门"),
     default_dept_id: await n("默认部门"),
     default_dept_id_lbl: await n("默认部门"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     role_ids: await n("拥有角色"),
     role_ids_lbl: await n("拥有角色"),
     rem: await n("备注"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
   };
   return fieldComments;
 }
@@ -616,11 +616,11 @@ export async function create(
   const method = "create";
   
   const [
-    is_enabledDict, // 启用
     is_lockedDict, // 锁定
+    is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
-    "is_enabled",
     "is_locked",
+    "is_enabled",
   ]);
   
   
@@ -655,6 +655,14 @@ export async function create(
     }
   }
   
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
+  
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
@@ -683,14 +691,6 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.role_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      model.is_locked = Number(val);
-    }
   }
   
   const oldModel = await findByUnique(model, options);
@@ -740,14 +740,14 @@ export async function create(
   if (model.default_dept_id !== undefined) {
     sql += `,default_dept_id`;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,is_locked`;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
   if (model.rem !== undefined) {
     sql += `,rem`;
-  }
-  if (model.is_locked !== undefined) {
-    sql += `,is_locked`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
@@ -779,14 +779,14 @@ export async function create(
   if (model.default_dept_id !== undefined) {
     sql += `,${ args.push(model.default_dept_id) }`;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,${ args.push(model.is_locked) }`;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
-  }
-  if (model.is_locked !== undefined) {
-    sql += `,${ args.push(model.is_locked) }`;
   }
   sql += `)`;
   
@@ -894,11 +894,11 @@ export async function updateById(
   }
   
   const [
-    is_enabledDict, // 启用
     is_lockedDict, // 锁定
+    is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
-    "is_enabled",
     "is_locked",
+    "is_enabled",
   ]);
   
   // 修改租户id
@@ -937,6 +937,14 @@ export async function updateById(
     }
   }
   
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
+  
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
@@ -965,14 +973,6 @@ export async function updateById(
     }
     const models = await query<Result>(sql, args);
     model.role_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      model.is_locked = Number(val);
-    }
   }
   
   const oldModel = await findById(id);
@@ -1009,6 +1009,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (model.is_locked !== undefined) {
+    if (model.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
+      updateFldNum++;
+    }
+  }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
@@ -1018,12 +1024,6 @@ export async function updateById(
   if (model.rem !== undefined) {
     if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.is_locked !== undefined) {
-    if (model.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }

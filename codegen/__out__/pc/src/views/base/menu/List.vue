@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.type == null)">
+      <template v-if="showBuildIn || builtInSearch?.type == null">
         <el-form-item
           :label="n('类型')"
           prop="type"
@@ -44,7 +44,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.parent_id == null)">
+      <template v-if="showBuildIn || builtInSearch?.parent_id == null">
         <el-form-item
           label="父菜单"
           prop="parent_id"
@@ -67,7 +67,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
+      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -82,7 +82,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -407,7 +407,7 @@
         >
           
           <!-- 类型 -->
-          <template v-if="'type' === col.prop && (showBuildIn == '1' || builtInSearch?.type == null)">
+          <template v-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -416,7 +416,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-else-if="'parent_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.parent_id == null)">
+          <template v-else-if="'parent_id_lbl' === col.prop && (showBuildIn || builtInSearch?.parent_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -425,7 +425,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -434,7 +434,7 @@
           </template>
           
           <!-- 路由 -->
-          <template v-else-if="'route_path' === col.prop && (showBuildIn == '1' || builtInSearch?.route_path == null)">
+          <template v-else-if="'route_path' === col.prop && (showBuildIn || builtInSearch?.route_path == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -443,7 +443,7 @@
           </template>
           
           <!-- 参数 -->
-          <template v-else-if="'route_query' === col.prop && (showBuildIn == '1' || builtInSearch?.route_query == null)">
+          <template v-else-if="'route_query' === col.prop && (showBuildIn || builtInSearch?.route_query == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -452,16 +452,24 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
+          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.is_enabled"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_enabledChg(row.id, row.is_enabled)"
+                ></el-switch>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -470,7 +478,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -864,7 +872,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "排序",
       prop: "order_by",
-      width: 100,
+      width: 80,
       sortable: "custom",
       align: "right",
       headerAlign: "center",
@@ -1095,6 +1103,15 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 启用 */
+async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  await enableByIds(
+    [ id ],
+    is_enabled,
+  );
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */
