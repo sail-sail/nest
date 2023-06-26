@@ -222,6 +222,8 @@ type Mutation {
   updateByIdTenant(id: String!, model: TenantInput!): String!
   "根据 ids 删除数据"
   deleteByIdsTenant(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsTenant(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
   lockByIdsTenant(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"

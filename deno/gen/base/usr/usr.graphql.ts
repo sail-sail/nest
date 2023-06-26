@@ -145,6 +145,8 @@ type Mutation {
   updateByIdUsr(id: String!, model: UsrInput!): String!
   "根据 ids 删除数据"
   deleteByIdsUsr(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsUsr(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
   lockByIdsUsr(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"

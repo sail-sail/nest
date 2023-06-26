@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -2206,7 +2207,7 @@ export async function deleteByIds(
     if (hasLocked) {
     #>
     
-    const is_locked = await getIs_lockedById(id);
+    const is_locked = await getIsLockedById(id);
     if (is_locked) {
       continue;
     }<#
@@ -2235,6 +2236,79 @@ export async function deleteByIds(
   
   return num;
 }<#
+if (hasEnabled) {
+#>
+
+/**
+ * 根据 ID 查找是否已启用
+ * 记录不存在则返回 undefined
+ * @param {string} id
+ * @return {Promise<0 | 1 | undefined>}
+ */
+export async function getIsEnabledById(
+  id: string,
+  options?: {
+  },
+): Promise<0 | 1 | undefined> {
+  const model = await findById(
+    id,
+    options,
+  );
+  const is_enabled = model?.is_enabled as (0 | 1 | undefined);
+  return is_enabled;
+}
+
+/**
+ * 根据 ids 启用或者禁用数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_enabled
+ * @return {Promise<number>}
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+  options?: {
+  },
+): Promise<number> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "enableByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      <#=mod#>_<#=table#>
+    set
+      is_enabled = ${ args.push(is_enabled) }
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id in ${ args.push(ids) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
+  }
+  #>
+  
+  return num;
+}<#
+}
+#><#
 if (hasLocked) {
 #>
 
@@ -2245,7 +2319,7 @@ if (hasLocked) {
  * @param {string} id
  * @return {Promise<0 | 1 | undefined>}
  */
-export async function getIs_lockedById(
+export async function getIsLockedById(
   id: string,
   options?: {
   },

@@ -213,6 +213,35 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 ids 启用或禁用数据
+ * @export enableByIds
+ * @param {string[]} ids
+ * @param {0 | 1} is_enabled
+ * @param {GqlOpt} opt?
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data: {
+    enableByIdsDomain: Mutation["enableByIdsDomain"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [String!]!, $is_enabled: Int!) {
+        enableByIdsDomain(ids: $ids, is_enabled: $is_enabled)
+      }
+    `,
+    variables: {
+      ids,
+      is_enabled,
+    },
+  }, opt);
+  const res = data.enableByIdsDomain;
+  return res;
+}
+
+/**
  * 根据 ids 从回收站还原数据
  * @export revertByIds
  * @param {string[]} ids

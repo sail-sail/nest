@@ -170,6 +170,8 @@ type Mutation {
   updateByIdDept(id: String!, model: DeptInput!): String!
   "根据 ids 删除数据"
   deleteByIdsDept(ids: [String!]!): Int!
+  "根据 ids 启用或者禁用数据"
+  enableByIdsDept(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁数据"
   lockByIdsDept(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"

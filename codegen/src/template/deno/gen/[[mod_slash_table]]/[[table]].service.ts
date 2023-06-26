@@ -1,6 +1,7 @@
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -235,7 +236,7 @@ export async function updateById(
   if (hasLocked) {
   #>
   
-  const is_locked = await <#=table#>Dao.getIs_lockedById(id);
+  const is_locked = await <#=table#>Dao.getIsLockedById(id);
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }<#
@@ -268,7 +269,7 @@ export async function deleteByIds(
   const lockedIds: string[] = [ ];
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const is_locked = await <#=table#>Dao.getIs_lockedById(id);
+    const is_locked = await <#=table#>Dao.getIsLockedById(id);
     if (is_locked) {
       lockedIds.push(id);
     }
@@ -290,6 +291,24 @@ export async function deleteByIds(
   #>
   return data;
 }<#
+  if (hasEnabled) {
+#>
+
+/**
+ * 根据 ids 启用或禁用数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+): Promise<number> {
+  const data = await <#=table#>Dao.enableByIds(ids, is_enabled);
+  return data;
+}<#
+  }
+#><#
   if (hasLocked) {
 #>
 

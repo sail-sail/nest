@@ -215,10 +215,39 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 删除数据
+ * 根据 ids 启用或禁用数据
+ * @export enableByIds
+ * @param {string[]} ids
+ * @param {0 | 1} is_enabled
+ * @param {GqlOpt} opt?
+ */
+export async function enableByIds(
+  ids: string[],
+  is_enabled: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data: {
+    enableByIdsUsr: Mutation["enableByIdsUsr"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [String!]!, $is_enabled: Int!) {
+        enableByIdsUsr(ids: $ids, is_enabled: $is_enabled)
+      }
+    `,
+    variables: {
+      ids,
+      is_enabled,
+    },
+  }, opt);
+  const res = data.enableByIdsUsr;
+  return res;
+}
+
+/**
+ * 根据 ids 锁定或解锁数据
  * @export lockByIds
  * @param {string[]} ids
- * @param {0 | 1} lockByIds
+ * @param {0 | 1} is_locked
  * @param {GqlOpt} opt?
  */
 export async function lockByIds(
