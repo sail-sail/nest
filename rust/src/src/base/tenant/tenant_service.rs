@@ -7,6 +7,12 @@ use crate::gen::base::tenant::tenant_model::{
   TenantModel,
 };
 
+use crate::gen::base::domain::domain_dao;
+use crate::gen::base::domain::domain_model::{
+  DomainSearch,
+  DomainModel,
+};
+
 // 获取当前租户绑定的网址
 // pub async fn get_host_tenant<'a>(
 //   ctx: &mut impl Ctx<'a>,
@@ -48,11 +54,10 @@ pub async fn get_login_tenants<'a>(
   domain: String,
 ) -> Result<Vec<TenantModel>> {
   
-  #[cfg(debug_assertions)]
-  let res = tenant_dao::find_all(
+  let domain_models: Vec<DomainModel> = domain_dao::find_all(
     ctx,
-    TenantSearch {
-      // domain: domain.into(),
+    DomainSearch {
+      lbl: domain.into(),
       is_enabled: vec![1].into(),
       ..Default::default()
     }.into(),
@@ -61,18 +66,24 @@ pub async fn get_login_tenants<'a>(
     None,
   ).await?;
   
-  #[cfg(not(debug_assertions))]
-  let res = tenant_dao::find_all(
-    ctx,
-    TenantSearch {
-      domain: domain.into(),
-      is_enabled: vec![1].into(),
-      ..Default::default()
-    }.into(),
-    None,
-    None,
-    None,
-  ).await?;
+  let res: Vec<TenantModel> = if domain_models.len() == 0 {
+    vec![]
+  } else {
+    let domain_ids: Vec<String> = domain_models.into_iter()
+      .map(|x| x.id)
+      .collect();
+    tenant_dao::find_all(
+      ctx,
+      TenantSearch {
+        domain_ids: domain_ids.into(),
+        is_enabled: vec![1].into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?
+  };
   
   Ok(res)
 }
