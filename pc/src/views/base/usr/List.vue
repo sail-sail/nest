@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
+      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -41,7 +41,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.username_like == null && builtInSearch?.username == null)">
+      <template v-if="showBuildIn || builtInSearch?.username_like == null && builtInSearch?.username == null">
         <el-form-item
           :label="n('用户名')"
           prop="username_like"
@@ -56,7 +56,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.dept_ids == null)">
+      <template v-if="showBuildIn || builtInSearch?.dept_ids == null">
         <el-form-item
           label="拥有部门"
           prop="dept_ids"
@@ -79,7 +79,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.role_ids == null)">
+      <template v-if="showBuildIn || builtInSearch?.role_ids == null">
         <el-form-item
           label="拥有角色"
           prop="role_ids"
@@ -102,7 +102,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -443,7 +443,7 @@
         >
           
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
+          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -452,7 +452,7 @@
           </template>
           
           <!-- 用户名 -->
-          <template v-else-if="'username' === col.prop && (showBuildIn == '1' || builtInSearch?.username == null)">
+          <template v-else-if="'username' === col.prop && (showBuildIn || builtInSearch?.username == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -461,7 +461,7 @@
           </template>
           
           <!-- 拥有部门 -->
-          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.dept_ids == null)">
+          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -475,25 +475,50 @@
           </template>
           
           <!-- 默认部门 -->
-          <template v-else-if="'default_dept_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.default_dept_id == null)">
+          <template v-else-if="'default_dept_id_lbl' === col.prop && (showBuildIn || builtInSearch?.default_dept_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+            </el-table-column>
+          </template>
+          
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.is_locked"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_lockedChg(row.id, row.is_locked)"
+                ></el-switch>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
+          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.is_enabled"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_enabledChg(row.id, row.is_enabled)"
+                ></el-switch>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 拥有角色 -->
-          <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.role_ids == null)">
+          <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.role_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -507,16 +532,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked' === col.prop && (showBuildIn == '1' || builtInSearch?.is_locked == null)">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -689,12 +705,12 @@ const props = defineProps<{
   dept_ids_lbl?: string|string[]; // 拥有部门
   default_dept_id?: string|string[]; // 默认部门
   default_dept_id_lbl?: string|string[]; // 默认部门
+  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
   rem?: string; // 备注
   rem_like?: string; // 备注
-  is_locked?: string|string[]; // 锁定
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -705,12 +721,12 @@ const builtInSearchType: { [key: string]: string } = {
   dept_ids_lbl: "string[]",
   default_dept_id: "string[]",
   default_dept_id_lbl: "string[]",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   role_ids: "string[]",
   role_ids_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -915,6 +931,14 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "锁定",
+      prop: "is_locked_lbl",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "启用",
       prop: "is_enabled_lbl",
       width: 60,
@@ -933,16 +957,8 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 180,
+      width: 280,
       align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      width: 60,
-      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1116,10 +1132,10 @@ async function importExcelClk() {
     [ n("用户名") ]: "username",
     [ n("拥有部门") ]: "dept_ids_lbl",
     [ n("默认部门") ]: "default_dept_id_lbl",
+    [ n("锁定") ]: "is_locked_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("拥有角色") ]: "role_ids_lbl",
     [ n("备注") ]: "rem",
-    [ n("锁定") ]: "is_locked_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1165,6 +1181,24 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 锁定 */
+async function is_lockedChg(id: string, is_locked: 0 | 1) {
+  await lockByIds(
+    [ id ],
+    is_locked,
+  );
+  await dataGrid(true);
+}
+
+/** 启用 */
+async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  await enableByIds(
+    [ id ],
+    is_enabled,
+  );
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */
@@ -1333,10 +1367,10 @@ async function initI18nsEfc() {
     "用户名",
     "拥有部门",
     "默认部门",
+    "锁定",
     "启用",
     "拥有角色",
     "备注",
-    "锁定",
   ];
   await Promise.all([
     initListI18ns(),

@@ -318,16 +318,16 @@ watchEffect(async () => {
         message: `${ await nsAsync("请选择") } ${ n("默认部门") }`,
       },
     ],
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
-      },
-    ],
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+      },
+    ],
+    is_enabled: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
       },
     ],
   };
@@ -349,8 +349,8 @@ let showBuildIn = $ref(false);
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: UsrInput = {
-    is_enabled: 1,
     is_locked: 0,
+    is_enabled: 1,
   };
   return defaultInput;
 }
@@ -606,10 +606,10 @@ async function initI18nsEfc() {
     "用户名",
     "拥有部门",
     "默认部门",
+    "锁定",
     "启用",
     "拥有角色",
     "备注",
-    "锁定",
   ];
   await Promise.all([
     initDetailI18ns(),

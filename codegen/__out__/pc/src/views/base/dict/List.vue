@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.code_like == null && builtInSearch?.code == null)">
+      <template v-if="showBuildIn || builtInSearch?.code_like == null && builtInSearch?.code == null">
         <el-form-item
           :label="n('编码')"
           prop="code_like"
@@ -41,7 +41,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
+      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -56,7 +56,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -397,7 +397,7 @@
         >
           
           <!-- 编码 -->
-          <template v-if="'code' === col.prop && (showBuildIn == '1' || builtInSearch?.code == null)">
+          <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -414,7 +414,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -423,7 +423,7 @@
           </template>
           
           <!-- 数据类型 -->
-          <template v-else-if="'type' === col.prop && (showBuildIn == '1' || builtInSearch?.type == null)">
+          <template v-else-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -432,7 +432,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn == '1' || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -441,16 +441,24 @@
           </template>
           
           <!-- 启用 -->
-          <template v-else-if="'is_enabled' === col.prop && (showBuildIn == '1' || builtInSearch?.is_enabled == null)">
+          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.is_enabled"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_enabledChg(row.id, row.is_enabled)"
+                ></el-switch>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -459,16 +467,24 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked' === col.prop && (showBuildIn == '1' || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.is_locked"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_lockedChg(row.id, row.is_locked)"
+                ></el-switch>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.create_usr_id == null)">
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -477,7 +493,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop && (showBuildIn == '1' || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -486,7 +502,7 @@
           </template>
           
           <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.update_usr_id == null)">
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -495,7 +511,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop && (showBuildIn == '1' || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -864,6 +880,7 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "名称",
@@ -872,6 +889,7 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "数据类型",
@@ -884,7 +902,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "排序",
       prop: "order_by",
-      width: 100,
+      width: 80,
       sortable: "custom",
       align: "right",
       headerAlign: "center",
@@ -901,7 +919,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 120,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1170,6 +1188,24 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 启用 */
+async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  await enableByIds(
+    [ id ],
+    is_enabled,
+  );
+  await dataGrid(true);
+}
+
+/** 锁定 */
+async function is_lockedChg(id: string, is_locked: 0 | 1) {
+  await lockByIds(
+    [ id ],
+    is_locked,
+  );
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */

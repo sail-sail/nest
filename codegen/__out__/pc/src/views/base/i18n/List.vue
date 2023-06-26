@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.lang_id == null)">
+      <template v-if="showBuildIn || builtInSearch?.lang_id == null">
         <el-form-item
           label="语言"
           prop="lang_id"
@@ -49,7 +49,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.menu_id == null)">
+      <template v-if="showBuildIn || builtInSearch?.menu_id == null">
         <el-form-item
           label="菜单"
           prop="menu_id"
@@ -72,7 +72,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.code_like == null && builtInSearch?.code == null)">
+      <template v-if="showBuildIn || builtInSearch?.code_like == null && builtInSearch?.code == null">
         <el-form-item
           :label="n('编码')"
           prop="code_like"
@@ -87,7 +87,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
+      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -102,7 +102,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -411,7 +411,7 @@
         >
           
           <!-- 语言 -->
-          <template v-if="'lang_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lang_id == null)">
+          <template v-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -420,7 +420,7 @@
           </template>
           
           <!-- 菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.menu_id == null)">
+          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -429,7 +429,7 @@
           </template>
           
           <!-- 编码 -->
-          <template v-else-if="'code' === col.prop && (showBuildIn == '1' || builtInSearch?.code == null)">
+          <template v-else-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -438,7 +438,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -447,7 +447,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"

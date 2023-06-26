@@ -237,7 +237,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "拥有角色",
-        ORDINAL_POSITION: 6,
+        ORDINAL_POSITION: 7,
         require: false,
         search: true,
         width: 280,
@@ -245,9 +245,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        width: 180,
-        align: "left",
-        isTextarea: true,
+        ORDINAL_POSITION: 8,
       },
     ],
   },
@@ -303,11 +301,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-        width: 60,
       },
       {
         COLUMN_NAME: "order_by",
-        width: 100,
       },
       {
         COLUMN_NAME: "rem",
@@ -752,6 +748,7 @@ export default defineConfig({
             column: "dict_id",
           },
         ],
+        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
@@ -759,6 +756,7 @@ export default defineConfig({
         require: true,
         search: true,
         width: 240,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "type",
@@ -767,18 +765,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
       },
       {
         COLUMN_NAME: "is_enabled",
-        width: 60,
       },
       {
         COLUMN_NAME: "rem",
-        width: 120,
-        align: "left",
-        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",

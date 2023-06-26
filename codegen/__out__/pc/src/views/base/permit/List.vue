@@ -26,7 +26,7 @@
       @keyup.enter="searchClk"
     >
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.role_id == null)">
+      <template v-if="showBuildIn || builtInSearch?.role_id == null">
         <el-form-item
           label="角色"
           prop="role_id"
@@ -49,7 +49,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.menu_id == null)">
+      <template v-if="showBuildIn || builtInSearch?.menu_id == null">
         <el-form-item
           label="菜单"
           prop="menu_id"
@@ -72,7 +72,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.code_like == null && builtInSearch?.code == null)">
+      <template v-if="showBuildIn || builtInSearch?.code_like == null && builtInSearch?.code == null">
         <el-form-item
           :label="n('编码')"
           prop="code_like"
@@ -87,7 +87,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null)">
+      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -102,7 +102,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn == '1' || builtInSearch?.is_deleted == null)">
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
         <el-form-item
           label=" "
           prop="is_deleted"
@@ -411,7 +411,7 @@
         >
           
           <!-- 角色 -->
-          <template v-if="'role_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.role_id == null)">
+          <template v-if="'role_id_lbl' === col.prop && (showBuildIn || builtInSearch?.role_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -420,7 +420,7 @@
           </template>
           
           <!-- 菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.menu_id == null)">
+          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -429,7 +429,7 @@
           </template>
           
           <!-- 编码 -->
-          <template v-else-if="'code' === col.prop && (showBuildIn == '1' || builtInSearch?.code == null)">
+          <template v-else-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -438,7 +438,7 @@
           </template>
           
           <!-- 名称 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -447,16 +447,24 @@
           </template>
           
           <!-- 可见 -->
-          <template v-else-if="'is_visible' === col.prop && (showBuildIn == '1' || builtInSearch?.is_visible == null)">
+          <template v-else-if="'is_visible_lbl' === col.prop && (showBuildIn || builtInSearch?.is_visible == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.is_visible"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_visibleChg(row.id, row.is_visible)"
+                ></el-switch>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn == '1' || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -465,7 +473,7 @@
           </template>
           
           <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.create_usr_id == null)">
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -474,7 +482,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop && (showBuildIn == '1' || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -483,7 +491,7 @@
           </template>
           
           <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn == '1' || builtInSearch?.update_usr_id == null)">
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -492,7 +500,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop && (showBuildIn == '1' || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1158,6 +1166,17 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 可见 */
+async function is_visibleChg(id: string, is_visible: 0 | 1) {
+  await updateById(
+    id,
+    {
+      is_visible,
+    },
+  );
+  await dataGrid(true);
 }
 
 /** 打开修改页面 */
