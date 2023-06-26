@@ -114,7 +114,16 @@
         @click="loginClk"
         :disabled="!usrStore.isLogining"
       >
-        {{ i18n.ns("登录") }}
+        <span
+          v-if="!usrStore.authorization"
+        >
+          {{ i18n.ns("登录") }}
+        </span>
+        <span
+          v-else
+        >
+          {{ i18n.ns("正在登录") }}...
+        </span>
       </el-button>
       
     </el-form>
@@ -227,7 +236,6 @@ async function loginClk() {
       dept_id: model.dept_id,
     }),
   );
-  usrStore.isLogining = false;
   usrStore.dept_id = loginModel.dept_id ?? undefined;
   usrStore.authorization = loginModel.authorization;
   tabsStore.clearKeepAliveNames();
