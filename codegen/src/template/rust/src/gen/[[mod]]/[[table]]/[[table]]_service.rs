@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -206,6 +207,47 @@ pub async fn delete_by_ids<'a>(
   
   Ok(num)
 }<#
+if (hasEnabled) {
+#>
+
+/// 根据 ID 查找是否已启用
+/// 记录不存在则返回 false
+#[allow(dead_code)]
+pub async fn get_is_enabled_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let is_enabled = <#=table#>_dao::get_is_enabled_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(is_enabled)
+}
+
+/// 根据 ids 启用或者禁用数据
+#[allow(dead_code)]
+pub async fn enable_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  is_locked: u8,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = <#=table#>_dao::enable_by_ids(
+    ctx,
+    ids,
+    is_locked,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#><#
 if (hasLocked) {
 #>
 

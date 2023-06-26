@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
@@ -1769,6 +1770,72 @@ pub async fn delete_by_ids<'a>(
   
   Ok(num)
 }<#
+if (hasEnabled) {
+#>
+
+/// 根据 ID 查找是否已启用
+/// 记录不存在则返回 false
+pub async fn get_is_enabled_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let model = find_by_id(ctx, id, options).await?;
+  
+  let is_enabled = {
+    if let Some(model) = model {
+      model.is_enabled == 1
+    } else {
+      false
+    }
+  };
+  
+  Ok(is_enabled)
+}
+
+/// 根据 ids 启用或禁用数据
+pub async fn enable_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  is_enabled: u8,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "enable_by_ids";
+  
+  let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_foreign_tables());
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_enabled=? where id=? limit 1",
+      table,
+    );
+    
+    args.push(is_enabled.into());
+    args.push(id.into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}<#
+}
+#><#
 if (hasLocked) {
 #>
 
@@ -1806,6 +1873,8 @@ pub async fn lock_by_ids<'a>(
   let _method = "lock_by_ids";
   
   let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_foreign_tables());
   
   let mut num = 0;
   for id in ids {
