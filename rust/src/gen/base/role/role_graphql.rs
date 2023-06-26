@@ -88,6 +88,24 @@ impl RoleGenQuery {
     ctx.ok(res).await
   }
   
+  /// 根据 ID 查找是否已启用
+  /// 记录不存在则返回 false
+  pub async fn get_is_enabled_by_id_role<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<bool> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = role_resolver::get_is_enabled_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
   /// 获取字段对应的名称
   pub async fn get_field_comments_role<'a>(
     &self,
@@ -177,6 +195,25 @@ impl RoleGenMutation {
     let res = role_resolver::delete_by_ids(
       &mut ctx,
       ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 启用或禁用数据
+  pub async fn enable_by_ids_role<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+    is_enabled: u8,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = role_resolver::enable_by_ids(
+      &mut ctx,
+      ids,
+      is_enabled,
       None,
     ).await;
     

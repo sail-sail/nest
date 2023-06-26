@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -119,6 +120,28 @@ impl <#=tableUP#>GenQuery {
     
     ctx.ok(res).await
   }<#
+  if (hasEnabled) {
+  #>
+  
+  /// 根据 ID 查找是否已启用
+  /// 记录不存在则返回 false
+  pub async fn get_is_enabled_by_id_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<bool> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = <#=table#>_resolver::get_is_enabled_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
+  }
+  #><#
   if (hasLocked) {
   #>
   
@@ -295,10 +318,33 @@ impl <#=tableUP#>GenMutation {<#
   }<#
     }
   #><#
+    if (hasEnabled && opts.noEdit !== true) {
+  #>
+  
+  /// 根据 ids 启用或禁用数据
+  pub async fn enable_by_ids_<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+    is_enabled: u8,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_resolver::enable_by_ids(
+      &mut ctx,
+      ids,
+      is_enabled,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
+    }
+  #><#
     if (hasLocked && opts.noEdit !== true) {
   #>
   
-  /// 根据 ids 锁定或者解锁数据
+  /// 根据 ids 锁定或解锁数据
   pub async fn lock_by_ids_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,

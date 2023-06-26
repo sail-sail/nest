@@ -251,6 +251,68 @@ pub async fn delete_by_ids<'a>(
   Ok(num)
 }
 
+/// 根据 ID 查找是否已启用
+/// 记录不存在则返回 false
+#[allow(dead_code)]
+pub async fn get_is_enabled_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let is_enabled = dept_service::get_is_enabled_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(is_enabled)
+}
+
+/// 根据 ids 启用或禁用数据
+#[allow(dead_code)]
+pub async fn enable_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  is_enabled: u8,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/dept".to_owned(),
+    "enable".to_owned(),
+  ).await?;
+  
+  let old_data = serde_json::to_string(&ids)?;
+  
+  let num = dept_service::enable_by_ids(
+    ctx,
+    ids,
+    is_enabled,
+    options,
+  ).await?;
+  
+  let method_lbl = ns(ctx, "启用".to_owned(), None).await?;
+  let table_comment = ns(ctx, "部门".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "base_dept".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "enable".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;
+  
+  Ok(num)
+}
+
 /// 根据 ID 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
@@ -270,7 +332,7 @@ pub async fn get_is_locked_by_id<'a>(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁数据
+/// 根据 ids 锁定或解锁数据
 #[allow(dead_code)]
 pub async fn lock_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
