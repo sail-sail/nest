@@ -112,8 +112,18 @@
         type="primary"
         style="width: 100%;margin-top: 20px;"
         @click="loginClk"
+        :disabled="!usrStore.isLogining"
       >
-        {{ i18n.ns("登录") }}
+        <span
+          v-if="!usrStore.authorization"
+        >
+          {{ i18n.ns("登录") }}
+        </span>
+        <span
+          v-else
+        >
+          {{ i18n.ns("正在登录") }}...
+        </span>
       </el-button>
       
     </el-form>
@@ -151,6 +161,8 @@ let i18n = $ref(useI18n("/base/usr"));
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
+
+usrStore.isLogining = true;
 
 const inputStyle = {
   backgroundColor: 'transparent',
@@ -230,7 +242,7 @@ async function loginClk() {
   await Promise.all([
     indexStore.initI18nVersion(),
   ]);
-  window.location.reload();
+  window.history.go(0);
 }
 
 let tenants = $ref<{

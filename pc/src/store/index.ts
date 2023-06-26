@@ -22,8 +22,8 @@ export default defineStore("index", function() {
   let i18n_version: string | null = $ref(localStorage.getItem("__i18n_version"));
   
   /**
- * 获取 i18n 版本
- */
+   * 获取 i18n 版本
+   */
   async function initI18nVersion() {
     const options = await getOptionsByLbl({
       lbl: "国际化版本号",

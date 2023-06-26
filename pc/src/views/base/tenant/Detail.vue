@@ -45,18 +45,26 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.domain == null)">
+        <template v-if="(showBuildIn || builtInModel?.domain_ids == null)">
           <el-form-item
-            :label="n('域名绑定')"
-            prop="domain"
+            :label="n('域名')"
+            prop="domain_ids"
             un-h="full"
           >
-            <el-input
-              v-model="dialogModel.domain"
+            <CustomSelect
+              :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
+              v-model="dialogModel.domain_ids"
+              :method="getDomainList"
+              :options-map="((item: DomainModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               un-w="full"
-              :placeholder="`${ ns('请输入') } ${ n('域名绑定') }`"
-              :clearable="true"
-            ></el-input>
+              :placeholder="`${ ns('请选择') } ${ n('域名') }`"
+              multiple
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -261,11 +269,13 @@ import {
 
 import {
   type TenantInput,
+  type DomainModel,
   type UsrModel,
   type MenuModel,
 } from "#/types";
 
 import {
+  getDomainList,
   getUsrList,
   getMenuList,
 } from "./Api";
@@ -298,6 +308,7 @@ type DialogAction = "add" | "copy" | "edit";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
+  domain_ids: [ ],
   menu_ids: [ ],
 } as TenantInput);
 
@@ -322,10 +333,10 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
-    domain: [
+    domain_ids: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("域名绑定") }`,
+        message: `${ await nsAsync("请选择") } ${ n("域名") }`,
       },
     ],
     usr_id: [
@@ -593,13 +604,13 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "域名绑定",
+    "域名",
     "租户管理员",
     "到期日",
     "最大用户数",
     "锁定",
-    "菜单",
     "启用",
+    "菜单",
     "排序",
     "备注",
     "创建人",

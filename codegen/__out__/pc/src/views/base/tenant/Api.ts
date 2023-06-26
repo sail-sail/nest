@@ -7,6 +7,7 @@ import {
 } from "#/types";
 
 import {
+  type DomainSearch,
   type UsrSearch,
   type MenuSearch,
 } from "#/types";
@@ -37,7 +38,8 @@ export async function findAll(
         findAllTenant(search: $search, page: $page, sort: $sort) {
           id
           lbl
-          domain
+          domain_ids
+          domain_ids_lbl
           usr_id
           usr_id_lbl
           expiration
@@ -45,10 +47,10 @@ export async function findAll(
           max_usr_num
           is_locked
           is_locked_lbl
-          menu_ids
-          menu_ids_lbl
           is_enabled
           is_enabled_lbl
+          menu_ids
+          menu_ids_lbl
           order_by
           rem
           create_usr_id
@@ -174,7 +176,8 @@ export async function findById(
         findByIdTenant(id: $id) {
           id
           lbl
-          domain
+          domain_ids
+          domain_ids_lbl
           usr_id
           usr_id_lbl
           expiration
@@ -182,10 +185,10 @@ export async function findById(
           max_usr_num
           is_locked
           is_locked_lbl
-          menu_ids
-          menu_ids_lbl
           is_enabled
           is_enabled_lbl
+          menu_ids
+          menu_ids_lbl
           order_by
           rem
           create_usr_id
@@ -312,6 +315,51 @@ export async function forceDeleteByIds(
   }, opt);
   const res = data.forceDeleteByIdsTenant;
   return res;
+}
+
+export async function findAllDomain(
+  search?: DomainSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDomain: Query["findAllDomain"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDomain(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllDomain;
+  return res;
+}
+
+export async function getDomainList() {
+  const data = await findAllDomain(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
 }
 
 export async function findAllUsr(
@@ -443,7 +491,8 @@ export function useExportExcel(routePath: string) {
           findAllTenant(search: $search, sort: $sort) {
             id
             lbl
-            domain
+            domain_ids
+            domain_ids_lbl
             usr_id
             usr_id_lbl
             expiration
@@ -451,10 +500,10 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
-            menu_ids
-            menu_ids_lbl
             is_enabled
             is_enabled_lbl
+            menu_ids
+            menu_ids_lbl
             order_by
             rem
             create_usr_id
@@ -468,7 +517,8 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsTenant {
             lbl
-            domain
+            domain_ids
+            domain_ids_lbl
             usr_id
             usr_id_lbl
             expiration
@@ -476,10 +526,10 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
-            menu_ids
-            menu_ids_lbl
             is_enabled
             is_enabled_lbl
+            menu_ids
+            menu_ids_lbl
             order_by
             rem
             create_usr_id

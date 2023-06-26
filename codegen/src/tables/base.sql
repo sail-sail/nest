@@ -4,7 +4,6 @@ drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `domain` varchar(45) NOT NULL DEFAULT '' COMMENT '域名绑定',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户管理员',
   `expiration` date DEFAULT NULL COMMENT '到期日',
   `max_usr_num` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '最大用户数',
@@ -21,6 +20,41 @@ CREATE TABLE if not exists `base_tenant` (
   INDEX (`order_by`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户';
+
+------------------------------------------------------------------------------------------------ 域名
+drop table if exists `base_domain`;
+CREATE TABLE if not exists `base_domain` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `is_default` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '默认,dict:is_default',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
+  `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='域名';
+
+------------------------------------------------------------------------------------------------ 租户域名
+drop table if exists `base_tenant_domain`;
+CREATE TABLE if not exists `base_tenant_domain` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `tenant_id` varchar(22) NOT NULL COMMENT '租户',
+  `domain_id` varchar(22) NOT NULL COMMENT '域名',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`tenant_id`, `domain_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户域名';
 
 ------------------------------------------------------------------------------------------------ 租户菜单
 drop table if exists `base_tenant_menu`;
@@ -65,8 +99,10 @@ drop table if exists `base_role`;
 CREATE TABLE if not exists `base_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
+  `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
