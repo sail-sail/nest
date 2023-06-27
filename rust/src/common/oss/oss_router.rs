@@ -307,15 +307,21 @@ pub async fn img(
   let content = oss_service::get_object(&id).await?;
   let len = content.len();
   let format = f.unwrap_or("webp".to_owned());
-  let mut img = ImageReader::new(Cursor::new(&content)).with_guessed_format()?.decode()?;
+  let img = ImageReader::new(Cursor::new(&content)).with_guessed_format()?.decode()?;
   let (width, height) = img.dimensions();
-  let nwidth = w.unwrap_or(width);
-  let nheight = h.unwrap_or(height);
-  if nwidth > width || nheight > height {
-    response = response.header("Content-Length", len.to_string());
-    let response = response.body(content);
-    return Ok(response);
+  let mut nwidth = w.unwrap_or(width);
+  let mut nheight = h.unwrap_or(height);
+  if nwidth > width {
+    nwidth = width;
   }
+  if nheight > height {
+    nheight = height;
+  }
+  // if nwidth > width || nheight > height {
+  //   response = response.header("Content-Length", len.to_string());
+  //   let response = response.body(content);
+  //   return Ok(response);
+  // }
   drop(content);
   let output_format = match format.as_str() {
     "jpg" => ImageOutputFormat::Jpeg(q.unwrap_or(80)),
@@ -324,7 +330,8 @@ pub async fn img(
     "webp" => ImageOutputFormat::WebP,
     _ => ImageOutputFormat::WebP,
   };
-  img = img.resize(nwidth, nheight, FilterType::Lanczos3);
+  let img = img.resize(nwidth, nheight, FilterType::Lanczos3);
+  // let img = img.into_rgba8();
   let mut content: Vec<u8> = Vec::with_capacity(len);
   img.write_to(&mut Cursor::new(&mut content), output_format)?;
   
