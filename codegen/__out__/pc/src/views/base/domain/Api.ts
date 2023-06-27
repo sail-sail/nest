@@ -213,6 +213,32 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 id 设置默认记录
+ * @export defaultById
+ * @param {string} id
+ * @param {GqlOpt} opt?
+ */
+export async function defaultById(
+  id: string,
+  opt?: GqlOpt,
+) {
+  const data: {
+    defaultByIdDomain: Mutation["defaultByIdDomain"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: String!) {
+        defaultByIdDomain(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.defaultByIdDomain;
+  return res;
+}
+
+/**
  * 根据 ids 启用或禁用数据
  * @export enableByIds
  * @param {string[]} ids

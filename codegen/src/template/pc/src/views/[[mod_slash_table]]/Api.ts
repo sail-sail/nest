@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -439,6 +440,36 @@ export async function deleteByIds(
     },
   }, opt);
   const res = data.deleteByIds<#=Table_Up#>;
+  return res;
+}<#
+}
+#><#
+if (hasDefault && opts.noEdit !== true) {
+#>
+
+/**
+ * 根据 id 设置默认记录
+ * @export defaultById
+ * @param {string} id
+ * @param {GqlOpt} opt?
+ */
+export async function defaultById(
+  id: string,
+  opt?: GqlOpt,
+) {
+  const data: {
+    defaultById<#=Table_Up#>: Mutation["defaultById<#=Table_Up#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: String!) {
+        defaultById<#=Table_Up#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.defaultById<#=Table_Up#>;
   return res;
 }<#
 }

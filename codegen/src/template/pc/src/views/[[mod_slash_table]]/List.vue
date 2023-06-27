@@ -2,6 +2,7 @@
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -729,6 +730,17 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if(column.isSwitch && opts.noEdit !== true && column_name === "is_default") {
+              #>
+              <template #default="{ row }">
+                <el-switch
+                  v-model="row.<#=column_name#>"
+                  :active-value="1"
+                  :inactive-value="0"
+                  :disabled="row.<#=column_name#> === 1"
+                  @change="<#=column_name#>Chg(row.id)"
+                ></el-switch>
+              </template><#
               } else if(column.isSwitch && opts.noEdit !== true) {
               #>
               <template #default="{ row }">
@@ -998,6 +1010,11 @@ import {
   #>
   deleteByIds,
   forceDeleteByIds,<#
+    }
+  #><#
+    if (hasDefault && opts.noEdit !== true) {
+  #>
+  defaultById,<#
     }
   #><#
     if (hasEnabled && opts.noEdit !== true) {
@@ -2113,7 +2130,26 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
 #><#
-if (column_name === "is_enabled") {
+if (column_name === "is_default") {
+#>
+
+/** <#=column_comment#> */
+async function <#=column_name#>Chg(id: string) {
+  const notLoading = true;
+  await defaultById(
+    id,
+    {
+      notLoading,
+    },
+  );
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}<#
+} else if (column_name === "is_enabled") {
 #>
 
 /** <#=column_comment#> */

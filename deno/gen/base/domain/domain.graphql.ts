@@ -155,6 +155,8 @@ type Mutation {
   updateByIdDomain(id: String!, model: DomainInput!): String!
   "根据 ids 删除数据"
   deleteByIdsDomain(ids: [String!]!): Int!
+  "根据 id 设置默认记录"
+  defaultByIdDomain(id: String!): Int!
   "根据 ids 启用或者禁用数据"
   enableByIdsDomain(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 还原数据"

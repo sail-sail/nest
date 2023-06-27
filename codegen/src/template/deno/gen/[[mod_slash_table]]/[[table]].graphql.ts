@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -453,6 +454,12 @@ type Mutation {<#
   #>
   "根据 ids 删除数据"
   deleteByIds<#=Table_Up#>(ids: [String!]!): Int!<#
+  }
+  #><#
+  if (hasDefault && opts.noEdit !== true) {
+  #>
+  "根据 id 设置默认记录"
+  defaultById<#=Table_Up#>(id: String!): Int!<#
   }
   #><#
   if (hasEnabled && opts.noEdit !== true) {

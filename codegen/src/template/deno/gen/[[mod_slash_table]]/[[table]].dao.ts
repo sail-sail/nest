@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -2236,6 +2237,71 @@ export async function deleteByIds(
   
   return num;
 }<#
+if (hasDefault) {
+#>
+
+/**
+ * 根据 id 设置默认记录
+ * @param {string} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "defaultById";
+  
+  if (!id) {
+    throw new Error("defaultById: id cannot be empty");
+  }
+  
+  {
+    const args = new QueryArgs();
+    let sql = `
+      update
+        <#=mod#>_<#=table#>
+      set
+        is_default = 0
+      where
+        id != ${ args.push(id) }
+    `;
+    await execute(sql, args);
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      <#=mod#>_<#=table#>
+    set
+      is_default = 1
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
+  }
+  #>
+  
+  return num;
+}<#
+}
+#><#
 if (hasEnabled) {
 #>
 

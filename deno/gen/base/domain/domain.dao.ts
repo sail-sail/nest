@@ -873,6 +873,63 @@ export async function deleteByIds(
 }
 
 /**
+ * 根据 id 设置默认记录
+ * @param {string} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_domain";
+  const method = "defaultById";
+  
+  if (!id) {
+    throw new Error("defaultById: id cannot be empty");
+  }
+  
+  {
+    const args = new QueryArgs();
+    let sql = `
+      update
+        base_domain
+      set
+        is_default = 0
+      where
+        id != ${ args.push(id) }
+    `;
+    await execute(sql, args);
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      base_domain
+    set
+      is_default = 1
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
  * 根据 ID 查找是否已启用
  * 记录不存在则返回 undefined
  * @param {string} id

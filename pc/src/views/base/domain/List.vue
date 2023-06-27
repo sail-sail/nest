@@ -394,7 +394,8 @@
                   v-model="row.is_default"
                   :active-value="1"
                   :inactive-value="0"
-                  @change="is_defaultChg(row.id, row.is_default)"
+                  :disabled="row.is_default === 1"
+                  @change="is_defaultChg(row.id)"
                 ></el-switch>
               </template>
             </el-table-column>
@@ -518,6 +519,7 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
+  defaultById,
   enableByIds,
   useExportExcel,
   updateById,
@@ -1110,13 +1112,10 @@ async function cancelImport() {
 }
 
 /** 默认 */
-async function is_defaultChg(id: string, is_default: 0 | 1) {
+async function is_defaultChg(id: string) {
   const notLoading = true;
-  await updateById(
+  await defaultById(
     id,
-    {
-      is_default,
-    },
     {
       notLoading,
     },
