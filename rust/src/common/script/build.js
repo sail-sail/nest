@@ -57,13 +57,13 @@ async function compile() {
   await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/server`, `${ buildDir }/rust/server`);
 }
 
-async function publish() {
-  console.log("publish");
-  child_process.execSync("npm run publish", {
-    cwd: `${ projectDir }/rust`,
-    stdio: "inherit",
-  });
-}
+// async function publish() {
+//   console.log("publish");
+//   child_process.execSync("npm run publish", {
+//     cwd: `${ projectDir }/rust`,
+//     stdio: "inherit",
+//   });
+// }
 
 (async function() {
   if (commands.length === 0) {
@@ -76,7 +76,7 @@ async function publish() {
     await copyEnv();
     await gqlgen();
     await compile();
-    await publish();
+    // await publish();
     await pc();
     process.exit(0);
   }
