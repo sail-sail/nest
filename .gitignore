@@ -7,6 +7,8 @@ package-lock.json
 yarn.lock
 unpackage
 ~$*.xlsx
+target
+Cargo.lock
 
 /build
 /log
@@ -19,8 +21,6 @@ publish_cnf.js
 /rust/target
 /rust/Cargo.lock
 /rust/src/common/gql/schema.graphql
-
-/app_macro
 
 /pc/typings/components.d.ts
 /pc/typings/auto-imports.d.ts

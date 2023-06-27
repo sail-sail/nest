@@ -8,17 +8,17 @@
   class="custom_tree_select"
   node-key="id"
   vaule-key="id"
-  v-bind="$attrs"
-  @keyup.enter.stop
+  :props="props.props"
+  :multiple="props.multiple"
   :data="data"
+  v-bind="$attrs"
+  :render-after-expand="false"
   :loading="!inited"
-  :model-value="modelValue"
-  @update:model-value="modelValueUpdate"
+  v-model="modelValue"
+  @keyup.enter.stop
   @clear="clearClk"
   @change="valueChg"
   @check="checkClk"
-  :multiple="props.multiple"
-  :props="props.props"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -77,11 +77,6 @@ const props = withDefaults(
 );
 
 let modelValue = $ref(props.modelValue);
-
-function modelValueUpdate(value?: string | string[] | null) {
-  modelValue = value;
-  emit("update:modelValue", modelValue);
-}
 
 watch(
   () => props.modelValue,
