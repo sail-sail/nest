@@ -59,12 +59,12 @@ axios.interceptors.response.use(
     const usrStore = useUsrStore();
     const config = response.config;
     const configAny = config as any;
-    if (configAny.isMutation) {
-      if (indexStore.mutationLoading > 0) {
-        indexStore.mutationLoading--;
-      }
-    }
     if (configAny.notLoading !== true) {
+      if (configAny.isMutation) {
+        if (indexStore.mutationLoading > 0) {
+          indexStore.mutationLoading--;
+        }
+      }
       indexStore.minusLoading();
     }
     const headers = response.headers;

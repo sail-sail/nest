@@ -869,14 +869,17 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
-async function dataGrid(isCount = false) {
+async function dataGrid(
+  isCount = false,
+  opt?: GqlOpt,
+) {
   if (isCount) {
     await Promise.all([
-      useFindAll(),
-      useFindCount(),
+      useFindAll(opt),
+      useFindCount(opt),
     ]);
   } else {
-    await useFindAll();
+    await useFindAll(opt);
   }
 }
 
@@ -893,16 +896,20 @@ function getDataSearch() {
   return search2;
 }
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }
 
-async function useFindCount() {
+async function useFindCount(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2);
+  page.total = await findCount(search2, opt);
 }
 
 let sort: Sort = $ref({
