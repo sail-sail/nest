@@ -4,14 +4,16 @@
     "pnpm-lock.yaml": true,
     "target": true,
     "Cargo.lock": true,
-    ".cargo": true
+    ".cargo": true,
+    "app_macro": true
   },
   "search.exclude": {
     "node_modules": true,
     "pnpm-lock.yaml": true,
     "target": true,
     "Cargo.lock": true,
-    ".cargo": true
+    ".cargo": true,
+    "app_macro": true
   },
   "deno.enable": false,
   "files.eol": "\n"
