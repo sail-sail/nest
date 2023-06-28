@@ -405,7 +405,7 @@
                   v-model="row.is_default"
                   :active-value="1"
                   :inactive-value="0"
-                  :disabled="row.is_default === 1"
+                  :before-change="() => row.is_default == 0"
                   @change="is_defaultChg(row.id)"
                 ></el-switch>
               </template>

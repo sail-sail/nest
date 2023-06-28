@@ -759,7 +759,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   v-model="row.<#=column_name#>"
                   :active-value="1"
                   :inactive-value="0"
-                  :disabled="row.<#=column_name#> === 1"
+                  :before-change="() => row.<#=column_name#> == 0"
                   @change="<#=column_name#>Chg(row.id)"
                 ></el-switch>
               </template><#
