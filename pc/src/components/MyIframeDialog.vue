@@ -11,6 +11,7 @@
       un-flex="~ [3_0_0] col basis-[inherit]"
       un-overflow-hidden
       un-m="x-4"
+      un-pos-relative
     >
       <iframe
         v-if="dialogModel.url"
@@ -27,6 +28,25 @@
         seamless
         @load="iframeLoad"
       ></iframe>
+      <div
+        v-if="!iframeLoaded"
+        un-pos-absolute
+        un-w="full"
+        un-h="full"
+        un-top="0"
+        un-left="0"
+        z-index="2"
+        un-flex="~ col"
+        un-justify-center
+        un-items-center
+        un-bg="gray-200"
+      >
+        <div
+          un-text="5 black font-bold"
+        >
+          {{ ns('加载中...') }}
+        </div>
+      </div>
     </div>
     
     <div
@@ -43,7 +63,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns("关闭") }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
     </div>
@@ -58,7 +78,7 @@ import {
 
 const {
   ns,
-} = useI18n("/base/tenant");
+} = useI18n("/base/usr");
 
 let inited = $ref(false);
 
@@ -113,7 +133,10 @@ async function showDialog(
 
 let iframeRef = $ref<HTMLIFrameElement>();
 
+let iframeLoaded = $ref(false);
+
 function iframeLoad() {
+  iframeLoaded = true;
   try {
     initIframeEl();
   } catch (err) {
