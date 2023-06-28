@@ -897,7 +897,8 @@ export async function defaultById(
       set
         is_default = 0
       where
-        id != ${ args.push(id) }
+        is_default = 1
+        and id != ${ args.push(id) }
     `;
     await execute(sql, args);
   }
