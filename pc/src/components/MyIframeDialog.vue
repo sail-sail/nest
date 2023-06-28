@@ -43,7 +43,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ ns("关闭") }}</span>
       </el-button>
       
     </div>
@@ -55,6 +55,10 @@
 import {
   type CustomDialogType,
 } from "@/components/CustomDialog.vue";
+
+const {
+  ns,
+} = useI18n("/base/tenant");
 
 let inited = $ref(false);
 
