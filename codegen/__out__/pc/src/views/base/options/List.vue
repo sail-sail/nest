@@ -444,6 +444,17 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-input-number
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
+              </template>
             </el-table-column>
           </template>
           
@@ -907,7 +918,7 @@ function getTableColumns(): ColumnType[] {
       sortable: "custom",
       align: "right",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "启用",
@@ -915,7 +926,7 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "备注",
@@ -931,7 +942,7 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "创建人",

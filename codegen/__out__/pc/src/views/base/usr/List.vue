@@ -936,7 +936,7 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "启用",
@@ -944,7 +944,7 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "拥有角色",

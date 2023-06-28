@@ -155,6 +155,9 @@ async function getSchema0(
       if (item.width == null) {
         item.width = 60;
       }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
     }
     if ([ "is_enabled" ].includes(column_name)) {
       if (item.noAdd == null) {
@@ -169,6 +172,9 @@ async function getSchema0(
       if (item.width == null) {
         item.width = 60;
       }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
     }
     if (column_name.startsWith("is_")) {
       if (item.width == null) {
@@ -177,6 +183,9 @@ async function getSchema0(
       if (item.isSwitch == null) {
         item.isSwitch = true;
       }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {
@@ -184,6 +193,9 @@ async function getSchema0(
       }
       if (item.align == null) {
         item.align = "right";
+      }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
       }
     }
     if ([ "rem" ].includes(column_name)) {
