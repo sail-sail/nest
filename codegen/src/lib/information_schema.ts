@@ -189,7 +189,7 @@ async function getSchema0(
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {
-        item.width = 80;
+        item.width = 100;
       }
       if (item.align == null) {
         item.align = "right";

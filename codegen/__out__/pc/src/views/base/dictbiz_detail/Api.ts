@@ -41,6 +41,7 @@ export async function findAll(
           rem
           is_locked
           is_locked_lbl
+          is_deleted
         }
       }
     `,
@@ -165,6 +166,7 @@ export async function findById(
           rem
           is_locked
           is_locked_lbl
+          is_deleted
         }
       }
     `,

@@ -19,6 +19,8 @@ type LangModel {
   is_enabled_lbl: String
   "排序"
   order_by: Int!
+  "是否已删除"
+  is_deleted: Int!
 }
 type LangFieldComment {
   "编码"

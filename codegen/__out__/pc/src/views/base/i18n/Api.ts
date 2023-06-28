@@ -39,6 +39,7 @@ export async function findAll(
           code
           lbl
           rem
+          is_deleted
         }
       }
     `,
@@ -160,6 +161,7 @@ export async function findById(
           code
           lbl
           rem
+          is_deleted
         }
       }
     `,

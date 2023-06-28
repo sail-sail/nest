@@ -29,6 +29,8 @@ type MenuModel {
   order_by: Int!
   "备注"
   rem: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type MenuFieldComment {
   "类型"

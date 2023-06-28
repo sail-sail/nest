@@ -119,6 +119,8 @@ type <#=modelName#> {<#
     }
   }
   #>
+  "是否已删除"
+  is_deleted: Int!
 }
 type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {

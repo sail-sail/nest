@@ -35,6 +35,8 @@ type BackgroundTaskModel {
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
+  "是否已删除"
+  is_deleted: Int!
 }
 type BackgroundTaskFieldComment {
   "名称"

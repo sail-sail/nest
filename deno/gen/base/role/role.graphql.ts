@@ -19,6 +19,8 @@ type RoleModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "是否已删除"
+  is_deleted: Int!
 }
 type RoleFieldComment {
   "名称"

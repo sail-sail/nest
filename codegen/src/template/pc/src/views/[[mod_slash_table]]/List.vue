@@ -704,6 +704,11 @@ const hasAtt = columns.some((item) => item.isAtt);
             >
               <template #default="{ row }">
                 <el-input-number
+                  v-if="permit('edit')<#
+                  if (hasLocked) {
+                  #> && row.is_locked !== 1<#
+                  }
+                  #> && row.is_deleted !== 1"
                   v-model="row.order_by"
                   :min="0"
                   :precision="0"
@@ -756,6 +761,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit')<#
+                  if (hasLocked) {
+                  #> && row.is_locked !== 1<#
+                  }
+                  #> && row.is_deleted !== 1"
                   v-model="row.<#=column_name#>"
                   :active-value="1"
                   :inactive-value="0"
@@ -767,6 +777,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit')<#
+                  if (hasLocked && column_name !== "is_locked") {
+                  #> && row.is_locked !== 1<#
+                  }
+                  #> && row.is_deleted !== 1"
                   v-model="row.<#=column_name#>"
                   :active-value="1"
                   :inactive-value="0"
@@ -826,9 +841,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  
                   min="w-7.5"
-                  
                   @click="<#=column_name#>Clk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}

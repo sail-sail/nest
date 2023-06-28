@@ -43,6 +43,8 @@ type DictbizModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type DictbizFieldComment {
   "编码"

@@ -35,6 +35,8 @@ type UsrModel {
   role_ids_lbl: [String!]
   "备注"
   rem: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type UsrFieldComment {
   "名称"

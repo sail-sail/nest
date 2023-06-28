@@ -37,6 +37,7 @@ export async function findAll(
           rem
           is_enabled
           is_enabled_lbl
+          is_deleted
         }
       }
     `,
@@ -157,6 +158,7 @@ export async function findById(
           rem
           is_enabled
           is_enabled_lbl
+          is_deleted
         }
       }
     `,

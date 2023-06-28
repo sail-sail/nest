@@ -44,6 +44,7 @@ export async function findAll(
           rem
           create_usr_id
           create_usr_id_lbl
+          is_deleted
         }
       }
     `,
@@ -117,6 +118,7 @@ export async function findById(
           rem
           create_usr_id
           create_usr_id_lbl
+          is_deleted
         }
       }
     `,

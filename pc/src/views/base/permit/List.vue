@@ -454,6 +454,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_visible"
                   :active-value="1"
                   :inactive-value="0"

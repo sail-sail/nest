@@ -151,6 +151,7 @@ export async function findAll(
             }
           }
           #>
+          is_deleted
         }
       }
     `,
@@ -390,6 +391,7 @@ export async function findById(
             }
           }
           #>
+          is_deleted
         }
       }
     `,

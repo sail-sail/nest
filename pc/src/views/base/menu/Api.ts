@@ -46,6 +46,7 @@ export async function findAll(
           is_enabled_lbl
           order_by
           rem
+          is_deleted
         }
       }
     `,
@@ -192,6 +193,7 @@ export async function findById(
           is_enabled_lbl
           order_by
           rem
+          is_deleted
         }
       }
     `,

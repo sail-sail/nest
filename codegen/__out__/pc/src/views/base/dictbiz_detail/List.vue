@@ -454,6 +454,7 @@
             >
               <template #default="{ row }">
                 <el-input-number
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
                   v-model="row.order_by"
                   :min="0"
                   :precision="0"
@@ -474,6 +475,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
                   v-model="row.is_enabled"
                   :active-value="1"
                   :inactive-value="0"
@@ -500,6 +502,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_locked"
                   :active-value="1"
                   :inactive-value="0"

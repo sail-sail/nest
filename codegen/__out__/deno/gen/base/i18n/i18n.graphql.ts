@@ -21,6 +21,8 @@ type I18Nmodel {
   lbl: String!
   "备注"
   rem: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type I18NfieldComment {
   "语言"

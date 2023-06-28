@@ -462,6 +462,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_locked"
                   :active-value="1"
                   :inactive-value="0"
@@ -479,6 +480,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
                   v-model="row.is_enabled"
                   :active-value="1"
                   :inactive-value="0"
@@ -497,9 +499,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  
                   min="w-7.5"
-                  
                   @click="menu_idsClk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
@@ -516,6 +516,7 @@
             >
               <template #default="{ row }">
                 <el-input-number
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
                   v-model="row.order_by"
                   :min="0"
                   :precision="0"
@@ -1017,7 +1018,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "排序",
       prop: "order_by",
-      width: 80,
+      width: 100,
       sortable: "custom",
       align: "right",
       headerAlign: "center",

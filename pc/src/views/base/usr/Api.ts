@@ -49,6 +49,7 @@ export async function findAll(
           role_ids
           role_ids_lbl
           rem
+          is_deleted
         }
       }
     `,
@@ -177,6 +178,7 @@ export async function findById(
           role_ids
           role_ids_lbl
           rem
+          is_deleted
         }
       }
     `,

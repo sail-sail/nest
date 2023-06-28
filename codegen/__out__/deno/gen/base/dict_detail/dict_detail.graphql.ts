@@ -27,6 +27,8 @@ type DictDetailModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
+  "是否已删除"
+  is_deleted: Int!
 }
 type DictDetailFieldComment {
   "系统字典"

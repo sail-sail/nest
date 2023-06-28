@@ -406,9 +406,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  
                   min="w-7.5"
-                  
                   @click="menu_idsClk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
@@ -434,6 +432,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_enabled"
                   :active-value="1"
                   :inactive-value="0"
