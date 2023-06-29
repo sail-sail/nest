@@ -209,6 +209,18 @@ async function getSchema0(
         item.isTextarea = true;
       }
     }
+    if (
+      (
+        item.foreignKey
+        && (item.foreignKey.multiple || item.COLUMN_NAME.endsWith("_ids"))
+        && (item.foreignKey.showType === "tag" || !item.foreignKey.showType)
+      )
+      || item.COLUMN_NAME.endsWith("_ids")
+    ) {
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
+    }
   }
   return records2;
 }

@@ -965,7 +965,7 @@ function getTableColumns(): ColumnType[] {
       width: 280,
       align: "left",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "租户管理员",
@@ -1013,7 +1013,7 @@ function getTableColumns(): ColumnType[] {
       width: 80,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "排序",

@@ -922,7 +922,7 @@ function getTableColumns(): ColumnType[] {
       width: 280,
       align: "left",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "默认部门",
@@ -954,7 +954,7 @@ function getTableColumns(): ColumnType[] {
       width: 280,
       align: "left",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "备注",

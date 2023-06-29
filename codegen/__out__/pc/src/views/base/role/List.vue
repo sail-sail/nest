@@ -804,7 +804,7 @@ function getTableColumns(): ColumnType[] {
       width: 80,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "备注",
