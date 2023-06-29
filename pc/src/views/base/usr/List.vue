@@ -460,20 +460,6 @@
             </el-table-column>
           </template>
           
-          <!-- 拥有部门 -->
-          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row, column }">
-                <LinkList
-                  v-model="row[column.property]"
-                ></LinkList>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 默认部门 -->
           <template v-else-if="'default_dept_id_lbl' === col.prop && (showBuildIn || builtInSearch?.default_dept_id == null)">
             <el-table-column
@@ -515,6 +501,20 @@
                   :inactive-value="0"
                   @change="is_enabledChg(row.id, row.is_enabled)"
                 ></el-switch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 拥有部门 -->
+          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
               </template>
             </el-table-column>
           </template>
@@ -703,12 +703,12 @@ const props = defineProps<{
   username_like?: string; // 用户名
   password?: string; // 密码
   password_like?: string; // 密码
-  dept_ids?: string|string[]; // 拥有部门
-  dept_ids_lbl?: string|string[]; // 拥有部门
   default_dept_id?: string|string[]; // 默认部门
   default_dept_id_lbl?: string|string[]; // 默认部门
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  dept_ids?: string|string[]; // 拥有部门
+  dept_ids_lbl?: string|string[]; // 拥有部门
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
   rem?: string; // 备注
@@ -719,14 +719,14 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   ids: "string[]",
-  dept_ids: "string[]",
-  dept_ids_lbl: "string[]",
   default_dept_id: "string[]",
   default_dept_id_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  dept_ids: "string[]",
+  dept_ids_lbl: "string[]",
   role_ids: "string[]",
   role_ids_lbl: "string[]",
 };
@@ -917,14 +917,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "拥有部门",
-      prop: "dept_ids_lbl",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
       label: "默认部门",
       prop: "default_dept_id_lbl",
       width: 140,
@@ -945,6 +937,14 @@ function getTableColumns(): ColumnType[] {
       prop: "is_enabled_lbl",
       width: 60,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "拥有部门",
+      prop: "dept_ids_lbl",
+      width: 280,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1139,10 +1139,10 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("用户名") ]: "username",
-    [ n("拥有部门") ]: "dept_ids_lbl",
     [ n("默认部门") ]: "default_dept_id_lbl",
     [ n("锁定") ]: "is_locked_lbl",
     [ n("启用") ]: "is_enabled_lbl",
+    [ n("拥有部门") ]: "dept_ids_lbl",
     [ n("拥有角色") ]: "role_ids_lbl",
     [ n("备注") ]: "rem",
   };
@@ -1392,10 +1392,10 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "用户名",
-    "拥有部门",
     "默认部门",
     "锁定",
     "启用",
+    "拥有部门",
     "拥有角色",
     "备注",
   ];

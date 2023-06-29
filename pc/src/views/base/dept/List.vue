@@ -399,23 +399,20 @@
             </el-table-column>
           </template>
           
-          <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-input-number
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
-                  v-model="row.order_by"
-                  :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
+                <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
+                  v-model="row.is_locked"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_lockedChg(row.id, row.is_locked)"
+                ></el-switch>
               </template>
             </el-table-column>
           </template>
@@ -438,30 +435,33 @@
             </el-table-column>
           </template>
           
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-            </el-table-column>
-          </template>
-          
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <el-switch
-                  v-if="permit('edit') && row.is_deleted !== 1"
-                  v-model="row.is_locked"
-                  :active-value="1"
-                  :inactive-value="0"
-                  @change="is_lockedChg(row.id, row.is_locked)"
-                ></el-switch>
-              </template>
             </el-table-column>
           </template>
           
@@ -647,11 +647,11 @@ const props = defineProps<{
   parent_id_lbl?: string|string[]; // 父部门
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  order_by?: string; // 排序
+  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
-  is_locked?: string|string[]; // 锁定
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人
   create_time?: string; // 创建时间
@@ -666,11 +666,11 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
-  order_by: "number",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
+  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -859,11 +859,10 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "排序",
-      prop: "order_by",
-      width: 100,
-      sortable: "custom",
-      align: "right",
+      label: "锁定",
+      prop: "is_locked_lbl",
+      width: 60,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -876,20 +875,21 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "备注",
       prop: "rem",
-      width: 180,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-    },
-    {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
     },
     {
       label: "创建人",
@@ -1096,10 +1096,10 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("父部门") ]: "parent_id_lbl",
     [ n("名称") ]: "lbl",
-    [ n("排序") ]: "order_by",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("备注") ]: "rem",
     [ n("锁定") ]: "is_locked_lbl",
+    [ n("启用") ]: "is_enabled_lbl",
+    [ n("排序") ]: "order_by",
+    [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time",
     [ n("更新人") ]: "update_usr_id_lbl",
@@ -1153,12 +1153,12 @@ async function cancelImport() {
   importPercentage = 0;
 }
 
-/** 启用 */
-async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+/** 锁定 */
+async function is_lockedChg(id: string, is_locked: 0 | 1) {
   const notLoading = true;
-  await enableByIds(
+  await lockByIds(
     [ id ],
-    is_enabled,
+    is_locked,
     {
       notLoading,
     },
@@ -1171,12 +1171,12 @@ async function is_enabledChg(id: string, is_enabled: 0 | 1) {
   );
 }
 
-/** 锁定 */
-async function is_lockedChg(id: string, is_locked: 0 | 1) {
+/** 启用 */
+async function is_enabledChg(id: string, is_enabled: 0 | 1) {
   const notLoading = true;
-  await lockByIds(
+  await enableByIds(
     [ id ],
-    is_locked,
+    is_enabled,
     {
       notLoading,
     },
@@ -1353,10 +1353,10 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "父部门",
     "名称",
-    "排序",
-    "启用",
-    "备注",
     "锁定",
+    "启用",
+    "排序",
+    "备注",
     "创建人",
     "创建时间",
     "更新人",

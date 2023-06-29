@@ -2576,26 +2576,28 @@ async function <#=column_name#>Clk(row: <#=modelName#>) {
   } = await <#=column_name#>ListSelectDialogRef.showDialog({
     selectedIds: row.<#=column_name#> as string[],
   });
-  if (action === "select") {
-    selectedIds2 = selectedIds2 || [ ];
-    let isEqual = true;
-    if (selectedIds2.length === row.<#=column_name#>.length) {
-      for (let i = 0; i < selectedIds2.length; i++) {
-        const item = selectedIds2[i];
-        if (!row.<#=column_name#>.includes(item)) {
-          isEqual = false;
-          break;
-        }
-      }
-    } else {
-      isEqual = false;
-    }
-    if (!isEqual) {
-      row.<#=column_name#> = selectedIds2;
-      await updateById(row.id, { <#=column_name#>: selectedIds2 });
-      await dataGrid();
-    }
+  if (action !== "select") {
+    return;
   }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.<#=column_name#>.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.<#=column_name#>.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.<#=column_name#> = selectedIds2;
+  await updateById(row.id, { <#=column_name#>: selectedIds2 });
+  await dataGrid();
 }<#
   }
 #><#

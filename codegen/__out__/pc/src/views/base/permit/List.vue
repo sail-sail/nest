@@ -907,7 +907,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 300,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

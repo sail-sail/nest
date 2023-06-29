@@ -106,6 +106,12 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
   }
@@ -115,11 +121,45 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
+  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
   }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id === null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_time && search?.create_time?.length > 0) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id === null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time && search?.update_time?.length > 0) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -159,6 +199,10 @@ function getFromQuery() {
       group by role_id
     ) _menu
       on _menu.role_id = t.id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -224,6 +268,8 @@ export async function findAll(
     select t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -277,6 +323,30 @@ export async function findAll(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl;
+    
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (isNaN(create_time.toDate().getTime())) {
+        model.create_time_lbl = (model.create_time || "").toString();
+      } else {
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.create_time_lbl = "";
+    }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -291,9 +361,17 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     menu_ids: await n("菜单"),
     menu_ids_lbl: await n("菜单"),
-    rem: await n("备注"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -569,6 +647,14 @@ export async function create(
     }
   }
   
+  {
+    const {
+      filterMenuIdsByTenant,
+    } = await import("/src/base/tenant/tenant.dao.ts");
+    
+    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+  }
+  
   if (!model.id) {
     model.id = shortUuidV4();
   }
@@ -599,11 +685,17 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (model.is_enabled !== undefined) {
+    sql += `,is_enabled`;
+  }
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.is_enabled !== undefined) {
-    sql += `,is_enabled`;
+  if (model.update_usr_id !== undefined) {
+    sql += `,update_usr_id`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,update_time`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
@@ -626,11 +718,17 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
+  if (model.is_enabled !== undefined) {
+    sql += `,${ args.push(model.is_enabled) }`;
+  }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
   }
-  if (model.is_enabled !== undefined) {
-    sql += `,${ args.push(model.is_enabled) }`;
+  if (model.update_usr_id !== undefined) {
+    sql += `,${ args.push(model.update_usr_id) }`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,${ args.push(model.update_time) }`;
   }
   sql += `)`;
   
@@ -655,6 +753,7 @@ export async function delCache() {
   const foreignTables: string[] = [
     "role_menu",
     "menu",
+    "usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -779,6 +878,14 @@ export async function updateById(
     throw await ns("修改失败, 数据已被删除");
   }
   
+  {
+    const {
+      filterMenuIdsByTenant,
+    } = await import("/src/base/tenant/tenant.dao.ts");
+    
+    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+  }
+  
   const args = new QueryArgs();
   let sql = /*sql*/ `
     update base_role set
@@ -790,15 +897,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(model.rem) },`;
-      updateFldNum++;
-    }
-  }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.rem !== undefined) {
+    if (model.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
@@ -947,7 +1054,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_role";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -985,7 +1092,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_role";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

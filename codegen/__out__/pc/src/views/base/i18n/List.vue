@@ -455,6 +455,42 @@
             </el-table-column>
           </template>
           
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
@@ -522,6 +558,7 @@ import {
   type I18Nsearch,
   type LangModel,
   type MenuModel,
+  type UsrModel,
 } from "#/types";
 
 import {
@@ -618,6 +655,12 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   rem?: string; // 备注
   rem_like?: string; // 备注
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -628,6 +671,10 @@ const builtInSearchType: { [key: string]: string } = {
   lang_id_lbl: "string[]",
   menu_id: "string[]",
   menu_id_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -831,8 +878,40 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 300,
+      width: 280,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      width: 150,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1014,6 +1093,10 @@ async function importExcelClk() {
     [ n("编码") ]: "code",
     [ n("名称") ]: "lbl",
     [ n("备注") ]: "rem",
+    [ n("创建人") ]: "create_usr_id_lbl",
+    [ n("创建时间") ]: "create_time",
+    [ n("更新人") ]: "update_usr_id_lbl",
+    [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1032,6 +1115,8 @@ async function importExcelClk() {
       header,
       {
         date_keys: [
+          n("创建时间"),
+          n("更新时间"),
         ],
       },
     );
@@ -1178,6 +1263,10 @@ async function initI18nsEfc() {
     "编码",
     "名称",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),

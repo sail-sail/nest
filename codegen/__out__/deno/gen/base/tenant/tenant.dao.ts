@@ -129,6 +129,14 @@ async function getWhereQuery(
   if (search?.is_locked && search?.is_locked?.length > 0) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
+  }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
@@ -146,14 +154,6 @@ async function getWhereQuery(
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
-  }
-  if (search?.order_by && search?.order_by?.length > 0) {
-    if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
-    }
-    if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
-    }
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -467,11 +467,11 @@ export async function getFieldComments() {
     max_usr_num: await n("最大用户数"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
+    order_by: await n("排序"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     menu_ids: await n("菜单"),
     menu_ids_lbl: await n("菜单"),
-    order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -830,11 +830,11 @@ export async function create(
   if (model.is_locked !== undefined) {
     sql += `,is_locked`;
   }
-  if (model.is_enabled !== undefined) {
-    sql += `,is_enabled`;
-  }
   if (model.order_by !== undefined) {
     sql += `,order_by`;
+  }
+  if (model.is_enabled !== undefined) {
+    sql += `,is_enabled`;
   }
   if (model.rem !== undefined) {
     sql += `,rem`;
@@ -869,11 +869,11 @@ export async function create(
   if (model.is_locked !== undefined) {
     sql += `,${ args.push(model.is_locked) }`;
   }
-  if (model.is_enabled !== undefined) {
-    sql += `,${ args.push(model.is_enabled) }`;
-  }
   if (model.order_by !== undefined) {
     sql += `,${ args.push(model.order_by) }`;
+  }
+  if (model.is_enabled !== undefined) {
+    sql += `,${ args.push(model.is_enabled) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -912,8 +912,6 @@ export async function delCache() {
     "usr",
     "tenant_menu",
     "menu",
-    "usr",
-    "usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -1070,15 +1068,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
-      updateFldNum++;
-    }
-  }
   if (model.order_by !== undefined) {
     if (model.order_by != oldModel.order_by) {
       sql += `order_by = ${ args.push(model.order_by) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_enabled !== undefined) {
+    if (model.is_enabled != oldModel.is_enabled) {
+      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
       updateFldNum++;
     }
   }
@@ -1308,7 +1306,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_tenant";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -1346,7 +1344,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_tenant";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

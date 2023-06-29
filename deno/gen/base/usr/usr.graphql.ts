@@ -13,10 +13,6 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
-  "拥有部门"
-  dept_ids: [String!]
-  "拥有部门"
-  dept_ids_lbl: [String!]
   "默认部门"
   default_dept_id: String!
   "默认部门"
@@ -29,6 +25,10 @@ type UsrModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "拥有部门"
+  dept_ids: [String!]
+  "拥有部门"
+  dept_ids_lbl: [String!]
   "拥有角色"
   role_ids: [String!]
   "拥有角色"
@@ -43,10 +43,6 @@ type UsrFieldComment {
   lbl: String!
   "用户名"
   username: String!
-  "拥有部门"
-  dept_ids: String!
-  "拥有部门"
-  dept_ids_lbl: String!
   "默认部门"
   default_dept_id: String!
   "默认部门"
@@ -59,6 +55,10 @@ type UsrFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "拥有部门"
+  dept_ids: String!
+  "拥有部门"
+  dept_ids_lbl: String!
   "拥有角色"
   role_ids: String!
   "拥有角色"
@@ -75,10 +75,6 @@ input UsrInput {
   username: String
   "密码"
   password: String
-  "拥有部门"
-  dept_ids: [String!]
-  "拥有部门"
-  dept_ids_lbl: [String!]
   "默认部门"
   default_dept_id: String
   "默认部门"
@@ -91,6 +87,10 @@ input UsrInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "拥有部门"
+  dept_ids: [String!]
+  "拥有部门"
+  dept_ids_lbl: [String!]
   "拥有角色"
   role_ids: [String!]
   "拥有角色"
@@ -111,9 +111,6 @@ input UsrSearch {
   "用户名"
   username: String
   username_like: String
-  "拥有部门"
-  dept_ids: [String!]
-  dept_ids_is_null: Boolean
   "默认部门"
   default_dept_id: [String!]
   default_dept_id_is_null: Boolean
@@ -121,6 +118,9 @@ input UsrSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "拥有部门"
+  dept_ids: [String!]
+  dept_ids_is_null: Boolean
   "拥有角色"
   role_ids: [String!]
   role_ids_is_null: Boolean

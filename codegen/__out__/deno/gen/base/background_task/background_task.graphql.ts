@@ -35,6 +35,18 @@ type BackgroundTaskModel {
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
 }
@@ -67,6 +79,18 @@ type BackgroundTaskFieldComment {
   create_usr_id: String!
   "创建人"
   create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input BackgroundTaskInput {
   ""
@@ -99,6 +123,18 @@ input BackgroundTaskInput {
   create_usr_id: String
   "创建人"
   create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
 }
 input BackgroundTaskSearch {
   "是否已删除"
@@ -130,6 +166,13 @@ input BackgroundTaskSearch {
   "创建人"
   create_usr_id: [String!]
   create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [String!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
 }
 type Query {
   "根据条件查找据数总数"

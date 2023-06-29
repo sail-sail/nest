@@ -374,27 +374,6 @@
             </el-table-column>
           </template>
           
-          <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <el-input-number
-                  v-if="permit('edit') && row.is_deleted !== 1"
-                  v-model="row.order_by"
-                  :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 默认 -->
           <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
             <el-table-column
@@ -428,6 +407,27 @@
                   :inactive-value="0"
                   @change="is_enabledChg(row.id, row.is_enabled)"
                 ></el-switch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit') && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
               </template>
             </el-table-column>
           </template>
@@ -626,9 +626,9 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  order_by?: string; // 排序
   is_default?: string|string[]; // 默认
   is_enabled?: string|string[]; // 启用
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -643,11 +643,11 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   ids: "string[]",
-  order_by: "number",
   is_default: "number[]",
   is_default_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -830,15 +830,6 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "排序",
-      prop: "order_by",
-      width: 100,
-      sortable: "custom",
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
       label: "默认",
       prop: "is_default_lbl",
       width: 60,
@@ -851,6 +842,15 @@ function getTableColumns(): ColumnType[] {
       prop: "is_enabled_lbl",
       width: 60,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1068,9 +1068,9 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
-    [ n("排序") ]: "order_by",
     [ n("默认") ]: "is_default_lbl",
     [ n("启用") ]: "is_enabled_lbl",
+    [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time",
@@ -1298,9 +1298,9 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "排序",
     "默认",
     "启用",
+    "排序",
     "备注",
     "创建人",
     "创建时间",

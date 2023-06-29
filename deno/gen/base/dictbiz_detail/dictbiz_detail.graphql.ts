@@ -15,18 +15,18 @@ type DictbizDetailModel {
   lbl: String!
   "值"
   val: String!
-  "排序"
-  order_by: Int!
-  "启用"
-  is_enabled: Int!
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int!
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int!
+  "备注"
+  rem: String!
   "是否已删除"
   is_deleted: Int!
 }
@@ -39,18 +39,18 @@ type DictbizDetailFieldComment {
   lbl: String!
   "值"
   val: String!
-  "排序"
-  order_by: String!
-  "启用"
-  is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
-  "备注"
-  rem: String!
   "锁定"
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
+  "排序"
+  order_by: String!
+  "备注"
+  rem: String!
 }
 input DictbizDetailInput {
   ""
@@ -63,18 +63,18 @@ input DictbizDetailInput {
   lbl: String
   "值"
   val: String
-  "排序"
-  order_by: Int
-  "启用"
-  is_enabled: Int
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String
   "锁定"
   is_locked: Int
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int
+  "备注"
+  rem: String
 }
 input DictbizDetailSearch {
   "是否已删除"
@@ -92,15 +92,15 @@ input DictbizDetailSearch {
   "值"
   val: String
   val_like: String
-  "排序"
-  order_by: [Int!]
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "锁定"
-  is_locked: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

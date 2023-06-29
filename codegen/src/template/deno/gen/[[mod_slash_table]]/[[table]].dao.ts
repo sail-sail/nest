@@ -1410,7 +1410,19 @@ export async function create(
     if (result) {
       return result;
     }
+  }<#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  {
+    const {
+      filterMenuIdsByTenant,
+    } = await import("/src/base/tenant/tenant.dao.ts");
+    
+    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+  }<#
   }
+  #>
   
   if (!model.id) {
     model.id = shortUuidV4();
@@ -1634,6 +1646,7 @@ export async function delCache() {
   const cacheKey1 = `dao.sql.${ table }`;
   await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [<#
+  const foreignTablesCache = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1645,6 +1658,10 @@ export async function delCache() {
     const foreignTable = foreignKey.table;
     const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    if (foreignTablesCache.includes(foreignTable)) {
+      continue;
+    }
+    foreignTablesCache.push(foreignTable);
   #><#
     if (foreignKey && foreignKey.type === "many2many") {
   #>
@@ -2042,7 +2059,19 @@ export async function updateById(
   
   if (!oldModel) {
     throw await ns("修改失败, 数据已被删除");
+  }<#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  {
+    const {
+      filterMenuIdsByTenant,
+    } = await import("/src/base/tenant/tenant.dao.ts");
+    
+    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+  }<#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -2461,7 +2490,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -2503,7 +2532,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

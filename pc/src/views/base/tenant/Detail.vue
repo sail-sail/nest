@@ -126,6 +126,26 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+          <el-form-item
+            :label="n('排序')"
+            prop="order_by"
+            un-h="full"
+          >
+            <el-input-number
+              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
+              v-model="dialogModel.order_by"
+              un-w="full"
+              :precision="0"
+              :step="1"
+              :step-strictly="true"
+              :controls="false"
+              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              :clearable="true"
+            ></el-input-number>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
           <el-form-item
             :label="n('菜单')"
@@ -149,26 +169,6 @@
               check-on-click-node
               multiple
             ></CustomTreeSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
-          <el-form-item
-            :label="n('排序')"
-            prop="order_by"
-            un-h="full"
-          >
-            <el-input-number
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
-              v-model="dialogModel.order_by"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
-              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
-              :clearable="true"
-            ></el-input-number>
           </el-form-item>
         </template>
         
@@ -378,8 +378,8 @@ async function getDefaultInput() {
   const defaultInput: TenantInput = {
     max_usr_num: 0,
     is_locked: 0,
-    is_enabled: 1,
     order_by: 1,
+    is_enabled: 1,
   };
   return defaultInput;
 }
@@ -609,9 +609,9 @@ async function initI18nsEfc() {
     "到期日",
     "最大用户数",
     "锁定",
+    "排序",
     "启用",
     "菜单",
-    "排序",
     "备注",
     "创建人",
     "创建时间",

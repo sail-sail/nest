@@ -472,6 +472,27 @@
             </el-table-column>
           </template>
           
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -504,27 +525,6 @@
                 >
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <el-input-number
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
-                  v-model="row.order_by"
-                  :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
               </template>
             </el-table-column>
           </template>
@@ -748,10 +748,10 @@ const props = defineProps<{
   expiration?: string; // 到期日
   max_usr_num?: string; // 最大用户数
   is_locked?: string|string[]; // 锁定
+  order_by?: string; // 排序
   is_enabled?: string|string[]; // 启用
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单
-  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -773,11 +773,11 @@ const builtInSearchType: { [key: string]: string } = {
   max_usr_num: "number",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
+  order_by: "number",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1000,6 +1000,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "启用",
       prop: "is_enabled_lbl",
       width: 60,
@@ -1012,15 +1021,6 @@ function getTableColumns(): ColumnType[] {
       prop: "menu_ids_lbl",
       width: 80,
       align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "排序",
-      prop: "order_by",
-      width: 100,
-      sortable: "custom",
-      align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1243,9 +1243,9 @@ async function importExcelClk() {
     [ n("到期日") ]: "expiration",
     [ n("最大用户数") ]: "max_usr_num",
     [ n("锁定") ]: "is_locked_lbl",
+    [ n("排序") ]: "order_by",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("菜单") ]: "menu_ids_lbl",
-    [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time",
@@ -1505,9 +1505,9 @@ async function initI18nsEfc() {
     "到期日",
     "最大用户数",
     "锁定",
+    "排序",
     "启用",
     "菜单",
-    "排序",
     "备注",
     "创建人",
     "创建时间",
@@ -1564,26 +1564,28 @@ async function menu_idsClk(row: TenantModel) {
   } = await menu_idsListSelectDialogRef.showDialog({
     selectedIds: row.menu_ids as string[],
   });
-  if (action === "select") {
-    selectedIds2 = selectedIds2 || [ ];
-    let isEqual = true;
-    if (selectedIds2.length === row.menu_ids.length) {
-      for (let i = 0; i < selectedIds2.length; i++) {
-        const item = selectedIds2[i];
-        if (!row.menu_ids.includes(item)) {
-          isEqual = false;
-          break;
-        }
-      }
-    } else {
-      isEqual = false;
-    }
-    if (!isEqual) {
-      row.menu_ids = selectedIds2;
-      await updateById(row.id, { menu_ids: selectedIds2 });
-      await dataGrid();
-    }
+  if (action !== "select") {
+    return;
   }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.menu_ids.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.menu_ids.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.menu_ids = selectedIds2;
+  await updateById(row.id, { menu_ids: selectedIds2 });
+  await dataGrid();
 }
 
 defineExpose({

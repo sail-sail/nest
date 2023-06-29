@@ -44,6 +44,12 @@ export async function findAll(
           rem
           create_usr_id
           create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
           is_deleted
         }
       }
@@ -118,6 +124,12 @@ export async function findById(
           rem
           create_usr_id
           create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
           is_deleted
         }
       }
@@ -290,6 +302,12 @@ export function useExportExcel(routePath: string) {
             rem
             create_usr_id
             create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
           getFieldCommentsBackgroundTask {
             lbl
@@ -306,6 +324,12 @@ export function useExportExcel(routePath: string) {
             rem
             create_usr_id
             create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
         }
       `,

@@ -35,12 +35,12 @@ export async function findAll(
           dict_id_lbl
           lbl
           val
-          order_by
-          is_enabled
-          is_enabled_lbl
-          rem
           is_locked
           is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
           is_deleted
         }
       }
@@ -160,12 +160,12 @@ export async function findById(
           dict_id_lbl
           lbl
           val
-          order_by
-          is_enabled
-          is_enabled_lbl
-          rem
           is_locked
           is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
           is_deleted
         }
       }
@@ -386,24 +386,24 @@ export function useExportExcel(routePath: string) {
             dict_id_lbl
             lbl
             val
-            order_by
-            is_enabled
-            is_enabled_lbl
-            rem
             is_locked
             is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
           }
           getFieldCommentsDictDetail {
             dict_id
             dict_id_lbl
             lbl
             val
-            order_by
-            is_enabled
-            is_enabled_lbl
-            rem
             is_locked
             is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
           }
         }
       `,

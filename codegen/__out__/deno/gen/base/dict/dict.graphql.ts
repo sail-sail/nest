@@ -15,18 +15,18 @@ type DictModel {
   type: String!
   "数据类型"
   type_lbl: String
-  "排序"
-  order_by: Int!
-  "启用"
-  is_enabled: Int!
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int!
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -55,18 +55,18 @@ type DictFieldComment {
   type: String!
   "数据类型"
   type_lbl: String!
-  "排序"
-  order_by: String!
-  "启用"
-  is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
-  "备注"
-  rem: String!
   "锁定"
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
+  "排序"
+  order_by: String!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -95,18 +95,18 @@ input DictInput {
   type: String
   "数据类型"
   type_lbl: String
-  "排序"
-  order_by: Int
-  "启用"
-  is_enabled: Int
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String
   "锁定"
   is_locked: Int
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int
+  "备注"
+  rem: String
   "创建人"
   create_usr_id: String
   "创建人"
@@ -139,15 +139,15 @@ input DictSearch {
   lbl_like: String
   "数据类型"
   type: [String!]
-  "排序"
-  order_by: [Int!]
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "锁定"
-  is_locked: [Int!]
   "创建人"
   create_usr_id: [String!]
   create_usr_id_is_null: Boolean

@@ -27,6 +27,8 @@ type TenantModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
+  "排序"
+  order_by: Int!
   "启用"
   is_enabled: Int!
   "启用"
@@ -35,8 +37,6 @@ type TenantModel {
   menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
-  "排序"
-  order_by: Int!
   "备注"
   rem: String!
   "创建人"
@@ -79,6 +79,8 @@ type TenantFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
+  "排序"
+  order_by: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -87,8 +89,6 @@ type TenantFieldComment {
   menu_ids: String!
   "菜单"
   menu_ids_lbl: String!
-  "排序"
-  order_by: String!
   "备注"
   rem: String!
   "创建人"
@@ -131,6 +131,8 @@ input TenantInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
+  "排序"
+  order_by: Int
   "启用"
   is_enabled: Int
   "启用"
@@ -139,8 +141,6 @@ input TenantInput {
   menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
-  "排序"
-  order_by: Int
   "备注"
   rem: String
   "创建人"
@@ -182,13 +182,13 @@ input TenantSearch {
   max_usr_num: [Int!]
   "锁定"
   is_locked: [Int!]
+  "排序"
+  order_by: [Int!]
   "启用"
   is_enabled: [Int!]
   "菜单"
   menu_ids: [String!]
   menu_ids_is_null: Boolean
-  "排序"
-  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String

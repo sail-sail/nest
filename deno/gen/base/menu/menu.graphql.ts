@@ -21,6 +21,10 @@ type MenuModel {
   route_path: String!
   "参数"
   route_query: String
+  "所在租户"
+  tenant_ids: [String!]
+  "所在租户"
+  tenant_ids_lbl: [String!]
   "启用"
   is_enabled: Int!
   "启用"
@@ -29,6 +33,22 @@ type MenuModel {
   order_by: Int!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
 }
@@ -47,6 +67,10 @@ type MenuFieldComment {
   route_path: String!
   "参数"
   route_query: String!
+  "所在租户"
+  tenant_ids: String!
+  "所在租户"
+  tenant_ids_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -55,6 +79,22 @@ type MenuFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input MenuInput {
   ""
@@ -73,6 +113,10 @@ input MenuInput {
   route_path: String
   "参数"
   route_query: String
+  "所在租户"
+  tenant_ids: [String!]
+  "所在租户"
+  tenant_ids_lbl: [String!]
   "启用"
   is_enabled: Int
   "启用"
@@ -81,6 +125,22 @@ input MenuInput {
   order_by: Int
   "备注"
   rem: String
+  "创建人"
+  create_usr_id: String
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
 }
 input MenuSearch {
   "是否已删除"
@@ -103,6 +163,9 @@ input MenuSearch {
   "参数"
   route_query: String
   route_query_like: String
+  "所在租户"
+  tenant_ids: [String!]
+  tenant_ids_is_null: Boolean
   "启用"
   is_enabled: [Int!]
   "排序"
@@ -110,6 +173,16 @@ input MenuSearch {
   "备注"
   rem: String
   rem_like: String
+  "创建人"
+  create_usr_id: [String!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [String!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
 }
 type Query {
   "根据条件查找据数总数"

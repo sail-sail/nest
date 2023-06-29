@@ -465,8 +465,12 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "菜单",
-    "备注",
     "启用",
+    "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

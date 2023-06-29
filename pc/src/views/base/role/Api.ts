@@ -8,6 +8,7 @@ import {
 
 import {
   type MenuSearch,
+  type UsrSearch,
 } from "#/types";
 
 /**
@@ -34,9 +35,17 @@ export async function findAll(
           lbl
           menu_ids
           menu_ids_lbl
-          rem
           is_enabled
           is_enabled_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
           is_deleted
         }
       }
@@ -155,9 +164,17 @@ export async function findById(
           lbl
           menu_ids
           menu_ids_lbl
-          rem
           is_enabled
           is_enabled_lbl
+          rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
           is_deleted
         }
       }
@@ -322,6 +339,51 @@ export async function getMenuList() {
   return data;
 }
 
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllUsr;
+  return res;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 导出Excel
  */
@@ -348,17 +410,33 @@ export function useExportExcel(routePath: string) {
             lbl
             menu_ids
             menu_ids_lbl
-            rem
             is_enabled
             is_enabled_lbl
+            rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
           getFieldCommentsRole {
             lbl
             menu_ids
             menu_ids_lbl
-            rem
             is_enabled
             is_enabled_lbl
+            rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
         }
       `,

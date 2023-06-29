@@ -411,6 +411,33 @@
             </el-table-column>
           </template>
           
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
@@ -557,6 +584,10 @@ const props = defineProps<{
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -569,6 +600,8 @@ const builtInSearchType: { [key: string]: string } = {
   type_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -799,7 +832,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 180,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -809,6 +842,30 @@ function getTableColumns(): ColumnType[] {
       prop: "create_usr_id_lbl",
       width: 120,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      width: 150,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -991,6 +1048,9 @@ async function initI18nsEfc() {
     "结束时间",
     "备注",
     "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),

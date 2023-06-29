@@ -415,15 +415,6 @@
             </el-table-column>
           </template>
           
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -439,6 +430,51 @@
                   @change="is_enabledChg(row.id, row.is_enabled)"
                 ></el-switch>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -520,6 +556,7 @@ import {
   type RoleInput,
   type RoleSearch,
   type MenuModel,
+  type UsrModel,
 } from "#/types";
 
 import {
@@ -608,9 +645,15 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单
+  is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   rem_like?: string; // 备注
-  is_enabled?: string|string[]; // 启用
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -621,6 +664,10 @@ const builtInSearchType: { [key: string]: string } = {
   menu_ids_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -807,6 +854,14 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "启用",
+      prop: "is_enabled_lbl",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "备注",
       prop: "rem",
       width: 280,
@@ -815,12 +870,36 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "启用",
-      prop: "is_enabled_lbl",
-      width: 80,
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      width: 150,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: false,
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
   ];
 }
@@ -997,8 +1076,12 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("菜单") ]: "menu_ids_lbl",
-    [ n("备注") ]: "rem",
     [ n("启用") ]: "is_enabled_lbl",
+    [ n("备注") ]: "rem",
+    [ n("创建人") ]: "create_usr_id_lbl",
+    [ n("创建时间") ]: "create_time",
+    [ n("更新人") ]: "update_usr_id_lbl",
+    [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1017,6 +1100,8 @@ async function importExcelClk() {
       header,
       {
         date_keys: [
+          n("创建时间"),
+          n("更新时间"),
         ],
       },
     );
@@ -1203,8 +1288,12 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "菜单",
-    "备注",
     "启用",
+    "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),
@@ -1256,26 +1345,28 @@ async function menu_idsClk(row: RoleModel) {
   } = await menu_idsListSelectDialogRef.showDialog({
     selectedIds: row.menu_ids as string[],
   });
-  if (action === "select") {
-    selectedIds2 = selectedIds2 || [ ];
-    let isEqual = true;
-    if (selectedIds2.length === row.menu_ids.length) {
-      for (let i = 0; i < selectedIds2.length; i++) {
-        const item = selectedIds2[i];
-        if (!row.menu_ids.includes(item)) {
-          isEqual = false;
-          break;
-        }
-      }
-    } else {
-      isEqual = false;
-    }
-    if (!isEqual) {
-      row.menu_ids = selectedIds2;
-      await updateById(row.id, { menu_ids: selectedIds2 });
-      await dataGrid();
-    }
+  if (action !== "select") {
+    return;
   }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.menu_ids.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.menu_ids.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.menu_ids = selectedIds2;
+  await updateById(row.id, { menu_ids: selectedIds2 });
+  await dataGrid();
 }
 
 defineExpose({

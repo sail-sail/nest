@@ -32,11 +32,11 @@ export async function findAll(
         findAllDomain(search: $search, page: $page, sort: $sort) {
           id
           lbl
-          order_by
           is_default
           is_default_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -162,11 +162,11 @@ export async function findById(
         findByIdDomain(id: $id) {
           id
           lbl
-          order_by
           is_default
           is_default_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -390,11 +390,11 @@ export function useExportExcel(routePath: string) {
           findAllDomain(search: $search, sort: $sort) {
             id
             lbl
-            order_by
             is_default
             is_default_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl
@@ -407,11 +407,11 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsDomain {
             lbl
-            order_by
             is_default
             is_default_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl

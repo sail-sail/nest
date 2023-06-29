@@ -40,6 +40,10 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 import * as authDao from "/lib/auth/auth.dao.ts";
 
 import {
+  many2manyUpdate,
+} from "/lib/util/dao_util.ts";
+
+import {
   SortOrderEnum,
   type PageInput,
   type SortInput,
@@ -113,6 +117,18 @@ async function getWhereQuery(
   if (isNotEmpty(search?.route_query_like)) {
     whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_query_like) + "%") }`;
   }
+  if (search?.tenant_ids && !Array.isArray(search?.tenant_ids)) {
+    search.tenant_ids = [ search.tenant_ids ];
+  }
+  if (search?.tenant_ids && search?.tenant_ids.length > 0) {
+    whereQuery += ` and base_tenant.id in ${ args.push(search.tenant_ids) }`;
+  }
+  if (search?.tenant_ids === null) {
+    whereQuery += ` and base_tenant.id is null`;
+  }
+  if (search?.tenant_ids_is_null) {
+    whereQuery += ` and base_tenant.id is null`;
+  }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
@@ -136,6 +152,46 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
   }
+  if (search?.create_usr_id && !Array.isArray(search?.create_usr_id)) {
+    search.create_usr_id = [ search.create_usr_id ];
+  }
+  if (search?.create_usr_id && search?.create_usr_id.length > 0) {
+    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+  }
+  if (search?.create_usr_id === null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and create_usr_id_lbl.id is null`;
+  }
+  if (search?.create_time && search?.create_time?.length > 0) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time >= ${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
+    search.update_usr_id = [ search.update_usr_id ];
+  }
+  if (search?.update_usr_id && search?.update_usr_id.length > 0) {
+    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+  }
+  if (search?.update_usr_id === null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and update_usr_id_lbl.id is null`;
+  }
+  if (search?.update_time && search?.update_time?.length > 0) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time >= ${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
+    }
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -154,6 +210,32 @@ function getFromQuery() {
     base_menu t
     left join base_menu parent_id_lbl
       on parent_id_lbl.id = t.parent_id
+    left join base_tenant_menu
+      on base_tenant_menu.menu_id = t.id
+      and base_tenant_menu.is_deleted = 0
+    left join base_tenant
+      on base_tenant_menu.tenant_id = base_tenant.id
+      and base_tenant.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_tenant.id) tenant_ids,
+        json_arrayagg(base_tenant.lbl) tenant_ids_lbl,
+        base_menu.id menu_id
+      from base_tenant_menu
+      inner join base_tenant
+        on base_tenant.id = base_tenant_menu.tenant_id
+        and base_tenant.is_deleted = 0
+      inner join base_menu
+        on base_menu.id = base_tenant_menu.menu_id
+      where
+        base_tenant_menu.is_deleted = 0
+      group by menu_id
+    ) _tenant
+      on _tenant.menu_id = t.id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id
   `;
   return fromQuery;
 }
@@ -218,6 +300,10 @@ export async function findAll(
   let sql = /*sql*/ `
     select t.*
       ,parent_id_lbl.lbl parent_id_lbl
+      ,max(tenant_ids) tenant_ids
+      ,max(tenant_ids_lbl) tenant_ids_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ getFromQuery() }
     where
@@ -288,6 +374,30 @@ export async function findAll(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl;
+    
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (isNaN(create_time.toDate().getTime())) {
+        model.create_time_lbl = (model.create_time || "").toString();
+      } else {
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.create_time_lbl = "";
+    }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -306,10 +416,20 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     route_path: await n("路由"),
     route_query: await n("参数"),
+    tenant_ids: await n("所在租户"),
+    tenant_ids_lbl: await n("所在租户"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
     rem: await n("备注"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -568,6 +688,28 @@ export async function create(
     }
   }
   
+  // 所在租户
+  if (!model.tenant_ids && model.tenant_ids_lbl) {
+    if (typeof model.tenant_ids_lbl === "string" || model.tenant_ids_lbl instanceof String) {
+      model.tenant_ids_lbl = model.tenant_ids_lbl.split(",");
+    }
+    model.tenant_ids_lbl = model.tenant_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_tenant t
+      where
+        t.lbl in ${ args.push(model.tenant_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    model.tenant_ids = models.map((item: { id: string }) => item.id);
+  }
+  
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
@@ -626,6 +768,12 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
+  if (model.update_usr_id !== undefined) {
+    sql += `,update_usr_id`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,update_time`;
+  }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
     sql += `,${ args.push(model.create_usr_id) }`;
@@ -659,9 +807,17 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
   }
+  if (model.update_usr_id !== undefined) {
+    sql += `,${ args.push(model.update_usr_id) }`;
+  }
+  if (model.update_time !== undefined) {
+    sql += `,${ args.push(model.update_time) }`;
+  }
   sql += `)`;
   
   const result = await execute(sql, args);
+  // 所在租户
+  await many2manyUpdate(model, "tenant_ids", { mod: "base", table: "tenant_menu", column1: "menu_id", column2: "tenant_id" });
   
   await delCache();
   
@@ -679,6 +835,9 @@ export async function delCache() {
   await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [
     "menu",
+    "tenant_menu",
+    "tenant",
+    "usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -740,6 +899,28 @@ export async function updateById(
     if (menuModel) {
       model.parent_id = menuModel.id;
     }
+  }
+
+  // 所在租户
+  if (!model.tenant_ids && model.tenant_ids_lbl) {
+    if (typeof model.tenant_ids_lbl === "string" || model.tenant_ids_lbl instanceof String) {
+      model.tenant_ids_lbl = model.tenant_ids_lbl.split(",");
+    }
+    model.tenant_ids_lbl = model.tenant_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_tenant t
+      where
+        t.lbl in ${ args.push(model.tenant_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    model.tenant_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 启用
@@ -822,6 +1003,10 @@ export async function updateById(
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
   }
+  
+  updateFldNum++;
+  // 所在租户
+  await many2manyUpdate({ ...model, id }, "tenant_ids", { mod: "base", table: "tenant_menu", column1: "menu_id", column2: "tenant_id" });
   
   if (updateFldNum > 0) {
     await delCache();
@@ -950,7 +1135,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_menu";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -988,7 +1173,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_menu";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

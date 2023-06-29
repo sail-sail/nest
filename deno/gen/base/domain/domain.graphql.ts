@@ -9,8 +9,6 @@ type DomainModel {
   id: String!
   "名称"
   lbl: String!
-  "排序"
-  order_by: Int!
   "默认"
   is_default: Int!
   "默认"
@@ -19,6 +17,8 @@ type DomainModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int!
   "备注"
   rem: String!
   "创建人"
@@ -43,8 +43,6 @@ type DomainModel {
 type DomainFieldComment {
   "名称"
   lbl: String!
-  "排序"
-  order_by: String!
   "默认"
   is_default: String!
   "默认"
@@ -53,6 +51,8 @@ type DomainFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
   "创建人"
@@ -77,8 +77,6 @@ input DomainInput {
   id: String
   "名称"
   lbl: String
-  "排序"
-  order_by: Int
   "默认"
   is_default: Int
   "默认"
@@ -87,6 +85,8 @@ input DomainInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int
   "备注"
   rem: String
   "创建人"
@@ -116,12 +116,12 @@ input DomainSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "排序"
-  order_by: [Int!]
   "默认"
   is_default: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String

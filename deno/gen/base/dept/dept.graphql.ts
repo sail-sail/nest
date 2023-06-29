@@ -13,18 +13,18 @@ type DeptModel {
   parent_id_lbl: String
   "名称"
   lbl: String!
-  "排序"
-  order_by: Int!
-  "启用"
-  is_enabled: Int!
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int!
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -51,18 +51,18 @@ type DeptFieldComment {
   parent_id_lbl: String!
   "名称"
   lbl: String!
-  "排序"
-  order_by: String!
-  "启用"
-  is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
-  "备注"
-  rem: String!
   "锁定"
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
+  "排序"
+  order_by: String!
+  "备注"
+  rem: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -89,18 +89,18 @@ input DeptInput {
   parent_id_lbl: String
   "名称"
   lbl: String
-  "排序"
-  order_by: Int
-  "启用"
-  is_enabled: Int
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String
   "锁定"
   is_locked: Int
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int
+  "备注"
+  rem: String
   "创建人"
   create_usr_id: String
   "创建人"
@@ -131,15 +131,15 @@ input DeptSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "排序"
-  order_by: [Int!]
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "锁定"
-  is_locked: [Int!]
   "创建人"
   create_usr_id: [String!]
   create_usr_id_is_null: Boolean

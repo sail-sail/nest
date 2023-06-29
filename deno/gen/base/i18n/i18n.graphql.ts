@@ -21,6 +21,22 @@ type I18Nmodel {
   lbl: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
   "是否已删除"
   is_deleted: Int!
 }
@@ -39,6 +55,22 @@ type I18NfieldComment {
   lbl: String!
   "备注"
   rem: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input I18Ninput {
   ""
@@ -57,6 +89,22 @@ input I18Ninput {
   lbl: String
   "备注"
   rem: String
+  "创建人"
+  create_usr_id: String
+  "创建人"
+  create_usr_id_lbl: String
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String
+  "更新人"
+  update_usr_id: String
+  "更新人"
+  update_usr_id_lbl: String
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String
 }
 input I18Nsearch {
   "是否已删除"
@@ -80,6 +128,16 @@ input I18Nsearch {
   "备注"
   rem: String
   rem_like: String
+  "创建人"
+  create_usr_id: [String!]
+  create_usr_id_is_null: Boolean
+  "创建时间"
+  create_time: [NaiveDateTime!]
+  "更新人"
+  update_usr_id: [String!]
+  update_usr_id_is_null: Boolean
+  "更新时间"
+  update_time: [NaiveDateTime!]
 }
 type Query {
   "根据条件查找据数总数"

@@ -11,10 +11,6 @@ import {
   type RoleSearch,
 } from "#/types";
 
-import {
-  findTree as findDeptTree,
-} from "@/views/base/dept/Api";
-
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -38,14 +34,14 @@ export async function findAll(
           id
           lbl
           username
-          dept_ids
-          dept_ids_lbl
           default_dept_id
           default_dept_id_lbl
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          dept_ids
+          dept_ids_lbl
           role_ids
           role_ids_lbl
           rem
@@ -167,14 +163,14 @@ export async function findById(
           lbl
           username
           password
-          dept_ids
-          dept_ids_lbl
           default_dept_id
           default_dept_id_lbl
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
+          dept_ids
+          dept_ids_lbl
           role_ids
           role_ids_lbl
           rem
@@ -457,14 +453,14 @@ export function useExportExcel(routePath: string) {
             lbl
             username
             password
-            dept_ids
-            dept_ids_lbl
             default_dept_id
             default_dept_id_lbl
             is_locked
             is_locked_lbl
             is_enabled
             is_enabled_lbl
+            dept_ids
+            dept_ids_lbl
             role_ids
             role_ids_lbl
             rem
@@ -472,14 +468,14 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsUsr {
             lbl
             username
-            dept_ids
-            dept_ids_lbl
             default_dept_id
             default_dept_id_lbl
             is_locked
             is_locked_lbl
             is_enabled
             is_enabled_lbl
+            dept_ids
+            dept_ids_lbl
             role_ids
             role_ids_lbl
             rem

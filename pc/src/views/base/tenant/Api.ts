@@ -47,11 +47,11 @@ export async function findAll(
           max_usr_num
           is_locked
           is_locked_lbl
+          order_by
           is_enabled
           is_enabled_lbl
           menu_ids
           menu_ids_lbl
-          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -186,11 +186,11 @@ export async function findById(
           max_usr_num
           is_locked
           is_locked_lbl
+          order_by
           is_enabled
           is_enabled_lbl
           menu_ids
           menu_ids_lbl
-          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -531,11 +531,11 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
+            order_by
             is_enabled
             is_enabled_lbl
             menu_ids
             menu_ids_lbl
-            order_by
             rem
             create_usr_id
             create_usr_id_lbl
@@ -557,11 +557,11 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
+            order_by
             is_enabled
             is_enabled_lbl
             menu_ids
             menu_ids_lbl
-            order_by
             rem
             create_usr_id
             create_usr_id_lbl

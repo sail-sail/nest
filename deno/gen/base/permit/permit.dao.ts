@@ -768,7 +768,6 @@ export async function delCache() {
     "role",
     "menu",
     "usr",
-    "usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -1006,7 +1005,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_permit";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -1044,7 +1043,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_permit";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

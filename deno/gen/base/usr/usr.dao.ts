@@ -105,18 +105,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.username_like)) {
     whereQuery += ` and t.username like ${ args.push(sqlLike(search?.username_like) + "%") }`;
   }
-  if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
-    search.dept_ids = [ search.dept_ids ];
-  }
-  if (search?.dept_ids && search?.dept_ids.length > 0) {
-    whereQuery += ` and base_dept.id in ${ args.push(search.dept_ids) }`;
-  }
-  if (search?.dept_ids === null) {
-    whereQuery += ` and base_dept.id is null`;
-  }
-  if (search?.dept_ids_is_null) {
-    whereQuery += ` and base_dept.id is null`;
-  }
   if (search?.default_dept_id && !Array.isArray(search?.default_dept_id)) {
     search.default_dept_id = [ search.default_dept_id ];
   }
@@ -140,6 +128,18 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
+  if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
+    search.dept_ids = [ search.dept_ids ];
+  }
+  if (search?.dept_ids && search?.dept_ids.length > 0) {
+    whereQuery += ` and base_dept.id in ${ args.push(search.dept_ids) }`;
+  }
+  if (search?.dept_ids === null) {
+    whereQuery += ` and base_dept.id is null`;
+  }
+  if (search?.dept_ids_is_null) {
+    whereQuery += ` and base_dept.id is null`;
   }
   if (search?.role_ids && !Array.isArray(search?.role_ids)) {
     search.role_ids = [ search.role_ids ];
@@ -178,6 +178,8 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_usr t
+    left join base_dept default_dept_id_lbl
+      on default_dept_id_lbl.id = t.default_dept_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
       and base_usr_dept.is_deleted = 0
@@ -200,8 +202,6 @@ function getFromQuery() {
       group by usr_id
     ) _dept
       on _dept.usr_id = t.id
-    left join base_dept default_dept_id_lbl
-      on default_dept_id_lbl.id = t.default_dept_id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
       and base_usr_role.is_deleted = 0
@@ -287,9 +287,9 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
+      ,default_dept_id_lbl.lbl default_dept_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
-      ,default_dept_id_lbl.lbl default_dept_id_lbl
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
     from
@@ -372,14 +372,14 @@ export async function getFieldComments() {
   const fieldComments = {
     lbl: await n("名称"),
     username: await n("用户名"),
-    dept_ids: await n("拥有部门"),
-    dept_ids_lbl: await n("拥有部门"),
     default_dept_id: await n("默认部门"),
     default_dept_id_lbl: await n("默认部门"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    dept_ids: await n("拥有部门"),
+    dept_ids_lbl: await n("拥有部门"),
     role_ids: await n("拥有角色"),
     role_ids_lbl: await n("拥有角色"),
     rem: await n("备注"),
@@ -622,28 +622,6 @@ export async function create(
   ]);
   
   
-  // 拥有部门
-  if (!model.dept_ids && model.dept_ids_lbl) {
-    if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
-      model.dept_ids_lbl = model.dept_ids_lbl.split(",");
-    }
-    model.dept_ids_lbl = model.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = /*sql*/ `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(model.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    model.dept_ids = models.map((item: { id: string }) => item.id);
-  }
-  
   // 默认部门
   if (isNotEmpty(model.default_dept_id_lbl) && model.default_dept_id === undefined) {
     model.default_dept_id_lbl = String(model.default_dept_id_lbl).trim();
@@ -667,6 +645,28 @@ export async function create(
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
+  }
+  
+  // 拥有部门
+  if (!model.dept_ids && model.dept_ids_lbl) {
+    if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
+      model.dept_ids_lbl = model.dept_ids_lbl.split(",");
+    }
+    model.dept_ids_lbl = model.dept_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_dept t
+      where
+        t.lbl in ${ args.push(model.dept_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    model.dept_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 拥有角色
@@ -809,8 +809,6 @@ export async function delCache() {
   const cacheKey1 = `dao.sql.${ table }`;
   await delCacheCtx(cacheKey1);
   const foreignTables: string[] = [
-    "usr_dept",
-    "dept",
     "dept",
     "usr_role",
     "role",
@@ -903,28 +901,6 @@ export async function updateById(
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(id, model.tenant_id);
   }
-
-  // 拥有部门
-  if (!model.dept_ids && model.dept_ids_lbl) {
-    if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
-      model.dept_ids_lbl = model.dept_ids_lbl.split(",");
-    }
-    model.dept_ids_lbl = model.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = /*sql*/ `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(model.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    model.dept_ids = models.map((item: { id: string }) => item.id);
-  }
   
   // 默认部门
   if (isNotEmpty(model.default_dept_id_lbl) && model.default_dept_id === undefined) {
@@ -949,6 +925,28 @@ export async function updateById(
     if (val !== undefined) {
       model.is_enabled = Number(val);
     }
+  }
+
+  // 拥有部门
+  if (!model.dept_ids && model.dept_ids_lbl) {
+    if (typeof model.dept_ids_lbl === "string" || model.dept_ids_lbl instanceof String) {
+      model.dept_ids_lbl = model.dept_ids_lbl.split(",");
+    }
+    model.dept_ids_lbl = model.dept_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_dept t
+      where
+        t.lbl in ${ args.push(model.dept_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    model.dept_ids = models.map((item: { id: string }) => item.id);
   }
 
   // 拥有角色
@@ -1245,7 +1243,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_usr";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -1283,7 +1281,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_usr";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;
