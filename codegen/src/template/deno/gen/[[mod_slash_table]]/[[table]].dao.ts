@@ -388,8 +388,10 @@ function getFromQuery() {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
       on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
     left join <#=foreignKey.mod#>_<#=foreignTable#>
       on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
     left join (
       select
         json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
@@ -402,6 +404,7 @@ function getFromQuery() {
       from <#=foreignKey.mod#>_<#=many2many.table#>
       inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
         on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+        and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
         on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
       where
