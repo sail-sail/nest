@@ -63,10 +63,20 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "domain_ids",
-        COLUMN_COMMENT: "域名",
+        COLUMN_COMMENT: "所属域名",
         require: true,
         align: "left",
         width: 280,
+      },
+      {
+        COLUMN_NAME: "menu_ids",
+        COLUMN_COMMENT: "菜单权限",
+        search: true,
+        width: 80,
+        foreignKey: {
+          showType: "dialog",
+          selectType: "tree",
+        },
       },
       {
         COLUMN_NAME: "usr_id",
@@ -86,21 +96,10 @@ export default defineConfig({
         COLUMN_NAME: "is_locked",
       },
       {
-        COLUMN_NAME: "order_by",
-      },
-      {
         COLUMN_NAME: "is_enabled",
       },
       {
-        COLUMN_NAME: "menu_ids",
-        COLUMN_COMMENT: "菜单",
-        require: false,
-        search: true,
-        width: 80,
-        foreignKey: {
-          showType: "dialog",
-          selectType: "tree",
-        },
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",

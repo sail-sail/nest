@@ -8,8 +8,8 @@ import {
 
 import {
   type DomainSearch,
-  type UsrSearch,
   type MenuSearch,
+  type UsrSearch,
 } from "#/types";
 
 import {
@@ -40,6 +40,8 @@ export async function findAll(
           lbl
           domain_ids
           domain_ids_lbl
+          menu_ids
+          menu_ids_lbl
           usr_id
           usr_id_lbl
           expiration
@@ -47,11 +49,9 @@ export async function findAll(
           max_usr_num
           is_locked
           is_locked_lbl
-          order_by
           is_enabled
           is_enabled_lbl
-          menu_ids
-          menu_ids_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -179,6 +179,8 @@ export async function findById(
           lbl
           domain_ids
           domain_ids_lbl
+          menu_ids
+          menu_ids_lbl
           usr_id
           usr_id_lbl
           expiration
@@ -186,11 +188,9 @@ export async function findById(
           max_usr_num
           is_locked
           is_locked_lbl
-          order_by
           is_enabled
           is_enabled_lbl
-          menu_ids
-          menu_ids_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -393,51 +393,6 @@ export async function getDomainList() {
   return data;
 }
 
-export async function findAllUsr(
-  search?: UsrSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllUsr: Query["findAllUsr"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllUsr(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllUsr;
-  return res;
-}
-
-export async function getUsrList() {
-  const data = await findAllUsr(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function findAllMenu(
   search?: MenuSearch,
   page?: PageInput,
@@ -467,6 +422,51 @@ export async function findAllMenu(
 
 export async function getMenuList() {
   const data = await findAllMenu(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllUsr;
+  return res;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
     undefined,
     {
     },
@@ -524,6 +524,8 @@ export function useExportExcel(routePath: string) {
             lbl
             domain_ids
             domain_ids_lbl
+            menu_ids
+            menu_ids_lbl
             usr_id
             usr_id_lbl
             expiration
@@ -531,11 +533,9 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
-            order_by
             is_enabled
             is_enabled_lbl
-            menu_ids
-            menu_ids_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl
@@ -550,6 +550,8 @@ export function useExportExcel(routePath: string) {
             lbl
             domain_ids
             domain_ids_lbl
+            menu_ids
+            menu_ids_lbl
             usr_id
             usr_id_lbl
             expiration
@@ -557,11 +559,9 @@ export function useExportExcel(routePath: string) {
             max_usr_num
             is_locked
             is_locked_lbl
-            order_by
             is_enabled
             is_enabled_lbl
-            menu_ids
-            menu_ids_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl

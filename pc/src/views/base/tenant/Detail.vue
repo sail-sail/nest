@@ -47,7 +47,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.domain_ids == null)">
           <el-form-item
-            :label="n('域名')"
+            :label="n('所属域名')"
             prop="domain_ids"
             un-h="full"
           >
@@ -62,9 +62,35 @@
                 };
               })"
               un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('域名') }`"
+              :placeholder="`${ ns('请选择') } ${ n('所属域名') }`"
               multiple
             ></CustomSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
+          <el-form-item
+            :label="n('菜单权限')"
+            prop="menu_ids"
+            un-h="full"
+          >
+            <CustomTreeSelect
+              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
+              v-model="dialogModel.menu_ids"
+              :method="getMenuTree"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
+              :props="{
+                label: 'lbl',
+                children: 'children',
+              }"
+              check-strictly
+              :render-after-expand="false"
+              :default-expand-all="true"
+              show-checkbox
+              check-on-click-node
+              multiple
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -143,32 +169,6 @@
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
               :clearable="true"
             ></el-input-number>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
-          <el-form-item
-            :label="n('菜单')"
-            prop="menu_ids"
-            un-h="full"
-          >
-            <CustomTreeSelect
-              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
-              v-model="dialogModel.menu_ids"
-              :method="getMenuTree"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-              :props="{
-                label: 'lbl',
-                children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node
-              multiple
-            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -270,14 +270,14 @@ import {
 import {
   type TenantInput,
   type DomainModel,
-  type UsrModel,
   type MenuModel,
+  type UsrModel,
 } from "#/types";
 
 import {
   getDomainList,
-  getUsrList,
   getMenuList,
+  getUsrList,
 } from "./Api";
 
 import {
@@ -336,7 +336,7 @@ watchEffect(async () => {
     domain_ids: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("域名") }`,
+        message: `${ await nsAsync("请选择") } ${ n("所属域名") }`,
       },
     ],
     usr_id: [
@@ -378,8 +378,8 @@ async function getDefaultInput() {
   const defaultInput: TenantInput = {
     max_usr_num: 0,
     is_locked: 0,
-    order_by: 1,
     is_enabled: 1,
+    order_by: 1,
   };
   return defaultInput;
 }
@@ -604,14 +604,14 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "域名",
+    "所属域名",
+    "菜单权限",
     "租户管理员",
     "到期日",
     "最大用户数",
     "锁定",
-    "排序",
     "启用",
-    "菜单",
+    "排序",
     "备注",
     "创建人",
     "创建时间",

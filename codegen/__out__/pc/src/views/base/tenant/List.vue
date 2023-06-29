@@ -43,7 +43,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_ids == null">
         <el-form-item
-          label="菜单"
+          label="菜单权限"
           prop="menu_ids"
         >
           <CustomSelect
@@ -57,7 +57,7 @@
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+            :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
             multiple
             @change="searchClk"
           ></CustomSelect>
@@ -413,7 +413,7 @@
             </el-table-column>
           </template>
           
-          <!-- 域名 -->
+          <!-- 所属域名 -->
           <template v-else-if="'domain_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.domain_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -423,6 +423,24 @@
                 <LinkList
                   v-model="row[column.property]"
                 ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 菜单权限 -->
+          <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  min="w-7.5"
+                  @click="menu_idsClk(row)"
+                >
+                  {{ row[column.property]?.length || 0 }}
+                </el-link>
               </template>
             </el-table-column>
           </template>
@@ -472,27 +490,6 @@
             </el-table-column>
           </template>
           
-          <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <el-input-number
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
-                  v-model="row.order_by"
-                  :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -511,20 +508,23 @@
             </el-table-column>
           </template>
           
-          <!-- 菜单 -->
-          <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_ids == null)">
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
-                <el-link
-                  type="primary"
-                  min="w-7.5"
-                  @click="menu_idsClk(row)"
-                >
-                  {{ row[column.property]?.length || 0 }}
-                </el-link>
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
               </template>
             </el-table-column>
           </template>
@@ -653,8 +653,8 @@ import {
   type TenantInput,
   type TenantSearch,
   type DomainModel,
-  type UsrModel,
   type MenuModel,
+  type UsrModel,
 } from "#/types";
 
 import {
@@ -741,17 +741,17 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  domain_ids?: string|string[]; // 域名
-  domain_ids_lbl?: string|string[]; // 域名
+  domain_ids?: string|string[]; // 所属域名
+  domain_ids_lbl?: string|string[]; // 所属域名
+  menu_ids?: string|string[]; // 菜单权限
+  menu_ids_lbl?: string|string[]; // 菜单权限
   usr_id?: string|string[]; // 租户管理员
   usr_id_lbl?: string|string[]; // 租户管理员
   expiration?: string; // 到期日
   max_usr_num?: string; // 最大用户数
   is_locked?: string|string[]; // 锁定
-  order_by?: string; // 排序
   is_enabled?: string|string[]; // 启用
-  menu_ids?: string|string[]; // 菜单
-  menu_ids_lbl?: string|string[]; // 菜单
+  order_by?: string; // 排序
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -768,16 +768,16 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   domain_ids: "string[]",
   domain_ids_lbl: "string[]",
+  menu_ids: "string[]",
+  menu_ids_lbl: "string[]",
   usr_id: "string[]",
   usr_id_lbl: "string[]",
   max_usr_num: "number",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
-  order_by: "number",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  menu_ids: "string[]",
-  menu_ids_lbl: "string[]",
+  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -960,10 +960,18 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "域名",
+      label: "所属域名",
       prop: "domain_ids_lbl",
       width: 280,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "菜单权限",
+      prop: "menu_ids_lbl",
+      width: 80,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1000,15 +1008,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "排序",
-      prop: "order_by",
-      width: 100,
-      sortable: "custom",
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
       label: "启用",
       prop: "is_enabled_lbl",
       width: 60,
@@ -1017,10 +1016,11 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "菜单",
-      prop: "menu_ids_lbl",
-      width: 80,
-      align: "center",
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1238,14 +1238,14 @@ async function importExcelClk() {
   }
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
-    [ n("域名") ]: "domain_ids_lbl",
+    [ n("所属域名") ]: "domain_ids_lbl",
+    [ n("菜单权限") ]: "menu_ids_lbl",
     [ n("租户管理员") ]: "usr_id_lbl",
     [ n("到期日") ]: "expiration",
     [ n("最大用户数") ]: "max_usr_num",
     [ n("锁定") ]: "is_locked_lbl",
-    [ n("排序") ]: "order_by",
     [ n("启用") ]: "is_enabled_lbl",
-    [ n("菜单") ]: "menu_ids_lbl",
+    [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time",
@@ -1500,14 +1500,14 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "域名",
+    "所属域名",
+    "菜单权限",
     "租户管理员",
     "到期日",
     "最大用户数",
     "锁定",
-    "排序",
     "启用",
-    "菜单",
+    "排序",
     "备注",
     "创建人",
     "创建时间",
