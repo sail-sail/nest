@@ -148,6 +148,29 @@ pub async fn delete_by_ids<'a>(
   Ok(num)
 }
 
+/// 根据 id 设置默认记录
+#[allow(dead_code)]
+pub async fn default_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "default".to_owned(),
+  ).await?;
+  
+  let num = domain_service::default_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]

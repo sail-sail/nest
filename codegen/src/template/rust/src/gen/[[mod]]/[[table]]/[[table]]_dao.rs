@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
@@ -409,8 +410,10 @@ fn get_from_query() -> &'static str {
     #>
     left join <#=many2many.mod#>_<#=many2many.table#>
       on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#> = t.id
+      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
     left join <#=foreignKey.mod#>_<#=foreignTable#>
       on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#>
+      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
     left join (
       select
         json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
@@ -423,8 +426,11 @@ fn get_from_query() -> &'static str {
       from <#=foreignKey.mod#>_<#=many2many.table#>
       inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
         on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#> = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+        and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
         on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
+      where
+        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
@@ -1678,6 +1684,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   vec![
     table,<#
     let foreign_tableArr = [ ];
+    const foreignTablesCache = [ ];
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1689,6 +1696,10 @@ fn get_foreign_tables() -> Vec<&'static str> {
       const foreignTable = foreignKey.table;
       const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      if (foreignTablesCache.includes(foreignTable)) {
+        continue;
+      }
+      foreignTablesCache.push(foreignTable);
     #><#
       if (foreignKey && foreignKey.type === "many2many") {
         if (foreign_tableArr.includes(many2many.table)) {
@@ -1702,8 +1713,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
           foreign_tableArr.push(foreignTable);
         }
     #>
-    "<#=many2many.table#>",
-    "<#=foreignTable#>",<#
+    "<#=many2many.mod#>_<#=many2many.table#>",
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     } else if (foreignKey && !foreignKey.multiple) {
       if (foreign_tableArr.includes(foreignTable)) {
         continue;
@@ -1711,7 +1722,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
         foreign_tableArr.push(foreignTable);
       }
     #>
-    "<#=foreignTable#>",<#
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     }
     #><#
     }
@@ -1770,6 +1781,69 @@ pub async fn delete_by_ids<'a>(
   
   Ok(num)
 }<#
+if (hasDefault) {
+#>
+
+/// 根据 id 设置默认记录
+pub async fn default_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let _method = "default_by_id";
+  
+  let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_foreign_tables());
+  
+  {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_default=0 where is_default = 1 and id!=?",
+      table,
+    );
+    
+    args.push(id.clone().into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  let mut num = 0;
+  
+  let mut args = QueryArgs::new();
+    
+  let sql = format!(
+    "update {} set is_default=1 where id=?",
+    table,
+  );
+  
+  args.push(id.into());
+  
+  let args = args.into();
+  
+  let options = options.clone().into();
+  
+  num += ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}<#
+}
+#><#
 if (hasEnabled) {
 #>
 

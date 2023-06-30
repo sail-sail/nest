@@ -848,7 +848,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_domain";
   vec![
     table,
-    "usr",
+    "base_usr",
   ]
 }
 
@@ -890,6 +890,65 @@ pub async fn delete_by_ids<'a>(
       options,
     ).await?;
   }
+  
+  Ok(num)
+}
+
+/// 根据 id 设置默认记录
+pub async fn default_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "base_domain";
+  let _method = "default_by_id";
+  
+  let options = Options::from(options);
+  
+  let options = options.set_del_cache_key1s(get_foreign_tables());
+  
+  {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_default=0 where is_default = 1 and id!=?",
+      table,
+    );
+    
+    args.push(id.clone().into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  let mut num = 0;
+  
+  let mut args = QueryArgs::new();
+    
+  let sql = format!(
+    "update {} set is_default=1 where id=?",
+    table,
+  );
+  
+  args.push(id.into());
+  
+  let args = args.into();
+  
+  let options = options.clone().into();
+  
+  num += ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
   
   Ok(num)
 }

@@ -861,9 +861,9 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_i18n";
   vec![
     table,
-    "lang",
-    "menu",
-    "usr",
+    "base_lang",
+    "base_menu",
+    "base_usr",
   ]
 }
 

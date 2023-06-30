@@ -893,7 +893,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_dictbiz_detail";
   vec![
     table,
-    "dictbiz",
+    "base_dictbiz",
   ]
 }
 
