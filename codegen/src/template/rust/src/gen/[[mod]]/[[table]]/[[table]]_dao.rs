@@ -1237,7 +1237,18 @@ pub async fn create<'a>(
       Some(id) => return Ok(id),
       None => {},
     }
+  }<#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  if input.menu_ids.is_some() {
+    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      ctx,
+      input.menu_ids.unwrap(),
+    ).await?.into();
+  }<#
   }
+  #>
   
   let id = get_short_uuid();
   
@@ -1589,6 +1600,17 @@ pub async fn update_by_id<'a>(
       sql_fields += ",version = ?";
       args.push((version + 1).into());
     }
+  }<#
+  }
+  #><#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  if input.menu_ids.is_some() {
+    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      ctx,
+      input.menu_ids.unwrap(),
+    ).await?.into();
   }<#
   }
   #>

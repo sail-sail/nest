@@ -698,6 +698,13 @@ pub async fn create<'a>(
     }
   }
   
+  if input.menu_ids.is_some() {
+    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      ctx,
+      input.menu_ids.unwrap(),
+    ).await?.into();
+  }
+  
   let id = get_short_uuid();
   
   if input.id.is_none() {
@@ -881,6 +888,13 @@ pub async fn update_by_id<'a>(
   
   if field_num == 0 {
     return Ok(id);
+  }
+  
+  if input.menu_ids.is_some() {
+    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      ctx,
+      input.menu_ids.unwrap(),
+    ).await?.into();
   }
   
   if let Some(auth_model) = ctx.get_auth_model() {
