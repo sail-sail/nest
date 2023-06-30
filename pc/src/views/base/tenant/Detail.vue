@@ -68,32 +68,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
-          <el-form-item
-            :label="n('菜单权限')"
-            prop="menu_ids"
-            un-h="full"
-          >
-            <CustomTreeSelect
-              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
-              v-model="dialogModel.menu_ids"
-              :method="getMenuTree"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
-              :props="{
-                label: 'lbl',
-                children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node
-              multiple
-            ></CustomTreeSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
             :label="n('租户管理员')"
@@ -270,19 +244,13 @@ import {
 import {
   type TenantInput,
   type DomainModel,
-  type MenuModel,
   type UsrModel,
 } from "#/types";
 
 import {
   getDomainList,
-  getMenuList,
   getUsrList,
 } from "./Api";
-
-import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
 
 const emit = defineEmits<
   (

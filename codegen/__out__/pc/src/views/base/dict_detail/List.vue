@@ -965,9 +965,10 @@ async function dataGrid(
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;

@@ -12,7 +12,8 @@ export default defineStore("usr", function() {
   
   let isLogining = $ref(false);
   
-  let dept_id = $ref<string>();
+  let tenant_id = $ref<string>();
+  let username = $ref<string>();
   
   let loginInfo = $ref<GetLoginInfo>();
   
@@ -71,8 +72,9 @@ export default defineStore("usr", function() {
   return $$({
     authorization,
     isLogining,
-    dept_id,
     loginInfo,
+    username,
+    tenant_id,
     lang,
     refreshToken,
     login,
@@ -88,6 +90,8 @@ export default defineStore("usr", function() {
     paths: [
       "authorization",
       "dept_id",
+      "username",
+      "tenant_id",
       "loginInfo",
       "lang",
     ],

@@ -239,7 +239,6 @@ async function loginClk() {
   } catch (err) {
     return;
   }
-  model.dept_id = usrStore.dept_id;
   const loginModel = await login(model);
   if (!loginModel.authorization) {
     return;
@@ -252,8 +251,11 @@ async function loginClk() {
       dept_id: model.dept_id,
     }),
   );
-  usrStore.dept_id = loginModel.dept_id ?? undefined;
+  debugger;
   usrStore.authorization = loginModel.authorization;
+  usrStore.username = model.username;
+  usrStore.tenant_id = model.tenant_id;
+  usrStore.lang = model.lang;
   tabsStore.clearKeepAliveNames();
   await Promise.all([
     indexStore.initI18nVersion(),

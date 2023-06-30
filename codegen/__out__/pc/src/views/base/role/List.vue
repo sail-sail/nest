@@ -406,7 +406,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  min="w-7.5"
+                  un-min="w-7.5"
                   @click="menu_idsClk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
@@ -513,6 +513,7 @@
     v-slot="{ selectedIds }"
   >
     <MenuList
+      :tenant_ids="[ usrStore.tenant_id ]"
       :selected-ids="selectedIds"
       @selected-ids-chg="menu_idsListSelectDialogRef?.selectedIdsChg($event)"
     ></MenuList>
@@ -951,9 +952,10 @@ async function dataGrid(
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;

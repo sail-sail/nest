@@ -45,29 +45,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
-          <el-form-item
-            :label="n('菜单')"
-            prop="menu_ids"
-            un-h="full"
-          >
-            <CustomSelect
-              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
-              v-model="dialogModel.menu_ids"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-              multiple
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -164,11 +141,9 @@ import {
 
 import {
   type RoleInput,
-  type MenuModel,
 } from "#/types";
 
 import {
-  getMenuList,
 } from "./Api";
 
 const emit = defineEmits<

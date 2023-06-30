@@ -841,7 +841,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  min="w-7.5"
+                  un-min="w-7.5"
                   @click="<#=column_name#>Clk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
@@ -945,7 +945,12 @@ const hasAtt = columns.some((item) => item.isAtt);
     ref="<#=column_name#>ListSelectDialogRef"
     v-slot="{ selectedIds }"
   >
-    <<#=Foreign_Table_Up#>List
+    <<#=Foreign_Table_Up#>List<#
+      if (mod === "base" && table === "role" && column_name === "menu_ids") {
+      #>
+      :tenant_ids="[ usrStore.tenant_id ]"<#
+      }
+      #>
       :selected-ids="selectedIds"
       @selected-ids-chg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
     ></<#=Foreign_Table_Up#>List>
@@ -1835,9 +1840,10 @@ async function dataGrid(
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;
