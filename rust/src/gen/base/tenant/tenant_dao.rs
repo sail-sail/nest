@@ -382,8 +382,10 @@ fn get_from_query() -> &'static str {
   let from_query = r#"base_tenant t
     left join base_tenant_domain
       on base_tenant_domain.tenant_id = t.id
+      and base_tenant_domain.is_deleted = 0
     left join base_domain
       on base_tenant_domain.domain_id = base_domain.id
+      and base_domain.is_deleted = 0
     left join (
       select
         json_arrayagg(base_domain.id) domain_ids,
@@ -392,15 +394,20 @@ fn get_from_query() -> &'static str {
       from base_tenant_domain
       inner join base_domain
         on base_domain.id = base_tenant_domain.domain_id
+        and base_domain.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_domain.tenant_id
+      where
+        base_tenant_domain.is_deleted = 0
       group by tenant_id
     ) _domain
       on _domain.tenant_id = t.id
     left join base_tenant_menu
       on base_tenant_menu.tenant_id = t.id
+      and base_tenant_menu.is_deleted = 0
     left join base_menu
       on base_tenant_menu.menu_id = base_menu.id
+      and base_menu.is_deleted = 0
     left join (
       select
         json_arrayagg(base_menu.id) menu_ids,
@@ -409,8 +416,11 @@ fn get_from_query() -> &'static str {
       from base_tenant_menu
       inner join base_menu
         on base_menu.id = base_tenant_menu.menu_id
+        and base_menu.is_deleted = 0
       inner join base_tenant
         on base_tenant.id = base_tenant_menu.tenant_id
+      where
+        base_tenant_menu.is_deleted = 0
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id
@@ -1200,11 +1210,11 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_tenant";
   vec![
     table,
-    "tenant_domain",
-    "domain",
-    "tenant_menu",
-    "menu",
-    "usr",
+    "base_tenant_domain",
+    "base_domain",
+    "base_tenant_menu",
+    "base_menu",
+    "base_usr",
   ]
 }
 

@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -311,6 +312,27 @@ impl <#=tableUP#>GenMutation {<#
     let res = <#=table#>_resolver::delete_by_ids(
       &mut ctx,
       ids,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }<#
+    }
+  #><#
+    if (hasDefault && opts.noEdit !== true) {
+  #>
+  
+  /// 根据 id 设置默认记录
+  pub async fn default_by_id<#=table#><'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = <#=table#>_resolver::default_by_id(
+      &mut ctx,
+      id,
       None,
     ).await;
     

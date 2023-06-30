@@ -978,8 +978,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_dept";
   vec![
     table,
-    "dept",
-    "usr",
+    "base_dept",
+    "base_usr",
   ]
 }
 

@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -334,6 +335,60 @@ pub async fn delete_by_ids<'a>(
   
   Ok(num)
 }<#
+if (hasDefault) {
+#>
+
+/// 根据 id 设置默认记录
+#[allow(dead_code)]
+pub async fn default_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/<#=mod#>/<#=table#>".to_owned(),
+    "default".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = serde_json::to_string(&ids)?;<#
+  }
+  #>
+  
+  let num = <#=table#>_service::default_by_id(
+    ctx,
+    id,
+    options,
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let method_lbl = ns(ctx, "默认".to_owned(), None).await?;
+  let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
+  
+  log(
+    ctx,
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "default".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: format!("{method_lbl}{table_comment}").into(),
+      old_data: old_data.into(),
+      new_data: "[]".to_owned().into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(num)
+}<#
+}
+#><#
 if (hasEnabled) {
 #>
 

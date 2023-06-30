@@ -263,8 +263,10 @@ fn get_from_query() -> &'static str {
       on default_dept_id_lbl.id = t.default_dept_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = 0
     left join base_dept
       on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted = 0
     left join (
       select
         json_arrayagg(base_dept.id) dept_ids,
@@ -273,15 +275,20 @@ fn get_from_query() -> &'static str {
       from base_usr_dept
       inner join base_dept
         on base_dept.id = base_usr_dept.dept_id
+        and base_dept.is_deleted = 0
       inner join base_usr
         on base_usr.id = base_usr_dept.usr_id
+      where
+        base_usr_dept.is_deleted = 0
       group by usr_id
     ) _dept
       on _dept.usr_id = t.id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
+      and base_usr_role.is_deleted = 0
     left join base_role
       on base_usr_role.role_id = base_role.id
+      and base_role.is_deleted = 0
     left join (
       select
         json_arrayagg(base_role.id) role_ids,
@@ -290,8 +297,11 @@ fn get_from_query() -> &'static str {
       from base_usr_role
       inner join base_role
         on base_role.id = base_usr_role.role_id
+        and base_role.is_deleted = 0
       inner join base_usr
         on base_usr.id = base_usr_role.usr_id
+      where
+        base_usr_role.is_deleted = 0
       group by usr_id
     ) _role
       on _role.usr_id = t.id"#;
@@ -1084,9 +1094,9 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_usr";
   vec![
     table,
-    "dept",
-    "usr_role",
-    "role",
+    "base_dept",
+    "base_usr_role",
+    "base_role",
   ]
 }
 

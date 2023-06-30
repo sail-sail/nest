@@ -939,7 +939,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_background_task";
   vec![
     table,
-    "usr",
+    "base_usr",
   ]
 }
 

@@ -341,8 +341,10 @@ fn get_from_query() -> &'static str {
       on parent_id_lbl.id = t.parent_id
     left join base_tenant_menu
       on base_tenant_menu.menu_id = t.id
+      and base_tenant_menu.is_deleted = 0
     left join base_tenant
       on base_tenant_menu.tenant_id = base_tenant.id
+      and base_tenant.is_deleted = 0
     left join (
       select
         json_arrayagg(base_tenant.id) tenant_ids,
@@ -351,8 +353,11 @@ fn get_from_query() -> &'static str {
       from base_tenant_menu
       inner join base_tenant
         on base_tenant.id = base_tenant_menu.tenant_id
+        and base_tenant.is_deleted = 0
       inner join base_menu
         on base_menu.id = base_tenant_menu.menu_id
+      where
+        base_tenant_menu.is_deleted = 0
       group by menu_id
     ) _tenant
       on _tenant.menu_id = t.id
@@ -1079,10 +1084,10 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_menu";
   vec![
     table,
-    "menu",
-    "tenant_menu",
-    "tenant",
-    "usr",
+    "base_menu",
+    "base_tenant_menu",
+    "base_tenant",
+    "base_usr",
   ]
 }
 

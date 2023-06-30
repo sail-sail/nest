@@ -197,6 +197,23 @@ impl DomainGenMutation {
     ctx.ok(res).await
   }
   
+  /// 根据 id 设置默认记录
+  pub async fn default_by_iddomain<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = domain_resolver::default_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
   /// 根据 ids 启用或禁用数据
   pub async fn enable_by_ids_domain<'a>(
     &self,
