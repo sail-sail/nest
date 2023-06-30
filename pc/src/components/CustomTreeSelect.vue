@@ -85,9 +85,15 @@ watch(
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
 function clearClk() {
   modelValue = "";
-  emit("update:modelValue", modelValue);
   emit("change", undefined);
   emit("clear");
 }
