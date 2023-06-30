@@ -406,13 +406,29 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  
-                  min="w-7.5"
-                  
+                  un-min="w-7.5"
                   @click="menu_idsClk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 启用 -->
+          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
+                  v-model="row.is_enabled"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="is_enabledChg(row.id, row.is_enabled)"
+                ></el-switch>
               </template>
             </el-table-column>
           </template>
@@ -426,20 +442,39 @@
             </el-table-column>
           </template>
           
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <el-switch
-                  v-model="row.is_enabled"
-                  :active-value="1"
-                  :inactive-value="0"
-                  @change="is_enabledChg(row.id, row.is_enabled)"
-                ></el-switch>
-              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -478,6 +513,7 @@
     v-slot="{ selectedIds }"
   >
     <MenuList
+      :tenant_ids="[ usrStore.tenant_id ]"
       :selected-ids="selectedIds"
       @selected-ids-chg="menu_idsListSelectDialogRef?.selectedIdsChg($event)"
     ></MenuList>
@@ -521,6 +557,7 @@ import {
   type RoleInput,
   type RoleSearch,
   type MenuModel,
+  type UsrModel,
 } from "#/types";
 
 import {
@@ -609,9 +646,15 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单
+  is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   rem_like?: string; // 备注
-  is_enabled?: string|string[]; // 启用
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -622,6 +665,10 @@ const builtInSearchType: { [key: string]: string } = {
   menu_ids_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -805,7 +852,15 @@ function getTableColumns(): ColumnType[] {
       width: 80,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
+    },
+    {
+      label: "启用",
+      prop: "is_enabled_lbl",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
     },
     {
       label: "备注",
@@ -816,9 +871,33 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "启用",
-      prop: "is_enabled_lbl",
-      width: 80,
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      width: 150,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -856,23 +935,27 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
-async function dataGrid(isCount = false) {
+async function dataGrid(
+  isCount = false,
+  opt?: GqlOpt,
+) {
   if (isCount) {
     await Promise.all([
-      useFindAll(),
-      useFindCount(),
+      useFindAll(opt),
+      useFindCount(opt),
     ]);
   } else {
-    await useFindAll();
+    await useFindAll(opt);
   }
 }
 
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -880,16 +963,20 @@ function getDataSearch() {
   return search2;
 }
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }
 
-async function useFindCount() {
+async function useFindCount(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2);
+  page.total = await findCount(search2, opt);
 }
 
 let sort: Sort = $ref({
@@ -991,8 +1078,12 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("菜单") ]: "menu_ids_lbl",
-    [ n("备注") ]: "rem",
     [ n("启用") ]: "is_enabled_lbl",
+    [ n("备注") ]: "rem",
+    [ n("创建人") ]: "create_usr_id_lbl",
+    [ n("创建时间") ]: "create_time",
+    [ n("更新人") ]: "update_usr_id_lbl",
+    [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1011,6 +1102,8 @@ async function importExcelClk() {
       header,
       {
         date_keys: [
+          n("创建时间"),
+          n("更新时间"),
         ],
       },
     );
@@ -1042,11 +1135,20 @@ async function cancelImport() {
 
 /** 启用 */
 async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  const notLoading = true;
   await enableByIds(
     [ id ],
     is_enabled,
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 打开修改页面 */
@@ -1188,8 +1290,12 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "菜单",
-    "备注",
     "启用",
+    "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),
@@ -1241,26 +1347,28 @@ async function menu_idsClk(row: RoleModel) {
   } = await menu_idsListSelectDialogRef.showDialog({
     selectedIds: row.menu_ids as string[],
   });
-  if (action === "select") {
-    selectedIds2 = selectedIds2 || [ ];
-    let isEqual = true;
-    if (selectedIds2.length === row.menu_ids.length) {
-      for (let i = 0; i < selectedIds2.length; i++) {
-        const item = selectedIds2[i];
-        if (!row.menu_ids.includes(item)) {
-          isEqual = false;
-          break;
-        }
-      }
-    } else {
-      isEqual = false;
-    }
-    if (!isEqual) {
-      row.menu_ids = selectedIds2;
-      await updateById(row.id, { menu_ids: selectedIds2 });
-      await dataGrid();
-    }
+  if (action !== "select") {
+    return;
   }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.menu_ids.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.menu_ids.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.menu_ids = selectedIds2;
+  await updateById(row.id, { menu_ids: selectedIds2 });
+  await dataGrid();
 }
 
 defineExpose({

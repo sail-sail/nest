@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -406,9 +407,8 @@ function getFromQuery() {
         and <#=foreignKey.mod#>_<#=foreignKey.table#>.is_deleted = 0
       inner join <#=mod#>_<#=table#>
         on <#=mod#>_<#=table#>.id = <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
-        and <#=mod#>_<#=table#>.is_deleted = 0
       where
-      <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
+        <#=many2many.mod#>_<#=many2many.table#>.is_deleted = 0
       group by <#=many2many.column1#>
     ) _<#=foreignTable#>
       on _<#=foreignTable#>.<#=many2many.column1#> = t.id<#
@@ -1410,7 +1410,19 @@ export async function create(
     if (result) {
       return result;
     }
+  }<#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  {
+    const {
+      filterMenuIdsByTenant,
+    } = await import("/src/base/tenant/tenant.dao.ts");
+    
+    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+  }<#
   }
+  #>
   
   if (!model.id) {
     model.id = shortUuidV4();
@@ -1631,9 +1643,9 @@ export async function delCache() {
   const table = "<#=mod#>_<#=table#>";
   const method = "delCache";
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  await delCacheCtx(cacheKey1);
+  await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [<#
+  const foreignTablesCache = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1645,14 +1657,18 @@ export async function delCache() {
     const foreignTable = foreignKey.table;
     const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const many2many = column.many2many;
+    if (foreignTablesCache.includes(foreignTable)) {
+      continue;
+    }
+    foreignTablesCache.push(foreignTable);
   #><#
     if (foreignKey && foreignKey.type === "many2many") {
   #>
-    "<#=many2many.table#>",
-    "<#=foreignTable#>",<#
+    "<#=many2many.mod#>_<#=many2many.table#>",
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
-    "<#=foreignTable#>",<#
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     }
   #><#
   }
@@ -1661,8 +1677,7 @@ export async function delCache() {
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
-    const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await delCacheCtx(cacheKey1);
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
   }
 }<#
 }
@@ -2042,7 +2057,19 @@ export async function updateById(
   
   if (!oldModel) {
     throw await ns("修改失败, 数据已被删除");
+  }<#
+  if (mod === "base" && table === "role") {
+  #>
+  
+  {
+    const {
+      filterMenuIdsByTenant,
+    } = await import("/src/base/tenant/tenant.dao.ts");
+    
+    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+  }<#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = /*sql*/ `
@@ -2236,6 +2263,72 @@ export async function deleteByIds(
   
   return num;
 }<#
+if (hasDefault) {
+#>
+
+/**
+ * 根据 id 设置默认记录
+ * @param {string} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "<#=mod#>_<#=table#>";
+  const method = "defaultById";
+  
+  if (!id) {
+    throw new Error("defaultById: id cannot be empty");
+  }
+  
+  {
+    const args = new QueryArgs();
+    let sql = `
+      update
+        <#=mod#>_<#=table#>
+      set
+        is_default = 0
+      where
+        is_default = 1
+        and id != ${ args.push(id) }
+    `;
+    await execute(sql, args);
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      <#=mod#>_<#=table#>
+    set
+      is_default = 1
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
+  }
+  #>
+  
+  return num;
+}<#
+}
+#><#
 if (hasEnabled) {
 #>
 
@@ -2395,7 +2488,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -2437,7 +2530,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

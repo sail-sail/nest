@@ -258,13 +258,83 @@ fn get_where_query<'a>(
       where_query += &format!(" and create_usr_id_lbl.id is null");
     }
   }
+  {
+    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.create_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      _ => create_time[0].clone().into(),
+    };
+    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      1 => None,
+      _ => create_time[1].clone().into(),
+    };
+    if let Some(create_time_gt) = create_time_gt {
+      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+    }
+    if let Some(create_time_lt) = create_time_lt {
+      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+    }
+  }
+  {
+    let update_usr_id: Vec<String> = match &search {
+      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !update_usr_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += &format!(" and update_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.update_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      _ => update_time[0].clone().into(),
+    };
+    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      1 => None,
+      _ => update_time[1].clone().into(),
+    };
+    if let Some(update_time_gt) = update_time_gt {
+      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+    }
+    if let Some(update_time_lt) = update_time_lt {
+      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+    }
+  }
   where_query
 }
 
 fn get_from_query() -> &'static str {
   let from_query = r#"base_background_task t
     left join base_usr create_usr_id_lbl
-      on create_usr_id_lbl.id = t.create_usr_id"#;
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id"#;
   from_query
 }
 
@@ -293,6 +363,7 @@ pub async fn find_all<'a>(
     select
       t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -419,6 +490,12 @@ pub async fn get_field_comments<'a>(
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
@@ -672,6 +749,18 @@ pub async fn create<'a>(
     sql_fields += ",rem";
     sql_values += ",?";
     args.push(rem.into());
+  }
+  // 更新人
+  if let Some(update_usr_id) = input.update_usr_id {
+    sql_fields += ",update_usr_id";
+    sql_values += ",?";
+    args.push(update_usr_id.into());
+  }
+  // 更新时间
+  if let Some(update_time) = input.update_time {
+    sql_fields += ",update_time";
+    sql_values += ",?";
+    args.push(update_time.into());
   }
   
   let sql = format!(

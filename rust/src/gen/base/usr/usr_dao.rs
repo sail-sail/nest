@@ -127,32 +127,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let dept_ids: Vec<String> = match &search {
-      Some(item) => item.dept_ids.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !dept_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(dept_ids.len());
-        for item in dept_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_dept.id in ({})", arg);
-    }
-  }
-  {
-    let dept_ids_is_null: bool = match &search {
-      Some(item) => item.dept_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if dept_ids_is_null {
-      where_query += &format!(" and dept_ids_lbl.id is null");
-    }
-  }
-  {
     let default_dept_id: Vec<String> = match &search {
       Some(item) => item.default_dept_id.clone().unwrap_or_default(),
       None => Default::default(),
@@ -213,6 +187,32 @@ fn get_where_query<'a>(
     }
   }
   {
+    let dept_ids: Vec<String> = match &search {
+      Some(item) => item.dept_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !dept_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(dept_ids.len());
+        for item in dept_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_dept.id in ({})", arg);
+    }
+  }
+  {
+    let dept_ids_is_null: bool = match &search {
+      Some(item) => item.dept_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if dept_ids_is_null {
+      where_query += &format!(" and dept_ids_lbl.id is null");
+    }
+  }
+  {
     let role_ids: Vec<String> = match &search {
       Some(item) => item.role_ids.clone().unwrap_or_default(),
       None => Default::default(),
@@ -259,6 +259,8 @@ fn get_where_query<'a>(
 
 fn get_from_query() -> &'static str {
   let from_query = r#"base_usr t
+    left join base_dept default_dept_id_lbl
+      on default_dept_id_lbl.id = t.default_dept_id
     left join base_usr_dept
       on base_usr_dept.usr_id = t.id
     left join base_dept
@@ -276,8 +278,6 @@ fn get_from_query() -> &'static str {
       group by usr_id
     ) _dept
       on _dept.usr_id = t.id
-    left join base_dept default_dept_id_lbl
-      on default_dept_id_lbl.id = t.default_dept_id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
     left join base_role
@@ -322,9 +322,9 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
+      ,default_dept_id_lbl.lbl default_dept_id_lbl
       ,max(dept_ids) dept_ids
       ,max(dept_ids_lbl) dept_ids_lbl
-      ,default_dept_id_lbl.lbl default_dept_id_lbl
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
     from
@@ -445,14 +445,14 @@ pub async fn get_field_comments<'a>(
   let field_comments = UsrFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     username: n_route.n(ctx, "用户名".to_owned(), None).await?,
-    dept_ids: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
-    dept_ids_lbl: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
     default_dept_id: n_route.n(ctx, "默认部门".to_owned(), None).await?,
     default_dept_id_lbl: n_route.n(ctx, "默认部门".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    dept_ids: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
+    dept_ids_lbl: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
     role_ids: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
     role_ids_lbl: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
@@ -654,6 +654,27 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 默认部门
+  if input.default_dept_id.is_none() {
+    if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
+      input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+        item.trim().to_owned()
+      );
+      let model = crate::gen::base::dept::dept_dao::find_one(
+        ctx,
+        crate::gen::base::dept::dept_model::DeptSearch {
+          lbl: input.default_dept_id_lbl.clone(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        input.default_dept_id = model.id.into();
+      }
+    }
+  }
+  
   // 拥有部门
   if input.dept_ids.is_none() {
     if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
@@ -682,27 +703,6 @@ pub async fn set_id_by_lbl<'a>(
           .map(|item| item.id)
           .collect::<Vec<String>>()
           .into();
-      }
-    }
-  }
-  
-  // 默认部门
-  if input.default_dept_id.is_none() {
-    if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-      input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::base::dept::dept_dao::find_one(
-        ctx,
-        crate::gen::base::dept::dept_model::DeptSearch {
-          lbl: input.default_dept_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.default_dept_id = model.id.into();
       }
     }
   }
@@ -1084,7 +1084,6 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_usr";
   vec![
     table,
-    "usr_dept",
     "dept",
     "usr_role",
     "role",

@@ -9,8 +9,6 @@ type DomainModel {
   id: String!
   "名称"
   lbl: String!
-  "排序"
-  order_by: Int!
   "默认"
   is_default: Int!
   "默认"
@@ -19,6 +17,8 @@ type DomainModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int!
   "备注"
   rem: String!
   "创建人"
@@ -37,12 +37,12 @@ type DomainModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type DomainFieldComment {
   "名称"
   lbl: String!
-  "排序"
-  order_by: String!
   "默认"
   is_default: String!
   "默认"
@@ -51,6 +51,8 @@ type DomainFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
   "创建人"
@@ -75,8 +77,6 @@ input DomainInput {
   id: String
   "名称"
   lbl: String
-  "排序"
-  order_by: Int
   "默认"
   is_default: Int
   "默认"
@@ -85,6 +85,8 @@ input DomainInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "排序"
+  order_by: Int
   "备注"
   rem: String
   "创建人"
@@ -114,12 +116,12 @@ input DomainSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "排序"
-  order_by: [Int!]
   "默认"
   is_default: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
@@ -155,6 +157,8 @@ type Mutation {
   updateByIdDomain(id: String!, model: DomainInput!): String!
   "根据 ids 删除数据"
   deleteByIdsDomain(ids: [String!]!): Int!
+  "根据 id 设置默认记录"
+  defaultByIdDomain(id: String!): Int!
   "根据 ids 启用或者禁用数据"
   enableByIdsDomain(ids: [String!]!, is_enabled: Int!): Int!
   "根据 ids 还原数据"

@@ -75,6 +75,30 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.default_dept_id == null)">
+          <el-form-item
+            :label="n('默认部门')"
+            prop="default_dept_id"
+            un-h="full"
+          >
+            <CustomSelect
+              ref="default_dept_idRef"
+              :init="false"
+              @change="old_default_dept_id = dialogModel.default_dept_id;"
+              v-model="dialogModel.default_dept_id"
+              :method="getDeptListApi"
+              :options-map="((item: DeptModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
           <el-form-item
             :label="n('拥有部门')"
@@ -98,30 +122,6 @@
               check-on-click-node
               multiple
             ></CustomTreeSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.default_dept_id == null)">
-          <el-form-item
-            :label="n('默认部门')"
-            prop="default_dept_id"
-            un-h="full"
-          >
-            <CustomSelect
-              ref="default_dept_idRef"
-              :init="false"
-              @change="old_default_dept_id = dialogModel.default_dept_id;"
-              v-model="dialogModel.default_dept_id"
-              :method="getDeptListApi"
-              :options-map="((item: DeptModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
-            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -604,10 +604,10 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "用户名",
-    "拥有部门",
     "默认部门",
     "锁定",
     "启用",
+    "拥有部门",
     "拥有角色",
     "备注",
   ];

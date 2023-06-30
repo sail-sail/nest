@@ -106,22 +106,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let rem = match &search {
-      Some(item) => item.rem.clone(),
-      None => None,
-    };
-    if let Some(rem) = rem {
-      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
-    }
-    let rem_like = match &search {
-      Some(item) => item.rem_like.clone(),
-      None => None,
-    };
-    if let Some(rem_like) = rem_like {
-      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
-    }
-  }
-  {
     let is_enabled: Vec<u8> = match &search {
       Some(item) => item.is_enabled.clone().unwrap_or_default(),
       None => Default::default(),
@@ -159,11 +143,125 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
     }
   }
+  {
+    let rem = match &search {
+      Some(item) => item.rem.clone(),
+      None => None,
+    };
+    if let Some(rem) = rem {
+      where_query += &format!(" and t.rem = {}", args.push(rem.into()));
+    }
+    let rem_like = match &search {
+      Some(item) => item.rem_like.clone(),
+      None => None,
+    };
+    if let Some(rem_like) = rem_like {
+      where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+    }
+  }
+  {
+    let create_usr_id: Vec<String> = match &search {
+      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !create_usr_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(create_usr_id.len());
+        for item in create_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let create_usr_id_is_null: bool = match &search {
+      Some(item) => item.create_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if create_usr_id_is_null {
+      where_query += &format!(" and create_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.create_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      _ => create_time[0].clone().into(),
+    };
+    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      1 => None,
+      _ => create_time[1].clone().into(),
+    };
+    if let Some(create_time_gt) = create_time_gt {
+      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+    }
+    if let Some(create_time_lt) = create_time_lt {
+      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+    }
+  }
+  {
+    let update_usr_id: Vec<String> = match &search {
+      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !update_usr_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += &format!(" and update_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.update_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      _ => update_time[0].clone().into(),
+    };
+    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      1 => None,
+      _ => update_time[1].clone().into(),
+    };
+    if let Some(update_time_gt) = update_time_gt {
+      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+    }
+    if let Some(update_time_lt) = update_time_lt {
+      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
+    }
+  }
   where_query
 }
 
 fn get_from_query() -> &'static str {
-  let from_query = r#"base_lang t"#;
+  let from_query = r#"base_lang t
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id"#;
   from_query
 }
 
@@ -191,6 +289,8 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -299,10 +399,18 @@ pub async fn get_field_comments<'a>(
   let field_comments = LangFieldComment {
     code: n_route.n(ctx, "编码".to_owned(), None).await?,
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
     order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
@@ -559,12 +667,6 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(lbl.into());
   }
-  // 备注
-  if let Some(rem) = input.rem {
-    sql_fields += ",rem";
-    sql_values += ",?";
-    args.push(rem.into());
-  }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     sql_fields += ",is_enabled";
@@ -576,6 +678,24 @@ pub async fn create<'a>(
     sql_fields += ",order_by";
     sql_values += ",?";
     args.push(order_by.into());
+  }
+  // 备注
+  if let Some(rem) = input.rem {
+    sql_fields += ",rem";
+    sql_values += ",?";
+    args.push(rem.into());
+  }
+  // 更新人
+  if let Some(update_usr_id) = input.update_usr_id {
+    sql_fields += ",update_usr_id";
+    sql_values += ",?";
+    args.push(update_usr_id.into());
+  }
+  // 更新时间
+  if let Some(update_time) = input.update_time {
+    sql_fields += ",update_time";
+    sql_values += ",?";
+    args.push(update_time.into());
   }
   
   let sql = format!(
@@ -638,12 +758,6 @@ pub async fn update_by_id<'a>(
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
   }
-  // 备注
-  if let Some(rem) = input.rem {
-    field_num += 1;
-    sql_fields += ",rem = ?";
-    args.push(rem.into());
-  }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
@@ -655,6 +769,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",order_by = ?";
     args.push(order_by.into());
+  }
+  // 备注
+  if let Some(rem) = input.rem {
+    field_num += 1;
+    sql_fields += ",rem = ?";
+    args.push(rem.into());
   }
   
   if field_num == 0 {
@@ -700,6 +820,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_lang";
   vec![
     table,
+    "usr",
   ]
 }
 

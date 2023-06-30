@@ -90,27 +90,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<u32> = match &search {
-      Some(item) => item.order_by.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let order_by_gt: Option<u32> = match &order_by.len() {
-      0 => None,
-      _ => order_by[0].clone().into(),
-    };
-    let order_by_lt: Option<u32> = match &order_by.len() {
-      0 => None,
-      1 => None,
-      _ => order_by[1].clone().into(),
-    };
-    if let Some(order_by_gt) = order_by_gt {
-      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
-    }
-    if let Some(order_by_lt) = order_by_lt {
-      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
-    }
-  }
-  {
     let is_default: Vec<u8> = match &search {
       Some(item) => item.is_default.clone().unwrap_or_default(),
       None => Default::default(),
@@ -142,6 +121,27 @@ fn get_where_query<'a>(
         items.join(",")
       };
       where_query += &format!(" and t.is_enabled in ({})", arg);
+    }
+  }
+  {
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let order_by_gt: Option<u32> = match &order_by.len() {
+      0 => None,
+      _ => order_by[0].clone().into(),
+    };
+    let order_by_lt: Option<u32> = match &order_by.len() {
+      0 => None,
+      1 => None,
+      _ => order_by[1].clone().into(),
+    };
+    if let Some(order_by_gt) = order_by_gt {
+      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
+    }
+    if let Some(order_by_lt) = order_by_lt {
+      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
     }
   }
   {
@@ -409,11 +409,11 @@ pub async fn get_field_comments<'a>(
   
   let field_comments = DomainFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     is_default: n_route.n(ctx, "默认".to_owned(), None).await?,
     is_default_lbl: n_route.n(ctx, "默认".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
@@ -689,12 +689,6 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(lbl.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
-    sql_values += ",?";
-    args.push(order_by.into());
-  }
   // 默认
   if let Some(is_default) = input.is_default {
     sql_fields += ",is_default";
@@ -706,6 +700,12 @@ pub async fn create<'a>(
     sql_fields += ",is_enabled";
     sql_values += ",?";
     args.push(is_enabled.into());
+  }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    sql_fields += ",order_by";
+    sql_values += ",?";
+    args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -780,12 +780,6 @@ pub async fn update_by_id<'a>(
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    field_num += 1;
-    sql_fields += ",order_by = ?";
-    args.push(order_by.into());
-  }
   // 默认
   if let Some(is_default) = input.is_default {
     field_num += 1;
@@ -797,6 +791,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
+  }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    field_num += 1;
+    sql_fields += ",order_by = ?";
+    args.push(order_by.into());
   }
   // 备注
   if let Some(rem) = input.rem {

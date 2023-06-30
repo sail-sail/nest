@@ -45,6 +45,22 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_default == null)">
+          <el-form-item
+            :label="n('默认')"
+            prop="is_default"
+            un-h="full"
+          >
+            <DictSelect
+              :set="dialogModel.is_default = dialogModel.is_default ?? undefined"
+              v-model="dialogModel.is_default"
+              code="is_default"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('默认') }`"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -62,22 +78,6 @@
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
               :clearable="true"
             ></el-input-number>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.is_default == null)">
-          <el-form-item
-            :label="n('默认')"
-            prop="is_default"
-            un-h="full"
-          >
-            <DictSelect
-              :set="dialogModel.is_default = dialogModel.is_default ?? undefined"
-              v-model="dialogModel.is_default"
-              code="is_default"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('默认') }`"
-            ></DictSelect>
           </el-form-item>
         </template>
         
@@ -255,9 +255,9 @@ let showBuildIn = $ref(false);
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DomainInput = {
-    order_by: 1,
     is_default: 0,
     is_enabled: 1,
+    order_by: 1,
   };
   return defaultInput;
 }
@@ -480,9 +480,9 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "排序",
     "默认",
     "启用",
+    "排序",
     "备注",
     "创建人",
     "创建时间",

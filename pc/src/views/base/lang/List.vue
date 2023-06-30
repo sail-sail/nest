@@ -398,15 +398,6 @@
             </el-table-column>
           </template>
           
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -415,6 +406,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_enabled"
                   :active-value="1"
                   :inactive-value="0"
@@ -426,6 +418,63 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit') && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 备注 -->
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -499,6 +548,7 @@ import {
   type LangModel,
   type LangInput,
   type LangSearch,
+  type UsrModel,
 } from "#/types";
 
 defineOptions({
@@ -582,10 +632,16 @@ const props = defineProps<{
   code_like?: string; // 编码
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  rem?: string; // 备注
-  rem_like?: string; // 备注
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+  create_usr_id?: string|string[]; // 创建人
+  create_usr_id_lbl?: string|string[]; // 创建人
+  create_time?: string; // 创建时间
+  update_usr_id?: string|string[]; // 更新人
+  update_usr_id_lbl?: string|string[]; // 更新人
+  update_time?: string; // 更新时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -595,6 +651,10 @@ const builtInSearchType: { [key: string]: string } = {
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   order_by: "number",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -782,20 +842,12 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "备注",
-      prop: "rem",
-      width: 300,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "启用",
       prop: "is_enabled_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "排序",
@@ -803,6 +855,46 @@ function getTableColumns(): ColumnType[] {
       width: 100,
       sortable: "custom",
       align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "备注",
+      prop: "rem",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      width: 120,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      width: 150,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -839,23 +931,27 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
-async function dataGrid(isCount = false) {
+async function dataGrid(
+  isCount = false,
+  opt?: GqlOpt,
+) {
   if (isCount) {
     await Promise.all([
-      useFindAll(),
-      useFindCount(),
+      useFindAll(opt),
+      useFindCount(opt),
     ]);
   } else {
-    await useFindAll();
+    await useFindAll(opt);
   }
 }
 
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -863,16 +959,20 @@ function getDataSearch() {
   return search2;
 }
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }
 
-async function useFindCount() {
+async function useFindCount(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2);
+  page.total = await findCount(search2, opt);
 }
 
 let sort: Sort = $ref({
@@ -974,9 +1074,13 @@ async function importExcelClk() {
   const header: { [key: string]: string } = {
     [ n("编码") ]: "code",
     [ n("名称") ]: "lbl",
-    [ n("备注") ]: "rem",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
+    [ n("备注") ]: "rem",
+    [ n("创建人") ]: "create_usr_id_lbl",
+    [ n("创建时间") ]: "create_time",
+    [ n("更新人") ]: "update_usr_id_lbl",
+    [ n("更新时间") ]: "update_time",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -995,6 +1099,8 @@ async function importExcelClk() {
       header,
       {
         date_keys: [
+          n("创建时间"),
+          n("更新时间"),
         ],
       },
     );
@@ -1026,11 +1132,20 @@ async function cancelImport() {
 
 /** 启用 */
 async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  const notLoading = true;
   await enableByIds(
     [ id ],
     is_enabled,
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 打开修改页面 */
@@ -1172,9 +1287,13 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "编码",
     "名称",
-    "备注",
     "启用",
     "排序",
+    "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),

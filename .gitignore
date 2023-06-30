@@ -7,6 +7,8 @@ package-lock.json
 yarn.lock
 unpackage
 ~$*.xlsx
+target
+Cargo.lock
 
 /build
 /log

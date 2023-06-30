@@ -15,18 +15,18 @@ type DictbizModel {
   type: String!
   "数据类型"
   type_lbl: String
-  "排序"
-  order_by: Int!
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
   "备注"
   rem: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String
+  "排序"
+  order_by: Int!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -43,6 +43,8 @@ type DictbizModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type DictbizFieldComment {
   "编码"
@@ -53,18 +55,18 @@ type DictbizFieldComment {
   type: String!
   "数据类型"
   type_lbl: String!
-  "排序"
-  order_by: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
   "备注"
   rem: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
+  "排序"
+  order_by: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -93,18 +95,18 @@ input DictbizInput {
   type: String
   "数据类型"
   type_lbl: String
-  "排序"
-  order_by: Int
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
   "备注"
   rem: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
+  "排序"
+  order_by: Int
   "创建人"
   create_usr_id: String
   "创建人"
@@ -137,15 +139,15 @@ input DictbizSearch {
   lbl_like: String
   "数据类型"
   type: [String!]
-  "排序"
-  order_by: [Int!]
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "锁定"
-  is_locked: [Int!]
+  "排序"
+  order_by: [Int!]
   "创建人"
   create_usr_id: [String!]
   create_usr_id_is_null: Boolean

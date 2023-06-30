@@ -32,11 +32,11 @@ export async function findAll(
         findAllDomain(search: $search, page: $page, sort: $sort) {
           id
           lbl
-          order_by
           is_default
           is_default_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -46,6 +46,7 @@ export async function findAll(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          is_deleted
         }
       }
     `,
@@ -161,11 +162,11 @@ export async function findById(
         findByIdDomain(id: $id) {
           id
           lbl
-          order_by
           is_default
           is_default_lbl
           is_enabled
           is_enabled_lbl
+          order_by
           rem
           create_usr_id
           create_usr_id_lbl
@@ -175,6 +176,7 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          is_deleted
         }
       }
     `,
@@ -209,6 +211,32 @@ export async function deleteByIds(
     },
   }, opt);
   const res = data.deleteByIdsDomain;
+  return res;
+}
+
+/**
+ * 根据 id 设置默认记录
+ * @export defaultById
+ * @param {string} id
+ * @param {GqlOpt} opt?
+ */
+export async function defaultById(
+  id: string,
+  opt?: GqlOpt,
+) {
+  const data: {
+    defaultByIdDomain: Mutation["defaultByIdDomain"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: String!) {
+        defaultByIdDomain(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.defaultByIdDomain;
   return res;
 }
 
@@ -362,11 +390,11 @@ export function useExportExcel(routePath: string) {
           findAllDomain(search: $search, sort: $sort) {
             id
             lbl
-            order_by
             is_default
             is_default_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl
@@ -379,11 +407,11 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsDomain {
             lbl
-            order_by
             is_default
             is_default_lbl
             is_enabled
             is_enabled_lbl
+            order_by
             rem
             create_usr_id
             create_usr_id_lbl

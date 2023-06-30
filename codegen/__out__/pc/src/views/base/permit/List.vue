@@ -454,6 +454,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_visible"
                   :active-value="1"
                   :inactive-value="0"
@@ -901,12 +902,12 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "备注",
       prop: "rem",
-      width: 300,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -976,23 +977,27 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
-async function dataGrid(isCount = false) {
+async function dataGrid(
+  isCount = false,
+  opt?: GqlOpt,
+) {
   if (isCount) {
     await Promise.all([
-      useFindAll(),
-      useFindCount(),
+      useFindAll(opt),
+      useFindCount(opt),
     ]);
   } else {
-    await useFindAll();
+    await useFindAll(opt);
   }
 }
 
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1000,16 +1005,20 @@ function getDataSearch() {
   return search2;
 }
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }
 
-async function useFindCount() {
+async function useFindCount(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2);
+  page.total = await findCount(search2, opt);
 }
 
 let sort: Sort = $ref({
@@ -1170,13 +1179,22 @@ async function cancelImport() {
 
 /** 可见 */
 async function is_visibleChg(id: string, is_visible: 0 | 1) {
+  const notLoading = true;
   await updateById(
     id,
     {
       is_visible,
     },
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 打开修改页面 */

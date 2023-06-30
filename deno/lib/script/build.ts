@@ -23,9 +23,8 @@ async function copyEnv() {
   await Deno.copyFile(Deno.cwd()+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
   await Deno.copyFile(Deno.cwd()+"/.env.prod", `${ buildDir }/.env.prod`);
   await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
-  // await Deno.copyFile(Deno.cwd()+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
+  await Deno.copyFile(Deno.cwd()+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
   await Deno.copyFile(Deno.cwd()+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
-  await Deno.copyFile(Deno.cwd()+"/lib/image/image-libc-2.28.so", `${ buildDir }/lib/image/image.so`);
 }
 
 async function gqlgen() {

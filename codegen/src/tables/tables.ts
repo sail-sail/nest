@@ -19,7 +19,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单",
-        ORDINAL_POSITION: 2,
         require: false,
         search: true,
         width: 80,
@@ -28,16 +27,22 @@ export default defineConfig({
         },
       },
       {
-        COLUMN_NAME: "rem",
-        width: 280,
-        
-        align: "left",
-        isTextarea: true,
+        COLUMN_NAME: "is_enabled",
       },
       {
-        COLUMN_NAME: "is_enabled",
-        require: true,
-        width: 80,
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -58,11 +63,20 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "domain_ids",
-        COLUMN_COMMENT: "域名",
-        ORDINAL_POSITION: 2,
+        COLUMN_COMMENT: "所属域名",
         require: true,
         align: "left",
         width: 280,
+      },
+      {
+        COLUMN_NAME: "menu_ids",
+        COLUMN_COMMENT: "菜单权限",
+        search: true,
+        width: 80,
+        foreignKey: {
+          showType: "dialog",
+          selectType: "tree",
+        },
       },
       {
         COLUMN_NAME: "usr_id",
@@ -82,22 +96,10 @@ export default defineConfig({
         COLUMN_NAME: "is_locked",
       },
       {
-        COLUMN_NAME: "order_by",
-      },
-      {
         COLUMN_NAME: "is_enabled",
       },
       {
-        COLUMN_NAME: "menu_ids",
-        COLUMN_COMMENT: "菜单",
-        ORDINAL_POSITION: 7,
-        require: false,
-        search: true,
-        width: 80,
-        foreignKey: {
-          showType: "dialog",
-          selectType: "tree",
-        },
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
@@ -132,13 +134,13 @@ export default defineConfig({
         fixed: "left",
       },
       {
-        COLUMN_NAME: "order_by",
-      },
-      {
         COLUMN_NAME: "is_default",
       },
       {
         COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
@@ -215,7 +217,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "dept_ids",
         COLUMN_COMMENT: "拥有部门",
-        ORDINAL_POSITION: 4,
         require: false,
         search: true,
         width: 280,
@@ -237,7 +238,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "拥有角色",
-        ORDINAL_POSITION: 7,
         require: false,
         search: true,
         width: 280,
@@ -245,7 +245,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        ORDINAL_POSITION: 8,
       },
     ],
   },
@@ -289,15 +288,27 @@ export default defineConfig({
         require: true,
         search: true,
         align: "left",
-        width: 140,
+        width: 160,
       },
       {
         COLUMN_NAME: "route_path",
         align: "left",
+        width: 200,
       },
       {
         COLUMN_NAME: "route_query",
         align: "left",
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "tenant_ids",
+        COLUMN_COMMENT: "所在租户",
+        width: 180,
+        align: "left",
+        many2many: {
+          mod: "base",
+          table: "tenant_menu",
+        },
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -307,8 +318,18 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        width: 180,
-        isTextarea: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ]
   },
@@ -367,13 +388,19 @@ export default defineConfig({
         width: 180,
       },
       {
+        COLUMN_NAME: "rem",
+      },
+      {
         COLUMN_NAME: "create_usr_id",
       },
       {
-        COLUMN_NAME: "rem",
-        width: 180,
-        align: "left",
-        isTextarea: true,
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ]
   },
@@ -401,18 +428,24 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-        require: true,
-        width: 60,
       },
       {
         COLUMN_NAME: "order_by",
-        width: 100,
       },
       {
         COLUMN_NAME: "rem",
-        width: 300,
-        align: "left",
-        isTextarea: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -451,9 +484,18 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        align: "left",
-        width: 300,
-        isTextarea: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -504,9 +546,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        width: 300,
-        align: "left",
-        isTextarea: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -565,7 +604,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_locked",
-        width: 60,
       },
       {
         COLUMN_NAME: "version",
@@ -631,9 +669,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        width: 180,
-        align: "left",
-        isTextarea: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -689,25 +724,16 @@ export default defineConfig({
         fixed: "left",
       },
       {
-        COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_enabled",
-        width: 60,
+      },
+      {
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
-        width: 180,
-        align: "left",
-        isTextarea: true,
-      },
-      {
-        COLUMN_NAME: "is_locked",
-        noAdd: true,
-        noEdit: true,
-        width: 100,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -764,16 +790,16 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "order_by",
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_enabled",
       },
       {
-        COLUMN_NAME: "rem",
+        COLUMN_NAME: "order_by",
       },
       {
-        COLUMN_NAME: "is_locked",
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -824,22 +850,19 @@ export default defineConfig({
         width: 240,
       },
       {
-        COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_enabled",
         width: 60,
       },
       {
-        COLUMN_NAME: "rem",
-        width: 120,
-        align: "left",
-        isTextarea: true,
+        COLUMN_NAME: "order_by",
+        sortable: true,
+        width: 100,
       },
       {
-        COLUMN_NAME: "is_locked",
+        COLUMN_NAME: "rem",
       },
     ],
   },
@@ -882,9 +905,7 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -892,13 +913,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
-        width: 140,
-        align: "left",
-        isTextarea: true,
       },
       {
-        COLUMN_NAME: "is_locked",
-        width: 100,
+        COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -947,21 +964,16 @@ export default defineConfig({
         width: 120,
       },
       {
-        COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_enabled",
       },
       {
-        COLUMN_NAME: "rem",
-        width: 140,
-        align: "left",
-        isTextarea: true,
+        COLUMN_NAME: "order_by",
       },
       {
-        COLUMN_NAME: "is_locked",
+        COLUMN_NAME: "rem",
       },
     ],
   },

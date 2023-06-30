@@ -143,24 +143,20 @@ fn get_where_query<'a>(
     }
   }
   {
-    let order_by: Vec<u32> = match &search {
-      Some(item) => item.order_by.clone().unwrap_or_default(),
-      None => vec![],
+    let is_locked: Vec<u8> = match &search {
+      Some(item) => item.is_locked.clone().unwrap_or_default(),
+      None => Default::default(),
     };
-    let order_by_gt: Option<u32> = match &order_by.len() {
-      0 => None,
-      _ => order_by[0].clone().into(),
-    };
-    let order_by_lt: Option<u32> = match &order_by.len() {
-      0 => None,
-      1 => None,
-      _ => order_by[1].clone().into(),
-    };
-    if let Some(order_by_gt) = order_by_gt {
-      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
-    }
-    if let Some(order_by_lt) = order_by_lt {
-      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
+    if !is_locked.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_locked.len());
+        for item in is_locked {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_locked in ({})", arg);
     }
   }
   {
@@ -197,20 +193,24 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_locked: Vec<u8> = match &search {
-      Some(item) => item.is_locked.clone().unwrap_or_default(),
-      None => Default::default(),
+    let order_by: Vec<u32> = match &search {
+      Some(item) => item.order_by.clone().unwrap_or_default(),
+      None => vec![],
     };
-    if !is_locked.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_locked.len());
-        for item in is_locked {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_locked in ({})", arg);
+    let order_by_gt: Option<u32> = match &order_by.len() {
+      0 => None,
+      _ => order_by[0].clone().into(),
+    };
+    let order_by_lt: Option<u32> = match &order_by.len() {
+      0 => None,
+      1 => None,
+      _ => order_by[1].clone().into(),
+    };
+    if let Some(order_by_gt) = order_by_gt {
+      where_query += &format!(" and t.order_by >= {}", args.push(order_by_gt.into()));
+    }
+    if let Some(order_by_lt) = order_by_lt {
+      where_query += &format!(" and t.order_by <= {}", args.push(order_by_lt.into()));
     }
   }
   {
@@ -368,13 +368,13 @@ pub async fn find_all<'a>(
   
   let dict_vec = get_dict(ctx, &vec![
     "dict_type",
-    "is_enabled",
     "is_locked",
+    "is_enabled",
   ]).await?;
   
   let type_dict = &dict_vec[0];
-  let is_enabled_dict = &dict_vec[1];
-  let is_locked_dict = &dict_vec[2];
+  let is_locked_dict = &dict_vec[1];
+  let is_enabled_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -386,20 +386,20 @@ pub async fn find_all<'a>(
         .unwrap_or_else(|| model.r#type.to_string())
     };
     
-    // 启用
-    model.is_enabled_lbl = {
-      is_enabled_dict.iter()
-        .find(|item| item.val == model.is_enabled.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
-    };
-    
     // 锁定
     model.is_locked_lbl = {
       is_locked_dict.iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_locked.to_string())
+    };
+    
+    // 启用
+    model.is_enabled_lbl = {
+      is_enabled_dict.iter()
+        .find(|item| item.val == model.is_enabled.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
   }
@@ -475,12 +475,12 @@ pub async fn get_field_comments<'a>(
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     r#type: n_route.n(ctx, "数据类型".to_owned(), None).await?,
     r#type_lbl: n_route.n(ctx, "数据类型".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
@@ -654,8 +654,8 @@ pub async fn set_id_by_lbl<'a>(
   
   let dict_vec = get_dict(ctx, &vec![
     "dict_type",
-    "is_enabled",
     "is_locked",
+    "is_enabled",
   ]).await?;
   
   // 数据类型
@@ -673,13 +673,13 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 启用
-  if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
-    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
-      input.is_enabled = is_enabled_dict.into_iter()
+  // 锁定
+  if input.is_locked.is_none() {
+    let is_locked_dict = &dict_vec[1];
+    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
+      input.is_locked = is_locked_dict.into_iter()
         .find(|item| {
-          item.lbl == is_enabled_lbl
+          item.lbl == is_locked_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -688,13 +688,13 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[2];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict.into_iter()
+  // 启用
+  if input.is_enabled.is_none() {
+    let is_enabled_dict = &dict_vec[2];
+    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+      input.is_enabled = is_enabled_dict.into_iter()
         .find(|item| {
-          item.lbl == is_locked_lbl
+          item.lbl == is_enabled_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -789,11 +789,11 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(r#type.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
+    sql_fields += ",is_locked";
     sql_values += ",?";
-    args.push(order_by.into());
+    args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -807,11 +807,11 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(rem.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    sql_fields += ",is_locked";
+  // 排序
+  if let Some(order_by) = input.order_by {
+    sql_fields += ",order_by";
     sql_values += ",?";
-    args.push(is_locked.into());
+    args.push(order_by.into());
   }
   // 更新人
   if let Some(update_usr_id) = input.update_usr_id {
@@ -932,11 +932,11 @@ pub async fn update_by_id<'a>(
     sql_fields += ",type = ?";
     args.push(r#type.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
     field_num += 1;
-    sql_fields += ",order_by = ?";
-    args.push(order_by.into());
+    sql_fields += ",is_locked = ?";
+    args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -950,11 +950,11 @@ pub async fn update_by_id<'a>(
     sql_fields += ",rem = ?";
     args.push(rem.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
+  // 排序
+  if let Some(order_by) = input.order_by {
     field_num += 1;
-    sql_fields += ",is_locked = ?";
-    args.push(is_locked.into());
+    sql_fields += ",order_by = ?";
+    args.push(order_by.into());
   }
   
   if field_num == 0 {

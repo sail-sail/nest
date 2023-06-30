@@ -21,6 +21,22 @@ pub struct I18nModel {
   pub lbl: String,
   /// 备注
   pub rem: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for I18nModel {
@@ -41,6 +57,26 @@ impl FromRow<'_, MySqlRow> for I18nModel {
     let lbl: String = row.try_get("lbl")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 创建人
+    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(create_time) => create_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
+    // 更新人
+    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     
     let model = Self {
       id,
@@ -51,6 +87,14 @@ impl FromRow<'_, MySqlRow> for I18nModel {
       code,
       lbl,
       rem,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -74,6 +118,22 @@ pub struct I18nFieldComment {
   pub lbl: String,
   /// 备注
   pub rem: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: String,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: String,
+  /// 更新时间
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -102,6 +162,18 @@ pub struct I18nSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<Vec<String>>,
+  /// 创建人
+  pub create_usr_id_is_null: Option<bool>,
+  /// 创建时间
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  pub update_usr_id: Option<Vec<String>>,
+  /// 更新人
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -122,6 +194,22 @@ pub struct I18nInput {
   pub lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<String>,
+  /// 创建人
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  pub update_usr_id: Option<String>,
+  /// 更新人
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<I18nInput> for I18nSearch {
@@ -140,6 +228,14 @@ impl From<I18nInput> for I18nSearch {
       lbl: input.lbl,
       // 备注
       rem: input.rem,
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      // 创建时间
+      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
       ..Default::default()
     }
   }

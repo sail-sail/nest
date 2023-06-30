@@ -136,6 +136,23 @@ fn get_where_query<'a>(
     }
   }
   {
+    let is_enabled: Vec<u8> = match &search {
+      Some(item) => item.is_enabled.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_enabled.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_enabled in ({})", arg);
+    }
+  }
+  {
     let rem = match &search {
       Some(item) => item.rem.clone(),
       None => None,
@@ -152,20 +169,97 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
+    let create_usr_id: Vec<String> = match &search {
+      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !is_enabled.is_empty() {
+    if !create_usr_id.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
+        let mut items = Vec::with_capacity(create_usr_id.len());
+        for item in create_usr_id {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
+      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let create_usr_id_is_null: bool = match &search {
+      Some(item) => item.create_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if create_usr_id_is_null {
+      where_query += &format!(" and create_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.create_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      _ => create_time[0].clone().into(),
+    };
+    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      1 => None,
+      _ => create_time[1].clone().into(),
+    };
+    if let Some(create_time_gt) = create_time_gt {
+      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+    }
+    if let Some(create_time_lt) = create_time_lt {
+      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+    }
+  }
+  {
+    let update_usr_id: Vec<String> = match &search {
+      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !update_usr_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += &format!(" and update_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.update_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      _ => update_time[0].clone().into(),
+    };
+    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      1 => None,
+      _ => update_time[1].clone().into(),
+    };
+    if let Some(update_time_gt) = update_time_gt {
+      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+    }
+    if let Some(update_time_lt) = update_time_lt {
+      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
   where_query
@@ -189,7 +283,11 @@ fn get_from_query() -> &'static str {
         on base_role.id = base_role_menu.role_id
       group by role_id
     ) _menu
-      on _menu.role_id = t.id"#;
+      on _menu.role_id = t.id
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id"#;
   from_query
 }
 
@@ -219,6 +317,8 @@ pub async fn find_all<'a>(
       t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -328,9 +428,17 @@ pub async fn get_field_comments<'a>(
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
     menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
@@ -619,17 +727,29 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(lbl.into());
   }
+  // 启用
+  if let Some(is_enabled) = input.is_enabled {
+    sql_fields += ",is_enabled";
+    sql_values += ",?";
+    args.push(is_enabled.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     sql_fields += ",rem";
     sql_values += ",?";
     args.push(rem.into());
   }
-  // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    sql_fields += ",is_enabled";
+  // 更新人
+  if let Some(update_usr_id) = input.update_usr_id {
+    sql_fields += ",update_usr_id";
     sql_values += ",?";
-    args.push(is_enabled.into());
+    args.push(update_usr_id.into());
+  }
+  // 更新时间
+  if let Some(update_time) = input.update_time {
+    sql_fields += ",update_time";
+    sql_values += ",?";
+    args.push(update_time.into());
   }
   
   let sql = format!(
@@ -741,17 +861,17 @@ pub async fn update_by_id<'a>(
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
   }
-  // 备注
-  if let Some(rem) = input.rem {
-    field_num += 1;
-    sql_fields += ",rem = ?";
-    args.push(rem.into());
-  }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
+  }
+  // 备注
+  if let Some(rem) = input.rem {
+    field_num += 1;
+    sql_fields += ",rem = ?";
+    args.push(rem.into());
   }
   
   if field_num == 0 {
@@ -814,6 +934,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
     table,
     "role_menu",
     "menu",
+    "usr",
   ]
 }
 
