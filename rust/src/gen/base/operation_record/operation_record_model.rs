@@ -39,6 +39,8 @@ pub struct OperationRecordModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 是否已删除
+  is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for OperationRecordModel {
@@ -81,6 +83,8 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
+    // 是否已删除
+    let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       id,
@@ -100,6 +104,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
+      is_deleted,
     };
     
     Ok(model)

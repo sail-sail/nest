@@ -35,6 +35,8 @@ pub struct UsrModel {
   pub role_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
+  /// 是否已删除
+  is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for UsrModel {
@@ -69,6 +71,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 是否已删除
+    let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       id,
@@ -86,6 +90,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       role_ids,
       role_ids_lbl,
       rem,
+      is_deleted,
     };
     
     Ok(model)

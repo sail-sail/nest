@@ -323,7 +323,7 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 id 设置默认记录
-  pub async fn default_by_id<#=table#><'a>(
+  pub async fn default_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
     id: String,

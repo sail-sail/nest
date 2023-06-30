@@ -92,6 +92,8 @@ pub struct <#=tableUP#>Model {<#
   #><#
   }
   #>
+  /// 是否已删除
+  is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
@@ -203,6 +205,8 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #><#
     }
     #>
+    // 是否已删除
+    let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {<#
       for (let i = 0; i < columns.length; i++) {
@@ -242,6 +246,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #><#
       }
       #>
+      is_deleted,
     };
     
     Ok(model)

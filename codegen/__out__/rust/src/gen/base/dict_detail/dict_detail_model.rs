@@ -27,6 +27,8 @@ pub struct DictDetailModel {
   pub order_by: u32,
   /// 备注
   pub rem: String,
+  /// 是否已删除
+  is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for DictDetailModel {
@@ -51,6 +53,8 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 是否已删除
+    let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       id,
@@ -64,6 +68,7 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
       is_enabled_lbl,
       order_by,
       rem,
+      is_deleted,
     };
     
     Ok(model)
