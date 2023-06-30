@@ -806,18 +806,16 @@ export async function delCache() {
   const table = "base_usr";
   const method = "delCache";
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  await delCacheCtx(cacheKey1);
+  await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
-    "dept",
-    "usr_role",
-    "role",
+    "base_dept",
+    "base_usr_role",
+    "base_role",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
-    const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await delCacheCtx(cacheKey1);
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
   }
 }
 

@@ -1643,8 +1643,7 @@ export async function delCache() {
   const table = "<#=mod#>_<#=table#>";
   const method = "delCache";
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  await delCacheCtx(cacheKey1);
+  await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [<#
   const foreignTablesCache = [ ];
   for (let i = 0; i < columns.length; i++) {
@@ -1665,11 +1664,11 @@ export async function delCache() {
   #><#
     if (foreignKey && foreignKey.type === "many2many") {
   #>
-    "<#=many2many.table#>",
-    "<#=foreignTable#>",<#
+    "<#=many2many.mod#>_<#=many2many.table#>",
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
-    "<#=foreignTable#>",<#
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     }
   #><#
   }
@@ -1678,8 +1677,7 @@ export async function delCache() {
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
-    const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await delCacheCtx(cacheKey1);
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
   }
 }<#
 }
