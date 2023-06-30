@@ -1138,38 +1138,40 @@ pub async fn update_by_id<'a>(
   }
   
   if field_num == 0 {
-    return Ok(id);
+    
+    if let Some(auth_model) = ctx.get_auth_model() {
+      let usr_id = auth_model.id;
+      sql_fields += ",update_usr_id = ?";
+      args.push(usr_id.into());
+    }
+    
+    let sql_where = "id = ?";
+    args.push(id.clone().into());
+    
+    let sql = format!(
+      "update {} set {} where {} limit 1",
+      table,
+      sql_fields,
+      sql_where,
+    );
+    
+    let args = args.into();
+    
+    let options = Options::from(options);
+    
+    let options = options.set_del_cache_key1s(get_foreign_tables());
+    
+    let options = options.into();
+    
+    ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+    
   }
   
-  if let Some(auth_model) = ctx.get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",update_usr_id = ?";
-    args.push(usr_id.into());
-  }
-  
-  let sql_where = "id = ?";
-  args.push(id.clone().into());
-  
-  let sql = format!(
-    "update {} set {} where {} limit 1",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_foreign_tables());
-  
-  let options = options.into();
-  
-  ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;
+  let mut field_num = 0;
   
   // 所属域名
   if let Some(domain_ids) = input.domain_ids {
@@ -1184,6 +1186,8 @@ pub async fn update_by_id<'a>(
         column2: "domain_id",
       },
     ).await?;
+    
+    field_num += 1;
   }
   
   // 菜单权限
@@ -1199,6 +1203,16 @@ pub async fn update_by_id<'a>(
         column2: "menu_id",
       },
     ).await?;
+    
+    field_num += 1;
+  }
+  
+  if field_num > 0 {
+    let options = Options::from(None);
+    let options = options.set_del_cache_key1s(get_foreign_tables());
+    if let Some(del_cache_key1s) = &options.del_cache_key1s {
+      crate::common::cache::cache_dao::del_caches(del_cache_key1s).await?;
+    }
   }
   
   Ok(id)

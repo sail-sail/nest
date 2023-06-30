@@ -822,36 +822,36 @@ pub async fn update_by_id<'a>(
   }
   
   if field_num == 0 {
-    return Ok(id);
+    
+    if let Some(auth_model) = ctx.get_auth_model() {
+      let usr_id = auth_model.id;
+      sql_fields += ",update_usr_id = ?";
+      args.push(usr_id.into());
+    }
+    
+    let sql_where = "id = ?";
+    args.push(id.clone().into());
+    
+    let sql = format!(
+      "update {} set {} where {} limit 1",
+      table,
+      sql_fields,
+      sql_where,
+    );
+    
+    let args = args.into();
+    
+    let options = Options::from(options);
+    
+    let options = options.into();
+    
+    ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+    
   }
-  
-  if let Some(auth_model) = ctx.get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",update_usr_id = ?";
-    args.push(usr_id.into());
-  }
-  
-  let sql_where = "id = ?";
-  args.push(id.clone().into());
-  
-  let sql = format!(
-    "update {} set {} where {} limit 1",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;
   
   Ok(id)
 }

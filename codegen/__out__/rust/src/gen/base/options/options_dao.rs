@@ -912,49 +912,51 @@ pub async fn update_by_id<'a>(
   }
   
   if field_num == 0 {
-    return Ok(id);
-  }if let Some(version) = input.version {
-    if version > 0 {
-      let version2 = get_version_by_id(ctx, id.clone()).await?;
-      if let Some(version2) = version2 {
-        if version2 > version {
-          return Err(SrvErr::msg("数据已被修改，请刷新后重试".into()).into());
+    
+    if let Some(version) = input.version {
+      if version > 0 {
+        let version2 = get_version_by_id(ctx, id.clone()).await?;
+        if let Some(version2) = version2 {
+          if version2 > version {
+            return Err(SrvErr::msg("数据已被修改，请刷新后重试".into()).into());
+          }
         }
+        sql_fields += ",version = ?";
+        args.push((version + 1).into());
       }
-      sql_fields += ",version = ?";
-      args.push((version + 1).into());
     }
+    
+    if let Some(auth_model) = ctx.get_auth_model() {
+      let usr_id = auth_model.id;
+      sql_fields += ",update_usr_id = ?";
+      args.push(usr_id.into());
+    }
+    
+    let sql_where = "id = ?";
+    args.push(id.clone().into());
+    
+    let sql = format!(
+      "update {} set {} where {} limit 1",
+      table,
+      sql_fields,
+      sql_where,
+    );
+    
+    let args = args.into();
+    
+    let options = Options::from(options);
+    
+    let options = options.set_del_cache_key1s(get_foreign_tables());
+    
+    let options = options.into();
+    
+    ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+    
   }
-  
-  if let Some(auth_model) = ctx.get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",update_usr_id = ?";
-    args.push(usr_id.into());
-  }
-  
-  let sql_where = "id = ?";
-  args.push(id.clone().into());
-  
-  let sql = format!(
-    "update {} set {} where {} limit 1",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_foreign_tables());
-  
-  let options = options.into();
-  
-  ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;
   
   Ok(id)
 }

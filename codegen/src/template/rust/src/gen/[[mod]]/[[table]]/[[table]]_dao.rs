@@ -1585,24 +1585,60 @@ pub async fn update_by_id<'a>(
   }
   #>
   
-  if field_num == 0 {
-    return Ok(id);
-  }<#
-  if (hasVersion) {
-  #>if let Some(version) = input.version {
-    if version > 0 {
-      let version2 = get_version_by_id(ctx, id.clone()).await?;
-      if let Some(version2) = version2 {
-        if version2 > version {
-          return Err(SrvErr::msg("数据已被修改，请刷新后重试".into()).into());
+  if field_num == 0 {<#
+    if (hasVersion) {
+    #>
+    
+    if let Some(version) = input.version {
+      if version > 0 {
+        let version2 = get_version_by_id(ctx, id.clone()).await?;
+        if let Some(version2) = version2 {
+          if version2 > version {
+            return Err(SrvErr::msg("数据已被修改，请刷新后重试".into()).into());
+          }
         }
+        sql_fields += ",version = ?";
+        args.push((version + 1).into());
       }
-      sql_fields += ",version = ?";
-      args.push((version + 1).into());
+    }<#
     }
+    #>
+    
+    if let Some(auth_model) = ctx.get_auth_model() {
+      let usr_id = auth_model.id;
+      sql_fields += ",update_usr_id = ?";
+      args.push(usr_id.into());
+    }
+    
+    let sql_where = "id = ?";
+    args.push(id.clone().into());
+    
+    let sql = format!(
+      "update {} set {} where {} limit 1",
+      table,
+      sql_fields,
+      sql_where,
+    );
+    
+    let args = args.into();
+    
+    let options = Options::from(options);<#
+    if (cache) {
+    #>
+    
+    let options = options.set_del_cache_key1s(get_foreign_tables());<#
+    }
+    #>
+    
+    let options = options.into();
+    
+    ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+    
   }<#
-  }
-  #><#
   if (mod === "base" && table === "role") {
   #>
   
@@ -1613,41 +1649,11 @@ pub async fn update_by_id<'a>(
     ).await?.into();
   }<#
   }
+  #><#
+  if (hasMany2many) {
   #>
   
-  if let Some(auth_model) = ctx.get_auth_model() {
-    let usr_id = auth_model.id;
-    sql_fields += ",update_usr_id = ?";
-    args.push(usr_id.into());
-  }
-  
-  let sql_where = "id = ?";
-  args.push(id.clone().into());
-  
-  let sql = format!(
-    "update {} set {} where {} limit 1",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);<#
-  if (cache) {
-  #>
-  
-  let options = options.set_del_cache_key1s(get_foreign_tables());<#
-  }
-  #>
-  
-  let options = options.into();
-  
-  ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;<#
+  let mut field_num = 0;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1684,12 +1690,24 @@ pub async fn update_by_id<'a>(
         column2: "<#=many2many.column2#>",
       },
     ).await?;
+    
+    field_num += 1;
   }<#
   }
   #><#
   }
+  #>
+  
+  if field_num > 0 {
+    let options = Options::from(None);
+    let options = options.set_del_cache_key1s(get_foreign_tables());
+    if let Some(del_cache_key1s) = &options.del_cache_key1s {
+      crate::common::cache::cache_dao::del_caches(del_cache_key1s).await?;
+    }
+  }<#
+  }
   #><#
-    if (table === "i18n") {
+    if (mod === "base" && table === "i18n") {
   #>
   
   crate::src::base::options::options_dao::update_i18n_version(ctx).await?;<#
