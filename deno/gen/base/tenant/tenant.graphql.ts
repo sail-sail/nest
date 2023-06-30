@@ -9,10 +9,14 @@ type TenantModel {
   id: String!
   "名称"
   lbl: String!
-  "域名"
+  "所属域名"
   domain_ids: [String!]
-  "域名"
+  "所属域名"
   domain_ids_lbl: [String!]
+  "菜单权限"
+  menu_ids: [String!]
+  "菜单权限"
+  menu_ids_lbl: [String!]
   "租户管理员"
   usr_id: String!
   "租户管理员"
@@ -31,10 +35,6 @@ type TenantModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
-  "菜单"
-  menu_ids: [String!]
-  "菜单"
-  menu_ids_lbl: [String!]
   "排序"
   order_by: Int!
   "备注"
@@ -55,14 +55,20 @@ type TenantModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "是否已删除"
+  is_deleted: Int!
 }
 type TenantFieldComment {
   "名称"
   lbl: String!
-  "域名"
+  "所属域名"
   domain_ids: String!
-  "域名"
+  "所属域名"
   domain_ids_lbl: String!
+  "菜单权限"
+  menu_ids: String!
+  "菜单权限"
+  menu_ids_lbl: String!
   "租户管理员"
   usr_id: String!
   "租户管理员"
@@ -81,10 +87,6 @@ type TenantFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
-  "菜单"
-  menu_ids: String!
-  "菜单"
-  menu_ids_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -111,10 +113,14 @@ input TenantInput {
   id: String
   "名称"
   lbl: String
-  "域名"
+  "所属域名"
   domain_ids: [String!]
-  "域名"
+  "所属域名"
   domain_ids_lbl: [String!]
+  "菜单权限"
+  menu_ids: [String!]
+  "菜单权限"
+  menu_ids_lbl: [String!]
   "租户管理员"
   usr_id: String
   "租户管理员"
@@ -133,10 +139,6 @@ input TenantInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
-  "菜单"
-  menu_ids: [String!]
-  "菜单"
-  menu_ids_lbl: [String!]
   "排序"
   order_by: Int
   "备注"
@@ -168,9 +170,12 @@ input TenantSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "域名"
+  "所属域名"
   domain_ids: [String!]
   domain_ids_is_null: Boolean
+  "菜单权限"
+  menu_ids: [String!]
+  menu_ids_is_null: Boolean
   "租户管理员"
   usr_id: [String!]
   usr_id_is_null: Boolean
@@ -182,9 +187,6 @@ input TenantSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "菜单"
-  menu_ids: [String!]
-  menu_ids_is_null: Boolean
   "排序"
   order_by: [Int!]
   "备注"

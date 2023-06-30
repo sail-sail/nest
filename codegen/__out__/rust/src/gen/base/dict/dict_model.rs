@@ -15,18 +15,18 @@ pub struct DictModel {
   pub r#type: String,
   /// 数据类型
   pub r#type_lbl: String,
-  /// 排序
-  pub order_by: u32,
-  /// 启用
-  pub is_enabled: u8,
-  /// 启用
-  pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
   pub is_locked_lbl: String,
+  /// 启用
+  pub is_enabled: u8,
+  /// 启用
+  pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: u32,
+  /// 备注
+  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -56,16 +56,16 @@ impl FromRow<'_, MySqlRow> for DictModel {
     // 数据类型
     let r#type: String = row.try_get("type")?;
     let type_lbl: String = r#type.to_string();
-    // 排序
-    let order_by: u32 = row.try_get("order_by")?;
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
-    // 备注
-    let rem: String = row.try_get("rem")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
+    // 启用
+    let is_enabled: u8 = row.try_get("is_enabled")?;
+    let is_enabled_lbl: String = is_enabled.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
+    // 备注
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -93,12 +93,12 @@ impl FromRow<'_, MySqlRow> for DictModel {
       lbl,
       r#type,
       type_lbl,
-      order_by,
-      is_enabled,
-      is_enabled_lbl,
-      rem,
       is_locked,
       is_locked_lbl,
+      is_enabled,
+      is_enabled_lbl,
+      order_by,
+      rem,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -124,18 +124,18 @@ pub struct DictFieldComment {
   pub r#type: String,
   /// 数据类型
   pub r#type_lbl: String,
-  /// 排序
-  pub order_by: String,
-  /// 启用
-  pub is_enabled: String,
-  /// 启用
-  pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
   pub is_locked_lbl: String,
+  /// 启用
+  pub is_enabled: String,
+  /// 启用
+  pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: String,
+  /// 备注
+  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -170,16 +170,16 @@ pub struct DictSearch {
   pub lbl_like: Option<String>,
   /// 数据类型
   pub r#type: Option<Vec<String>>,
-  /// 排序
-  pub order_by: Option<Vec<u32>>,
+  /// 锁定
+  pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 锁定
-  pub is_locked: Option<Vec<u8>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   /// 创建人
@@ -206,18 +206,18 @@ pub struct DictInput {
   pub r#type: Option<String>,
   /// 数据类型
   pub type_lbl: Option<String>,
-  /// 排序
-  pub order_by: Option<u32>,
-  /// 启用
-  pub is_enabled: Option<u8>,
-  /// 启用
-  pub is_enabled_lbl: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
   pub is_locked_lbl: Option<String>,
+  /// 启用
+  pub is_enabled: Option<u8>,
+  /// 启用
+  pub is_enabled_lbl: Option<String>,
+  /// 排序
+  pub order_by: Option<u32>,
+  /// 备注
+  pub rem: Option<String>,
   /// 创建人
   pub create_usr_id: Option<String>,
   /// 创建人
@@ -248,14 +248,14 @@ impl From<DictInput> for DictSearch {
       lbl: input.lbl,
       // 数据类型
       r#type: input.r#type.map(|x| vec![x.into()]),
-      // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
-      // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 备注
-      rem: input.rem,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
+      // 启用
+      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      // 排序
+      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 备注
+      rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
       // 创建时间

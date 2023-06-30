@@ -244,10 +244,11 @@ export default defineConfig({
     outDir: "../build/pc",
     chunkSizeWarningLimit: 2000,
     reportCompressedSize: false,
-    sourcemap: true,
+    sourcemap: false,
   },
   define: {
-    __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
+    // __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
+    __VUE_OPTIONS_API__: true,
   },
   server: {
     port: 4000,

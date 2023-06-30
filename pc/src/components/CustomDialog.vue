@@ -57,10 +57,12 @@ let {
   setFullscreen,
 } = $(useFullscreenEfc());
 
+export type CustomDialogType = "auto" | "medium" | "large" | "default";
+
 let dialogVisible = $ref(false);
 let dialogTitle = $ref("");
 let fullscreen = $ref(true);
-let dialogType = $ref<"auto" | "medium" | "large" | "default">("default");
+let dialogType = $ref<CustomDialogType>("default");
 
 let pointerPierce = $ref(false);
 

@@ -39,12 +39,12 @@ export async function findAll(
           parent_id
           parent_id_lbl
           lbl
-          order_by
-          is_enabled
-          is_enabled_lbl
-          rem
           is_locked
           is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -53,6 +53,7 @@ export async function findAll(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          is_deleted
         }
       }
     `,
@@ -190,12 +191,12 @@ export async function findById(
           parent_id
           parent_id_lbl
           lbl
-          order_by
-          is_enabled
-          is_enabled_lbl
-          rem
           is_locked
           is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
           create_usr_id
           create_usr_id_lbl
           create_time
@@ -204,6 +205,7 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
+          is_deleted
         }
       }
     `,
@@ -482,12 +484,12 @@ export function useExportExcel(routePath: string) {
             parent_id
             parent_id_lbl
             lbl
-            order_by
-            is_enabled
-            is_enabled_lbl
-            rem
             is_locked
             is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
             create_usr_id
             create_usr_id_lbl
             create_time
@@ -501,12 +503,12 @@ export function useExportExcel(routePath: string) {
             parent_id
             parent_id_lbl
             lbl
-            order_by
-            is_enabled
-            is_enabled_lbl
-            rem
             is_locked
             is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
             create_usr_id
             create_usr_id_lbl
             create_time

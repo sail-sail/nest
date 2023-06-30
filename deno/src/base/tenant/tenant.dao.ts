@@ -10,7 +10,7 @@ import {
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import * as usrDao from "/src/base/usr/usr.dao.ts";
+import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
 /**
  * 获取当前租户绑定的网址
@@ -19,7 +19,7 @@ import * as usrDao from "/src/base/usr/usr.dao.ts";
  */
 export async function getHostTenant(): Promise<typeof result> {
   const { id: usr_id } = await authDao.getAuthModel() as AuthModel;
-  const tenant_id = await usrDao.getTenant_id(usr_id);
+  const tenant_id = await usrDaoSrc.getTenant_id(usr_id);
   const args = new QueryArgs();
   const sql = /*sql*/ `
     select
@@ -35,4 +35,35 @@ export async function getHostTenant(): Promise<typeof result> {
   }
   const result = await queryOne<Result>(sql, args)
   return result;
+}
+
+/** 当前租户拥有的菜单 */
+export async function getMenuIdsByTenant() {
+  const {
+    findById: findByIdTenant,
+  } = await import("/gen/base/tenant/tenant.dao.ts");
+  let menu_idsInTenant: string[] = [ ];
+  const tenant_id = await usrDaoSrc.getTenant_id();
+  if (tenant_id) {
+    const tenantModel = await findByIdTenant(tenant_id);
+    menu_idsInTenant = tenantModel?.menu_ids || menu_idsInTenant;
+  }
+  return menu_idsInTenant;
+}
+
+export async function filterMenuIdsByTenant(
+  menu_ids?: string[] | null,
+) {
+  if (!menu_ids || menu_ids.length === 0) {
+    return [ ];
+  }
+  const menu_idsInTenant = await getMenuIdsByTenant();
+  const menu_ids2: string[] = [ ];
+  for (let i = 0; i < menu_ids.length; i++) {
+    const menu_id = menu_ids[i];
+    if (menu_idsInTenant.includes(menu_id)) {
+      menu_ids2.push(menu_id);
+    }
+  }
+  return menu_ids2;
 }

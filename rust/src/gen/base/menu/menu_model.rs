@@ -21,6 +21,10 @@ pub struct MenuModel {
   pub route_path: String,
   /// 参数
   pub route_query: Option<String>,
+  /// 所在租户
+  pub tenant_ids: Vec<String>,
+  /// 所在租户
+  pub tenant_ids_lbl: Vec<String>,
   /// 启用
   pub is_enabled: u8,
   /// 启用
@@ -29,6 +33,22 @@ pub struct MenuModel {
   pub order_by: u32,
   /// 备注
   pub rem: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for MenuModel {
@@ -48,6 +68,11 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let route_path: String = row.try_get("route_path")?;
     // 参数
     let route_query: Option<String> = row.try_get("route_query")?;
+    // 所在租户
+    let tenant_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("tenant_ids")?;
+    let tenant_ids = tenant_ids.unwrap_or_default().0;
+    let tenant_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("tenant_ids_lbl")?;
+    let tenant_ids_lbl = tenant_ids_lbl.unwrap_or_default().0;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -55,6 +80,26 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 创建人
+    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(create_time) => create_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
+    // 更新人
+    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     
     let model = Self {
       id,
@@ -65,10 +110,20 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       lbl,
       route_path,
       route_query,
+      tenant_ids,
+      tenant_ids_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
       rem,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
     };
     
     Ok(model)
@@ -92,6 +147,10 @@ pub struct MenuFieldComment {
   pub route_path: String,
   /// 参数
   pub route_query: String,
+  /// 所在租户
+  pub tenant_ids: String,
+  /// 所在租户
+  pub tenant_ids_lbl: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
@@ -100,6 +159,22 @@ pub struct MenuFieldComment {
   pub order_by: String,
   /// 备注
   pub rem: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: String,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: String,
+  /// 更新时间
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -124,6 +199,10 @@ pub struct MenuSearch {
   pub route_path_like: Option<String>,
   /// 参数
   pub route_query: Option<String>,
+  /// 所在租户
+  pub tenant_ids: Option<Vec<String>>,
+  /// 所在租户
+  pub tenant_ids_is_null: Option<bool>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
@@ -132,6 +211,18 @@ pub struct MenuSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<Vec<String>>,
+  /// 创建人
+  pub create_usr_id_is_null: Option<bool>,
+  /// 创建时间
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  pub update_usr_id: Option<Vec<String>>,
+  /// 更新人
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -152,6 +243,10 @@ pub struct MenuInput {
   pub route_path: Option<String>,
   /// 参数
   pub route_query: Option<String>,
+  /// 所在租户
+  pub tenant_ids: Option<Vec<String>>,
+  /// 所在租户
+  pub tenant_ids_lbl: Option<Vec<String>>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
@@ -160,6 +255,22 @@ pub struct MenuInput {
   pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<String>,
+  /// 创建人
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  pub update_usr_id: Option<String>,
+  /// 更新人
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<MenuInput> for MenuSearch {
@@ -178,12 +289,22 @@ impl From<MenuInput> for MenuSearch {
       route_path: input.route_path,
       // 参数
       route_query: input.route_query,
+      // 所在租户
+      tenant_ids: input.tenant_ids,
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 排序
       order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 备注
       rem: input.rem,
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      // 创建时间
+      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
       ..Default::default()
     }
   }

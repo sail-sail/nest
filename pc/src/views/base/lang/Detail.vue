@@ -60,25 +60,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-grid="col-span-1"
-            un-h="full"
-          >
-            <el-input
-              v-model="dialogModel.rem"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
-              @keyup.enter.stop
-              un-w="full"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -96,6 +77,25 @@
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
               :clearable="true"
             ></el-input-number>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+          <el-form-item
+            :label="n('备注')"
+            prop="rem"
+            un-grid="col-span-1"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.rem"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              @keyup.enter.stop
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
+            ></el-input>
           </el-form-item>
         </template>
         
@@ -485,9 +485,13 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "编码",
     "名称",
-    "备注",
     "启用",
     "排序",
+    "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

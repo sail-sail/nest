@@ -76,6 +76,25 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+          <el-form-item
+            :label="n('备注')"
+            prop="rem"
+            un-grid="col-span-2"
+            un-h="full"
+          >
+            <el-input
+              v-model="dialogModel.rem"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              @keyup.enter.stop
+              un-w="full"
+              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :clearable="true"
+            ></el-input>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -93,25 +112,6 @@
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
               :clearable="true"
             ></el-input-number>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
-          <el-form-item
-            :label="n('备注')"
-            prop="rem"
-            un-grid="col-span-2"
-            un-h="full"
-          >
-            <el-input
-              v-model="dialogModel.rem"
-              type="textarea"
-              :autosize="{ minRows: 3, maxRows: 5 }"
-              @keyup.enter.stop
-              un-w="full"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
           </el-form-item>
         </template>
         
@@ -257,16 +257,16 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("数据类型") }`,
       },
     ],
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
-      },
-    ],
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+      },
+    ],
+    is_enabled: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
       },
     ],
   };
@@ -289,9 +289,9 @@ let showBuildIn = $ref(false);
 async function getDefaultInput() {
   const defaultInput: DictbizInput = {
     type: "string",
-    order_by: 1,
-    is_enabled: 1,
     is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
   };
   return defaultInput;
 }
@@ -518,10 +518,10 @@ async function initI18nsEfc() {
     "编码",
     "名称",
     "数据类型",
-    "排序",
+    "锁定",
     "启用",
     "备注",
-    "锁定",
+    "排序",
     "创建人",
     "创建时间",
     "更新人",

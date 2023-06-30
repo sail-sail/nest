@@ -103,6 +103,9 @@ for (let i = 0; i < columns.length; i++) {
           }
           let require = column.require;
           const foreignKey = column.foreignKey;
+          if (foreignKey && foreignKey.showType === "dialog") {
+            continue;
+          }
           const foreignTable = foreignKey && foreignKey.table;
           const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
           const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
@@ -116,6 +119,9 @@ for (let i = 0; i < columns.length; i++) {
             vIf.push("dialogAction !== 'edit'");
           }
           const vIfStr = vIf.join(" && ");
+          if (column_type == null) {
+            column_type = "";
+          }
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -157,10 +163,13 @@ for (let i = 0; i < columns.length; i++) {
             }
             #>
             ></UploadImage><#
-            } else if (foreignKey && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
+            } else if (
+              foreignKey
+              && (foreignKey.selectType === "select" || foreignKey.selectType == null)
+            ) {
             #>
             <CustomSelect<#
-              if (table === "usr" && column_name === "default_dept_id") {
+              if (mod === "base" && table === "usr" && column_name === "default_dept_id") {
               #>
               ref="default_dept_idRef"
               :init="false"
@@ -173,7 +182,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               v-model="dialogModel.<#=column_name#>"<#
-              if (table === "usr" && column_name === "default_dept_id") {
+              if (mod === "base" && table === "usr" && column_name === "default_dept_id") {
               #>
               :method="getDeptListApi"<#
               } else {
@@ -495,6 +504,9 @@ import {
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
+  if (foreignKey.showType === "dialog") {
+    continue;
+  }
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (column.noAdd && column.noEdit) {
@@ -531,6 +543,9 @@ import {<#
     }
     const foreignKey = column.foreignKey;
     if (!foreignKey) continue;
+    if (foreignKey.showType === "dialog") {
+      continue;
+    }
     if (column.noAdd && column.noEdit) {
       continue;
     }
@@ -567,6 +582,9 @@ for (let i = 0; i < columns.length; i++) {
   }
   const foreignKey = column.foreignKey;
   if (!foreignKey || foreignKey.selectType !== "tree") {
+    continue;
+  }
+  if (foreignKey.showType === "dialog") {
     continue;
   }
   const foreignTable = foreignKey && foreignKey.table;
@@ -885,7 +903,7 @@ async function refreshEfc() {
   const data = await findById(dialogModel.id);
   if (data) {
     dialogModel = data;<#
-    if (table === "usr") {
+    if (mod === "base" && table === "usr") {
     #>
     old_default_dept_id = dialogModel.default_dept_id;<#
     }
@@ -1021,7 +1039,7 @@ async function saveClk() {
 }<#
 }
 #><#
-if (table === "usr") {
+if (mod === "base" && table === "usr") {
 #>
 
 let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();

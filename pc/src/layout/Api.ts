@@ -76,3 +76,19 @@ export async function login(
   const data = res.login;
   return data;
 }
+
+// 清空缓存
+export async function clearCache(
+  variables?: { [key: string]: any; },
+  opt?: GqlOpt,
+): Promise<any> {
+  const data = await mutation({
+    query: /* GraphQL */ `
+      mutation {
+        clearCache
+      }
+    `,
+    variables,
+  }, opt);
+  return data?.clearCache;
+}

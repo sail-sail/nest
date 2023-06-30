@@ -77,14 +77,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.order_by && search?.order_by?.length > 0) {
-    if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
-    }
-    if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
-    }
-  }
   if (search?.is_default && !Array.isArray(search?.is_default)) {
     search.is_default = [ search.is_default ];
   }
@@ -96,6 +88,14 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
+  if (search?.order_by && search?.order_by?.length > 0) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
+    }
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -337,11 +337,11 @@ export async function getFieldComments() {
   const n = initN("/domain");
   const fieldComments = {
     lbl: await n("名称"),
-    order_by: await n("排序"),
     is_default: await n("默认"),
     is_default_lbl: await n("默认"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -635,14 +635,14 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.order_by !== undefined) {
-    sql += `,order_by`;
-  }
   if (model.is_default !== undefined) {
     sql += `,is_default`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,is_enabled`;
+  }
+  if (model.order_by !== undefined) {
+    sql += `,order_by`;
   }
   if (model.rem !== undefined) {
     sql += `,rem`;
@@ -665,14 +665,14 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
   }
-  if (model.order_by !== undefined) {
-    sql += `,${ args.push(model.order_by) }`;
-  }
   if (model.is_default !== undefined) {
     sql += `,${ args.push(model.is_default) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
+  }
+  if (model.order_by !== undefined) {
+    sql += `,${ args.push(model.order_by) }`;
   }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
@@ -699,17 +699,14 @@ export async function delCache() {
   const table = "base_domain";
   const method = "delCache";
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  await delCacheCtx(cacheKey1);
+  await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
-    "usr",
-    "usr",
+    "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
-    const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await delCacheCtx(cacheKey1);
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
   }
 }
 
@@ -783,12 +780,6 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.order_by !== undefined) {
-    if (model.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(model.order_by) },`;
-      updateFldNum++;
-    }
-  }
   if (model.is_default !== undefined) {
     if (model.is_default != oldModel.is_default) {
       sql += `is_default = ${ args.push(model.is_default) },`;
@@ -798,6 +789,12 @@ export async function updateById(
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.order_by !== undefined) {
+    if (model.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(model.order_by) },`;
       updateFldNum++;
     }
   }
@@ -866,6 +863,64 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 id 设置默认记录
+ * @param {string} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_domain";
+  const method = "defaultById";
+  
+  if (!id) {
+    throw new Error("defaultById: id cannot be empty");
+  }
+  
+  {
+    const args = new QueryArgs();
+    let sql = `
+      update
+        base_domain
+      set
+        is_default = 0
+      where
+        is_default = 1
+        and id != ${ args.push(id) }
+    `;
+    await execute(sql, args);
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      base_domain
+    set
+      is_default = 1
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
   
   await delCache();
   
@@ -948,7 +1003,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_domain";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -986,7 +1041,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_domain";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

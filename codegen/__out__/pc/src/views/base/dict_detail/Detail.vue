@@ -264,16 +264,16 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("值") }`,
       },
     ],
-    is_enabled: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
-      },
-    ],
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+      },
+    ],
+    is_enabled: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("启用") }`,
       },
     ],
   };
@@ -295,9 +295,9 @@ let showBuildIn = $ref(false);
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DictDetailInput = {
-    order_by: 1,
-    is_enabled: 1,
     is_locked: 0,
+    is_enabled: 1,
+    order_by: 1,
   };
   return defaultInput;
 }
@@ -524,10 +524,10 @@ async function initI18nsEfc() {
     "系统字典",
     "名称",
     "值",
-    "排序",
-    "启用",
-    "备注",
     "锁定",
+    "启用",
+    "排序",
+    "备注",
   ];
   await Promise.all([
     initDetailI18ns(),

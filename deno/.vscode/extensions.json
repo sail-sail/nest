@@ -28,6 +28,7 @@
     "zixuanchen.vitest-explorer",
     "dbaeumer.vscode-eslint",
     "maggie.eslint-rules-zh-plugin",
-    "britesnow.vscode-toggle-quotes"
+    "britesnow.vscode-toggle-quotes",
+    "ponetto.vscode-diff-viewer"
   ]
 }

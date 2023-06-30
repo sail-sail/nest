@@ -34,6 +34,10 @@ import {
   ServiceException,
 } from "./exceptions/service.exception.ts";
 
+import {
+  ConnnectionError,
+} from "./mysql/src/constant/errors.ts";
+
 declare global {
   interface Window {
     process: {
@@ -563,8 +567,15 @@ export async function rollback(conn?: PoolConnection, opt?: { debug?: boolean })
   }
   try {
     await conn.execute("rollback");
+  } catch(err) {
+    if (err instanceof ConnnectionError && err.message === "Connection is closed") {
+      conn.close();
+      context.conn = undefined;
+      conn = undefined;
+    }
+    throw err;
   } finally {
-    conn.returnToPool();
+    conn?.returnToPool();
   }
 }
 

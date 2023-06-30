@@ -2,6 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -291,6 +292,22 @@ export async function deleteByIds(
   #>
   return data;
 }<#
+  if (hasDefault) {
+#>
+
+/**
+ * 根据 ids 启用或禁用数据
+ * @param {string} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: string,
+): Promise<number> {
+  const data = await <#=table#>Dao.defaultById(id);
+  return data;
+}<#
+  }
+#><#
   if (hasEnabled) {
 #>
 

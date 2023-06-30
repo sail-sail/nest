@@ -444,6 +444,18 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
+              </template>
             </el-table-column>
           </template>
           
@@ -455,6 +467,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
                   v-model="row.is_enabled"
                   :active-value="1"
                   :inactive-value="0"
@@ -481,6 +494,7 @@
             >
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_locked"
                   :active-value="1"
                   :inactive-value="0"
@@ -907,7 +921,7 @@ function getTableColumns(): ColumnType[] {
       sortable: "custom",
       align: "right",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "启用",
@@ -915,7 +929,7 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "备注",
@@ -931,7 +945,7 @@ function getTableColumns(): ColumnType[] {
       width: 60,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
     },
     {
       label: "创建人",
@@ -998,23 +1012,27 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
-async function dataGrid(isCount = false) {
+async function dataGrid(
+  isCount = false,
+  opt?: GqlOpt,
+) {
   if (isCount) {
     await Promise.all([
-      useFindAll(),
-      useFindCount(),
+      useFindAll(opt),
+      useFindCount(opt),
     ]);
   } else {
-    await useFindAll();
+    await useFindAll(opt);
   }
 }
 
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1022,16 +1040,20 @@ function getDataSearch() {
   return search2;
 }
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }
 
-async function useFindCount() {
+async function useFindCount(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2);
+  page.total = await findCount(search2, opt);
 }
 
 let sort: Sort = $ref({
@@ -1193,20 +1215,38 @@ async function cancelImport() {
 
 /** 启用 */
 async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  const notLoading = true;
   await enableByIds(
     [ id ],
     is_enabled,
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 锁定 */
 async function is_lockedChg(id: string, is_locked: 0 | 1) {
+  const notLoading = true;
   await lockByIds(
     [ id ],
     is_locked,
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 打开修改页面 */

@@ -171,7 +171,7 @@ const props = withDefaults(
     modelValue: "",
     maxFileSize: 1024 * 1024 * 50,
     maxSize: 1,
-    accept: "image/png,image/jpeg,image/svg+xml",
+    accept: "image/webp,image/png,image/jpeg,image/svg+xml",
   },
 );
 

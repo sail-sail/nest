@@ -115,6 +115,29 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.tenant_ids == null)">
+          <el-form-item
+            :label="n('所在租户')"
+            prop="tenant_ids"
+            un-h="full"
+          >
+            <CustomSelect
+              :set="dialogModel.tenant_ids = dialogModel.tenant_ids ?? [ ]"
+              v-model="dialogModel.tenant_ids"
+              :method="getTenantList"
+              :options-map="((item: TenantModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              un-w="full"
+              :placeholder="`${ ns('请选择') } ${ n('所在租户') }`"
+              multiple
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -233,10 +256,12 @@ import {
 import {
   type MenuInput,
   type MenuModel,
+  type TenantModel,
 } from "#/types";
 
 import {
   getMenuList,
+  getTenantList,
 } from "./Api";
 
 import {
@@ -267,6 +292,7 @@ type DialogAction = "add" | "copy" | "edit";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
+  tenant_ids: [ ],
 } as MenuInput);
 
 let ids = $ref<string[]>([ ]);
@@ -544,9 +570,14 @@ async function initI18nsEfc() {
     "名称",
     "路由",
     "参数",
+    "所在租户",
     "启用",
     "排序",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

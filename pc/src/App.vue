@@ -347,24 +347,24 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 .el-table {
   .table_current_row {
-    background-color: var(--el-fill-color-darker);
+    background-color: var(--el-fill-color);
   }
   .table_current_row.hover-row {
-    background-color: var(--el-fill-color-darker);
+    background-color: var(--el-fill-color);
   }
   .el-table__body tr.table_current_row:hover>td.el-table__cell {
-    background-color: var(--el-fill-color-darker);
+    background-color: var(--el-fill-color);
   }
 }
 .dark .el-table {
   .table_current_row {
-    background-color: var(--el-fill-color-darker);
+    background-color: var(--el-fill-color);
   }
   .table_current_row.hover-row {
-    background-color: var(--el-fill-color-darker);
+    background-color: var(--el-fill-color);
   }
   .el-table__body tr.table_current_row:hover>td.el-table__cell {
-    background-color: var(--el-fill-color-darker);
+    background-color: var(--el-fill-color);
   }
 }
 .el-date-editor.el-input, .el-date-editor.el-input__inner {

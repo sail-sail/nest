@@ -155,6 +155,9 @@ async function getSchema0(
       if (item.width == null) {
         item.width = 60;
       }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
     }
     if ([ "is_enabled" ].includes(column_name)) {
       if (item.noAdd == null) {
@@ -169,6 +172,9 @@ async function getSchema0(
       if (item.width == null) {
         item.width = 60;
       }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
     }
     if (column_name.startsWith("is_")) {
       if (item.width == null) {
@@ -177,13 +183,19 @@ async function getSchema0(
       if (item.isSwitch == null) {
         item.isSwitch = true;
       }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {
-        item.width = 80;
+        item.width = 100;
       }
       if (item.align == null) {
         item.align = "right";
+      }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
       }
     }
     if ([ "rem" ].includes(column_name)) {
@@ -195,6 +207,18 @@ async function getSchema0(
       }
       if (item.isTextarea == null) {
         item.isTextarea = true;
+      }
+    }
+    if (
+      (
+        item.foreignKey
+        && (item.foreignKey.multiple || item.COLUMN_NAME.endsWith("_ids"))
+        && (item.foreignKey.showType === "tag" || !item.foreignKey.showType)
+      )
+      || item.COLUMN_NAME.endsWith("_ids")
+    ) {
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
       }
     }
   }
@@ -216,6 +240,11 @@ export async function getSchema(
   const hasTenant_id = records.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
   tables[table_name].opts.hasTenant_id = hasTenant_id;
   const columns = [ ];
+  
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    column.ORDINAL_POSITION = i + 1;
+  }
   
   for (let k = 0; k < records.length; k++) {
     const record = records[k];
@@ -336,7 +365,21 @@ export async function getSchema(
         column.foreignKey = { mod: mod2, table: table2, column: "id", lbl: "lbl", multiple: true, type: "many2many", defaultSort };
         const table = table_name.substring(table_name.indexOf("_") + 1);
         const mod = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table)?.substring(0, table_name.indexOf("_"));
-        column.many2many = { mod, table: `${ table }_${ table2 }`, column1: `${ table }_id`, column2: `${ table2 }_id` };
+        if (!column.many2many) {
+          column.many2many = { mod, table: `${ table }_${ table2 }`, column1: `${ table }_id`, column2: `${ table2 }_id` };
+        }
+        if (!column.many2many.mod) {
+          column.many2many.mod = mod;
+        }
+        if (!column.many2many.table) {
+          column.many2many.table = `${ table }_${ table2 }`;
+        }
+        if (!column.many2many.column1) {
+          column.many2many.column1 = `${ table }_id`;
+        }
+        if (!column.many2many.column2) {
+          column.many2many.column2 = `${ table2 }_id`;
+        }
       } else if (column.COLUMN_NAME.endsWith("_id")) {
         const table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_id".length);
         const table2_name = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table2);

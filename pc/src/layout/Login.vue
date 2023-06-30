@@ -1,5 +1,18 @@
 <template>
-<div class="wrap_login_div">
+<div
+  ref="loginRef"
+  class="wrap_login_div"
+  un-z="10000"
+>
+  <div
+    un-pos-absolute
+    un-top="0"
+    un-right="0"
+    un-text="transparent"
+    @click="clearCacheClk"
+  >
+    清空缓存
+  </div>
   <div class="login_div">
     <div
       style="margin-top: 20px;margin-left: 20px;font-size: 14px;"
@@ -149,6 +162,7 @@ import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
   getLoginLangs,
+  clearCache,
 } from "./Api";
 
 import {
@@ -178,6 +192,8 @@ let model = $ref<MutationLoginArgs>({
   dept_id: undefined,
   lang,
 });
+
+let loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
 
 let formRef = $ref<InstanceType<typeof ElForm>>();
 
@@ -223,7 +239,6 @@ async function loginClk() {
   } catch (err) {
     return;
   }
-  model.dept_id = usrStore.dept_id;
   const loginModel = await login(model);
   if (!loginModel.authorization) {
     return;
@@ -236,8 +251,11 @@ async function loginClk() {
       dept_id: model.dept_id,
     }),
   );
-  usrStore.dept_id = loginModel.dept_id ?? undefined;
+  debugger;
   usrStore.authorization = loginModel.authorization;
+  usrStore.username = model.username;
+  usrStore.tenant_id = model.tenant_id;
+  usrStore.lang = model.lang;
   tabsStore.clearKeepAliveNames();
   await Promise.all([
     indexStore.initI18nVersion(),
@@ -273,6 +291,14 @@ async function initI18nEfc() {
       "密码",
     ]),
   ]);
+}
+
+async function clearCacheClk() {
+  await clearCache();
+  ElMessage.success({
+    message: "清空缓存成功",
+    appendTo: loginRef,
+  });
 }
 
 async function initFrame() {

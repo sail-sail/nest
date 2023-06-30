@@ -9,8 +9,6 @@ pub struct DomainModel {
   pub id: String,
   /// 名称
   pub lbl: String,
-  /// 排序
-  pub order_by: u32,
   /// 默认
   pub is_default: u8,
   /// 默认
@@ -19,6 +17,8 @@ pub struct DomainModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: u32,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -45,14 +45,14 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 排序
-    let order_by: u32 = row.try_get("order_by")?;
     // 默认
     let is_default: u8 = row.try_get("is_default")?;
     let is_default_lbl: String = is_default.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -79,11 +79,11 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     let model = Self {
       id,
       lbl,
-      order_by,
       is_default,
       is_default_lbl,
       is_enabled,
       is_enabled_lbl,
+      order_by,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -104,8 +104,6 @@ impl FromRow<'_, MySqlRow> for DomainModel {
 pub struct DomainFieldComment {
   /// 名称
   pub lbl: String,
-  /// 排序
-  pub order_by: String,
   /// 默认
   pub is_default: String,
   /// 默认
@@ -114,6 +112,8 @@ pub struct DomainFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -144,12 +144,12 @@ pub struct DomainSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
-  /// 排序
-  pub order_by: Option<Vec<u32>>,
   /// 默认
   pub is_default: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -174,8 +174,6 @@ pub struct DomainInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
-  /// 排序
-  pub order_by: Option<u32>,
   /// 默认
   pub is_default: Option<u8>,
   /// 默认
@@ -184,6 +182,8 @@ pub struct DomainInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
+  /// 排序
+  pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -212,12 +212,12 @@ impl From<DomainInput> for DomainSearch {
       is_deleted: None,
       // 名称
       lbl: input.lbl,
-      // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 默认
       is_default: input.is_default.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      // 排序
+      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 备注
       rem: input.rem,
       // 创建人

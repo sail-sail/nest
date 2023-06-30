@@ -22,7 +22,10 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
     findById: findByIdMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
-  const authModel = await getAuthModel();
+  const authModel = await getAuthModel(false);
+  if (!authModel) {
+    return [ ];
+  }
   const usr_id = authModel.id;
   const usrModel = await findByIdUsr(usr_id);
   if (!usrModel) {

@@ -9,10 +9,14 @@ pub struct TenantModel {
   pub id: String,
   /// 名称
   pub lbl: String,
-  /// 域名
+  /// 所属域名
   pub domain_ids: Vec<String>,
-  /// 域名
+  /// 所属域名
   pub domain_ids_lbl: Vec<String>,
+  /// 菜单权限
+  pub menu_ids: Vec<String>,
+  /// 菜单权限
+  pub menu_ids_lbl: Vec<String>,
   /// 租户管理员
   pub usr_id: String,
   /// 租户管理员
@@ -31,10 +35,6 @@ pub struct TenantModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 菜单
-  pub menu_ids: Vec<String>,
-  /// 菜单
-  pub menu_ids_lbl: Vec<String>,
   /// 排序
   pub order_by: u32,
   /// 备注
@@ -63,11 +63,16 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 域名
+    // 所属域名
     let domain_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("domain_ids")?;
     let domain_ids = domain_ids.unwrap_or_default().0;
     let domain_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("domain_ids_lbl")?;
     let domain_ids_lbl = domain_ids_lbl.unwrap_or_default().0;
+    // 菜单权限
+    let menu_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids")?;
+    let menu_ids = menu_ids.unwrap_or_default().0;
+    let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
     // 租户管理员
     let usr_id: String = row.try_get("usr_id")?;
     let usr_id_lbl: Option<String> = row.try_get("usr_id_lbl")?;
@@ -86,11 +91,6 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    // 菜单
-    let menu_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids")?;
-    let menu_ids = menu_ids.unwrap_or_default().0;
-    let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
-    let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
@@ -121,6 +121,8 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       lbl,
       domain_ids,
       domain_ids_lbl,
+      menu_ids,
+      menu_ids_lbl,
       usr_id,
       usr_id_lbl,
       expiration,
@@ -130,8 +132,6 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
-      menu_ids,
-      menu_ids_lbl,
       order_by,
       rem,
       create_usr_id,
@@ -153,10 +153,14 @@ impl FromRow<'_, MySqlRow> for TenantModel {
 pub struct TenantFieldComment {
   /// 名称
   pub lbl: String,
-  /// 域名
+  /// 所属域名
   pub domain_ids: String,
-  /// 域名
+  /// 所属域名
   pub domain_ids_lbl: String,
+  /// 菜单权限
+  pub menu_ids: String,
+  /// 菜单权限
+  pub menu_ids_lbl: String,
   /// 租户管理员
   pub usr_id: String,
   /// 租户管理员
@@ -175,10 +179,6 @@ pub struct TenantFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 菜单
-  pub menu_ids: String,
-  /// 菜单
-  pub menu_ids_lbl: String,
   /// 排序
   pub order_by: String,
   /// 备注
@@ -211,10 +211,14 @@ pub struct TenantSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
-  /// 域名
+  /// 所属域名
   pub domain_ids: Option<Vec<String>>,
-  /// 域名
+  /// 所属域名
   pub domain_ids_is_null: Option<bool>,
+  /// 菜单权限
+  pub menu_ids: Option<Vec<String>>,
+  /// 菜单权限
+  pub menu_ids_is_null: Option<bool>,
   /// 租户管理员
   pub usr_id: Option<Vec<String>>,
   /// 租户管理员
@@ -227,10 +231,6 @@ pub struct TenantSearch {
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
-  /// 菜单
-  pub menu_ids: Option<Vec<String>>,
-  /// 菜单
-  pub menu_ids_is_null: Option<bool>,
   /// 排序
   pub order_by: Option<Vec<u32>>,
   /// 备注
@@ -257,10 +257,14 @@ pub struct TenantInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
-  /// 域名
+  /// 所属域名
   pub domain_ids: Option<Vec<String>>,
-  /// 域名
+  /// 所属域名
   pub domain_ids_lbl: Option<Vec<String>>,
+  /// 菜单权限
+  pub menu_ids: Option<Vec<String>>,
+  /// 菜单权限
+  pub menu_ids_lbl: Option<Vec<String>>,
   /// 租户管理员
   pub usr_id: Option<String>,
   /// 租户管理员
@@ -279,10 +283,6 @@ pub struct TenantInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 菜单
-  pub menu_ids: Option<Vec<String>>,
-  /// 菜单
-  pub menu_ids_lbl: Option<Vec<String>>,
   /// 排序
   pub order_by: Option<u32>,
   /// 备注
@@ -313,8 +313,10 @@ impl From<TenantInput> for TenantSearch {
       is_deleted: None,
       // 名称
       lbl: input.lbl,
-      // 域名
+      // 所属域名
       domain_ids: input.domain_ids,
+      // 菜单权限
+      menu_ids: input.menu_ids,
       // 租户管理员
       usr_id: input.usr_id.map(|x| vec![x.into()]),
       // 到期日
@@ -325,8 +327,6 @@ impl From<TenantInput> for TenantSearch {
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 菜单
-      menu_ids: input.menu_ids,
       // 排序
       order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 备注

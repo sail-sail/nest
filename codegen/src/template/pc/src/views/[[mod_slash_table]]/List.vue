@@ -2,6 +2,7 @@
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -692,6 +693,33 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
+            } else if (column_name === "order_by") {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-input-number
+                  v-if="permit('edit')<#
+                  if (hasLocked) {
+                  #> && row.is_locked !== 1<#
+                  }
+                  #> && row.is_deleted !== 1"
+                  v-model="row.order_by"
+                  :min="0"
+                  :precision="0"
+                  :step="1"
+                  :step-strictly="true"
+                  :controls="false"
+                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
+                ></el-input-number>
+              </template>
+            </el-table-column>
+          </template><#
             } else if (column.whitespacePre) {
           #>
           
@@ -729,10 +757,31 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if(column.isSwitch && opts.noEdit !== true && column_name === "is_default") {
+              #>
+              <template #default="{ row }">
+                <el-switch
+                  v-if="permit('edit')<#
+                  if (hasLocked) {
+                  #> && row.is_locked !== 1<#
+                  }
+                  #> && row.is_deleted !== 1"
+                  v-model="row.<#=column_name#>"
+                  :active-value="1"
+                  :inactive-value="0"
+                  :before-change="() => row.<#=column_name#> == 0"
+                  @change="<#=column_name#>Chg(row.id)"
+                ></el-switch>
+              </template><#
               } else if(column.isSwitch && opts.noEdit !== true) {
               #>
               <template #default="{ row }">
                 <el-switch
+                  v-if="permit('edit')<#
+                  if (hasLocked && column_name !== "is_locked") {
+                  #> && row.is_locked !== 1<#
+                  }
+                  #> && row.is_deleted !== 1"
                   v-model="row.<#=column_name#>"
                   :active-value="1"
                   :inactive-value="0"
@@ -792,9 +841,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  
-                  min="w-7.5"
-                  
+                  un-min="w-7.5"
                   @click="<#=column_name#>Clk(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
@@ -898,7 +945,12 @@ const hasAtt = columns.some((item) => item.isAtt);
     ref="<#=column_name#>ListSelectDialogRef"
     v-slot="{ selectedIds }"
   >
-    <<#=Foreign_Table_Up#>List
+    <<#=Foreign_Table_Up#>List<#
+      if (mod === "base" && table === "role" && column_name === "menu_ids") {
+      #>
+      :tenant_ids="[ usrStore.tenant_id ]"<#
+      }
+      #>
       :selected-ids="selectedIds"
       @selected-ids-chg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
     ></<#=Foreign_Table_Up#>List>
@@ -998,6 +1050,11 @@ import {
   #>
   deleteByIds,
   forceDeleteByIds,<#
+    }
+  #><#
+    if (hasDefault && opts.noEdit !== true) {
+  #>
+  defaultById,<#
     }
   #><#
     if (hasEnabled && opts.noEdit !== true) {
@@ -1766,23 +1823,27 @@ let {
 let detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
-async function dataGrid(isCount = false) {
+async function dataGrid(
+  isCount = false,
+  opt?: GqlOpt,
+) {
   if (isCount) {
     await Promise.all([
-      useFindAll(),
-      useFindCount(),
+      useFindAll(opt),
+      useFindCount(opt),
     ]);
   } else {
-    await useFindAll();
+    await useFindAll(opt);
   }
 }
 
 function getDataSearch() {
   let search2 = {
     ...search,
+    idsChecked: undefined,
   };
-  if (props.showBuildIn == "0") {
-    Object.assign(search2, builtInSearch, { idsChecked: undefined });
+  if (!showBuildIn) {
+    Object.assign(search2, builtInSearch);
   }
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1792,25 +1853,31 @@ function getDataSearch() {
 if (list_page) {
 #>
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const pgSize = page.size;
   const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ]);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }<#
 } else {
 #>
 
-async function useFindAll() {
+async function useFindAll(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  tableData = await findAll(search2, undefined, [ sort ]);
+  tableData = await findAll(search2, undefined, [ sort ], opt);
 }<#
 }
 #>
 
-async function useFindCount() {
+async function useFindCount(
+  opt?: GqlOpt,
+) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2);
+  page.total = await findCount(search2, opt);
 }<#
 if (defaultSort && defaultSort.prop) {
 #>
@@ -2104,40 +2171,86 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
 #><#
-if (column_name === "is_enabled") {
+if (column_name === "is_default") {
+#>
+
+/** <#=column_comment#> */
+async function <#=column_name#>Chg(id: string) {
+  const notLoading = true;
+  await defaultById(
+    id,
+    {
+      notLoading,
+    },
+  );
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}<#
+} else if (column_name === "is_enabled") {
 #>
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  const notLoading = true;
   await enableByIds(
     [ id ],
     <#=column_name#>,
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }<#
 } else if (column_name === "is_locked") {
 #>
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  const notLoading = true;
   await lockByIds(
     [ id ],
     <#=column_name#>,
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }<#
 } else {
 #>
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  const notLoading = true;
   await updateById(
     id,
     {
       <#=column_name#>,
     },
+    {
+      notLoading,
+    },
   );
-  await dataGrid(true);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }<#
 }
 #><#
@@ -2469,26 +2582,28 @@ async function <#=column_name#>Clk(row: <#=modelName#>) {
   } = await <#=column_name#>ListSelectDialogRef.showDialog({
     selectedIds: row.<#=column_name#> as string[],
   });
-  if (action === "select") {
-    selectedIds2 = selectedIds2 || [ ];
-    let isEqual = true;
-    if (selectedIds2.length === row.<#=column_name#>.length) {
-      for (let i = 0; i < selectedIds2.length; i++) {
-        const item = selectedIds2[i];
-        if (!row.<#=column_name#>.includes(item)) {
-          isEqual = false;
-          break;
-        }
-      }
-    } else {
-      isEqual = false;
-    }
-    if (!isEqual) {
-      row.<#=column_name#> = selectedIds2;
-      await updateById(row.id, { <#=column_name#>: selectedIds2 });
-      await dataGrid();
-    }
+  if (action !== "select") {
+    return;
   }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.<#=column_name#>.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.<#=column_name#>.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.<#=column_name#> = selectedIds2;
+  await updateById(row.id, { <#=column_name#>: selectedIds2 });
+  await dataGrid();
 }<#
   }
 #><#

@@ -762,19 +762,16 @@ export async function delCache() {
   const table = "base_permit";
   const method = "delCache";
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  await delCacheCtx(cacheKey1);
+  await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
-    "role",
-    "menu",
-    "usr",
-    "usr",
+    "base_role",
+    "base_menu",
+    "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
     if (foreignTable === table) continue;
-    const cacheKey1 = `dao.sql.${ foreignTable }`;
-    await delCacheCtx(cacheKey1);
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
   }
 }
 
@@ -1006,7 +1003,7 @@ export async function revertByIds(
   },
 ): Promise<number> {
   const table = "base_permit";
-  const method = "create";
+  const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
@@ -1044,7 +1041,7 @@ export async function forceDeleteByIds(
   },
 ): Promise<number> {
   const table = "base_permit";
-  const method = "create";
+  const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;

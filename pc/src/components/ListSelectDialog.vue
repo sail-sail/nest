@@ -35,11 +35,14 @@
       un-justify-start
       un-items-center
     >
-      <slot :selected-ids="selectedIds"></slot>
+      <slot
+        v-bind="$attrs"
+        :selected-ids="selectedIds"
+      ></slot>
     </div>
     <div
       un-p="y-2.5"
-      un-flex
+      un-flex="~ gap-1"
       un-justify-center
       un-items-center
     >
@@ -48,29 +51,29 @@
         @click="cancelClk"
       >
         <template #icon>
-          <ElIconClose />
+          <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>{{ ns("关闭") }}</span>
       </el-button>
       
       <el-button
-        un-m="x-1"
         @click="revertClk"
       >
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>还原</span>
+        <span>{{ ns("还原") }}</span>
       </el-button>
       
       <el-button
+        plain
         type="primary"
         @click="saveClk"
       >
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>确定</span>
+        <span>{{ ns("确定") }}</span>
       </el-button>
       
     </div>
@@ -79,6 +82,10 @@
 </template>
 
 <script setup lang="ts">
+const {
+  ns,
+} = useI18n("/base/usr");
+
 let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 
 let inited = $ref(false);

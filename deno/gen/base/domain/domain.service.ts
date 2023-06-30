@@ -130,6 +130,18 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用数据
+ * @param {string} id
+ * @return {Promise<number>}
+ */
+export async function defaultById(
+  id: string,
+): Promise<number> {
+  const data = await domainDao.defaultById(id);
+  return data;
+}
+
+/**
+ * 根据 ids 启用或禁用数据
  * @param {string[]} ids
  * @param {0 | 1} is_locked
  * @return {Promise<number>}

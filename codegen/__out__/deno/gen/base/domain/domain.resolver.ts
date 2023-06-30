@@ -144,6 +144,28 @@ export async function deleteByIdsDomain(
 }
 
 /**
+ * 根据 id 设置默认记录
+ */
+export async function defaultByIdDomain(
+  id: string,
+) {
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/base/domain",
+    "default",
+  );
+  
+  const {
+    defaultById,
+  } = await import("./domain.service.ts");
+  const res = await defaultById(id);
+  return res;
+}
+
+/**
  * 根据 ids 启用或者禁用数据
  */
 export async function enableByIdsDomain(

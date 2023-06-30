@@ -47,7 +47,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.domain_ids == null)">
           <el-form-item
-            :label="n('域名')"
+            :label="n('所属域名')"
             prop="domain_ids"
             un-h="full"
           >
@@ -62,7 +62,7 @@
                 };
               })"
               un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('域名') }`"
+              :placeholder="`${ ns('请选择') } ${ n('所属域名') }`"
               multiple
             ></CustomSelect>
           </el-form-item>
@@ -123,32 +123,6 @@
               :placeholder="`${ ns('请输入') } ${ n('最大用户数') }`"
               :clearable="true"
             ></el-input-number>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.menu_ids == null)">
-          <el-form-item
-            :label="n('菜单')"
-            prop="menu_ids"
-            un-h="full"
-          >
-            <CustomTreeSelect
-              :set="dialogModel.menu_ids = dialogModel.menu_ids ?? [ ]"
-              v-model="dialogModel.menu_ids"
-              :method="getMenuTree"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-              :props="{
-                label: 'lbl',
-                children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node
-              multiple
-            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -271,18 +245,12 @@ import {
   type TenantInput,
   type DomainModel,
   type UsrModel,
-  type MenuModel,
 } from "#/types";
 
 import {
   getDomainList,
   getUsrList,
-  getMenuList,
 } from "./Api";
-
-import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
 
 const emit = defineEmits<
   (
@@ -336,7 +304,7 @@ watchEffect(async () => {
     domain_ids: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("域名") }`,
+        message: `${ await nsAsync("请选择") } ${ n("所属域名") }`,
       },
     ],
     usr_id: [
@@ -604,13 +572,13 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "域名",
+    "所属域名",
+    "菜单权限",
     "租户管理员",
     "到期日",
     "最大用户数",
     "锁定",
     "启用",
-    "菜单",
     "排序",
     "备注",
     "创建人",
