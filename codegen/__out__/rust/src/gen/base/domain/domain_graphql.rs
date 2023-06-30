@@ -198,7 +198,7 @@ impl DomainGenMutation {
   }
   
   /// 根据 id 设置默认记录
-  pub async fn default_by_iddomain<'a>(
+  pub async fn default_by_id_domain<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
