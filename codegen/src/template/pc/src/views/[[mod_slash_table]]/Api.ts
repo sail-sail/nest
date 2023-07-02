@@ -391,7 +391,6 @@ export async function findById(
             }
           }
           #>
-          is_deleted
         }
       }
     `,

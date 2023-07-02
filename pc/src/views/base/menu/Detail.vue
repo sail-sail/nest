@@ -431,7 +431,6 @@ async function refreshEfc() {
   if (data) {
     dialogModel = {
       ...data,
-      is_deleted: undefined,
     };
   }
 }

@@ -175,7 +175,6 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
-          is_deleted
         }
       }
     `,
