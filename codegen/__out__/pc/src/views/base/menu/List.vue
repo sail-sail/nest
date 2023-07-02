@@ -568,8 +568,13 @@
     >
       <el-pagination
         background
-        layout="total"
+        :page-sizes="pageSizes"
+        :page-size="page.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :current-page="page.current"
         :total="page.total"
+        @size-change="pgSizeChg"
+        @current-change="pgCurrentChg"
       ></el-pagination>
     </div>
   </div>
@@ -836,6 +841,9 @@ const builtInModel = $computed(() => {
 /** 分页功能 */
 let {
   page,
+  pageSizes,
+  pgSizeChg,
+  pgCurrentChg,
 } = $(usePage<MenuModel>(dataGrid));
 
 /** 表格选择功能 */
@@ -1071,8 +1079,10 @@ function getDataSearch() {
 async function useFindAll(
   opt?: GqlOpt,
 ) {
+  const pgSize = page.size;
+  const pgOffset = (page.current - 1) * page.size;
   const search2 = getDataSearch();
-  tableData = await findAll(search2, undefined, [ sort ], opt);
+  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
 }
 
 async function useFindCount(

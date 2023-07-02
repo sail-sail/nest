@@ -80,9 +80,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     list_page,
     list_tree,
   } = opts;
-  if (list_tree) {
-    list_page = false;
-  }
   if (list_page == null) {
     list_page = true;
   }
