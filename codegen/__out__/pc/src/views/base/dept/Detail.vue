@@ -462,6 +462,7 @@ async function saveClk() {
       {
         ...dialogModel,
         ...builtInModel,
+        is_deleted: undefined,
       },
     );
     msg = await nsAsync("修改成功");
