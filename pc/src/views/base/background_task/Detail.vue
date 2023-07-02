@@ -388,7 +388,10 @@ async function refreshEfc() {
   }
   const data = await findById(dialogModel.id);
   if (data) {
-    dialogModel = data;
+    dialogModel = {
+      ...data,
+      is_deleted: undefined,
+    };
   }
 }
 

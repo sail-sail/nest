@@ -435,7 +435,10 @@ async function refreshEfc() {
   }
   const data = await findById(dialogModel.id);
   if (data) {
-    dialogModel = data;
+    dialogModel = {
+      ...data,
+      is_deleted: undefined,
+    };
     old_default_dept_id = dialogModel.default_dept_id;
   }
 }
@@ -533,7 +536,6 @@ async function saveClk() {
       {
         ...dialogModel,
         ...builtInModel,
-        is_deleted: undefined,
       },
     );
     msg = await nsAsync("修改成功");
