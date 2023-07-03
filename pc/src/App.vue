@@ -279,15 +279,15 @@ body .el-table--small {
   // }
   .el-table__header {
     thead tr {
-      height: 29px;
+      height: 36.67px;
     }
   }
   .el-table__row {
-    height: 29px;
+    height: 36.67px;
   }
   .cell {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
   font-size: 13px;
   th.el-table__cell {

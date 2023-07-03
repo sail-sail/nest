@@ -260,7 +260,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "type",
         search: true,
-        width: 100,
+        width: 80,
         fixed: "left",
       },
       {

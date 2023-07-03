@@ -59,7 +59,8 @@
   >
     <List
       ref="listRef"
-      :show-build-in="'1'"
+      show-build-in="1"
+      is-pagination="0"
       v-bind="$attrs"
       :parent_id="parent_id"
       @add="findTreeEfc"
@@ -90,7 +91,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  parent_id?: string | string[];
+  parent_id?: string;
 }>();
 
 const {

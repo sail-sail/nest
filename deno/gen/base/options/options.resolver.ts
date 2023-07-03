@@ -159,7 +159,7 @@ export async function enableByIdsOptions(
   
   await usePermit(
     "/base/options",
-    "lock",
+    "enable",
   );
   
   const {

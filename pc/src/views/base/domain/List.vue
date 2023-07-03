@@ -490,12 +490,13 @@
       </el-table>
     </div>
     <div
-      un-flex
+      un-flex="~"
       un-justify-end
-      un-p="t-0.5 b-0.5"
+      un-p="y-1"
+      un-box-border
     >
       <el-pagination
-        background
+        v-if="isPagination"
         :page-sizes="pageSizes"
         :page-size="page.size"
         layout="total, sizes, prev, pager, next, jumper"
@@ -503,6 +504,11 @@
         :total="page.total"
         @size-change="pgSizeChg"
         @current-change="pgCurrentChg"
+      ></el-pagination>
+      <el-pagination
+        v-else
+        layout="total"
+        :total="page.total"
       ></el-pagination>
     </div>
   </div>
@@ -627,6 +633,7 @@ async function idsCheckedChg() {
 const props = defineProps<{
   is_deleted?: string;
   showBuildIn?: string;
+  isPagination?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -649,6 +656,7 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
+  isPagination: "0|1",
   ids: "string[]",
   is_default: "number[]",
   is_default_lbl: "string[]",
@@ -665,6 +673,7 @@ const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
   "showBuildIn",
+  "isPagination",
 ];
 
 /** 内置搜索条件 */
@@ -719,6 +728,23 @@ watch(
       showBuildIn = true;
     } else {
       showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否分页 */
+let isPagination = $ref(true);
+
+watch(
+  () => props.isPagination,
+  () => {
+    if (props.isPagination === "0") {
+      isPagination = false;
+    } else {
+      isPagination = true;
     }
   },
   {
@@ -965,17 +991,42 @@ function getDataSearch() {
 async function useFindAll(
   opt?: GqlOpt,
 ) {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
-  const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
+  if (isPagination) {
+    const pgSize = page.size;
+    const pgOffset = (page.current - 1) * page.size;
+    const search2 = getDataSearch();
+    tableData = await findAll(
+      search2,
+      {
+        pgSize,
+        pgOffset,
+      },
+      [
+        sort,
+      ],
+      opt,
+    );
+  } else {
+    const search2 = getDataSearch();
+    tableData = await findAll(
+      search2,
+      undefined,
+      [
+        sort,
+      ],
+      opt,
+    );
+  }
 }
 
 async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2, opt);
+  page.total = await findCount(
+    search2,
+    opt,
+  );
 }
 
 let sort: Sort = $ref({
@@ -1017,13 +1068,16 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
-  if (changedIds.length > 0) {
-    selectedIds = [ ...changedIds ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
-    emit("add", changedIds);
+  if (changedIds.length === 0) {
+    return;
   }
+  selectedIds = [
+    ...changedIds,
+  ];
+  await Promise.all([
+    dataGrid(true),
+  ]);
+  emit("add", changedIds);
 }
 
 /** 打开复制页面 */
@@ -1046,13 +1100,16 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
-  if (changedIds.length > 0) {
-    selectedIds = [ ...changedIds ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
-    emit("add", changedIds);
+  if (changedIds.length === 0) {
+    return;
   }
+  selectedIds = [
+    ...changedIds,
+  ];
+  await Promise.all([
+    dataGrid(true),
+  ]);
+  emit("add", changedIds);
 }
 
 let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
@@ -1180,12 +1237,13 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
-  if (changedIds.length > 0) {
-    await Promise.all([
-      dataGrid(),
-    ]);
-    emit("edit", changedIds);
+  if (changedIds.length === 0) {
+    return;
   }
+  await Promise.all([
+    dataGrid(),
+  ]);
+  emit("edit", changedIds);
 }
 
 /** 点击删除 */

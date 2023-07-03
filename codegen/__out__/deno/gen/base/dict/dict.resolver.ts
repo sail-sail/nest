@@ -159,7 +159,7 @@ export async function enableByIdsDict(
   
   await usePermit(
     "/base/dict",
-    "lock",
+    "enable",
   );
   
   const {

@@ -2,7 +2,7 @@ import {
   useI18n,
 } from "@/locales/i18n";
 
-export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 30, 50, 100 ]) {
+export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 20, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
   // 分页
   let page = $ref({
