@@ -76,6 +76,10 @@ export async function findAll(
   return res;
 }
 
+export type MenuModelTree = MenuModel & {
+  children?: MenuModelTree[];
+}
+
 /**
  * 查找树形数据
  * @param sort 

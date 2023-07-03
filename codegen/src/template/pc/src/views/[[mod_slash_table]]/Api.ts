@@ -10,6 +10,7 @@ let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
 let searchName = "";
+let modelNameTree = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
@@ -18,11 +19,13 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   fieldCommentName = Table_Up + "fieldComment";
   inputName = Table_Up + "input";
   searchName = Table_Up + "search";
+  modelNameTree = Table_Up + "modelTree";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
+  modelNameTree = Table_Up + "ModelTree";
 }
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
@@ -189,6 +192,10 @@ export async function findAll(
 }<#
 if (list_tree) {
 #>
+
+export type <#=modelNameTree#> = <#=modelName#> & {
+  children?: <#=modelNameTree#>[];
+}
 
 /**
  * 查找树形数据

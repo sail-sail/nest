@@ -70,6 +70,10 @@ export async function findAll(
   return res;
 }
 
+export type DeptModelTree = DeptModel & {
+  children?: DeptModelTree[];
+}
+
 /**
  * 查找树形数据
  * @param sort 
