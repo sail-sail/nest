@@ -530,12 +530,16 @@ async function saveClk() {
     if (!dialogModel.id) {
       return;
     }
+    const dialogModel2 = {
+      ...dialogModel,
+        ...builtInModel,
+    };
+    if (!showBuildIn) {
+      Object.assign(dialogModel2, builtInModel);
+    }
     id = await updateById(
       dialogModel.id,
-      {
-        ...dialogModel,
-        ...builtInModel,
-      },
+      dialogModel2,
     );
     msg = await nsAsync("修改成功");
   }

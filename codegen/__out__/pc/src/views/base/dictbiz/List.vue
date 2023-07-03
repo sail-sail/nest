@@ -195,7 +195,7 @@
     
       <el-button
         plain
-        @click="searchClk"
+        @click="refreshClk"
       >
         <template #icon>
           <ElIconRefresh />
@@ -634,6 +634,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "refresh",
   "beforeSearchReset",
 ]);
 
@@ -652,11 +653,17 @@ let search = $ref(initSearch());
 /** 回收站 */
 async function recycleChg() {
   selectedIds = [ ];
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 搜索 */
 async function searchClk() {
+  await dataGrid(true);
+}
+
+/** 刷新 */
+async function refreshClk() {
+  emit("refresh");
   await dataGrid(true);
 }
 
@@ -666,12 +673,12 @@ async function searchReset() {
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 点击已选择 */
@@ -1085,7 +1092,6 @@ async function openAdd() {
     return;
   }
   const {
-    type,
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("增加"),
@@ -1093,9 +1099,6 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
-  if (type === "cancel") {
-    return;
-  }
   if (changedIds.length > 0) {
     selectedIds = [ ...changedIds ];
     await Promise.all([
@@ -1115,7 +1118,6 @@ async function openCopy() {
     return;
   }
   const {
-    type,
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("复制"),
@@ -1126,9 +1128,6 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
-  if (type === "cancel") {
-    return;
-  }
   if (changedIds.length > 0) {
     selectedIds = [ ...changedIds ];
     await Promise.all([
@@ -1256,7 +1255,6 @@ async function openEdit() {
     return;
   }
   const {
-    type,
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("修改"),
@@ -1267,9 +1265,6 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
-  if (type === "cancel") {
-    return;
-  }
   if (changedIds.length > 0) {
     await Promise.all([
       dataGrid(),
@@ -1446,7 +1441,7 @@ async function initFrame() {
   }
   await Promise.all([
     initI18nsEfc(),
-    searchClk(),
+    dataGrid(true),
   ]);
   if (tableData.length === 1) {
     await nextTick();
@@ -1462,7 +1457,7 @@ watch(
       ...search,
       ...builtInSearch,
     };
-    await searchClk();
+    await dataGrid(true);
   },
   {
     deep: true,
@@ -1474,6 +1469,6 @@ usrStore.onLogin(initFrame);
 initFrame();
 
 defineExpose({
-  refresh: searchClk,
+  refresh: refreshClk,
 });
 </script>

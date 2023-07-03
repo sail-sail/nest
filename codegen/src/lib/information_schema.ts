@@ -6,11 +6,11 @@ import config, { TableCloumn, TablesConfigItem } from "../config";
 import { isEmpty } from "./StringUitl";
 
 export class Context {
-  pool: PoolConnection;
+  pool: Pool;
   conn: PoolConnection;
 }
 
-function getPool(): PoolConnection {
+function getPool(): Pool {
   const db = nestConfig.database;
   console.log({
     host: db.host,

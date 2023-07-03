@@ -195,7 +195,7 @@
     
       <el-button
         plain
-        @click="searchClk"
+        @click="refreshClk"
       >
         <template #icon>
           <ElIconRefresh />
@@ -546,6 +546,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "refresh",
   "beforeSearchReset",
 ]);
 
@@ -564,11 +565,17 @@ let search = $ref(initSearch());
 /** 回收站 */
 async function recycleChg() {
   selectedIds = [ ];
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 搜索 */
 async function searchClk() {
+  await dataGrid(true);
+}
+
+/** 刷新 */
+async function refreshClk() {
+  emit("refresh");
   await dataGrid(true);
 }
 
@@ -578,12 +585,12 @@ async function searchReset() {
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 点击已选择 */
@@ -1102,7 +1109,7 @@ async function initFrame() {
   }
   await Promise.all([
     initI18nsEfc(),
-    searchClk(),
+    dataGrid(true),
   ]);
   if (tableData.length === 1) {
     await nextTick();
@@ -1118,7 +1125,7 @@ watch(
       ...search,
       ...builtInSearch,
     };
-    await searchClk();
+    await dataGrid(true);
   },
   {
     deep: true,
@@ -1130,6 +1137,6 @@ usrStore.onLogin(initFrame);
 initFrame();
 
 defineExpose({
-  refresh: searchClk,
+  refresh: refreshClk,
 });
 </script>

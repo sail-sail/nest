@@ -261,6 +261,7 @@ export default defineConfig({
         COLUMN_NAME: "type",
         search: true,
         width: 100,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "parent_id",
@@ -279,13 +280,16 @@ export default defineConfig({
             order: "ascending",
           },
         },
+        align: "left",
+        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
+        width: 160,
         require: true,
         search: true,
         align: "left",
-        width: 160,
+        fixed: "left",
       },
       {
         COLUMN_NAME: "route_path",

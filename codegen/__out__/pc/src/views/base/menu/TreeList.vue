@@ -62,6 +62,11 @@
       :show-build-in="'1'"
       v-bind="$attrs"
       :parent_id="parent_id"
+      @add="findTreeEfc"
+      @edit="findTreeEfc"
+      @remove="findTreeEfc"
+      @revert="findTreeEfc"
+      @refresh="findTreeEfc"
       @before-search-reset="beforeSearchReset"
     ></List>
   </div>
@@ -100,10 +105,11 @@ let parent_id = $ref(props.parent_id);
 
 watch(
   () => props.parent_id,
-  () => {
+  async () => {
     parent_id = props.parent_id;
+    treeRef?.setCurrentKey(parent_id);
     if (parent_id) {
-      listRef?.refresh?.();
+      await listRef?.refresh?.();
     }
   },
   {
@@ -152,8 +158,30 @@ function nodeClass(data: TreeNodeData, _: any): string {
   return "";
 }
 
+function getById(
+  id: string,
+  data: MenuModelTree[],
+): MenuModelTree | undefined {
+  for (const item of data) {
+    if (item.id === id) {
+      return item;
+    }
+    const node = getById(id, item.children || [ ]);
+    if (node) {
+      return node;
+    }
+  }
+  return;
+}
+
 async function findTreeEfc() {
   treeData = await findTree();
+  if (parent_id) {
+    const node = getById(parent_id, treeData);
+    if (!node) {
+      parent_id = "";
+    }
+  }
 }
 
 async function nodeClk(model: MenuModelTree) {
@@ -166,8 +194,11 @@ function beforeSearchReset() {
   treeRef?.setCurrentKey(undefined);
 }
 
-async function refresh() {
-  await listRef?.refresh?.();
+async function refreshClk() {
+  await Promise.all([
+    listRef?.refresh?.(),
+    findTreeEfc(),
+  ]);
 }
 
 async function initFrame() {
@@ -178,6 +209,6 @@ async function initFrame() {
 initFrame();
 
 defineExpose({
-  refresh,
+  refresh: refreshClk,
 });
 </script>
