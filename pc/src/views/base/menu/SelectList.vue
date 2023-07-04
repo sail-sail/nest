@@ -21,7 +21,7 @@
   >
     <el-button
       plain
-      @click="cancelClk"
+      @click="closeClk"
     >
       <template #icon>
         <ElIconCircleClose />
@@ -131,7 +131,7 @@ async function saveClk() {
 }
 
 /** 点击取消关闭按钮 */
-async function cancelClk() {
+async function closeClk() {
   onCloseResolve({
     type: "cancel",
     selectedIds,

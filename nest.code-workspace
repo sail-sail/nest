@@ -24,11 +24,7 @@
     "deno.lint": true,
     "deno.unstable": true,
     "deno.importMap": "./import_map.json",
-    "unocss.root": "pc",
-    "terminal.integrated.confirmOnKill": "never",
-    "terminal.integrated.env.windows": {
-      "VUE_EDITOR": "code"
-    },
+    "unocss.root": "",
     "unocss.colorPreview": false,
     "volar.updateImportsOnFileMove.enabled": false,
     "volar.codeLens.references": false,

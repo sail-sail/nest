@@ -34,5 +34,10 @@
     "**/*.ts",
     "**/*.d.ts",
     "**/*.vue"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.ts"
   ]
 }

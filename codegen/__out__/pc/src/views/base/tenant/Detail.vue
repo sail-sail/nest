@@ -176,12 +176,12 @@
       
       <el-button
         plain
-        @click="cancelClk"
+        @click="closeClk"
       >
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('取消') }}</span>
+        <span>{{ n('关闭') }}</span>
       </el-button>
       
       <el-button
@@ -559,7 +559,7 @@ async function saveClk() {
 }
 
 /** 点击取消关闭按钮 */
-function cancelClk() {
+function closeClk() {
   onCloseResolve({
     type: "cancel",
     changedIds,

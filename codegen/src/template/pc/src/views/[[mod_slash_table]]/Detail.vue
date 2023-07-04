@@ -412,12 +412,12 @@ for (let i = 0; i < columns.length; i++) {
       
       <el-button
         plain
-        @click="cancelClk"
+        @click="closeClk"
       >
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('取消') }}</span>
+        <span>{{ n('关闭') }}</span>
       </el-button><#
       if (opts.noAdd !== true || opts.noEdit !== true) {
       #>
@@ -1081,7 +1081,7 @@ watch(
 #>
 
 /** 点击取消关闭按钮 */
-function cancelClk() {
+function closeClk() {
   onCloseResolve({
     type: "cancel",
     changedIds,

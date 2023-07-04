@@ -2,7 +2,6 @@
 <ElSelectV2
   :options="options4SelectV2"
   filterable
-  clearable
   collapse-tags
   collapse-tags-tooltip
   default-first-option
@@ -10,15 +9,18 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
-  :model-value="modelValue"
+  :model-value="modelValue ? modelValue : undefined"
   @update:model-value="modelValueUpdate"
   @clear="clearClk"
+  un-w="full"
   v-bind="$attrs"
   @keyup.enter.stop
   :loading="!inited"
   class="custom_select"
   @change="valueChg"
   :multiple="props.multiple"
+  :clearable="!props.disabled"
+  :disabled="props.disabled"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -65,6 +67,7 @@ const props = withDefaults(
     maxWidth?: number;
     multiple?: boolean;
     init?: boolean;
+    disabled?: boolean;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -82,15 +85,11 @@ const props = withDefaults(
     maxWidth: 550,
     multiple: false,
     init: true,
+    disabled: undefined,
   },
 );
 
 let modelValue = $ref(props.modelValue);
-
-function modelValueUpdate(value?: string | string[] | null) {
-  modelValue = value;
-  emit("update:modelValue", modelValue);
-}
 
 watch(
   () => props.modelValue,
@@ -99,9 +98,19 @@ watch(
   },
 );
 
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
+function modelValueUpdate(value?: string | string[] | null) {
+  modelValue = value;
+}
+
 function clearClk() {
   modelValue = "";
-  emit("update:modelValue", modelValue);
   emit("clear");
 }
 
