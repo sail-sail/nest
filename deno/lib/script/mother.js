@@ -28,6 +28,7 @@ function watchFn() {
     pjPath,
     {
       ignored: [
+        `${ pjPath }/.vscode/**`,
         `${ pjPath }/**/node_modules/**`,
         `${ pjPath }/**/package.json`,
         `${ pjPath }/**/*.xlsx`,
@@ -36,7 +37,7 @@ function watchFn() {
         `${ pjPath }/lib/script/**`,
         `${ pjPath }/tmp/**`,
         `${ pjPath }/typings/**`,
-        `${ pjPath }/gen/types.ts`,
+        `${ pjPath }/**/types.ts`,
         `${ pjPath }/.eslintrc.js`,
         `${ pjPath }/.gitignore`,
         `${ pjPath }/*.diff`,

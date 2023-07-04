@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -34,7 +34,6 @@
           <el-form-item
             :label="n('类型')"
             prop="type"
-            un-h="full"
           >
             <DictSelect
               :set="dialogModel.type = dialogModel.type ?? undefined"
@@ -50,7 +49,6 @@
           <el-form-item
             :label="n('父菜单')"
             prop="parent_id"
-            un-h="full"
           >
             <CustomTreeSelect
               v-model="dialogModel.parent_id"
@@ -74,7 +72,6 @@
           <el-form-item
             :label="n('名称')"
             prop="lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -89,7 +86,6 @@
           <el-form-item
             :label="n('路由')"
             prop="route_path"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.route_path"
@@ -104,7 +100,6 @@
           <el-form-item
             :label="n('参数')"
             prop="route_query"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.route_query"
@@ -119,7 +114,6 @@
           <el-form-item
             :label="n('所在租户')"
             prop="tenant_ids"
-            un-h="full"
           >
             <CustomSelect
               :set="dialogModel.tenant_ids = dialogModel.tenant_ids ?? [ ]"
@@ -142,7 +136,6 @@
           <el-form-item
             :label="n('排序')"
             prop="order_by"
-            un-h="full"
           >
             <el-input-number
               :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
@@ -163,7 +156,6 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

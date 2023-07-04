@@ -1,5 +1,6 @@
 <template>
 <ElSelectV2
+  v-if="readonly !== true"
   :options="options4SelectV2"
   filterable
   collapse-tags
@@ -21,6 +22,7 @@
   :multiple="props.multiple"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  :readonly="props.readonly"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -30,6 +32,43 @@
     <slot :name="key"></slot>
   </template>
 </ElSelectV2>
+<template
+  v-else
+>
+  <div
+    v-if="props.multiple"
+    un-flex="~ gap-1 wrap"
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="y-1.5 x-2.75"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    <el-tag
+      v-for="label in modelLabels"
+      :key="label"
+      type="info"
+    >
+      {{ label }}
+    </el-tag>
+  </div>
+  <div
+    v-else
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="x-2.75"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    {{ modelLabels[0] || "" }}
+  </div>
+</template>
 </template>
 
 <script lang="ts" setup>
@@ -68,6 +107,7 @@ const props = withDefaults(
     multiple?: boolean;
     init?: boolean;
     disabled?: boolean;
+    readonly?: boolean;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -86,6 +126,7 @@ const props = withDefaults(
     multiple: false,
     init: true,
     disabled: undefined,
+    readonly: undefined,
   },
 );
 
@@ -108,6 +149,29 @@ watch(
 function modelValueUpdate(value?: string | string[] | null) {
   modelValue = value;
 }
+
+const modelLabels = $computed(() => {
+  if (!modelValue) {
+    return "";
+  }
+  if (!props.multiple) {
+    const model = data.find((item) => props.optionsMap(item).value === modelValue);
+    if (!model) {
+      return "";
+    }
+    return [ props.optionsMap(model).label || "" ];
+  }
+  let labels: string[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const model = data.find((item) => props.optionsMap(item).value === value);
+    if (!model) {
+      continue;
+    }
+    labels.push(props.optionsMap(model).label || "");
+  }
+  return labels;
+});
 
 function clearClk() {
   modelValue = "";

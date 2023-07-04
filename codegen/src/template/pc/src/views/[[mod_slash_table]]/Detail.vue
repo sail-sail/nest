@@ -56,14 +56,14 @@ for (let i = 0; i < columns.length; i++) {
           if (columnNum > 4) {
         #>
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center<#
           } else {
         #>
         
-        un-grid="~ rows-[auto] cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center<#
@@ -141,7 +141,6 @@ for (let i = 0; i < columns.length; i++) {
             un-grid="col-span-2"<#
             }
             #>
-            un-h="full"
           ><#
             if (column.isImg) {
             #>

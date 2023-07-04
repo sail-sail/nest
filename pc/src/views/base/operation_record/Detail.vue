@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -33,7 +33,6 @@
           <el-form-item
             :label="n('模块')"
             prop="module"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.module"
@@ -48,7 +47,6 @@
           <el-form-item
             :label="n('模块名称')"
             prop="module_lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.module_lbl"
@@ -63,7 +61,6 @@
           <el-form-item
             :label="n('方法')"
             prop="method"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.method"
@@ -78,7 +75,6 @@
           <el-form-item
             :label="n('方法名称')"
             prop="method_lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.method_lbl"
@@ -93,7 +89,6 @@
           <el-form-item
             :label="n('操作')"
             prop="lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -108,7 +103,6 @@
           <el-form-item
             :label="n('操作前数据')"
             prop="old_data"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.old_data"
@@ -123,7 +117,6 @@
           <el-form-item
             :label="n('操作后数据')"
             prop="new_data"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.new_data"
@@ -139,7 +132,6 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

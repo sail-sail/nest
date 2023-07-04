@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -34,7 +34,6 @@
           <el-form-item
             :label="n('名称')"
             prop="lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -49,7 +48,6 @@
           <el-form-item
             :label="n('用户名')"
             prop="username"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.username"
@@ -64,7 +62,6 @@
           <el-form-item
             :label="n('密码')"
             prop="password"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.password"
@@ -79,7 +76,6 @@
           <el-form-item
             :label="n('默认部门')"
             prop="default_dept_id"
-            un-h="full"
           >
             <CustomSelect
               ref="default_dept_idRef"
@@ -103,7 +99,6 @@
           <el-form-item
             :label="n('拥有部门')"
             prop="dept_ids"
-            un-h="full"
           >
             <CustomTreeSelect
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
@@ -129,7 +124,6 @@
           <el-form-item
             :label="n('拥有角色')"
             prop="role_ids"
-            un-h="full"
           >
             <CustomSelect
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
@@ -153,7 +147,6 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

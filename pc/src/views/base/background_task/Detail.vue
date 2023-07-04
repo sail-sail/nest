@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -33,7 +33,6 @@
           <el-form-item
             :label="n('名称')"
             prop="lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -48,7 +47,6 @@
           <el-form-item
             :label="n('状态')"
             prop="state"
-            un-h="full"
           >
             <DictSelect
               :set="dialogModel.state = dialogModel.state ?? undefined"
@@ -64,7 +62,6 @@
           <el-form-item
             :label="n('类型')"
             prop="type"
-            un-h="full"
           >
             <DictSelect
               :set="dialogModel.type = dialogModel.type ?? undefined"
@@ -80,7 +77,6 @@
           <el-form-item
             :label="n('执行结果')"
             prop="result"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.result"
@@ -95,7 +91,6 @@
           <el-form-item
             :label="n('错误信息')"
             prop="err_msg"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.err_msg"
@@ -110,7 +105,6 @@
           <el-form-item
             :label="n('开始时间')"
             prop="begin_time"
-            un-h="full"
           >
             <el-date-picker
               :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
@@ -127,7 +121,6 @@
           <el-form-item
             :label="n('结束时间')"
             prop="end_time"
-            un-h="full"
           >
             <el-date-picker
               :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
@@ -145,7 +138,6 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

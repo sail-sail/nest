@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -34,7 +34,6 @@
           <el-form-item
             :label="n('编码')"
             prop="code"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.code"
@@ -49,7 +48,6 @@
           <el-form-item
             :label="n('名称')"
             prop="lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -64,7 +62,6 @@
           <el-form-item
             :label="n('数据类型')"
             prop="type"
-            un-h="full"
           >
             <DictSelect
               :set="dialogModel.type = dialogModel.type ?? undefined"
@@ -80,7 +77,6 @@
           <el-form-item
             :label="n('排序')"
             prop="order_by"
-            un-h="full"
           >
             <el-input-number
               :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
@@ -101,7 +97,6 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"

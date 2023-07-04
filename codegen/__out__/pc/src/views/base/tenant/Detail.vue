@@ -19,7 +19,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -34,7 +34,6 @@
           <el-form-item
             :label="n('名称')"
             prop="lbl"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.lbl"
@@ -49,7 +48,6 @@
           <el-form-item
             :label="n('所属域名')"
             prop="domain_ids"
-            un-h="full"
           >
             <CustomSelect
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
@@ -72,7 +70,6 @@
           <el-form-item
             :label="n('租户管理员')"
             prop="usr_id"
-            un-h="full"
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
@@ -93,7 +90,6 @@
           <el-form-item
             :label="n('到期日')"
             prop="expiration"
-            un-h="full"
           >
             <el-date-picker
               :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
@@ -110,7 +106,6 @@
           <el-form-item
             :label="n('最大用户数')"
             prop="max_usr_num"
-            un-h="full"
           >
             <el-input-number
               :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
@@ -130,7 +125,6 @@
           <el-form-item
             :label="n('排序')"
             prop="order_by"
-            un-h="full"
           >
             <el-input-number
               :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
@@ -151,7 +145,6 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
             <el-input
               v-model="dialogModel.rem"
