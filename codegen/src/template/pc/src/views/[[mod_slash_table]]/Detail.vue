@@ -308,15 +308,13 @@ for (let i = 0; i < columns.length; i++) {
             ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
-            <el-checkbox
-              :set="0"
-              un-w="full"
+            <CustomCheckbox
               v-model="dialogModel.<#=column_name#>"
-              :false-label="0"
-              :true-label="1"
+              :true-readonly-label="`${ ns('是') }`"
+              :false-readonly-label="`${ ns('否') }`"
             >
               <#=column_comment#>
-            </el-checkbox><#
+            </CustomCheckbox><#
             } else if (column_type.startsWith("int")) {
             #>
             <CustomInputNumber
@@ -337,10 +335,8 @@ for (let i = 0; i < columns.length; i++) {
               }
               let min = column.min;
             #>
-            <el-input-number
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
-              un-w="full"
               :max="<#=max#>"<#
                 if (min) {
               #>
@@ -348,11 +344,8 @@ for (let i = 0; i < columns.length; i++) {
                 }
               #>
               :precision="<#=precision#>"
-              :step="1"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :clearable="true"
-            ></el-input-number><#
+            ></CustomInputNumber><#
             } else {
             #>
             <CustomInput

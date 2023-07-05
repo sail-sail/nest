@@ -22,6 +22,7 @@
   :disabled="props.disabled"
   :readonly="props.readonly"
   @keyup.enter.stop
+  @change="valueChg"
 >
   <!--传递插槽-->
   <template
@@ -144,12 +145,26 @@ watch(
   },
 );
 
-watch(
-  () => modelValue,
-  () => {
-    emit("update:modelValue", modelValue);
-  },
-);
+function valueChg() {
+  emit("update:modelValue", modelValue);
+  if (!props.multiple) {
+    const model = dictModels.find((item) => props.optionsMap(item).value === modelValue);
+    emit("change", model);
+    return;
+  }
+  let models: DictModel[] = [ ];
+  let modelValues: string[] = [ ];
+  if (Array.isArray(modelValue)) {
+    modelValues = modelValue;
+  } else {
+    modelValues = modelValue?.split(",") || [ ];
+  }
+  for (const value of modelValues) {
+    const model = dictModels.find((item) => props.optionsMap(item).value === value)!;
+    models.push(model);
+  }
+  emit("change", models);
+}
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
@@ -229,6 +244,7 @@ const modelLabels = $computed(() => {
 
 function clearClk() {
   modelValue = "";
+  emit("update:modelValue", modelValue);
   emit("clear");
 }
 

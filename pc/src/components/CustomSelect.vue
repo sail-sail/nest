@@ -145,15 +145,9 @@ watch(
   },
 );
 
-watch(
-  () => modelValue,
-  () => {
-    emit("update:modelValue", modelValue);
-  },
-);
-
 function modelValueUpdate(value?: string | string[] | null) {
   modelValue = value;
+  emit("update:modelValue", value);
 }
 
 const modelLabels = $computed(() => {
@@ -181,6 +175,7 @@ const modelLabels = $computed(() => {
 
 function clearClk() {
   modelValue = "";
+  emit("update:modelValue", modelValue);
   emit("clear");
 }
 
@@ -285,16 +280,21 @@ async function refreshEfc() {
   inited = true;
 }
 
-function valueChg(value: string | string[] | null) {
+function valueChg() {
   if (!props.multiple) {
-    const model = data.find((item) => props.optionsMap(item).value === value);
+    const model = data.find((item) => props.optionsMap(item).value === modelValue);
     emit("change", model);
     return;
   }
   let models: any[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  let modelValues: string[] = [ ];
+  if (Array.isArray(modelValue)) {
+    modelValues = modelValue;
+  } else {
+    modelValues = modelValue?.split(",") || [ ];
+  }
   for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === value);
+    const model = data.find((item) => props.optionsMap(item).value === modelValue)!;
     models.push(model);
   }
   emit("change", models);

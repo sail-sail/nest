@@ -11,6 +11,7 @@
   v-model="modelValue"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  @change="valueChg"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -23,21 +24,35 @@
 <template
   v-else
 >
-  <div
-    un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
-    un-box-border
-    un-rounded
-    un-m="l-1"
-    un-w="full"
-    un-min="h-8"
-    un-line-height="normal"
-    un-break-words
-    class="custom_select_readonly"
-    v-bind="$attrs"
+  <template
+    v-if="props.readonlyBorder === true"
   >
-    {{ modelValue ?? "" }}
-  </div>
+    <div
+      un-b="1 solid [var(--el-border-color)]"
+      un-p="x-2.75 y-1"
+      un-box-border
+      un-rounded
+      un-m="l-1"
+      un-w="full"
+      un-min="h-8"
+      un-line-height="normal"
+      un-break-words
+      class="custom_input_number_readonly"
+      v-bind="$attrs"
+    >
+      {{ modelValue ?? "" }}
+    </div>
+  </template>
+  <template
+    v-else
+  >
+    <div
+      class="custom_input_number_readonly readonly_border_none"
+      v-bind="$attrs"
+    >
+      {{ modelValue ?? "" }}
+    </div>
+  </template>
 </template>
 </template>
 
@@ -58,6 +73,7 @@ const props = withDefaults(
     controls?: boolean;
     disabled?: boolean;
     readonly?: boolean;
+    readonlyBorder?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -67,6 +83,7 @@ const props = withDefaults(
     controls: false,
     disabled: undefined,
     readonly: undefined,
+    readonlyBorder: true,
   },
 );
 
@@ -79,10 +96,8 @@ watch(
   },
 );
 
-watch(
-  () => modelValue,
-  () => {
-    emit("update:modelValue", modelValue);
-  },
-);
+function valueChg() {
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
+}
 </script>

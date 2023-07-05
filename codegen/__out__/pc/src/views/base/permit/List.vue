@@ -453,13 +453,11 @@
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_visible"
-                  :active-value="1"
-                  :inactive-value="0"
                   @change="is_visibleChg(row.id, row.is_visible)"
-                ></el-switch>
+                ></CustomSwitch>
               </template>
             </el-table-column>
           </template>

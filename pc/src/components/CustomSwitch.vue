@@ -1,14 +1,15 @@
 <template>
-<el-input
+<el-switch
   v-if="readonly !== true"
-  class="custom_input"
+  class="custom_switch"
   un-w="full"
+  :set="0"
   v-bind="$attrs"
+  :active-value="props.activeValue"
+  :inactive-value="props.inactiveValue"
   v-model="modelValue"
-  :clearable="!props.disabled"
   :disabled="props.disabled"
   @change="valueChg"
-  @clear="clearClk"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -17,34 +18,28 @@
   >
     <slot :name="key"></slot>
   </template>
-</el-input>
+</el-switch>
 <template
   v-else
 >
   <div
-    un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
-    un-box-border
-    un-rounded
-    un-m="l-1"
-    un-w="full"
-    un-min="h-8"
-    un-line-height="normal"
-    un-break-words
-    class="custom_select_readonly"
+    class="custom_switch_readonly"
     v-bind="$attrs"
   >
-    {{ modelValue ?? "" }}
+    {{ modelLabel }}
   </div>
 </template>
 </template>
 
 <script lang="ts" setup>
+const {
+  ns,
+  initSysI18ns,
+} = useI18n("/base/usr");
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
   (e: "change", value?: any): void,
-  (e: "clear"): void,
 }>();
 
 const props = withDefaults(
@@ -52,11 +47,21 @@ const props = withDefaults(
     modelValue?: any;
     disabled?: boolean;
     readonly?: boolean;
+    activeValue?: any;
+    inactiveValue?: any;
+    trueReadonlyLabel?: string;
+    falseReadonlyLabel?: string;
+    notBorder?: boolean;
   }>(),
   {
     modelValue: undefined,
     disabled: undefined,
     readonly: undefined,
+    activeValue: 1,
+    inactiveValue: 0,
+    trueReadonlyLabel: "是",
+    falseReadonlyLabel: "否",
+    notBorder: undefined,
   },
 );
 
@@ -74,9 +79,23 @@ function valueChg() {
   emit("change", modelValue);
 }
 
-function clearClk() {
-  modelValue = "";
-  emit("update:modelValue", modelValue);
-  emit("clear");
+let modelLabel = $computed(() => {
+  if (modelValue == 1) {
+    return props.trueReadonlyLabel || ns("是");
+  }
+  if (modelValue == 0) {
+    return props.falseReadonlyLabel || ns("否");
+  }
+  return modelValue ?? "";
+});
+
+async function initFrame() {
+  const codes = [
+    "是",
+    "否",
+  ];
+  await initSysI18ns(codes);
 }
+
+initFrame();
 </script>

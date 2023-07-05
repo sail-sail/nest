@@ -381,14 +381,12 @@
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_default"
-                  :active-value="1"
-                  :inactive-value="0"
                   :before-change="() => row.is_default == 0"
                   @change="is_defaultChg(row.id)"
-                ></el-switch>
+                ></CustomSwitch>
               </template>
             </el-table-column>
           </template>
@@ -400,13 +398,11 @@
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_enabled"
-                  :active-value="1"
-                  :inactive-value="0"
                   @change="is_enabledChg(row.id, row.is_enabled)"
-                ></el-switch>
+                ></CustomSwitch>
               </template>
             </el-table-column>
           </template>
@@ -418,16 +414,12 @@
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-input-number
+                <CustomInputNumber
                   v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.order_by"
                   :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
+                ></CustomInputNumber>
               </template>
             </el-table-column>
           </template>

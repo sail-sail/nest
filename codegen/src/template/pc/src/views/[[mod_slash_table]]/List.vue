@@ -703,7 +703,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-input-number
+                <CustomInputNumber
                   v-if="permit('edit')<#
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
@@ -711,12 +711,8 @@ const hasAtt = columns.some((item) => item.isAtt);
                   #> && row.is_deleted !== 1"
                   v-model="row.order_by"
                   :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
+                ></CustomInputNumber>
               </template>
             </el-table-column>
           </template><#
@@ -760,33 +756,29 @@ const hasAtt = columns.some((item) => item.isAtt);
               } else if(column.isSwitch && opts.noEdit !== true && column_name === "is_default") {
               #>
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit')<#
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
                   #> && row.is_deleted !== 1"
                   v-model="row.<#=column_name#>"
-                  :active-value="1"
-                  :inactive-value="0"
                   :before-change="() => row.<#=column_name#> == 0"
                   @change="<#=column_name#>Chg(row.id)"
-                ></el-switch>
+                ></CustomSwitch>
               </template><#
               } else if(column.isSwitch && opts.noEdit !== true) {
               #>
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit')<#
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }
                   #> && row.is_deleted !== 1"
                   v-model="row.<#=column_name#>"
-                  :active-value="1"
-                  :inactive-value="0"
                   @change="<#=column_name#>Chg(row.id, row.<#=column_name#>)"
-                ></el-switch>
+                ></CustomSwitch>
               </template><#
               }
               #>

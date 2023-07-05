@@ -476,13 +476,11 @@
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit') && row.is_deleted !== 1"
                   v-model="row.is_locked"
-                  :active-value="1"
-                  :inactive-value="0"
                   @change="is_lockedChg(row.id, row.is_locked)"
-                ></el-switch>
+                ></CustomSwitch>
               </template>
             </el-table-column>
           </template>
@@ -494,13 +492,11 @@
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
                   v-model="row.is_enabled"
-                  :active-value="1"
-                  :inactive-value="0"
                   @change="is_enabledChg(row.id, row.is_enabled)"
-                ></el-switch>
+                ></CustomSwitch>
               </template>
             </el-table-column>
           </template>

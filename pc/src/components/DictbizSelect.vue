@@ -22,6 +22,7 @@
   :disabled="props.disabled"
   :readonly="props.readonly"
   @keyup.enter.stop
+  @change="valueChg"
 >
   <!--传递插槽-->
   <template
@@ -144,12 +145,10 @@ watch(
   },
 );
 
-watch(
-  () => modelValue,
-  () => {
-    emit("update:modelValue", modelValue);
-  },
-);
+function valueChg() {
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
+}
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
@@ -229,6 +228,8 @@ const modelLabels = $computed(() => {
 
 function clearClk() {
   modelValue = "";
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
   emit("clear");
 }
 

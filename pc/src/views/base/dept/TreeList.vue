@@ -104,6 +104,8 @@ let listRef = $ref<InstanceType<typeof List>>();
 
 let parent_id = $ref(props.parent_id);
 
+let treeRef = $ref<InstanceType<typeof ElTree>>();
+
 watch(
   () => props.parent_id,
   async () => {
@@ -117,8 +119,6 @@ watch(
     immediate: true,
   },
 );
-
-let treeRef = $ref<InstanceType<typeof ElTree>>();
 
 let treeData = $ref<Awaited<ReturnType<typeof findTree>>>([ ]);
 
