@@ -61,17 +61,10 @@
             :label="n('排序')"
             prop="order_by"
           >
-            <el-input-number
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.order_by"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
-              :clearable="true"
-            ></el-input-number>
+            ></CustomInputNumber>
           </el-form-item>
         </template>
         

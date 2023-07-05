@@ -1,8 +1,12 @@
 <template>
-<el-input
+<el-input-number
   v-if="readonly !== true"
-  class="custom_input"
   un-w="full"
+  class="custom_input_number"
+  :precision="props.precision"
+  :step="props.step"
+  :step-strictly="props.stepStrictly"
+  :controls="props.controls"
   v-bind="$attrs"
   v-model="modelValue"
   :clearable="!props.disabled"
@@ -15,7 +19,7 @@
   >
     <slot :name="key"></slot>
   </template>
-</el-input>
+</el-input-number>
 <template
   v-else
 >
@@ -48,11 +52,19 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     modelValue?: any;
+    precision?: number;
+    step?: number;
+    stepStrictly?: boolean;
+    controls?: boolean;
     disabled?: boolean;
     readonly?: boolean;
   }>(),
   {
     modelValue: undefined,
+    precision: 0,
+    step: 1,
+    stepStrictly: false,
+    controls: false,
     disabled: undefined,
     readonly: undefined,
   },

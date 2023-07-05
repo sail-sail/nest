@@ -87,14 +87,12 @@
             :label="n('到期日')"
             prop="expiration"
           >
-            <el-date-picker
-              :set="dialogModel.expiration = dialogModel.expiration ?? undefined"
+            <CustomDatePicker
               v-model="dialogModel.expiration"
-              un-w="full"
               type="date"
               format="YYYY-MM-DD"
               :placeholder="`${ ns('请选择') } ${ n('到期日') }`"
-            ></el-date-picker>
+            ></CustomDatePicker>
           </el-form-item>
         </template>
         
@@ -103,17 +101,10 @@
             :label="n('最大用户数')"
             prop="max_usr_num"
           >
-            <el-input-number
-              :set="dialogModel.max_usr_num = dialogModel.max_usr_num ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.max_usr_num"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('最大用户数') }`"
-              :clearable="true"
-            ></el-input-number>
+            ></CustomInputNumber>
           </el-form-item>
         </template>
         
@@ -122,17 +113,10 @@
             :label="n('排序')"
             prop="order_by"
           >
-            <el-input-number
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.order_by"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
-              :clearable="true"
-            ></el-input-number>
+            ></CustomInputNumber>
           </el-form-item>
         </template>
         

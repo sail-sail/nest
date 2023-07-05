@@ -1,7 +1,7 @@
 <template>
-<el-input
+<el-date-picker
   v-if="readonly !== true"
-  class="custom_input"
+  class="custom_date_picker"
   un-w="full"
   v-bind="$attrs"
   v-model="modelValue"
@@ -15,7 +15,7 @@
   >
     <slot :name="key"></slot>
   </template>
-</el-input>
+</el-date-picker>
 <template
   v-else
 >
@@ -32,7 +32,7 @@
     class="custom_select_readonly"
     v-bind="$attrs"
   >
-    {{ modelValue ?? "" }}
+    {{ modelLabel }}
   </div>
 </template>
 </template>
@@ -48,11 +48,13 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     modelValue?: any;
+    format?: string;
     disabled?: boolean;
     readonly?: boolean;
   }>(),
   {
     modelValue: undefined,
+    format: "YYYY-MM-DD",
     disabled: undefined,
     readonly: undefined,
   },
@@ -73,4 +75,11 @@ watch(
     emit("update:modelValue", modelValue);
   },
 );
+
+let modelLabel = $computed(() => {
+  if (modelValue) {
+    return dayjs(modelValue).format(props.format ?? "YYYY-MM-DD");
+  }
+  return "";
+});
 </script>

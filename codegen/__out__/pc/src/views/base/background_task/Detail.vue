@@ -98,14 +98,12 @@
             :label="n('开始时间')"
             prop="begin_time"
           >
-            <el-date-picker
-              :set="dialogModel.begin_time = dialogModel.begin_time ?? undefined"
+            <CustomDatePicker
               v-model="dialogModel.begin_time"
-              un-w="full"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
-            ></el-date-picker>
+            ></CustomDatePicker>
           </el-form-item>
         </template>
         
@@ -114,14 +112,12 @@
             :label="n('结束时间')"
             prop="end_time"
           >
-            <el-date-picker
-              :set="dialogModel.end_time = dialogModel.end_time ?? undefined"
+            <CustomDatePicker
               v-model="dialogModel.end_time"
-              un-w="full"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
-            ></el-date-picker>
+            ></CustomDatePicker>
           </el-form-item>
         </template>
         

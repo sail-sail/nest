@@ -292,22 +292,20 @@ for (let i = 0; i < columns.length; i++) {
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
-            <el-date-picker
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"
-              un-w="full"<#
-                if (data_type === "datetime") {
+            <CustomDatePicker
+              v-model="dialogModel.<#=column_name#>"<#
+              if (data_type === "datetime") {
               #>
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"<#
-                } else if (data_type === "date") {
+              } else if (data_type === "date") {
               #>
               type="date"
               format="YYYY-MM-DD"<#
-                }
+              }
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            ></el-date-picker><#
+            ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
             <el-checkbox
@@ -321,17 +319,10 @@ for (let i = 0; i < columns.length; i++) {
             </el-checkbox><#
             } else if (column_type.startsWith("int")) {
             #>
-            <el-input-number
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :clearable="true"
-            ></el-input-number><#
+            ></CustomInputNumber><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
               let precision = Number(arr[1]);
