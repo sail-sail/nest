@@ -35,12 +35,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -59,7 +57,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('所属域名') }`"
               multiple
             ></CustomSelect>
@@ -80,7 +77,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('租户管理员') }`"
             ></CustomSelect>
           </el-form-item>
@@ -146,15 +142,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

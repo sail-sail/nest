@@ -34,12 +34,10 @@
             :label="n('模块')"
             prop="module"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.module"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('模块') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -48,12 +46,10 @@
             :label="n('模块名称')"
             prop="module_lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.module_lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -62,12 +58,10 @@
             :label="n('方法')"
             prop="method"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.method"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('方法') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -76,12 +70,10 @@
             :label="n('方法名称')"
             prop="method_lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.method_lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -90,12 +82,10 @@
             :label="n('操作')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('操作') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -104,12 +94,10 @@
             :label="n('操作前数据')"
             prop="old_data"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.old_data"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -118,12 +106,10 @@
             :label="n('操作后数据')"
             prop="new_data"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.new_data"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -133,15 +119,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

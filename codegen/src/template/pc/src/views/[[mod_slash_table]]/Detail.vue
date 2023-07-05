@@ -195,7 +195,6 @@ for (let i = 0; i < columns.length; i++) {
                   value: item.<#=foreignKey.column#>,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (foreignKey.multiple) {
               #>
@@ -232,17 +231,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               v-model="dialogModel.<#=column_name#>"
               :method="get<#=Foreign_Table_Up#>Tree"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (foreignKey.lbl !== "lbl") {
+              #>
               :props="{
                 label: '<#=foreignKey.lbl#>',
                 children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node<#
+              }"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               multiple<#
@@ -283,7 +280,6 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             ></DictSelect><#
             } else if (column.dictbiz) {
@@ -292,7 +288,6 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
@@ -362,13 +357,14 @@ for (let i = 0; i < columns.length; i++) {
                 }
               #>
               :precision="<#=precision#>"
+              :step="1"
               :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
               :clearable="true"
             ></el-input-number><#
             } else {
             #>
-            <el-input
+            <CustomInput
               v-model="dialogModel.<#=column_name#>"<#
               if (column.isTextarea) {
               #>
@@ -377,10 +373,8 @@ for (let i = 0; i < columns.length; i++) {
               @keyup.enter.stop<#
               }
               #>
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :clearable="true"
-            ></el-input><#
+            ></CustomInput><#
             }
             #>
           </el-form-item><#

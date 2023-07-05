@@ -1,8 +1,8 @@
 <template>
 <ElSelectV2
+  v-if="readonly !== true"
   :options="options4SelectV2"
   filterable
-  clearable
   collapse-tags
   collapse-tags-tooltip
   default-first-option
@@ -10,9 +10,18 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
+  @clear="clearClk"
+  un-w="full"
   v-bind="$attrs"
-  @keyup.enter.stop
+  :model-value="modelValue ? modelValue : undefined"
+  @update:model-value="modelValue = $event"
   :loading="!inited"
+  class="dict_select"
+  :multiple="props.multiple"
+  :clearable="!props.disabled"
+  :disabled="props.disabled"
+  :readonly="props.readonly"
+  @keyup.enter.stop
 >
   <!--传递插槽-->
   <template
@@ -23,6 +32,49 @@
     <slot :name="key"></slot>
   </template>
 </ElSelectV2>
+<template
+  v-else
+>
+  <div
+    v-if="props.multiple"
+    un-flex="~ gap-1 wrap"
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="y-0.75 x-1.5"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    un-min="h-8"
+    un-line-height="normal"
+    un-break-words
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    <el-tag
+      v-for="label in modelLabels"
+      :key="label"
+      type="info"
+    >
+      {{ label }}
+    </el-tag>
+  </div>
+  <div
+    v-else
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="x-2.75 y-1"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    un-min="h-8"
+    un-line-height="normal"
+    un-break-words
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    {{ modelLabels[0] || "" }}
+  </div>
+</template>
 </template>
 
 <script lang="ts" setup>
@@ -40,6 +92,8 @@ export type DictModel = {
   __pinyin_label?: string;
 };
 
+const t = getCurrentInstance();
+
 type OptionsMap = (item: DictModel) => OptionType;
 
 const props = withDefaults(
@@ -48,6 +102,12 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
+    modelValue?: string | string[] | null;
+    autoWidth?: boolean;
+    maxWidth?: number;
+    multiple?: boolean;
+    disabled?: boolean;
+    readonly?: boolean;
   }>(),
   {
     optionsMap: function(item: DictModel) {
@@ -64,14 +124,113 @@ const props = withDefaults(
     },
     pinyinFilterable: true,
     height: 300,
+    modelValue: undefined,
+    autoWidth: true,
+    maxWidth: 550,
+    multiple: false,
+    disabled: undefined,
+    readonly: undefined,
   },
 );
 
 let inited = $ref(false);
 
+let modelValue = $ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  () => {
+    modelValue = props.modelValue;
+  },
+);
+
+watch(
+  () => modelValue,
+  () => {
+    emit("update:modelValue", modelValue);
+  },
+);
+
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
 
+async function refreshDropdownWidth() {
+  if (!props.autoWidth) {
+    return;
+  }
+  if (!t || !t.proxy || !t.proxy.$el) {
+    return;
+  }
+  await nextTick();
+  const el = t.proxy.$el as HTMLDivElement;
+  const wrapperEl = el.querySelector(".el-select-v2__wrapper") as HTMLDivElement;
+  const id = wrapperEl.getAttribute("aria-describedby");
+  if (!id) {
+    return;
+  }
+  const popperEl = document.getElementById(id) as HTMLDivElement | null;
+  if (!popperEl) {
+    return;
+  }
+  const optionItemEls = popperEl.querySelectorAll(".el-select-dropdown__option-item");
+  if (!optionItemEls || optionItemEls.length === 0) {
+    return;
+  }
+  const dropdownListEl = popperEl.querySelector(".el-select-dropdown__list") as HTMLDivElement | null;
+  if (!dropdownListEl) {
+    return;
+  }
+  const popperWidth = parseInt(dropdownListEl.style.width);
+  if (!popperWidth) {
+    return;
+  }
+  let maxWidth = 0;
+  for (let i = 0; i < optionItemEls.length; i++) {
+    const item = optionItemEls[i];
+    const width = item.scrollWidth;
+    if (width > maxWidth) {
+      maxWidth = width;
+    }
+  }
+  if (maxWidth > popperWidth) {
+    dropdownListEl.style.minWidth = `${ maxWidth }px`;
+  }
+}
+
 let dictModels = $ref<DictModel[]>([ ]);
+
+const emit = defineEmits<{
+  (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "change", value?: any | any[] | null): void,
+  (e: "clear"): void,
+}>();
+
+const modelLabels = $computed(() => {
+  if (!modelValue) {
+    return "";
+  }
+  if (!props.multiple) {
+    const model = dictModels.find((item) => props.optionsMap(item).value === modelValue);
+    if (!model) {
+      return "";
+    }
+    return [ props.optionsMap(model).label || "" ];
+  }
+  let labels: string[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const model = dictModels.find((item) => props.optionsMap(item).value === value);
+    if (!model) {
+      continue;
+    }
+    labels.push(props.optionsMap(model).label || "");
+  }
+  return labels;
+});
+
+function clearClk() {
+  modelValue = "";
+  emit("clear");
+}
 
 function filterMethod(value: string) {
   options4SelectV2 = dictModels.map((item) => {
@@ -89,11 +248,13 @@ function filterMethod(value: string) {
 }
 
 function handleVisibleChange(visible: boolean) {
-  if (!props.pinyinFilterable) {
-    return;
-  }
   if (visible) {
-    filterMethod("");
+    refreshDropdownWidth();
+  }
+  if (props.pinyinFilterable) {
+    if (visible) {
+      filterMethod("");
+    }
   }
 }
 

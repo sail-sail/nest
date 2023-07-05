@@ -39,7 +39,6 @@
               :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
               code="menu_type"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             ></DictSelect>
           </el-form-item>
@@ -53,17 +52,7 @@
             <CustomTreeSelect
               v-model="dialogModel.parent_id"
               :method="getMenuTree"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('父菜单') }`"
-              :props="{
-                label: 'lbl',
-                children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -73,12 +62,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -87,12 +74,10 @@
             :label="n('路由')"
             prop="route_path"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.route_path"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('路由') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -101,12 +86,10 @@
             :label="n('参数')"
             prop="route_query"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.route_query"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('参数') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -125,7 +108,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('所在租户') }`"
               multiple
             ></CustomSelect>
@@ -157,15 +139,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

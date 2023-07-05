@@ -10,12 +10,11 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
-  :model-value="modelValue ? modelValue : undefined"
-  @update:model-value="modelValueUpdate"
   @clear="clearClk"
   un-w="full"
   v-bind="$attrs"
-  @keyup.enter.stop
+  :model-value="modelValue ? modelValue : undefined"
+  @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="custom_select"
   @change="valueChg"
@@ -23,6 +22,7 @@
   :clearable="!props.disabled"
   :disabled="props.disabled"
   :readonly="props.readonly"
+  @keyup.enter.stop
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -39,11 +39,14 @@
     v-if="props.multiple"
     un-flex="~ gap-1 wrap"
     un-b="1 solid [var(--el-border-color)]"
-    un-p="y-1.5 x-2.75"
+    un-p="y-0.75 x-1.5"
     un-box-border
     un-rounded
     un-m="l-1"
     un-w="full"
+    un-min="h-7.5"
+    un-line-height="normal"
+    un-break-words
     class="custom_select_readonly"
     v-bind="$attrs"
   >
@@ -58,11 +61,14 @@
   <div
     v-else
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75"
+    un-p="x-2.75 y-1"
     un-box-border
     un-rounded
     un-m="l-1"
     un-w="full"
+    un-min="h-8"
+    un-line-height="normal"
+    un-break-words
     class="custom_select_readonly"
     v-bind="$attrs"
   >

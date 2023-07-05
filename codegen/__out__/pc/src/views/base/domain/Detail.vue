@@ -35,12 +35,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -53,7 +51,6 @@
               :set="dialogModel.is_default = dialogModel.is_default ?? undefined"
               v-model="dialogModel.is_default"
               code="is_default"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('默认') }`"
             ></DictSelect>
           </el-form-item>
@@ -84,15 +81,13 @@
             prop="rem"
             un-grid="col-span-1"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

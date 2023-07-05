@@ -34,12 +34,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -52,7 +50,6 @@
               :set="dialogModel.state = dialogModel.state ?? undefined"
               v-model="dialogModel.state"
               code="background_task_state"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('状态') }`"
             ></DictSelect>
           </el-form-item>
@@ -67,7 +64,6 @@
               :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
               code="background_task_type"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             ></DictSelect>
           </el-form-item>
@@ -78,12 +74,10 @@
             :label="n('执行结果')"
             prop="result"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.result"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('执行结果') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -92,12 +86,10 @@
             :label="n('错误信息')"
             prop="err_msg"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.err_msg"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('错误信息') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -139,15 +131,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

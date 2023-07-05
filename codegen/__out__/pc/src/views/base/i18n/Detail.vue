@@ -44,7 +44,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('语言') }`"
             ></CustomSelect>
           </el-form-item>
@@ -64,7 +63,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
             ></CustomSelect>
           </el-form-item>
@@ -75,12 +73,10 @@
             :label="n('编码')"
             prop="code"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.code"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('编码') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -89,12 +85,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -104,15 +98,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

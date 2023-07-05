@@ -35,12 +35,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -49,12 +47,10 @@
             :label="n('用户名')"
             prop="username"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.username"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -63,12 +59,10 @@
             :label="n('密码')"
             prop="password"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.password"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('密码') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -89,7 +83,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
             ></CustomSelect>
           </el-form-item>
@@ -104,17 +97,7 @@
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
               v-model="dialogModel.dept_ids"
               :method="getDeptTree"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('拥有部门') }`"
-              :props="{
-                label: 'lbl',
-                children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node
               multiple
             ></CustomTreeSelect>
           </el-form-item>
@@ -135,7 +118,6 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('拥有角色') }`"
               multiple
             ></CustomSelect>
@@ -148,15 +130,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         

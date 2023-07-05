@@ -35,12 +35,10 @@
             :label="n('名称')"
             prop="lbl"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -49,12 +47,10 @@
             :label="n('键')"
             prop="ky"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.ky"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('键') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -63,12 +59,10 @@
             :label="n('值')"
             prop="val"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.val"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('值') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -97,15 +91,13 @@
             prop="rem"
             un-grid="col-span-2"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+            ></CustomInput>
           </el-form-item>
         </template>
         
