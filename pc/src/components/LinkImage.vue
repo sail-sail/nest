@@ -1,6 +1,5 @@
 <template>
 <div
-  @click="linkClk"
   un-flex="~ gap-1"
   un-p="y-0.5"
   un-box-border
@@ -11,13 +10,18 @@
     v-if="urlList.length > 0"
   >
     <el-image
-      v-for="url in urlList"
+      v-for="(url, i) in urlList"
       :key="url"
       :src="url"
       fit="contain"
       loading="lazy"
       un-rounded
       un-object-contain
+      :preview-src-list="originalUrlList"
+      :initial-index="i"
+      :preview-teleported="true"
+      :infinite="false"
+      :hide-on-click-modal="true"
     >
       <template #placeholder>
         <div
@@ -62,14 +66,6 @@
   >
     (无)
   </div>
-  <Teleport to="body">
-    <el-image-viewer
-      v-if="originalUrlList.length > 0 && showImageViewer"
-      hide-on-click-modal
-      :url-list="originalUrlList"
-      @close="showImageViewer = false"
-    ></el-image-viewer>
-  </Teleport>
 </div>
 </template>
 
@@ -121,10 +117,4 @@ let originalUrlList = $computed(() => {
   }
   return list;
 });
-
-let showImageViewer = $ref(false);
-
-function linkClk() {
-  showImageViewer = !showImageViewer;
-}
 </script>
