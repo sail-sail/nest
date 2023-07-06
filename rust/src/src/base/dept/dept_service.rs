@@ -14,11 +14,10 @@ pub async fn dept_login_select<'a>(
       return Ok("".to_owned());
     }
   }
-  let auth_model = ctx.get_auth_model();
-  if auth_model.is_none() {
-    return Err(anyhow::anyhow!("auth_model.is_none()"));
-  }
-  let mut auth_model = auth_model.unwrap();
+  let mut auth_model = ctx.get_auth_model()
+    .ok_or_else(|| 
+      anyhow::anyhow!("auth_model.is_none()")
+    )?;
   let usr_model = usr_dao::find_by_id(ctx, auth_model.id.clone(), None).await?;
   let dept_ids: Vec<String> = {
     if let Some(usr_model) = usr_model {
@@ -32,6 +31,6 @@ pub async fn dept_login_select<'a>(
   }
   auth_model.dept_id = dept_id.into();
   let token = auth_dao::get_token_by_auth_model(&auth_model)?;
-  ctx.set_auth_token(token.into());
-  todo!()
+  ctx.set_auth_token(token.clone().into());
+  Ok(token)
 }

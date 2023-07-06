@@ -17,6 +17,6 @@ pub struct SrcQuery(
 
 #[derive(MergedObject, Default)]
 pub struct SrcMutation(
-  crate::src::base::dept::dept_resolver::DeptMutation,
+  crate::src::base::dept::dept_graphql::DeptMutation,
   crate::src::base::usr::usr_resolver::UsrMutation,
 );
