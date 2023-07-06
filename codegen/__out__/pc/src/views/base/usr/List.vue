@@ -454,8 +454,22 @@
           :key="col.prop"
         >
           
+          <!-- 头像 -->
+          <template v-if="'img' === col.prop && (showBuildIn || builtInSearch?.img == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                ></LinkImage>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -720,6 +734,8 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
+  img?: string; // 头像
+  img_like?: string; // 头像
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   username?: string; // 用户名
@@ -958,6 +974,14 @@ let tableData = $ref<UsrModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
+    {
+      label: "头像",
+      prop: "img",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      fixed: "left",
+    },
     {
       label: "名称",
       prop: "lbl",
@@ -1231,6 +1255,7 @@ async function importExcelClk() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ n("头像") ]: "img",
     [ n("名称") ]: "lbl",
     [ n("用户名") ]: "username",
     [ n("默认部门") ]: "default_dept_id_lbl",
@@ -1537,6 +1562,7 @@ async function revertByIdsEfc() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "头像",
     "名称",
     "用户名",
     "默认部门",

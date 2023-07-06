@@ -87,6 +87,15 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.img !== undefined) {
+    whereQuery += ` and t.img = ${ args.push(search.img) }`;
+  }
+  if (search?.img === null) {
+    whereQuery += ` and t.img is null`;
+  }
+  if (isNotEmpty(search?.img_like)) {
+    whereQuery += ` and t.img like ${ args.push(sqlLike(search?.img_like) + "%") }`;
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -370,6 +379,7 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/usr");
   const fieldComments = {
+    img: await n("头像"),
     lbl: await n("名称"),
     username: await n("用户名"),
     default_dept_id: await n("默认部门"),
@@ -726,6 +736,9 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
+  if (model.img !== undefined) {
+    sql += `,img`;
+  }
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -764,6 +777,9 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (model.img !== undefined) {
+    sql += `,${ args.push(model.img) }`;
   }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
@@ -980,6 +996,12 @@ export async function updateById(
     update base_usr set
   `;
   let updateFldNum = 0;
+  if (model.img !== undefined) {
+    if (model.img != oldModel.img) {
+      sql += `img = ${ args.push(model.img) },`;
+      updateFldNum++;
+    }
+  }
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;

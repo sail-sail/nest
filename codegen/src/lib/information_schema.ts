@@ -210,6 +210,40 @@ async function getSchema0(
       }
     }
     if (
+      (column_name === "img" || column_name.endsWith("_img"))
+      || (column_name === "att" || column_name.endsWith("_att"))
+    ) {
+      if (column_name === "img" || column_name.endsWith("_img")) {
+        item.isImg = true;
+      } else if (column_name === "att" || column_name.endsWith("_att")) {
+        item.isAtt = true;
+      }
+      if (item.width == null) {
+        let column_comment = item.COLUMN_COMMENT || "";
+        if (column_comment) {
+          if (column_comment.indexOf("[") !== -1) {
+            column_comment = column_comment.substring(0, column_comment.indexOf("["));
+          }
+          item.width = 16 + column_comment.length * 14;
+        } else {
+          item.width = 100;
+        }
+      }
+      if (item.align == null) {
+        item.align = "center";
+      }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
+      if (item.attMaxSize == null) {
+        const COLUMN_TYPE = item.COLUMN_TYPE;
+        if (COLUMN_TYPE) {
+          const columnSize = Number(COLUMN_TYPE.replace("varchar(", "").replace(")", ""));
+          item.attMaxSize = Math.floor((columnSize + 1) / 23);
+        }
+      }
+    }
+    if (
       (
         item.foreignKey
         && (item.foreignKey.multiple || item.COLUMN_NAME.endsWith("_ids"))

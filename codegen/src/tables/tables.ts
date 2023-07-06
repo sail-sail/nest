@@ -168,6 +168,10 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "img",
+        fixed: "left",
+      },
+      {
         COLUMN_NAME: "lbl",
         require: true,
         search: true,

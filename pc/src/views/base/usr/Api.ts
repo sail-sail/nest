@@ -32,6 +32,7 @@ export async function findAll(
       query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllUsr(search: $search, page: $page, sort: $sort) {
           id
+          img
           lbl
           username
           default_dept_id
@@ -160,6 +161,7 @@ export async function findById(
       query($id: String!) {
         findByIdUsr(id: $id) {
           id
+          img
           lbl
           username
           password
@@ -449,6 +451,7 @@ export function useExportExcel(routePath: string) {
         query($search: UsrSearch, $sort: [SortInput!]) {
           findAllUsr(search: $search, sort: $sort) {
             id
+            img
             lbl
             username
             password
@@ -465,6 +468,7 @@ export function useExportExcel(routePath: string) {
             rem
           }
           getFieldCommentsUsr {
+            img
             lbl
             username
             default_dept_id

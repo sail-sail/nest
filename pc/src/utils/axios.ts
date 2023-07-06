@@ -174,7 +174,6 @@ export function getDownloadUrl(
   model: {
     id: string;
     filename?: string;
-    remove?: "0"|"1";
     inline?: "0"|"1";
   } | string,
   type: "oss" | "tmpfile" = "tmpfile",
@@ -195,10 +194,62 @@ export function getDownloadUrl(
   if (model.inline != null) {
     params.set("inline", model.inline);
   }
-  if (model.remove != null) {
-    params.set("remove", model.remove);
-  }
   return `${ baseURL }/api/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
+}
+
+/**
+ * 获得压缩后图片的url
+ **/
+export function getImgUrl(
+  model: {
+    id: string;
+    authorization?: string;
+    format?: "webp" | "png" | "jpeg" | "jpg";
+    width?: number;
+    height?: number;
+    quality?: number;
+    filename?: string;
+    inline?: "0"|"1";
+  } | string,
+) {
+  let authorization: string | undefined = undefined;
+  if (typeof model !== "string") {
+    authorization = model.authorization;
+    if (!authorization) {
+      const usrStore = useUsrStore();
+      authorization = usrStore.authorization;
+    }
+  }
+  const params = new URLSearchParams();
+  if (typeof model === "string") {
+    model = {
+      id: model,
+      format: "webp",
+    };
+  }
+  params.set("id", model.id);
+  if (model.filename) {
+    params.set("filename", model.filename);
+  }
+  if (model.inline != null) {
+    params.set("inline", model.inline);
+  }
+  if (model.format) {
+    params.set("f", model.format);
+  }
+  if (model.width) {
+    params.set("w", model.width.toString());
+  }
+  if (model.height) {
+    params.set("h", model.height.toString());
+  }
+  if (model.quality) {
+    params.set("q", model.quality.toString());
+  }
+  if (authorization) {
+    params.set("authorization", authorization);
+  }
+  return `${ baseURL }/api/oss/img?${ params.toString() }`;
 }
 
 /**

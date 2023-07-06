@@ -46,6 +46,23 @@
         @keyup.enter="saveClk"
       >
         
+        <template v-if="(showBuildIn || builtInModel?.img == null)">
+          <el-form-item
+            :label="n('头像')"
+            prop="img"
+            class="img_form_item"
+          >
+            <UploadImage
+              v-model="dialogModel.img"
+              :readonly="isLocked || isReadonly"
+            ></UploadImage>
+          </el-form-item>
+          
+          
+            <div></div>
+          
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
@@ -646,6 +663,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "头像",
     "名称",
     "用户名",
     "默认部门",
