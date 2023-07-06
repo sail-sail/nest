@@ -777,7 +777,7 @@ pub async fn update_by_id<'a>(
     args.push(rem.into());
   }
   
-  if field_num == 0 {
+  if field_num > 0 {
     
     if let Some(auth_model) = ctx.get_auth_model() {
       let usr_id = auth_model.id;

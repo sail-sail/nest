@@ -1585,7 +1585,7 @@ pub async fn update_by_id<'a>(
   }
   #>
   
-  if field_num == 0 {<#
+  if field_num > 0 {<#
     if (hasVersion) {
     #>
     
