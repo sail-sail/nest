@@ -149,7 +149,7 @@ pub trait Ctx<'a>: Send + Sized {
       return Ok(());
     }
     info!("{} begin;", self.get_req_id());
-    let tran = DB_POOL.clone().begin().await.unwrap();
+    let tran = DB_POOL.clone().begin().await?;
     self.set_tran(tran);
     Ok(())
   }
@@ -704,7 +704,7 @@ pub trait Ctx<'a>: Send + Sized {
         }
       }
       let tran = self.get_tran().unwrap();
-      let res = query.fetch_all(tran).await
+      let res = query.fetch_all(&mut **tran).await
         .map_err(|e| {
           let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);
@@ -1055,7 +1055,7 @@ pub trait Ctx<'a>: Send + Sized {
         }
       }
       let tran = self.get_tran().unwrap();
-      let res = query.fetch_optional(tran).await
+      let res = query.fetch_optional(&mut **tran).await
         .map_err(|e| {
           let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
           error!("{}", err_msg);

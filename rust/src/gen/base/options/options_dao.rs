@@ -911,7 +911,7 @@ pub async fn update_by_id<'a>(
     args.push(version.into());
   }
   
-  if field_num == 0 {
+  if field_num > 0 {
     
     if let Some(version) = input.version {
       if version > 0 {

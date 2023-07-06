@@ -157,7 +157,7 @@ pub async fn create<'a>(
       module_lbl: table_comment.clone().into(),
       method: "create".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
+      lbl: method_lbl.into(),
       old_data: "{}".to_owned().into(),
       new_data: serde_json::to_string(&new_data)?.into(),
       ..Default::default()
@@ -265,7 +265,7 @@ pub async fn update_by_id<'a>(
       module_lbl: table_comment.clone().into(),
       method: "update".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
+      lbl: method_lbl.into(),
       old_data: serde_json::to_string(&old_data)?.into(),
       new_data: serde_json::to_string(&new_data)?.into(),
       ..Default::default()
@@ -324,7 +324,7 @@ pub async fn delete_by_ids<'a>(
       module_lbl: table_comment.clone().into(),
       method: "delete".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
+      lbl: method_lbl.into(),
       old_data: serde_json::to_string(&old_data)?.into(),
       new_data: "[]".to_owned().into(),
       ..Default::default()
@@ -376,7 +376,7 @@ pub async fn default_by_id<'a>(
       module_lbl: table_comment.clone().into(),
       method: "default".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
+      lbl: method_lbl.into(),
       old_data: old_data.into(),
       new_data: "[]".to_owned().into(),
       ..Default::default()
@@ -450,7 +450,7 @@ pub async fn enable_by_ids<'a>(
       module_lbl: table_comment.clone().into(),
       method: "enable".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
+      lbl: method_lbl.into(),
       old_data: old_data.into(),
       new_data: "[]".to_owned().into(),
       ..Default::default()
@@ -502,7 +502,10 @@ pub async fn lock_by_ids<'a>(
   if (log) {
   #>
   
-  let old_data = serde_json::to_string(&ids)?;<#
+  let new_data = serde_json::json!({
+    "ids": ids,
+    "is_locked": is_locked,
+  }).to_string();<#
   }
   #>
   
@@ -515,19 +518,23 @@ pub async fn lock_by_ids<'a>(
   if (log) {
   #>
   
-  let method_lbl = ns(ctx, "锁定".to_owned(), None).await?;
+  let method_lbl: String = if is_locked == 0 {
+    ns(ctx, "解锁".to_owned(), None).await?
+  } else {
+    ns(ctx, "锁定".to_owned(), None).await?
+  };
   let table_comment = ns(ctx, "<#=table_comment#>".to_owned(), None).await?;
   
   log(
     ctx,
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
-      module_lbl: table_comment.clone().into(),
-      method: "lock".to_owned().into(),
+      module_lbl: table_comment.into(),
+      method: "lockByIds".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
-      old_data: old_data.into(),
-      new_data: "[]".to_owned().into(),
+      lbl: method_lbl.into(),
+      old_data: "".to_owned().into(),
+      new_data: new_data.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -569,7 +576,7 @@ pub async fn revert_by_ids<'a>(
   if (log) {
   #>
   
-  let old_data = serde_json::to_string(&ids)?;<#
+  let new_data = serde_json::to_string(&ids)?;<#
   }
   #>
   
@@ -589,11 +596,11 @@ pub async fn revert_by_ids<'a>(
     OperationRecordInput {
       module: "<#=mod#>_<#=table#>".to_owned().into(),
       module_lbl: table_comment.clone().into(),
-      method: "revert".to_owned().into(),
+      method: "revertByIds".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
-      old_data: old_data.into(),
-      new_data: "[]".to_owned().into(),
+      lbl: method_lbl.into(),
+      old_data: "[]".to_owned().into(),
+      new_data: new_data.into(),
       ..Default::default()
     },
   ).await?;<#
@@ -641,7 +648,7 @@ pub async fn force_delete_by_ids<'a>(
       module_lbl: table_comment.clone().into(),
       method: "force_delete".to_owned().into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: format!("{method_lbl}{table_comment}").into(),
+      lbl: method_lbl.into(),
       old_data: old_data.into(),
       new_data: "[]".to_owned().into(),
       ..Default::default()

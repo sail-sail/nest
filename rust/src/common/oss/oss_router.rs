@@ -211,39 +211,6 @@ pub async fn img(
   } else {
     filename = urlencoding::encode(filename.as_str()).to_string();
   }
-  response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
-  if let Some(last_modified) = &stat.last_modified {
-    if !last_modified.is_empty() {
-      response = response.header("Last-Modified", last_modified);
-    }
-  }
-  if let Some(etag) = &stat.etag {
-    if !etag.is_empty() {
-      response = response.header("ETag", etag);
-    }
-  }
-  if let Some(if_none_match) = if_none_match {
-    if let Some(etag) = stat.etag {
-      if if_none_match == etag {
-        response = response.status(StatusCode::from_u16(304)?);
-        return Ok(response.finish());
-      }
-    }
-  }
-  let is_img = match &stat.content_type {
-    Some(content_type) => {
-      content_type.starts_with("image/")
-    },
-    None => false,
-  };
-  if f.is_none() || !is_img {
-    let content = oss_service::get_object(&id).await?;
-    let len = content.len();
-    response = response.header("Content-Length", len.to_string());
-    let response = response.body(content);
-    return Ok(response);
-  }
-  
   let cache_id = {
     let mut id = id.clone();
     if let Some(f) = &f {
@@ -264,6 +231,79 @@ pub async fn img(
     }
     id
   };
+  let f_is_none = f.is_none();
+  let format = f.unwrap_or("webp".to_owned());
+  let output_format = match format.as_str() {
+    "webp" => ImageOutputFormat::WebP,
+    "jpg" => ImageOutputFormat::Jpeg(q.unwrap_or(80)),
+    "png" => ImageOutputFormat::Png,
+    "ico" => ImageOutputFormat::Ico,
+    _ => ImageOutputFormat::WebP,
+  };
+  let content_type = match format.as_str() {
+    "webp" => "image/webp",
+    "jpg" => "image/jpeg",
+    "png" => "image/png",
+    "ico" => "image/x-icon",
+    _ => "image/webp",
+  };
+  // 修改filename后缀名
+  let mut filename_vec: Vec<&str> = filename.split(".").collect();
+  if filename_vec.len() > 1 {
+    filename_vec.pop();
+    filename = filename_vec.join(".");
+    filename.push_str(".");
+    filename.push_str(format.as_str());
+    if filename.contains("\"") {
+      filename = filename.replace("\"", "");
+    }
+  }
+  if let Some(if_none_match) = if_none_match {
+    if let Some(etag) = &stat.etag {
+      if if_none_match == etag {
+        if let Some(last_modified) = &stat.last_modified {
+          if !last_modified.is_empty() {
+            response = response.header("Last-Modified", last_modified);
+          }
+        }
+        if !etag.is_empty() {
+          response = response.header("ETag", etag);
+        }
+        response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+        response = response.status(StatusCode::from_u16(304)?);
+        return Ok(response.finish());
+      } else {
+        if !etag.is_empty() {
+          response = response.header("ETag", etag);
+        }
+      }
+    }
+  }
+  let is_img = match &stat.content_type {
+    Some(content_type) => {
+      content_type.starts_with("image/")
+    },
+    None => false,
+  };
+  if f_is_none || !is_img {
+    response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+    let content = oss_service::get_object(&id).await?;
+    let len = content.len();
+    response = response.header("Content-Length", len.to_string());
+    if let Some(last_modified) = &stat.last_modified {
+      if !last_modified.is_empty() {
+        response = response.header("Last-Modified", last_modified);
+      }
+    }
+    if let Some(etag) = &stat.etag {
+      if !etag.is_empty() {
+        response = response.header("ETag", etag);
+      }
+    }
+    let response = response.body(content);
+    return Ok(response);
+  }
+  
   let stat = tmpfile_dao::head_object(&cache_id).await?;
   if let Some(stat) = stat {
     match &stat.content_type {
@@ -280,10 +320,25 @@ pub async fn img(
     } else {
       filename = urlencoding::encode(filename.as_str()).to_string();
     }
-    response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
-    if let Some(last_modified) = &stat.last_modified {
-      if !last_modified.is_empty() {
-        response = response.header("Last-Modified", last_modified);
+    if let Some(if_none_match) = if_none_match {
+      if let Some(etag) = &stat.etag {
+        if if_none_match == etag {
+          if let Some(last_modified) = &stat.last_modified {
+            if !last_modified.is_empty() {
+              response = response.header("Last-Modified", last_modified);
+            }
+          }
+          if !etag.is_empty() {
+            response = response.header("ETag", etag);
+          }
+          response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+          response = response.status(StatusCode::from_u16(304)?);
+          return Ok(response.finish());
+        } else {
+          if !etag.is_empty() {
+            response = response.header("ETag", etag);
+          }
+        }
       }
     }
     if let Some(etag) = &stat.etag {
@@ -291,22 +346,15 @@ pub async fn img(
         response = response.header("ETag", etag);
       }
     }
-    if let Some(if_none_match) = if_none_match {
-      if let Some(etag) = stat.etag {
-        if if_none_match == etag {
-          response = response.status(StatusCode::from_u16(304)?);
-          return Ok(response.finish());
-        }
-      }
-    }
     let content = tmpfile_dao::get_object(&cache_id).await?;
     response = response.header("Content-Length", content.len().to_string());
+    response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+    response = response.content_type(content_type);
     let response = response.body(content);
     return Ok(response);
   }
   let content = oss_service::get_object(&id).await?;
   let len = content.len();
-  let format = f.unwrap_or("webp".to_owned());
   let img = ImageReader::new(Cursor::new(&content)).with_guessed_format()?.decode()?;
   let (width, height) = img.dimensions();
   let mut nwidth = w.unwrap_or(width);
@@ -323,37 +371,12 @@ pub async fn img(
   //   return Ok(response);
   // }
   drop(content);
-  let output_format = match format.as_str() {
-    "jpg" => ImageOutputFormat::Jpeg(q.unwrap_or(80)),
-    "png" => ImageOutputFormat::Png,
-    "ico" => ImageOutputFormat::Ico,
-    "webp" => ImageOutputFormat::WebP,
-    _ => ImageOutputFormat::WebP,
-  };
   let img = img.resize(nwidth, nheight, FilterType::Lanczos3);
   // let img = img.into_rgba8();
   let mut content: Vec<u8> = Vec::with_capacity(len);
   img.write_to(&mut Cursor::new(&mut content), output_format)?;
   
-  let content_type = match format.as_str() {
-    "jpg" => "image/jpeg",
-    "png" => "image/png",
-    "ico" => "image/x-icon",
-    "webp" => "image/webp",
-    _ => "image/webp",
-  };
-  
   let len = content.len();
-  
-  // 修改filename后缀名
-  let mut filename_vec: Vec<&str> = filename.split(".").collect();
-  if filename_vec.len() > 1 {
-    filename_vec.pop();
-    filename = filename_vec.join(".");
-    filename.push_str(".");
-    filename.push_str(format.as_str());
-    drop(format);
-  }
   
   // 缓存图片到tmpfile
   tmpfile_dao::put_object(
@@ -363,33 +386,43 @@ pub async fn img(
     &filename,
   ).await?;
   
-  response = response.header("Content-Length", len.to_string());
-  response = response.content_type(content_type);
-  response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
-  
   let stat = tmpfile_dao::head_object(&cache_id).await?;
   
-  if let Some(stat) = stat {
-    if let Some(last_modified) = &stat.last_modified {
-      if !last_modified.is_empty() {
-        response = response.header("Last-Modified", last_modified);
+  if let Some(stat) = &stat {
+    if let Some(if_none_match) = if_none_match {
+      if let Some(etag) = &stat.etag {
+        if if_none_match == etag {
+          if let Some(last_modified) = &stat.last_modified {
+            if !last_modified.is_empty() {
+              response = response.header("Last-Modified", last_modified);
+            }
+          }
+          if !etag.is_empty() {
+            response = response.header("ETag", etag);
+          }
+          response = response.header("Content-Length", len.to_string());
+          response = response.content_type(content_type);
+          response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
+          response = response.status(StatusCode::from_u16(304)?);
+          return Ok(response.finish());
+        } else {
+          if !etag.is_empty() {
+            response = response.header("ETag", etag);
+          }
+        }
       }
     }
+  }
+  if let Some(stat) = stat {
     if let Some(etag) = &stat.etag {
       if !etag.is_empty() {
         response = response.header("ETag", etag);
       }
     }
-    if let Some(if_none_match) = if_none_match {
-      if let Some(etag) = stat.etag {
-        if if_none_match == etag {
-          response = response.status(StatusCode::from_u16(304)?);
-          return Ok(response.finish());
-        }
-      }
-    }
   }
-  
+  response = response.header("Content-Length", len.to_string());
+  response = response.content_type(content_type);
+  response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
   let response = response.body(content);
   Ok(response)
 }
