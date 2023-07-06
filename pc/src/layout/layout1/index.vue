@@ -488,7 +488,9 @@ async function deptSelectClk(dept_id: string) {
     dept_id,
   });
   if (token) {
-    usrStore.dept_id = dept_id;
+    if (usrStore.loginInfo) {
+      usrStore.loginInfo.dept_id = dept_id;
+    }
     await usrStore.login(token);
   }
 }
