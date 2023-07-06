@@ -1099,10 +1099,9 @@ async function openView() {
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("查看"),
-    action: "edit",
+    action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
-    isReadonly: true,
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
