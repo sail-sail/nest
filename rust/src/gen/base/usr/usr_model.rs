@@ -7,6 +7,8 @@ use async_graphql::{SimpleObject, InputObject};
 pub struct UsrModel {
   /// ID
   pub id: String,
+  /// 头像
+  pub img: String,
   /// 名称
   pub lbl: String,
   /// 用户名
@@ -43,6 +45,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
+    // 头像
+    let img: String = row.try_get("img")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 用户名
@@ -76,6 +80,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     
     let model = Self {
       id,
+      img,
       lbl,
       username,
       password,
@@ -100,6 +105,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrFieldComment {
+  /// 头像
+  pub img: String,
   /// 名称
   pub lbl: String,
   /// 用户名
@@ -136,6 +143,10 @@ pub struct UsrSearch {
   #[graphql(skip)]
   pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
+  /// 头像
+  pub img: Option<String>,
+  /// 头像
+  pub img_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
@@ -174,6 +185,8 @@ pub struct UsrSearch {
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
   pub id: Option<String>,
+  /// 头像
+  pub img: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 用户名
@@ -211,6 +224,8 @@ impl From<UsrInput> for UsrSearch {
       ids: None,
       tenant_id: None,
       is_deleted: None,
+      // 头像
+      img: input.img,
       // 名称
       lbl: input.lbl,
       // 用户名
