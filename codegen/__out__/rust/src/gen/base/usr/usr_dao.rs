@@ -95,6 +95,22 @@ fn get_where_query<'a>(
     }
   }
   {
+    let img = match &search {
+      Some(item) => item.img.clone(),
+      None => None,
+    };
+    if let Some(img) = img {
+      where_query += &format!(" and t.img = {}", args.push(img.into()));
+    }
+    let img_like = match &search {
+      Some(item) => item.img_like.clone(),
+      None => None,
+    };
+    if let Some(img_like) = img_like {
+      where_query += &format!(" and t.img like {}", args.push((sql_like(&img_like) + "%").into()));
+    }
+  }
+  {
     let lbl = match &search {
       Some(item) => item.lbl.clone(),
       None => None,
@@ -453,6 +469,7 @@ pub async fn get_field_comments<'a>(
   };
   
   let field_comments = UsrFieldComment {
+    img: n_route.n(ctx, "头像".to_owned(), None).await?,
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     username: n_route.n(ctx, "用户名".to_owned(), None).await?,
     default_dept_id: n_route.n(ctx, "默认部门".to_owned(), None).await?,
@@ -817,6 +834,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(usr_id.into());
   }
+  // 头像
+  if let Some(img) = input.img {
+    sql_fields += ",img";
+    sql_values += ",?";
+    args.push(img.into());
+  }
   // 名称
   if let Some(lbl) = input.lbl {
     sql_fields += ",lbl";
@@ -978,6 +1001,12 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
+  // 头像
+  if let Some(img) = input.img {
+    field_num += 1;
+    sql_fields += ",img = ?";
+    args.push(img.into());
+  }
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
