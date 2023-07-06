@@ -6,6 +6,7 @@ let modelName = "";
 let fieldCommentName = "";
 let inputName = "";
 let searchName = "";
+let modelNameTree = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
@@ -14,11 +15,13 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   fieldCommentName = Table_Up + "fieldComment";
   inputName = Table_Up + "input";
   searchName = Table_Up + "search";
+  modelNameTree = Table_Up + "modelTree";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
+  modelNameTree = Table_Up + "ModelTree";
 }
 #><template>
 <div
@@ -81,9 +84,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   >
     <List
       ref="listRef"
-      :show-build-in="'1'"
+      show-build-in="1"
+      is-pagination="0"
       v-bind="$attrs"
       :parent_id="parent_id"
+      @add="findTreeEfc"
+      @edit="findTreeEfc"
+      @remove="findTreeEfc"
+      @revert="findTreeEfc"
+      @refresh="findTreeEfc"
       @before-search-reset="beforeSearchReset"
     ></List>
   </div>
@@ -95,7 +104,7 @@ import List from "./List.vue";
 
 import {
   findTree,
-  type <#=modelName#>Tree,
+  type <#=modelNameTree#>,
 } from "./Api";
 
 import {
@@ -107,7 +116,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-  parent_id?: string | string[];
+  parent_id?: string;
 }>();
 
 const {
@@ -120,20 +129,21 @@ let listRef = $ref<InstanceType<typeof List>>();
 
 let parent_id = $ref(props.parent_id);
 
+let treeRef = $ref<InstanceType<typeof ElTree>>();
+
 watch(
   () => props.parent_id,
-  () => {
+  async () => {
     parent_id = props.parent_id;
+    treeRef?.setCurrentKey(parent_id);
     if (parent_id) {
-      listRef?.refresh?.();
+      await listRef?.refresh?.();
     }
   },
   {
     immediate: true,
   },
 );
-
-let treeRef = $ref<InstanceType<typeof ElTree>>();
 
 let treeData = $ref<Awaited<ReturnType<typeof findTree>>>([ ]);
 
@@ -160,7 +170,7 @@ function searchClr() {
   treeRef?.filter(search_value);
 }
 
-function filterNode(value: string, data: <#=modelName#>Tree) {
+function filterNode(value: string, data: <#=modelNameTree#>) {
   if (!value) {
     return true;
   }
@@ -174,11 +184,33 @@ function nodeClass(data: TreeNodeData, _: any): string {
   return "";
 }
 
-async function findTreeEfc() {
-  treeData = await findTree();
+function getById(
+  id: string,
+  data: <#=modelNameTree#>[],
+): <#=modelNameTree#> | undefined {
+  for (const item of data) {
+    if (item.id === id) {
+      return item;
+    }
+    const node = getById(id, item.children || [ ]);
+    if (node) {
+      return node;
+    }
+  }
+  return;
 }
 
-async function nodeClk(model: <#=modelName#>Tree) {
+async function findTreeEfc() {
+  treeData = await findTree();
+  if (parent_id) {
+    const node = getById(parent_id, treeData);
+    if (!node) {
+      parent_id = "";
+    }
+  }
+}
+
+async function nodeClk(model: <#=modelNameTree#>) {
   parent_id = model.id;
 }
 
@@ -188,8 +220,11 @@ function beforeSearchReset() {
   treeRef?.setCurrentKey(undefined);
 }
 
-async function refresh() {
-  await listRef?.refresh?.();
+async function refreshClk() {
+  await Promise.all([
+    listRef?.refresh?.(),
+    findTreeEfc(),
+  ]);
 }
 
 async function initFrame() {
@@ -200,6 +235,6 @@ async function initFrame() {
 initFrame();
 
 defineExpose({
-  refresh,
+  refresh: refreshClk,
 });
 </script>

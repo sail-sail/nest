@@ -182,7 +182,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="danger"
         @click="deleteByIdsEfc"
@@ -192,10 +192,20 @@
         </template>
         <span>{{ ns('删除') }}</span>
       </el-button>
+      
+      <el-button
+        plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconView />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
     
       <el-button
         plain
-        @click="searchClk"
+        @click="refreshClk"
       >
         <template #icon>
           <ElIconRefresh />
@@ -256,7 +266,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="primary"
         @click="revertByIdsEfc"
@@ -268,7 +278,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete')"
+        v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
         @click="forceDeleteByIdsClk"
@@ -343,6 +353,7 @@
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
+        @row-dblclick="openView"
       >
         
         <el-table-column
@@ -478,12 +489,13 @@
       </el-table>
     </div>
     <div
-      un-flex
+      un-flex="~"
       un-justify-end
-      un-p="t-0.5 b-0.5"
+      un-p="y-1"
+      un-box-border
     >
       <el-pagination
-        background
+        v-if="isPagination"
         :page-sizes="pageSizes"
         :page-size="page.size"
         layout="total, sizes, prev, pager, next, jumper"
@@ -491,6 +503,11 @@
         :total="page.total"
         @size-change="pgSizeChg"
         @current-change="pgCurrentChg"
+      ></el-pagination>
+      <el-pagination
+        v-else
+        layout="total"
+        :total="page.total"
       ></el-pagination>
     </div>
   </div>
@@ -546,6 +563,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "refresh",
   "beforeSearchReset",
 ]);
 
@@ -564,11 +582,17 @@ let search = $ref(initSearch());
 /** 回收站 */
 async function recycleChg() {
   selectedIds = [ ];
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 搜索 */
 async function searchClk() {
+  await dataGrid(true);
+}
+
+/** 刷新 */
+async function refreshClk() {
+  emit("refresh");
   await dataGrid(true);
 }
 
@@ -578,12 +602,12 @@ async function searchReset() {
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 点击已选择 */
@@ -594,6 +618,8 @@ async function idsCheckedChg() {
 const props = defineProps<{
   is_deleted?: string;
   showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -625,6 +651,8 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
   ids: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
@@ -636,6 +664,8 @@ const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
   "showBuildIn",
+  "isPagination",
+  "isLocked",
 ];
 
 /** 内置搜索条件 */
@@ -690,6 +720,40 @@ watch(
       showBuildIn = true;
     } else {
       showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否分页 */
+let isPagination = $ref(true);
+
+watch(
+  () => props.isPagination,
+  () => {
+    if (props.isPagination === "0") {
+      isPagination = false;
+    } else {
+      isPagination = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否只读模式 */
+let isLocked = $ref(false);
+
+watch(
+  () => props.isLocked,
+  () => {
+    if (props.isLocked === "1") {
+      isLocked = true;
+    } else {
+      isLocked = false;
     }
   },
   {
@@ -958,17 +1022,42 @@ function getDataSearch() {
 async function useFindAll(
   opt?: GqlOpt,
 ) {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
-  const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
+  if (isPagination) {
+    const pgSize = page.size;
+    const pgOffset = (page.current - 1) * page.size;
+    const search2 = getDataSearch();
+    tableData = await findAll(
+      search2,
+      {
+        pgSize,
+        pgOffset,
+      },
+      [
+        sort,
+      ],
+      opt,
+    );
+  } else {
+    const search2 = getDataSearch();
+    tableData = await findAll(
+      search2,
+      undefined,
+      [
+        sort,
+      ],
+      opt,
+    );
+  }
 }
 
 async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2, opt);
+  page.total = await findCount(
+    search2,
+    opt,
+  );
 }
 
 let sort: Sort = $ref({
@@ -997,8 +1086,41 @@ async function cancelExportClk() {
   exportExcel.workerTerminate();
 }
 
+/** 打开查看 */
+async function openView() {
+  if (!detailRef) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    return;
+  }
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("查看"),
+    action: "view",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    isLocked: $$(isLocked),
+    model: {
+      ids: selectedIds,
+    },
+  });
+  if (changedIds.length === 0) {
+    return;
+  }
+  await Promise.all([
+    dataGrid(),
+  ]);
+  emit("edit", changedIds);
+}
+
 /** 点击删除 */
 async function deleteByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -1025,6 +1147,9 @@ async function deleteByIdsEfc() {
 
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -1050,6 +1175,9 @@ async function forceDeleteByIdsClk() {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要还原的数据"));
     return;
@@ -1102,7 +1230,7 @@ async function initFrame() {
   }
   await Promise.all([
     initI18nsEfc(),
-    searchClk(),
+    dataGrid(true),
   ]);
   if (tableData.length === 1) {
     await nextTick();
@@ -1118,7 +1246,7 @@ watch(
       ...search,
       ...builtInSearch,
     };
-    await searchClk();
+    await dataGrid(true);
   },
   {
     deep: true,
@@ -1130,6 +1258,6 @@ usrStore.onLogin(initFrame);
 initFrame();
 
 defineExpose({
-  refresh: searchClk,
+  refresh: refreshClk,
 });
 </script>

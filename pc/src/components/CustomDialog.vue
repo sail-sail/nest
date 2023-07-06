@@ -32,6 +32,9 @@
           {{ dialogTitle }}
         </span>
       </div>
+      <slot
+        name="extra_header"
+      ></slot>
       <ElIconFullScreen
         v-if="fullscreen"
         class="full_but"

@@ -329,25 +329,25 @@ export interface TableCloumn {
     /**
      * table模块名
      */
-    mod: string,
+    mod?: string,
     
     /**
      * 多对多右边的表名
      * @type {string}
      */
-    table: string,
+    table?: string,
     
     /**
      * 多对多左边的字段名
      * @type {string}
      */
-    column1: string,
+    column1?: string,
     
     /**
      * 多对多右边的字段名
      * @type {string}
      */
-    column2: string,
+    column2?: string,
   },
   
   /**

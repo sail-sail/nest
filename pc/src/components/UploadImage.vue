@@ -2,6 +2,7 @@
 <div
   un-w="full"
   un-h="full"
+  un-m="l-1"
   un-pos-relative
   :class="{ 'border_wrap': urlList.length === 0 }"
   un-rounded
@@ -59,7 +60,7 @@
   </el-image>
   <transition name="fade">
     <div
-      v-if="showUpload"
+      v-if="!readonly && showUpload"
       class="upload_div"
       un-rounded
     >
@@ -166,12 +167,14 @@ const props = withDefaults(
     maxFileSize?: number;
     maxSize?: number;
     accept?: string;
+    readonly?: boolean;
   }>(),
   {
     modelValue: "",
     maxFileSize: 1024 * 1024 * 50,
     maxSize: 1,
     accept: "image/webp,image/png,image/jpeg,image/svg+xml",
+    readonly: false,
   },
 );
 

@@ -159,7 +159,7 @@ export async function enableByIdsTenant(
   
   await usePermit(
     "/base/tenant",
-    "lock",
+    "enable",
   );
   
   const {

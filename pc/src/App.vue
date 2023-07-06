@@ -65,14 +65,14 @@ function goBack() {
   }
 }
 
-const warn = console.warn;
-console.warn = (...args: any[]) => {
-  if (args[0] === "[HMR] Something went wrong during Vue component hot-reload. Full reload required.") {
-    window.location.reload();
-    return;
-  }
-  warn(...args);
-};
+// const warn = console.warn;
+// console.warn = (...args: any[]) => {
+//   if (args[0] === "[HMR] Something went wrong during Vue component hot-reload. Full reload required.") {
+//     window.location.reload();
+//     return;
+//   }
+//   warn(...args);
+// };
 
 async function initI18nsEfc() {
   const codes = [
@@ -216,7 +216,7 @@ html,body {
   .el-dialog__header {
     .dialog_title {
       display: flex;
-      padding-right: 20px;
+      padding-right: 14px;
       color: var(--el-text-color-regular);
     }
     .title_lbl {
@@ -231,7 +231,18 @@ html,body {
       height: 13px;
     }
     .full_but:hover {
-      color: blue;
+      color: var(--el-color-primary);
+    }
+    .unlock_but,.lock_but {
+      position: relative;
+      top: 1px;
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+      margin-right: 8px;
+    }
+    .unlock_but:hover,.lock_but:hover {
+      color: var(--el-color-primary);
     }
   }
 }
@@ -279,15 +290,15 @@ body .el-table--small {
   // }
   .el-table__header {
     thead tr {
-      height: 29px;
+      height: 36.67px;
     }
   }
   .el-table__row {
-    height: 29px;
+    height: 36.67px;
   }
   .cell {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
   font-size: 13px;
   th.el-table__cell {
@@ -341,6 +352,12 @@ body .el-checkbox.el-checkbox--small {
 }
 body .el-input-number {
   width: 100%;
+}
+.el-input-number.is-without-controls {
+  .el-input__wrapper {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
 }
 body .el-input-number.is-without-controls .el-input__inner {
   text-align: inherit;

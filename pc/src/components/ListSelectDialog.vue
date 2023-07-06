@@ -38,6 +38,8 @@
       <slot
         v-bind="$attrs"
         :selected-ids="selectedIds"
+        :is-locked="isLocked ? '1' : '0'"
+        @selected-ids-chg="selectedIdsChg"
       ></slot>
     </div>
     <div
@@ -66,6 +68,7 @@
       </el-button>
       
       <el-button
+        v-if="!isLocked"
         plain
         type="primary"
         @click="saveClk"
@@ -82,6 +85,10 @@
 </template>
 
 <script setup lang="ts">
+const props = defineProps<{
+  isLocked?: boolean;
+}>();
+
 const {
   ns,
 } = useI18n("/base/usr");
@@ -97,6 +104,12 @@ let dialogAction = $ref<"select" | "close" | "cancel">("select");
 let selectedIds = $ref<string[] | undefined>([ ]);
 let oldSelectedIds: string[] = [ ];
 
+let isLocked = $computed(() => {
+  return argIsLocked || props.isLocked || false;
+});
+
+let argIsLocked = $ref<boolean>();
+
 type OnCloseResolveType = {
   action: typeof dialogAction;
   selectedIds?: string[];
@@ -110,6 +123,7 @@ async function showDialog(
     title?: string;
     action?: "select";
     selectedIds: string[];
+    isLocked?: boolean;
   },
 ) {
   inited = false;
@@ -134,6 +148,9 @@ async function showDialog(
     selectedIds = [ ];
     oldSelectedIds = [ ];
   }
+  if (arg?.isLocked != null) {
+    argIsLocked = arg?.isLocked;
+  }
   inited = true;
   return await dialogPrm;
 }
@@ -143,6 +160,9 @@ function selectedIdsChg(value: string[]) {
 }
 
 async function saveClk() {
+  if (props.isLocked) {
+    return;
+  }
   dialogVisible = false;
   onCloseResolve({
     action: "select",
@@ -170,7 +190,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
   });
 }
 
-defineExpose({ showDialog, selectedIdsChg });
+defineExpose({ showDialog });
 </script>
 
 <style>

@@ -38,6 +38,22 @@ for (let i = 0; i < columns.length; i++) {
   ref="customDialogRef"
   :before-close="beforeClose"
 >
+  <template
+    v-if="!isLocked"
+    #extra_header
+  >
+    <ElIconUnlock
+      v-if="!isReadonly"
+      class="unlock_but"
+      @click="isReadonly = true"
+    >
+    </ElIconUnlock>
+    <ElIconLock
+      v-else
+      class="lock_but"
+      @click="isReadonly = false"
+    ></ElIconLock>
+  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -56,14 +72,14 @@ for (let i = 0; i < columns.length; i++) {
           if (columnNum > 4) {
         #>
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center<#
           } else {
         #>
         
-        un-grid="~ rows-[auto] cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center<#
@@ -141,27 +157,27 @@ for (let i = 0; i < columns.length; i++) {
             un-grid="col-span-2"<#
             }
             #>
-            un-h="full"
           ><#
             if (column.isImg) {
             #>
             <UploadImage
               v-model="dialogModel.<#=column_name#>"<#
               if (column.attMaxSize > 1) {
-            #>
+              #>
               :max-size="<#=column.attMaxSize#>"<#
               }
-            #><#
-            if (column.maxFileSize) {
-            #>
+              #><#
+              if (column.maxFileSize) {
+              #>
               :maxFileSize="<#=column.maxFileSize#>"<#
-            }
-            #><#
-            if (column.attAccept) {
-            #>
+              }
+              #><#
+              if (column.attAccept) {
+              #>
               accept="<#=column.attAccept#>"<#
-            }
-            #>
+              }
+              #>
+              :readonly="isLocked || isReadonly"
             ></UploadImage><#
             } else if (
               foreignKey
@@ -196,13 +212,13 @@ for (let i = 0; i < columns.length; i++) {
                   value: item.<#=foreignKey.column#>,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (foreignKey.multiple) {
               #>
               multiple<#
               }
               #>
+              :readonly="isLocked || isReadonly"
             ></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
               if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -222,6 +238,7 @@ for (let i = 0; i < columns.length; i++) {
               multiple<#
               }
               #>
+              :readonly="isLocked || isReadonly"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignKey && foreignKey.selectType === "tree") {
             #>
@@ -233,22 +250,21 @@ for (let i = 0; i < columns.length; i++) {
               #>
               v-model="dialogModel.<#=column_name#>"
               :method="get<#=Foreign_Table_Up#>Tree"
-              un-w="full"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (foreignKey.lbl !== "lbl") {
+              #>
               :props="{
                 label: '<#=foreignKey.lbl#>',
                 children: 'children',
-              }"
-              check-strictly
-              :render-after-expand="false"
-              :default-expand-all="true"
-              show-checkbox
-              check-on-click-node<#
+              }"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               multiple<#
               }
               #>
+              :readonly="isLocked || isReadonly"
             ></CustomTreeSelect><#
             } else if (selectList.length > 0) {
             #>
@@ -261,6 +277,7 @@ for (let i = 0; i < columns.length; i++) {
               default-first-option
               :clearable="true"
               @keyup.enter.stop
+              :disabled="isLocked || isReadonly"
             ><#
               for (let item of selectList) {
                 let value = item.value;
@@ -270,13 +287,13 @@ for (let i = 0; i < columns.length; i++) {
                 } else if (typeof(value) === "number") {
                   value = value.toString();
                 }
-            #>
+              #>
               <el-option
                 :value="<#=value#>"
                 :label="n('<#=label#>')"
               ></el-option><#
               }
-            #>
+              #>
             </el-select><#
             } else if (column.dict) {
             #>
@@ -284,8 +301,8 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></DictSelect><#
             } else if (column.dictbiz) {
             #>
@@ -293,51 +310,43 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
-            <el-date-picker
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"
-              un-w="full"<#
-                if (data_type === "datetime") {
+            <CustomDatePicker
+              v-model="dialogModel.<#=column_name#>"<#
+              if (data_type === "datetime") {
               #>
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"<#
-                } else if (data_type === "date") {
+              } else if (data_type === "date") {
               #>
               type="date"
               format="YYYY-MM-DD"<#
-                }
+              }
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            ></el-date-picker><#
+              :readonly="isReadonly"
+            ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
-            <el-checkbox
-              :set="0"
-              un-w="full"
+            <CustomCheckbox
               v-model="dialogModel.<#=column_name#>"
-              :false-label="0"
-              :true-label="1"
+              :true-readonly-label="`${ ns('是') }`"
+              :false-readonly-label="`${ ns('否') }`"
+              :readonly="isLocked || isReadonly"
             >
               <#=column_comment#>
-            </el-checkbox><#
+            </CustomCheckbox><#
             } else if (column_type.startsWith("int")) {
             #>
-            <el-input-number
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :clearable="true"
-            ></el-input-number><#
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
               let precision = Number(arr[1]);
@@ -352,10 +361,8 @@ for (let i = 0; i < columns.length; i++) {
               }
               let min = column.min;
             #>
-            <el-input-number
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
-              un-w="full"
               :max="<#=max#>"<#
                 if (min) {
               #>
@@ -363,13 +370,12 @@ for (let i = 0; i < columns.length; i++) {
                 }
               #>
               :precision="<#=precision#>"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :clearable="true"
-            ></el-input-number><#
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber><#
             } else {
             #>
-            <el-input
+            <CustomInput
               v-model="dialogModel.<#=column_name#>"<#
               if (column.isTextarea) {
               #>
@@ -378,10 +384,9 @@ for (let i = 0; i < columns.length; i++) {
               @keyup.enter.stop<#
               }
               #>
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :clearable="true"
-            ></el-input><#
+              :readonly="isLocked || isReadonly"
+            ></CustomInput><#
             }
             #>
           </el-form-item><#
@@ -412,17 +417,18 @@ for (let i = 0; i < columns.length; i++) {
       
       <el-button
         plain
-        @click="cancelClk"
+        @click="closeClk"
       >
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('取消') }}</span>
+        <span>{{ n('关闭') }}</span>
       </el-button><#
       if (opts.noAdd !== true || opts.noEdit !== true) {
       #>
       
       <el-button
+        v-if="!isLocked && !isReadonly"
         plain
         type="primary"
         @click="saveClk"
@@ -430,7 +436,7 @@ for (let i = 0; i < columns.length; i++) {
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ n('确定') }}</span>
       </el-button><#
       }
       #>
@@ -474,6 +480,11 @@ for (let i = 0; i < columns.length; i++) {
 </template>
 
 <script lang="ts" setup>
+import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
 import {<#
   if (opts.noAdd !== true) {
   #>
@@ -653,7 +664,7 @@ const {
 
 let inited = $ref(false);
 
-type DialogAction = "add" | "copy" | "edit";
+type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({<#
@@ -755,6 +766,14 @@ let builtInModel = $ref<<#=inputName#>>();
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
 
+/** 是否只读模式 */
+let isReadonly = $ref(false);
+
+/** 是否锁定 */
+let isLocked = $ref(false);
+
+let readonlyWatchStop: WatchStopHandle | undefined = undefined;
+
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: <#=inputName#> = {<#
@@ -803,7 +822,9 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: <#=inputName#>;
-    showBuildIn?: Ref<boolean> | boolean;
+    showBuildIn?: MaybeRefOrGetter<boolean>;
+    isReadonly?: MaybeRefOrGetter<boolean>;
+    isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       id?: string;
       ids?: string[];
@@ -829,7 +850,18 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = unref(arg?.showBuildIn) ?? false;
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
+  readonlyWatchStop = watchEffect(function() {
+    showBuildIn = toValue(arg?.showBuildIn) ?? false;
+    isReadonly = toValue(arg?.isReadonly) ?? false;
+    isLocked = <#
+    if (hasLocked) {
+    #>dialogModel.is_locked == 1 || <#
+    }
+    #>toValue(arg?.isLocked) || false;
+  });
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -881,10 +913,20 @@ async function showDialog(
         #>
       };
     }
-  } else if (action === "edit") {
+  } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
       return await dialogRes.dialogPrm;
     }
+    ids = model.ids;
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      await refreshEfc();
+    }
+  } else if (dialogAction === "view") {
+    if (!model || !model.ids) {
+      return await dialogRes.dialogPrm;
+    }
+    isReadonly = true;
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
@@ -902,7 +944,9 @@ async function refreshEfc() {
   }
   const data = await findById(dialogModel.id);
   if (data) {
-    dialogModel = data;<#
+    dialogModel = {
+      ...data,
+    };<#
     if (mod === "base" && table === "usr") {
     #>
     old_default_dept_id = dialogModel.default_dept_id;<#
@@ -977,6 +1021,9 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 
 /** 确定 */
 async function saveClk() {
+  if (isReadonly) {
+    return;
+  }
   if (!formRef) {
     return;
   }
@@ -1011,12 +1058,16 @@ async function saveClk() {
     if (!dialogModel.id) {
       return;
     }
+    const dialogModel2 = {
+      ...dialogModel,
+        ...builtInModel,
+    };
+    if (!showBuildIn) {
+      Object.assign(dialogModel2, builtInModel);
+    }
     id = await updateById(
       dialogModel.id,
-      {
-        ...dialogModel,
-        ...builtInModel,
-      },
+      dialogModel2,
     );
     msg = await nsAsync("修改成功");
   }<#
@@ -1075,7 +1126,10 @@ watch(
 #>
 
 /** 点击取消关闭按钮 */
-function cancelClk() {
+function closeClk() {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   onCloseResolve({
     type: "cancel",
     changedIds,
@@ -1083,6 +1137,9 @@ function cancelClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   done(false);
   onCloseResolve({
     type: "cancel",
@@ -1123,5 +1180,8 @@ async function initI18nsEfc() {
 }
 initI18nsEfc();
 
-defineExpose({ showDialog });
+defineExpose({
+  showDialog,
+  refresh: refreshEfc,
+});
 </script>
