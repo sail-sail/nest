@@ -169,7 +169,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('add')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -181,7 +181,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('add')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -193,7 +193,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -205,7 +205,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="danger"
         @click="deleteByIdsEfc"
@@ -214,6 +214,16 @@
           <ElIconCircleClose />
         </template>
         <span>{{ ns('删除') }}</span>
+      </el-button>
+      
+      <el-button
+        plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconView />
+        </template>
+        <span>{{ ns('查看') }}</span>
       </el-button>
     
       <el-button
@@ -271,6 +281,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="importExcelClk"
             >
@@ -278,7 +289,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('enable')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="enableByIdsClk(1)"
             >
@@ -286,7 +297,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('enable')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="enableByIdsClk(0)"
             >
@@ -294,7 +305,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('lock')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="lockByIdsClk(1)"
             >
@@ -302,7 +313,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('lock')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="lockByIdsClk(0)"
             >
@@ -318,7 +329,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="primary"
         @click="revertByIdsEfc"
@@ -330,7 +341,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete')"
+        v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
         @click="forceDeleteByIdsClk"
@@ -405,6 +416,7 @@
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
+        @row-dblclick="openView"
       >
         
         <el-table-column
@@ -454,7 +466,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1"
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_locked"
                   @change="is_lockedChg(row.id, row.is_locked)"
                 ></CustomSwitch>
@@ -470,7 +482,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
                   @change="is_enabledChg(row.id, row.is_enabled)"
                 ></CustomSwitch>
@@ -486,7 +498,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1"
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
@@ -666,6 +678,7 @@ const props = defineProps<{
   is_deleted?: string;
   showBuildIn?: string;
   isPagination?: string;
+  isLocked?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
@@ -687,6 +700,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isLocked: "0|1",
   ids: "string[]",
   dict_id: "string[]",
   dict_id_lbl: "string[]",
@@ -702,6 +716,7 @@ const propsNotInSearch: string[] = [
   "isMultiple",
   "showBuildIn",
   "isPagination",
+  "isLocked",
 ];
 
 /** 内置搜索条件 */
@@ -773,6 +788,23 @@ watch(
       isPagination = false;
     } else {
       isPagination = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否只读模式 */
+let isLocked = $ref(false);
+
+watch(
+  () => props.isLocked,
+  () => {
+    if (props.isLocked === "1") {
+      isLocked = true;
+    } else {
+      isLocked = false;
     }
   },
   {
@@ -1070,6 +1102,9 @@ async function cancelExportClk() {
 
 /** 打开增加页面 */
 async function openAdd() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -1095,6 +1130,9 @@ async function openAdd() {
 
 /** 打开复制页面 */
 async function openCopy() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -1133,6 +1171,9 @@ let isCancelImport = $ref(false);
 
 /** 弹出导入窗口 */
 async function importExcelClk() {
+  if (isLocked) {
+    return;
+  }
   if (!uploadFileDialogRef) {
     return;
   }
@@ -1193,6 +1234,9 @@ async function cancelImport() {
 
 /** 锁定 */
 async function is_lockedChg(id: string, is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await lockByIds(
     [ id ],
@@ -1211,6 +1255,9 @@ async function is_lockedChg(id: string, is_locked: 0 | 1) {
 
 /** 启用 */
 async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await enableByIds(
     [ id ],
@@ -1229,6 +1276,9 @@ async function is_enabledChg(id: string, is_enabled: 0 | 1) {
 
 /** 打开修改页面 */
 async function openEdit() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -1243,6 +1293,39 @@ async function openEdit() {
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
+    isReadonly: $$(isLocked),
+    isLocked: $$(isLocked),
+    model: {
+      ids: selectedIds,
+    },
+  });
+  if (changedIds.length === 0) {
+    return;
+  }
+  await Promise.all([
+    dataGrid(),
+  ]);
+  emit("edit", changedIds);
+}
+
+/** 打开查看 */
+async function openView() {
+  if (!detailRef) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    return;
+  }
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("查看"),
+    action: "edit",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    isReadonly: true,
+    isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
     },
@@ -1258,6 +1341,9 @@ async function openEdit() {
 
 /** 点击删除 */
 async function deleteByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -1284,6 +1370,9 @@ async function deleteByIdsEfc() {
 
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -1309,6 +1398,9 @@ async function forceDeleteByIdsClk() {
 
 /** 点击启用或者禁用 */
 async function enableByIdsClk(is_enabled: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1334,6 +1426,9 @@ async function enableByIdsClk(is_enabled: 0 | 1) {
 
 /** 点击锁定或者解锁 */
 async function lockByIdsClk(is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1359,6 +1454,9 @@ async function lockByIdsClk(is_locked: 0 | 1) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要还原的数据"));
     return;

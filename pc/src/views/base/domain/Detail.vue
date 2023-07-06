@@ -3,6 +3,22 @@
   ref="customDialogRef"
   :before-close="beforeClose"
 >
+  <template
+    v-if="!isLocked"
+    #extra_header
+  >
+    <ElIconUnlock
+      v-if="!isReadonly"
+      class="unlock_but"
+      @click="isReadonly = true"
+    >
+    </ElIconUnlock>
+    <ElIconLock
+      v-else
+      class="lock_but"
+      @click="isReadonly = false"
+    ></ElIconLock>
+  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -38,6 +54,7 @@
             <CustomInput
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -52,6 +69,7 @@
               v-model="dialogModel.is_default"
               code="is_default"
               :placeholder="`${ ns('请选择') } ${ n('默认') }`"
+              :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -64,6 +82,7 @@
             <CustomInputNumber
               v-model="dialogModel.order_by"
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -80,6 +99,7 @@
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -104,6 +124,7 @@
       </el-button>
       
       <el-button
+        v-if="!isLocked && !isReadonly"
         plain
         type="primary"
         @click="saveClk"
@@ -111,7 +132,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ n('确定') }}</span>
       </el-button>
       
       <div
@@ -154,6 +175,11 @@
 
 <script lang="ts" setup>
 import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
+import {
   create,
   findById,
   findLastOrderBy,
@@ -187,7 +213,7 @@ const {
 
 let inited = $ref(false);
 
-type DialogAction = "add" | "copy" | "edit";
+type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
@@ -236,6 +262,14 @@ let builtInModel = $ref<DomainInput>();
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
 
+/** 是否只读模式 */
+let isReadonly = $ref(false);
+
+/** 是否锁定 */
+let isLocked = $ref(false);
+
+let readonlyWatchStop: WatchStopHandle | undefined = undefined;
+
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DomainInput = {
@@ -253,7 +287,9 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: DomainInput;
-    showBuildIn?: Ref<boolean> | boolean;
+    showBuildIn?: MaybeRefOrGetter<boolean>;
+    isReadonly?: MaybeRefOrGetter<boolean>;
+    isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       id?: string;
       ids?: string[];
@@ -272,7 +308,14 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = unref(arg?.showBuildIn) ?? false;
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
+  readonlyWatchStop = watchEffect(function() {
+    showBuildIn = toValue(arg?.showBuildIn) ?? false;
+    isReadonly = toValue(arg?.isReadonly) ?? false;
+    isLocked = toValue(arg?.isLocked) || false;
+  });
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -306,10 +349,20 @@ async function showDialog(
         id: undefined,
       };
     }
-  } else if (action === "edit") {
+  } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
       return await dialogRes.dialogPrm;
     }
+    ids = model.ids;
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      await refreshEfc();
+    }
+  } else if (dialogAction === "view") {
+    if (!model || !model.ids) {
+      return await dialogRes.dialogPrm;
+    }
+    isReadonly = true;
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
@@ -397,6 +450,9 @@ async function nextId() {
 
 /** 确定 */
 async function saveClk() {
+  if (isReadonly) {
+    return;
+  }
   if (!formRef) {
     return;
   }
@@ -452,6 +508,9 @@ async function saveClk() {
 
 /** 点击取消关闭按钮 */
 function closeClk() {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   onCloseResolve({
     type: "cancel",
     changedIds,
@@ -459,6 +518,9 @@ function closeClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   done(false);
   onCloseResolve({
     type: "cancel",
@@ -486,5 +548,8 @@ async function initI18nsEfc() {
 }
 initI18nsEfc();
 
-defineExpose({ showDialog });
+defineExpose({
+  showDialog,
+  refresh: refreshEfc,
+});
 </script>

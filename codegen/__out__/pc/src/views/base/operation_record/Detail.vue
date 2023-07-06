@@ -3,6 +3,22 @@
   ref="customDialogRef"
   :before-close="beforeClose"
 >
+  <template
+    v-if="!isLocked"
+    #extra_header
+  >
+    <ElIconUnlock
+      v-if="!isReadonly"
+      class="unlock_but"
+      @click="isReadonly = true"
+    >
+    </ElIconUnlock>
+    <ElIconLock
+      v-else
+      class="lock_but"
+      @click="isReadonly = false"
+    ></ElIconLock>
+  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -37,6 +53,7 @@
             <CustomInput
               v-model="dialogModel.module"
               :placeholder="`${ ns('请输入') } ${ n('模块') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -49,6 +66,7 @@
             <CustomInput
               v-model="dialogModel.module_lbl"
               :placeholder="`${ ns('请输入') } ${ n('模块名称') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -61,6 +79,7 @@
             <CustomInput
               v-model="dialogModel.method"
               :placeholder="`${ ns('请输入') } ${ n('方法') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -73,6 +92,7 @@
             <CustomInput
               v-model="dialogModel.method_lbl"
               :placeholder="`${ ns('请输入') } ${ n('方法名称') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -85,6 +105,7 @@
             <CustomInput
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('操作') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -97,6 +118,7 @@
             <CustomInput
               v-model="dialogModel.old_data"
               :placeholder="`${ ns('请输入') } ${ n('操作前数据') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -109,6 +131,7 @@
             <CustomInput
               v-model="dialogModel.new_data"
               :placeholder="`${ ns('请输入') } ${ n('操作后数据') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -125,6 +148,7 @@
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -188,6 +212,11 @@
 
 <script lang="ts" setup>
 import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
+import {
   findById,
 } from "./Api";
 
@@ -218,7 +247,7 @@ const {
 
 let inited = $ref(false);
 
-type DialogAction = "add" | "copy" | "edit";
+type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
@@ -255,6 +284,14 @@ let builtInModel = $ref<OperationRecordInput>();
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
 
+/** 是否只读模式 */
+let isReadonly = $ref(false);
+
+/** 是否锁定 */
+let isLocked = $ref(false);
+
+let readonlyWatchStop: WatchStopHandle | undefined = undefined;
+
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: OperationRecordInput = {
@@ -269,7 +306,9 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: OperationRecordInput;
-    showBuildIn?: Ref<boolean> | boolean;
+    showBuildIn?: MaybeRefOrGetter<boolean>;
+    isReadonly?: MaybeRefOrGetter<boolean>;
+    isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       id?: string;
       ids?: string[];
@@ -288,7 +327,14 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = unref(arg?.showBuildIn) ?? false;
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
+  readonlyWatchStop = watchEffect(function() {
+    showBuildIn = toValue(arg?.showBuildIn) ?? false;
+    isReadonly = toValue(arg?.isReadonly) ?? false;
+    isLocked = toValue(arg?.isLocked) || false;
+  });
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -319,10 +365,20 @@ async function showDialog(
         id: undefined,
       };
     }
-  } else if (action === "edit") {
+  } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
       return await dialogRes.dialogPrm;
     }
+    ids = model.ids;
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      await refreshEfc();
+    }
+  } else if (dialogAction === "view") {
+    if (!model || !model.ids) {
+      return await dialogRes.dialogPrm;
+    }
+    isReadonly = true;
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
@@ -410,6 +466,9 @@ async function nextId() {
 
 /** 点击取消关闭按钮 */
 function closeClk() {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   onCloseResolve({
     type: "cancel",
     changedIds,
@@ -417,6 +476,9 @@ function closeClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   done(false);
   onCloseResolve({
     type: "cancel",
@@ -447,5 +509,8 @@ async function initI18nsEfc() {
 }
 initI18nsEfc();
 
-defineExpose({ showDialog });
+defineExpose({
+  showDialog,
+  refresh: refreshEfc,
+});
 </script>

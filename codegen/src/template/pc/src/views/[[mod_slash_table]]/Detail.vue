@@ -38,6 +38,22 @@ for (let i = 0; i < columns.length; i++) {
   ref="customDialogRef"
   :before-close="beforeClose"
 >
+  <template
+    v-if="!isLocked"
+    #extra_header
+  >
+    <ElIconUnlock
+      v-if="!isReadonly"
+      class="unlock_but"
+      @click="isReadonly = true"
+    >
+    </ElIconUnlock>
+    <ElIconLock
+      v-else
+      class="lock_but"
+      @click="isReadonly = false"
+    ></ElIconLock>
+  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -147,20 +163,21 @@ for (let i = 0; i < columns.length; i++) {
             <UploadImage
               v-model="dialogModel.<#=column_name#>"<#
               if (column.attMaxSize > 1) {
-            #>
+              #>
               :max-size="<#=column.attMaxSize#>"<#
               }
-            #><#
-            if (column.maxFileSize) {
-            #>
+              #><#
+              if (column.maxFileSize) {
+              #>
               :maxFileSize="<#=column.maxFileSize#>"<#
-            }
-            #><#
-            if (column.attAccept) {
-            #>
+              }
+              #><#
+              if (column.attAccept) {
+              #>
               accept="<#=column.attAccept#>"<#
-            }
-            #>
+              }
+              #>
+              :readonly="isLocked || isReadonly"
             ></UploadImage><#
             } else if (
               foreignKey
@@ -201,6 +218,7 @@ for (let i = 0; i < columns.length; i++) {
               multiple<#
               }
               #>
+              :readonly="isLocked || isReadonly"
             ></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
               if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -220,6 +238,7 @@ for (let i = 0; i < columns.length; i++) {
               multiple<#
               }
               #>
+              :readonly="isLocked || isReadonly"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignKey && foreignKey.selectType === "tree") {
             #>
@@ -245,6 +264,7 @@ for (let i = 0; i < columns.length; i++) {
               multiple<#
               }
               #>
+              :readonly="isLocked || isReadonly"
             ></CustomTreeSelect><#
             } else if (selectList.length > 0) {
             #>
@@ -257,6 +277,7 @@ for (let i = 0; i < columns.length; i++) {
               default-first-option
               :clearable="true"
               @keyup.enter.stop
+              :disabled="isLocked || isReadonly"
             ><#
               for (let item of selectList) {
                 let value = item.value;
@@ -266,13 +287,13 @@ for (let i = 0; i < columns.length; i++) {
                 } else if (typeof(value) === "number") {
                   value = value.toString();
                 }
-            #>
+              #>
               <el-option
                 :value="<#=value#>"
                 :label="n('<#=label#>')"
               ></el-option><#
               }
-            #>
+              #>
             </el-select><#
             } else if (column.dict) {
             #>
@@ -281,6 +302,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></DictSelect><#
             } else if (column.dictbiz) {
             #>
@@ -289,6 +311,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
@@ -305,6 +328,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+              :readonly="isReadonly"
             ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
@@ -312,6 +336,7 @@ for (let i = 0; i < columns.length; i++) {
               v-model="dialogModel.<#=column_name#>"
               :true-readonly-label="`${ ns('是') }`"
               :false-readonly-label="`${ ns('否') }`"
+              :readonly="isLocked || isReadonly"
             >
               <#=column_comment#>
             </CustomCheckbox><#
@@ -320,6 +345,7 @@ for (let i = 0; i < columns.length; i++) {
             <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInputNumber><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -345,6 +371,7 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :precision="<#=precision#>"
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInputNumber><#
             } else {
             #>
@@ -358,6 +385,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomInput><#
             }
             #>
@@ -400,6 +428,7 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <el-button
+        v-if="!isLocked && !isReadonly"
         plain
         type="primary"
         @click="saveClk"
@@ -407,7 +436,7 @@ for (let i = 0; i < columns.length; i++) {
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ n('确定') }}</span>
       </el-button><#
       }
       #>
@@ -451,6 +480,11 @@ for (let i = 0; i < columns.length; i++) {
 </template>
 
 <script lang="ts" setup>
+import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
 import {<#
   if (opts.noAdd !== true) {
   #>
@@ -630,7 +664,7 @@ const {
 
 let inited = $ref(false);
 
-type DialogAction = "add" | "copy" | "edit";
+type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({<#
@@ -732,6 +766,14 @@ let builtInModel = $ref<<#=inputName#>>();
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
 
+/** 是否只读模式 */
+let isReadonly = $ref(false);
+
+/** 是否锁定 */
+let isLocked = $ref(false);
+
+let readonlyWatchStop: WatchStopHandle | undefined = undefined;
+
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: <#=inputName#> = {<#
@@ -780,7 +822,9 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: <#=inputName#>;
-    showBuildIn?: Ref<boolean> | boolean;
+    showBuildIn?: MaybeRefOrGetter<boolean>;
+    isReadonly?: MaybeRefOrGetter<boolean>;
+    isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       id?: string;
       ids?: string[];
@@ -806,7 +850,18 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = unref(arg?.showBuildIn) ?? false;
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
+  readonlyWatchStop = watchEffect(function() {
+    showBuildIn = toValue(arg?.showBuildIn) ?? false;
+    isReadonly = toValue(arg?.isReadonly) ?? false;
+    isLocked = <#
+    if (hasLocked) {
+    #>dialogModel.is_locked == 1 || <#
+    }
+    #>toValue(arg?.isLocked) || false;
+  });
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -858,10 +913,20 @@ async function showDialog(
         #>
       };
     }
-  } else if (action === "edit") {
+  } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
       return await dialogRes.dialogPrm;
     }
+    ids = model.ids;
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      await refreshEfc();
+    }
+  } else if (dialogAction === "view") {
+    if (!model || !model.ids) {
+      return await dialogRes.dialogPrm;
+    }
+    isReadonly = true;
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
@@ -956,6 +1021,9 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 
 /** 确定 */
 async function saveClk() {
+  if (isReadonly) {
+    return;
+  }
   if (!formRef) {
     return;
   }
@@ -1059,6 +1127,9 @@ watch(
 
 /** 点击取消关闭按钮 */
 function closeClk() {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   onCloseResolve({
     type: "cancel",
     changedIds,
@@ -1066,6 +1137,9 @@ function closeClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   done(false);
   onCloseResolve({
     type: "cancel",
@@ -1106,5 +1180,8 @@ async function initI18nsEfc() {
 }
 initI18nsEfc();
 
-defineExpose({ showDialog });
+defineExpose({
+  showDialog,
+  refresh: refreshEfc,
+});
 </script>

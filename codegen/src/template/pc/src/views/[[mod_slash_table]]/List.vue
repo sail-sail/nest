@@ -318,7 +318,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('add')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -330,7 +330,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button>
       
       <el-button
-        v-if="permit('add')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -346,7 +346,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('edit')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -362,7 +362,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="danger"
         @click="deleteByIdsEfc"
@@ -374,6 +374,16 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
         }
       #>
+      
+      <el-button
+        plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconView />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
     
       <el-button
         plain
@@ -445,6 +455,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="importExcelClk"
             >
@@ -456,7 +467,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
-              v-if="permit('enable')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="enableByIdsClk(1)"
             >
@@ -464,7 +475,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('enable')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="enableByIdsClk(0)"
             >
@@ -476,7 +487,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
-              v-if="permit('lock')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="lockByIdsClk(1)"
             >
@@ -484,7 +495,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('lock')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="lockByIdsClk(0)"
             >
@@ -501,10 +512,10 @@ const hasAtt = columns.some((item) => item.isAtt);
     
     <template v-else><#
       if (opts.noDelete !== true && opts.noRevert !== true) {
-    #>
+      #>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="primary"
         @click="revertByIdsEfc"
@@ -516,11 +527,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
       }
       #><#
-        if (opts.noDelete !== true) {
+      if (opts.noDelete !== true) {
       #>
       
       <el-button
-        v-if="permit('force_delete')"
+        v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
         @click="forceDeleteByIdsClk"
@@ -530,7 +541,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('彻底删除') }}</span>
       </el-button><#
-        }
+      }
       #>
       
       <el-button
@@ -542,7 +553,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('刷新') }}</span>
       </el-button><#
-        if (opts.noExport !== true) {
+      if (opts.noExport !== true) {
       #>
       
       <el-button
@@ -554,7 +565,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('导出') }}</span>
       </el-button><#
-        }
+      }
       #>
       
     </template>
@@ -607,6 +618,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
+        @row-dblclick="openView"
       >
         
         <el-table-column
@@ -689,6 +701,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   accept="<#=column.attAccept#>"<#
                   }
                   #>
+                  :isLocked="isLocked"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -708,7 +721,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1"
+                  #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
@@ -761,7 +774,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1"
+                  #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.<#=column_name#>"
                   :before-change="() => row.<#=column_name#> == 0"
                   @change="<#=column_name#>Chg(row.id)"
@@ -775,7 +788,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1"
+                  #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.<#=column_name#>"
                   @change="<#=column_name#>Chg(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
@@ -940,7 +953,8 @@ const hasAtt = columns.some((item) => item.isAtt);
   
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
-    v-slot="{ selectedIds }"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
   >
     <<#=Foreign_Table_Up#>List<#
       if (mod === "base" && table === "role" && column_name === "menu_ids") {
@@ -948,8 +962,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       :tenant_ids="[ usrStore.tenant_id ]"<#
       }
       #>
-      :selected-ids="selectedIds"
-      @selected-ids-chg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
+      v-bind="listSelectProps"
     ></<#=Foreign_Table_Up#>List>
   </ListSelectDialog><#
     }
@@ -1285,6 +1298,7 @@ const props = defineProps<{
   is_deleted?: string;
   showBuildIn?: string;
   isPagination?: string;
+  isLocked?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
@@ -1378,6 +1392,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isLocked: "0|1",
   ids: "string[]",<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1431,6 +1446,7 @@ const propsNotInSearch: string[] = [
   "isMultiple",
   "showBuildIn",
   "isPagination",
+  "isLocked",
 ];
 
 /** 内置搜索条件 */
@@ -1502,6 +1518,23 @@ watch(
       isPagination = false;
     } else {
       isPagination = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否只读模式 */
+let isLocked = $ref(false);
+
+watch(
+  () => props.isLocked,
+  () => {
+    if (props.isLocked === "1") {
+      isLocked = true;
+    } else {
+      isLocked = false;
     }
   },
   {
@@ -2020,6 +2053,9 @@ if (opts.noAdd !== true) {
 
 /** 打开增加页面 */
 async function openAdd() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -2050,6 +2086,9 @@ async function openAdd() {
 
 /** 打开复制页面 */
 async function openCopy() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -2090,6 +2129,9 @@ let isCancelImport = $ref(false);
 
 /** 弹出导入窗口 */
 async function importExcelClk() {
+  if (isLocked) {
+    return;
+  }
   if (!uploadFileDialogRef) {
     return;
   }
@@ -2230,6 +2272,9 @@ if (column_name === "is_default") {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await defaultById(
     id,
@@ -2249,6 +2294,9 @@ async function <#=column_name#>Chg(id: string) {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await enableByIds(
     [ id ],
@@ -2269,6 +2317,9 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await lockByIds(
     [ id ],
@@ -2289,6 +2340,9 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await updateById(
     id,
@@ -2313,6 +2367,9 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 
 /** 打开修改页面 */
 async function openEdit() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -2327,6 +2384,8 @@ async function openEdit() {
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
+    isReadonly: $$(isLocked),
+    isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
     },
@@ -2345,12 +2404,51 @@ async function openEdit() {
   emit("edit", changedIds);
 }<#
 }
-#><#
+#>
+
+/** 打开查看 */
+async function openView() {
+  if (!detailRef) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    return;
+  }
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("查看"),
+    action: "edit",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    isReadonly: true,
+    isLocked: $$(isLocked),
+    model: {
+      ids: selectedIds,
+    },
+  });
+  if (changedIds.length === 0) {
+    return;
+  }
+  await Promise.all([
+    dataGrid(),<#
+    if (hasSummary) {
+    #>
+    dataSummary(),<#
+    }
+    #>
+  ]);
+  emit("edit", changedIds);
+}<#
 if (opts.noDelete !== true) {
 #>
 
 /** 点击删除 */
 async function deleteByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -2382,6 +2480,9 @@ async function deleteByIdsEfc() {
 
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -2416,6 +2517,9 @@ async function forceDeleteByIdsClk() {
 
 /** 点击启用或者禁用 */
 async function enableByIdsClk(is_enabled: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -2445,6 +2549,9 @@ async function enableByIdsClk(is_enabled: 0 | 1) {
 
 /** 点击锁定或者解锁 */
 async function lockByIdsClk(is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -2474,6 +2581,9 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要还原的数据"));
     return;
@@ -2625,14 +2735,27 @@ for (let i = 0; i < columns.length; i++) {
 let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
 async function <#=column_name#>Clk(row: <#=modelName#>) {
-  if (!<#=column_name#>ListSelectDialogRef) return;
+  if (!<#=column_name#>ListSelectDialogRef) {
+    return;
+  }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   let {
     selectedIds: selectedIds2,
     action
   } = await <#=column_name#>ListSelectDialogRef.showDialog({
-    selectedIds: row.<#=column_name#> as string[],
+    selectedIds: row.<#=column_name#> as string[],<#
+    if (hasLocked) {
+    #>
+    isLocked: row.is_locked == 1,<#
+    } else {
+    #>
+    isLocked: false,<#
+    }
+    #>
   });
+  if (isLocked) {
+    return;
+  }
   if (action !== "select") {
     return;
   }
@@ -2666,6 +2789,7 @@ let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({
     title,
+    isLocked: $$(isLocked),
     model: {
       id,
     },

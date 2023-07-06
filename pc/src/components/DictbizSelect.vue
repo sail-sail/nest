@@ -13,7 +13,7 @@
   @clear="clearClk"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue ? modelValue : undefined"
+  :model-value="modelValue === '' ? modelValue : undefined"
   @update:model-value="modelValue = $event"
   :loading="!inited"
   class="dict_select"
@@ -103,7 +103,7 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
-    modelValue?: string | string[] | null;
+    modelValue?: any;
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
@@ -147,7 +147,23 @@ watch(
 
 function valueChg() {
   emit("update:modelValue", modelValue);
-  emit("change", modelValue);
+  if (!props.multiple) {
+    const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
+    emit("change", model);
+    return;
+  }
+  let models: DictModel[] = [ ];
+  let modelValues: string[] = [ ];
+  if (Array.isArray(modelValue)) {
+    modelValues = modelValue;
+  } else {
+    modelValues = modelValue?.split(",") || [ ];
+  }
+  for (const value of modelValues) {
+    const model = dictModels.find((item) => value != null && String(props.optionsMap(item).value) == String(value))!;
+    models.push(model);
+  }
+  emit("change", models);
 }
 
 let options4SelectV2 = $ref<(OptionType & { __pinyin_label?: string })[]>([ ]);
@@ -198,8 +214,8 @@ async function refreshDropdownWidth() {
 let dictModels = $ref<DictModel[]>([ ]);
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
-  (e: "change", value?: any | any[] | null): void,
+  (e: "update:modelValue", value?: any): void,
+  (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
@@ -208,7 +224,7 @@ const modelLabels = $computed(() => {
     return "";
   }
   if (!props.multiple) {
-    const model = dictModels.find((item) => props.optionsMap(item).value === modelValue);
+    const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) === String(modelValue));
     if (!model) {
       return "";
     }
@@ -217,7 +233,7 @@ const modelLabels = $computed(() => {
   let labels: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
-    const model = dictModels.find((item) => props.optionsMap(item).value === value);
+    const model = dictModels.find((item) => value != null && String(props.optionsMap(item).value) === String(value));
     if (!model) {
       continue;
     }

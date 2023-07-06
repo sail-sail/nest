@@ -7,15 +7,17 @@
     un-overflow-hidden
     un-flex="~ [1_0_0] row basis-[inherit]"
   >
-    <List
+    <TreeList
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
-    ></List>
+      :is-readonly="isReadonly ? '1' : '0'"
+      :is-locked="isReadonly ? '1' : '0'"
+    ></TreeList>
   </div>
   <div
     un-p="y-2.5"
-    un-flex
+    un-flex="~"
     un-justify-center
     un-items-center
   >
@@ -26,7 +28,7 @@
       <template #icon>
         <ElIconCircleClose />
       </template>
-      <span>取消</span>
+      <span>{{ ns("取消") }}</span>
     </el-button>
     
     <el-button
@@ -37,7 +39,7 @@
       <template #icon>
         <ElIconCircleCheck />
       </template>
-      <span>确定</span>
+      <span>{{ ns("确定") }}</span>
     </el-button>
   </div>
 </CustomDialog>
@@ -45,10 +47,15 @@
 
 <script lang="ts" setup>
 import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
+import {
   findAll,
 } from "./Api";
 
-import List from "./List.vue";
+import TreeList from "./TreeList.vue";
 
 import {
   type MenuModel,
@@ -57,6 +64,11 @@ import {
 const emit = defineEmits<{
   (e: "change", value?: MenuModel | (MenuModel | undefined)[] | null): void,
 }>();
+
+const {
+  n,
+  ns,
+} = useI18n("/base/menu");
 
 let inited = $ref(false);
 
@@ -75,11 +87,16 @@ let selectedIds = $ref<string[]>([ ]);
 
 let multiple = $ref(false);
 
+let isReadonly = $ref(false);
+
+let readonlyWatchStop: WatchStopHandle | undefined = undefined;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
     title?: string;
     multiple?: boolean;
+    isReadonly?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: string[];
     };
@@ -95,6 +112,12 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
+  readonlyWatchStop = watchEffect(function() {
+    isReadonly = toValue(arg?.isReadonly) ?? false;
+  });
   dialogAction = action || "select";
   
   if (arg?.multiple != null) {
@@ -132,6 +155,9 @@ async function saveClk() {
 
 /** 点击取消关闭按钮 */
 async function closeClk() {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   onCloseResolve({
     type: "cancel",
     selectedIds,
@@ -139,6 +165,9 @@ async function closeClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   done(false);
   onCloseResolve({
     type: "cancel",

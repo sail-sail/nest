@@ -13,7 +13,7 @@
   @clear="clearClk"
   un-w="full"
   v-bind="$attrs"
-  :model-value="modelValue ? modelValue : undefined"
+  :model-value="modelValue !== '' ? modelValue : undefined"
   @update:model-value="modelValue = $event"
   :loading="!inited"
   class="dict_select"
@@ -73,7 +73,7 @@
     class="custom_select_readonly"
     v-bind="$attrs"
   >
-    {{ modelLabels[0] || "" }}
+    {{ modelLabels[0] ?? "" }}
   </div>
 </template>
 </template>
@@ -103,7 +103,7 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     pinyinFilterable?: boolean;
     height?: number;
-    modelValue?: string | string[] | null;
+    modelValue?: any;
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
@@ -148,7 +148,7 @@ watch(
 function valueChg() {
   emit("update:modelValue", modelValue);
   if (!props.multiple) {
-    const model = dictModels.find((item) => props.optionsMap(item).value === modelValue);
+    const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
     emit("change", model);
     return;
   }
@@ -160,7 +160,7 @@ function valueChg() {
     modelValues = modelValue?.split(",") || [ ];
   }
   for (const value of modelValues) {
-    const model = dictModels.find((item) => props.optionsMap(item).value === value)!;
+    const model = dictModels.find((item) => value != null && String(props.optionsMap(item).value) == String(value))!;
     models.push(model);
   }
   emit("change", models);
@@ -220,24 +220,24 @@ const emit = defineEmits<{
 }>();
 
 const modelLabels = $computed(() => {
-  if (!modelValue) {
+  if (modelValue == null) {
     return "";
   }
   if (!props.multiple) {
-    const model = dictModels.find((item) => props.optionsMap(item).value === modelValue);
+    const model = dictModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
     if (!model) {
       return "";
     }
-    return [ props.optionsMap(model).label || "" ];
+    return [ props.optionsMap(model).label ?? "" ];
   }
   let labels: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
-    const model = dictModels.find((item) => props.optionsMap(item).value === value);
+    const model = dictModels.find((item) => value != null && String(props.optionsMap(item).value) == String(value));
     if (!model) {
       continue;
     }
-    labels.push(props.optionsMap(model).label || "");
+    labels.push(props.optionsMap(model).label ?? "");
   }
   return labels;
 });
