@@ -1,6 +1,10 @@
 <template>
 <div
-  @click="linkClk"
+  un-flex="~ gap-1"
+  un-p="y-0.5"
+  un-box-border
+  un-rounded
+  un-cursor-pointer
 >
   <template
     v-if="urlList.length > 0"
@@ -9,9 +13,15 @@
       v-for="(url, i) in urlList"
       :key="url"
       :src="url"
-      :un-m="i > 0 ? 'l-1' : ''"
+      fit="contain"
+      loading="lazy"
       un-rounded
       un-object-contain
+      :preview-src-list="originalUrlList"
+      :initial-index="i"
+      :preview-teleported="true"
+      :infinite="false"
+      :hide-on-click-modal="true"
     >
       <template #placeholder>
         <div
@@ -56,24 +66,23 @@
   >
     (无)
   </div>
-  <Teleport to="body">
-    <el-image-viewer
-      v-if="urlList.length > 0 && showImageViewer"
-      hide-on-click-modal
-      :url-list="urlList"
-      @close="showImageViewer = false"
-    ></el-image-viewer>
-  </Teleport>
 </div>
 </template>
 
 <script lang="ts" setup>
 const props = withDefaults(
   defineProps<{
-    modelValue: string|null;
+    modelValue: string | null;
+    width?: number;
+    height?: number;
+    quality?: number;
   }>(),
   {
     modelValue: "",
+    format: "webp",
+    width: 46,
+    height: 46,
+    quality: 60,
   },
 );
 
@@ -82,17 +91,30 @@ let urlList = $computed(() => {
   if (!props.modelValue) return list;
   let ids = props.modelValue.split(",").filter((x) => x);
   for (let id of ids) {
-    list.push(getDownloadUrl({
+    const url = getImgUrl({
       id,
-      inline: "1",
-    }, "oss"));
+      format: "webp",
+      width: props.width,
+      height: props.height,
+      quality: props.quality,
+    });
+    list.push(url);
   }
   return list;
 });
 
-let showImageViewer = $ref(false);
-
-function linkClk() {
-  showImageViewer = !showImageViewer;
-}
+let originalUrlList = $computed(() => {
+  const list: string[] = [];
+  if (!props.modelValue) return list;
+  let ids = props.modelValue.split(",").filter((x) => x);
+  for (let id of ids) {
+    const url = getImgUrl({
+      id,
+      format: "webp",
+      quality: 100,
+    });
+    list.push(url);
+  }
+  return list;
+});
 </script>

@@ -159,7 +159,7 @@ export async function enableByIdsMenu(
   
   await usePermit(
     "/base/menu",
-    "lock",
+    "enable",
   );
   
   const {

@@ -76,6 +76,10 @@ export async function findAll(
   return res;
 }
 
+export type MenuModelTree = MenuModel & {
+  children?: MenuModelTree[];
+}
+
 /**
  * 查找树形数据
  * @param sort 
@@ -215,7 +219,6 @@ export async function findById(
           update_usr_id_lbl
           update_time
           update_time_lbl
-          is_deleted
         }
       }
     `,

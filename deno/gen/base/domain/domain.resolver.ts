@@ -181,7 +181,7 @@ export async function enableByIdsDomain(
   
   await usePermit(
     "/base/domain",
-    "lock",
+    "enable",
   );
   
   const {

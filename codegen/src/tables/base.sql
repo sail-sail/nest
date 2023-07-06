@@ -76,6 +76,7 @@ CREATE TABLE if not exists `base_tenant_menu` (
 drop table if exists `base_usr`;
 CREATE TABLE if not exists `base_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `img` varchar(22) NOT NULL DEFAULT '' COMMENT '头像',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `username` varchar(45) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(43) NOT NULL DEFAULT '' COMMENT '密码',

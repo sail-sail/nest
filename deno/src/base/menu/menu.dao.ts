@@ -54,7 +54,7 @@ async function _getMenus(
   }
   sql += ` order by t.order_by asc`;
   
-  const table = "menu";
+  const table = "base_menu";
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });

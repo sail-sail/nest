@@ -318,7 +318,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('add')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -330,7 +330,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button>
       
       <el-button
-        v-if="permit('add')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -346,7 +346,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('edit')"
+        v-if="permit('edit') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -362,7 +362,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="danger"
         @click="deleteByIdsEfc"
@@ -374,10 +374,20 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
         }
       #>
+      
+      <el-button
+        plain
+        @click="openView"
+      >
+        <template #icon>
+          <ElIconView />
+        </template>
+        <span>{{ ns('查看') }}</span>
+      </el-button>
     
       <el-button
         plain
-        @click="searchClk"
+        @click="refreshClk"
       >
         <template #icon>
           <ElIconRefresh />
@@ -445,6 +455,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="importExcelClk"
             >
@@ -456,7 +467,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
-              v-if="permit('enable')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="enableByIdsClk(1)"
             >
@@ -464,7 +475,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('enable')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="enableByIdsClk(0)"
             >
@@ -476,7 +487,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
-              v-if="permit('lock')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="lockByIdsClk(1)"
             >
@@ -484,7 +495,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('lock')"
+              v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="lockByIdsClk(0)"
             >
@@ -501,10 +512,10 @@ const hasAtt = columns.some((item) => item.isAtt);
     
     <template v-else><#
       if (opts.noDelete !== true && opts.noRevert !== true) {
-    #>
+      #>
       
       <el-button
-        v-if="permit('delete')"
+        v-if="permit('delete') && !isLocked"
         plain
         type="primary"
         @click="revertByIdsEfc"
@@ -516,11 +527,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
       }
       #><#
-        if (opts.noDelete !== true) {
+      if (opts.noDelete !== true) {
       #>
       
       <el-button
-        v-if="permit('force_delete')"
+        v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
         @click="forceDeleteByIdsClk"
@@ -530,7 +541,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('彻底删除') }}</span>
       </el-button><#
-        }
+      }
       #>
       
       <el-button
@@ -542,7 +553,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('刷新') }}</span>
       </el-button><#
-        if (opts.noExport !== true) {
+      if (opts.noExport !== true) {
       #>
       
       <el-button
@@ -554,7 +565,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('导出') }}</span>
       </el-button><#
-        }
+      }
       #>
       
     </template>
@@ -607,6 +618,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         @click.ctrl="rowClkCtrl"
         @click.shift="rowClkShift"
         @header-dragend="headerDragend"
+        @row-dblclick="openView"
       >
         
         <el-table-column
@@ -689,6 +701,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   accept="<#=column.attAccept#>"<#
                   }
                   #>
+                  :isLocked="isLocked"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -703,20 +716,16 @@ const hasAtt = columns.some((item) => item.isAtt);
               v-bind="col"
             >
               <template #default="{ row }">
-                <el-input-number
+                <CustomInputNumber
                   v-if="permit('edit')<#
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1"
+                  #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  :precision="0"
-                  :step="1"
-                  :step-strictly="true"
-                  :controls="false"
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></el-input-number>
+                ></CustomInputNumber>
               </template>
             </el-table-column>
           </template><#
@@ -760,33 +769,29 @@ const hasAtt = columns.some((item) => item.isAtt);
               } else if(column.isSwitch && opts.noEdit !== true && column_name === "is_default") {
               #>
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit')<#
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1"
+                  #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.<#=column_name#>"
-                  :active-value="1"
-                  :inactive-value="0"
                   :before-change="() => row.<#=column_name#> == 0"
                   @change="<#=column_name#>Chg(row.id)"
-                ></el-switch>
+                ></CustomSwitch>
               </template><#
               } else if(column.isSwitch && opts.noEdit !== true) {
               #>
               <template #default="{ row }">
-                <el-switch
+                <CustomSwitch
                   v-if="permit('edit')<#
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }
-                  #> && row.is_deleted !== 1"
+                  #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.<#=column_name#>"
-                  :active-value="1"
-                  :inactive-value="0"
                   @change="<#=column_name#>Chg(row.id, row.<#=column_name#>)"
-                ></el-switch>
+                ></CustomSwitch>
               </template><#
               }
               #>
@@ -885,14 +890,15 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-table>
     </div>
     <div
-      un-flex
+      un-flex="~"
       un-justify-end
-      un-p="t-0.5 b-0.5"
+      un-p="y-1"
+      un-box-border
     ><#
       if (list_page) {
       #>
       <el-pagination
-        background
+        v-if="isPagination"
         :page-sizes="pageSizes"
         :page-size="page.size"
         layout="total, sizes, prev, pager, next, jumper"
@@ -900,11 +906,15 @@ const hasAtt = columns.some((item) => item.isAtt);
         :total="page.total"
         @size-change="pgSizeChg"
         @current-change="pgCurrentChg"
+      ></el-pagination>
+      <el-pagination
+        v-else
+        layout="total"
+        :total="page.total"
       ></el-pagination><#
       } else {
       #>
       <el-pagination
-        background
         layout="total"
         :total="page.total"
       ></el-pagination><#
@@ -943,7 +953,8 @@ const hasAtt = columns.some((item) => item.isAtt);
   
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
-    v-slot="{ selectedIds }"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
   >
     <<#=Foreign_Table_Up#>List<#
       if (mod === "base" && table === "role" && column_name === "menu_ids") {
@@ -951,8 +962,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       :tenant_ids="[ usrStore.tenant_id ]"<#
       }
       #>
-      :selected-ids="selectedIds"
-      @selected-ids-chg="<#=column_name#>ListSelectDialogRef?.selectedIdsChg($event)"
+      v-bind="listSelectProps"
     ></<#=Foreign_Table_Up#>List>
   </ListSelectDialog><#
     }
@@ -1201,6 +1211,7 @@ const emit = defineEmits([
   "edit",
   "remove",
   "revert",
+  "refresh",
   "beforeSearchReset",
 ]);
 
@@ -1250,11 +1261,17 @@ let search = $ref(initSearch());
 /** 回收站 */
 async function recycleChg() {
   selectedIds = [ ];
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 搜索 */
 async function searchClk() {
+  await dataGrid(true);
+}
+
+/** 刷新 */
+async function refreshClk() {
+  emit("refresh");
   await dataGrid(true);
 }
 
@@ -1264,12 +1281,12 @@ async function searchReset() {
   idsChecked = 0;
   resetSelectedIds();
   emit("beforeSearchReset");
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 清空搜索框事件 */
 async function searchIptClr() {
-  await searchClk();
+  await dataGrid(true);
 }
 
 /** 点击已选择 */
@@ -1280,6 +1297,8 @@ async function idsCheckedChg() {
 const props = defineProps<{
   is_deleted?: string;
   showBuildIn?: string;
+  isPagination?: string;
+  isLocked?: string;
   ids?: string[]; //ids
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选<#
@@ -1372,6 +1391,8 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
+  isPagination: "0|1",
+  isLocked: "0|1",
   ids: "string[]",<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1424,6 +1445,8 @@ const propsNotInSearch: string[] = [
   "selectedIds",
   "isMultiple",
   "showBuildIn",
+  "isPagination",
+  "isLocked",
 ];
 
 /** 内置搜索条件 */
@@ -1478,6 +1501,40 @@ watch(
       showBuildIn = true;
     } else {
       showBuildIn = false;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否分页 */
+let isPagination = $ref(true);
+
+watch(
+  () => props.isPagination,
+  () => {
+    if (props.isPagination === "0") {
+      isPagination = false;
+    } else {
+      isPagination = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+/** 是否只读模式 */
+let isLocked = $ref(false);
+
+watch(
+  () => props.isLocked,
+  () => {
+    if (props.isLocked === "1") {
+      isLocked = true;
+    } else {
+      isLocked = false;
     }
   },
   {
@@ -1856,10 +1913,32 @@ if (list_page) {
 async function useFindAll(
   opt?: GqlOpt,
 ) {
-  const pgSize = page.size;
-  const pgOffset = (page.current - 1) * page.size;
-  const search2 = getDataSearch();
-  tableData = await findAll(search2, { pgSize, pgOffset }, [ sort ], opt);
+  if (isPagination) {
+    const pgSize = page.size;
+    const pgOffset = (page.current - 1) * page.size;
+    const search2 = getDataSearch();
+    tableData = await findAll(
+      search2,
+      {
+        pgSize,
+        pgOffset,
+      },
+      [
+        sort,
+      ],
+      opt,
+    );
+  } else {
+    const search2 = getDataSearch();
+    tableData = await findAll(
+      search2,
+      undefined,
+      [
+        sort,
+      ],
+      opt,
+    );
+  }
 }<#
 } else {
 #>
@@ -1868,7 +1947,14 @@ async function useFindAll(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  tableData = await findAll(search2, undefined, [ sort ], opt);
+  tableData = await findAll(
+    search2,
+    undefined,
+    [
+      sort,
+    ],
+    opt,
+  );
 }<#
 }
 #>
@@ -1877,7 +1963,10 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(search2, opt);
+  page.total = await findCount(
+    search2,
+    opt,
+  );
 }<#
 if (defaultSort && defaultSort.prop) {
 #>
@@ -1964,11 +2053,13 @@ if (opts.noAdd !== true) {
 
 /** 打开增加页面 */
 async function openAdd() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
   const {
-    type,
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("增加"),
@@ -1976,25 +2067,28 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
-  if (type === "cancel") {
+  if (changedIds.length === 0) {
     return;
   }
-  if (changedIds.length > 0) {
-    selectedIds = [ ...changedIds ];
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
-    emit("add", changedIds);
-  }
+  selectedIds = [
+    ...changedIds,
+  ];
+  await Promise.all([
+    dataGrid(true),<#
+    if (hasSummary) {
+    #>
+    dataSummary(),<#
+    }
+    #>
+  ]);
+  emit("add", changedIds);
 }
 
 /** 打开复制页面 */
 async function openCopy() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -2003,7 +2097,6 @@ async function openCopy() {
     return;
   }
   const {
-    type,
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("复制"),
@@ -2014,16 +2107,16 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
-  if (type === "cancel") {
+  if (changedIds.length === 0) {
     return;
   }
-  if (changedIds.length > 0) {
-    selectedIds = [ ...changedIds ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
-    emit("add", changedIds);
-  }
+  selectedIds = [
+    ...changedIds,
+  ];
+  await Promise.all([
+    dataGrid(true),
+  ]);
+  emit("add", changedIds);
 }<#
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
@@ -2036,6 +2129,9 @@ let isCancelImport = $ref(false);
 
 /** 弹出导入窗口 */
 async function importExcelClk() {
+  if (isLocked) {
+    return;
+  }
   if (!uploadFileDialogRef) {
     return;
   }
@@ -2176,6 +2272,9 @@ if (column_name === "is_default") {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await defaultById(
     id,
@@ -2195,6 +2294,9 @@ async function <#=column_name#>Chg(id: string) {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await enableByIds(
     [ id ],
@@ -2215,6 +2317,9 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await lockByIds(
     [ id ],
@@ -2235,6 +2340,9 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 
 /** <#=column_comment#> */
 async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   const notLoading = true;
   await updateById(
     id,
@@ -2259,6 +2367,9 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 
 /** 打开修改页面 */
 async function openEdit() {
+  if (isLocked) {
+    return;
+  }
   if (!detailRef) {
     return;
   }
@@ -2267,39 +2378,76 @@ async function openEdit() {
     return;
   }
   const {
-    type,
     changedIds,
   } = await detailRef.showDialog({
     title: await nsAsync("修改"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
+    isReadonly: $$(isLocked),
+    isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
     },
   });
-  if (type === "cancel") {
+  if (changedIds.length === 0) {
     return;
   }
-  if (changedIds.length > 0) {
-    await Promise.all([
-      dataGrid(),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
-    emit("edit", changedIds);
-  }
+  await Promise.all([
+    dataGrid(),<#
+    if (hasSummary) {
+    #>
+    dataSummary(),<#
+    }
+    #>
+  ]);
+  emit("edit", changedIds);
 }<#
 }
-#><#
+#>
+
+/** 打开查看 */
+async function openView() {
+  if (!detailRef) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    return;
+  }
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("查看"),
+    action: "view",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    isLocked: $$(isLocked),
+    model: {
+      ids: selectedIds,
+    },
+  });
+  if (changedIds.length === 0) {
+    return;
+  }
+  await Promise.all([
+    dataGrid(),<#
+    if (hasSummary) {
+    #>
+    dataSummary(),<#
+    }
+    #>
+  ]);
+  emit("edit", changedIds);
+}<#
 if (opts.noDelete !== true) {
 #>
 
 /** 点击删除 */
 async function deleteByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要删除的数据"));
     return;
@@ -2331,6 +2479,9 @@ async function deleteByIdsEfc() {
 
 /** 点击彻底删除 */
 async function forceDeleteByIdsClk() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要 彻底删除 的数据"));
     return;
@@ -2365,6 +2516,9 @@ async function forceDeleteByIdsClk() {
 
 /** 点击启用或者禁用 */
 async function enableByIdsClk(is_enabled: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -2394,6 +2548,9 @@ async function enableByIdsClk(is_enabled: 0 | 1) {
 
 /** 点击锁定或者解锁 */
 async function lockByIdsClk(is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -2423,6 +2580,9 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  if (isLocked) {
+    return;
+  }
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要还原的数据"));
     return;
@@ -2511,7 +2671,7 @@ async function initFrame() {
   }
   await Promise.all([
     initI18nsEfc(),
-    searchClk(),<#
+    dataGrid(true),<#
     if (hasSummary) {
     #>
     dataSummary(),<#
@@ -2532,7 +2692,7 @@ watch(
       ...search,
       ...builtInSearch,
     };
-    await searchClk();
+    await dataGrid(true);
   },
   {
     deep: true,
@@ -2574,14 +2734,27 @@ for (let i = 0; i < columns.length; i++) {
 let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
 async function <#=column_name#>Clk(row: <#=modelName#>) {
-  if (!<#=column_name#>ListSelectDialogRef) return;
+  if (!<#=column_name#>ListSelectDialogRef) {
+    return;
+  }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
   let {
     selectedIds: selectedIds2,
     action
   } = await <#=column_name#>ListSelectDialogRef.showDialog({
-    selectedIds: row.<#=column_name#> as string[],
+    selectedIds: row.<#=column_name#> as string[],<#
+    if (hasLocked) {
+    #>
+    isLocked: row.is_locked == 1,<#
+    } else {
+    #>
+    isLocked: false,<#
+    }
+    #>
   });
+  if (isLocked) {
+    return;
+  }
   if (action !== "select") {
     return;
   }
@@ -2615,6 +2788,7 @@ let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({
     title,
+    isLocked: $$(isLocked),
     model: {
       id,
     },
@@ -2626,6 +2800,6 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
 #>
 
 defineExpose({
-  refresh: searchClk,
+  refresh: refreshClk,
 });
 </script>

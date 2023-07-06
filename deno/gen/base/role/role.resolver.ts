@@ -159,7 +159,7 @@ export async function enableByIdsRole(
   
   await usePermit(
     "/base/role",
-    "lock",
+    "enable",
   );
   
   const {

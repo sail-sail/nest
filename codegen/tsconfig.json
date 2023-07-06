@@ -21,17 +21,16 @@
       "esnext"
     ]
   },
-  "exclude": [
-    "node_modules",
-    "__out__/**/*.*",
-    "src/template/**/*",
-    "src/**/[[table]].*.ts"
-  ],
   "include": [
     "src/bin/**/*.ts",
     "src/lib/**/*.ts",
     "src/tables/**/*.ts",
     "src/util/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "__out__/**/*.*",
+    "src/template/**/*.*"
   ],
   "ts-node": {
     "transpileOnly": true,

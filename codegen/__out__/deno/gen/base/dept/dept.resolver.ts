@@ -206,7 +206,7 @@ export async function enableByIdsDept(
   
   await usePermit(
     "/base/dept",
-    "lock",
+    "enable",
   );
   
   const {
@@ -258,10 +258,13 @@ export async function lockByIdsDept(
     module: "base_dept",
     module_lbl: "部门",
     method: "lockByIds",
-    method_lbl: "锁定",
-    lbl: "锁定",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
+    method_lbl: is_locked ? "锁定" : "解锁",
+    lbl: is_locked ? "锁定" : "解锁",
+    old_data: "",
+    new_data: JSON.stringify({
+      ids,
+      is_locked,
+    }),
   });
   return res;
 }
@@ -294,8 +297,8 @@ export async function revertByIdsDept(
     method: "revertByIds",
     method_lbl: "还原",
     lbl: "还原",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
+    old_data: "[]",
+    new_data: JSON.stringify(ids),
   });
   return res;
 }

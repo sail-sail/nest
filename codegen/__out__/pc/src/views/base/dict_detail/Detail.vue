@@ -3,6 +3,22 @@
   ref="customDialogRef"
   :before-close="beforeClose"
 >
+  <template
+    v-if="!isLocked"
+    #extra_header
+  >
+    <ElIconUnlock
+      v-if="!isReadonly"
+      class="unlock_but"
+      @click="isReadonly = true"
+    >
+    </ElIconUnlock>
+    <ElIconLock
+      v-else
+      class="lock_but"
+      @click="isReadonly = false"
+    ></ElIconLock>
+  </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
     un-overflow-hidden
@@ -19,7 +35,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ rows-[auto] cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -34,7 +50,6 @@
           <el-form-item
             :label="n('系统字典')"
             prop="dict_id"
-            un-h="full"
           >
             <CustomSelect
               v-model="dialogModel.dict_id"
@@ -45,8 +60,8 @@
                   value: item.id,
                 };
               })"
-              un-w="full"
               :placeholder="`${ ns('请选择') } ${ n('系统字典') }`"
+              :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -55,14 +70,12 @@
           <el-form-item
             :label="n('名称')"
             prop="lbl"
-            un-h="full"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.lbl"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :clearable="true"
-            ></el-input>
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -70,14 +83,12 @@
           <el-form-item
             :label="n('值')"
             prop="val"
-            un-h="full"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.val"
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('值') }`"
-              :clearable="true"
-            ></el-input>
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -85,19 +96,12 @@
           <el-form-item
             :label="n('排序')"
             prop="order_by"
-            un-h="full"
           >
-            <el-input-number
-              :set="dialogModel.order_by = dialogModel.order_by ?? undefined"
+            <CustomInputNumber
               v-model="dialogModel.order_by"
-              un-w="full"
-              :precision="0"
-              :step="1"
-              :step-strictly="true"
-              :controls="false"
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
-              :clearable="true"
-            ></el-input-number>
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
           </el-form-item>
         </template>
         
@@ -106,17 +110,15 @@
             :label="n('备注')"
             prop="rem"
             un-grid="col-span-2"
-            un-h="full"
           >
-            <el-input
+            <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 5 }"
               @keyup.enter.stop
-              un-w="full"
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
-              :clearable="true"
-            ></el-input>
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -131,15 +133,16 @@
       
       <el-button
         plain
-        @click="cancelClk"
+        @click="closeClk"
       >
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('取消') }}</span>
+        <span>{{ n('关闭') }}</span>
       </el-button>
       
       <el-button
+        v-if="!isLocked && !isReadonly"
         plain
         type="primary"
         @click="saveClk"
@@ -147,7 +150,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ n('确定') }}</span>
       </el-button>
       
       <div
@@ -190,6 +193,11 @@
 
 <script lang="ts" setup>
 import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
+import {
   create,
   findById,
   findLastOrderBy,
@@ -225,7 +233,7 @@ const {
 
 let inited = $ref(false);
 
-type DialogAction = "add" | "copy" | "edit";
+type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
@@ -292,6 +300,14 @@ let builtInModel = $ref<DictDetailInput>();
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
 
+/** 是否只读模式 */
+let isReadonly = $ref(false);
+
+/** 是否锁定 */
+let isLocked = $ref(false);
+
+let readonlyWatchStop: WatchStopHandle | undefined = undefined;
+
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DictDetailInput = {
@@ -309,7 +325,9 @@ async function showDialog(
   arg?: {
     title?: string;
     builtInModel?: DictDetailInput;
-    showBuildIn?: Ref<boolean> | boolean;
+    showBuildIn?: MaybeRefOrGetter<boolean>;
+    isReadonly?: MaybeRefOrGetter<boolean>;
+    isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       id?: string;
       ids?: string[];
@@ -328,7 +346,14 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
-  showBuildIn = unref(arg?.showBuildIn) ?? false;
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
+  readonlyWatchStop = watchEffect(function() {
+    showBuildIn = toValue(arg?.showBuildIn) ?? false;
+    isReadonly = toValue(arg?.isReadonly) ?? false;
+    isLocked = dialogModel.is_locked == 1 || toValue(arg?.isLocked) || false;
+  });
   dialogAction = action || "add";
   ids = [ ];
   changedIds = [ ];
@@ -364,10 +389,20 @@ async function showDialog(
         is_locked_lbl: undefined,
       };
     }
-  } else if (action === "edit") {
+  } else if (dialogAction === "edit") {
     if (!model || !model.ids) {
       return await dialogRes.dialogPrm;
     }
+    ids = model.ids;
+    if (ids && ids.length > 0) {
+      dialogModel.id = ids[0];
+      await refreshEfc();
+    }
+  } else if (dialogAction === "view") {
+    if (!model || !model.ids) {
+      return await dialogRes.dialogPrm;
+    }
+    isReadonly = true;
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
@@ -385,7 +420,9 @@ async function refreshEfc() {
   }
   const data = await findById(dialogModel.id);
   if (data) {
-    dialogModel = data;
+    dialogModel = {
+      ...data,
+    };
   }
 }
 
@@ -453,6 +490,9 @@ async function nextId() {
 
 /** 确定 */
 async function saveClk() {
+  if (isReadonly) {
+    return;
+  }
   if (!formRef) {
     return;
   }
@@ -477,12 +517,16 @@ async function saveClk() {
     if (!dialogModel.id) {
       return;
     }
+    const dialogModel2 = {
+      ...dialogModel,
+        ...builtInModel,
+    };
+    if (!showBuildIn) {
+      Object.assign(dialogModel2, builtInModel);
+    }
     id = await updateById(
       dialogModel.id,
-      {
-        ...dialogModel,
-        ...builtInModel,
-      },
+      dialogModel2,
     );
     msg = await nsAsync("修改成功");
   }
@@ -503,7 +547,10 @@ async function saveClk() {
 }
 
 /** 点击取消关闭按钮 */
-function cancelClk() {
+function closeClk() {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   onCloseResolve({
     type: "cancel",
     changedIds,
@@ -511,6 +558,9 @@ function cancelClk() {
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
+  if (readonlyWatchStop) {
+    readonlyWatchStop();
+  }
   done(false);
   onCloseResolve({
     type: "cancel",
@@ -536,5 +586,8 @@ async function initI18nsEfc() {
 }
 initI18nsEfc();
 
-defineExpose({ showDialog });
+defineExpose({
+  showDialog,
+  refresh: refreshEfc,
+});
 </script>

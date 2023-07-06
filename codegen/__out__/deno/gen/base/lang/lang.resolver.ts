@@ -159,7 +159,7 @@ export async function enableByIdsLang(
   
   await usePermit(
     "/base/lang",
-    "lock",
+    "enable",
   );
   
   const {

@@ -1,8 +1,8 @@
 <template>
 <ElSelectV2
+  v-if="readonly !== true"
   :options="options4SelectV2"
   filterable
-  clearable
   collapse-tags
   collapse-tags-tooltip
   default-first-option
@@ -10,15 +10,19 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
-  :model-value="modelValue"
-  @update:model-value="modelValueUpdate"
   @clear="clearClk"
+  un-w="full"
   v-bind="$attrs"
-  @keyup.enter.stop
+  :model-value="modelValue ? modelValue : undefined"
+  @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="custom_select"
   @change="valueChg"
   :multiple="props.multiple"
+  :clearable="!props.disabled"
+  :disabled="props.disabled"
+  :readonly="props.readonly"
+  @keyup.enter.stop
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -28,6 +32,49 @@
     <slot :name="key"></slot>
   </template>
 </ElSelectV2>
+<template
+  v-else
+>
+  <div
+    v-if="props.multiple"
+    un-flex="~ gap-1 wrap"
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="y-0.75 x-1.5"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    un-min="h-7.5"
+    un-line-height="normal"
+    un-break-words
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    <el-tag
+      v-for="label in modelLabels"
+      :key="label"
+      type="info"
+    >
+      {{ label }}
+    </el-tag>
+  </div>
+  <div
+    v-else
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="x-2.75 y-1"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    un-min="h-8"
+    un-line-height="normal"
+    un-break-words
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    {{ modelLabels[0] || "" }}
+  </div>
+</template>
 </template>
 
 <script lang="ts" setup>
@@ -65,6 +112,8 @@ const props = withDefaults(
     maxWidth?: number;
     multiple?: boolean;
     init?: boolean;
+    disabled?: boolean;
+    readonly?: boolean;
   }>(),
   {
     optionsMap: function(item: any) {
@@ -82,15 +131,12 @@ const props = withDefaults(
     maxWidth: 550,
     multiple: false,
     init: true,
+    disabled: undefined,
+    readonly: undefined,
   },
 );
 
 let modelValue = $ref(props.modelValue);
-
-function modelValueUpdate(value?: string | string[] | null) {
-  modelValue = value;
-  emit("update:modelValue", modelValue);
-}
 
 watch(
   () => props.modelValue,
@@ -98,6 +144,34 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+function modelValueUpdate(value?: string | string[] | null) {
+  modelValue = value;
+  emit("update:modelValue", value);
+}
+
+const modelLabels = $computed(() => {
+  if (!modelValue) {
+    return "";
+  }
+  if (!props.multiple) {
+    const model = data.find((item) => props.optionsMap(item).value === modelValue);
+    if (!model) {
+      return "";
+    }
+    return [ props.optionsMap(model).label || "" ];
+  }
+  let labels: string[] = [ ];
+  let modelValues = (modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const model = data.find((item) => props.optionsMap(item).value === value);
+    if (!model) {
+      continue;
+    }
+    labels.push(props.optionsMap(model).label || "");
+  }
+  return labels;
+});
 
 function clearClk() {
   modelValue = "";
@@ -206,16 +280,21 @@ async function refreshEfc() {
   inited = true;
 }
 
-function valueChg(value: string | string[] | null) {
+function valueChg() {
   if (!props.multiple) {
-    const model = data.find((item) => props.optionsMap(item).value === value);
+    const model = data.find((item) => props.optionsMap(item).value === modelValue);
     emit("change", model);
     return;
   }
   let models: any[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  let modelValues: string[] = [ ];
+  if (Array.isArray(modelValue)) {
+    modelValues = modelValue;
+  } else {
+    modelValues = modelValue?.split(",") || [ ];
+  }
   for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === value);
+    const model = data.find((item) => props.optionsMap(item).value === modelValue)!;
     models.push(model);
   }
   emit("change", models);

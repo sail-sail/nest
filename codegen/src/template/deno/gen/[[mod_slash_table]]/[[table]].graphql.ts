@@ -80,7 +80,8 @@ type <#=modelName#> {<#
     }
     let column_comment = column.COLUMN_COMMENT;
     if (!column_comment && column_name !== "id") {
-      throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
+      console.log(column);
+      throw `错误: 表: ${mod}_${ table } 字段: ${ column_name } 无 comment`;
     }
     let selectList = [ ];
     if (column_comment.endsWith("multiple")) {

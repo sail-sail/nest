@@ -166,7 +166,6 @@ export async function findById(
           is_enabled_lbl
           order_by
           rem
-          is_deleted
         }
       }
     `,

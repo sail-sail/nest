@@ -47,7 +47,7 @@
       
       <el-button
         plain
-        @click="cancelClk"
+        @click="closeClk"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -156,7 +156,7 @@ async function initI18nsEfc() {
 initI18nsEfc();
 
 /** 点击取消关闭按钮 */
-function cancelClk() {
+function closeClk() {
   onCloseResolve({
     type: "cancel",
   });

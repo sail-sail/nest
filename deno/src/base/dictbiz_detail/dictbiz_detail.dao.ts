@@ -18,7 +18,7 @@ type DictModel = {
 export async function getDictbiz(
   codes: string[] = [ ],
 ) {
-  const table = "dictbiz_detail";
+  const table = "base_dictbiz_detail";
   
   if (codes.length === 0) {
     return [ ];

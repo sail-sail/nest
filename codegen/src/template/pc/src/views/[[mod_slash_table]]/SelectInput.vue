@@ -22,6 +22,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 #><template>
 <div
+  v-if="!props.readonly"
   class="flex items-stretch w-full box-border"
   :class="{
     'p-l-1': dialog_visible,
@@ -94,9 +95,33 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     @change="selectListChg"
   ></SelectList>
 </div>
+<template
+  v-else
+>
+  <div
+    un-b="1 solid [var(--el-border-color)]"
+    un-p="x-2.75 y-1"
+    un-box-border
+    un-rounded
+    un-m="l-1"
+    un-w="full"
+    un-min="h-8"
+    un-line-height="normal"
+    un-break-words
+    class="custom_select_readonly"
+    v-bind="$attrs"
+  >
+    {{ inputValue ?? "" }}
+  </div>
+</template>
 </template>
 
 <script lang="ts" setup>
+import {
+  type MaybeRefOrGetter,
+  type WatchStopHandle,
+} from "vue";
+
 import SelectList from "./SelectList.vue";
 
 import {
@@ -116,6 +141,8 @@ let emit = defineEmits<{
 const {
   n,
   ns,
+  nAsync,
+  nsAsync,
 } = useI18n("/<#=mod#>/<#=table#>");
 
 const props = withDefaults(
@@ -124,12 +151,14 @@ const props = withDefaults(
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
+    readonly?: boolean;
   }>(),
   {
     modelValue: undefined,
     multiple: false,
-    placeholder: "`${ ns('请选择') } ${ n('<#=table_comment#>') }`",
+    placeholder: undefined,
     disabled: false,
+    readonly: false,
   },
 );
 
@@ -221,9 +250,10 @@ async function inputClk() {
     type,
     selectedIds,
   } = await selectListRef.showDialog({
-    title: "选择 菜单",
+    title: `${ await nsAsync("选择") } ${ await nAsync("<#=table_comment#>") }`,
     action: "select",
     multiple: props.multiple,
+    isReadonly: () => props.readonly,
     model: {
       ids: modelValueArr,
     },

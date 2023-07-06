@@ -7,6 +7,8 @@ defineGraphql(resolver, /* GraphQL */ `
 type UsrModel {
   "ID"
   id: String!
+  "头像"
+  img: String!
   "名称"
   lbl: String!
   "用户名"
@@ -39,6 +41,8 @@ type UsrModel {
   is_deleted: Int!
 }
 type UsrFieldComment {
+  "头像"
+  img: String!
   "名称"
   lbl: String!
   "用户名"
@@ -69,6 +73,8 @@ type UsrFieldComment {
 input UsrInput {
   ""
   id: String
+  "头像"
+  img: String
   "名称"
   lbl: String
   "用户名"
@@ -105,6 +111,9 @@ input UsrSearch {
   ids: [String]
   "String"
   id: String
+  "头像"
+  img: String
+  img_like: String
   "名称"
   lbl: String
   lbl_like: String
