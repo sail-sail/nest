@@ -195,7 +195,7 @@ async function getModelsByIds(ids: string[]) {
   return res;
 }
 
-// 根据modelValue刷新输入框的值
+/** 根据modelValue刷新输入框的值 */
 async function refreshInputValue() {
   const modelValueArr = getModelValueArr();
   if (modelValueArr.length === 0) {
@@ -210,7 +210,7 @@ function clearClk() {
   modelValue = "";
   inputValue = "";
   emit("update:modelValue", modelValue);
-  emit("change", undefined);
+  emit("change");
   emit("clear");
 }
 
