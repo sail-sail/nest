@@ -43,7 +43,7 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
-        @keyup.enter="saveClk"
+        @keyup.enter="onSave"
       >
         
         <template v-if="(showBuildIn || builtInModel?.dictbiz_id == null)">
@@ -133,7 +133,7 @@
       
       <el-button
         plain
-        @click="closeClk"
+        @click="onClose"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -145,7 +145,7 @@
         v-if="!isLocked && !isReadonly"
         plain
         type="primary"
-        @click="saveClk"
+        @click="onSave"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -163,7 +163,7 @@
         <el-button
           link
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-          @click="prevIdClk"
+          @click="onPrevId"
         >
           {{ n('上一项') }}
         </el-button>
@@ -175,7 +175,7 @@
         <el-button
           link
           :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-          @click="nextIdClk"
+          @click="onNextId"
         >
           {{ n('下一项') }}
         </el-button>
@@ -399,7 +399,7 @@ async function showDialog(
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
-      await refreshEfc();
+      await onRefresh();
     }
   } else if (dialogAction === "view") {
     if (!model || !model.ids) {
@@ -409,7 +409,7 @@ async function showDialog(
     ids = model.ids;
     if (ids && ids.length > 0) {
       dialogModel.id = ids[0];
-      await refreshEfc();
+      await onRefresh();
     }
   }
   inited = true;
@@ -417,7 +417,7 @@ async function showDialog(
 }
 
 /** 刷新 */
-async function refreshEfc() {
+async function onRefresh() {
   if (!dialogModel.id) {
     return;
   }
@@ -430,7 +430,7 @@ async function refreshEfc() {
 }
 
 /** 点击上一项 */
-async function prevIdClk() {
+async function onPrevId() {
   await prevId();
 }
 
@@ -448,7 +448,7 @@ async function prevId() {
       return false;
     }
   }
-  await refreshEfc();
+  await onRefresh();
   emit(
     "nextId",
     {
@@ -460,7 +460,7 @@ async function prevId() {
 }
 
 /** 点击下一项 */
-async function nextIdClk() {
+async function onNextId() {
   await nextId();
 }
 
@@ -480,7 +480,7 @@ async function nextId() {
       return false;
     }
   }
-  await refreshEfc();
+  await onRefresh();
   emit(
     "nextId",
     {
@@ -492,7 +492,7 @@ async function nextId() {
 }
 
 /** 确定 */
-async function saveClk() {
+async function onSave() {
   if (isReadonly) {
     return;
   }
@@ -550,7 +550,7 @@ async function saveClk() {
 }
 
 /** 点击取消关闭按钮 */
-function closeClk() {
+function onClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
@@ -591,6 +591,6 @@ initI18nsEfc();
 
 defineExpose({
   showDialog,
-  refresh: refreshEfc,
+  refresh: onRefresh,
 });
 </script>

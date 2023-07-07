@@ -23,7 +23,7 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="searchClk"
+      @keyup.enter="onSearch"
     >
       
       <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
@@ -54,7 +54,7 @@
             code="background_task_state"
             :placeholder="`${ ns('请选择') } ${ n('状态') }`"
             multiple
-            @change="searchClk"
+            @change="onSearch"
           ></DictSelect>
         </el-form-item>
       </template>
@@ -72,7 +72,7 @@
             code="background_task_type"
             :placeholder="`${ ns('请选择') } ${ n('类型') }`"
             multiple
-            @change="searchClk"
+            @change="onSearch"
           ></DictSelect>
         </el-form-item>
       </template>
@@ -159,7 +159,7 @@
         <el-button
           plain
           type="primary"
-          @click="searchClk"
+          @click="onSearch"
         >
           <template #icon>
             <ElIconSearch />
@@ -211,7 +211,7 @@
     
       <el-button
         plain
-        @click="refreshClk"
+        @click="onRefresh"
       >
         <template #icon>
           <ElIconRefresh />
@@ -237,7 +237,7 @@
         <template #dropdown>
           <el-dropdown-menu
             un-min="w-20"
-            whitespace-nowrap
+            un-whitespace-nowrap
           >
             
           </el-dropdown-menu>
@@ -264,7 +264,7 @@
         v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
-        @click="forceDeleteByIdsClk"
+        @click="onForceDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -274,7 +274,7 @@
       
       <el-button
         plain
-        @click="searchClk"
+        @click="onSearch"
       >
         <template #icon>
           <ElIconRefresh />
@@ -321,10 +321,10 @@
         :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
-        @row-click="rowClk"
+        @row-click="onRow"
         @sort-change="sortChange"
-        @click.ctrl="rowClkCtrl"
-        @click.shift="rowClkShift"
+        @click.ctrl="onRowCtrl"
+        @click.shift="onRowShift"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
       >
@@ -558,12 +558,12 @@ async function recycleChg() {
 }
 
 /** 搜索 */
-async function searchClk() {
+async function onSearch() {
   await dataGrid(true);
 }
 
 /** 刷新 */
-async function refreshClk() {
+async function onRefresh() {
   emit("refresh");
   await dataGrid(true);
 }
@@ -676,9 +676,9 @@ let {
   selectedIds,
   selectChg,
   rowClassName,
-  rowClk,
-  rowClkCtrl,
-  rowClkShift,
+  onRow,
+  onRowCtrl,
+  onRowShift,
 } = $(useSelect<BackgroundTaskModel>(
   $$(tableRef),
   {
@@ -1009,7 +1009,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsClk() {
+async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
@@ -1121,6 +1121,6 @@ usrStore.onLogin(initFrame);
 initFrame();
 
 defineExpose({
-  refresh: refreshClk,
+  refresh: onRefresh,
 });
 </script>

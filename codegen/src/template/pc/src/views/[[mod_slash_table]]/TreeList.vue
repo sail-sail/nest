@@ -45,7 +45,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         v-model="search_value"
         :clearable="true"
         un-w="full"
-        @clear="searchClr"
+        @clear="onSearchClear"
       >
         <template #prefix>
           <el-icon>
@@ -74,7 +74,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         un-w="full"
         un-m="b-4"
         :filter-node-method="filterNode"
-        @node-click="nodeClk"
+        @node-click="onNode"
       ></el-tree>
     </div>
   </div>
@@ -165,7 +165,7 @@ watchDebounced(
   },
 );
 
-function searchClr() {
+function onSearchClear() {
   is_clear = true;
   treeRef?.filter(search_value);
 }
@@ -210,7 +210,7 @@ async function findTreeEfc() {
   }
 }
 
-async function nodeClk(model: <#=modelNameTree#>) {
+async function onNode(model: <#=modelNameTree#>) {
   parent_id = model.id;
 }
 
@@ -220,7 +220,7 @@ function beforeSearchReset() {
   treeRef?.setCurrentKey(undefined);
 }
 
-async function refreshClk() {
+async function onRefresh() {
   await Promise.all([
     listRef?.refresh?.(),
     findTreeEfc(),
@@ -235,6 +235,6 @@ async function initFrame() {
 initFrame();
 
 defineExpose({
-  refresh: refreshClk,
+  refresh: onRefresh,
 });
 </script>

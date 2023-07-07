@@ -9,7 +9,7 @@
   :inactive-value="props.inactiveValue"
   v-model="modelValue"
   :disabled="props.disabled"
-  @change="valueChg"
+  @change="onChange"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -74,7 +74,7 @@ watch(
   },
 );
 
-function valueChg() {
+function onChange() {
   emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }

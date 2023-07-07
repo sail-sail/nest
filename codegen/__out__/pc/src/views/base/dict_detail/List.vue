@@ -23,7 +23,7 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="searchClk"
+      @keyup.enter="onSearch"
     >
       
       <template v-if="showBuildIn || builtInSearch?.dict_id == null">
@@ -44,7 +44,7 @@
             })"
             :placeholder="`${ ns('请选择') } ${ n('系统字典') }`"
             multiple
-            @change="searchClk"
+            @change="onSearch"
           ></CustomSelect>
         </el-form-item>
       </template>
@@ -140,7 +140,7 @@
         <el-button
           plain
           type="primary"
-          @click="searchClk"
+          @click="onSearch"
         >
           <template #icon>
             <ElIconSearch />
@@ -228,7 +228,7 @@
     
       <el-button
         plain
-        @click="refreshClk"
+        @click="onRefresh"
       >
         <template #icon>
           <ElIconRefresh />
@@ -261,13 +261,13 @@
         <template #dropdown>
           <el-dropdown-menu
             un-min="w-20"
-            whitespace-nowrap
+            un-whitespace-nowrap
           >
             
             <el-dropdown-item
               v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
               un-justify-center
-              @click="exportClk"
+              @click="onExport"
             >
               <span>{{ ns('导出') }}</span>
             </el-dropdown-item>
@@ -275,7 +275,7 @@
             <el-dropdown-item
               v-else
               un-justify-center
-              @click="cancelExportClk"
+              @click="onCancelExport"
             >
               <span un-text="red">{{ ns('取消导出') }}</span>
             </el-dropdown-item>
@@ -283,7 +283,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="importExcelClk"
+              @click="onImportExcel"
             >
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
@@ -291,7 +291,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="enableByIdsClk(1)"
+              @click="onEnableByIds(1)"
             >
               <span>{{ ns('启用') }}</span>
             </el-dropdown-item>
@@ -299,7 +299,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="enableByIdsClk(0)"
+              @click="onEnableByIds(0)"
             >
               <span>{{ ns('禁用') }}</span>
             </el-dropdown-item>
@@ -307,7 +307,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="lockByIdsClk(1)"
+              @click="onLockByIds(1)"
             >
               <span>{{ ns('锁定') }}</span>
             </el-dropdown-item>
@@ -315,7 +315,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="lockByIdsClk(0)"
+              @click="onLockByIds(0)"
             >
               <span>{{ ns('解锁') }}</span>
             </el-dropdown-item>
@@ -344,7 +344,7 @@
         v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
-        @click="forceDeleteByIdsClk"
+        @click="onForceDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -354,7 +354,7 @@
       
       <el-button
         plain
-        @click="searchClk"
+        @click="onSearch"
       >
         <template #icon>
           <ElIconRefresh />
@@ -364,7 +364,7 @@
       
       <el-button
         plain
-        @click="exportClk"
+        @click="onExport"
       >
         <template #icon>
           <ElIconDownload />
@@ -411,10 +411,10 @@
         :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
-        @row-click="rowClk"
+        @row-click="onRow"
         @sort-change="sortChange"
-        @click.ctrl="rowClkCtrl"
-        @click.shift="rowClkShift"
+        @click.ctrl="onRowCtrl"
+        @click.shift="onRowShift"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
       >
@@ -645,12 +645,12 @@ async function recycleChg() {
 }
 
 /** 搜索 */
-async function searchClk() {
+async function onSearch() {
   await dataGrid(true);
 }
 
 /** 刷新 */
-async function refreshClk() {
+async function onRefresh() {
   emit("refresh");
   await dataGrid(true);
 }
@@ -755,9 +755,9 @@ let {
   selectedIds,
   selectChg,
   rowClassName,
-  rowClk,
-  rowClkCtrl,
-  rowClkShift,
+  onRow,
+  onRowCtrl,
+  onRowShift,
 } = $(useSelect<DictDetailModel>(
   $$(tableRef),
   {
@@ -991,12 +991,12 @@ async function sortChange(
 let exportExcel = $ref(useExportExcel("/base/dict_detail"));
 
 /** 导出Excel */
-async function exportClk() {
+async function onExport() {
   await exportExcel.workerFn(search, [ sort ]);
 }
 
 /** 取消导出Excel */
-async function cancelExportClk() {
+async function onCancelExport() {
   exportExcel.workerTerminate();
 }
 
@@ -1070,7 +1070,7 @@ let isImporting = $ref(false);
 let isCancelImport = $ref(false);
 
 /** 弹出导入窗口 */
-async function importExcelClk() {
+async function onImportExcel() {
   if (isLocked) {
     return;
   }
@@ -1268,7 +1268,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsClk() {
+async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
@@ -1296,7 +1296,7 @@ async function forceDeleteByIdsClk() {
 }
 
 /** 点击启用或者禁用 */
-async function enableByIdsClk(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1324,7 +1324,7 @@ async function enableByIdsClk(is_enabled: 0 | 1) {
 }
 
 /** 点击锁定或者解锁 */
-async function lockByIdsClk(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1431,6 +1431,6 @@ usrStore.onLogin(initFrame);
 initFrame();
 
 defineExpose({
-  refresh: refreshClk,
+  refresh: onRefresh,
 });
 </script>

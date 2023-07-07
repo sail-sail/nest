@@ -52,7 +52,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="searchClk"
+      @keyup.enter="onSearch"
     ><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -105,7 +105,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="searchClk"
+            @change="onSearch"
           ></CustomSelect>
         </el-form-item>
       </template><#
@@ -124,7 +124,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="searchClk"
+            @change="onSearch"
           ></DictSelect>
         </el-form-item>
       </template><#
@@ -143,7 +143,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="searchClk"
+            @change="onSearch"
           ></DictbizSelect>
         </el-form-item>
       </template><#
@@ -287,7 +287,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         <el-button
           plain
           type="primary"
-          @click="searchClk"
+          @click="onSearch"
         >
           <template #icon>
             <ElIconSearch />
@@ -387,7 +387,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     
       <el-button
         plain
-        @click="refreshClk"
+        @click="onRefresh"
       >
         <template #icon>
           <ElIconRefresh />
@@ -429,7 +429,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         <template #dropdown>
           <el-dropdown-menu
             un-min="w-20"
-            whitespace-nowrap
+            un-whitespace-nowrap
           ><#
             if (opts.noExport !== true) {
           #>
@@ -437,7 +437,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
               un-justify-center
-              @click="exportClk"
+              @click="onExport"
             >
               <span>{{ ns('导出') }}</span>
             </el-dropdown-item>
@@ -445,7 +445,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-else
               un-justify-center
-              @click="cancelExportClk"
+              @click="onCancelExport"
             >
               <span un-text="red">{{ ns('取消导出') }}</span>
             </el-dropdown-item><#
@@ -457,7 +457,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="importExcelClk"
+              @click="onImportExcel"
             >
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item><#
@@ -469,7 +469,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="enableByIdsClk(1)"
+              @click="onEnableByIds(1)"
             >
               <span>{{ ns('启用') }}</span>
             </el-dropdown-item>
@@ -477,7 +477,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="enableByIdsClk(0)"
+              @click="onEnableByIds(0)"
             >
               <span>{{ ns('禁用') }}</span>
             </el-dropdown-item><#
@@ -489,7 +489,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="lockByIdsClk(1)"
+              @click="onLockByIds(1)"
             >
               <span>{{ ns('锁定') }}</span>
             </el-dropdown-item>
@@ -497,7 +497,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="lockByIdsClk(0)"
+              @click="onLockByIds(0)"
             >
               <span>{{ ns('解锁') }}</span>
             </el-dropdown-item><#
@@ -534,7 +534,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
-        @click="forceDeleteByIdsClk"
+        @click="onForceDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -546,7 +546,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       <el-button
         plain
-        @click="searchClk"
+        @click="onSearch"
       >
         <template #icon>
           <ElIconRefresh />
@@ -558,7 +558,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       <el-button
         plain
-        @click="exportClk"
+        @click="onExport"
       >
         <template #icon>
           <ElIconDownload />
@@ -613,10 +613,10 @@ const hasAtt = columns.some((item) => item.isAtt);
         #>
         @select="selectChg"
         @select-all="selectChg"
-        @row-click="rowClk"
+        @row-click="onRow"
         @sort-change="sortChange"
-        @click.ctrl="rowClkCtrl"
-        @click.shift="rowClkShift"
+        @click.ctrl="onRowCtrl"
+        @click.shift="onRowShift"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
       >
@@ -847,7 +847,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                 <el-link
                   type="primary"
                   un-min="w-7.5"
-                  @click="<#=column_name#>Clk(row)"
+                  @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
@@ -1265,12 +1265,12 @@ async function recycleChg() {
 }
 
 /** 搜索 */
-async function searchClk() {
+async function onSearch() {
   await dataGrid(true);
 }
 
 /** 刷新 */
-async function refreshClk() {
+async function onRefresh() {
   emit("refresh");
   await dataGrid(true);
 }
@@ -1489,9 +1489,9 @@ let {
   selectedIds,
   selectChg,
   rowClassName,
-  rowClk,
-  rowClkCtrl,
-  rowClkShift,
+  onRow,
+  onRowCtrl,
+  onRowShift,
 } = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
@@ -1899,12 +1899,12 @@ async function sortChange(
 let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
 
 /** 导出Excel */
-async function exportClk() {
+async function onExport() {
   await exportExcel.workerFn(search, [ sort ]);
 }
 
 /** 取消导出Excel */
-async function cancelExportClk() {
+async function onCancelExport() {
   exportExcel.workerTerminate();
 }<#
   }
@@ -2028,7 +2028,7 @@ let isImporting = $ref(false);
 let isCancelImport = $ref(false);
 
 /** 弹出导入窗口 */
-async function importExcelClk() {
+async function onImportExcel() {
   if (isLocked) {
     return;
   }
@@ -2378,7 +2378,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsClk() {
+async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
@@ -2415,7 +2415,7 @@ async function forceDeleteByIdsClk() {
 #>
 
 /** 点击启用或者禁用 */
-async function enableByIdsClk(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -2447,7 +2447,7 @@ async function enableByIdsClk(is_enabled: 0 | 1) {
 #>
 
 /** 点击锁定或者解锁 */
-async function lockByIdsClk(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -2633,7 +2633,7 @@ for (let i = 0; i < columns.length; i++) {
 
 let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
-async function <#=column_name#>Clk(row: <#=modelName#>) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
   if (!<#=column_name#>ListSelectDialogRef) {
     return;
   }
@@ -2700,6 +2700,6 @@ async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
 #>
 
 defineExpose({
-  refresh: refreshClk,
+  refresh: onRefresh,
 });
 </script>

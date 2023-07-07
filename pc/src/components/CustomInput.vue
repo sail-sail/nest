@@ -7,8 +7,8 @@
   v-model="modelValue"
   :clearable="!props.disabled"
   :disabled="props.disabled"
-  @change="valueChg"
-  @clear="clearClk"
+  @change="onChange"
+  @clear="onClear"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -69,12 +69,12 @@ watch(
   },
 );
 
-function valueChg() {
+function onChange() {
   emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }
 
-function clearClk() {
+function onClear() {
   modelValue = "";
   emit("update:modelValue", modelValue);
   emit("clear");

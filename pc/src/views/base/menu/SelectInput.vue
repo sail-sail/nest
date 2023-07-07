@@ -8,9 +8,9 @@
 >
   <el-input
     v-bind="$attrs"
-    @click="inputClk"
+    @click="onInput"
     v-model="inputValue"
-    @clear="clearClk"
+    @clear="onClear"
     readonly
     clearable
     class="cursor-pointer box-border flex-[1_0_0]"
@@ -39,7 +39,7 @@
           v-if="modelValue && modelValue.length > 0"
         >
           <el-icon
-            @click="clearClk"
+            @click="onClear"
             un-cursor-pointer
             un-text="hover:red-500"
             un-m="r-0.5"
@@ -57,7 +57,7 @@
           v-else
         >
           <el-icon
-            @click="inputClk"
+            @click="onInput"
             un-cursor-pointer
             un-m="r-0.5"
             size="14"
@@ -206,7 +206,7 @@ async function refreshInputValue() {
   inputValue = models.map((item) => item?.lbl || "").join(", ");
 }
 
-function clearClk() {
+function onClear() {
   modelValue = "";
   inputValue = "";
   emit("update:modelValue", modelValue);
@@ -218,7 +218,7 @@ let dialog_visible = $ref(false);
 
 let selectListRef = $ref<InstanceType<typeof SelectList>>();
 
-async function inputClk() {
+async function onInput() {
   if (!selectListRef) {
     return;
   }

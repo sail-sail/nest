@@ -219,7 +219,7 @@ export function useSelect<T>(
    * @param {TableColumnCtx<T>?} column
    * @param {PointerEvent?} _event
    */
-  async function rowClk(row: T & { id: string }, column?: TableColumnCtx<T>, _event?: PointerEvent) {
+  async function onRow(row: T & { id: string }, column?: TableColumnCtx<T>, _event?: PointerEvent) {
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
@@ -260,7 +260,7 @@ export function useSelect<T>(
    * 按住ctrl键之后点击一行
    * @param {MouseEvent} _event
    */
-  function rowClkCtrl(_event?: MouseEvent) {
+  function onRowCtrl(_event?: MouseEvent) {
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
@@ -286,7 +286,7 @@ export function useSelect<T>(
    * 按住shift键之后点击一行
    * @param {MouseEvent} _event
    */
-  function rowClkShift(_event?: MouseEvent) {
+  function onRowShift(_event?: MouseEvent) {
     if (!tableRef.value) {
       return;
     }
@@ -323,9 +323,9 @@ export function useSelect<T>(
   return $$({
     selectedIds,
     selectChg,
-    rowClk,
-    rowClkCtrl,
-    rowClkShift,
+    onRow,
+    onRowCtrl,
+    onRowShift,
     rowClassName,
   });
 }
@@ -418,7 +418,7 @@ export function useSelectOne<T>(
    * @param {TableColumnCtx<T>} column
    * @param {PointerEvent} event
    */
-  async function rowClk(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
+  async function onRow(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
     const tableSelectable = opts?.tableSelectable;
     if (tableSelectable && !tableSelectable(row)) {
       if (column.type !== "selection") {
@@ -459,7 +459,7 @@ export function useSelectOne<T>(
   return $$({
     selectedIds,
     selectChg,
-    rowClk,
+    onRow,
     rowClassName,
   });
 }
