@@ -850,17 +850,20 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = false;
+  isReadonly = false;
+  isLocked = false;
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
-    showBuildIn = toValue(arg?.showBuildIn) ?? false;
-    isReadonly = toValue(arg?.isReadonly) ?? false;
+    showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
+    isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     isLocked = <#
     if (hasLocked) {
     #>dialogModel.is_locked == 1 || <#
     }
-    #>toValue(arg?.isLocked) || false;
+    #>toValue(arg?.isLocked) || isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];

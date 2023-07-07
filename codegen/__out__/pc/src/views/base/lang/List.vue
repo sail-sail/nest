@@ -689,127 +689,27 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置搜索条件 */
-const builtInSearch: LangSearch = $computed(() => {
-  const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
-  for (const item of entries) {
-    if (builtInSearchType[item[0]] === "0|1") {
-      item[1] = (item[1] === "0" ? 0 : 1) as any;
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "number[]") {
-      if (!Array.isArray(item[1])) {
-        item[1] = [ item[1] as string ]; 
-      }
-      item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "string[]") {
-      if (!Array.isArray(item[1])) {
-        item[1] = [ item[1] as string ]; 
-      }
-      continue;
-    }
-  }
-  return Object.fromEntries(entries) as unknown as LangSearch;
-});
-
-/** 是否多选 */
-let multiple = $ref(true);
-
-watch(
-  () => props.isMultiple,
-  () => {
-    if (props.isMultiple === false) {
-      multiple = false;
-    } else {
-      multiple = true;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-/** 是否显示内置变量 */
-let showBuildIn = $ref(false);
-
-watch(
-  () => props.showBuildIn,
-  () => {
-    if (props.showBuildIn === "1") {
-      showBuildIn = true;
-    } else {
-      showBuildIn = false;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-/** 是否分页 */
-let isPagination = $ref(true);
-
-watch(
-  () => props.isPagination,
-  () => {
-    if (props.isPagination === "0") {
-      isPagination = false;
-    } else {
-      isPagination = true;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-/** 是否只读模式 */
-let isLocked = $ref(false);
-
-watch(
-  () => props.isLocked,
-  () => {
-    if (props.isLocked === "1") {
-      isLocked = true;
-    } else {
-      isLocked = false;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
+const builtInSearch: LangSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
 
 /** 内置变量 */
-const builtInModel = $computed(() => {
-  const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
-  for (const item of entries) {
-    if (builtInSearchType[item[0]] === "0|1") {
-      item[1] = (item[1] === "0" ? 0 : 1) as any;
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
-      if (Array.isArray(item[1]) && item[1].length === 1) {
-        if (!isNaN(Number(item[1][0]))) {
-          item[1] = Number(item[1][0]) as any;
-        }
-      } else {
-        if (!isNaN(Number(item[1]))) {
-          item[1] = Number(item[1]) as any;
-        }
-      }
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "string[]" || builtInSearchType[item[0]] === "string") {
-      if (Array.isArray(item[1]) && item[1].length === 1) {
-        item[1] = item[1][0]; 
-      }
-      continue;
-    }
-  }
-  return Object.fromEntries(entries) as unknown as LangModel;
-});
+const builtInModel: LangModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
 
 /** 分页功能 */
 let {

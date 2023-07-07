@@ -2,6 +2,75 @@ import {
   useI18n,
 } from "@/locales/i18n";
 
+/** 初始化内置搜索条件 */
+export function initBuiltInSearch<T>(
+  props: Record<string, any>,
+  builtInSearchType: { [key: string]: string },
+  propsNotInSearch: string[],
+) {
+  const builtInSearch = computed(() => {
+    const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
+    for (const item of entries) {
+      if (builtInSearchType[item[0]] === "0|1") {
+        item[1] = (item[1] === "0" ? 0 : 1) as any;
+        continue;
+      }
+      if (builtInSearchType[item[0]] === "number[]") {
+        if (!Array.isArray(item[1])) {
+          item[1] = [ item[1] as string ]; 
+        }
+        item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
+        continue;
+      }
+      if (builtInSearchType[item[0]] === "string[]") {
+        if (!Array.isArray(item[1])) {
+          item[1] = [ item[1] as string ]; 
+        }
+        continue;
+      }
+    }
+    return Object.fromEntries(entries) as unknown as T;
+  });
+  return builtInSearch;
+}
+
+/** 初始化内置变量 */
+export function initBuiltInModel<T>(
+  props: Record<string, any>,
+  builtInSearchType: { [key: string]: string },
+  propsNotInSearch: string[],
+) {
+  const builtInModel = computed(() => {
+    const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
+    for (const item of entries) {
+      if (builtInSearchType[item[0]] === "0|1") {
+        item[1] = (item[1] === "0" ? 0 : 1) as any;
+        continue;
+      }
+      if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
+        if (Array.isArray(item[1]) && item[1].length === 1) {
+          if (!isNaN(Number(item[1][0]))) {
+            item[1] = Number(item[1][0]) as any;
+          }
+        } else {
+          if (!isNaN(Number(item[1]))) {
+            item[1] = Number(item[1]) as any;
+          }
+        }
+        continue;
+      }
+      if (builtInSearchType[item[0]] === "string[]" || builtInSearchType[item[0]] === "string") {
+        if (Array.isArray(item[1]) && item[1].length === 1) {
+          item[1] = item[1][0]; 
+        }
+        continue;
+      }
+    }
+    return Object.fromEntries(entries) as unknown as T;
+  });
+  return builtInModel;
+}
+
 export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 20, 50, 100 ]) {
   let pageSizes = $ref(pageSizes0);
   // 分页

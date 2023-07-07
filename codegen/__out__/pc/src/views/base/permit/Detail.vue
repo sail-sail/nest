@@ -360,13 +360,16 @@ async function showDialog(
   const model = arg?.model;
   const action = arg?.action;
   builtInModel = arg?.builtInModel;
+  showBuildIn = false;
+  isReadonly = false;
+  isLocked = false;
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }
   readonlyWatchStop = watchEffect(function() {
-    showBuildIn = toValue(arg?.showBuildIn) ?? false;
-    isReadonly = toValue(arg?.isReadonly) ?? false;
-    isLocked = toValue(arg?.isLocked) || false;
+    showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
+    isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
+    isLocked = toValue(arg?.isLocked) || isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];
