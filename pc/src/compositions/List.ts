@@ -100,13 +100,40 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 20, 50, 
   });
 }
 
-export function useSelect<T>(
+export function useSelect<T = any>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
     multiple?: Ref<boolean> | ComputedRef<boolean> | boolean,
+    tabIndex?: number,
   },
 ) {
+  
+  const watch3Stop = watch(
+    () => tableRef.value,
+    () => {
+      if (!tableRef.value) {
+        return;
+      }
+      const tableEl = tableRef.value.$el as HTMLDivElement;
+      if (!tableEl) {
+        return;
+      }
+      tableEl.tabIndex = opts?.tabIndex ?? 0;
+      tableEl.focus();
+    },
+  );
+  
+  function getRowKey() {
+    const rowKey = tableRef.value?.rowKey;
+    if (!rowKey) {
+      return;
+    }
+    if (typeof rowKey === "string") {
+      return rowKey;
+    }
+    throw new Error("暂不支持 function 类型的 rowKey");
+  }
   
   /** 当前多行选中的数据 */
   let selectedIds: string[] = $ref([ ]);
@@ -116,13 +143,17 @@ export function useSelect<T>(
     if (!tableRef.value || !tableRef.value.data) {
       return;
     }
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     const newSelectList: any[] = [ ];
     const select2falseList: any[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
-      if (selectedIds.includes(item.id)) {
+      if (selectedIds.includes(item[rowKey])) {
         newSelectList.push(item);
-      } else if (prevSelectedIds.includes(item.id)) {
+      } else if (prevSelectedIds.includes(item[rowKey])) {
         select2falseList.push(item);
       }
     }
@@ -169,10 +200,12 @@ export function useSelect<T>(
   
   /**
    * 多行或单行勾选
-   * @param {(T & { id: string })[]} list
-   * @param {(T & { id: string })} row?
    */
-  function selectChg(list: (T & { id: string })[], row?: (T & { id: string })) {
+  function selectChg(list: T[], row?: T) {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
@@ -186,40 +219,264 @@ export function useSelect<T>(
       } else {
         if (!multiple) {
           tableRef.value?.clearSelection();
-          selectedIds = [ list[0].id ];
+          selectedIds = [ (list[0] as any)[rowKey] ];
         } else {
           for (let i = 0; i < list.length; i++) {
-            const item = list[i];
-            if (!selectedIds.includes(item.id)) {
-              selectedIds.push(item.id);
+            const item = list[i] as any;
+            if (!selectedIds.includes(item[rowKey])) {
+              selectedIds.push(item[rowKey]);
             }
           }
         }
       }
     } else {
+      const id = (row as any)[rowKey];
       if (list.includes(row)) {
-        if (!selectedIds.includes(row.id)) {
+        if (!selectedIds.includes(id)) {
           if (!multiple) {
-            selectedIds = [ row.id ];
+            selectedIds = [ id ];
           } else {
-            selectedIds = [ ...selectedIds, row.id ];
+            selectedIds = [ ...selectedIds, id ];
           }
         }
       } else {
-        if (selectedIds.includes(row.id)) {
-          selectedIds = selectedIds.filter((id) => id !== row.id);
+        if (selectedIds.includes(id)) {
+          selectedIds = selectedIds.filter((item) => item !== id);
         }
       }
     }
   }
   
+  function scrollIntoViewIfNeeded(idx: number) {
+    const table = tableRef.value?.$el;
+    if (!table) {
+      return;
+    }
+    const tableBody = table.querySelector(".el-table__body-wrapper");
+    if (!tableBody) {
+      return;
+    }
+    const tableRow = tableBody.querySelector(`.el-table__row:nth-child(${ idx + 1 })`);
+    if (!tableRow) {
+      return;
+    }
+    tableRow.scrollIntoViewIfNeeded(true);
+  }
+  
+  /**
+   * 键盘按键向上按键
+   */
+  function onRowUp(e: KeyboardEvent) {
+    if (e.ctrlKey) {
+      onRowCtrlUp();
+      return;
+    }
+    if (e.shiftKey) {
+      onRowShiftUp();
+      return;
+    }
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+    const data = tableRef.value?.data;
+    if (!data || data.length === 0) {
+      return;
+    }
+    if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
+      const selectedIdx = data.length - 1;
+      selectedIds = [ data[selectedIdx][rowKey] ];
+      scrollIntoViewIfNeeded(selectedIdx);
+      return;
+    }
+    const idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+    if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
+      const selectedIdx = data.length - 1;
+      selectedIds = [ data[selectedIdx][rowKey] ];
+      scrollIntoViewIfNeeded(selectedIdx);
+      return;
+    }
+    const selectedIdx = idx - 1;
+    if (data[selectedIdx]?.[rowKey]) {
+      selectedIds = [ data[selectedIdx][rowKey] ];
+      scrollIntoViewIfNeeded(selectedIdx);
+    }
+  }
+  
+  /**
+   * 键盘按键ctrl+向上按键
+   */
+  function onRowCtrlUp() {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+    const data = tableRef.value?.data;
+    if (!data || data.length === 0) {
+      return;
+    }
+    const selectedIdx = 0;
+    if (data[selectedIdx]?.[rowKey]) {
+      selectedIds = [ data[selectedIdx][rowKey] ];
+      scrollIntoViewIfNeeded(selectedIdx);
+    }
+  }
+  
+  /**
+   * 键盘按键shift+向上按键
+   */
+  function onRowShiftUp() {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+    const data = tableRef.value?.data;
+    if (!data || data.length === 0) {
+      return;
+    }
+    if (selectedIds.length === 0 && data[data.length - 1]?.[rowKey]) {
+      const selectedIdx = data.length - 1;
+      selectedIds = [
+        data[selectedIdx][rowKey],
+      ];
+      scrollIntoViewIfNeeded(selectedIdx);
+      return;
+    }
+    const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    if (idx === -1 || idx === 0 && data[data.length - 1]?.[rowKey]) {
+      const selectedIdx = data.length - 1;
+      selectedIds = [
+        ...selectedIds,
+        data[selectedIdx][rowKey],
+      ];
+      scrollIntoViewIfNeeded(selectedIdx);
+      return;
+    }
+    const selectedIdx = idx - 1;
+    if (data[selectedIdx]?.[rowKey]) {
+      selectedIds = [
+        ...selectedIds,
+        data[selectedIdx][rowKey],
+      ];
+      scrollIntoViewIfNeeded(selectedIdx);
+    }
+  }
+  
+  /**
+   * 键盘按键向下按键
+   */
+  function onRowDown(e: KeyboardEvent) {
+    if (e.ctrlKey) {
+      onRowCtrlDown();
+      return;
+    }
+    if (e.shiftKey) {
+      onRowShiftDown();
+      return;
+    }
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+    const data = tableRef.value?.data;
+    if (!data || data.length === 0) {
+      return;
+    }
+    if (selectedIds.length === 0 && data[0]?.[rowKey]) {
+      selectedIds = [ data[0][rowKey] ];
+      scrollIntoViewIfNeeded(0);
+      return;
+    }
+    const idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
+    if (idx === -1 || (idx === data.length - 1) && data[0]?.[rowKey]) {
+      selectedIds = [ data[0][rowKey] ];
+      scrollIntoViewIfNeeded(0);
+      return;
+    }
+    const selectedIdx = idx + 1;
+    if (data[selectedIdx]?.[rowKey]) {
+      selectedIds = [ data[selectedIdx][rowKey] ];
+      scrollIntoViewIfNeeded(selectedIdx);
+    }
+  }
+  
+  /**
+   * 键盘按键ctrl+向下按键
+   */
+  function onRowCtrlDown() {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+    const data = tableRef.value?.data;
+    if (!data || data.length === 0) {
+      return;
+    }
+    const selectedIdx = data.length - 1;
+    if (data[selectedIdx]?.[rowKey]) {
+      selectedIds = [ data[selectedIdx][rowKey] ];
+      scrollIntoViewIfNeeded(selectedIdx);
+    }
+  }
+  
+  /**
+   * 键盘按键shift+向下按键
+   */
+  function onRowShiftDown() {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+    const data = tableRef.value?.data;
+    if (!data || data.length === 0) {
+      return;
+    }
+    if (selectedIds.length === 0 && data[0]?.[rowKey]) {
+      const selectedIdx = 0;
+      selectedIds = [
+        data[selectedIdx][rowKey],
+      ];
+      scrollIntoViewIfNeeded(selectedIdx);
+      return;
+    }
+    const idx = data.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    if (idx === -1 || (idx === data.length - 1) && data[0]?.[rowKey]) {
+      const selectedIdx = 0;
+      selectedIds = [
+        ...selectedIds,
+        data[selectedIdx][rowKey],
+      ];
+      scrollIntoViewIfNeeded(selectedIdx);
+      return;
+    }
+    const selectedIdx = idx + 1;
+    if (data[selectedIdx]?.[rowKey]) {
+      selectedIds = [
+        ...selectedIds,
+        data[selectedIdx][rowKey],
+      ];
+      scrollIntoViewIfNeeded(selectedIdx);
+    }
+  }
+  
   /**
    * 点击一行
-   * @param {(T & { id: string })} row
-   * @param {TableColumnCtx<T>?} column
-   * @param {PointerEvent?} _event
    */
-  async function onRow(row: T & { id: string }, column?: TableColumnCtx<T>, _event?: PointerEvent) {
+  function onRow(row: T, column?: TableColumnCtx<T>, e?: PointerEvent) {
+    if (column && column.type !== "selection") {
+      if (e && e.ctrlKey) {
+        onRowCtrl(row, column, e);
+        return;
+      }
+      if (e && e.shiftKey) {
+        onRowShift(row, column, e);
+        return;
+      }
+    }
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
@@ -234,33 +491,37 @@ export function useSelect<T>(
       }
       return;
     }
+    const id = (row as any)[rowKey];
     if (column && column.type === "selection") {
-      if (selectedIds.includes(row.id)) {
-        selectedIds = selectedIds.filter((id) => id !== row.id);
+      if (selectedIds.includes(id)) {
+        selectedIds = selectedIds.filter((item) => item !== id);
       } else {
         if (multiple) {
           selectedIds = [
             ...selectedIds,
-            row.id,
+            id,
           ];
         } else {
-          selectedIds = [ row.id ];
+          selectedIds = [ id ];
         }
       }
     } else {
       if (!row) {
         selectedIds = [ ];
       } else {
-        selectedIds = [ row.id ];
+        selectedIds = [ id ];
       }
     }
   }
   
   /**
    * 按住ctrl键之后点击一行
-   * @param {MouseEvent} _event
    */
-  function onRowCtrl(_event?: MouseEvent) {
+  function onRowCtrl(row: T, column?: TableColumnCtx<T>, e?: MouseEvent) {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
@@ -268,43 +529,54 @@ export function useSelect<T>(
     if (isRef(opts?.multiple) && opts?.multiple.value === false) {
       multiple = false;
     }
-    const id = selectedIds[0];
-    if (id) {
-      if (!prevSelectedIds.includes(id)) {
-        if (multiple) {
-          selectedIds = [ ...prevSelectedIds, id ];
-        } else {
-          selectedIds = [ id ];
-        }
+    const id = (row as any)[rowKey];
+    if (selectedIds.includes(id)) {
+      selectedIds = selectedIds.filter((item) => item !== id);
+    } else {
+      if (multiple) {
+        selectedIds = [
+          ...selectedIds,
+          id,
+        ];
       } else {
-        selectedIds = prevSelectedIds.filter((item) => item !== id);
+        selectedIds = [ id ];
       }
     }
   }
   
   /**
    * 按住shift键之后点击一行
-   * @param {MouseEvent} _event
    */
-  function onRowShift(_event?: MouseEvent) {
-    if (!tableRef.value) {
+  function onRowShift(row: T, column?: TableColumnCtx<T>, e?: MouseEvent) {
+    if (e) {
+      e.preventDefault();
+    }
+    const rowKey = getRowKey();
+    if (!rowKey) {
       return;
     }
-    const id = selectedIds[0];
-    const tableData = tableRef.value.data;
-    let fromIdx = tableData.length - 1;
-    for (let i = 0; i < prevSelectedIds.length; i++) {
-      const item = prevSelectedIds[i];
-      const idx = tableData.indexOf(item);
-      if (idx !== -1 && idx < fromIdx) {
-        fromIdx = idx;
-      }
+    const tableData = tableRef.value?.data;
+    if (!tableData || tableData.length === 0) {
+      return;
     }
-    if (fromIdx === tableData.length - 1) {
-      fromIdx = 0;
+    const id = (row as any)[rowKey];
+    if (selectedIds.length === 0) {
+      selectedIds = [ id ];
+      return;
     }
-    const toIndex = tableData.findIndex((item) => item === id);
-    selectedIds = tableData.slice(Math.min(fromIdx, toIndex), Math.max(fromIdx, toIndex) + 1);
+    const idx = tableData.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    if (idx === -1) {
+      selectedIds = [ id ];
+      return;
+    }
+    const idx2 = tableData.findIndex((item) => item[rowKey] === id);
+    if (idx2 === -1) {
+      selectedIds = [ id ];
+      return;
+    }
+    const minIdx = Math.min(idx, idx2);
+    const maxIdx = Math.max(idx, idx2);
+    selectedIds = tableData.slice(minIdx, maxIdx + 1).map((item) => item[rowKey]);
   }
   
   /**
@@ -318,14 +590,15 @@ export function useSelect<T>(
   onUnmounted(function() {
     watch1Stop();
     watch2Stop();
+    watch3Stop();
   });
   
   return $$({
     selectedIds,
     selectChg,
     onRow,
-    onRowCtrl,
-    onRowShift,
+    onRowUp,
+    onRowDown,
     rowClassName,
   });
 }
@@ -334,22 +607,55 @@ export function useSelectOne<T>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: (row: T, index?: number) => boolean,
+    tabIndex?: number,
   },
 ) {
+  
+  const watch3Stop = watch(
+    () => tableRef.value,
+    () => {
+      if (!tableRef.value) {
+        return;
+      }
+      const tableEl = tableRef.value.$el as HTMLDivElement;
+      if (!tableEl) {
+        return;
+      }
+      tableEl.tabIndex = opts?.tabIndex ?? 0;
+      tableEl.focus();
+    },
+  );
+  
+  function getRowKey() {
+    const rowKey = tableRef.value?.rowKey;
+    if (!rowKey) {
+      return;
+    }
+    if (typeof rowKey === "string") {
+      return rowKey;
+    }
+    throw new Error("暂不支持 function 类型的 rowKey");
+  }
   
   /** 当前多行选中的数据 */
   let selectedIds = $ref<string[]>([ ]);
   let prevSelectedIds = $ref<string[]>([ ]);
   
   function useSelectedIds() {
-    if (!tableRef.value || !tableRef.value.data) return;
+    if (!tableRef.value || !tableRef.value.data) {
+      return;
+    }
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     const newSelectList = [ ];
     const select2falseList = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
-      if (selectedIds.includes(item.id)) {
+      if (selectedIds.includes(item[rowKey])) {
         newSelectList.push(item);
-      } else if (prevSelectedIds.includes(item.id)) {
+      } else if (prevSelectedIds.includes(item[rowKey])) {
         select2falseList.push(item);
       }
     }
@@ -389,24 +695,27 @@ export function useSelectOne<T>(
   
   /**
    * 多行或单行勾选
-   * @param {(T & { id: string })[]} list
-   * @param {(T & { id: string })} row?
    */
-  function selectChg(list: (T & { id: string })[], row?: (T & { id: string })) {
+  function selectChg(list: T[], row?: T) {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     if (!row) {
       if (list.length === 0) {
         selectedIds = [ ];
       } else {
-        selectedIds = [ list[0].id ];
+        selectedIds = [ (list as any)[0][rowKey] ];
       }
     } else {
+      const id = (row as any)[rowKey];
       if (list.includes(row)) {
-        if (!selectedIds.includes(row.id)) {
-          selectedIds = [ row.id ];
+        if (!selectedIds.includes(id)) {
+          selectedIds = [ id ];
         }
       } else {
-        if (selectedIds.includes(row.id)) {
-          selectedIds = selectedIds.filter((id) => id !== row.id);
+        if (selectedIds.includes(id)) {
+          selectedIds = selectedIds.filter((item) => item !== id);
         }
       }
     }
@@ -414,11 +723,12 @@ export function useSelectOne<T>(
   
   /**
    * 点击一行
-   * @param {(T & { id: string })} row
-   * @param {TableColumnCtx<T>} column
-   * @param {PointerEvent} event
    */
-  async function onRow(row: T & { id: string }, column: TableColumnCtx<T>, event: PointerEvent) {
+  async function onRow(row: T, column: TableColumnCtx<T>, event: PointerEvent) {
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
     const tableSelectable = opts?.tableSelectable;
     if (tableSelectable && !tableSelectable(row)) {
       if (column.type !== "selection") {
@@ -426,26 +736,26 @@ export function useSelectOne<T>(
       }
       return;
     }
+    const id = (row as any)[rowKey];
     if (column.type === "selection") {
-      if (selectedIds.includes(row.id)) {
-        selectedIds = selectedIds.filter((id) => id !== row.id);
+      if (selectedIds.includes(id)) {
+        selectedIds = selectedIds.filter((item) => item !== id);
       } else {
         selectedIds = [
-          row.id,
+          id,
         ];
       }
     } else {
       if (!row) {
         selectedIds = [ ];
       } else {
-        selectedIds = [ row.id ];
+        selectedIds = [ id ];
       }
     }
   }
   
   /**
    * 表格每一行的css样式
-   * @param {{ row: T, rowIndex: number }} { row, rowIndex }
    */
   function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
@@ -454,6 +764,7 @@ export function useSelectOne<T>(
   onUnmounted(function() {
     watch1Stop();
     watch2Stop();
+    watch3Stop();
   });
   
   return $$({

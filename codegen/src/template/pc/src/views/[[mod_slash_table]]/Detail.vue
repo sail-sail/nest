@@ -861,9 +861,9 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     isLocked = <#
     if (hasLocked) {
-    #>dialogModel.is_locked == 1 || <#
+    #>dialogModel.is_locked == 1 ?? <#
     }
-    #>toValue(arg?.isLocked) || isLocked;
+    #>toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];

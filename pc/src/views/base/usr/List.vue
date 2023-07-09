@@ -36,7 +36,7 @@
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
-            @clear="searchIptClr"
+            @clear="onSearchClear"
           ></el-input>
         </el-form-item>
       </template>
@@ -51,7 +51,7 @@
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
             clearable
-            @clear="searchIptClr"
+            @clear="onSearchClear"
           ></el-input>
         </el-form-item>
       </template>
@@ -128,7 +128,7 @@
           :false-label="0"
           :true-label="1"
           :disabled="selectedIds.length === 0"
-          @change="idsCheckedChg"
+          @change="onIdsChecked"
         >
           <span>{{ ns('已选择') }}</span>
           <span
@@ -231,7 +231,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
-        @click="deleteByIdsEfc"
+        @click="onDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -435,11 +435,14 @@
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
-        @sort-change="sortChange"
-        @click.ctrl="onRowCtrl"
-        @click.shift="onRowShift"
+        @sort-change="onSortChange"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
+        @keydown.escape="emptySelected"
+        @keydown.delete="onDeleteByIds"
+        @keydown.enter="onRowEnter"
+        @keydown.up="onRowUp"
+        @keydown.down="onRowDown"
       >
         
         <el-table-column
@@ -716,12 +719,12 @@ async function searchReset() {
 }
 
 /** 清空搜索框事件 */
-async function searchIptClr() {
+async function onSearchClear() {
   await dataGrid(true);
 }
 
 /** 点击已选择 */
-async function idsCheckedChg() {
+async function onIdsChecked() {
   await dataGrid(true);
 }
 
@@ -817,8 +820,8 @@ let {
   selectChg,
   rowClassName,
   onRow,
-  onRowCtrl,
-  onRowShift,
+  onRowUp,
+  onRowDown,
 } = $(useSelect<UsrModel>(
   $$(tableRef),
   {
@@ -1057,7 +1060,7 @@ let sort: Sort = $ref({
 });
 
 /** 排序 */
-async function sortChange(
+async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<UsrModel> } & Sort,
 ) {
   sort.prop = prop || "";
@@ -1253,6 +1256,17 @@ async function is_enabledChg(id: string, is_enabled: 0 | 1) {
   );
 }
 
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
+  } else {
+    await openView();
+  }
+}
+
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -1318,7 +1332,7 @@ async function openView() {
 }
 
 /** 点击删除 */
-async function deleteByIdsEfc() {
+async function onDeleteByIds() {
   if (isLocked) {
     return;
   }

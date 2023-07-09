@@ -349,7 +349,7 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = dialogModel.is_locked == 1 || toValue(arg?.isLocked) || isLocked;
+    isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];

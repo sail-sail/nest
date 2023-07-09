@@ -165,7 +165,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
             clearable
             @update:model-value="search.<#=column_name#> = $event"
-            @clear="searchIptClr"
+            @clear="onSearchClear"
           ></el-date-picker>
         </el-form-item>
       </template><#
@@ -196,7 +196,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             un-w="full"
             :controls="false"
             clearable
-            @clear="searchIptClr"
+            @clear="onSearchClear"
           ></el-input-number>
         </el-form-item>
       </template><#
@@ -212,7 +212,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
             clearable
-            @clear="searchIptClr"
+            @clear="onSearchClear"
           ></el-input>
         </el-form-item>
       </template><#
@@ -252,7 +252,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           :false-label="0"
           :true-label="1"
           :disabled="selectedIds.length === 0"
-          @change="idsCheckedChg"
+          @change="onIdsChecked"
         >
           <span>{{ ns('已选择') }}</span>
           <span
@@ -365,7 +365,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
-        @click="deleteByIdsEfc"
+        @click="onDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -614,11 +614,14 @@ const hasAtt = columns.some((item) => item.isAtt);
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
-        @sort-change="sortChange"
-        @click.ctrl="onRowCtrl"
-        @click.shift="onRowShift"
+        @sort-change="onSortChange"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
+        @keydown.escape="emptySelected"
+        @keydown.delete="onDeleteByIds"
+        @keydown.enter="onRowEnter"
+        @keydown.up="onRowUp"
+        @keydown.down="onRowDown"
       >
         
         <el-table-column
@@ -1285,12 +1288,12 @@ async function searchReset() {
 }
 
 /** 清空搜索框事件 */
-async function searchIptClr() {
+async function onSearchClear() {
   await dataGrid(true);
 }
 
 /** 点击已选择 */
-async function idsCheckedChg() {
+async function onIdsChecked() {
   await dataGrid(true);
 }
 
@@ -1490,8 +1493,8 @@ let {
   selectChg,
   rowClassName,
   onRow,
-  onRowCtrl,
-  onRowShift,
+  onRowUp,
+  onRowDown,
 } = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
@@ -1886,7 +1889,7 @@ let sort: Sort = $ref({
 #>
 
 /** 排序 */
-async function sortChange(
+async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
 ) {
   sort.prop = prop || "";
@@ -2265,6 +2268,17 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 }
 #>
 
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
+  } else {
+    await openView();
+  }
+}
+
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -2344,7 +2358,7 @@ if (opts.noDelete !== true) {
 #>
 
 /** 点击删除 */
-async function deleteByIdsEfc() {
+async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
