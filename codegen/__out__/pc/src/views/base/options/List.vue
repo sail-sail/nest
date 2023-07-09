@@ -412,6 +412,8 @@
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
+        @keydown.page-up="onPageUp"
+        @keydown.page-down="onPageDown"
       >
         
         <el-table-column
@@ -774,7 +776,7 @@ const multiple = $computed(() => props.isMultiple !== false);
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
-const isPagination = $computed(() => props.isPagination === "1");
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
 /** 是否只读模式 */
 const isLocked = $computed(() => props.isLocked === "1");
 
@@ -784,7 +786,14 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<OptionsModel>(dataGrid));
+  onPageUp,
+  onPageDown,
+} = $(usePage<OptionsModel>(
+  dataGrid,
+  {
+    isPagination,
+  },
+));
 
 /** 表格选择功能 */
 let {

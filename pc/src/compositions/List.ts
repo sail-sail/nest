@@ -71,8 +71,16 @@ export function initBuiltInModel<T>(
   return builtInModel;
 }
 
-export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 20, 50, 100 ]) {
-  let pageSizes = $ref(pageSizes0);
+export function usePage<T>(
+  dataGrid: Function,
+  opt?: {
+    pageSizes?: number[],
+    isPagination?: boolean, // 默认为true
+  },
+) {
+  
+  let pageSizes = $ref(opt?.pageSizes || [ 20, 50, 100 ]);
+  
   // 分页
   let page = $ref({
     size: pageSizes[0],
@@ -82,14 +90,41 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 20, 50, 
 
   // 每页显示发生改变
   async function pgSizeChg(size: number) {
+    if (opt?.isPagination === false) {
+      return;
+    }
     page.size = size;
     await dataGrid(true);
   }
 
   // 页码发生改变
   async function pgCurrentChg(current: number) {
+    if (opt?.isPagination === false) {
+      return;
+    }
     page.current = current;
     await dataGrid();
+  }
+  
+  async function onPageDown() {
+    if (opt?.isPagination === false) {
+      return;
+    }
+    const totalPageSize = Math.ceil(page.total / page.size);
+    if (page.current < totalPageSize) {
+      page.current++;
+      await dataGrid();
+    }
+  }
+  
+  async function onPageUp() {
+    if (opt?.isPagination === false) {
+      return;
+    }
+    if (page.current > 1) {
+      page.current--;
+      await dataGrid();
+    }
   }
   
   return $$({
@@ -97,6 +132,8 @@ export function usePage<T>(dataGrid: Function, pageSizes0: number[] = [ 20, 50, 
     pageSizes,
     pgSizeChg,
     pgCurrentChg,
+    onPageDown,
+    onPageUp,
   });
 }
 
