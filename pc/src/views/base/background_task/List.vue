@@ -330,6 +330,8 @@
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
+        @keydown.left="onRowLeft"
+        @keydown.right="onRowRight"
         @keydown.home="onRowHome"
         @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
@@ -693,6 +695,8 @@ let {
   onRow,
   onRowUp,
   onRowDown,
+  onRowLeft,
+  onRowRight,
   onRowHome,
   onRowEnd,
 } = $(useSelect<BackgroundTaskModel>(

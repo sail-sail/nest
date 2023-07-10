@@ -438,6 +438,58 @@ export function useSelect<T = any>(
   }
   
   /**
+   * 键盘按键向左按键
+   */
+  function onRowLeft(e: KeyboardEvent) {
+    if (!tableRef.value) {
+      return;
+    }
+    const tableEl = tableRef.value.$el as HTMLDivElement;
+    if (!tableEl) {
+      return;
+    }
+    const tableBody = tableEl.querySelector(".el-table__body-wrapper");
+    if (!tableBody) {
+      return;
+    }
+    const scrollbar = tableBody.querySelector(".el-scrollbar__wrap");
+    if (!scrollbar) {
+      return;
+    }
+    if (e.ctrlKey) {
+      scrollbar.scrollLeft = 0;
+    } else {
+      scrollbar.scrollLeft -= 100;
+    }
+  }
+  
+  /**
+   * 键盘按键向右按键
+   */
+  function onRowRight(e: KeyboardEvent) {
+    if (!tableRef.value) {
+      return;
+    }
+    const tableEl = tableRef.value.$el as HTMLDivElement;
+    if (!tableEl) {
+      return;
+    }
+    const tableBody = tableEl.querySelector(".el-table__body-wrapper");
+    if (!tableBody) {
+      return;
+    }
+    const scrollbar = tableBody.querySelector(".el-scrollbar__wrap");
+    if (!scrollbar) {
+      return;
+    }
+    if (e.ctrlKey) {
+      scrollbar.scrollLeft = scrollbar.scrollWidth;
+    } else {
+      scrollbar.scrollLeft += 100;
+    }
+  }
+  
+  /**
    * 键盘按键ctrl+向下按键
    */
   function onRowCtrlDown() {
@@ -635,9 +687,11 @@ export function useSelect<T = any>(
     selectChg,
     onRow,
     onRowUp,
+    onRowDown,
+    onRowLeft,
+    onRowRight,
     onRowHome: onRowCtrlUp,
     onRowEnd: onRowCtrlDown,
-    onRowDown,
     rowClassName,
   });
 }
