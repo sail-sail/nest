@@ -10,14 +10,14 @@
   :remote="props.pinyinFilterable"
   :remote-method="filterMethod"
   @visible-change="handleVisibleChange"
-  @clear="clearClk"
+  @clear="onClear"
   un-w="full"
   v-bind="$attrs"
   :model-value="modelValue ? modelValue : undefined"
   @update:model-value="modelValueUpdate"
   :loading="!inited"
   class="custom_select"
-  @change="valueChg"
+  @change="onChange"
   :multiple="props.multiple"
   :clearable="!props.disabled"
   :disabled="props.disabled"
@@ -173,7 +173,7 @@ const modelLabels = $computed(() => {
   return labels;
 });
 
-function clearClk() {
+function onClear() {
   modelValue = "";
   emit("update:modelValue", modelValue);
   emit("clear");
@@ -280,7 +280,7 @@ async function refreshEfc() {
   inited = true;
 }
 
-function valueChg() {
+function onChange() {
   if (!props.multiple) {
     const model = data.find((item) => props.optionsMap(item).value === modelValue);
     emit("change", model);

@@ -57,7 +57,7 @@ const foreignTabs = column?.foreignTabs || [ ];
       
       <el-button
         plain
-        @click="closeClk"
+        @click="onClose"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -187,7 +187,7 @@ async function initI18nsEfc() {
 initI18nsEfc();
 
 /** 点击取消关闭按钮 */
-function closeClk() {
+function onClose() {
   onCloseResolve({
     type: "cancel",
   });

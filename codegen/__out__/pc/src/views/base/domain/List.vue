@@ -23,7 +23,7 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="searchClk"
+      @keyup.enter="onSearch"
     >
       
       <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
@@ -36,7 +36,7 @@
             un-w="full"
             :placeholder="`${ ns('请输入') } ${ n('名称') }`"
             clearable
-            @clear="searchIptClr"
+            @clear="onSearchClear"
           ></el-input>
         </el-form-item>
       </template>
@@ -67,7 +67,7 @@
           :false-label="0"
           :true-label="1"
           :disabled="selectedIds.length === 0"
-          @change="idsCheckedChg"
+          @change="onIdsChecked"
         >
           <span>{{ ns('已选择') }}</span>
           <span
@@ -84,7 +84,7 @@
           un-cursor-pointer
           un-m="l-1.5"
           un-text="hover:red"
-          @click="emptySelected"
+          @click="onEmptySelected"
         >
           <ElIconRemove />
         </el-icon>
@@ -102,7 +102,7 @@
         <el-button
           plain
           type="primary"
-          @click="searchClk"
+          @click="onSearch"
         >
           <template #icon>
             <ElIconSearch />
@@ -170,7 +170,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
-        @click="deleteByIdsEfc"
+        @click="onDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -190,7 +190,7 @@
     
       <el-button
         plain
-        @click="refreshClk"
+        @click="onRefresh"
       >
         <template #icon>
           <ElIconRefresh />
@@ -223,13 +223,13 @@
         <template #dropdown>
           <el-dropdown-menu
             un-min="w-20"
-            whitespace-nowrap
+            un-whitespace-nowrap
           >
             
             <el-dropdown-item
               v-if="(exportExcel.workerStatus as any) !== 'RUNNING'"
               un-justify-center
-              @click="exportClk"
+              @click="onExport"
             >
               <span>{{ ns('导出') }}</span>
             </el-dropdown-item>
@@ -237,7 +237,7 @@
             <el-dropdown-item
               v-else
               un-justify-center
-              @click="cancelExportClk"
+              @click="onCancelExport"
             >
               <span un-text="red">{{ ns('取消导出') }}</span>
             </el-dropdown-item>
@@ -245,7 +245,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="importExcelClk"
+              @click="onImportExcel"
             >
               <span>{{ ns('导入') }}</span>
             </el-dropdown-item>
@@ -253,7 +253,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="enableByIdsClk(1)"
+              @click="onEnableByIds(1)"
             >
               <span>{{ ns('启用') }}</span>
             </el-dropdown-item>
@@ -261,7 +261,7 @@
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
-              @click="enableByIdsClk(0)"
+              @click="onEnableByIds(0)"
             >
               <span>{{ ns('禁用') }}</span>
             </el-dropdown-item>
@@ -290,7 +290,7 @@
         v-if="permit('force_delete') && !isLocked"
         plain
         type="danger"
-        @click="forceDeleteByIdsClk"
+        @click="onForceDeleteByIds"
       >
         <template #icon>
           <ElIconCircleClose />
@@ -300,7 +300,7 @@
       
       <el-button
         plain
-        @click="searchClk"
+        @click="onSearch"
       >
         <template #icon>
           <ElIconRefresh />
@@ -310,7 +310,7 @@
       
       <el-button
         plain
-        @click="exportClk"
+        @click="onExport"
       >
         <template #icon>
           <ElIconDownload />
@@ -357,12 +357,21 @@
         :default-sort="sort"
         @select="selectChg"
         @select-all="selectChg"
-        @row-click="rowClk"
-        @sort-change="sortChange"
-        @click.ctrl="rowClkCtrl"
-        @click.shift="rowClkShift"
+        @row-click="onRow"
+        @sort-change="onSortChange"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
+        @keydown.escape="onEmptySelected"
+        @keydown.delete="onDeleteByIds"
+        @keydown.enter="onRowEnter"
+        @keydown.up="onRowUp"
+        @keydown.down="onRowDown"
+        @keydown.left="onRowLeft"
+        @keydown.right="onRowRight"
+        @keydown.home="onRowHome"
+        @keydown.end="onRowEnd"
+        @keydown.page-up="onPageUp"
+        @keydown.page-down="onPageDown"
       >
         
         <el-table-column
@@ -605,12 +614,12 @@ async function recycleChg() {
 }
 
 /** 搜索 */
-async function searchClk() {
+async function onSearch() {
   await dataGrid(true);
 }
 
 /** 刷新 */
-async function refreshClk() {
+async function onRefresh() {
   emit("refresh");
   await dataGrid(true);
 }
@@ -625,12 +634,12 @@ async function searchReset() {
 }
 
 /** 清空搜索框事件 */
-async function searchIptClr() {
+async function onSearchClear() {
   await dataGrid(true);
 }
 
 /** 点击已选择 */
-async function idsCheckedChg() {
+async function onIdsChecked() {
   await dataGrid(true);
 }
 
@@ -684,127 +693,27 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置搜索条件 */
-const builtInSearch: DomainSearch = $computed(() => {
-  const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
-  for (const item of entries) {
-    if (builtInSearchType[item[0]] === "0|1") {
-      item[1] = (item[1] === "0" ? 0 : 1) as any;
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "number[]") {
-      if (!Array.isArray(item[1])) {
-        item[1] = [ item[1] as string ]; 
-      }
-      item[1] = (item[1] as any).map((itemTmp: string) => Number(itemTmp));
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "string[]") {
-      if (!Array.isArray(item[1])) {
-        item[1] = [ item[1] as string ]; 
-      }
-      continue;
-    }
-  }
-  return Object.fromEntries(entries) as unknown as DomainSearch;
-});
-
-/** 是否多选 */
-let multiple = $ref(true);
-
-watch(
-  () => props.isMultiple,
-  () => {
-    if (props.isMultiple === false) {
-      multiple = false;
-    } else {
-      multiple = true;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-/** 是否显示内置变量 */
-let showBuildIn = $ref(false);
-
-watch(
-  () => props.showBuildIn,
-  () => {
-    if (props.showBuildIn === "1") {
-      showBuildIn = true;
-    } else {
-      showBuildIn = false;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-/** 是否分页 */
-let isPagination = $ref(true);
-
-watch(
-  () => props.isPagination,
-  () => {
-    if (props.isPagination === "0") {
-      isPagination = false;
-    } else {
-      isPagination = true;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-/** 是否只读模式 */
-let isLocked = $ref(false);
-
-watch(
-  () => props.isLocked,
-  () => {
-    if (props.isLocked === "1") {
-      isLocked = true;
-    } else {
-      isLocked = false;
-    }
-  },
-  {
-    immediate: true,
-  },
-);
+const builtInSearch: DomainSearch = $(initBuiltInSearch(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
 
 /** 内置变量 */
-const builtInModel = $computed(() => {
-  const entries = Object.entries(props).filter(([ key, val ]) => !propsNotInSearch.includes(key) && val);
-  for (const item of entries) {
-    if (builtInSearchType[item[0]] === "0|1") {
-      item[1] = (item[1] === "0" ? 0 : 1) as any;
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "number[]" || builtInSearchType[item[0]] === "number") {
-      if (Array.isArray(item[1]) && item[1].length === 1) {
-        if (!isNaN(Number(item[1][0]))) {
-          item[1] = Number(item[1][0]) as any;
-        }
-      } else {
-        if (!isNaN(Number(item[1]))) {
-          item[1] = Number(item[1]) as any;
-        }
-      }
-      continue;
-    }
-    if (builtInSearchType[item[0]] === "string[]" || builtInSearchType[item[0]] === "string") {
-      if (Array.isArray(item[1]) && item[1].length === 1) {
-        item[1] = item[1][0]; 
-      }
-      continue;
-    }
-  }
-  return Object.fromEntries(entries) as unknown as DomainModel;
-});
+const builtInModel: DomainModel = $(initBuiltInModel(
+  props,
+  builtInSearchType,
+  propsNotInSearch,
+));
+
+/** 是否多选 */
+const multiple = $computed(() => props.isMultiple !== false);
+/** 是否显示内置变量 */
+const showBuildIn = $computed(() => props.showBuildIn === "1");
+/** 是否分页 */
+const isPagination = $computed(() => !props.isPagination || props.isPagination === "1");
+/** 是否只读模式 */
+const isLocked = $computed(() => props.isLocked === "1");
 
 /** 分页功能 */
 let {
@@ -812,16 +721,27 @@ let {
   pageSizes,
   pgSizeChg,
   pgCurrentChg,
-} = $(usePage<DomainModel>(dataGrid));
+  onPageUp,
+  onPageDown,
+} = $(usePage<DomainModel>(
+  dataGrid,
+  {
+    isPagination,
+  },
+));
 
 /** 表格选择功能 */
 let {
   selectedIds,
   selectChg,
   rowClassName,
-  rowClk,
-  rowClkCtrl,
-  rowClkShift,
+  onRow,
+  onRowUp,
+  onRowDown,
+  onRowLeft,
+  onRowRight,
+  onRowHome,
+  onRowEnd,
 } = $(useSelect<DomainModel>(
   $$(tableRef),
   {
@@ -847,7 +767,7 @@ function resetSelectedIds() {
 }
 
 /** 取消已选择筛选 */
-async function emptySelected() {
+async function onEmptySelected() {
   resetSelectedIds();
   idsChecked = 0;
   await dataGrid(true);
@@ -1059,7 +979,7 @@ let sort: Sort = $ref({
 });
 
 /** 排序 */
-async function sortChange(
+async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<DomainModel> } & Sort,
 ) {
   sort.prop = prop || "";
@@ -1070,12 +990,12 @@ async function sortChange(
 let exportExcel = $ref(useExportExcel("/base/domain"));
 
 /** 导出Excel */
-async function exportClk() {
+async function onExport() {
   await exportExcel.workerFn(search, [ sort ]);
 }
 
 /** 取消导出Excel */
-async function cancelExportClk() {
+async function onCancelExport() {
   exportExcel.workerTerminate();
 }
 
@@ -1149,7 +1069,7 @@ let isImporting = $ref(false);
 let isCancelImport = $ref(false);
 
 /** 弹出导入窗口 */
-async function importExcelClk() {
+async function onImportExcel() {
   if (isLocked) {
     return;
   }
@@ -1256,6 +1176,17 @@ async function is_enabledChg(id: string, is_enabled: 0 | 1) {
   );
 }
 
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
+  } else {
+    await openView();
+  }
+}
+
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -1321,7 +1252,7 @@ async function openView() {
 }
 
 /** 点击删除 */
-async function deleteByIdsEfc() {
+async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
@@ -1350,7 +1281,7 @@ async function deleteByIdsEfc() {
 }
 
 /** 点击彻底删除 */
-async function forceDeleteByIdsClk() {
+async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
@@ -1378,7 +1309,7 @@ async function forceDeleteByIdsClk() {
 }
 
 /** 点击启用或者禁用 */
-async function enableByIdsClk(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1487,6 +1418,6 @@ usrStore.onLogin(initFrame);
 initFrame();
 
 defineExpose({
-  refresh: refreshClk,
+  refresh: onRefresh,
 });
 </script>

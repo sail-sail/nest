@@ -58,7 +58,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   >
     <el-button
       plain
-      @click="closeClk"
+      @click="onClose"
     >
       <template #icon>
         <ElIconCircleClose />
@@ -69,7 +69,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     <el-button
       plain
       type="primary"
-      @click="saveClk"
+      @click="onSave"
     >
       <template #icon>
         <ElIconCircleCheck />
@@ -187,7 +187,7 @@ async function getModelsByIds(ids: string[]) {
 }
 
 /** 确定 */
-async function saveClk() {
+async function onSave() {
   onCloseResolve({
     type: "ok",
     selectedIds,
@@ -197,7 +197,7 @@ async function saveClk() {
 }
 
 /** 点击取消关闭按钮 */
-async function closeClk() {
+async function onClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }

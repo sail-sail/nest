@@ -128,6 +128,8 @@ export default defineConfig({
             "useSelectOne",
             "useTableColumns",
             "initListI18ns",
+            "initBuiltInSearch",
+            "initBuiltInModel",
           ],
           "@/compositions/Detail": [
             "initDetailI18ns",

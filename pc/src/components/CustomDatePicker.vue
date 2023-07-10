@@ -7,6 +7,8 @@
   v-model="modelValue"
   :clearable="!props.disabled"
   :disabled="props.disabled"
+  @change="onChange"
+  @clear="onClear"
 >
   <template
     v-for="(item, key, index) in $slots"
@@ -69,17 +71,22 @@ watch(
   },
 );
 
-watch(
-  () => modelValue,
-  () => {
-    emit("update:modelValue", modelValue);
-  },
-);
-
 let modelLabel = $computed(() => {
   if (modelValue) {
     return dayjs(modelValue).format(props.format ?? "YYYY-MM-DD");
   }
   return "";
 });
+
+function onChange() {
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
+}
+
+function onClear() {
+  modelValue = undefined;
+  emit("update:modelValue", modelValue);
+  emit("change", modelValue);
+  emit("clear");
+}
 </script>

@@ -20,9 +20,9 @@
   :loading="!inited"
   v-model="modelValue"
   @keyup.enter.stop
-  @clear="clearClk"
-  @change="valueChg"
-  @check="checkClk"
+  @clear="onClear"
+  @change="onChange"
+  @check="onCheck"
   :clearable="!props.disabled"
 >
   <template
@@ -176,13 +176,13 @@ const modelLabels = $computed(() => {
   return models;
 });
 
-function clearClk() {
+function onClear() {
   modelValue = "";
   emit("change", undefined);
   emit("clear");
 }
 
-function valueChg() {
+function onChange() {
 }
 
 function treeSelectFn<
@@ -205,7 +205,7 @@ function treeSelectFn<
   return;
 }
 
-function checkClk() {
+function onCheck() {
   if (!props.multiple) {
     if (!modelValue) {
       emit("change", undefined);

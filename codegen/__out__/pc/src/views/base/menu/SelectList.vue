@@ -23,7 +23,7 @@
   >
     <el-button
       plain
-      @click="closeClk"
+      @click="onClose"
     >
       <template #icon>
         <ElIconCircleClose />
@@ -34,7 +34,7 @@
     <el-button
       plain
       type="primary"
-      @click="saveClk"
+      @click="onSave"
     >
       <template #icon>
         <ElIconCircleCheck />
@@ -144,7 +144,7 @@ async function getModelsByIds(ids: string[]) {
 }
 
 /** 确定 */
-async function saveClk() {
+async function onSave() {
   onCloseResolve({
     type: "ok",
     selectedIds,
@@ -154,7 +154,7 @@ async function saveClk() {
 }
 
 /** 点击取消关闭按钮 */
-async function closeClk() {
+async function onClose() {
   if (readonlyWatchStop) {
     readonlyWatchStop();
   }

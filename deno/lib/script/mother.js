@@ -8,6 +8,8 @@ const child_process = require("child_process");
 // const buf = fs.readFileSync(`${ __dirname }/../../.env.dev`);
 // const conf = dotenv.parse(buf);
 
+process.title = "deno";
+
 {
   const arr = [
     "node_modules/@graphql-codegen/cli/cjs/bin.js",

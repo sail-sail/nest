@@ -209,7 +209,7 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
       data_type = 'number';
     }
     else if (column.DATA_TYPE === 'decimal') {
-      data_type = 'number';
+      data_type = 'Decimal';
     }
   #><#
     if (is_nullable) {
