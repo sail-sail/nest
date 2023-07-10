@@ -11,7 +11,7 @@ generates:
       useTypeImports: true
       scalars:
         Decimal:
-          input: string
+          input: InstanceType<typeof import("decimal.js").default>
           output: InstanceType<typeof import("decimal.js").default>
   ../pc/src/typings/types.ts:
     plugins:
