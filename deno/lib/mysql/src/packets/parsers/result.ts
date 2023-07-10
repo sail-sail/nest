@@ -24,6 +24,8 @@ import {
   MYSQL_TYPE_VARCHAR,
 } from "../../constant/mysql_types.ts";
 
+import Decimal from "decimal.js";
+
 /** @ignore */
 export interface FieldInfo {
   catalog: string;
@@ -92,8 +94,10 @@ function convertType(field: FieldInfo, val: string, config: ClientConfig): any {
     case MYSQL_TYPE_FLOAT:
     // case MYSQL_TYPE_DATETIME2:
       return parseFloat(val);
-    case MYSQL_TYPE_NEWDECIMAL:
-      return val; // #42 MySQL's decimal type cannot be accurately represented by the Number.
+    case MYSQL_TYPE_NEWDECIMAL: {
+      const val2 = new Decimal(val);
+      return val2; // #42 MySQL's decimal type cannot be accurately represented by the Number.
+    }
     case MYSQL_TYPE_TINY:
     case MYSQL_TYPE_SHORT:
     case MYSQL_TYPE_LONG:

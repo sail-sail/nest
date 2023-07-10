@@ -7,6 +7,12 @@ generates:
     plugins:
       - typescript
       - typescript-operations
+    config:
+      useTypeImports: true
+      scalars:
+        Decimal:
+          input: string
+          output: InstanceType<typeof import("decimal.js").default>
   ../pc/src/typings/types.ts:
     plugins:
       - typescript
