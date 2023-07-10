@@ -107,7 +107,7 @@
           un-cursor-pointer
           un-m="l-1.5"
           un-text="hover:red"
-          @click="emptySelected"
+          @click="onEmptySelected"
         >
           <ElIconRemove />
         </el-icon>
@@ -400,11 +400,13 @@
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
         @row-dblclick="openView"
-        @keydown.escape="emptySelected"
+        @keydown.escape="onEmptySelected"
         @keydown.delete="onDeleteByIds"
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
+        @keydown.home="onRowHome"
+        @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
         @keydown.page-down="onPageDown"
       >
@@ -864,6 +866,8 @@ let {
   onRow,
   onRowUp,
   onRowDown,
+  onRowHome,
+  onRowEnd,
 } = $(useSelect<TenantModel>(
   $$(tableRef),
   {
@@ -889,7 +893,7 @@ function resetSelectedIds() {
 }
 
 /** 取消已选择筛选 */
-async function emptySelected() {
+async function onEmptySelected() {
   resetSelectedIds();
   idsChecked = 0;
   await dataGrid(true);

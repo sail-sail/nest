@@ -635,6 +635,8 @@ export function useSelect<T = any>(
     selectChg,
     onRow,
     onRowUp,
+    onRowHome: onRowCtrlUp,
+    onRowEnd: onRowCtrlDown,
     onRowDown,
     rowClassName,
   });
