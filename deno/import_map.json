@@ -16,6 +16,7 @@
     "csv": "https://deno.land/x/csv@v0.8.0/mod.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
-    "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts"
+    "imagescript": "https://deno.land/x/imagescript@1.2.15/mod.ts",
+    "decimal.js": "https://esm.sh/decimal.js@10.4.3"
   }
 }

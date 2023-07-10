@@ -419,7 +419,11 @@ function refreshTab_active_line() {
   if (!tab_activeEl) {
     return;
   }
-  tab_activeEl.scrollIntoView({ block: "center", inline: "center" });
+  if ((tab_activeEl as any).scrollIntoViewIfNeeded) {
+    (tab_activeEl as any).scrollIntoViewIfNeeded(true);
+  } else {
+    tab_activeEl.scrollIntoView({ block: "center", inline: "center" });
+  }
   const offsetLeft = tab_activeEl.offsetLeft - (tab_activeEl.parentElement?.scrollLeft || 0);
   const offsetWidth = tab_activeEl.offsetWidth;
   tab_active_lineRef.style.display = "block";
@@ -488,7 +492,9 @@ async function deptSelectClk(dept_id: string) {
     dept_id,
   });
   if (token) {
-    usrStore.dept_id = dept_id;
+    if (usrStore.loginInfo) {
+      usrStore.loginInfo.dept_id = dept_id;
+    }
     await usrStore.login(token);
   }
 }

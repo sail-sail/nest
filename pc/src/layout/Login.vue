@@ -251,7 +251,6 @@ async function loginClk() {
       dept_id: model.dept_id,
     }),
   );
-  debugger;
   usrStore.authorization = loginModel.authorization;
   usrStore.username = model.username;
   usrStore.tenant_id = model.tenant_id;
