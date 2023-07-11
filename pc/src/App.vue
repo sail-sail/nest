@@ -416,6 +416,25 @@ body .el-input-number.is-without-controls .el-input__inner {
   }
 }
 
+.select_input_wrapper {
+  @apply flex items-stretch w-full box-border;
+  .el-input {
+    @apply box-border flex-[1_0_0];
+    .el-input__inner {
+      @apply cursor-pointer;
+    }
+  }
+}
+.select_input_wrapper.dialog_visible {
+  padding-left: 4px;
+}
+.el-form-item:has(.select_input_wrapper.dialog_visible) {
+  .el-form-item__label-wrap {
+    position: relative;
+    left: 1px;
+  }
+}
+
 .el-tree {
   .el-tree-node.is-current>.el-tree-node__content {
     background-color: rgba(210,210,210,.8);
