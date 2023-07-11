@@ -479,7 +479,7 @@ async function onSave() {
     id = await create(dialogModel2);
     dialogModel.id = id;
     msg = await nsAsync("添加成功");
-  } else if (dialogAction === "edit") {
+  } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
     }
