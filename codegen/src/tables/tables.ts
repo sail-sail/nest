@@ -27,6 +27,9 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "is_locked",
+      },
+      {
         COLUMN_NAME: "is_enabled",
       },
       {

@@ -249,7 +249,14 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await query<DictDetailModel>(sql, args, { cacheKey1, cacheKey2 });
+  const result = await query<DictDetailModel>(
+    sql,
+    args,
+    {
+      cacheKey1,
+      cacheKey2,
+    },
+  );
   
   const [
     is_lockedDict, // 锁定
@@ -788,7 +795,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+    if (model.update_usr_id && model.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();

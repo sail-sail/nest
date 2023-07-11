@@ -75,7 +75,34 @@ import {
   escape,
 } from "sqlstring";
 
-import dayjs from "dayjs";
+import dayjs from "dayjs";<#
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  if (!column_type) {
+    continue;
+  }
+  if (!column_type.startsWith("decimal")) {
+    continue;
+  }
+  hasDecimal = true;
+}
+#><#
+if (hasDecimal) {
+#>
+
+import Decimal from "decimal.js";<#
+}
+#>
 
 import {
   log,
@@ -579,11 +606,18 @@ export async function findAll(
   }
   #>
   
-  let result = await query<<#=modelName#>>(sql, args<#
-  if (cache) {
-  #>, { cacheKey1, cacheKey2 }<#
-  }
-  #>);<#
+  const result = await query<<#=modelName#>>(
+    sql,
+    args,<#
+    if (cache) {
+    #>
+    {
+      cacheKey1,
+      cacheKey2,
+    },<#
+    }
+  #>
+  );<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -746,6 +780,15 @@ export async function findAll(
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
       const isPassword = column.isPassword;
+    #><#
+      if (column_type && column_type.startsWith("decimal")) {
+    #>
+    
+    // <#=column_comment#>
+    if (model.<#=column_name#> != null) {
+      model.<#=column_name#> = new Decimal(model.<#=column_name#>);
+    }<#
+      }
     #><#
       if (foreignKey && foreignKey.type === "json") {
     #><#
@@ -2139,7 +2182,7 @@ export async function updateById(
   }
   #>
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+    if (model.update_usr_id && model.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();

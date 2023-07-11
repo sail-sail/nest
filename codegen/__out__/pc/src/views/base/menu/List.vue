@@ -936,7 +936,7 @@ function getTableColumns(): ColumnType[] {
       label: "所在租户",
       prop: "tenant_ids_lbl",
       width: 180,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
     },

@@ -1593,20 +1593,20 @@ function getTableColumns(): ColumnType[] {
     }
     const isPassword = column.isPassword;
     if (isPassword) continue;
-    if (column.align) {
-      column.align = column.align;
-    } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-      column.align = "right";
+    if (column_type) {
+      if (
+        (column_type !== "int(1)" && column_type.startsWith("int"))
+        || column_type.startsWith("decimal")
+      ) {
+        column.align = column.align || "right";
+        column.width = column.width || 100;
+      } else {
+        column.align = column.align || "center";
+      }
     } else {
       column.align = "center";
     }
-    if (column.headerAlign) {
-      column.headerAlign = column.headerAlign;
-    } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-      column.headerAlign = "center";
-    } else {
-      column.headerAlign = "center";
-    }
+    column.headerAlign = column.headerAlign || "center";
     if (column.showOverflowTooltip == null) {
       column.showOverflowTooltip = true;
     }

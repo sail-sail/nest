@@ -92,7 +92,7 @@ let modelValue = $ref(props.modelValue);
 watch(
   () => props.modelValue,
   () => {
-    modelValue = props.modelValue;
+    modelValue = Number(props.modelValue);
   },
 );
 

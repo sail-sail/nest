@@ -940,7 +940,7 @@ function getTableColumns(): ColumnType[] {
       label: "所属域名",
       prop: "domain_ids_lbl",
       width: 280,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
     },

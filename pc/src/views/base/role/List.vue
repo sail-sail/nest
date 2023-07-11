@@ -289,6 +289,22 @@
               <span>{{ ns('禁用') }}</span>
             </el-dropdown-item>
             
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onLockByIds(1)"
+            >
+              <span>{{ ns('锁定') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onLockByIds(0)"
+            >
+              <span>{{ ns('解锁') }}</span>
+            </el-dropdown-item>
+            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -436,6 +452,22 @@
             </el-table-column>
           </template>
           
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_locked"
+                  @change="is_lockedChg(row.id, row.is_locked)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -444,7 +476,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
                   @change="is_enabledChg(row.id, row.is_enabled)"
                 ></CustomSwitch>
@@ -572,6 +604,7 @@ import {
   deleteByIds,
   forceDeleteByIds,
   enableByIds,
+  lockByIds,
   useExportExcel,
   updateById,
   importModels,
@@ -680,6 +713,7 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   menu_ids?: string|string[]; // 菜单
   menu_ids_lbl?: string|string[]; // 菜单
+  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   rem_like?: string; // 备注
@@ -699,6 +733,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
@@ -833,6 +869,14 @@ function getTableColumns(): ColumnType[] {
       label: "菜单",
       prop: "menu_ids_lbl",
       width: 80,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "锁定",
+      prop: "is_locked_lbl",
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1093,6 +1137,7 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
     [ n("菜单") ]: "menu_ids_lbl",
+    [ n("锁定") ]: "is_locked_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
@@ -1146,6 +1191,27 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 锁定 */
+async function is_lockedChg(id: string, is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await lockByIds(
+    [ id ],
+    is_locked,
+    {
+      notLoading,
+    },
+  );
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 启用 */
@@ -1329,6 +1395,34 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   }
 }
 
+/** 点击锁定或者解锁 */
+async function onLockByIds(is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("请选择需要 锁定 的数据");
+    } else {
+      msg = await nsAsync("请选择需要 解锁 的数据");
+    }
+    ElMessage.warning(msg);
+    return;
+  }
+  const num = await lockByIds(selectedIds, is_locked);
+  if (num > 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("锁定 {0} 条数据成功", num);
+    } else {
+      msg = await nsAsync("解锁 {0} 条数据成功", num);
+    }
+    ElMessage.success(msg);
+    await dataGrid(true);
+  }
+}
+
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (isLocked) {
@@ -1363,6 +1457,7 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "菜单",
+    "锁定",
     "启用",
     "备注",
     "创建人",
@@ -1421,7 +1516,7 @@ async function onMenu_ids(row: RoleModel) {
     action
   } = await menu_idsListSelectDialogRef.showDialog({
     selectedIds: row.menu_ids as string[],
-    isLocked: false,
+    isLocked: row.is_locked == 1,
   });
   if (isLocked) {
     return;

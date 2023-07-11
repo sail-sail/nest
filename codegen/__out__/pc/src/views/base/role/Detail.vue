@@ -212,6 +212,12 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
+    is_locked: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+      },
+    ],
     is_enabled: [
       {
         required: true,
@@ -245,6 +251,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: RoleInput = {
+    is_locked: 0,
     is_enabled: 1,
   };
   return defaultInput;
@@ -287,7 +294,7 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = toValue(arg?.isLocked) ?? isLocked;
+    isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];
@@ -317,6 +324,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_locked: undefined,
+        is_locked_lbl: undefined,
       };
     }
   } else if (dialogAction === "edit") {
@@ -503,6 +512,7 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
     "菜单",
+    "锁定",
     "启用",
     "备注",
     "创建人",
