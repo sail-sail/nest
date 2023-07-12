@@ -114,6 +114,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_lock == null)">
+          <el-form-item
+            :label="n('锁定')"
+            prop="is_lock"
+          >
+            <DictSelect
+              :set="dialogModel.is_lock = dialogModel.is_lock ?? undefined"
+              v-model="dialogModel.is_lock"
+              code="is_lock"
+              :placeholder="`${ ns('请选择') } ${ n('锁定') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.tenant_ids == null)">
           <el-form-item
             :label="n('所在租户')"
@@ -345,6 +360,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 async function getDefaultInput() {
   const defaultInput: MenuInput = {
     type: "pc",
+    is_lock: 0,
     is_enabled: 1,
     order_by: 1,
   };
@@ -610,6 +626,7 @@ async function initI18nsEfc() {
     "名称",
     "路由",
     "参数",
+    "锁定",
     "所在租户",
     "启用",
     "排序",

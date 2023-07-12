@@ -472,6 +472,22 @@
             </el-table-column>
           </template>
           
+          <!-- 锁定 -->
+          <template v-else-if="'is_lock_lbl' === col.prop && (showBuildIn || builtInSearch?.is_lock == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_lock"
+                  @change="is_lockChg(row.id, row.is_lock)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 所在租户 -->
           <template v-else-if="'tenant_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.tenant_ids == null)">
             <el-table-column
@@ -740,6 +756,7 @@ const props = defineProps<{
   route_path_like?: string; // 路由
   route_query?: string; // 参数
   route_query_like?: string; // 参数
+  is_lock?: string|string[]; // 锁定
   tenant_ids?: string|string[]; // 所在租户
   tenant_ids_lbl?: string|string[]; // 所在租户
   is_enabled?: string|string[]; // 启用
@@ -764,6 +781,8 @@ const builtInSearchType: { [key: string]: string } = {
   type_lbl: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
+  is_lock: "number[]",
+  is_lock_lbl: "string[]",
   tenant_ids: "string[]",
   tenant_ids_lbl: "string[]",
   is_enabled: "number[]",
@@ -933,10 +952,18 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "锁定",
+      prop: "is_lock_lbl",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "所在租户",
       prop: "tenant_ids_lbl",
       width: 180,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1208,6 +1235,7 @@ async function onImportExcel() {
     [ n("名称") ]: "lbl",
     [ n("路由") ]: "route_path",
     [ n("参数") ]: "route_query",
+    [ n("锁定") ]: "is_lock_lbl",
     [ n("所在租户") ]: "tenant_ids_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
@@ -1263,6 +1291,29 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 锁定 */
+async function is_lockChg(id: string, is_lock: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateById(
+    id,
+    {
+      is_lock,
+    },
+    {
+      notLoading,
+    },
+  );
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 启用 */
@@ -1483,6 +1534,7 @@ async function initI18nsEfc() {
     "名称",
     "路由",
     "参数",
+    "锁定",
     "所在租户",
     "启用",
     "排序",

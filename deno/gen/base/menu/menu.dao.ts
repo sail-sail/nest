@@ -117,6 +117,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.route_query_like)) {
     whereQuery += ` and t.route_query like ${ args.push(sqlLike(search?.route_query_like) + "%") }`;
   }
+  if (search?.is_lock && !Array.isArray(search?.is_lock)) {
+    search.is_lock = [ search.is_lock ];
+  }
+  if (search?.is_lock && search?.is_lock?.length > 0) {
+    whereQuery += ` and t.is_lock in ${ args.push(search.is_lock) }`;
+  }
   if (search?.tenant_ids && !Array.isArray(search?.tenant_ids)) {
     search.tenant_ids = [ search.tenant_ids ];
   }
@@ -353,9 +359,11 @@ export async function findAll(
   
   const [
     typeDict, // 类型
+    is_lockDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
     "menu_type",
+    "is_lock",
     "is_enabled",
   ]);
   
@@ -371,6 +379,16 @@ export async function findAll(
       }
     }
     model.type_lbl = type_lbl;
+    
+    // 锁定
+    let is_lock_lbl = model.is_lock.toString();
+    if (model.is_lock !== undefined && model.is_lock !== null) {
+      const dictItem = is_lockDict.find((dictItem) => dictItem.val === model.is_lock.toString());
+      if (dictItem) {
+        is_lock_lbl = dictItem.lbl;
+      }
+    }
+    model.is_lock_lbl = is_lock_lbl;
     
     // 启用
     let is_enabled_lbl = model.is_enabled.toString();
@@ -423,6 +441,8 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     route_path: await n("路由"),
     route_query: await n("参数"),
+    is_lock: await n("锁定"),
+    is_lock_lbl: await n("锁定"),
     tenant_ids: await n("所在租户"),
     tenant_ids_lbl: await n("所在租户"),
     is_enabled: await n("启用"),
@@ -671,9 +691,11 @@ export async function create(
   
   const [
     typeDict, // 类型
+    is_lockDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
     "menu_type",
+    "is_lock",
     "is_enabled",
   ]);
   
@@ -692,6 +714,14 @@ export async function create(
     const menuModel = await findOne({ lbl: model.parent_id_lbl });
     if (menuModel) {
       model.parent_id = menuModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_lock_lbl) && model.is_lock === undefined) {
+    const val = is_lockDict.find((itemTmp) => itemTmp.lbl === model.is_lock_lbl)?.val;
+    if (val !== undefined) {
+      model.is_lock = Number(val);
     }
   }
   
@@ -766,6 +796,9 @@ export async function create(
   if (model.route_query !== undefined) {
     sql += `,route_query`;
   }
+  if (model.is_lock !== undefined) {
+    sql += `,is_lock`;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
@@ -804,6 +837,9 @@ export async function create(
   }
   if (model.route_query !== undefined) {
     sql += `,${ args.push(model.route_query) }`;
+  }
+  if (model.is_lock !== undefined) {
+    sql += `,${ args.push(model.is_lock) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
@@ -883,9 +919,11 @@ export async function updateById(
   
   const [
     typeDict, // 类型
+    is_lockDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
     "menu_type",
+    "is_lock",
     "is_enabled",
   ]);
   
@@ -903,6 +941,14 @@ export async function updateById(
     const menuModel = await findOne({ lbl: model.parent_id_lbl });
     if (menuModel) {
       model.parent_id = menuModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_lock_lbl) && model.is_lock === undefined) {
+    const val = is_lockDict.find((itemTmp) => itemTmp.lbl === model.is_lock_lbl)?.val;
+    if (val !== undefined) {
+      model.is_lock = Number(val);
     }
   }
 
@@ -974,6 +1020,12 @@ export async function updateById(
   if (model.route_query !== undefined) {
     if (model.route_query != oldModel.route_query) {
       sql += `route_query = ${ args.push(model.route_query) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_lock !== undefined) {
+    if (model.is_lock != oldModel.is_lock) {
+      sql += `is_lock = ${ args.push(model.is_lock) },`;
       updateFldNum++;
     }
   }

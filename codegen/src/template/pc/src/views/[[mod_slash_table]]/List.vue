@@ -1604,7 +1604,7 @@ function getTableColumns(): ColumnType[] {
         column.align = column.align || "center";
       }
     } else {
-      column.align = "center";
+      column.align = column.align || "center";
     }
     column.headerAlign = column.headerAlign || "center";
     if (column.showOverflowTooltip == null) {

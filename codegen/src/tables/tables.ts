@@ -309,6 +309,9 @@ export default defineConfig({
         width: 160,
       },
       {
+        COLUMN_NAME: "is_lock",
+      },
+      {
         COLUMN_NAME: "tenant_ids",
         COLUMN_COMMENT: "所在租户",
         width: 180,
