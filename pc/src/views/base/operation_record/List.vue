@@ -1006,6 +1006,15 @@ async function onCancelExport() {
   exportExcel.workerTerminate();
 }
 
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+  } else if (e.shiftKey) {
+  } else {
+    await openView();
+  }
+}
+
 /** 打开查看 */
 async function openView() {
   if (!detailRef) {

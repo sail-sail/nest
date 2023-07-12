@@ -1337,17 +1337,6 @@ async function is_enabledChg(id: string, is_enabled: 0 | 1) {
   );
 }
 
-/** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
-    await openEdit();
-  } else if (e.shiftKey) {
-    await openCopy();
-  } else {
-    await openView();
-  }
-}
-
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -1380,6 +1369,17 @@ async function openEdit() {
     dataGrid(),
   ]);
   emit("edit", changedIds);
+}
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
+  } else {
+    await openView();
+  }
 }
 
 /** 打开查看 */

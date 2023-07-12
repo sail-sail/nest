@@ -2289,17 +2289,6 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 }
 #>
 
-/** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
-    await openEdit();
-  } else if (e.shiftKey) {
-    await openCopy();
-  } else {
-    await openView();
-  }
-}
-
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -2340,6 +2329,25 @@ async function openEdit() {
 }<#
 }
 #>
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {<#
+    if (opts.noEdit !== true) {
+    #>
+    await openEdit();<#
+    }
+    #>
+  } else if (e.shiftKey) {<#
+    if (opts.noAdd !== true) {
+    #>
+    await openCopy();<#
+    }
+    #>
+  } else {
+    await openView();
+  }
+}
 
 /** 打开查看 */
 async function openView() {
