@@ -890,7 +890,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           }
           #>
           
-          <template v-else>
+          <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"

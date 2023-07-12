@@ -458,7 +458,7 @@
             </el-table-column>
           </template>
           
-          <template v-else>
+          <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
