@@ -159,6 +159,23 @@ fn get_where_query<'a>(
     }
   }
   {
+    let is_lock: Vec<u8> = match &search {
+      Some(item) => item.is_lock.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_lock.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_lock.len());
+        for item in is_lock {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_lock in ({})", arg);
+    }
+  }
+  {
     let tenant_ids: Vec<String> = match &search {
       Some(item) => item.tenant_ids.clone().unwrap_or_default(),
       None => Default::default(),
@@ -420,11 +437,13 @@ pub async fn find_all<'a>(
   
   let dict_vec = get_dict(ctx, &vec![
     "menu_type",
+    "is_lock",
     "is_enabled",
   ]).await?;
   
   let type_dict = &dict_vec[0];
-  let is_enabled_dict = &dict_vec[1];
+  let is_lock_dict = &dict_vec[1];
+  let is_enabled_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -434,6 +453,14 @@ pub async fn find_all<'a>(
         .find(|item| item.val == model.r#type.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
+    };
+    
+    // 锁定
+    model.is_lock_lbl = {
+      is_lock_dict.iter()
+        .find(|item| item.val == model.is_lock.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_lock.to_string())
     };
     
     // 启用
@@ -520,6 +547,8 @@ pub async fn get_field_comments<'a>(
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     route_path: n_route.n(ctx, "路由".to_owned(), None).await?,
     route_query: n_route.n(ctx, "参数".to_owned(), None).await?,
+    is_lock: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_lock_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     tenant_ids: n_route.n(ctx, "所在租户".to_owned(), None).await?,
     tenant_ids_lbl: n_route.n(ctx, "所在租户".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
@@ -705,6 +734,7 @@ pub async fn set_id_by_lbl<'a>(
   
   let dict_vec = get_dict(ctx, &vec![
     "menu_type",
+    "is_lock",
     "is_enabled",
   ]).await?;
   
@@ -723,9 +753,24 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 锁定
+  if input.is_lock.is_none() {
+    let is_lock_dict = &dict_vec[1];
+    if let Some(is_lock_lbl) = input.is_lock_lbl.clone() {
+      input.is_lock = is_lock_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_lock_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
+  }
+  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict.into_iter()
         .find(|item| {
@@ -883,6 +928,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(route_query.into());
   }
+  // 锁定
+  if let Some(is_lock) = input.is_lock {
+    sql_fields += ",is_lock";
+    sql_values += ",?";
+    args.push(is_lock.into());
+  }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     sql_fields += ",is_enabled";
@@ -1006,6 +1057,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",route_query = ?";
     args.push(route_query.into());
+  }
+  // 锁定
+  if let Some(is_lock) = input.is_lock {
+    field_num += 1;
+    sql_fields += ",is_lock = ?";
+    args.push(is_lock.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {

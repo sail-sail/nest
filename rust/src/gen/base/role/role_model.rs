@@ -13,6 +13,10 @@ pub struct RoleModel {
   pub menu_ids: Vec<String>,
   /// 菜单
   pub menu_ids_lbl: Vec<String>,
+  /// 锁定
+  pub is_locked: u8,
+  /// 锁定
+  pub is_locked_lbl: String,
   /// 启用
   pub is_enabled: u8,
   /// 启用
@@ -50,6 +54,9 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
+    // 锁定
+    let is_locked: u8 = row.try_get("is_locked")?;
+    let is_locked_lbl: String = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -83,6 +90,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       lbl,
       menu_ids,
       menu_ids_lbl,
+      is_locked,
+      is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
       rem,
@@ -110,6 +119,10 @@ pub struct RoleFieldComment {
   pub menu_ids: String,
   /// 菜单
   pub menu_ids_lbl: String,
+  /// 锁定
+  pub is_locked: String,
+  /// 锁定
+  pub is_locked_lbl: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
@@ -150,6 +163,8 @@ pub struct RoleSearch {
   pub menu_ids: Option<Vec<String>>,
   /// 菜单
   pub menu_ids_is_null: Option<bool>,
+  /// 锁定
+  pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 备注
@@ -180,6 +195,10 @@ pub struct RoleInput {
   pub menu_ids: Option<Vec<String>>,
   /// 菜单
   pub menu_ids_lbl: Option<Vec<String>>,
+  /// 锁定
+  pub is_locked: Option<u8>,
+  /// 锁定
+  pub is_locked_lbl: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
@@ -215,6 +234,8 @@ impl From<RoleInput> for RoleSearch {
       lbl: input.lbl,
       // 菜单
       menu_ids: input.menu_ids,
+      // 锁定
+      is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 备注
