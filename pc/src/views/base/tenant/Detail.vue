@@ -110,6 +110,7 @@
               v-model="dialogModel.expiration"
               type="date"
               format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
               :placeholder="`${ ns('请选择') } ${ n('到期日') }`"
               :readonly="isReadonly"
             ></CustomDatePicker>

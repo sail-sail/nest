@@ -320,11 +320,13 @@ for (let i = 0; i < columns.length; i++) {
               if (data_type === "datetime") {
               #>
               type="datetime"
-              format="YYYY-MM-DD HH:mm:ss"<#
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"<#
               } else if (data_type === "date") {
               #>
               type="date"
-              format="YYYY-MM-DD"<#
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"<#
               }
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
