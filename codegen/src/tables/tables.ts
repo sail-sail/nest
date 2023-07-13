@@ -1,5 +1,4 @@
 import { defineConfig } from "../config";
-import sps from "./sps";
 
 export default defineConfig({
   // 角色
@@ -989,5 +988,4 @@ export default defineConfig({
       },
     ],
   },
-  ...sps
 });

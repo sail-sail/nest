@@ -14,13 +14,3 @@ HTt8ThGSRO2Gisb0ym4XbA,pc,6ZeQOSTtRpGy+467HJZuBw,业务字典,/base/dictbiz,NULL
 avUSu4oaRnuqAAZ5zXxX9g,pc,6ZeQOSTtRpGy+467HJZuBw,语言,/base/lang,NULL,1,10054
 5lhD4VfTQs2vzkZUx8U+ew,pc,6ZeQOSTtRpGy+467HJZuBw,国际化,/base/i18n,NULL,1,10055
 vU3glaDcRtSU6zYA02lxbA,pc,6ZeQOSTtRpGy+467HJZuBw,权限,/base/permit,NULL,1,10056
-EvWR/dpySLOET6IcobATsw,pc,,智能停车,,NULL,1,20000
-jZoKR1PDQIeKVOCOxHzxVQ,pc,EvWR/dpySLOET6IcobATsw,停车场,/sps/parking,NULL,1,20100
-h4uDwoEdTm+l0Ma6stSabA,pc,EvWR/dpySLOET6IcobATsw,相机,/sps/camera,NULL,1,20200
-3TI7kUxGSKefe1C6nwJRnA,pc,EvWR/dpySLOET6IcobATsw,车位,/sps/parking_space,NULL,1,20300
-6rra+N8vSs6TlgqSqCkC3A,pc,EvWR/dpySLOET6IcobATsw,地锁,/sps/parking_lock,NULL,1,20400
-x3LkJAU1TlyeW/8hIO1vxA,pc,EvWR/dpySLOET6IcobATsw,地锁记录,/sps/lock_record,NULL,1,20500
-xKDcarSkSZSt/4OhZiVVjQ,pc,EvWR/dpySLOET6IcobATsw,订单,/sps/order,NULL,1,20600
-XEvT6Wv8R9G7D/XebJ0o0A,pc,EvWR/dpySLOET6IcobATsw,用户车辆,/sps/usr_cars,NULL,1,20700
-mh3bK5LQSdykKm6F8eXt2Q,pc,EvWR/dpySLOET6IcobATsw,会员,/base/wx_usr,NULL,1,20800
-o59oTpcDRIuf9x5mkQNF7g,pc,EvWR/dpySLOET6IcobATsw,黑白名单,/sps/parking_list,NULL,1,20900
