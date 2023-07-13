@@ -760,7 +760,9 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-            } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+            } else if (selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+            ) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -890,7 +892,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           }
           #>
           
-          <template v-else>
+          <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1604,7 +1606,7 @@ function getTableColumns(): ColumnType[] {
         column.align = column.align || "center";
       }
     } else {
-      column.align = "center";
+      column.align = column.align || "center";
     }
     column.headerAlign = column.headerAlign || "center";
     if (column.showOverflowTooltip == null) {
@@ -1684,8 +1686,8 @@ function getTableColumns(): ColumnType[] {
       #>
     },<#
     } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz
-        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
-      ) {
+      || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+    ) {
     #>
     {
       label: "<#=column_comment#>",
@@ -2068,6 +2070,7 @@ async function onImportExcel() {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "version") continue;
+    const data_type = column.DATA_TYPE;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2081,7 +2084,9 @@ async function onImportExcel() {
     }
     const foreignKey = column.foreignKey;
     let column_name2 = column_name;
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+    ) {
       column_name2 = `${column_name}_lbl`;
     }
   #>
@@ -2289,17 +2294,6 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 }
 #>
 
-/** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
-    await openEdit();
-  } else if (e.shiftKey) {
-    await openCopy();
-  } else {
-    await openView();
-  }
-}
-
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -2340,6 +2334,25 @@ async function openEdit() {
 }<#
 }
 #>
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {<#
+    if (opts.noEdit !== true) {
+    #>
+    await openEdit();<#
+    }
+    #>
+  } else if (e.shiftKey) {<#
+    if (opts.noAdd !== true) {
+    #>
+    await openCopy();<#
+    }
+    #>
+  } else {
+    await openView();
+  }
+}
 
 /** 打开查看 */
 async function openView() {

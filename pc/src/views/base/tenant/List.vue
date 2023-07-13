@@ -476,7 +476,7 @@
           </template>
           
           <!-- 到期日 -->
-          <template v-else-if="'expiration' === col.prop && (showBuildIn || builtInSearch?.expiration == null)">
+          <template v-else-if="'expiration_lbl' === col.prop && (showBuildIn || builtInSearch?.expiration == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -561,7 +561,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -579,7 +579,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -587,7 +587,7 @@
             </el-table-column>
           </template>
           
-          <template v-else>
+          <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -940,7 +940,7 @@ function getTableColumns(): ColumnType[] {
       label: "所属域名",
       prop: "domain_ids_lbl",
       width: 280,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
     },
@@ -1251,16 +1251,16 @@ async function onImportExcel() {
     [ n("所属域名") ]: "domain_ids_lbl",
     [ n("菜单权限") ]: "menu_ids_lbl",
     [ n("租户管理员") ]: "usr_id_lbl",
-    [ n("到期日") ]: "expiration",
+    [ n("到期日") ]: "expiration_lbl",
     [ n("最大用户数") ]: "max_usr_num",
     [ n("锁定") ]: "is_locked_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
-    [ n("创建时间") ]: "create_time",
+    [ n("创建时间") ]: "create_time_lbl",
     [ n("更新人") ]: "update_usr_id_lbl",
-    [ n("更新时间") ]: "update_time",
+    [ n("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1353,17 +1353,6 @@ async function is_enabledChg(id: string, is_enabled: 0 | 1) {
   );
 }
 
-/** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
-    await openEdit();
-  } else if (e.shiftKey) {
-    await openCopy();
-  } else {
-    await openView();
-  }
-}
-
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -1396,6 +1385,17 @@ async function openEdit() {
     dataGrid(),
   ]);
   emit("edit", changedIds);
+}
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
+  } else {
+    await openView();
+  }
 }
 
 /** 打开查看 */

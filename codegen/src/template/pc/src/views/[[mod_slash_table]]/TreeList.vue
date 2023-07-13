@@ -84,15 +84,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   >
     <List
       ref="listRef"
-      show-build-in="1"
+      :show-build-in="props.showBuildIn || '1'"
       is-pagination="0"
       v-bind="$attrs"
       :parent_id="parent_id"
-      @add="findTreeEfc"
-      @edit="findTreeEfc"
-      @remove="findTreeEfc"
-      @revert="findTreeEfc"
-      @refresh="findTreeEfc"
+      @add="onFindTree"
+      @edit="onFindTree"
+      @remove="onFindTree"
+      @revert="onFindTree"
+      @refresh="onFindTree"
       @before-search-reset="beforeSearchReset"
     ></List>
   </div>
@@ -117,6 +117,7 @@ defineOptions({
 
 const props = defineProps<{
   parent_id?: string;
+  showBuildIn?: string;
 }>();
 
 const {
@@ -200,7 +201,7 @@ function getById(
   return;
 }
 
-async function findTreeEfc() {
+async function onFindTree() {
   treeData = await findTree();
   if (parent_id) {
     const node = getById(parent_id, treeData);
@@ -223,12 +224,12 @@ function beforeSearchReset() {
 async function onRefresh() {
   await Promise.all([
     listRef?.refresh?.(),
-    findTreeEfc(),
+    onFindTree(),
   ]);
 }
 
 async function initFrame() {
-  await findTreeEfc();
+  await onFindTree();
   inited = true;
 }
 

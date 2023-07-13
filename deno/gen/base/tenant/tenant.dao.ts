@@ -780,6 +780,12 @@ export async function create(
     }
   }
   
+  // 到期日
+  if (isNotEmpty(model.expiration_lbl) && model.expiration === undefined) {
+    model.expiration_lbl = String(model.expiration_lbl).trim();
+    model.expiration = model.expiration_lbl;
+  }
+  
   // 锁定
   if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;

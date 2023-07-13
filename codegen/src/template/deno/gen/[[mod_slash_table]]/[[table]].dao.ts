@@ -1442,7 +1442,15 @@ export async function create(
     const models = await query<Result>(sql, args);
     model.<#=column_name#> = models.map((item: { id: string }) => item.id);
   }<#
-    }
+  } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
+    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();
+    model.<#=column_name#> = model.<#=column_name#>_lbl;
+  }<#
+  }
   #><#
   }
   #>

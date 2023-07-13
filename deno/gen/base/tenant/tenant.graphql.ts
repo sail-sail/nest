@@ -22,7 +22,7 @@ type TenantModel {
   "租户管理员"
   usr_id_lbl: String
   "到期日"
-  expiration: Date
+  expiration: NaiveDate
   "到期日"
   expiration_lbl: String!
   "最大用户数"

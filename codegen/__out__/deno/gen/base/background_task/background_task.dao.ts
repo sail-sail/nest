@@ -665,6 +665,18 @@ export async function create(
     }
   }
   
+  // 开始时间
+  if (isNotEmpty(model.begin_time_lbl) && model.begin_time === undefined) {
+    model.begin_time_lbl = String(model.begin_time_lbl).trim();
+    model.begin_time = model.begin_time_lbl;
+  }
+  
+  // 结束时间
+  if (isNotEmpty(model.end_time_lbl) && model.end_time === undefined) {
+    model.end_time_lbl = String(model.end_time_lbl).trim();
+    model.end_time = model.end_time_lbl;
+  }
+  
   const oldModel = await findByUnique(model, options);
   if (oldModel) {
     const result = await checkByUnique(model, oldModel, options?.uniqueType, options);

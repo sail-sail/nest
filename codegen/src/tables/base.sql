@@ -157,6 +157,7 @@ CREATE TABLE if not exists `base_menu` (
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `route_path` varchar(255) NOT NULL DEFAULT '' COMMENT '路由',
   `route_query` json COMMENT '参数',
+  `is_lock` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_lock',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
