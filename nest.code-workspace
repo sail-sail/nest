@@ -36,12 +36,12 @@
     "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "always",
     "workbench.colorCustomizations": {
       // Overrides Theme Default Colors for InlayHints feature 
-      "editorInlayHint.background": "#00001CCC",
-      "editorInlayHint.foreground": "#99FFBBCC",
+      "editorInlayHint.background": "#08000088",
+      "editorInlayHint.foreground": "#ddeeff7d",
 
       // Overrides Theme Parameter hints fg for InlayHints feature
-      "editorInlayHint.parameterBackground": "#00001CCC",
-      "editorInlayHint.parameterForeground": "#99FFBBCC",
+      "editorInlayHint.parameterBackground": "#08000088",
+      "editorInlayHint.parameterForeground": "#ddeeff7d",
 
       // Overrides Theme Type hints fg for InlayHints feature
       "editorInlayHint.typeBackground": "#08000088",

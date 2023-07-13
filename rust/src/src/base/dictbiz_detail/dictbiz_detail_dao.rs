@@ -51,6 +51,8 @@ pub async fn get_dictbiz<'a>(
   
   let options = Options::new();
   
+  let options = options.set_is_debug(false);
+  
   let options = options.set_cache_key(table, &sql, &args);
   
   let options = options.into();
