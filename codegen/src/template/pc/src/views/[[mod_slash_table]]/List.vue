@@ -760,7 +760,9 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-            } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+            } else if (selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+            ) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -890,7 +892,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           }
           #>
           
-          <template v-else>
+          <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1593,20 +1595,20 @@ function getTableColumns(): ColumnType[] {
     }
     const isPassword = column.isPassword;
     if (isPassword) continue;
-    if (column.align) {
-      column.align = column.align;
-    } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-      column.align = "right";
+    if (column_type) {
+      if (
+        (column_type !== "int(1)" && column_type.startsWith("int"))
+        || column_type.startsWith("decimal")
+      ) {
+        column.align = column.align || "right";
+        column.width = column.width || 100;
+      } else {
+        column.align = column.align || "center";
+      }
     } else {
-      column.align = "center";
+      column.align = column.align || "center";
     }
-    if (column.headerAlign) {
-      column.headerAlign = column.headerAlign;
-    } else if (column_type && column_type !== "int(1)" && column_type.startsWith("int")) {
-      column.headerAlign = "center";
-    } else {
-      column.headerAlign = "center";
-    }
+    column.headerAlign = column.headerAlign || "center";
     if (column.showOverflowTooltip == null) {
       column.showOverflowTooltip = true;
     }
@@ -1684,8 +1686,8 @@ function getTableColumns(): ColumnType[] {
       #>
     },<#
     } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz
-        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
-      ) {
+      || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+    ) {
     #>
     {
       label: "<#=column_comment#>",
@@ -2068,6 +2070,7 @@ async function onImportExcel() {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "version") continue;
+    const data_type = column.DATA_TYPE;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2081,7 +2084,9 @@ async function onImportExcel() {
     }
     const foreignKey = column.foreignKey;
     let column_name2 = column_name;
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+    ) {
       column_name2 = `${column_name}_lbl`;
     }
   #>
@@ -2289,17 +2294,6 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 }
 #>
 
-/** 键盘回车按键 */
-async function onRowEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
-    await openEdit();
-  } else if (e.shiftKey) {
-    await openCopy();
-  } else {
-    await openView();
-  }
-}
-
 /** 打开修改页面 */
 async function openEdit() {
   if (isLocked) {
@@ -2340,6 +2334,25 @@ async function openEdit() {
 }<#
 }
 #>
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {<#
+    if (opts.noEdit !== true) {
+    #>
+    await openEdit();<#
+    }
+    #>
+  } else if (e.shiftKey) {<#
+    if (opts.noAdd !== true) {
+    #>
+    await openCopy();<#
+    }
+    #>
+  } else {
+    await openView();
+  }
+}
 
 /** 打开查看 */
 async function openView() {

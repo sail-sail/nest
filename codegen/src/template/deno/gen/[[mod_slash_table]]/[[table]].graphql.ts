@@ -58,7 +58,7 @@ type <#=modelName#> {<#
       data_type = 'String';
     }
     else if (column.DATA_TYPE === 'date') {
-      data_type = 'Date';
+      data_type = 'NaiveDate';
     }
     else if (column.DATA_TYPE === 'datetime') {
       data_type = 'NaiveDateTime';

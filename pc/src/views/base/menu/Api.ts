@@ -44,6 +44,8 @@ export async function findAll(
           lbl
           route_path
           route_query
+          is_lock
+          is_lock_lbl
           tenant_ids
           tenant_ids_lbl
           is_enabled
@@ -205,6 +207,8 @@ export async function findById(
           lbl
           route_path
           route_query
+          is_lock
+          is_lock_lbl
           tenant_ids
           tenant_ids_lbl
           is_enabled
@@ -520,6 +524,8 @@ export function useExportExcel(routePath: string) {
             lbl
             route_path
             route_query
+            is_lock
+            is_lock_lbl
             tenant_ids
             tenant_ids_lbl
             is_enabled
@@ -543,6 +549,8 @@ export function useExportExcel(routePath: string) {
             lbl
             route_path
             route_query
+            is_lock
+            is_lock_lbl
             tenant_ids
             tenant_ids_lbl
             is_enabled

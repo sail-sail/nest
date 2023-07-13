@@ -10,17 +10,23 @@ import {
 } from "/lib/context.ts";
 
 import {
-  buildSchema,
+  buildASTSchema,
   parse,
   execute,
   validateSchema,
   validate,
+  GraphQLScalarType,
+  Kind,
   type GraphQLSchema,
   type GraphQLError,
   type DocumentNode,
 } from "graphql";
 
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
+// import {
+//   Decimal,
+// } from "decimal.js";
 
 const gqlRouter = new Router();
 
@@ -85,7 +91,7 @@ const gqlRootValueProxy = new Proxy(
       // deno-lint-ignore no-explicit-any
       return function(...args: any[]) {
         const callback = target[prop];
-        if (!callback) {
+        if (!callback || typeof callback !== "function") {
           throw new Error(`方法 ${ prop } 不存在!`);
         }
         const args2 = args[2].fieldNodes[0].arguments;
@@ -96,6 +102,30 @@ const gqlRootValueProxy = new Proxy(
     },
   },
 );
+
+// function getTypeResolver() {
+//   return {
+//     Decimal: new GraphQLScalarType({
+//       name: "Decimal",
+//       description: "Decimal custom scalar type",
+//       serialize(value) {
+//         return (value as Decimal).toString();
+//       },
+//       parseValue(value) {
+//         if (typeof value === "string" || Number.isFinite(value)) {
+//           return new Decimal(value as string);
+//         }
+//         throw new Error("参数类型错误");
+//       },
+//       parseLiteral(ast) {
+//         if (ast.kind === Kind.STRING) {
+//           return new Decimal(ast.value);
+//         }
+//         throw new Error("参数类型错误");
+//       },
+//     }),
+//   };
+// }
 
 function mergeSchema(gqlSchemaStr: string): string {
   let gqlSchemaStr2 = "";
@@ -161,7 +191,16 @@ async function handleGraphql(
   },
 ) {
   if (gqlSchema === undefined) {
-    gqlSchema = buildSchema(mergeSchema(gqlSchemaStr));
+    const document = parse(mergeSchema(gqlSchemaStr), {
+      noLocation: true,
+    });
+    gqlSchema = buildASTSchema(
+      document,
+      {
+        assumeValidSDL: true,
+        assumeValid: true,
+      },
+    );
     const schemaValidationErrors = validateSchema(gqlSchema);
     if (schemaValidationErrors.length > 0) {
       throw schemaValidationErrors[0];
