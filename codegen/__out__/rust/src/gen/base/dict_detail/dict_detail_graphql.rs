@@ -1,3 +1,4 @@
+use tracing::instrument;
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
@@ -15,6 +16,7 @@ pub struct DictDetailGenQuery;
 impl DictDetailGenQuery {
   
   /// 根据搜索条件和分页查找数据
+  #[instrument(skip(self, ctx))]
   async fn find_all_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
@@ -36,6 +38,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
+  #[instrument(skip(self, ctx))]
   async fn find_count_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
@@ -53,7 +56,8 @@ impl DictDetailGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  pub async fn find_one_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_one_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     search: Option<DictDetailSearch>,
@@ -72,7 +76,8 @@ impl DictDetailGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  pub async fn find_by_id_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_by_id_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -90,7 +95,8 @@ impl DictDetailGenQuery {
   
   /// 根据 ID 查找是否已启用
   /// 记录不存在则返回 false
-  pub async fn get_is_enabled_by_id_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn get_is_enabled_by_id_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -109,7 +115,8 @@ impl DictDetailGenQuery {
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  pub async fn get_is_locked_by_id_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn get_is_locked_by_id_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -126,7 +133,8 @@ impl DictDetailGenQuery {
   }
   
   /// 获取字段对应的名称
-  pub async fn get_field_comments_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn get_field_comments_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
   ) -> Result<DictDetailFieldComment> {
@@ -141,7 +149,8 @@ impl DictDetailGenQuery {
   }
   
   /// 查找 order_by 字段的最大值
-  pub async fn find_last_order_by_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_last_order_by_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
@@ -164,7 +173,8 @@ pub struct DictDetailGenMutation;
 impl DictDetailGenMutation {
   
   /// 创建数据
-  pub async fn create_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn create_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     model: DictDetailInput,
@@ -181,7 +191,8 @@ impl DictDetailGenMutation {
   }
   
   /// 根据id修改数据
-  pub async fn update_by_id_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn update_by_id_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -200,7 +211,8 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 删除数据
-  pub async fn delete_by_ids_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn delete_by_ids_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -217,7 +229,8 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 启用或禁用数据
-  pub async fn enable_by_ids_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn enable_by_ids_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -236,7 +249,8 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
-  pub async fn lock_by_ids_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn lock_by_ids_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -255,7 +269,8 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 还原数据
-  pub async fn revert_by_ids_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn revert_by_ids_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -272,7 +287,8 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  pub async fn force_delete_by_ids_dict_detail<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn force_delete_by_ids_dict_detail<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,

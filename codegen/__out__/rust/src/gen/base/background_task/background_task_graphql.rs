@@ -1,3 +1,4 @@
+use tracing::instrument;
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
@@ -15,6 +16,7 @@ pub struct BackgroundTaskGenQuery;
 impl BackgroundTaskGenQuery {
   
   /// 根据搜索条件和分页查找数据
+  #[instrument(skip(self, ctx))]
   async fn find_all_background_task<'a>(
     &self,
     ctx: &Context<'a>,
@@ -36,6 +38,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
+  #[instrument(skip(self, ctx))]
   async fn find_count_background_task<'a>(
     &self,
     ctx: &Context<'a>,
@@ -53,7 +56,8 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  pub async fn find_one_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_one_background_task<'a>(
     &self,
     ctx: &Context<'a>,
     search: Option<BackgroundTaskSearch>,
@@ -72,7 +76,8 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  pub async fn find_by_id_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_by_id_background_task<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -89,7 +94,8 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 获取字段对应的名称
-  pub async fn get_field_comments_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn get_field_comments_background_task<'a>(
     &self,
     ctx: &Context<'a>,
   ) -> Result<BackgroundTaskFieldComment> {
@@ -112,7 +118,8 @@ pub struct BackgroundTaskGenMutation;
 impl BackgroundTaskGenMutation {
   
   /// 根据id修改租户id
-  pub async fn update_tenant_by_id_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn update_tenant_by_id_background_task<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -131,7 +138,8 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 删除数据
-  pub async fn delete_by_ids_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn delete_by_ids_background_task<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -148,7 +156,8 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 还原数据
-  pub async fn revert_by_ids_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn revert_by_ids_background_task<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -165,7 +174,8 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  pub async fn force_delete_by_ids_background_task<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn force_delete_by_ids_background_task<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,

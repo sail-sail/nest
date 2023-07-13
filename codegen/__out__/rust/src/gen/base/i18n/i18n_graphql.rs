@@ -1,3 +1,4 @@
+use tracing::instrument;
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
@@ -15,6 +16,7 @@ pub struct I18nGenQuery;
 impl I18nGenQuery {
   
   /// 根据搜索条件和分页查找数据
+  #[instrument(skip(self, ctx))]
   async fn find_all_i18n<'a>(
     &self,
     ctx: &Context<'a>,
@@ -36,6 +38,7 @@ impl I18nGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
+  #[instrument(skip(self, ctx))]
   async fn find_count_i18n<'a>(
     &self,
     ctx: &Context<'a>,
@@ -53,7 +56,8 @@ impl I18nGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  pub async fn find_one_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_one_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     search: Option<I18nSearch>,
@@ -72,7 +76,8 @@ impl I18nGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  pub async fn find_by_id_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn find_by_id_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -89,7 +94,8 @@ impl I18nGenQuery {
   }
   
   /// 获取字段对应的名称
-  pub async fn get_field_comments_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn get_field_comments_i18n<'a>(
     &self,
     ctx: &Context<'a>,
   ) -> Result<I18nFieldComment> {
@@ -112,7 +118,8 @@ pub struct I18nGenMutation;
 impl I18nGenMutation {
   
   /// 创建数据
-  pub async fn create_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn create_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     model: I18nInput,
@@ -129,7 +136,8 @@ impl I18nGenMutation {
   }
   
   /// 根据id修改数据
-  pub async fn update_by_id_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn update_by_id_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
@@ -148,7 +156,8 @@ impl I18nGenMutation {
   }
   
   /// 根据 ids 删除数据
-  pub async fn delete_by_ids_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn delete_by_ids_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -165,7 +174,8 @@ impl I18nGenMutation {
   }
   
   /// 根据 ids 还原数据
-  pub async fn revert_by_ids_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn revert_by_ids_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,
@@ -182,7 +192,8 @@ impl I18nGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  pub async fn force_delete_by_ids_i18n<'a>(
+  #[instrument(skip(self, ctx))]
+  async fn force_delete_by_ids_i18n<'a>(
     &self,
     ctx: &Context<'a>,
     ids: Vec<String>,

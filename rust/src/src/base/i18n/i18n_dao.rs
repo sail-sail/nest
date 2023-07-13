@@ -2,7 +2,7 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 
 use anyhow::Result;
-use crate::common::context::Ctx;
+use crate::common::context::{Ctx, Options};
 
 use regex::{Regex, Captures};
 
@@ -79,6 +79,12 @@ pub async fn n_lang<'a>(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
+  let options = Options::new();
+  
+  let options = options.set_is_debug(false);
+  
+  let options: Option<Options> = options.into();
+  
   let mut i18n_lbl = code.clone();
   let lang_model = lang_dao::find_one(
     ctx,
@@ -88,7 +94,7 @@ pub async fn n_lang<'a>(
       ..Default::default()
     }.into(),
     None,
-    None,
+    options.clone(),
   ).await?;
   let mut menu_id: Option<String> = None;
   if let Some(route_path) = route_path {
@@ -100,7 +106,7 @@ pub async fn n_lang<'a>(
         ..Default::default()
       }.into(),
       None,
-      None,
+      options.clone(),
     ).await?;
     if let Some(menu_model) = menu_model {
       menu_id = menu_model.id.to_string().into();
@@ -119,7 +125,7 @@ pub async fn n_lang<'a>(
           ..Default::default()
         }.into(),
         None,
-        None,
+        options.clone(),
       ).await?;
       if i18n_model.is_none() {
         i18n_model = i18n_dao::find_one(
@@ -131,7 +137,7 @@ pub async fn n_lang<'a>(
             ..Default::default()
           }.into(),
           None,
-          None,
+          options.clone(),
         ).await?;
       }
     } else {
@@ -144,7 +150,7 @@ pub async fn n_lang<'a>(
           ..Default::default()
         }.into(),
         None,
-        None,
+        options,
       ).await?;
     }
     if let Some(i18n_model) = i18n_model {

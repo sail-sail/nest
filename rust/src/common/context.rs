@@ -1358,7 +1358,7 @@ pub struct OrderByModel {
 
 /// "ignore" | "throw" | "update" = "throw"
 #[allow(dead_code)]
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum UniqueType {
   Ignore,
   Throw,
@@ -1639,28 +1639,29 @@ impl From<Uuid> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone)]
+#[derive(Default, new, Clone, Debug)]
 pub struct Options {
   
   /// 是否打印sql调试语句
   #[new(value = "true")]
-  pub is_debug: bool,
+  is_debug: bool,
   
   /// 指定当前函数的sql是否开启事务
   #[new(default)]
-  pub is_tran: Option<bool>,
+  is_tran: Option<bool>,
   
   #[new(default)]
-  pub cache_key1: Option<String>,
+  cache_key1: Option<String>,
   
   #[new(default)]
-  pub cache_key2: Option<String>,
+  cache_key2: Option<String>,
   
   #[new(default)]
-  pub del_cache_key1s: Option<Vec<String>>,
+  del_cache_key1s: Option<Vec<String>>,
   
   #[new(default)]
-  pub unique_type: Option<UniqueType>,
+  #[allow(dead_code)]
+  unique_type: Option<UniqueType>,
   
 }
 
@@ -1671,6 +1672,19 @@ impl Options {
       return Options::new();
     }
     options.unwrap()
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_is_debug(&self) -> bool {
+    self.is_debug
+  }
+  
+  #[inline]
+  pub fn set_is_debug(self, is_debug: bool) -> Self {
+    let mut self_ = self;
+    self_.is_debug = is_debug;
+    self_
   }
   
   pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<ArgType>) -> Self {
@@ -1690,6 +1704,10 @@ impl Options {
       .into()
       ;
     self_
+  }
+  
+  pub fn get_del_cache_key1s(&self) -> Option<&Vec<String>> {
+    self.del_cache_key1s.as_ref()
   }
   
   #[inline]

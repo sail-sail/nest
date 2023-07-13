@@ -1,3 +1,4 @@
+use tracing::instrument;
 use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
@@ -12,6 +13,7 @@ use crate::src::base::operation_record::operation_record_service::log;
 use crate::gen::base::operation_record::operation_record_model::OperationRecordInput;
 
 /// 根据搜索条件和分页查找数据
+#[instrument(skip(ctx))]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<DeptSearch>,
@@ -32,6 +34,7 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查找总数
+#[instrument(skip(ctx))]
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<DeptSearch>,
@@ -48,6 +51,7 @@ pub async fn find_count<'a>(
 }
 
 /// 根据条件查找第一条数据
+#[instrument(skip(ctx))]
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<DeptSearch>,
@@ -66,6 +70,7 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
+#[instrument(skip(ctx))]
 pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -82,6 +87,7 @@ pub async fn find_by_id<'a>(
 }
 
 /// 创建数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -128,6 +134,7 @@ pub async fn create<'a>(
 }
 
 /// 根据id修改租户id
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn update_tenant_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -147,6 +154,7 @@ pub async fn update_tenant_by_id<'a>(
 }
 
 /// 根据id修改数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -201,6 +209,7 @@ pub async fn update_by_id<'a>(
 }
 
 /// 根据 ids 删除数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -253,6 +262,7 @@ pub async fn delete_by_ids<'a>(
 
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -316,6 +326,7 @@ pub async fn enable_by_ids<'a>(
 /// 根据 ID 查找是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -333,6 +344,7 @@ pub async fn get_is_locked_by_id<'a>(
 }
 
 /// 根据 ids 锁定或解锁数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn lock_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -398,6 +410,7 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据 ids 还原数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -440,6 +453,7 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn force_delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
