@@ -94,7 +94,7 @@ pub trait Ctx<'a>: Send + Sized {
   
   fn set_tran(&mut self, tran: Transaction<'a, MySql>);
   
-  fn get_now(&self) -> DateTime<Local>;
+  fn get_now(&self) -> NaiveDateTime;
   
   fn get_server_tokentimeout(&self) -> i64 {
     SERVER_TOKEN_TIMEOUT.to_owned()
@@ -1316,7 +1316,7 @@ impl<'a> Ctx<'a> for CtxImpl<'a> {
     self.tran = Some(tran);
   }
   
-  fn get_now(&self) -> DateTime<Local> {
+  fn get_now(&self) -> NaiveDateTime {
     self.now
   }
   
@@ -1338,7 +1338,7 @@ pub struct CtxImpl<'a> {
   
   gql_ctx: &'a async_graphql::Context<'a>,
   
-  now: DateTime<Local>,
+  now: NaiveDateTime
   
 }
 
@@ -1412,7 +1412,7 @@ pub enum ArgType {
   F64(f64),
   String(String),
   CowStr(Cow<'static, str>),
-  TimeStamp(DateTime<Local>),
+  TimeStamp(NaiveDateTime),
   Date(NaiveDate),
   DateTime(NaiveDateTime),
   Time(NaiveTime),
@@ -1603,12 +1603,6 @@ impl From<Cow<'static, str>> for ArgType {
   }
 }
 
-impl From<DateTime<Local>> for ArgType {
-  fn from(value: DateTime<Local>) -> Self {
-    ArgType::TimeStamp(value)
-  }
-}
-
 impl From<NaiveDate> for ArgType {
   fn from(value: NaiveDate) -> Self {
     ArgType::Date(value)
@@ -1732,7 +1726,11 @@ impl<'a> CtxImpl<'a> {
   pub fn new(
     gql_ctx: &'a async_graphql::Context<'a>,
   ) -> CtxImpl<'a> {
-    let now: DateTime<Local> = Local::now();
+    let now = Local::now();
+    let now = NaiveDateTime::from_timestamp_opt(
+      now.timestamp() + now.offset().local_minus_utc() as i64,
+      now.timestamp_subsec_nanos(),
+    ).unwrap();
     let req_id = now.timestamp_millis().to_string();
     let mut ctx = CtxImpl {
       is_tran: false,
