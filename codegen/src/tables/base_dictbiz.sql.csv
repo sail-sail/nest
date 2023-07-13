@@ -1,1 +1,6 @@
-id,code,lbl,type,order_by,is_locked
+id,code,lbl,type,order_by,is_locked,tenant_id
+ZbzZV2FnQ1GkNMefesQgoQ,online_status,在线状态,string,10,1,ZDbZlC1OT8KaDg6soxMCBQ
+Zy71qWLsS/y51XZBR1GxDw,space_position,车位位置,string,11,1,ZDbZlC1OT8KaDg6soxMCBQ
+Js10Fx71TcekiBUHztQJUg,lock_status,车位地锁状态,string,12,1,ZDbZlC1OT8KaDg6soxMCBQ
+hK19GeHeQRqwcPU3UTkMaQ,is_admin,是否管理员,boolean,13,1,ZDbZlC1OT8KaDg6soxMCBQ
+Bf7EoTAWR5mO2bI13nqYvA,list_type,名单类型,string,14,1,ZDbZlC1OT8KaDg6soxMCBQ

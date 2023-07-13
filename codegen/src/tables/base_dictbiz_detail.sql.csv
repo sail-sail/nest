@@ -1,1 +1,16 @@
-id,dict_id,_dict_lbl,lbl,val,order_by,is_locked,tenant_id
+id,dictbiz_id,lbl,val,order_by,is_locked,tenant_id
+v50CMXVBR/yG+4x5SszUow,ZbzZV2FnQ1GkNMefesQgoQ,离线,offline,1,1,ZDbZlC1OT8KaDg6soxMCBQ
+iikZTqkPRAaNrxBYyC9Dbg,ZbzZV2FnQ1GkNMefesQgoQ,在线,online,2,1,ZDbZlC1OT8KaDg6soxMCBQ
+qzlg/Za3SlGaBTup8ZbUSw,ZbzZV2FnQ1GkNMefesQgoQ,暂未指定,,3,1,ZDbZlC1OT8KaDg6soxMCBQ
+nPZ8mt8BTXy55ShJj1GrKw,Zy71qWLsS/y51XZBR1GxDw,左,L,1,1,ZDbZlC1OT8KaDg6soxMCBQ
+gN7QJ6+/SIu85uA0q+7UlQ,Zy71qWLsS/y51XZBR1GxDw,右,R,2,1,ZDbZlC1OT8KaDg6soxMCBQ
+ZfQZBNARSd6JdLQtP5Cr4w,Zy71qWLsS/y51XZBR1GxDw,暂未指定,,3,1,ZDbZlC1OT8KaDg6soxMCBQ
+wzwzRtHRR2GQW94C9zgTVg,Js10Fx71TcekiBUHztQJUg,锁住,locked,1,1,ZDbZlC1OT8KaDg6soxMCBQ
+afqJkSVgTSqfGzyXPef+LA,Js10Fx71TcekiBUHztQJUg,解锁,unlocked,2,1,ZDbZlC1OT8KaDg6soxMCBQ
+0HzKU6JkSRujuANZ7OrdxA,Js10Fx71TcekiBUHztQJUg,错误,error,3,1,ZDbZlC1OT8KaDg6soxMCBQ
+nC2hWKVFQs2EedFoDX7MJA,Js10Fx71TcekiBUHztQJUg,暂未指定,,4,1,ZDbZlC1OT8KaDg6soxMCBQ
++LrDKY4aShSm0PD3nN2fxQ,hK19GeHeQRqwcPU3UTkMaQ,是,1,1,1,ZDbZlC1OT8KaDg6soxMCBQ
+jS01X1d3SLGjTiRXhcffsA,hK19GeHeQRqwcPU3UTkMaQ,否,0,2,1,ZDbZlC1OT8KaDg6soxMCBQ
+kXvoXMAISYKnUyaK3D68ZA,Bf7EoTAWR5mO2bI13nqYvA,黑名单,black,1,1,ZDbZlC1OT8KaDg6soxMCBQ
+B9Fdy0PeQXGtLfwYNx2VGA,Bf7EoTAWR5mO2bI13nqYvA,白名单,white,2,1,ZDbZlC1OT8KaDg6soxMCBQ
+kgEuPS4XQhyL7ozbVLb9BQ,Bf7EoTAWR5mO2bI13nqYvA,暂未指定,,3,1,ZDbZlC1OT8KaDg6soxMCBQ
