@@ -503,7 +503,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -521,7 +521,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1141,9 +1141,9 @@ async function onImportExcel() {
     [ n("启用") ]: "is_enabled_lbl",
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
-    [ n("创建时间") ]: "create_time",
+    [ n("创建时间") ]: "create_time_lbl",
     [ n("更新人") ]: "update_usr_id_lbl",
-    [ n("更新时间") ]: "update_time",
+    [ n("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),

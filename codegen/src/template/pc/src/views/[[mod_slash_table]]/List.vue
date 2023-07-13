@@ -760,7 +760,9 @@ const hasAtt = columns.some((item) => item.isAtt);
               </template>
             </el-table-column>
           </template><#
-            } else if (selectList.length > 0 || column.dict || column.dictbiz) {
+            } else if (selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+            ) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -1684,8 +1686,8 @@ function getTableColumns(): ColumnType[] {
       #>
     },<#
     } else if (selectList.length > 0 || foreignKey || column.dict || column.dictbiz
-        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
-      ) {
+      || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+    ) {
     #>
     {
       label: "<#=column_comment#>",
@@ -2068,6 +2070,7 @@ async function onImportExcel() {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "version") continue;
+    const data_type = column.DATA_TYPE;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2081,7 +2084,9 @@ async function onImportExcel() {
     }
     const foreignKey = column.foreignKey;
     let column_name2 = column_name;
-    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+    ) {
       column_name2 = `${column_name}_lbl`;
     }
   #>
