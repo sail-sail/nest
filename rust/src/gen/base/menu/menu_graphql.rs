@@ -8,13 +8,14 @@ use super::menu_model::*;
 use super::menu_resolver;
 
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct MenuGenQuery;
 
 #[Object(rename_args = "snake_case")]
 impl MenuGenQuery {
   
   /// 根据搜索条件和分页查找数据
+  #[tracing::instrument(name = "查找菜单", skip(ctx), fields())]
   async fn find_all_menu<'a>(
     &self,
     ctx: &Context<'a>,

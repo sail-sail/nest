@@ -106,6 +106,25 @@ impl RoleGenQuery {
     ctx.ok(res).await
   }
   
+  /// 根据 ID 查找是否已锁定
+  /// 已锁定的记录不能修改和删除
+  /// 记录不存在则返回 false
+  pub async fn get_is_locked_by_id_role<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<bool> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = role_resolver::get_is_locked_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
   /// 获取字段对应的名称
   pub async fn get_field_comments_role<'a>(
     &self,
@@ -214,6 +233,25 @@ impl RoleGenMutation {
       &mut ctx,
       ids,
       is_enabled,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 锁定或解锁数据
+  pub async fn lock_by_ids_role<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+    is_locked: u8,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = role_resolver::lock_by_ids(
+      &mut ctx,
+      ids,
+      is_locked,
       None,
     ).await;
     
