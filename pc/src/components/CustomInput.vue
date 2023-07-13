@@ -1,8 +1,9 @@
 <template>
 <el-input
   v-if="readonly !== true"
-  class="custom_input"
-  un-w="full"
+  ref="inputRef"
+  :type="props.type"
+  class="custom_input w-full"
   v-bind="$attrs"
   v-model="modelValue"
   :clearable="!props.disabled"
@@ -32,6 +33,9 @@
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly"
+    :style="{
+      height: textareaHeight != null ? textareaHeight + 'px' : undefined,
+    }"
     v-bind="$attrs"
   >
     {{ modelValue ?? "" }}
@@ -50,11 +54,13 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     modelValue?: any;
+    type?: string;
     disabled?: boolean;
     readonly?: boolean;
   }>(),
   {
     modelValue: undefined,
+    type: "text",
     disabled: undefined,
     readonly: undefined,
   },
@@ -68,6 +74,15 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+let inputRef = $ref<InstanceType<typeof ElInput>>();
+let textareaHeight = $shallowRef<number>();
+
+useResizeObserver($$(inputRef) as any, (entries) => {
+  const [ entry ] = entries;
+  const { height } = entry.contentRect;
+  textareaHeight = height;
+});
 
 function onChange() {
   emit("update:modelValue", modelValue);

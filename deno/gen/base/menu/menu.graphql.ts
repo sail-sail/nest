@@ -21,6 +21,10 @@ type MenuModel {
   route_path: String!
   "参数"
   route_query: String
+  "锁定"
+  is_lock: Int!
+  "锁定"
+  is_lock_lbl: String
   "所在租户"
   tenant_ids: [String!]
   "所在租户"
@@ -67,6 +71,10 @@ type MenuFieldComment {
   route_path: String!
   "参数"
   route_query: String!
+  "锁定"
+  is_lock: String!
+  "锁定"
+  is_lock_lbl: String!
   "所在租户"
   tenant_ids: String!
   "所在租户"
@@ -113,6 +121,10 @@ input MenuInput {
   route_path: String
   "参数"
   route_query: String
+  "锁定"
+  is_lock: Int
+  "锁定"
+  is_lock_lbl: String
   "所在租户"
   tenant_ids: [String!]
   "所在租户"
@@ -163,6 +175,8 @@ input MenuSearch {
   "参数"
   route_query: String
   route_query_like: String
+  "锁定"
+  is_lock: [Int!]
   "所在租户"
   tenant_ids: [String!]
   tenant_ids_is_null: Boolean

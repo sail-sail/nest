@@ -170,6 +170,32 @@ export async function enableByIdsRole(
 }
 
 /**
+ * 根据 ids 锁定或者解锁数据
+ */
+export async function lockByIdsRole(
+  ids: string[],
+  is_locked: 0 | 1,
+) {
+  const context = useContext();
+  
+  context.is_tran = true;
+  if (is_locked !== 0 && is_locked !== 1) {
+    throw new Error(`lockByIdsRole.is_locked expect 0 or 1 but got ${ is_locked }`);
+  }
+  
+  await usePermit(
+    "/base/role",
+    "lock",
+  );
+  
+  const {
+    lockByIds,
+  } = await import("./role.service.ts");
+  const res = await lockByIds(ids, is_locked);
+  return res;
+}
+
+/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsRole(

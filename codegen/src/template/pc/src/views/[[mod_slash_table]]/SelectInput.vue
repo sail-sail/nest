@@ -23,9 +23,9 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 #><template>
 <div
   v-if="!props.readonly"
-  class="flex items-stretch w-full box-border"
+  class="select_input_wrapper"
   :class="{
-    'p-l-1': dialog_visible,
+    dialog_visible: dialog_visible,
   }"
 >
   <el-input
@@ -35,8 +35,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     @clear="onClear"
     readonly
     clearable
-    class="cursor-pointer box-border flex-[1_0_0]"
-    un-cursor-pointer
     :placeholder="props.placeholder"
     @mouseenter="inputEnter"
     @mouseleave="inputLeave"
@@ -92,6 +90,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   </el-input>
   <SelectList
     ref="selectListRef"
+    @closed="dialog_visible = false;"
     @change="selectListChg"
   ></SelectList>
 </div>
@@ -258,7 +257,6 @@ async function onInput() {
       ids: modelValueArr,
     },
   });
-  dialog_visible = false;
   if (type === "cancel") {
     return;
   }

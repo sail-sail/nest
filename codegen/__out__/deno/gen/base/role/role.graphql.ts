@@ -13,6 +13,10 @@ type RoleModel {
   menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int!
   "启用"
@@ -45,6 +49,10 @@ type RoleFieldComment {
   menu_ids: String!
   "菜单"
   menu_ids_lbl: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -77,6 +85,10 @@ input RoleInput {
   menu_ids: [String!]
   "菜单"
   menu_ids_lbl: [String!]
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -113,6 +125,8 @@ input RoleSearch {
   "菜单"
   menu_ids: [String!]
   menu_ids_is_null: Boolean
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
   "备注"
@@ -150,6 +164,8 @@ type Mutation {
   deleteByIdsRole(ids: [String!]!): Int!
   "根据 ids 启用或者禁用数据"
   enableByIdsRole(ids: [String!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsRole(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsRole(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"

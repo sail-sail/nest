@@ -28,7 +28,7 @@
       <template #icon>
         <ElIconCircleClose />
       </template>
-      <span>{{ ns("取消") }}</span>
+      <span>{{ ns("关闭") }}</span>
     </el-button>
     
     <el-button

@@ -106,6 +106,12 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
   }
@@ -303,16 +309,35 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = JSON.stringify({ sql, args });
   
-  let result = await query<RoleModel>(sql, args, { cacheKey1, cacheKey2 });
+  const result = await query<RoleModel>(
+    sql,
+    args,
+    {
+      cacheKey1,
+      cacheKey2,
+    },
+  );
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 锁定
+    let is_locked_lbl = model.is_locked.toString();
+    if (model.is_locked !== undefined && model.is_locked !== null) {
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      if (dictItem) {
+        is_locked_lbl = dictItem.lbl;
+      }
+    }
+    model.is_locked_lbl = is_locked_lbl;
     
     // 启用
     let is_enabled_lbl = model.is_enabled.toString();
@@ -361,6 +386,8 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     menu_ids: await n("菜单"),
     menu_ids_lbl: await n("菜单"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     rem: await n("备注"),
@@ -603,8 +630,10 @@ export async function create(
   const method = "create";
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
@@ -629,6 +658,14 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
   }
   
   // 启用
@@ -685,6 +722,9 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,is_locked`;
+  }
   if (model.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
@@ -717,6 +757,9 @@ export async function create(
   }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
+  }
+  if (model.is_locked !== undefined) {
+    sql += `,${ args.push(model.is_locked) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
@@ -830,8 +873,10 @@ export async function updateById(
   }
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
@@ -860,6 +905,14 @@ export async function updateById(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
   }
   
   // 启用
@@ -895,6 +948,12 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (model.is_locked !== undefined) {
+    if (model.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
+      updateFldNum++;
+    }
+  }
   if (model.is_enabled !== undefined) {
     if (model.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(model.is_enabled) },`;
@@ -908,7 +967,7 @@ export async function updateById(
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id != null && model.update_usr_id !== "-") {
+    if (model.update_usr_id && model.update_usr_id !== "-") {
       sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
@@ -954,6 +1013,11 @@ export async function deleteByIds(
     const id = ids[i];
     const isExist = await existById(id);
     if (!isExist) {
+      continue;
+    }
+    
+    const is_locked = await getIsLockedById(id);
+    if (is_locked) {
       continue;
     }
     const args = new QueryArgs();
@@ -1020,6 +1084,72 @@ export async function enableByIds(
       base_role
     set
       is_enabled = ${ args.push(is_enabled) }
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id in ${ args.push(ids) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 ID 查找是否已锁定
+ * 已锁定的记录不能修改和删除
+ * 记录不存在则返回 undefined
+ * @param {string} id
+ * @return {Promise<0 | 1 | undefined>}
+ */
+export async function getIsLockedById(
+  id: string,
+  options?: {
+  },
+): Promise<0 | 1 | undefined> {
+  const model = await findById(
+    id,
+    options,
+  );
+  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  return is_locked;
+}
+
+/**
+ * 根据 ids 锁定或者解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_role";
+  const method = "lockByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      base_role
+    set
+      is_locked = ${ args.push(is_locked) }
     
   `;
   {

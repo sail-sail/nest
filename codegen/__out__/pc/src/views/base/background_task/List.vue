@@ -396,7 +396,7 @@
           </template>
           
           <!-- 开始时间 -->
-          <template v-else-if="'begin_time' === col.prop && (showBuildIn || builtInSearch?.begin_time == null)">
+          <template v-else-if="'begin_time_lbl' === col.prop && (showBuildIn || builtInSearch?.begin_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -405,7 +405,7 @@
           </template>
           
           <!-- 结束时间 -->
-          <template v-else-if="'end_time' === col.prop && (showBuildIn || builtInSearch?.end_time == null)">
+          <template v-else-if="'end_time_lbl' === col.prop && (showBuildIn || builtInSearch?.end_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -432,7 +432,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -450,7 +450,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -458,7 +458,7 @@
             </el-table-column>
           </template>
           
-          <template v-else>
+          <template v-else-if="showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -967,6 +967,15 @@ async function onSortChange(
   sort.prop = prop || "";
   sort.order = order || "ascending";
   await dataGrid();
+}
+
+/** 键盘回车按键 */
+async function onRowEnter(e: KeyboardEvent) {
+  if (e.ctrlKey) {
+  } else if (e.shiftKey) {
+  } else {
+    await openView();
+  }
 }
 
 /** 打开查看 */

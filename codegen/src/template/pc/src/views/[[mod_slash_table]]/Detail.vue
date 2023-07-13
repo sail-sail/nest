@@ -1057,7 +1057,7 @@ async function onSave() {
   }
   #><#
   if (opts.noEdit !== true) {
-  #>if (dialogAction === "edit") {
+  #>if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
     }

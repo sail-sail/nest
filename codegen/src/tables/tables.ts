@@ -27,6 +27,9 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "is_locked",
+      },
+      {
         COLUMN_NAME: "is_enabled",
       },
       {
@@ -307,6 +310,9 @@ export default defineConfig({
         COLUMN_NAME: "route_query",
         align: "left",
         width: 160,
+      },
+      {
+        COLUMN_NAME: "is_lock",
       },
       {
         COLUMN_NAME: "tenant_ids",

@@ -63,7 +63,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       <template #icon>
         <ElIconCircleClose />
       </template>
-      <span>{{ ns("取消") }}</span>
+      <span>{{ ns("关闭") }}</span>
     </el-button>
     
     <el-button

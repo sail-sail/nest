@@ -27,7 +27,34 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {
   useContext,
-} from "/lib/context.ts";
+} from "/lib/context.ts";<#
+let hasDecimal = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noList) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "version") continue;
+  const foreignKey = column.foreignKey;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  if (!column_type) {
+    continue;
+  }
+  if (!column_type.startsWith("decimal")) {
+    continue;
+  }
+  hasDecimal = true;
+}
+#><#
+if (hasDecimal) {
+#>
+
+import Decimal from "decimal.js";<#
+}
+#>
 
 import {
   type SearchExtra,
@@ -125,7 +152,41 @@ if (opts.noAdd !== true) {
  */
 export async function create<#=Table_Up#>(
   input: <#=inputName#>,
-) {
+) {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (column.noList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "version") continue;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    if (!column_type) {
+      continue;
+    }
+    if (!column_type.startsWith("decimal")) {
+      continue;
+    }
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+  #>
+  
+  // <#=column_comment#>
+  if (input.<#=column_name#> != null) {
+    input.<#=column_name#> = new Decimal(input.<#=column_name#>);
+  }<#
+  }
+  #>
   const context = useContext();
   
   context.is_tran = true;
@@ -179,7 +240,41 @@ if (opts.noEdit !== true) {
 export async function updateById<#=Table_Up#>(
   id: string,
   input: <#=inputName#>,
-) {
+) {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (column.noList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "version") continue;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    if (!column_type) {
+      continue;
+    }
+    if (!column_type.startsWith("decimal")) {
+      continue;
+    }
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+  #>
+  
+  // <#=column_comment#>
+  if (input.<#=column_name#> != null) {
+    input.<#=column_name#> = new Decimal(input.<#=column_name#>);
+  }<#
+  }
+  #>
   const context = useContext();
   
   context.is_tran = true;
