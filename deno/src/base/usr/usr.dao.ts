@@ -34,13 +34,13 @@ export async function findLoginUsr(
       and t.username = ${ args.push(username) }
       and t.password = ${ args.push(password) }
       and t.tenant_id = ${ args.push(tenant_id) }
-    limit 1 
+    limit 1
   `;
-  const result = await queryOne<{
+  const model = await queryOne<{
     id: string,
     default_dept_id: string,
   }>(sql, args);
-  return result;
+  return model;
 }
 
 export async function getDeptIdsById(

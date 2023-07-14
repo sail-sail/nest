@@ -55,8 +55,6 @@ import {
   type TenantSearch,
 } from "./tenant.model.ts";
 
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: TenantSearch,
@@ -107,23 +105,8 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
-  if (search?.usr_id && !Array.isArray(search?.usr_id)) {
-    search.usr_id = [ search.usr_id ];
-  }
-  if (search?.usr_id && search?.usr_id.length > 0) {
-    whereQuery += ` and usr_id_lbl.id in ${ args.push(search.usr_id) }`;
-  }
-  if (search?.usr_id === null) {
-    whereQuery += ` and usr_id_lbl.id is null`;
-  }
-  if (search?.usr_id_is_null) {
-    whereQuery += ` and usr_id_lbl.id is null`;
-  }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  if (isNotEmpty(search?.is_locked)) {
+    whereQuery += ` and t.is_locked = ${ args.push(search?.is_locked) }`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -248,8 +231,6 @@ function getFromQuery() {
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id
-    left join base_usr usr_id_lbl
-      on usr_id_lbl.id = t.usr_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -321,7 +302,6 @@ export async function findAll(
       ,max(domain_ids_lbl) domain_ids_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
-      ,usr_id_lbl.lbl usr_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -372,25 +352,13 @@ export async function findAll(
   );
   
   const [
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
-    "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 锁定
-    let is_locked_lbl = model.is_locked.toString();
-    if (model.is_locked !== undefined && model.is_locked !== null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
-      if (dictItem) {
-        is_locked_lbl = dictItem.lbl;
-      }
-    }
-    model.is_locked_lbl = is_locked_lbl;
     
     // 启用
     let is_enabled_lbl = model.is_enabled.toString();
@@ -441,10 +409,7 @@ export async function getFieldComments() {
     domain_ids_lbl: await n("所属域名"),
     menu_ids: await n("菜单权限"),
     menu_ids_lbl: await n("菜单权限"),
-    usr_id: await n("租户管理员"),
-    usr_id_lbl: await n("租户管理员"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
+    is_locked: await n("租户管理员"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
@@ -688,10 +653,8 @@ export async function create(
   const method = "create";
   
   const [
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
-    "is_locked",
     "is_enabled",
   ]);
   
@@ -740,23 +703,6 @@ export async function create(
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
-  // 租户管理员
-  if (isNotEmpty(model.usr_id_lbl) && model.usr_id === undefined) {
-    model.usr_id_lbl = String(model.usr_id_lbl).trim();
-    const usrModel = await usrDao.findOne({ lbl: model.usr_id_lbl });
-    if (usrModel) {
-      model.usr_id = usrModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      model.is_locked = Number(val);
-    }
-  }
-  
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
@@ -794,9 +740,6 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.usr_id !== undefined) {
-    sql += `,usr_id`;
-  }
   if (model.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -826,9 +769,6 @@ export async function create(
   }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
-  }
-  if (model.usr_id !== undefined) {
-    sql += `,${ args.push(model.usr_id) }`;
   }
   if (model.is_locked !== undefined) {
     sql += `,${ args.push(model.is_locked) }`;
@@ -913,10 +853,8 @@ export async function updateById(
   }
   
   const [
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
-    "is_locked",
     "is_enabled",
   ]);
 
@@ -964,23 +902,6 @@ export async function updateById(
     model.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
-  // 租户管理员
-  if (isNotEmpty(model.usr_id_lbl) && model.usr_id === undefined) {
-    model.usr_id_lbl = String(model.usr_id_lbl).trim();
-    const usrModel = await usrDao.findOne({ lbl: model.usr_id_lbl });
-    if (usrModel) {
-      model.usr_id = usrModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      model.is_locked = Number(val);
-    }
-  }
-  
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
@@ -1003,12 +924,6 @@ export async function updateById(
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.usr_id !== undefined) {
-    if (model.usr_id != oldModel.usr_id) {
-      sql += `usr_id = ${ args.push(model.usr_id) },`;
       updateFldNum++;
     }
   }

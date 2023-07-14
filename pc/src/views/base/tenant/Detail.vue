@@ -81,26 +81,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
-          <el-form-item
-            :label="n('租户管理员')"
-            prop="usr_id"
-          >
-            <CustomSelect
-              v-model="dialogModel.usr_id"
-              :method="getUsrList"
-              :options-map="((item: UsrModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('租户管理员') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -216,12 +196,10 @@ import {
 import {
   type TenantInput,
   type DomainModel,
-  type UsrModel,
 } from "#/types";
 
 import {
   getDomainList,
-  getUsrList,
 } from "./Api";
 
 const emit = defineEmits<
@@ -279,16 +257,10 @@ watchEffect(async () => {
         message: `${ await nsAsync("请选择") } ${ n("所属域名") }`,
       },
     ],
-    usr_id: [
-      {
-        required: true,
-        message: `${ await nsAsync("请选择") } ${ n("租户管理员") }`,
-      },
-    ],
     is_locked: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+        message: `${ await nsAsync("请输入") } ${ n("租户管理员") }`,
       },
     ],
     is_enabled: [
@@ -591,7 +563,6 @@ async function initI18nsEfc() {
     "所属域名",
     "菜单权限",
     "租户管理员",
-    "锁定",
     "启用",
     "排序",
     "备注",

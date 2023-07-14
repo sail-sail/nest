@@ -18,13 +18,7 @@ type TenantModel {
   "菜单权限"
   menu_ids_lbl: [String!]
   "租户管理员"
-  usr_id: String!
-  "租户管理员"
-  usr_id_lbl: String
-  "锁定"
   is_locked: Int!
-  "锁定"
-  is_locked_lbl: String
   "启用"
   is_enabled: Int!
   "启用"
@@ -64,13 +58,7 @@ type TenantFieldComment {
   "菜单权限"
   menu_ids_lbl: String!
   "租户管理员"
-  usr_id: String!
-  "租户管理员"
-  usr_id_lbl: String!
-  "锁定"
   is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -110,13 +98,7 @@ input TenantInput {
   "菜单权限"
   menu_ids_lbl: [String!]
   "租户管理员"
-  usr_id: String
-  "租户管理员"
-  usr_id_lbl: String
-  "锁定"
   is_locked: Int
-  "锁定"
-  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -159,10 +141,8 @@ input TenantSearch {
   menu_ids: [String!]
   menu_ids_is_null: Boolean
   "租户管理员"
-  usr_id: [String!]
-  usr_id_is_null: Boolean
-  "锁定"
-  is_locked: [Int!]
+  is_locked: Int
+  is_locked_like: Int
   "启用"
   is_enabled: [Int!]
   "排序"

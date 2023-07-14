@@ -82,12 +82,6 @@ export default defineConfig({
         },
       },
       {
-        COLUMN_NAME: "usr_id",
-        require: true,
-        align: "left",
-        width: 140,
-      },
-      {
         COLUMN_NAME: "is_locked",
       },
       {

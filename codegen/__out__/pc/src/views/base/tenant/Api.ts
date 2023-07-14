@@ -42,10 +42,7 @@ export async function findAll(
           domain_ids_lbl
           menu_ids
           menu_ids_lbl
-          usr_id
-          usr_id_lbl
           is_locked
-          is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -178,10 +175,7 @@ export async function findById(
           domain_ids_lbl
           menu_ids
           menu_ids_lbl
-          usr_id
-          usr_id_lbl
           is_locked
-          is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -519,10 +513,7 @@ export function useExportExcel(routePath: string) {
             domain_ids_lbl
             menu_ids
             menu_ids_lbl
-            usr_id
-            usr_id_lbl
             is_locked
-            is_locked_lbl
             is_enabled
             is_enabled_lbl
             order_by
@@ -542,10 +533,7 @@ export function useExportExcel(routePath: string) {
             domain_ids_lbl
             menu_ids
             menu_ids_lbl
-            usr_id
-            usr_id_lbl
             is_locked
-            is_locked_lbl
             is_enabled
             is_enabled_lbl
             order_by
