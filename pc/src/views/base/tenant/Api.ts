@@ -43,6 +43,7 @@ export async function findAll(
           menu_ids
           menu_ids_lbl
           is_locked
+          is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -176,6 +177,7 @@ export async function findById(
           menu_ids
           menu_ids_lbl
           is_locked
+          is_locked_lbl
           is_enabled
           is_enabled_lbl
           order_by
@@ -514,6 +516,7 @@ export function useExportExcel(routePath: string) {
             menu_ids
             menu_ids_lbl
             is_locked
+            is_locked_lbl
             is_enabled
             is_enabled_lbl
             order_by
@@ -534,6 +537,7 @@ export function useExportExcel(routePath: string) {
             menu_ids
             menu_ids_lbl
             is_locked
+            is_locked_lbl
             is_enabled
             is_enabled_lbl
             order_by

@@ -260,7 +260,7 @@ watchEffect(async () => {
     is_locked: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("租户管理员") }`,
+        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
     is_enabled: [
@@ -562,7 +562,7 @@ async function initI18nsEfc() {
     "名称",
     "所属域名",
     "菜单权限",
-    "租户管理员",
+    "锁定",
     "启用",
     "排序",
     "备注",

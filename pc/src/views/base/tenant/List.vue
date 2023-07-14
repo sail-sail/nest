@@ -466,12 +466,19 @@
             </el-table-column>
           </template>
           
-          <!-- 租户管理员 -->
-          <template v-else-if="'is_locked' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_locked"
+                  @change="is_lockedChg(row.id, row.is_locked)"
+                ></CustomSwitch>
+              </template>
             </el-table-column>
           </template>
           
@@ -739,8 +746,7 @@ const props = defineProps<{
   domain_ids_lbl?: string|string[]; // 所属域名
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string|string[]; // 菜单权限
-  is_locked?: string; // 租户管理员
-  is_locked_like?: string; // 租户管理员
+  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
   rem?: string; // 备注
@@ -763,7 +769,8 @@ const builtInSearchType: { [key: string]: string } = {
   domain_ids_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
-  is_locked: "number",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   order_by: "number",
@@ -912,8 +919,8 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "租户管理员",
-      prop: "is_locked",
+      label: "锁定",
+      prop: "is_locked_lbl",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1185,7 +1192,7 @@ async function onImportExcel() {
     [ n("名称") ]: "lbl",
     [ n("所属域名") ]: "domain_ids_lbl",
     [ n("菜单权限") ]: "menu_ids_lbl",
-    [ n("租户管理员") ]: "is_locked",
+    [ n("锁定") ]: "is_locked_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
     [ n("备注") ]: "rem",
@@ -1242,7 +1249,7 @@ async function cancelImport() {
   importPercentage = 0;
 }
 
-/** 租户管理员 */
+/** 锁定 */
 async function is_lockedChg(id: string, is_locked: 0 | 1) {
   if (isLocked) {
     return;
@@ -1507,7 +1514,7 @@ async function initI18nsEfc() {
     "名称",
     "所属域名",
     "菜单权限",
-    "租户管理员",
+    "锁定",
     "启用",
     "排序",
     "备注",

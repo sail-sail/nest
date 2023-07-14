@@ -105,8 +105,11 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
-  if (isNotEmpty(search?.is_locked)) {
-    whereQuery += ` and t.is_locked = ${ args.push(search?.is_locked) }`;
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
   if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
     search.is_enabled = [ search.is_enabled ];
@@ -352,13 +355,25 @@ export async function findAll(
   );
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 锁定
+    let is_locked_lbl = model.is_locked.toString();
+    if (model.is_locked !== undefined && model.is_locked !== null) {
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      if (dictItem) {
+        is_locked_lbl = dictItem.lbl;
+      }
+    }
+    model.is_locked_lbl = is_locked_lbl;
     
     // 启用
     let is_enabled_lbl = model.is_enabled.toString();
@@ -409,7 +424,8 @@ export async function getFieldComments() {
     domain_ids_lbl: await n("所属域名"),
     menu_ids: await n("菜单权限"),
     menu_ids_lbl: await n("菜单权限"),
-    is_locked: await n("租户管理员"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
@@ -653,8 +669,10 @@ export async function create(
   const method = "create";
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
   
@@ -701,6 +719,14 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
   }
   
   // 启用
@@ -853,8 +879,10 @@ export async function updateById(
   }
   
   const [
+    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_enabled",
   ]);
 
@@ -900,6 +928,14 @@ export async function updateById(
     }
     const models = await query<Result>(sql, args);
     model.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
   }
   
   // 启用
