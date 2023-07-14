@@ -88,14 +88,6 @@ export default defineConfig({
         width: 140,
       },
       {
-        COLUMN_NAME: "expiration",
-        width: 140,
-      },
-      {
-        COLUMN_NAME: "max_usr_num",
-        width: 100,
-      },
-      {
         COLUMN_NAME: "is_locked",
       },
       {

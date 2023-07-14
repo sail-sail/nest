@@ -119,22 +119,6 @@ async function getWhereQuery(
   if (search?.usr_id_is_null) {
     whereQuery += ` and usr_id_lbl.id is null`;
   }
-  if (search?.expiration && search?.expiration?.length > 0) {
-    if (search.expiration[0] != null) {
-      whereQuery += ` and t.expiration >= ${ args.push(search.expiration[0]) }`;
-    }
-    if (search.expiration[1] != null) {
-      whereQuery += ` and t.expiration <= ${ args.push(search.expiration[1]) }`;
-    }
-  }
-  if (search?.max_usr_num && search?.max_usr_num?.length > 0) {
-    if (search.max_usr_num[0] != null) {
-      whereQuery += ` and t.max_usr_num >= ${ args.push(search.max_usr_num[0]) }`;
-    }
-    if (search.max_usr_num[1] != null) {
-      whereQuery += ` and t.max_usr_num <= ${ args.push(search.max_usr_num[1]) }`;
-    }
-  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -398,18 +382,6 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 到期日
-    if (model.expiration) {
-      const expiration = dayjs(model.expiration);
-      if (isNaN(expiration.toDate().getTime())) {
-        model.expiration_lbl = (model.expiration || "").toString();
-      } else {
-        model.expiration_lbl = expiration.format("YYYY-MM-DD");
-      }
-    } else {
-      model.expiration_lbl = "";
-    }
-    
     // 锁定
     let is_locked_lbl = model.is_locked.toString();
     if (model.is_locked !== undefined && model.is_locked !== null) {
@@ -471,9 +443,6 @@ export async function getFieldComments() {
     menu_ids_lbl: await n("菜单权限"),
     usr_id: await n("租户管理员"),
     usr_id_lbl: await n("租户管理员"),
-    expiration: await n("到期日"),
-    expiration_lbl: await n("到期日"),
-    max_usr_num: await n("最大用户数"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -780,12 +749,6 @@ export async function create(
     }
   }
   
-  // 到期日
-  if (isNotEmpty(model.expiration_lbl) && model.expiration === undefined) {
-    model.expiration_lbl = String(model.expiration_lbl).trim();
-    model.expiration = model.expiration_lbl;
-  }
-  
   // 锁定
   if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
@@ -834,12 +797,6 @@ export async function create(
   if (model.usr_id !== undefined) {
     sql += `,usr_id`;
   }
-  if (model.expiration !== undefined) {
-    sql += `,expiration`;
-  }
-  if (model.max_usr_num !== undefined) {
-    sql += `,max_usr_num`;
-  }
   if (model.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -872,12 +829,6 @@ export async function create(
   }
   if (model.usr_id !== undefined) {
     sql += `,${ args.push(model.usr_id) }`;
-  }
-  if (model.expiration !== undefined) {
-    sql += `,${ args.push(model.expiration) }`;
-  }
-  if (model.max_usr_num !== undefined) {
-    sql += `,${ args.push(model.max_usr_num) }`;
   }
   if (model.is_locked !== undefined) {
     sql += `,${ args.push(model.is_locked) }`;
@@ -1058,18 +1009,6 @@ export async function updateById(
   if (model.usr_id !== undefined) {
     if (model.usr_id != oldModel.usr_id) {
       sql += `usr_id = ${ args.push(model.usr_id) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.expiration !== undefined) {
-    if (model.expiration != oldModel.expiration) {
-      sql += `expiration = ${ args.push(model.expiration) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.max_usr_num !== undefined) {
-    if (model.max_usr_num != oldModel.max_usr_num) {
-      sql += `max_usr_num = ${ args.push(model.max_usr_num) },`;
       updateFldNum++;
     }
   }

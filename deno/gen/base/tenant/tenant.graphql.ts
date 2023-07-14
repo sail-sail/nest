@@ -21,12 +21,6 @@ type TenantModel {
   usr_id: String!
   "租户管理员"
   usr_id_lbl: String
-  "到期日"
-  expiration: NaiveDate
-  "到期日"
-  expiration_lbl: String!
-  "最大用户数"
-  max_usr_num: Int!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -73,12 +67,6 @@ type TenantFieldComment {
   usr_id: String!
   "租户管理员"
   usr_id_lbl: String!
-  "到期日"
-  expiration: String!
-  "到期日"
-  expiration_lbl: String!
-  "最大用户数"
-  max_usr_num: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -125,12 +113,6 @@ input TenantInput {
   usr_id: String
   "租户管理员"
   usr_id_lbl: String
-  "到期日"
-  expiration: NaiveDate
-  "到期日"
-  expiration_lbl: String
-  "最大用户数"
-  max_usr_num: Int
   "锁定"
   is_locked: Int
   "锁定"
@@ -179,10 +161,6 @@ input TenantSearch {
   "租户管理员"
   usr_id: [String!]
   usr_id_is_null: Boolean
-  "到期日"
-  expiration: [NaiveDate!]
-  "最大用户数"
-  max_usr_num: [Int!]
   "锁定"
   is_locked: [Int!]
   "启用"

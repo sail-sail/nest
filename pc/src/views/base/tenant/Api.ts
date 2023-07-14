@@ -44,9 +44,6 @@ export async function findAll(
           menu_ids_lbl
           usr_id
           usr_id_lbl
-          expiration
-          expiration_lbl
-          max_usr_num
           is_locked
           is_locked_lbl
           is_enabled
@@ -183,9 +180,6 @@ export async function findById(
           menu_ids_lbl
           usr_id
           usr_id_lbl
-          expiration
-          expiration_lbl
-          max_usr_num
           is_locked
           is_locked_lbl
           is_enabled
@@ -527,9 +521,6 @@ export function useExportExcel(routePath: string) {
             menu_ids_lbl
             usr_id
             usr_id_lbl
-            expiration
-            expiration_lbl
-            max_usr_num
             is_locked
             is_locked_lbl
             is_enabled
@@ -553,9 +544,6 @@ export function useExportExcel(routePath: string) {
             menu_ids_lbl
             usr_id
             usr_id_lbl
-            expiration
-            expiration_lbl
-            max_usr_num
             is_locked
             is_locked_lbl
             is_enabled

@@ -475,24 +475,6 @@
             </el-table-column>
           </template>
           
-          <!-- 到期日 -->
-          <template v-else-if="'expiration_lbl' === col.prop && (showBuildIn || builtInSearch?.expiration == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 最大用户数 -->
-          <template v-else-if="'max_usr_num' === col.prop && (showBuildIn || builtInSearch?.max_usr_num == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
@@ -775,8 +757,6 @@ const props = defineProps<{
   menu_ids_lbl?: string|string[]; // 菜单权限
   usr_id?: string|string[]; // 租户管理员
   usr_id_lbl?: string|string[]; // 租户管理员
-  expiration?: string; // 到期日
-  max_usr_num?: string; // 最大用户数
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
@@ -802,7 +782,6 @@ const builtInSearchType: { [key: string]: string } = {
   menu_ids_lbl: "string[]",
   usr_id: "string[]",
   usr_id_lbl: "string[]",
-  max_usr_num: "number",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -957,22 +936,6 @@ function getTableColumns(): ColumnType[] {
       prop: "usr_id_lbl",
       width: 140,
       align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "到期日",
-      prop: "expiration_lbl",
-      width: 140,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "最大用户数",
-      prop: "max_usr_num",
-      width: 100,
-      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1251,8 +1214,6 @@ async function onImportExcel() {
     [ n("所属域名") ]: "domain_ids_lbl",
     [ n("菜单权限") ]: "menu_ids_lbl",
     [ n("租户管理员") ]: "usr_id_lbl",
-    [ n("到期日") ]: "expiration_lbl",
-    [ n("最大用户数") ]: "max_usr_num",
     [ n("锁定") ]: "is_locked_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
@@ -1279,7 +1240,6 @@ async function onImportExcel() {
       header,
       {
         date_keys: [
-          n("到期日"),
           n("创建时间"),
           n("更新时间"),
         ],
@@ -1577,8 +1537,6 @@ async function initI18nsEfc() {
     "所属域名",
     "菜单权限",
     "租户管理员",
-    "到期日",
-    "最大用户数",
     "锁定",
     "启用",
     "排序",
