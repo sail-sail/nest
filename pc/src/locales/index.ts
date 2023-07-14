@@ -1,5 +1,5 @@
-import elementEnLocale from "element-plus/lib/locale/lang/en";
-import elementZhLocale from "element-plus/lib/locale/lang/zh-cn";
+import elementEnLocale from "element-plus/es/locale/lang/en";
+import elementZhLocale from "element-plus/es/locale/lang/zh-cn";
 
 import enLocale from "./en";
 import zhLocale from "./zh-cn";
