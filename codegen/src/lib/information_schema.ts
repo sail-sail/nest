@@ -108,9 +108,9 @@ async function getSchema0(
   if (tenant_idColumn) {
     records2.push(tenant_idColumn);
   }
-  const dept_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "dept_id");
-  if (dept_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "dept_id")) {
-    records2.push(dept_idColumn);
+  const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
+  if (org_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
+    records2.push(org_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
   if (is_deletedColumn) {
@@ -129,7 +129,7 @@ async function getSchema0(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
-    if ([ "dept_id", "tenant_id", "is_deleted" ].includes(column_name)) {
+    if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;
     } else if ([ "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted"  ].includes(column_name)) {

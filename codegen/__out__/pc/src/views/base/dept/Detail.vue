@@ -35,7 +35,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -90,7 +90,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-1"
+            un-grid="col-span-2"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -100,6 +100,26 @@
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+          <el-form-item
+            :label="n('组织')"
+            prop="org_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.org_id"
+              :method="getOrgList"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('组织') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -188,10 +208,12 @@ import {
 import {
   type DeptInput,
   type DeptModel,
+  type OrgModel,
 } from "#/types";
 
 import {
   getDeptList,
+  getOrgList,
 } from "./Api";
 
 import {
@@ -555,6 +577,7 @@ async function initI18nsEfc() {
     "备注",
     "创建人",
     "创建时间",
+    "组织",
     "更新人",
     "更新时间",
   ];

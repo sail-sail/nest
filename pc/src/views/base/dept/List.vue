@@ -496,6 +496,15 @@
             </el-table-column>
           </template>
           
+          <!-- 组织 -->
+          <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
             <el-table-column
@@ -588,6 +597,7 @@ import {
   type DeptInput,
   type DeptSearch,
   type UsrModel,
+  type OrgModel,
 } from "#/types";
 
 defineOptions({
@@ -688,6 +698,8 @@ const props = defineProps<{
   create_usr_id?: string|string[]; // 创建人
   create_usr_id_lbl?: string|string[]; // 创建人
   create_time?: string; // 创建时间
+  org_id?: string|string[]; // 组织
+  org_id_lbl?: string|string[]; // 组织
   update_usr_id?: string|string[]; // 更新人
   update_usr_id_lbl?: string|string[]; // 更新人
   update_time?: string; // 更新时间
@@ -708,6 +720,8 @@ const builtInSearchType: { [key: string]: string } = {
   order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
+  org_id: "string[]",
+  org_id_lbl: "string[]",
   update_usr_id: "string[]",
   update_usr_id_lbl: "string[]",
 };
@@ -888,6 +902,13 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       width: 150,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "组织",
+      prop: "org_id_lbl",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1122,6 +1143,7 @@ async function onImportExcel() {
     [ n("备注") ]: "rem",
     [ n("创建人") ]: "create_usr_id_lbl",
     [ n("创建时间") ]: "create_time_lbl",
+    [ n("组织") ]: "org_id_lbl",
     [ n("更新人") ]: "update_usr_id_lbl",
     [ n("更新时间") ]: "update_time_lbl",
   };
@@ -1443,6 +1465,7 @@ async function initI18nsEfc() {
     "备注",
     "创建人",
     "创建时间",
+    "组织",
     "更新人",
     "更新时间",
   ];

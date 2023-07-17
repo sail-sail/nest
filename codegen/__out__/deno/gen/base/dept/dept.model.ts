@@ -10,6 +10,7 @@ import {
 
 export interface DeptSearch extends DeptSearchType {
   tenant_id?: string | null;
+  org_id?: string | null;
   $extra?: SearchExtra[];
 }
 
