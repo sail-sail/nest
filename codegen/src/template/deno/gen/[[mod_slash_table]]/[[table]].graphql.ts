@@ -274,6 +274,9 @@ input <#=searchName#> {
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const search = column.search;
+    if (column_name === 'org_id') {
+      continue;
+    }
     if (column_name === 'id') {
       data_type = 'String';
     }
