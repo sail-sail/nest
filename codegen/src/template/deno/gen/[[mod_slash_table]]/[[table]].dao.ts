@@ -157,7 +157,7 @@ import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";<#
 if (hasOrgId) {
 #>
 
-import * as deptDao from "/gen/base/dept/dept.dao.ts";<#
+import * as orgDao from "/gen/base/org/org.dao.ts";<#
 }
 #><#
 if (hasMany2many) {
@@ -1792,17 +1792,17 @@ if (hasOrgId) {
  *   }} [options]
  * @return {Promise<number>}
  */
-export async function updateDeptById(
+export async function updateOrgById(
   id: string,
   org_id: string,
   options?: {
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "updateDeptById";
+  const method = "updateOrgById";
   
-  const deptExist = await deptDao.existById(org_id);
-  if (!deptExist) {
+  const orgExist = await orgDao.existById(org_id);
+  if (!orgExist) {
     return 0;
   }
   
@@ -1991,7 +1991,7 @@ export async function updateById(
   
   // 修改部门id
   if (isNotEmpty(model.org_id)) {
-    await updateDeptById(id, model.org_id);
+    await updateOrgById(id, model.org_id);
   }<#
   }
   #><#
