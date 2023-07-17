@@ -33,10 +33,6 @@ type DeptModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String
   "更新人"
   update_usr_id: String!
   "更新人"
@@ -75,10 +71,6 @@ type DeptFieldComment {
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String!
   "更新人"
   update_usr_id: String!
   "更新人"
@@ -117,10 +109,6 @@ input DeptInput {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String
-  "组织"
-  org_id: String
-  "组织"
-  org_id_lbl: String
   "更新人"
   update_usr_id: String
   "更新人"
@@ -157,9 +145,6 @@ input DeptSearch {
   create_usr_id_is_null: Boolean
   "创建时间"
   create_time: [NaiveDateTime!]
-  "组织"
-  org_id: [String!]
-  org_id_is_null: Boolean
   "更新人"
   update_usr_id: [String!]
   update_usr_id_is_null: Boolean

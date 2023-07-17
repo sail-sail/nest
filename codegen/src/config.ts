@@ -1,6 +1,6 @@
 export default {
   ignoreCodegen: [
-    "dept_id",
+    "org_id",
     "tenant_id",
     "create_usr_id",
     "create_time",

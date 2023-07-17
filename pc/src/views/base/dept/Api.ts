@@ -9,7 +9,6 @@ import {
 
 import {
   type UsrSearch,
-  type OrgSearch,
 } from "#/types";
 
 import {
@@ -50,8 +49,6 @@ export async function findAll(
           create_usr_id_lbl
           create_time
           create_time_lbl
-          org_id
-          org_id_lbl
           update_usr_id
           update_usr_id_lbl
           update_time
@@ -208,8 +205,6 @@ export async function findById(
           create_usr_id_lbl
           create_time
           create_time_lbl
-          org_id
-          org_id_lbl
           update_usr_id
           update_usr_id_lbl
           update_time
@@ -451,51 +446,6 @@ export async function getUsrList() {
   return data;
 }
 
-export async function findAllOrg(
-  search?: OrgSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllOrg: Query["findAllOrg"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllOrg(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllOrg;
-  return res;
-}
-
-export async function getOrgList() {
-  const data = await findAllOrg(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function getDeptTree() {
   const data = await findDeptTree(
     [
@@ -547,8 +497,6 @@ export function useExportExcel(routePath: string) {
             create_usr_id_lbl
             create_time
             create_time_lbl
-            org_id
-            org_id_lbl
             update_usr_id
             update_usr_id_lbl
             update_time
@@ -568,8 +516,6 @@ export function useExportExcel(routePath: string) {
             create_usr_id_lbl
             create_time
             create_time_lbl
-            org_id
-            org_id_lbl
             update_usr_id
             update_usr_id_lbl
             update_time

@@ -57,8 +57,6 @@ import {
   type DeptSearch,
 } from "./dept.model.ts";
 
-import * as orgDao from "/gen/base/org/org.dao.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: DeptSearch,
@@ -164,18 +162,6 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time <= ${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.org_id && !Array.isArray(search?.org_id)) {
-    search.org_id = [ search.org_id ];
-  }
-  if (search?.org_id && search?.org_id.length > 0) {
-    whereQuery += ` and org_id_lbl.id in ${ args.push(search.org_id) }`;
-  }
-  if (search?.org_id === null) {
-    whereQuery += ` and org_id_lbl.id is null`;
-  }
-  if (search?.org_id_is_null) {
-    whereQuery += ` and org_id_lbl.id is null`;
-  }
   if (search?.update_usr_id && !Array.isArray(search?.update_usr_id)) {
     search.update_usr_id = [ search.update_usr_id ];
   }
@@ -216,8 +202,6 @@ function getFromQuery() {
       on parent_id_lbl.id = t.parent_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
-    left join base_org org_id_lbl
-      on org_id_lbl.id = t.org_id
     left join base_usr update_usr_id_lbl
       on update_usr_id_lbl.id = t.update_usr_id
   `;
@@ -285,7 +269,6 @@ export async function findAll(
     select t.*
       ,parent_id_lbl.lbl parent_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,org_id_lbl.lbl org_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ getFromQuery() }
@@ -412,8 +395,6 @@ export async function getFieldComments() {
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
     create_time_lbl: await n("创建时间"),
-    org_id: await n("组织"),
-    org_id_lbl: await n("组织"),
     update_usr_id: await n("更新人"),
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
@@ -682,15 +663,6 @@ export async function create(
     }
   }
   
-  // 组织
-  if (isNotEmpty(model.org_id_lbl) && model.org_id === undefined) {
-    model.org_id_lbl = String(model.org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: model.org_id_lbl });
-    if (orgModel) {
-      model.org_id = orgModel.id;
-    }
-  }
-  
   const oldModel = await findByUnique(model, options);
   if (oldModel) {
     const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
@@ -752,9 +724,6 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.org_id !== undefined) {
-    sql += `,org_id`;
-  }
   if (model.update_usr_id !== undefined) {
     sql += `,update_usr_id`;
   }
@@ -805,9 +774,6 @@ export async function create(
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
   }
-  if (model.org_id !== undefined) {
-    sql += `,${ args.push(model.org_id) }`;
-  }
   if (model.update_usr_id !== undefined) {
     sql += `,${ args.push(model.update_usr_id) }`;
   }
@@ -834,7 +800,6 @@ export async function delCache() {
   const foreignTables: string[] = [
     "base_dept",
     "base_usr",
-    "base_org",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -991,15 +956,6 @@ export async function updateById(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
-    }
-  }
-  
-  // 组织
-  if (isNotEmpty(model.org_id_lbl) && model.org_id === undefined) {
-    model.org_id_lbl = String(model.org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: model.org_id_lbl });
-    if (orgModel) {
-      model.org_id = orgModel.id;
     }
   }
   

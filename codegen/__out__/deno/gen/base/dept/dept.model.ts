@@ -20,6 +20,7 @@ export interface DeptModel extends DeptModelType {
   update_usr_id: string;
   update_time?: string | null;
   tenant_id?: string | null;
+  org_id?: string | null;
 }
 
 export interface DeptInput extends DeptInputType {
@@ -28,4 +29,5 @@ export interface DeptInput extends DeptInputType {
   update_usr_id?: string;
   update_time?: string | null;
   tenant_id?: string | null;
+  org_id?: string | null;
 }
