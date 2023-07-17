@@ -198,6 +198,9 @@ async function getSchema0(
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
       }
+      if (item.align == null) {
+        item.align = "center";
+      }
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {
