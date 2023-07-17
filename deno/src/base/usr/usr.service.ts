@@ -51,7 +51,7 @@ export async function login(
   if (org_id === null) {
     org_id = undefined;
   }
-  const org_ids = await usrDao.getDeptIdsById(
+  const org_ids = await usrDao.getOrgIdsById(
     model.id,
   );
   if (!org_id) {
