@@ -229,9 +229,13 @@ async function getSchema0(
       || (column_name === "att" || column_name.endsWith("_att"))
     ) {
       if (column_name === "img" || column_name.endsWith("_img")) {
-        item.isImg = true;
+        if (item.isImg == null) {
+          item.isImg = true;
+        }
       } else if (column_name === "att" || column_name.endsWith("_att")) {
-        item.isAtt = true;
+        if (item.isAtt == null) {
+          item.isAtt = true;
+        }
       }
       if (item.width == null) {
         let column_comment = item.COLUMN_COMMENT || "";
