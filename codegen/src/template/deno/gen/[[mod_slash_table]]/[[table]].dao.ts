@@ -4,7 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -154,7 +154,7 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";<#
 }
 #><#
-if (hasDeptId) {
+if (hasOrgId) {
 #>
 
 import * as deptDao from "/gen/base/dept/dept.dao.ts";<#
@@ -261,16 +261,16 @@ async function getWhereQuery(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
-  if (search?.dept_id == null) {
+  if (search?.org_id == null) {
     const authModel = await authDao.getAuthModel();
-    const dept_id = authModel?.dept_id;
-    if (dept_id) {
-      whereQuery += ` and t.dept_id = ${ args.push(dept_id) }`;
+    const org_id = authModel?.org_id;
+    if (org_id) {
+      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
     }
-  } else if (isNotEmpty(search?.dept_id) && search?.dept_id !== "-") {
-    whereQuery += ` and t.dept_id = ${ args.push(search.dept_id) }`;
+  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }<#
   }
   #><#
@@ -403,7 +403,7 @@ function getFromQuery() {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
-      if (column.isVirtual && column_name !== "dept_id") continue;
+      if (column.isVirtual && column_name !== "org_id") continue;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -522,7 +522,7 @@ export async function findAll(
         const column = columns[i];
         if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
-        if (column.isVirtual && column_name !== "dept_id") continue;
+        if (column.isVirtual && column_name !== "org_id") continue;
         const foreignKey = column.foreignKey;
         let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
@@ -1498,14 +1498,14 @@ export async function create(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
-  if (model.dept_id != null) {
-    sql += `,dept_id`;
+  if (model.org_id != null) {
+    sql += `,org_id`;
   } else {
     const authModel = await authDao.getAuthModel();
-    if (authModel?.dept_id) {
-      sql += `,dept_id`;
+    if (authModel?.org_id) {
+      sql += `,org_id`;
     }
   }<#
   }
@@ -1577,14 +1577,14 @@ export async function create(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
-  if (model.dept_id != null) {
-    sql += `,${ args.push(model.dept_id) }`;
+  if (model.org_id != null) {
+    sql += `,${ args.push(model.org_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
-    if (authModel?.dept_id) {
-      sql += `,${ args.push(authModel?.dept_id) }`;
+    if (authModel?.org_id) {
+      sql += `,${ args.push(authModel?.org_id) }`;
     }
   }<#
   }
@@ -1780,28 +1780,28 @@ export async function updateTenantById(
 }<#
 }
 #><#
-if (hasDeptId) {
+if (hasOrgId) {
 #>
 
 /**
  * 根据id修改部门id
  * @export
  * @param {string} id
- * @param {string} dept_id
+ * @param {string} org_id
  * @param {{
  *   }} [options]
  * @return {Promise<number>}
  */
 export async function updateDeptById(
   id: string,
-  dept_id: string,
+  org_id: string,
   options?: {
   },
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "updateDeptById";
   
-  const deptExist = await deptDao.existById(dept_id);
+  const deptExist = await deptDao.existById(org_id);
   if (!deptExist) {
     return 0;
   }
@@ -1812,7 +1812,7 @@ export async function updateDeptById(
       <#=mod#>_<#=table#>
     set
       update_time = ${ args.push(reqDate()) },
-      dept_id = ${ args.push(dept_id) }
+      org_id = ${ args.push(org_id) }
     where
       id = ${ args.push(id) }
   `;
@@ -1986,12 +1986,12 @@ export async function updateById(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
   
   // 修改部门id
-  if (isNotEmpty(model.dept_id)) {
-    await updateDeptById(id, model.dept_id);
+  if (isNotEmpty(model.org_id)) {
+    await updateDeptById(id, model.org_id);
   }<#
   }
   #><#
@@ -2145,7 +2145,7 @@ export async function updateById(
     if (column_name === "tenant_id") {
       continue;
     }
-    if (column_name === "dept_id") {
+    if (column_name === "org_id") {
       continue;
     }
   #><#
@@ -2655,13 +2655,13 @@ export async function findLastOrderBy(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
   {
     const authModel = await authDao.getAuthModel();
-    const dept_id = authModel?.dept_id;
-    if (dept_id) {
-      whereQuery.push(`t.dept_id = ${ args.push(dept_id) }`);
+    const org_id = authModel?.org_id;
+    if (org_id) {
+      whereQuery.push(`t.org_id = ${ args.push(org_id) }`);
     }
   }<#
   }

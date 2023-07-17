@@ -92,24 +92,9 @@ export async function createDept(
   );
   
   const {
-    findById,
     create,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
   const res = await create(input);
-  
-  const new_data = await findById(res);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "create",
-    method_lbl: "创建",
-    lbl: "创建",
-    old_data: "{}",
-    new_data: JSON.stringify(new_data),
-  });
   return res;
 }
 
@@ -130,25 +115,9 @@ export async function updateByIdDept(
   );
   
   const {
-    findById,
     updateById,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findByIdDept(id);
   const res = await updateById(id, input);
-  
-  const new_data = await findById(res);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "updateById",
-    method_lbl: "修改",
-    lbl: "修改",
-    old_data: JSON.stringify(old_data),
-    new_data: JSON.stringify(new_data),
-  });
   return res;
 }
 
@@ -168,25 +137,9 @@ export async function deleteByIdsDept(
   );
   
   const {
-    findAll,
     deleteByIds,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
-  const old_data = await findAll({
-    ids,
-  });
   const res = await deleteByIds(ids);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "deleteByIds",
-    method_lbl: "删除",
-    lbl: "删除",
-    old_data: JSON.stringify(old_data),
-    new_data: "{}",
-  });
   return res;
 }
 
@@ -212,19 +165,7 @@ export async function enableByIdsDept(
   const {
     enableByIds,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
   const res = await enableByIds(ids, is_enabled);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "enableByIds",
-    method_lbl: "启用",
-    lbl: "启用",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
-  });
   return res;
 }
 
@@ -250,22 +191,7 @@ export async function lockByIdsDept(
   const {
     lockByIds,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
   const res = await lockByIds(ids, is_locked);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "lockByIds",
-    method_lbl: is_locked ? "锁定" : "解锁",
-    lbl: is_locked ? "锁定" : "解锁",
-    old_data: "",
-    new_data: JSON.stringify({
-      ids,
-      is_locked,
-    }),
-  });
   return res;
 }
 
@@ -287,19 +213,7 @@ export async function revertByIdsDept(
   const {
     revertByIds,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
   const res = await revertByIds(ids);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "revertByIds",
-    method_lbl: "还原",
-    lbl: "还原",
-    old_data: "[]",
-    new_data: JSON.stringify(ids),
-  });
   return res;
 }
 
@@ -321,19 +235,7 @@ export async function forceDeleteByIdsDept(
   const {
     forceDeleteByIds,
   } = await import("./dept.service.ts");
-  
-  const { log } = await import("/src/base/operation_record/operation_record.service.ts");
   const res = await forceDeleteByIds(ids);
-  
-  await log({
-    module: "base_dept",
-    module_lbl: "部门",
-    method: "forceDeleteByIds",
-    method_lbl: "彻底删除",
-    lbl: "彻底删除",
-    old_data: JSON.stringify(ids),
-    new_data: "[]",
-  });
   return res;
 }
 

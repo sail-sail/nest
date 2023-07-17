@@ -185,11 +185,11 @@ for (let i = 0; i < columns.length; i++) {
             ) {
             #>
             <CustomSelect<#
-              if (mod === "base" && table === "usr" && column_name === "default_dept_id") {
+              if (mod === "base" && table === "usr" && column_name === "default_org_id") {
               #>
-              ref="default_dept_idRef"
+              ref="default_org_idRef"
               :init="false"
-              @change="old_default_dept_id = dialogModel.default_dept_id;"<#
+              @change="old_default_org_id = dialogModel.default_org_id;"<#
               }
               #><#
               if (foreignKey.multiple) {
@@ -198,9 +198,9 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               v-model="dialogModel.<#=column_name#>"<#
-              if (mod === "base" && table === "usr" && column_name === "default_dept_id") {
+              if (mod === "base" && table === "usr" && column_name === "default_org_id") {
               #>
-              :method="getDeptListApi"<#
+              :method="getOrgListApi"<#
               } else {
               #>
               :method="get<#=Foreign_Table_Up#>List"<#
@@ -954,7 +954,7 @@ async function onRefresh() {
     };<#
     if (mod === "base" && table === "usr") {
     #>
-    old_default_dept_id = dialogModel.default_dept_id;<#
+    old_default_org_id = dialogModel.default_org_id;<#
     }
     #>
   }
@@ -1098,33 +1098,33 @@ async function onSave() {
 if (mod === "base" && table === "usr") {
 #>
 
-let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();
-let old_default_dept_id: string | null | undefined = undefined;
+let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+let old_default_org_id: string | null | undefined = undefined;
 
-async function getDeptListApi() {
-  let dept_ids = dialogModel.dept_ids || [ ];
-  if (!dialogModel.default_dept_id && old_default_dept_id) {
-    if (dept_ids.includes(old_default_dept_id)) {
-      dialogModel.default_dept_id = old_default_dept_id;
+async function getOrgListApi() {
+  let org_ids = dialogModel.org_ids || [ ];
+  if (!dialogModel.default_org_id && old_default_org_id) {
+    if (org_ids.includes(old_default_org_id)) {
+      dialogModel.default_org_id = old_default_org_id;
     }
   }
-  if (!dialogModel.default_dept_id || !dept_ids.includes(dialogModel.default_dept_id)) {
-    dialogModel.default_dept_id = undefined;
+  if (!dialogModel.default_org_id || !org_ids.includes(dialogModel.default_org_id)) {
+    dialogModel.default_org_id = undefined;
   }
-  let data = await getDeptList();
+  let data = await getOrgList();
   data = data.filter((item) => {
-    return dept_ids.includes(item.id);
+    return org_ids.includes(item.id);
   });
   return data;
 }
 
 watch(
-  () => dialogModel.dept_ids,
+  () => dialogModel.org_ids,
   async () => {
-    if (!default_dept_idRef) {
+    if (!default_org_idRef) {
       return;
     }
-    await default_dept_idRef.refresh();
+    await default_org_idRef.refresh();
   },
 );<#
 }
