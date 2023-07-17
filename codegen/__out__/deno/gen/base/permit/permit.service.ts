@@ -112,6 +112,7 @@ export async function updateById(
   id: string,
   input: PermitInput,
 ): Promise<string> {
+  
   const data = await permitDao.updateById(id, input);
   return data;
 }
@@ -124,6 +125,7 @@ export async function updateById(
 export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
   const data = await permitDao.deleteByIds(ids);
   return data;
 }

@@ -755,6 +755,11 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      sys_fields: [
+        "code",
+        "type",
+        "is_enabled",
+      ],
     },
     columns: [
       {

@@ -81,6 +81,8 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  // 是否有系统字段 is_sys
+  const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
@@ -113,6 +115,16 @@ async function getSchema0(
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
   if (is_deletedColumn) {
     records2.push(is_deletedColumn);
+  }
+  if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "is_sys",
+      COLUMN_TYPE: "tinyint(1)",
+      DATA_TYPE: "tinyint",
+      COLUMN_COMMENT: "系统字段",
+      dict: "is_sys",
+      onlyCodegenDeno: true,
+    });
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];

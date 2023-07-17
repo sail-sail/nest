@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -28,7 +29,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #><#
-if (hasLocked) {
+if (hasLocked || hasIsSys) {
 #>import {
   ns,
 } from "/src/base/i18n/i18n.ts";<#
@@ -242,7 +243,24 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }<#
   }
+  #><#
+  if (hasIsSys) {
   #>
+  
+  // 不能修改系统记录的系统字段
+  const model = await <#=table#>Dao.findById(id);
+  if (model && model.is_sys === 1) {<#
+  opts.sys_fields = opts.sys_fields || [ ];
+  for (let i = 0; i < opts.sys_fields.length; i++) {
+    const sys_field = opts.sys_fields[i];
+  #>
+    input.<#=sys_field#> = undefined;<#
+  }
+  #>
+  }<#
+  }
+  #>
+  
   const data = await <#=table#>Dao.updateById(id, input);<#
   if (table === "i18n") {
   #>
@@ -279,7 +297,30 @@ export async function deleteByIds(
     throw await ns("不能删除已经锁定的数据");
   }<#
   }
+  #><#
+  if (hasIsSys) {
   #>
+  
+  const ids2: string[] = [ ];
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    
+    // 不能修改系统记录的系统字段
+    const model = await <#=table#>Dao.findById(id);
+    if (model && model.is_sys === 1) {
+      continue;
+    }
+    
+    ids2.push(id);
+  }
+  
+  if (ids2.length === 0 && ids.length > 0) {
+    throw await ns("不能删除系统记录");
+  }
+  ids = ids2;<#
+  }
+  #>
+  
   const data = await <#=table#>Dao.deleteByIds(ids);<#
   if (table === "i18n") {
   #>

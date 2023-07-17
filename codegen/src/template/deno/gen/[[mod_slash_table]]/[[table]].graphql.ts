@@ -36,7 +36,7 @@ type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    // if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
@@ -105,7 +105,9 @@ type <#=modelName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime"
+      || column.DATA_TYPE === "dict" || column.DATA_TYPE === "dictbiz"
+    ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#>
@@ -152,7 +154,9 @@ type <#=fieldCommentName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!<#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime"
+      || column.DATA_TYPE === "dict" || column.DATA_TYPE === "dictbiz"
+    ) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: String!
@@ -172,7 +176,7 @@ input <#=inputName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    // if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
@@ -261,7 +265,7 @@ input <#=searchName#> {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
+    // if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
@@ -382,7 +386,7 @@ type <#=Table_Up#>Summary {<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
-    if (column.onlyCodegenDeno) continue;
+    // if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     let column_comment = column.COLUMN_COMMENT;

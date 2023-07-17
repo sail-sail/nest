@@ -56,7 +56,7 @@ export interface TableCloumn {
   showOverflowTooltip?: boolean;
   
   /**
-   * 是否虚拟字段, 虚拟自动不会在dao中生成增加, 修改操作
+   * 是否虚拟字段, 虚拟字段不会在dao中生成增加, 修改操作
    * @type {boolean}
    * @memberof TableCloumn
    */
@@ -619,6 +619,11 @@ export interface TablesConfigItem {
      * @type {string[]}
      */
     unique?: string[];
+    
+    /**
+     * 不可改和不可删除的系统字段, 配合 is_sys 字段使用
+     */
+    sys_fields?: string[];
     
   },
   columns?: TableCloumn[];
