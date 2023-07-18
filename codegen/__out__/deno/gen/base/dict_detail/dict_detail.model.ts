@@ -13,6 +13,8 @@ export interface DictDetailSearch extends DictDetailSearchType {
 }
 
 export interface DictDetailModel extends DictDetailModelType {
+  /** 系统字段 */
+  is_sys: number;
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
@@ -20,6 +22,8 @@ export interface DictDetailModel extends DictDetailModelType {
 }
 
 export interface DictDetailInput extends DictDetailInputType {
+  /** 系统字段 */
+  is_sys?: number;
   create_usr_id?: string;
   create_time?: string | null;
   update_usr_id?: string;

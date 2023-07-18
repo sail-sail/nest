@@ -43,6 +43,8 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
+import * as orgDao from "/gen/base/org/org.dao.ts";
+
 import {
   SortOrderEnum,
   type PageInput,
@@ -71,6 +73,15 @@ async function getWhereQuery(
     }
   } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+  }
+  if (search?.org_id == null) {
+    const authModel = await authDao.getAuthModel();
+    const org_id = authModel?.org_id;
+    if (org_id) {
+      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
+    }
+  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
@@ -679,6 +690,14 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
+  if (model.org_id != null) {
+    sql += `,org_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.org_id) {
+      sql += `,org_id`;
+    }
+  }
   if (model.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
@@ -719,6 +738,14 @@ export async function create(
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
+    }
+  }
+  if (model.org_id != null) {
+    sql += `,${ args.push(model.org_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.org_id) {
+      sql += `,${ args.push(authModel?.org_id) }`;
     }
   }
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -821,6 +848,46 @@ export async function updateTenantById(
 }
 
 /**
+ * 根据id修改部门id
+ * @export
+ * @param {string} id
+ * @param {string} org_id
+ * @param {{
+ *   }} [options]
+ * @return {Promise<number>}
+ */
+export async function updateOrgById(
+  id: string,
+  org_id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_dept";
+  const method = "updateOrgById";
+  
+  const orgExist = await orgDao.existById(org_id);
+  if (!orgExist) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  const sql = /*sql*/ `
+    update
+      base_dept
+    set
+      update_time = ${ args.push(reqDate()) },
+      org_id = ${ args.push(org_id) }
+    where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
+  
+  await delCache();
+  return num;
+}
+
+/**
  * 根据id修改一行数据
  * @param {string} id
  * @param {DeptInput} model
@@ -860,6 +927,11 @@ export async function updateById(
   // 修改租户id
   if (isNotEmpty(model.tenant_id)) {
     await updateTenantById(id, model.tenant_id);
+  }
+  
+  // 修改部门id
+  if (isNotEmpty(model.org_id)) {
+    await updateOrgById(id, model.org_id);
   }
   
   // 父部门
@@ -1247,6 +1319,13 @@ export async function findLastOrderBy(
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
+  }
+  {
+    const authModel = await authDao.getAuthModel();
+    const org_id = authModel?.org_id;
+    if (org_id) {
+      whereQuery.push(`t.org_id = ${ args.push(org_id) }`);
+    }
   }
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");

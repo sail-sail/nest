@@ -102,42 +102,48 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.default_dept_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.default_org_id == null)">
           <el-form-item
-            :label="n('默认部门')"
-            prop="default_dept_id"
+            :label="n('默认组织')"
+            prop="default_org_id"
           >
             <CustomSelect
-              ref="default_dept_idRef"
+              ref="default_org_idRef"
               :init="false"
-              @change="old_default_dept_id = dialogModel.default_dept_id;"
-              v-model="dialogModel.default_dept_id"
-              :method="getDeptListApi"
-              :options-map="((item: DeptModel) => {
+              @change="old_default_org_id = dialogModel.default_org_id;"
+              v-model="dialogModel.default_org_id"
+              :method="getOrgListApi"
+              :options-map="((item: OrgModel) => {
                 return {
                   label: item.lbl,
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('默认部门') }`"
+              :placeholder="`${ ns('请选择') } ${ n('默认组织') }`"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
+        <template v-if="(showBuildIn || builtInModel?.org_ids == null)">
           <el-form-item
-            :label="n('拥有部门')"
-            prop="dept_ids"
+            :label="n('拥有组织')"
+            prop="org_ids"
           >
-            <CustomTreeSelect
-              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
-              v-model="dialogModel.dept_ids"
-              :method="getDeptTree"
-              :placeholder="`${ ns('请选择') } ${ n('拥有部门') }`"
+            <CustomSelect
+              :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
+              v-model="dialogModel.org_ids"
+              :method="getOrgList"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('拥有组织') }`"
               multiple
               :readonly="isLocked || isReadonly"
-            ></CustomTreeSelect>
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -263,18 +269,14 @@ import {
 
 import {
   type UsrInput,
-  type DeptModel,
+  type OrgModel,
   type RoleModel,
 } from "#/types";
 
 import {
-  getDeptList,
+  getOrgList,
   getRoleList,
 } from "./Api";
-
-import {
-  getDeptTree,
-} from "@/views/base/dept/Api";
 
 const emit = defineEmits<
   (
@@ -300,7 +302,7 @@ type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 
 let dialogModel = $ref({
-  dept_ids: [ ],
+  org_ids: [ ],
   role_ids: [ ],
 } as UsrInput);
 
@@ -331,10 +333,10 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("用户名") }`,
       },
     ],
-    default_dept_id: [
+    default_org_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("默认部门") }`,
+        message: `${ await nsAsync("请选择") } ${ n("默认组织") }`,
       },
     ],
     is_locked: [
@@ -487,7 +489,7 @@ async function onRefresh() {
     dialogModel = {
       ...data,
     };
-    old_default_dept_id = dialogModel.default_dept_id;
+    old_default_org_id = dialogModel.default_org_id;
   }
 }
 
@@ -611,33 +613,33 @@ async function onSave() {
   }
 }
 
-let default_dept_idRef = $ref<InstanceType<typeof CustomSelect>>();
-let old_default_dept_id: string | null | undefined = undefined;
+let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+let old_default_org_id: string | null | undefined = undefined;
 
-async function getDeptListApi() {
-  let dept_ids = dialogModel.dept_ids || [ ];
-  if (!dialogModel.default_dept_id && old_default_dept_id) {
-    if (dept_ids.includes(old_default_dept_id)) {
-      dialogModel.default_dept_id = old_default_dept_id;
+async function getOrgListApi() {
+  let org_ids = dialogModel.org_ids || [ ];
+  if (!dialogModel.default_org_id && old_default_org_id) {
+    if (org_ids.includes(old_default_org_id)) {
+      dialogModel.default_org_id = old_default_org_id;
     }
   }
-  if (!dialogModel.default_dept_id || !dept_ids.includes(dialogModel.default_dept_id)) {
-    dialogModel.default_dept_id = undefined;
+  if (!dialogModel.default_org_id || !org_ids.includes(dialogModel.default_org_id)) {
+    dialogModel.default_org_id = undefined;
   }
-  let data = await getDeptList();
+  let data = await getOrgList();
   data = data.filter((item) => {
-    return dept_ids.includes(item.id);
+    return org_ids.includes(item.id);
   });
   return data;
 }
 
 watch(
-  () => dialogModel.dept_ids,
+  () => dialogModel.org_ids,
   async () => {
-    if (!default_dept_idRef) {
+    if (!default_org_idRef) {
       return;
     }
-    await default_dept_idRef.refresh();
+    await default_org_idRef.refresh();
   },
 );
 
@@ -669,10 +671,10 @@ async function initI18nsEfc() {
     "头像",
     "名称",
     "用户名",
-    "默认部门",
+    "默认组织",
     "锁定",
     "启用",
-    "拥有部门",
+    "拥有组织",
     "拥有角色",
     "备注",
   ];

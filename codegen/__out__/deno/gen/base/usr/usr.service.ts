@@ -119,6 +119,7 @@ export async function updateById(
   if (is_locked) {
     throw await ns("不能修改已经锁定的数据");
   }
+  
   const data = await usrDao.updateById(id, input);
   return data;
 }
@@ -143,6 +144,7 @@ export async function deleteByIds(
   if (lockedIds.length > 0 && lockedIds.length === ids.length) {
     throw await ns("不能删除已经锁定的数据");
   }
+  
   const data = await usrDao.deleteByIds(ids);
   return data;
 }

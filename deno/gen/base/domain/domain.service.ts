@@ -112,6 +112,7 @@ export async function updateById(
   id: string,
   input: DomainInput,
 ): Promise<string> {
+  
   const data = await domainDao.updateById(id, input);
   return data;
 }
@@ -124,6 +125,7 @@ export async function updateById(
 export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
   const data = await domainDao.deleteByIds(ids);
   return data;
 }

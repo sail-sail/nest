@@ -112,6 +112,7 @@ export async function updateById(
   id: string,
   input: I18Ninput,
 ): Promise<string> {
+  
   const data = await i18nDao.updateById(id, input);
   
   {
@@ -129,6 +130,7 @@ export async function updateById(
 export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
   const data = await i18nDao.deleteByIds(ids);
   
   {

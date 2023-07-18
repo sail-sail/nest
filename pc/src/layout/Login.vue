@@ -189,7 +189,7 @@ let model = $ref<MutationLoginArgs>({
   username: "",
   password: "",
   tenant_id: "",
-  dept_id: undefined,
+  org_id: undefined,
   lang,
 });
 
@@ -248,7 +248,7 @@ async function loginClk() {
     JSON.stringify({
       username: model.username,
       tenant_id: model.tenant_id,
-      dept_id: model.dept_id,
+      org_id: model.org_id,
     }),
   );
   usrStore.authorization = loginModel.authorization;

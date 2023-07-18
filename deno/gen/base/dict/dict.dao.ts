@@ -161,6 +161,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
+    search.is_sys = [ search.is_sys ];
+  }
+  if (search?.is_sys && search?.is_sys?.length > 0) {
+    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -297,10 +303,12 @@ export async function findAll(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -359,6 +367,16 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 系统字段
+    let is_sys_lbl = model.is_sys.toString();
+    if (model.is_sys !== undefined && model.is_sys !== null) {
+      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
+      if (dictItem) {
+        is_sys_lbl = dictItem.lbl;
+      }
+    }
+    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -388,6 +406,8 @@ export async function getFieldComments() {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    is_sys: await n("系统字段"),
+    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
@@ -622,10 +642,12 @@ export async function create(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]);
   
   
@@ -650,6 +672,14 @@ export async function create(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(model.is_sys_lbl) && model.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === model.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      model.is_sys = Number(val);
     }
   }
   
@@ -706,6 +736,9 @@ export async function create(
   if (model.update_time !== undefined) {
     sql += `,update_time`;
   }
+  if (model.is_sys !== undefined) {
+    sql += `,is_sys`;
+  }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
     sql += `,${ args.push(model.create_usr_id) }`;
@@ -741,6 +774,9 @@ export async function create(
   }
   if (model.update_time !== undefined) {
     sql += `,${ args.push(model.update_time) }`;
+  }
+  if (model.is_sys !== undefined) {
+    sql += `,${ args.push(model.is_sys) }`;
   }
   sql += `)`;
   
@@ -802,10 +838,12 @@ export async function updateById(
     typeDict, // 数据类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "dict_type",
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]);
   
   // 数据类型
@@ -829,6 +867,14 @@ export async function updateById(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(model.is_sys_lbl) && model.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === model.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      model.is_sys = Number(val);
     }
   }
   
@@ -882,6 +928,12 @@ export async function updateById(
   if (model.rem !== undefined) {
     if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_sys !== undefined) {
+    if (model.is_sys != oldModel.is_sys) {
+      sql += `is_sys = ${ args.push(model.is_sys) },`;
       updateFldNum++;
     }
   }

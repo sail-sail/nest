@@ -81,6 +81,8 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  // 是否有系统字段 is_sys
+  const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
@@ -106,18 +108,28 @@ async function getSchema0(
   if (tenant_idColumn) {
     records2.push(tenant_idColumn);
   }
-  const dept_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "dept_id");
-  if (dept_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "dept_id")) {
-    records2.push(dept_idColumn);
+  const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
+  if (org_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
+    records2.push(org_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
   if (is_deletedColumn) {
     records2.push(is_deletedColumn);
   }
+  if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "is_sys",
+      COLUMN_TYPE: "tinyint(1)",
+      DATA_TYPE: "tinyint",
+      COLUMN_COMMENT: "系统字段",
+      dict: "is_sys",
+      onlyCodegenDeno: true,
+    });
+  }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
-    if ([ "dept_id", "tenant_id", "is_deleted" ].includes(column_name)) {
+    if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;
     } else if ([ "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted"  ].includes(column_name)) {
@@ -186,6 +198,9 @@ async function getSchema0(
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
       }
+      if (item.align == null) {
+        item.align = "center";
+      }
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {
@@ -214,9 +229,13 @@ async function getSchema0(
       || (column_name === "att" || column_name.endsWith("_att"))
     ) {
       if (column_name === "img" || column_name.endsWith("_img")) {
-        item.isImg = true;
+        if (item.isImg == null) {
+          item.isImg = true;
+        }
       } else if (column_name === "att" || column_name.endsWith("_att")) {
-        item.isAtt = true;
+        if (item.isAtt == null) {
+          item.isAtt = true;
+        }
       }
       if (item.width == null) {
         let column_comment = item.COLUMN_COMMENT || "";

@@ -27,6 +27,10 @@ type DictbizDetailModel {
   order_by: Int!
   "备注"
   rem: String!
+  "系统字段"
+  is_sys: Int!
+  "系统字段"
+  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
 }
@@ -75,6 +79,10 @@ input DictbizDetailInput {
   order_by: Int
   "备注"
   rem: String
+  "系统字段"
+  is_sys: Int
+  "系统字段"
+  is_sys_lbl: String
 }
 input DictbizDetailSearch {
   "是否已删除"
@@ -101,6 +109,8 @@ input DictbizDetailSearch {
   "备注"
   rem: String
   rem_like: String
+  "系统字段"
+  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"

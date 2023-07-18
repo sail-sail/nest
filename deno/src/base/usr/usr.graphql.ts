@@ -4,7 +4,7 @@ import * as usrResolver from "./usr.resolver.ts";
 
 defineGraphql(usrResolver, /* GraphQL */`
 
-  type GetLoginInfoDeptIdModels {
+  type GetLoginInfoOrgIdModels {
     id: String!
     lbl: String!
   }
@@ -12,18 +12,18 @@ defineGraphql(usrResolver, /* GraphQL */`
   type GetLoginInfo {
     lbl: String!
     lang: String!
-    dept_id: String
-    dept_id_models: [GetLoginInfoDeptIdModels!]!
+    org_id: String
+    org_id_models: [GetLoginInfoOrgIdModels!]!
   }
   
   type LoginModel {
-    dept_id: String
+    org_id: String
     authorization: String!
   }
   
   type Mutation {
     "登录"
-    login(username: String!, password: String!, tenant_id: String!, dept_id: String, lang: String!): LoginModel!
+    login(username: String!, password: String!, tenant_id: String!, org_id: String, lang: String!): LoginModel!
     selectLang(lang: String!): String!
   }
   

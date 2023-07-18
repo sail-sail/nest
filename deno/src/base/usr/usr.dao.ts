@@ -26,7 +26,7 @@ export async function findLoginUsr(
   const sql = /*sql*/`
     select
       t.id,
-      t.default_dept_id
+      t.default_org_id
     from base_usr t
     where
       t.is_deleted = 0
@@ -34,32 +34,32 @@ export async function findLoginUsr(
       and t.username = ${ args.push(username) }
       and t.password = ${ args.push(password) }
       and t.tenant_id = ${ args.push(tenant_id) }
-    limit 1 
+    limit 1
   `;
-  const result = await queryOne<{
+  const model = await queryOne<{
     id: string,
-    default_dept_id: string,
+    default_org_id: string,
   }>(sql, args);
-  return result;
+  return model;
 }
 
-export async function getDeptIdsById(
+export async function getOrgIdsById(
   id: string,
 ) {
   const args = new QueryArgs();
   const sql = /*sql*/`
     select
-      t.dept_id
+      t.org_id
     from
-      base_usr_dept t
+      base_usr_org t
     where
       t.is_deleted = 0
       and t.usr_id = ${ args.push(id) }
   `;
   const result = await query<{
-    dept_id: string,
+    org_id: string,
   }>(sql, args);
-  return (result || [ ]).map((item) => item.dept_id);
+  return (result || [ ]).map((item) => item.org_id);
 }
 
 export async function getTenant_idByWx_usr() {

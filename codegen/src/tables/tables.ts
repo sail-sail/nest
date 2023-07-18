@@ -82,20 +82,6 @@ export default defineConfig({
         },
       },
       {
-        COLUMN_NAME: "usr_id",
-        require: true,
-        align: "left",
-        width: 140,
-      },
-      {
-        COLUMN_NAME: "expiration",
-        width: 140,
-      },
-      {
-        COLUMN_NAME: "max_usr_num",
-        width: 100,
-      },
-      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -197,11 +183,11 @@ export default defineConfig({
         isPassword: true,
       },
       {
-        COLUMN_NAME: "default_dept_id",
+        COLUMN_NAME: "default_org_id",
         width: 140,
         require: true,
         foreignKey: {
-          table: "dept",
+          table: "org",
           column: "id",
           lbl: "lbl",
           multiple: false,
@@ -222,15 +208,15 @@ export default defineConfig({
         COLUMN_NAME: "is_enabled",
       },
       {
-        COLUMN_NAME: "dept_ids",
-        COLUMN_COMMENT: "拥有部门",
+        COLUMN_NAME: "org_ids",
+        COLUMN_COMMENT: "拥有组织",
         require: false,
         search: true,
         width: 280,
         align: "left",
         foreignKey: {
           mod: "base",
-          table: "dept",
+          table: "org",
           column: "id",
           lbl: "lbl",
           multiple: true,
@@ -239,7 +225,7 @@ export default defineConfig({
             prop: "order_by",
             order: "ascending",
           },
-          selectType: "tree",
+          selectType: "select",
         },
       },
       {
@@ -699,6 +685,51 @@ export default defineConfig({
       },
     ],
   },
+  // 组织
+  base_org: {
+    opts: {
+      cache: true,
+      unique: [ "lbl" ],
+      defaultSort: {
+        prop: "order_by",
+        order: "ascending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 180,
+        align: "left",
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
   // 部门
   base_dept: {
     opts: {
@@ -708,13 +739,13 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
-      log: true,
       list_tree: true,
     },
     columns: [
       {
         COLUMN_NAME: "parent_id",
         foreignKey: {
+          mod: "base",
           table: "dept",
           column: "id",
           lbl: "lbl",
@@ -772,6 +803,11 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      sys_fields: [
+        "code",
+        "type",
+        "is_enabled",
+      ],
     },
     columns: [
       {

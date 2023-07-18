@@ -2,7 +2,6 @@
 <el-switch
   v-if="readonly !== true"
   class="custom_switch"
-  un-w="full"
   :set="0"
   v-bind="$attrs"
   :active-value="props.activeValue"

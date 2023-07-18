@@ -131,12 +131,12 @@ CREATE TABLE if not exists `base_usr_role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户角色';
 
------------------------------------------------------------------------------------------------- 用户部门
-drop table if exists `base_usr_dept`;
-CREATE TABLE if not exists `base_usr_dept` (
+------------------------------------------------------------------------------------------------ 用户组织
+drop table if exists `base_usr_org`;
+CREATE TABLE if not exists `base_usr_org` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
-  `dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -144,9 +144,9 @@ CREATE TABLE if not exists `base_usr_dept` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `dept_id`, `tenant_id`),
+  INDEX (`usr_id`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户部门';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户组织';
 
 ------------------------------------------------------------------------------------------------ 菜单
 drop table if exists `base_menu`;
@@ -155,12 +155,12 @@ CREATE TABLE if not exists `base_menu` (
   `type` varchar(10) NOT NULL DEFAULT 'pc' COMMENT '类型,dict:menu_type',
   `parent_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父菜单',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `route_path` varchar(255) NOT NULL DEFAULT '' COMMENT '路由',
+  `route_path` varchar(100) NOT NULL DEFAULT '' COMMENT '路由',
   `route_query` json COMMENT '参数',
   `is_lock` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_lock',
-  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
-  `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -176,9 +176,10 @@ CREATE TABLE if not exists `base_lang` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `code` varchar(10) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
-  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '启用,dict:is_enabled',
+  `is_lock` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_lock',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -315,16 +316,37 @@ CREATE TABLE if not exists `base_operation_record` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='操作记录';
 
+------------------------------------------------------------------------------------------------ 组织
+drop table if exists `base_org`;
+CREATE TABLE if not exists `base_org` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lbl`, `tenant_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='组织';
+
 ------------------------------------------------------------------------------------------------ 部门
 drop table if exists `base_dept`;
 CREATE TABLE if not exists `base_dept` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `parent_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父部门',
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
-  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
-  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
-  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -344,9 +366,10 @@ CREATE TABLE if not exists `base_dict` (
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `type` varchar(22) NOT NULL DEFAULT 'string' COMMENT '数据类型,dict:dict_type',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统字段,dict:is_sys',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -365,9 +388,10 @@ CREATE TABLE if not exists `base_dict_detail` (
   `lbl` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
   `val` varchar(255) NOT NULL DEFAULT '' COMMENT '值',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统字段,dict:is_sys',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -386,9 +410,10 @@ CREATE TABLE if not exists `base_dictbiz` (
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '名称',
   `type` varchar(22) NOT NULL DEFAULT 'string' COMMENT '数据类型,dict:dict_type',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统字段,dict:is_sys',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -408,9 +433,10 @@ CREATE TABLE if not exists `base_dictbiz_detail` (
   `lbl` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
   `val` varchar(255) NOT NULL DEFAULT '' COMMENT '值',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `rem` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统字段,dict:is_sys',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',

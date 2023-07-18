@@ -1,4 +1,4 @@
-import "./dept/dept.graphql.ts";
+import "./org/org.graphql.ts";
 import "./menu/menu.graphql.ts";
 import "./tenant/tenant.graphql.ts";
 import "./usr/usr.graphql.ts";

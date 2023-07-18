@@ -14,6 +14,8 @@ export interface DictbizSearch extends DictbizSearchType {
 }
 
 export interface DictbizModel extends DictbizModelType {
+  /** 系统字段 */
+  is_sys: number;
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
@@ -22,6 +24,8 @@ export interface DictbizModel extends DictbizModelType {
 }
 
 export interface DictbizInput extends DictbizInputType {
+  /** 系统字段 */
+  is_sys?: number;
   create_usr_id?: string;
   create_time?: string | null;
   update_usr_id?: string;
