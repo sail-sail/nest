@@ -22,9 +22,9 @@ pub struct MenuModel {
   /// 参数
   pub route_query: Option<String>,
   /// 锁定
-  pub is_lock: u8,
+  pub is_locked: u8,
   /// 锁定
-  pub is_lock_lbl: String,
+  pub is_locked_lbl: String,
   /// 所在租户
   pub tenant_ids: Vec<String>,
   /// 所在租户
@@ -75,8 +75,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 参数
     let route_query: Option<String> = row.try_get("route_query")?;
     // 锁定
-    let is_lock: u8 = row.try_get("is_lock")?;
-    let is_lock_lbl: String = is_lock.to_string();
+    let is_locked: u8 = row.try_get("is_locked")?;
+    let is_locked_lbl: String = is_locked.to_string();
     // 所在租户
     let tenant_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("tenant_ids")?;
     let tenant_ids = tenant_ids.unwrap_or_default().0;
@@ -121,8 +121,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       lbl,
       route_path,
       route_query,
-      is_lock,
-      is_lock_lbl,
+      is_locked,
+      is_locked_lbl,
       tenant_ids,
       tenant_ids_lbl,
       is_enabled,
@@ -162,9 +162,9 @@ pub struct MenuFieldComment {
   /// 参数
   pub route_query: String,
   /// 锁定
-  pub is_lock: String,
+  pub is_locked: String,
   /// 锁定
-  pub is_lock_lbl: String,
+  pub is_locked_lbl: String,
   /// 所在租户
   pub tenant_ids: String,
   /// 所在租户
@@ -218,7 +218,7 @@ pub struct MenuSearch {
   /// 参数
   pub route_query: Option<String>,
   /// 锁定
-  pub is_lock: Option<Vec<u8>>,
+  pub is_locked: Option<Vec<u8>>,
   /// 所在租户
   pub tenant_ids: Option<Vec<String>>,
   /// 所在租户
@@ -264,9 +264,9 @@ pub struct MenuInput {
   /// 参数
   pub route_query: Option<String>,
   /// 锁定
-  pub is_lock: Option<u8>,
+  pub is_locked: Option<u8>,
   /// 锁定
-  pub is_lock_lbl: Option<String>,
+  pub is_locked_lbl: Option<String>,
   /// 所在租户
   pub tenant_ids: Option<Vec<String>>,
   /// 所在租户
@@ -314,7 +314,7 @@ impl From<MenuInput> for MenuSearch {
       // 参数
       route_query: input.route_query,
       // 锁定
-      is_lock: input.is_lock.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 所在租户
       tenant_ids: input.tenant_ids,
       // 启用
