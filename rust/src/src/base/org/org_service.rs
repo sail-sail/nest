@@ -4,13 +4,13 @@ use crate::common::context::Ctx;
 
 use crate::gen::base::usr::usr_dao;
 
-pub async fn dept_login_select<'a>(
+pub async fn org_login_select<'a>(
   ctx: &mut impl Ctx<'a>,
-  dept_id: String,
+  org_id: String,
 ) -> Result<String> {
-  let dept_id2 = ctx.get_auth_dept_id();
-  if let Some(dept_id2) = dept_id2 {
-    if dept_id == dept_id2 {
+  let org_id2 = ctx.get_auth_org_id();
+  if let Some(org_id2) = org_id2 {
+    if org_id == org_id2 {
       return Ok("".to_owned());
     }
   }
@@ -18,18 +18,22 @@ pub async fn dept_login_select<'a>(
     .ok_or_else(|| 
       anyhow::anyhow!("auth_model.is_none()")
     )?;
-  let usr_model = usr_dao::find_by_id(ctx, auth_model.id.clone(), None).await?;
-  let dept_ids: Vec<String> = {
+  let usr_model = usr_dao::find_by_id(
+    ctx,
+    auth_model.id.clone(),
+    None,
+  ).await?;
+  let org_ids: Vec<String> = {
     if let Some(usr_model) = usr_model {
-      usr_model.dept_ids
+      usr_model.org_ids
     } else {
       vec![]
     }
   };
-  if !dept_ids.contains(&dept_id) {
-    return Err(anyhow::anyhow!("dept_id: {dept_id} dose not exit in login usr"));
+  if !org_ids.contains(&org_id) {
+    return Err(anyhow::anyhow!("org_id: {org_id} dose not exit in login usr"));
   }
-  auth_model.dept_id = dept_id.into();
+  auth_model.org_id = org_id.into();
   let token = auth_dao::get_token_by_auth_model(&auth_model)?;
   ctx.set_auth_token(token.clone().into());
   Ok(token)

@@ -1,4 +1,4 @@
-pub mod dept;
+pub mod org;
 pub mod dict_detail;
 pub mod dictbiz_detail;
 pub mod i18n;

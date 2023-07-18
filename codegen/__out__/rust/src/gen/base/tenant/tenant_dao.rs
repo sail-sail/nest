@@ -144,74 +144,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let usr_id: Vec<String> = match &search {
-      Some(item) => item.usr_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !usr_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(usr_id.len());
-        for item in usr_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and usr_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let usr_id_is_null: bool = match &search {
-      Some(item) => item.usr_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if usr_id_is_null {
-      where_query += &format!(" and usr_id_lbl.id is null");
-    }
-  }
-  {
-    let expiration: Vec<chrono::NaiveDate> = match &search {
-      Some(item) => item.expiration.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let expiration_gt: Option<chrono::NaiveDate> = match &expiration.len() {
-      0 => None,
-      _ => expiration[0].clone().into(),
-    };
-    let expiration_lt: Option<chrono::NaiveDate> = match &expiration.len() {
-      0 => None,
-      1 => None,
-      _ => expiration[1].clone().into(),
-    };
-    if let Some(expiration_gt) = expiration_gt {
-      where_query += &format!(" and t.expiration >= {}", args.push(expiration_gt.into()));
-    }
-    if let Some(expiration_lt) = expiration_lt {
-      where_query += &format!(" and t.expiration <= {}", args.push(expiration_lt.into()));
-    }
-  }
-  {
-    let max_usr_num: Vec<u32> = match &search {
-      Some(item) => item.max_usr_num.clone().unwrap_or_default(),
-      None => vec![],
-    };
-    let max_usr_num_gt: Option<u32> = match &max_usr_num.len() {
-      0 => None,
-      _ => max_usr_num[0].clone().into(),
-    };
-    let max_usr_num_lt: Option<u32> = match &max_usr_num.len() {
-      0 => None,
-      1 => None,
-      _ => max_usr_num[1].clone().into(),
-    };
-    if let Some(max_usr_num_gt) = max_usr_num_gt {
-      where_query += &format!(" and t.max_usr_num >= {}", args.push(max_usr_num_gt.into()));
-    }
-    if let Some(max_usr_num_lt) = max_usr_num_lt {
-      where_query += &format!(" and t.max_usr_num <= {}", args.push(max_usr_num_lt.into()));
-    }
-  }
-  {
     let is_locked: Vec<u8> = match &search {
       Some(item) => item.is_locked.clone().unwrap_or_default(),
       None => Default::default(),
@@ -425,8 +357,6 @@ fn get_from_query() -> &'static str {
       group by tenant_id
     ) _menu
       on _menu.tenant_id = t.id
-    left join base_usr usr_id_lbl
-      on usr_id_lbl.id = t.usr_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -463,7 +393,6 @@ pub async fn find_all<'a>(
       ,max(domain_ids_lbl) domain_ids_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
-      ,usr_id_lbl.lbl usr_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -593,11 +522,6 @@ pub async fn get_field_comments<'a>(
     domain_ids_lbl: n_route.n(ctx, "所属域名".to_owned(), None).await?,
     menu_ids: n_route.n(ctx, "菜单权限".to_owned(), None).await?,
     menu_ids_lbl: n_route.n(ctx, "菜单权限".to_owned(), None).await?,
-    usr_id: n_route.n(ctx, "租户管理员".to_owned(), None).await?,
-    usr_id_lbl: n_route.n(ctx, "租户管理员".to_owned(), None).await?,
-    expiration: n_route.n(ctx, "到期日".to_owned(), None).await?,
-    expiration_lbl: n_route.n(ctx, "到期日".to_owned(), None).await?,
-    max_usr_num: n_route.n(ctx, "最大用户数".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
@@ -878,27 +802,6 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 租户管理员
-  if input.usr_id.is_none() {
-    if is_not_empty_opt(&input.usr_id_lbl) && input.usr_id.is_none() {
-      input.usr_id_lbl = input.usr_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::base::usr::usr_dao::find_one(
-        ctx,
-        crate::gen::base::usr::usr_model::UsrSearch {
-          lbl: input.usr_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.usr_id = model.id.into();
-      }
-    }
-  }
-  
   Ok(input)
 }
 
@@ -967,24 +870,6 @@ pub async fn create<'a>(
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
-  }
-  // 租户管理员
-  if let Some(usr_id) = input.usr_id {
-    sql_fields += ",usr_id";
-    sql_values += ",?";
-    args.push(usr_id.into());
-  }
-  // 到期日
-  if let Some(expiration) = input.expiration {
-    sql_fields += ",expiration";
-    sql_values += ",?";
-    args.push(expiration.into());
-  }
-  // 最大用户数
-  if let Some(max_usr_num) = input.max_usr_num {
-    sql_fields += ",max_usr_num";
-    sql_values += ",?";
-    args.push(max_usr_num.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -1109,24 +994,6 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
-  }
-  // 租户管理员
-  if let Some(usr_id) = input.usr_id {
-    field_num += 1;
-    sql_fields += ",usr_id = ?";
-    args.push(usr_id.into());
-  }
-  // 到期日
-  if let Some(expiration) = input.expiration {
-    field_num += 1;
-    sql_fields += ",expiration = ?";
-    args.push(expiration.into());
-  }
-  // 最大用户数
-  if let Some(max_usr_num) = input.max_usr_num {
-    field_num += 1;
-    sql_fields += ",max_usr_num = ?";
-    args.push(max_usr_num.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

@@ -43,6 +43,10 @@ pub struct DictbizModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 系统字段
+  pub is_sys: i8,
+  /// 系统字段
+  pub is_sys_lbl: String,
   /// 是否已删除
   is_deleted: u8,
 }
@@ -88,6 +92,9 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
       Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
+    // 系统字段
+    let is_sys: i8 = row.try_get("is_sys")?;
+    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -111,6 +118,8 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
+      is_sys,
+      is_sys_lbl,
       is_deleted,
     };
     
@@ -157,6 +166,10 @@ pub struct DictbizFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 系统字段
+  pub is_sys: String,
+  /// 系统字段
+  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -199,6 +212,8 @@ pub struct DictbizSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 系统字段
+  pub is_sys: Option<Vec<i8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -241,6 +256,10 @@ pub struct DictbizInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+  /// 系统字段
+  pub is_sys: Option<i8>,
+  /// 系统字段
+  pub is_sys_lbl: Option<String>,
 }
 
 impl From<DictbizInput> for DictbizSearch {
@@ -272,6 +291,8 @@ impl From<DictbizInput> for DictbizSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 系统字段
+      is_sys: input.is_sys.map(|x| vec![x.into()]),
       ..Default::default()
     }
   }

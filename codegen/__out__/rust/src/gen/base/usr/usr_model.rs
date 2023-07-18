@@ -15,10 +15,10 @@ pub struct UsrModel {
   pub username: String,
   /// 密码
   pub password: String,
-  /// 默认部门
-  pub default_dept_id: String,
-  /// 默认部门
-  pub default_dept_id_lbl: String,
+  /// 默认组织
+  pub default_org_id: String,
+  /// 默认组织
+  pub default_org_id_lbl: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -27,10 +27,10 @@ pub struct UsrModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 拥有部门
-  pub dept_ids: Vec<String>,
-  /// 拥有部门
-  pub dept_ids_lbl: Vec<String>,
+  /// 拥有组织
+  pub org_ids: Vec<String>,
+  /// 拥有组织
+  pub org_ids_lbl: Vec<String>,
   /// 拥有角色
   pub role_ids: Vec<String>,
   /// 拥有角色
@@ -53,21 +53,21 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let username: String = row.try_get("username")?;
     // 密码
     let password = "".to_owned();
-    // 默认部门
-    let default_dept_id: String = row.try_get("default_dept_id")?;
-    let default_dept_id_lbl: Option<String> = row.try_get("default_dept_id_lbl")?;
-    let default_dept_id_lbl = default_dept_id_lbl.unwrap_or_default();
+    // 默认组织
+    let default_org_id: String = row.try_get("default_org_id")?;
+    let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
+    let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    // 拥有部门
-    let dept_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids")?;
-    let dept_ids = dept_ids.unwrap_or_default().0;
-    let dept_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids_lbl")?;
-    let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
+    // 拥有组织
+    let org_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids")?;
+    let org_ids = org_ids.unwrap_or_default().0;
+    let org_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids_lbl")?;
+    let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
     // 拥有角色
     let role_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
@@ -84,14 +84,14 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       lbl,
       username,
       password,
-      default_dept_id,
-      default_dept_id_lbl,
+      default_org_id,
+      default_org_id_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
-      dept_ids,
-      dept_ids_lbl,
+      org_ids,
+      org_ids_lbl,
       role_ids,
       role_ids_lbl,
       rem,
@@ -111,10 +111,10 @@ pub struct UsrFieldComment {
   pub lbl: String,
   /// 用户名
   pub username: String,
-  /// 默认部门
-  pub default_dept_id: String,
-  /// 默认部门
-  pub default_dept_id_lbl: String,
+  /// 默认组织
+  pub default_org_id: String,
+  /// 默认组织
+  pub default_org_id_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -123,10 +123,10 @@ pub struct UsrFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 拥有部门
-  pub dept_ids: String,
-  /// 拥有部门
-  pub dept_ids_lbl: String,
+  /// 拥有组织
+  pub org_ids: String,
+  /// 拥有组织
+  pub org_ids_lbl: String,
   /// 拥有角色
   pub role_ids: String,
   /// 拥有角色
@@ -159,18 +159,18 @@ pub struct UsrSearch {
   pub password: Option<String>,
   /// 密码
   pub password_like: Option<String>,
-  /// 默认部门
-  pub default_dept_id: Option<Vec<String>>,
-  /// 默认部门
-  pub default_dept_id_is_null: Option<bool>,
+  /// 默认组织
+  pub default_org_id: Option<Vec<String>>,
+  /// 默认组织
+  pub default_org_id_is_null: Option<bool>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
-  /// 拥有部门
-  pub dept_ids: Option<Vec<String>>,
-  /// 拥有部门
-  pub dept_ids_is_null: Option<bool>,
+  /// 拥有组织
+  pub org_ids: Option<Vec<String>>,
+  /// 拥有组织
+  pub org_ids_is_null: Option<bool>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   /// 拥有角色
@@ -193,10 +193,10 @@ pub struct UsrInput {
   pub username: Option<String>,
   /// 密码
   pub password: Option<String>,
-  /// 默认部门
-  pub default_dept_id: Option<String>,
-  /// 默认部门
-  pub default_dept_id_lbl: Option<String>,
+  /// 默认组织
+  pub default_org_id: Option<String>,
+  /// 默认组织
+  pub default_org_id_lbl: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
@@ -205,10 +205,10 @@ pub struct UsrInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 拥有部门
-  pub dept_ids: Option<Vec<String>>,
-  /// 拥有部门
-  pub dept_ids_lbl: Option<Vec<String>>,
+  /// 拥有组织
+  pub org_ids: Option<Vec<String>>,
+  /// 拥有组织
+  pub org_ids_lbl: Option<Vec<String>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   /// 拥有角色
@@ -232,14 +232,14 @@ impl From<UsrInput> for UsrSearch {
       username: input.username,
       // 密码
       password: input.password,
-      // 默认部门
-      default_dept_id: input.default_dept_id.map(|x| vec![x.into()]),
+      // 默认组织
+      default_org_id: input.default_org_id.map(|x| vec![x.into()]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 拥有部门
-      dept_ids: input.dept_ids,
+      // 拥有组织
+      org_ids: input.org_ids,
       // 拥有角色
       role_ids: input.role_ids,
       // 备注

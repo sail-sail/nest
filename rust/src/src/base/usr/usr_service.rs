@@ -15,7 +15,7 @@ use crate::gen::base::usr::usr_model::UsrSearch;
 
 use super::usr_model::{
   GetLoginInfo,
-  GetLoginInfoDeptIdModel,
+  GetLoginInfoorgIdModel,
 };
 
 pub async fn login<'a>(
@@ -23,7 +23,7 @@ pub async fn login<'a>(
   username: String,
   password: String,
   tenant_id: String,
-  mut dept_id: Option<String>,
+  mut org_id: Option<String>,
   lang: String,
 ) -> Result<Login> {
   if username.is_empty() || password.is_empty() {
@@ -56,20 +56,20 @@ pub async fn login<'a>(
     return Err(anyhow::anyhow!("用户已被禁用"));
   }
   
-  let dept_ids = usr_model.dept_ids;
+  let org_ids = usr_model.org_ids;
   
-  if dept_id.is_none() {
-    if !usr_model.default_dept_id.is_empty() {
-      dept_id = usr_model.default_dept_id.into();
+  if org_id.is_none() {
+    if !usr_model.default_org_id.is_empty() {
+      org_id = usr_model.default_org_id.into();
     } else {
-      if dept_ids.is_empty() {
+      if org_ids.is_empty() {
         return Err(anyhow::anyhow!("用户没有部门"));
       }
-      dept_id = dept_ids[0].clone().into();
+      org_id = org_ids[0].clone().into();
     }
   }
   
-  let dept_id: String = dept_id.unwrap();
+  let org_id: String = org_id.unwrap();
   
   let now = ctx.get_now();
   let server_tokentimeout = ctx.get_server_tokentimeout();
@@ -78,7 +78,7 @@ pub async fn login<'a>(
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_model.id.into(),
     tenant_id: tenant_id.into(),
-    dept_id: dept_id.clone().into(),
+    org_id: org_id.clone().into(),
     lang,
     exp,
     ..Default::default()
@@ -86,7 +86,7 @@ pub async fn login<'a>(
   
   return Ok(Login {
     authorization,
-    dept_id,
+    org_id,
   });
 }
 
@@ -134,16 +134,16 @@ pub async fn get_login_info<'a>(
   
   let usr_model = usr_model.unwrap();
   
-  let dept_ids = usr_model.dept_ids;
-  let dept_ids_lbl = usr_model.dept_ids_lbl;
+  let org_ids = usr_model.org_ids;
+  let org_ids_lbl = usr_model.org_ids_lbl;
   
-  let dept_id = ctx.get_auth_dept_id();
-  if dept_id.is_none() {
+  let org_id = ctx.get_auth_org_id();
+  if org_id.is_none() {
     return Err(anyhow::anyhow!("未登录"));
   }
   
-  let dept_id_models: Vec<GetLoginInfoDeptIdModel> = dept_ids.iter().zip(dept_ids_lbl.iter()).map(|(id, lbl)| {
-    GetLoginInfoDeptIdModel {
+  let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids.iter().zip(org_ids_lbl.iter()).map(|(id, lbl)| {
+    GetLoginInfoorgIdModel {
       id: id.into(),
       lbl: lbl.into(),
     }
@@ -152,8 +152,8 @@ pub async fn get_login_info<'a>(
   Ok(GetLoginInfo {
     lbl: usr_model.lbl,
     lang: auth_model.lang,
-    dept_id,
-    dept_id_models,
+    org_id,
+    org_id_models,
   })
   
 }

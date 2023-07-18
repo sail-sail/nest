@@ -3,22 +3,21 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::src::base::permit::permit_service::use_permit;
 
-use super::dept_model::*;
-use super::dept_service;
+use super::org_model::*;
+use super::org_dao;
 
 /// 根据搜索条件和分页查找数据
 #[instrument(skip(ctx))]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DeptSearch>,
+  search: Option<OrgSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<DeptModel>> {
+) -> Result<Vec<OrgModel>> {
   
-  let res = dept_service::find_all(
+  let res = org_dao::find_all(
     ctx,
     search,
     page,
@@ -33,11 +32,11 @@ pub async fn find_all<'a>(
 #[instrument(skip(ctx))]
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DeptSearch>,
+  search: Option<OrgSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = dept_service::find_count(
+  let res = org_dao::find_count(
     ctx,
     search,
     options,
@@ -50,12 +49,12 @@ pub async fn find_count<'a>(
 #[instrument(skip(ctx))]
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DeptSearch>,
+  search: Option<OrgSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<DeptModel>> {
+) -> Result<Option<OrgModel>> {
   
-  let model = dept_service::find_one(
+  let model = org_dao::find_one(
     ctx,
     search,
     sort,
@@ -71,9 +70,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<DeptModel>> {
+) -> Result<Option<OrgModel>> {
   
-  let model = dept_service::find_by_id(
+  let model = org_dao::find_by_id(
     ctx,
     id,
     options,
@@ -87,17 +86,11 @@ pub async fn find_by_id<'a>(
 #[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: DeptInput,
+  input: OrgInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  let id = dept_service::create(
+  let id = org_dao::create(
     ctx,
     input,
     options,
@@ -116,7 +109,7 @@ pub async fn update_tenant_by_id<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = dept_service::update_tenant_by_id(
+  let num = org_dao::update_tenant_by_id(
     ctx,
     id,
     tenant_id,
@@ -132,17 +125,11 @@ pub async fn update_tenant_by_id<'a>(
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  input: DeptInput,
+  input: OrgInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let res = dept_service::update_by_id(
+  let res = org_dao::update_by_id(
     ctx,
     id,
     input,
@@ -161,13 +148,7 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "delete".to_owned(),
-  ).await?;
-  
-  let num = dept_service::delete_by_ids(
+  let num = org_dao::delete_by_ids(
     ctx,
     ids,
     options,
@@ -186,7 +167,7 @@ pub async fn get_is_enabled_by_id<'a>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = dept_service::get_is_enabled_by_id(
+  let is_enabled = org_dao::get_is_enabled_by_id(
     ctx,
     id,
     options,
@@ -195,25 +176,20 @@ pub async fn get_is_enabled_by_id<'a>(
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或禁用数据
+/// 根据 ids 启用或者禁用数据
+#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn enable_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
-  is_enabled: u8,
+  is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "enable".to_owned(),
-  ).await?;
-  
-  let num = dept_service::enable_by_ids(
+  let num = org_dao::enable_by_ids(
     ctx,
     ids,
-    is_enabled,
+    is_locked,
     options,
   ).await?;
   
@@ -231,7 +207,7 @@ pub async fn get_is_locked_by_id<'a>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_locked = dept_service::get_is_locked_by_id(
+  let is_locked = org_dao::get_is_locked_by_id(
     ctx,
     id,
     options,
@@ -240,7 +216,7 @@ pub async fn get_is_locked_by_id<'a>(
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或解锁数据
+/// 根据 ids 锁定或者解锁数据
 #[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn lock_by_ids<'a>(
@@ -250,13 +226,7 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "lock".to_owned(),
-  ).await?;
-  
-  let num = dept_service::lock_by_ids(
+  let num = org_dao::lock_by_ids(
     ctx,
     ids,
     is_locked,
@@ -270,9 +240,9 @@ pub async fn lock_by_ids<'a>(
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   options: Option<Options>,
-) -> Result<DeptFieldComment> {
+) -> Result<OrgFieldComment> {
   
-  let comments = dept_service::get_field_comments(
+  let comments = org_dao::get_field_comments(
     ctx,
     options,
   ).await?;
@@ -289,13 +259,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "delete".to_owned(),
-  ).await?;
-  
-  let num = dept_service::revert_by_ids(
+  let num = org_dao::revert_by_ids(
     ctx,
     ids,
     options,
@@ -313,13 +277,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/dept".to_owned(),
-    "force_delete".to_owned(),
-  ).await?;
-  
-  let num = dept_service::force_delete_by_ids(
+  let num = org_dao::force_delete_by_ids(
     ctx,
     ids,
     options,
@@ -329,12 +287,13 @@ pub async fn force_delete_by_ids<'a>(
 }
 
 /// 查找 order_by 字段的最大值
+#[instrument(skip(ctx))]
 pub async fn find_last_order_by<'a>(
   ctx: &mut impl Ctx<'a>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = dept_service::find_last_order_by(
+  let res = org_dao::find_last_order_by(
     ctx,
     options,
   ).await?;

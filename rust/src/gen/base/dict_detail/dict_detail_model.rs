@@ -27,6 +27,10 @@ pub struct DictDetailModel {
   pub order_by: u32,
   /// 备注
   pub rem: String,
+  /// 系统字段
+  pub is_sys: i8,
+  /// 系统字段
+  pub is_sys_lbl: String,
   /// 是否已删除
   is_deleted: u8,
 }
@@ -53,6 +57,9 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 系统字段
+    let is_sys: i8 = row.try_get("is_sys")?;
+    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -68,6 +75,8 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
       is_enabled_lbl,
       order_by,
       rem,
+      is_sys,
+      is_sys_lbl,
       is_deleted,
     };
     
@@ -98,6 +107,10 @@ pub struct DictDetailFieldComment {
   pub order_by: String,
   /// 备注
   pub rem: String,
+  /// 系统字段
+  pub is_sys: String,
+  /// 系统字段
+  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -128,6 +141,8 @@ pub struct DictDetailSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
+  /// 系统字段
+  pub is_sys: Option<Vec<i8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -154,6 +169,10 @@ pub struct DictDetailInput {
   pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
+  /// 系统字段
+  pub is_sys: Option<i8>,
+  /// 系统字段
+  pub is_sys_lbl: Option<String>,
 }
 
 impl From<DictDetailInput> for DictDetailSearch {
@@ -176,6 +195,8 @@ impl From<DictDetailInput> for DictDetailSearch {
       order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 备注
       rem: input.rem,
+      // 系统字段
+      is_sys: input.is_sys.map(|x| vec![x.into()]),
       ..Default::default()
     }
   }

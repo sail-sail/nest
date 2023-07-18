@@ -4,17 +4,11 @@ use async_graphql::{SimpleObject, InputObject};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DictbizModel {
+pub struct OrgModel {
   /// ID
   pub id: String,
-  /// 编码
-  pub code: String,
   /// 名称
   pub lbl: String,
-  /// 数据类型
-  pub r#type: String,
-  /// 数据类型
-  pub r#type_lbl: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -23,10 +17,10 @@ pub struct DictbizModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 排序
   pub order_by: u32,
+  /// 备注
+  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -43,35 +37,26 @@ pub struct DictbizModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: i8,
-  /// 系统字段
-  pub is_sys_lbl: String,
   /// 是否已删除
   is_deleted: u8,
 }
 
-impl FromRow<'_, MySqlRow> for DictbizModel {
+impl FromRow<'_, MySqlRow> for OrgModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    // 编码
-    let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 数据类型
-    let r#type: String = row.try_get("type")?;
-    let type_lbl: String = r#type.to_string();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    // 备注
-    let rem: String = row.try_get("rem")?;
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
+    // 备注
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -92,24 +77,18 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
       Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
-    // 系统字段
-    let is_sys: i8 = row.try_get("is_sys")?;
-    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       id,
-      code,
       lbl,
-      r#type,
-      type_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
-      rem,
       order_by,
+      rem,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -118,8 +97,6 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
-      is_sys,
-      is_sys_lbl,
       is_deleted,
     };
     
@@ -129,15 +106,9 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DictbizFieldComment {
-  /// 编码
-  pub code: String,
+pub struct OrgFieldComment {
   /// 名称
   pub lbl: String,
-  /// 数据类型
-  pub r#type: String,
-  /// 数据类型
-  pub r#type_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -146,10 +117,10 @@ pub struct DictbizFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 排序
   pub order_by: String,
+  /// 备注
+  pub rem: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -166,40 +137,30 @@ pub struct DictbizFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
-  /// 系统字段
-  pub is_sys: String,
-  /// 系统字段
-  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DictbizSearch {
+pub struct OrgSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
   #[graphql(skip)]
   pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
-  /// 编码
-  pub code: Option<String>,
-  /// 编码
-  pub code_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
-  /// 数据类型
-  pub r#type: Option<Vec<String>>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 排序
-  pub order_by: Option<Vec<u32>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   /// 创建人
@@ -212,22 +173,14 @@ pub struct DictbizSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
-  /// 系统字段
-  pub is_sys: Option<Vec<i8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DictbizInput {
+pub struct OrgInput {
   pub id: Option<String>,
-  /// 编码
-  pub code: Option<String>,
   /// 名称
   pub lbl: Option<String>,
-  /// 数据类型
-  pub r#type: Option<String>,
-  /// 数据类型
-  pub type_lbl: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
@@ -236,10 +189,10 @@ pub struct DictbizInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
   /// 排序
   pub order_by: Option<u32>,
+  /// 备注
+  pub rem: Option<String>,
   /// 创建人
   pub create_usr_id: Option<String>,
   /// 创建人
@@ -256,33 +209,25 @@ pub struct DictbizInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-  /// 系统字段
-  pub is_sys: Option<i8>,
-  /// 系统字段
-  pub is_sys_lbl: Option<String>,
 }
 
-impl From<DictbizInput> for DictbizSearch {
-  fn from(input: DictbizInput) -> Self {
+impl From<OrgInput> for OrgSearch {
+  fn from(input: OrgInput) -> Self {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
       tenant_id: None,
       is_deleted: None,
-      // 编码
-      code: input.code,
       // 名称
       lbl: input.lbl,
-      // 数据类型
-      r#type: input.r#type.map(|x| vec![x.into()]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 备注
-      rem: input.rem,
       // 排序
       order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 备注
+      rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
       // 创建时间
@@ -291,8 +236,6 @@ impl From<DictbizInput> for DictbizSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
-      // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x.into()]),
       ..Default::default()
     }
   }
