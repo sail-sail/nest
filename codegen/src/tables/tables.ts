@@ -577,30 +577,25 @@ export default defineConfig({
         require: true,
         search: true,
         width: 140,
+        align: "left",
       },
       {
         COLUMN_NAME: "val",
         search: true,
         width: 140,
-      },
-      {
-        COLUMN_NAME: "order_by",
-        sortable: true,
-        width: 100,
-      },
-      {
-        COLUMN_NAME: "is_enabled",
-        require: true,
-        width: 60,
-      },
-      {
-        COLUMN_NAME: "rem",
-        width: 180,
         align: "left",
-        isTextarea: true,
       },
       {
         COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "version",

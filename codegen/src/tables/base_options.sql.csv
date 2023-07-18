@@ -1,2 +1,2 @@
-id,lbl,ky,val,order_by,is_locked
-YsIrb3JLTd6xl2VjV5upuw,国际化版本号,i18n_version,1,1,1
+id,lbl,ky,val,order_by,is_locked,is_sys
+YsIrb3JLTd6xl2VjV5upuw,国际化版本号,i18n_version,1,1,1,1
