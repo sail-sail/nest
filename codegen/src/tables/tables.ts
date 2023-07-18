@@ -295,7 +295,7 @@ export default defineConfig({
         width: 160,
       },
       {
-        COLUMN_NAME: "is_lock",
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "tenant_ids",
