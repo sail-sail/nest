@@ -22,9 +22,9 @@ type MenuModel {
   "参数"
   route_query: String
   "锁定"
-  is_lock: Int!
+  is_locked: Int!
   "锁定"
-  is_lock_lbl: String
+  is_locked_lbl: String
   "所在租户"
   tenant_ids: [String!]
   "所在租户"
@@ -72,9 +72,9 @@ type MenuFieldComment {
   "参数"
   route_query: String!
   "锁定"
-  is_lock: String!
+  is_locked: String!
   "锁定"
-  is_lock_lbl: String!
+  is_locked_lbl: String!
   "所在租户"
   tenant_ids: String!
   "所在租户"
@@ -122,9 +122,9 @@ input MenuInput {
   "参数"
   route_query: String
   "锁定"
-  is_lock: Int
+  is_locked: Int
   "锁定"
-  is_lock_lbl: String
+  is_locked_lbl: String
   "所在租户"
   tenant_ids: [String!]
   "所在租户"
@@ -176,7 +176,7 @@ input MenuSearch {
   route_query: String
   route_query_like: String
   "锁定"
-  is_lock: [Int!]
+  is_locked: [Int!]
   "所在租户"
   tenant_ids: [String!]
   tenant_ids_is_null: Boolean
@@ -221,6 +221,8 @@ type Mutation {
   deleteByIdsMenu(ids: [String!]!): Int!
   "根据 ids 启用或者禁用数据"
   enableByIdsMenu(ids: [String!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsMenu(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsMenu(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"
