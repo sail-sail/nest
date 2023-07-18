@@ -2,7 +2,7 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -25,7 +25,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
 }
 const tenant_id_column = columns.find((column) => column.COLUMN_NAME === "tenant_id");
-const dept_id_column = columns.find((column) => column.COLUMN_NAME === "dept_id");
+const org_id_column = columns.find((column) => column.COLUMN_NAME === "org_id");
 #>import {
   type SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -42,9 +42,9 @@ export interface <#=searchName#> extends <#=searchName#>Type {<#
   tenant_id?: string | null;<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
-  dept_id?: string | null;<#
+  org_id?: string | null;<#
   }
   #>
   $extra?: SearchExtra[];
@@ -62,7 +62,7 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "dept_id",
+      "org_id",
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
@@ -138,9 +138,9 @@ export interface <#=modelName#> extends <#=modelName#>Type {<#
   tenant_id?: string | null;<#
   }
   #><#
-  if (hasDeptId && dept_id_column.ignoreCodegen) {
+  if (hasOrgId && org_id_column.ignoreCodegen) {
   #>
-  dept_id?: string | null;<#
+  org_id?: string | null;<#
   }
   #>
 }
@@ -157,7 +157,7 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "dept_id",
+      "org_id",
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
@@ -233,9 +233,9 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   tenant_id?: string | null;<#
   }
   #><#
-  if (hasDeptId && dept_id_column.ignoreCodegen) {
+  if (hasOrgId && org_id_column.ignoreCodegen) {
   #>
-  dept_id?: string | null;<#
+  org_id?: string | null;<#
   }
   #>
 }

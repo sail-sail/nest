@@ -81,7 +81,7 @@
 <script lang="ts" setup>
 import {
   type TreeOptionProps,
-} from "element-plus/lib/components/tree/src/tree.type";
+} from "element-plus/es/components/tree/src/tree.type";
 
 import {
   type ExtractPropTypes,

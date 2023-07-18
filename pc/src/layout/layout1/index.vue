@@ -103,7 +103,7 @@
         un-m="r-4"
       >
         <template
-          v-if="loginInfo && loginInfo.dept_id_models"
+          v-if="loginInfo && loginInfo.org_id_models"
         >
           <el-dropdown
             trigger="click"
@@ -113,14 +113,14 @@
               un-cursor-pointer
               un-whitespace-nowrap
             >
-              {{ loginInfo.dept_id_models.find(item => item.id === loginInfo?.dept_id)?.lbl || '' }}
+              {{ loginInfo.org_id_models.find(item => item.id === loginInfo?.org_id)?.lbl || '' }}
             </span>
             <template #dropdown>
               <el-dropdown-menu
                 un-whitespace-nowrap
               >
                 <el-dropdown-item
-                  v-for="item of loginInfo.dept_id_models"
+                  v-for="item of loginInfo.org_id_models"
                   :key="item.id"
                   @click="deptSelectClk(item.id)"
                 >
@@ -483,17 +483,17 @@ async function selectLangClk(lang: string) {
   }
 }
 
-async function deptSelectClk(dept_id: string) {
+async function deptSelectClk(org_id: string) {
   if (!loginInfo) {
     return;
   }
-  loginInfo.dept_id = dept_id;
+  loginInfo.org_id = org_id;
   const token = await deptLoginSelect({
-    dept_id,
+    org_id,
   });
   if (token) {
     if (usrStore.loginInfo) {
-      usrStore.loginInfo.dept_id = dept_id;
+      usrStore.loginInfo.org_id = org_id;
     }
     await usrStore.login(token);
   }

@@ -81,8 +81,8 @@ export async function getLoginInfo(
         getLoginInfo {
           lbl
           lang
-          dept_id
-          dept_id_models {
+          org_id
+          org_id_models {
             id
             lbl
           }
@@ -115,21 +115,21 @@ export async function getUsrPermits(
 
 export async function deptLoginSelect(
   variables: {
-    dept_id: string;
+    org_id: string;
   },
   opt?: GqlOpt,
 ) {
   const data: {
-    deptLoginSelect: Mutation["deptLoginSelect"];
+    orgLoginSelect: Mutation["orgLoginSelect"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($dept_id: String!) {
-        deptLoginSelect(dept_id: $dept_id)
+      mutation($org_id: String!) {
+        orgLoginSelect(org_id: $org_id)
       }
     `,
     variables,
   }, opt);
-  return data.deptLoginSelect;
+  return data.orgLoginSelect;
 }
 
 /**

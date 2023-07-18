@@ -123,6 +123,7 @@
               v-model="dialogModel.begin_time"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
               :readonly="isReadonly"
             ></CustomDatePicker>
@@ -138,6 +139,7 @@
               v-model="dialogModel.end_time"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
               :readonly="isReadonly"
             ></CustomDatePicker>

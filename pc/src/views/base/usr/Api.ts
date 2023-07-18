@@ -7,7 +7,7 @@ import {
 } from "#/types";
 
 import {
-  type DeptSearch,
+  type OrgSearch,
   type RoleSearch,
 } from "#/types";
 
@@ -35,14 +35,14 @@ export async function findAll(
           img
           lbl
           username
-          default_dept_id
-          default_dept_id_lbl
+          default_org_id
+          default_org_id_lbl
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
-          dept_ids
-          dept_ids_lbl
+          org_ids
+          org_ids_lbl
           role_ids
           role_ids_lbl
           rem
@@ -165,14 +165,14 @@ export async function findById(
           lbl
           username
           password
-          default_dept_id
-          default_dept_id_lbl
+          default_org_id
+          default_org_id_lbl
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
-          dept_ids
-          dept_ids_lbl
+          org_ids
+          org_ids_lbl
           role_ids
           role_ids_lbl
           rem
@@ -323,18 +323,18 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllDept(
-  search?: DeptSearch,
+export async function findAllOrg(
+  search?: OrgSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllDept: Query["findAllDept"];
+    findAllOrg: Query["findAllOrg"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllDept(search: $search, page: $page, sort: $sort) {
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -346,12 +346,12 @@ export async function findAllDept(
       sort,
     },
   }, opt);
-  const res = data.findAllDept;
+  const res = data.findAllOrg;
   return res;
 }
 
-export async function getDeptList() {
-  const data = await findAllDept(
+export async function getOrgList() {
+  const data = await findAllOrg(
     undefined,
     {
     },
@@ -413,21 +413,6 @@ export async function getRoleList() {
   return data;
 }
 
-export async function getDeptTree() {
-  const data = await findDeptTree(
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
  * 导出Excel
  */
@@ -455,14 +440,14 @@ export function useExportExcel(routePath: string) {
             lbl
             username
             password
-            default_dept_id
-            default_dept_id_lbl
+            default_org_id
+            default_org_id_lbl
             is_locked
             is_locked_lbl
             is_enabled
             is_enabled_lbl
-            dept_ids
-            dept_ids_lbl
+            org_ids
+            org_ids_lbl
             role_ids
             role_ids_lbl
             rem
@@ -471,14 +456,14 @@ export function useExportExcel(routePath: string) {
             img
             lbl
             username
-            default_dept_id
-            default_dept_id_lbl
+            default_org_id
+            default_org_id_lbl
             is_locked
             is_locked_lbl
             is_enabled
             is_enabled_lbl
-            dept_ids
-            dept_ids_lbl
+            org_ids
+            org_ids_lbl
             role_ids
             role_ids_lbl
             rem

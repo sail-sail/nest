@@ -62,10 +62,10 @@ export async function login(
     login: Mutation["login"],
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($username: String!, $password: String!, $tenant_id: String!, $dept_id: String, $lang: String!) {
-        login(username: $username, password: $password, tenant_id: $tenant_id, dept_id: $dept_id, lang: $lang) {
+      mutation($username: String!, $password: String!, $tenant_id: String!, $org_id: String, $lang: String!) {
+        login(username: $username, password: $password, tenant_id: $tenant_id, org_id: $org_id, lang: $lang) {
           authorization
-          dept_id
+          org_id
         }
       }
     `,

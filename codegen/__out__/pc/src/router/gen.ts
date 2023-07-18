@@ -147,6 +147,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/org",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "组织",
+        component: () => import("@/views/base/org/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/base/permit",
     component: Layout1,
     children: [
