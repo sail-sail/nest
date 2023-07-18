@@ -1,4 +1,6 @@
-
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
 
 import {
   type PageInput,
@@ -113,6 +115,11 @@ export async function updateById(
   input: MenuInput,
 ): Promise<string> {
   
+  const is_locked = await menuDao.getIsLockedById(id);
+  if (is_locked) {
+    throw await ns("不能修改已经锁定的数据");
+  }
+  
   const data = await menuDao.updateById(id, input);
   return data;
 }
@@ -125,6 +132,18 @@ export async function updateById(
 export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
+  const lockedIds: string[] = [ ];
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const is_locked = await menuDao.getIsLockedById(id);
+    if (is_locked) {
+      lockedIds.push(id);
+    }
+  }
+  if (lockedIds.length > 0 && lockedIds.length === ids.length) {
+    throw await ns("不能删除已经锁定的数据");
+  }
   
   const data = await menuDao.deleteByIds(ids);
   return data;
@@ -141,6 +160,20 @@ export async function enableByIds(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await menuDao.enableByIds(ids, is_enabled);
+  return data;
+}
+
+/**
+ * 根据 ids 锁定或解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+): Promise<number> {
+  const data = await menuDao.lockByIds(ids, is_locked);
   return data;
 }
 

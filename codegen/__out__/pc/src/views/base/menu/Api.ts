@@ -44,8 +44,8 @@ export async function findAll(
           lbl
           route_path
           route_query
-          is_lock
-          is_lock_lbl
+          is_locked
+          is_locked_lbl
           tenant_ids
           tenant_ids_lbl
           is_enabled
@@ -207,8 +207,8 @@ export async function findById(
           lbl
           route_path
           route_query
-          is_lock
-          is_lock_lbl
+          is_locked
+          is_locked_lbl
           tenant_ids
           tenant_ids_lbl
           is_enabled
@@ -289,6 +289,35 @@ export async function enableByIds(
     },
   }, opt);
   const res = data.enableByIdsMenu;
+  return res;
+}
+
+/**
+ * 根据 ids 锁定或解锁数据
+ * @export lockByIds
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @param {GqlOpt} opt?
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data: {
+    lockByIdsMenu: Mutation["lockByIdsMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [String!]!, $is_locked: Int!) {
+        lockByIdsMenu(ids: $ids, is_locked: $is_locked)
+      }
+    `,
+    variables: {
+      ids,
+      is_locked,
+    },
+  }, opt);
+  const res = data.lockByIdsMenu;
   return res;
 }
 
@@ -524,8 +553,8 @@ export function useExportExcel(routePath: string) {
             lbl
             route_path
             route_query
-            is_lock
-            is_lock_lbl
+            is_locked
+            is_locked_lbl
             tenant_ids
             tenant_ids_lbl
             is_enabled
@@ -549,8 +578,8 @@ export function useExportExcel(routePath: string) {
             lbl
             route_path
             route_query
-            is_lock
-            is_lock_lbl
+            is_locked
+            is_locked_lbl
             tenant_ids
             tenant_ids_lbl
             is_enabled
