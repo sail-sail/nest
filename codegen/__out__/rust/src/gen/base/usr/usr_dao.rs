@@ -144,29 +144,29 @@ fn get_where_query<'a>(
     }
   }
   {
-    let default_dept_id: Vec<String> = match &search {
-      Some(item) => item.default_dept_id.clone().unwrap_or_default(),
+    let default_org_id: Vec<String> = match &search {
+      Some(item) => item.default_org_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !default_dept_id.is_empty() {
+    if !default_org_id.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(default_dept_id.len());
-        for item in default_dept_id {
+        let mut items = Vec::with_capacity(default_org_id.len());
+        for item in default_org_id {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and default_dept_id_lbl.id in ({})", arg);
+      where_query += &format!(" and default_org_id_lbl.id in ({})", arg);
     }
   }
   {
-    let default_dept_id_is_null: bool = match &search {
-      Some(item) => item.default_dept_id_is_null.unwrap_or(false),
+    let default_org_id_is_null: bool = match &search {
+      Some(item) => item.default_org_id_is_null.unwrap_or(false),
       None => false,
     };
-    if default_dept_id_is_null {
-      where_query += &format!(" and default_dept_id_lbl.id is null");
+    if default_org_id_is_null {
+      where_query += &format!(" and default_org_id_lbl.id is null");
     }
   }
   {
@@ -204,29 +204,29 @@ fn get_where_query<'a>(
     }
   }
   {
-    let dept_ids: Vec<String> = match &search {
-      Some(item) => item.dept_ids.clone().unwrap_or_default(),
+    let org_ids: Vec<String> = match &search {
+      Some(item) => item.org_ids.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !dept_ids.is_empty() {
+    if !org_ids.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(dept_ids.len());
-        for item in dept_ids {
+        let mut items = Vec::with_capacity(org_ids.len());
+        for item in org_ids {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and base_dept.id in ({})", arg);
+      where_query += &format!(" and base_org.id in ({})", arg);
     }
   }
   {
-    let dept_ids_is_null: bool = match &search {
-      Some(item) => item.dept_ids_is_null.unwrap_or(false),
+    let org_ids_is_null: bool = match &search {
+      Some(item) => item.org_ids_is_null.unwrap_or(false),
       None => false,
     };
-    if dept_ids_is_null {
-      where_query += &format!(" and dept_ids_lbl.id is null");
+    if org_ids_is_null {
+      where_query += &format!(" and org_ids_lbl.id is null");
     }
   }
   {
@@ -276,30 +276,30 @@ fn get_where_query<'a>(
 
 fn get_from_query() -> &'static str {
   let from_query = r#"base_usr t
-    left join base_dept default_dept_id_lbl
-      on default_dept_id_lbl.id = t.default_dept_id
-    left join base_usr_dept
-      on base_usr_dept.usr_id = t.id
-      and base_usr_dept.is_deleted = 0
-    left join base_dept
-      on base_usr_dept.dept_id = base_dept.id
-      and base_dept.is_deleted = 0
+    left join base_org default_org_id_lbl
+      on default_org_id_lbl.id = t.default_org_id
+    left join base_usr_org
+      on base_usr_org.usr_id = t.id
+      and base_usr_org.is_deleted = 0
+    left join base_org
+      on base_usr_org.org_id = base_org.id
+      and base_org.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_dept.id) dept_ids,
-        json_arrayagg(base_dept.lbl) dept_ids_lbl,
+        json_arrayagg(base_org.id) org_ids,
+        json_arrayagg(base_org.lbl) org_ids_lbl,
         base_usr.id usr_id
-      from base_usr_dept
-      inner join base_dept
-        on base_dept.id = base_usr_dept.dept_id
-        and base_dept.is_deleted = 0
+      from base_usr_org
+      inner join base_org
+        on base_org.id = base_usr_org.org_id
+        and base_org.is_deleted = 0
       inner join base_usr
-        on base_usr.id = base_usr_dept.usr_id
+        on base_usr.id = base_usr_org.usr_id
       where
-        base_usr_dept.is_deleted = 0
+        base_usr_org.is_deleted = 0
       group by usr_id
-    ) _dept
-      on _dept.usr_id = t.id
+    ) _org
+      on _org.usr_id = t.id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
       and base_usr_role.is_deleted = 0
@@ -350,9 +350,9 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,default_dept_id_lbl.lbl default_dept_id_lbl
-      ,max(dept_ids) dept_ids
-      ,max(dept_ids_lbl) dept_ids_lbl
+      ,default_org_id_lbl.lbl default_org_id_lbl
+      ,max(org_ids) org_ids
+      ,max(org_ids_lbl) org_ids_lbl
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
     from
@@ -480,14 +480,14 @@ pub async fn get_field_comments<'a>(
     img: n_route.n(ctx, "头像".to_owned(), None).await?,
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     username: n_route.n(ctx, "用户名".to_owned(), None).await?,
-    default_dept_id: n_route.n(ctx, "默认部门".to_owned(), None).await?,
-    default_dept_id_lbl: n_route.n(ctx, "默认部门".to_owned(), None).await?,
+    default_org_id: n_route.n(ctx, "默认组织".to_owned(), None).await?,
+    default_org_id_lbl: n_route.n(ctx, "默认组织".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    dept_ids: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
-    dept_ids_lbl: n_route.n(ctx, "拥有部门".to_owned(), None).await?,
+    org_ids: n_route.n(ctx, "拥有组织".to_owned(), None).await?,
+    org_ids_lbl: n_route.n(ctx, "拥有组织".to_owned(), None).await?,
     role_ids: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
     role_ids_lbl: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
@@ -693,40 +693,40 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 默认部门
-  if input.default_dept_id.is_none() {
-    if is_not_empty_opt(&input.default_dept_id_lbl) && input.default_dept_id.is_none() {
-      input.default_dept_id_lbl = input.default_dept_id_lbl.map(|item| 
+  // 默认组织
+  if input.default_org_id.is_none() {
+    if is_not_empty_opt(&input.default_org_id_lbl) && input.default_org_id.is_none() {
+      input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
         item.trim().to_owned()
       );
-      let model = crate::gen::base::dept::dept_dao::find_one(
+      let model = crate::gen::base::org::org_dao::find_one(
         ctx,
-        crate::gen::base::dept::dept_model::DeptSearch {
-          lbl: input.default_dept_id_lbl.clone(),
+        crate::gen::base::org::org_model::OrgSearch {
+          lbl: input.default_org_id_lbl.clone(),
           ..Default::default()
         }.into(),
         None,
         None,
       ).await?;
       if let Some(model) = model {
-        input.default_dept_id = model.id.into();
+        input.default_org_id = model.id.into();
       }
     }
   }
   
-  // 拥有部门
-  if input.dept_ids.is_none() {
-    if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
-      input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
+  // 拥有组织
+  if input.org_ids.is_none() {
+    if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
+      input.org_ids_lbl = input.org_ids_lbl.map(|item| 
         item.into_iter()
           .map(|item| item.trim().to_owned())
           .collect::<Vec<String>>()
       );
       let mut models = vec![];
-      for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
-        let model = crate::gen::base::dept::dept_dao::find_one(
+      for lbl in input.org_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::org::org_dao::find_one(
           ctx,
-          crate::gen::base::dept::dept_model::DeptSearch {
+          crate::gen::base::org::org_model::OrgSearch {
             lbl: lbl.into(),
             ..Default::default()
           }.into(),
@@ -738,7 +738,7 @@ pub async fn set_id_by_lbl<'a>(
         }
       }
       if !models.is_empty() {
-        input.dept_ids = models.into_iter()
+        input.org_ids = models.into_iter()
           .map(|item| item.id)
           .collect::<Vec<String>>()
           .into();
@@ -871,11 +871,11 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(get_password(password)?.into());
   }
-  // 默认部门
-  if let Some(default_dept_id) = input.default_dept_id {
-    sql_fields += ",default_dept_id";
+  // 默认组织
+  if let Some(default_org_id) = input.default_org_id {
+    sql_fields += ",default_org_id";
     sql_values += ",?";
-    args.push(default_dept_id.into());
+    args.push(default_org_id.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -919,17 +919,17 @@ pub async fn create<'a>(
     options,
   ).await?;
   
-  // 拥有部门
-  if let Some(dept_ids) = input.dept_ids {
+  // 拥有组织
+  if let Some(org_ids) = input.org_ids {
     many2many_update(
       ctx,
       id.clone(),
-      dept_ids.clone(),
+      org_ids.clone(),
       ManyOpts {
         r#mod: "base",
-        table: "usr_dept",
+        table: "usr_org",
         column1: "usr_id",
-        column2: "dept_id",
+        column2: "org_id",
       },
     ).await?;
   }
@@ -1045,11 +1045,11 @@ pub async fn update_by_id<'a>(
     sql_fields += ",password = ?";
     args.push(get_password(password)?.into());
   }
-  // 默认部门
-  if let Some(default_dept_id) = input.default_dept_id {
+  // 默认组织
+  if let Some(default_org_id) = input.default_org_id {
     field_num += 1;
-    sql_fields += ",default_dept_id = ?";
-    args.push(default_dept_id.into());
+    sql_fields += ",default_org_id = ?";
+    args.push(default_org_id.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -1108,17 +1108,17 @@ pub async fn update_by_id<'a>(
   
   let mut field_num = 0;
   
-  // 拥有部门
-  if let Some(dept_ids) = input.dept_ids {
+  // 拥有组织
+  if let Some(org_ids) = input.org_ids {
     many2many_update(
       ctx,
       id.clone(),
-      dept_ids.clone(),
+      org_ids.clone(),
       ManyOpts {
         r#mod: "base",
-        table: "usr_dept",
+        table: "usr_org",
         column1: "usr_id",
-        column2: "dept_id",
+        column2: "org_id",
       },
     ).await?;
     
@@ -1159,7 +1159,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_usr";
   vec![
     table,
-    "base_dept",
+    "base_org",
     "base_usr_role",
     "base_role",
   ]

@@ -17,16 +17,6 @@ pub struct TenantModel {
   pub menu_ids: Vec<String>,
   /// 菜单权限
   pub menu_ids_lbl: Vec<String>,
-  /// 租户管理员
-  pub usr_id: String,
-  /// 租户管理员
-  pub usr_id_lbl: String,
-  /// 到期日
-  pub expiration: Option<chrono::NaiveDate>,
-  /// 到期日
-  pub expiration_lbl: String,
-  /// 最大用户数
-  pub max_usr_num: u32,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -75,18 +65,6 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
-    // 租户管理员
-    let usr_id: String = row.try_get("usr_id")?;
-    let usr_id_lbl: Option<String> = row.try_get("usr_id_lbl")?;
-    let usr_id_lbl = usr_id_lbl.unwrap_or_default();
-    // 到期日
-    let expiration: Option<chrono::NaiveDate> = row.try_get("expiration")?;
-    let expiration_lbl: String = match expiration {
-      Some(expiration) => expiration.format("%Y-%m-%d").to_string(),
-      None => "".to_owned(),
-    };
-    // 最大用户数
-    let max_usr_num: u32 = row.try_get("max_usr_num")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -127,11 +105,6 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       domain_ids_lbl,
       menu_ids,
       menu_ids_lbl,
-      usr_id,
-      usr_id_lbl,
-      expiration,
-      expiration_lbl,
-      max_usr_num,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -166,16 +139,6 @@ pub struct TenantFieldComment {
   pub menu_ids: String,
   /// 菜单权限
   pub menu_ids_lbl: String,
-  /// 租户管理员
-  pub usr_id: String,
-  /// 租户管理员
-  pub usr_id_lbl: String,
-  /// 到期日
-  pub expiration: String,
-  /// 到期日
-  pub expiration_lbl: String,
-  /// 最大用户数
-  pub max_usr_num: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -224,14 +187,6 @@ pub struct TenantSearch {
   pub menu_ids: Option<Vec<String>>,
   /// 菜单权限
   pub menu_ids_is_null: Option<bool>,
-  /// 租户管理员
-  pub usr_id: Option<Vec<String>>,
-  /// 租户管理员
-  pub usr_id_is_null: Option<bool>,
-  /// 到期日
-  pub expiration: Option<Vec<chrono::NaiveDate>>,
-  /// 最大用户数
-  pub max_usr_num: Option<Vec<u32>>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -270,16 +225,6 @@ pub struct TenantInput {
   pub menu_ids: Option<Vec<String>>,
   /// 菜单权限
   pub menu_ids_lbl: Option<Vec<String>>,
-  /// 租户管理员
-  pub usr_id: Option<String>,
-  /// 租户管理员
-  pub usr_id_lbl: Option<String>,
-  /// 到期日
-  pub expiration: Option<chrono::NaiveDate>,
-  /// 到期日
-  pub expiration_lbl: Option<String>,
-  /// 最大用户数
-  pub max_usr_num: Option<u32>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
@@ -322,12 +267,6 @@ impl From<TenantInput> for TenantSearch {
       domain_ids: input.domain_ids,
       // 菜单权限
       menu_ids: input.menu_ids,
-      // 租户管理员
-      usr_id: input.usr_id.map(|x| vec![x.into()]),
-      // 到期日
-      expiration: input.expiration.map(|x| vec![x.clone().into(), x.clone().into()]),
-      // 最大用户数
-      max_usr_num: input.max_usr_num.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用

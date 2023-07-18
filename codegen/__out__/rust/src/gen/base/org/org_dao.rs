@@ -24,13 +24,13 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
-use super::dict_detail_model::*;
+use super::org_model::*;
 
 #[allow(unused_variables)]
 fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
-  search: Option<DictDetailSearch>,
+  search: Option<OrgSearch>,
 ) -> String {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
@@ -75,29 +75,23 @@ fn get_where_query<'a>(
     }
   }
   {
-    let dict_id: Vec<String> = match &search {
-      Some(item) => item.dict_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !dict_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(dict_id.len());
-        for item in dict_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
+    let tenant_id = {
+      let tenant_id = match &search {
+        Some(item) => &item.tenant_id,
+        None => &None,
       };
-      where_query += &format!(" and dict_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let dict_id_is_null: bool = match &search {
-      Some(item) => item.dict_id_is_null.unwrap_or(false),
-      None => false,
+      let tenant_id = match trim_opt(tenant_id) {
+        None => ctx.get_auth_tenant_id(),
+        Some(item) => match item.as_str() {
+          "-" => None,
+          _ => item.into(),
+        },
+      };
+      tenant_id
     };
-    if dict_id_is_null {
-      where_query += &format!(" and dict_id_lbl.id is null");
+    if let Some(tenant_id) = tenant_id {
+      where_query += " and t.tenant_id = ?";
+      args.push(tenant_id.into());
     }
   }
   {
@@ -114,22 +108,6 @@ fn get_where_query<'a>(
     };
     if let Some(lbl_like) = lbl_like {
       where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
-    }
-  }
-  {
-    let val = match &search {
-      Some(item) => item.val.clone(),
-      None => None,
-    };
-    if let Some(val) = val {
-      where_query += &format!(" and t.val = {}", args.push(val.into()));
-    }
-    let val_like = match &search {
-      Some(item) => item.val_like.clone(),
-      None => None,
-    };
-    if let Some(val_like) = val_like {
-      where_query += &format!(" and t.val like {}", args.push((sql_like(&val_like) + "%").into()));
     }
   }
   {
@@ -204,29 +182,108 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_sys: Vec<i8> = match &search {
-      Some(item) => item.is_sys.clone().unwrap_or_default(),
+    let create_usr_id: Vec<String> = match &search {
+      Some(item) => item.create_usr_id.clone().unwrap_or_default(),
       None => Default::default(),
     };
-    if !is_sys.is_empty() {
+    if !create_usr_id.is_empty() {
       let arg = {
-        let mut items = Vec::with_capacity(is_sys.len());
-        for item in is_sys {
+        let mut items = Vec::with_capacity(create_usr_id.len());
+        for item in create_usr_id {
           args.push(item.into());
           items.push("?");
         }
         items.join(",")
       };
-      where_query += &format!(" and t.is_sys in ({})", arg);
+      where_query += &format!(" and create_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let create_usr_id_is_null: bool = match &search {
+      Some(item) => item.create_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if create_usr_id_is_null {
+      where_query += &format!(" and create_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let create_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.create_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      _ => create_time[0].clone().into(),
+    };
+    let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
+      0 => None,
+      1 => None,
+      _ => create_time[1].clone().into(),
+    };
+    if let Some(create_time_gt) = create_time_gt {
+      where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
+    }
+    if let Some(create_time_lt) = create_time_lt {
+      where_query += &format!(" and t.create_time <= {}", args.push(create_time_lt.into()));
+    }
+  }
+  {
+    let update_usr_id: Vec<String> = match &search {
+      Some(item) => item.update_usr_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !update_usr_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(update_usr_id.len());
+        for item in update_usr_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and update_usr_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let update_usr_id_is_null: bool = match &search {
+      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if update_usr_id_is_null {
+      where_query += &format!(" and update_usr_id_lbl.id is null");
+    }
+  }
+  {
+    let update_time: Vec<chrono::NaiveDateTime> = match &search {
+      Some(item) => item.update_time.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      _ => update_time[0].clone().into(),
+    };
+    let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
+      0 => None,
+      1 => None,
+      _ => update_time[1].clone().into(),
+    };
+    if let Some(update_time_gt) = update_time_gt {
+      where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
+    }
+    if let Some(update_time_lt) = update_time_lt {
+      where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
   where_query
 }
 
 fn get_from_query() -> &'static str {
-  let from_query = r#"base_dict_detail t
-    left join base_dict dict_id_lbl
-      on dict_id_lbl.id = t.dict_id"#;
+  let from_query = r#"base_org t
+    left join base_usr create_usr_id_lbl
+      on create_usr_id_lbl.id = t.create_usr_id
+    left join base_usr update_usr_id_lbl
+      on update_usr_id_lbl.id = t.update_usr_id"#;
   from_query
 }
 
@@ -235,14 +292,14 @@ fn get_from_query() -> &'static str {
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DictDetailSearch>,
+  search: Option<OrgSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<DictDetailModel>> {
+) -> Result<Vec<OrgModel>> {
   
   #[allow(unused_variables)]
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "find_all";
   
   let mut args = QueryArgs::new();
@@ -255,7 +312,8 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,dict_id_lbl.lbl dict_id_lbl
+      ,create_usr_id_lbl.lbl create_usr_id_lbl
+      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       {from_query}
     where
@@ -273,7 +331,7 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
-  let mut res: Vec<DictDetailModel> = ctx.query(
+  let mut res: Vec<OrgModel> = ctx.query(
     sql,
     args,
     options,
@@ -282,12 +340,10 @@ pub async fn find_all<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]).await?;
   
   let is_locked_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
-  let is_sys_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -307,14 +363,6 @@ pub async fn find_all<'a>(
         .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
-    // 系统字段
-    model.is_sys_lbl = {
-      is_sys_dict.iter()
-        .find(|item| item.val == model.is_sys.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_sys.to_string())
-    };
-    
   }
   
   Ok(res)
@@ -324,12 +372,12 @@ pub async fn find_all<'a>(
 #[instrument(skip(ctx))]
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DictDetailSearch>,
+  search: Option<OrgSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   #[allow(unused_variables)]
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "find_count";
   
   let mut args = QueryArgs::new();
@@ -381,25 +429,28 @@ pub async fn find_count<'a>(
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
-) -> Result<DictDetailFieldComment> {
+) -> Result<OrgFieldComment> {
   
   let n_route = NRoute {
-    route_path: "/base/dict_detail".to_owned().into(),
+    route_path: "/base/org".to_owned().into(),
   };
   
-  let field_comments = DictDetailFieldComment {
-    dict_id: n_route.n(ctx, "系统字典".to_owned(), None).await?,
-    dict_id_lbl: n_route.n(ctx, "系统字典".to_owned(), None).await?,
+  let field_comments = OrgFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    val: n_route.n(ctx, "值".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
     order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    is_sys: n_route.n(ctx, "系统字段".to_owned(), None).await?,
-    is_sys_lbl: n_route.n(ctx, "系统字段".to_owned(), None).await?,
+    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
+    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
+    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
+    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
@@ -408,7 +459,6 @@ pub async fn get_field_comments<'a>(
 #[allow(dead_code)]
 pub fn get_unique_keys() -> Vec<&'static str> {
   let unique_keys = vec![
-    "dict_id",
     "lbl",
   ];
   unique_keys
@@ -418,10 +468,10 @@ pub fn get_unique_keys() -> Vec<&'static str> {
 #[instrument(skip(ctx))]
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DictDetailSearch>,
+  search: Option<OrgSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<DictDetailModel>> {
+) -> Result<Option<OrgModel>> {
   
   let page = PageInput {
     pg_offset: 0.into(),
@@ -436,7 +486,7 @@ pub async fn find_one<'a>(
     options,
   ).await?;
   
-  let model: Option<DictDetailModel> = res.into_iter().next();
+  let model: Option<OrgModel> = res.into_iter().next();
   
   Ok(model)
 }
@@ -447,9 +497,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<DictDetailModel>> {
+) -> Result<Option<OrgModel>> {
   
-  let search = DictDetailSearch {
+  let search = OrgSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -469,23 +519,21 @@ pub async fn find_by_id<'a>(
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: DictDetailSearch,
+  search: OrgSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<DictDetailModel>> {
+) -> Result<Option<OrgModel>> {
   
   if search.id.is_none() {
     if
-      search.dict_id.is_none() ||
       search.lbl.is_none()
     {
       return Ok(None);
     }
   }
   
-  let search = DictDetailSearch {
+  let search = OrgSearch {
     id: search.id,
-    dict_id: search.dict_id,
     lbl: search.lbl,
     ..Default::default()
   }.into();
@@ -503,14 +551,13 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: &DictDetailInput,
-  model: &DictDetailModel,
+  input: &OrgInput,
+  model: &OrgModel,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
   if
-    input.dict_id.as_ref().is_none() || input.dict_id.as_ref().unwrap() != &model.dict_id ||
     input.lbl.as_ref().is_none() || input.lbl.as_ref().unwrap() != &model.lbl
   {
     return false;
@@ -523,8 +570,8 @@ fn equals_by_unique(
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: DictDetailInput,
-  model: DictDetailModel,
+  input: OrgInput,
+  model: OrgModel,
   unique_type: UniqueType,
 ) -> Result<Option<String>> {
   let is_equals = equals_by_unique(
@@ -549,13 +596,11 @@ pub async fn check_by_unique<'a>(
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
     let n_route = NRoute {
-      route_path: "/base/dict_detail".to_owned().into(),
+      route_path: "/base/org".to_owned().into(),
     };
     let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
-      "{}: {}, {}: {} {str}",
-      field_comments.dict_id,
-      input.dict_id.unwrap_or_default(),
+      "{}: {} {str}",
       field_comments.lbl,
       input.lbl.unwrap_or_default(),
     );
@@ -567,8 +612,8 @@ pub async fn check_by_unique<'a>(
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: DictDetailInput,
-) -> Result<DictDetailInput> {
+  input: OrgInput,
+) -> Result<OrgInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
@@ -576,7 +621,6 @@ pub async fn set_id_by_lbl<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
-    "is_sys",
   ]).await?;
   
   // 锁定
@@ -609,42 +653,6 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 系统字段
-  if input.is_sys.is_none() {
-    let is_sys_dict = &dict_vec[2];
-    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
-      input.is_sys = is_sys_dict.into_iter()
-        .find(|item| {
-          item.lbl == is_sys_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        })
-        .into();
-    }
-  }
-  
-  // 系统字典
-  if input.dict_id.is_none() {
-    if is_not_empty_opt(&input.dict_id_lbl) && input.dict_id.is_none() {
-      input.dict_id_lbl = input.dict_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::base::dict::dict_dao::find_one(
-        ctx,
-        crate::gen::base::dict::dict_model::DictSearch {
-          lbl: input.dict_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.dict_id = model.id.into();
-      }
-    }
-  }
-  
   Ok(input)
 }
 
@@ -652,11 +660,11 @@ pub async fn set_id_by_lbl<'a>(
 #[instrument(skip(ctx))]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  mut input: DictDetailInput,
+  mut input: OrgInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "create";
   
   let now = ctx.get_now();
@@ -702,29 +710,23 @@ pub async fn create<'a>(
   args.push(now.into());
   
   
+  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+    sql_fields += ",tenant_id";
+    sql_values += ",?";
+    args.push(tenant_id.into());
+  }
+  
   if let Some(auth_model) = ctx.get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";
     sql_values += ",?";
     args.push(usr_id.into());
   }
-  // 系统字典
-  if let Some(dict_id) = input.dict_id {
-    sql_fields += ",dict_id";
-    sql_values += ",?";
-    args.push(dict_id.into());
-  }
   // 名称
   if let Some(lbl) = input.lbl {
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
-  }
-  // 值
-  if let Some(val) = input.val {
-    sql_fields += ",val";
-    sql_values += ",?";
-    args.push(val.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -750,11 +752,17 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(rem.into());
   }
-  // 系统字段
-  if let Some(is_sys) = input.is_sys {
-    sql_fields += ",is_sys";
+  // 更新人
+  if let Some(update_usr_id) = input.update_usr_id {
+    sql_fields += ",update_usr_id";
     sql_values += ",?";
-    args.push(is_sys.into());
+    args.push(update_usr_id.into());
+  }
+  // 更新时间
+  if let Some(update_time) = input.update_time {
+    sql_fields += ",update_time";
+    sql_values += ",?";
+    args.push(update_time.into());
   }
   
   let sql = format!(
@@ -783,12 +791,56 @@ pub async fn create<'a>(
   Ok(id)
 }
 
+/// 根据id修改租户id
+#[instrument(skip(ctx))]
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = "base_org";
+  let _method = "update_tenant_by_id";
+  
+  let mut args = QueryArgs::new();
+  
+  let sql_fields = "tenant_id = ?,update_time = ?";
+  args.push(tenant_id.into());
+  args.push(ctx.get_now().into());
+  
+  let sql_where = "id = ?";
+  args.push(id.into());
+  
+  let sql = format!(
+    "update {} set {} where {}",
+    table,
+    sql_fields,
+    sql_where,
+  );
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_is_debug(false);
+  
+  let options = options.into();
+  
+  let num = ctx.execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
 /// 根据id修改数据
 #[instrument(skip(ctx))]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  mut input: DictDetailInput,
+  mut input: OrgInput,
   options: Option<Options>,
 ) -> Result<String> {
   
@@ -797,7 +849,7 @@ pub async fn update_by_id<'a>(
     input,
   ).await?;
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "update_by_id";
   
   let now = ctx.get_now();
@@ -808,23 +860,11 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
-  // 系统字典
-  if let Some(dict_id) = input.dict_id {
-    field_num += 1;
-    sql_fields += ",dict_id = ?";
-    args.push(dict_id.into());
-  }
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
-  }
-  // 值
-  if let Some(val) = input.val {
-    field_num += 1;
-    sql_fields += ",val = ?";
-    args.push(val.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -849,12 +889,6 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",rem = ?";
     args.push(rem.into());
-  }
-  // 系统字段
-  if let Some(is_sys) = input.is_sys {
-    field_num += 1;
-    sql_fields += ",is_sys = ?";
-    args.push(is_sys.into());
   }
   
   if field_num > 0 {
@@ -899,10 +933,10 @@ pub async fn update_by_id<'a>(
 /// 获取外键关联表, 第一个是主表
 #[allow(dead_code)]
 fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_dict_detail";
+  let table = "base_org";
   vec![
     table,
-    "base_dict",
+    "base_usr",
   ]
 }
 
@@ -914,7 +948,7 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "delete_by_ids";
   
   let options = Options::from(options);
@@ -982,7 +1016,7 @@ pub async fn enable_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "enable_by_ids";
   
   let options = Options::from(options);
@@ -1049,7 +1083,7 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "lock_by_ids";
   
   let options = Options::from(options);
@@ -1092,7 +1126,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "revert_by_ids";
   
   let options = Options::from(options);
@@ -1136,7 +1170,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "force_delete_by_ids";
   
   let options = Options::from(options);
@@ -1148,7 +1182,7 @@ pub async fn force_delete_by_ids<'a>(
     
     let model = find_all(
       ctx,
-      DictDetailSearch {
+      OrgSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
         ..Default::default()
@@ -1198,7 +1232,7 @@ pub async fn find_last_order_by<'a>(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dict_detail";
+  let table = "base_org";
   let _method = "find_last_order_by";
   
   #[allow(unused_mut)]
@@ -1206,6 +1240,11 @@ pub async fn find_last_order_by<'a>(
   let mut sql_where = "".to_owned();
   
   sql_where += "t.is_deleted = 0";
+  
+  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+    sql_where += " and t.tenant_id = ?";
+    args.push(tenant_id.into());
+  }
   
   let sql = format!(
     "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",

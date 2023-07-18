@@ -19,7 +19,7 @@ impl UsrMutation {
     username: String,
     password: String,
     tenant_id: String,
-    dept_id: Option<String>,
+    org_id: Option<String>,
     lang: String,
   ) -> Result<Login> {
     let mut ctx = CtxImpl::new(ctx);
@@ -29,7 +29,7 @@ impl UsrMutation {
       username,
       password,
       tenant_id,
-      dept_id,
+      org_id,
       lang,
     ).await?;
     

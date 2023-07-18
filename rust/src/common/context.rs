@@ -12,7 +12,7 @@ use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 
 use async_trait::async_trait;
-use chrono::{Local, DateTime, NaiveDate, NaiveTime, NaiveDateTime};
+use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
@@ -129,9 +129,9 @@ pub trait Ctx<'a>: Send + Sized {
     }
   }
   
-  fn get_auth_dept_id(&mut self) -> Option<String> {
+  fn get_auth_org_id(&mut self) -> Option<String> {
     match self.get_auth_model() {
-      Some(item) => item.dept_id,
+      Some(item) => item.org_id,
       None => None,
     }
   }

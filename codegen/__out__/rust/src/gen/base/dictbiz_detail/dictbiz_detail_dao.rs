@@ -223,6 +223,23 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
     }
   }
+  {
+    let is_sys: Vec<i8> = match &search {
+      Some(item) => item.is_sys.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_sys.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_sys.len());
+        for item in is_sys {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_sys in ({})", arg);
+    }
+  }
   where_query
 }
 
@@ -285,10 +302,12 @@ pub async fn find_all<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]).await?;
   
   let is_locked_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
+  let is_sys_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -306,6 +325,14 @@ pub async fn find_all<'a>(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // 系统字段
+    model.is_sys_lbl = {
+      is_sys_dict.iter()
+        .find(|item| item.val == model.is_sys.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_sys.to_string())
     };
     
   }
@@ -391,6 +418,8 @@ pub async fn get_field_comments<'a>(
     is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
     order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    is_sys: n_route.n(ctx, "系统字段".to_owned(), None).await?,
+    is_sys_lbl: n_route.n(ctx, "系统字段".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
@@ -567,6 +596,7 @@ pub async fn set_id_by_lbl<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]).await?;
   
   // 锁定
@@ -591,6 +621,21 @@ pub async fn set_id_by_lbl<'a>(
       input.is_enabled = is_enabled_dict.into_iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
+  }
+  
+  // 系统字段
+  if input.is_sys.is_none() {
+    let is_sys_dict = &dict_vec[2];
+    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
+      input.is_sys = is_sys_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -731,6 +776,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(rem.into());
   }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    sql_fields += ",is_sys";
+    sql_values += ",?";
+    args.push(is_sys.into());
+  }
   
   let sql = format!(
     "insert into {} ({}) values ({})",
@@ -868,6 +919,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",rem = ?";
     args.push(rem.into());
+  }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    field_num += 1;
+    sql_fields += ",is_sys = ?";
+    args.push(is_sys.into());
   }
   
   if field_num > 0 {
