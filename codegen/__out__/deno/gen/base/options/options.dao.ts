@@ -95,6 +95,18 @@ async function getWhereQuery(
   if (isNotEmpty(search?.val_like)) {
     whereQuery += ` and t.val like ${ args.push(sqlLike(search?.val_like) + "%") }`;
   }
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  }
+  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
+    search.is_enabled = [ search.is_enabled ];
+  }
+  if (search?.is_enabled && search?.is_enabled?.length > 0) {
+    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+  }
   if (search?.order_by && search?.order_by?.length > 0) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
@@ -102,12 +114,6 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
     }
-  }
-  if (search?.is_enabled && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
-  }
-  if (search?.is_enabled && search?.is_enabled?.length > 0) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -117,12 +123,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
-  }
-  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
-  if (search?.is_locked && search?.is_locked?.length > 0) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
   if (search?.version && search?.version?.length > 0) {
     if (search.version[0] != null) {
@@ -171,6 +171,12 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
+  }
+  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
+    search.is_sys = [ search.is_sys ];
+  }
+  if (search?.is_sys && search?.is_sys?.length > 0) {
+    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
   }
   if (search?.$extra) {
     const extras = search.$extra;
@@ -305,25 +311,17 @@ export async function findAll(
   );
   
   const [
-    is_enabledDict, // 启用
     is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
-    "is_enabled",
     "is_locked",
+    "is_enabled",
+    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 启用
-    let is_enabled_lbl = model.is_enabled.toString();
-    if (model.is_enabled !== undefined && model.is_enabled !== null) {
-      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
-      if (dictItem) {
-        is_enabled_lbl = dictItem.lbl;
-      }
-    }
-    model.is_enabled_lbl = is_enabled_lbl;
     
     // 锁定
     let is_locked_lbl = model.is_locked.toString();
@@ -334,6 +332,16 @@ export async function findAll(
       }
     }
     model.is_locked_lbl = is_locked_lbl;
+    
+    // 启用
+    let is_enabled_lbl = model.is_enabled.toString();
+    if (model.is_enabled !== undefined && model.is_enabled !== null) {
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      if (dictItem) {
+        is_enabled_lbl = dictItem.lbl;
+      }
+    }
+    model.is_enabled_lbl = is_enabled_lbl;
     
     // 创建时间
     if (model.create_time) {
@@ -358,6 +366,16 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 系统字段
+    let is_sys_lbl = model.is_sys.toString();
+    if (model.is_sys !== undefined && model.is_sys !== null) {
+      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
+      if (dictItem) {
+        is_sys_lbl = dictItem.lbl;
+      }
+    }
+    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -372,12 +390,12 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     ky: await n("键"),
     val: await n("值"),
-    order_by: await n("排序"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
+    is_enabled: await n("启用"),
+    is_enabled_lbl: await n("启用"),
+    order_by: await n("排序"),
+    rem: await n("备注"),
     version: await n("版本号"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -387,6 +405,8 @@ export async function getFieldComments() {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    is_sys: await n("系统字段"),
+    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
@@ -618,13 +638,23 @@ export async function create(
   const method = "create";
   
   const [
-    is_enabledDict, // 启用
     is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
-    "is_enabled",
     "is_locked",
+    "is_enabled",
+    "is_sys",
   ]);
   
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
   
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
@@ -634,11 +664,11 @@ export async function create(
     }
   }
   
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  // 系统字段
+  if (isNotEmpty(model.is_sys_lbl) && model.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === model.is_sys_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      model.is_sys = Number(val);
     }
   }
   
@@ -677,17 +707,17 @@ export async function create(
   if (model.val !== undefined) {
     sql += `,val`;
   }
-  if (model.order_by !== undefined) {
-    sql += `,order_by`;
+  if (model.is_locked !== undefined) {
+    sql += `,is_locked`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
+  if (model.order_by !== undefined) {
+    sql += `,order_by`;
+  }
   if (model.rem !== undefined) {
     sql += `,rem`;
-  }
-  if (model.is_locked !== undefined) {
-    sql += `,is_locked`;
   }
   if (model.version !== undefined) {
     sql += `,version`;
@@ -697,6 +727,9 @@ export async function create(
   }
   if (model.update_time !== undefined) {
     sql += `,update_time`;
+  }
+  if (model.is_sys !== undefined) {
+    sql += `,is_sys`;
   }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.create_usr_id != null && model.create_usr_id !== "-") {
@@ -716,17 +749,17 @@ export async function create(
   if (model.val !== undefined) {
     sql += `,${ args.push(model.val) }`;
   }
-  if (model.order_by !== undefined) {
-    sql += `,${ args.push(model.order_by) }`;
+  if (model.is_locked !== undefined) {
+    sql += `,${ args.push(model.is_locked) }`;
   }
   if (model.is_enabled !== undefined) {
     sql += `,${ args.push(model.is_enabled) }`;
   }
+  if (model.order_by !== undefined) {
+    sql += `,${ args.push(model.order_by) }`;
+  }
   if (model.rem !== undefined) {
     sql += `,${ args.push(model.rem) }`;
-  }
-  if (model.is_locked !== undefined) {
-    sql += `,${ args.push(model.is_locked) }`;
   }
   if (model.version !== undefined) {
     sql += `,${ args.push(model.version) }`;
@@ -736,6 +769,9 @@ export async function create(
   }
   if (model.update_time !== undefined) {
     sql += `,${ args.push(model.update_time) }`;
+  }
+  if (model.is_sys !== undefined) {
+    sql += `,${ args.push(model.is_sys) }`;
   }
   sql += `)`;
   
@@ -806,12 +842,22 @@ export async function updateById(
   }
   
   const [
-    is_enabledDict, // 启用
     is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
-    "is_enabled",
     "is_locked",
+    "is_enabled",
+    "is_sys",
   ]);
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
   
   // 启用
   if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
@@ -821,11 +867,11 @@ export async function updateById(
     }
   }
   
-  // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  // 系统字段
+  if (isNotEmpty(model.is_sys_lbl) && model.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === model.is_sys_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      model.is_sys = Number(val);
     }
   }
   
@@ -858,9 +904,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (model.order_by !== undefined) {
-    if (model.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(model.order_by) },`;
+  if (model.is_locked !== undefined) {
+    if (model.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }
@@ -870,21 +916,27 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (model.order_by !== undefined) {
+    if (model.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(model.order_by) },`;
+      updateFldNum++;
+    }
+  }
   if (model.rem !== undefined) {
     if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
       updateFldNum++;
     }
   }
-  if (model.is_locked !== undefined) {
-    if (model.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(model.is_locked) },`;
-      updateFldNum++;
-    }
-  }
   if (model.version !== undefined) {
     if (model.version != oldModel.version) {
       sql += `version = ${ args.push(model.version) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_sys !== undefined) {
+    if (model.is_sys != oldModel.is_sys) {
+      sql += `is_sys = ${ args.push(model.is_sys) },`;
       updateFldNum++;
     }
   }

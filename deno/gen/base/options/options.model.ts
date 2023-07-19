@@ -13,6 +13,8 @@ export interface OptionsSearch extends OptionsSearchType {
 }
 
 export interface OptionsModel extends OptionsModelType {
+  /** 系统字段 */
+  is_sys: number;
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
@@ -20,6 +22,8 @@ export interface OptionsModel extends OptionsModelType {
 }
 
 export interface OptionsInput extends OptionsInputType {
+  /** 系统字段 */
+  is_sys?: number;
   create_usr_id?: string;
   create_time?: string | null;
   update_usr_id?: string;
