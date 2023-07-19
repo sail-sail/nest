@@ -1,8 +1,15 @@
 use tracing::instrument;
 use anyhow::Result;
 
-use crate::common::context::{Ctx, Options};
+use crate::common::context::{
+  Ctx,
+  SrvErr,
+  Options,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
+
+use crate::src::base::i18n::i18n_dao;
 
 use super::tenant_model::*;
 use super::tenant_dao;
@@ -109,6 +116,17 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let is_locked = tenant_dao::get_is_locked_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if is_locked {
+    let err_msg = i18n_dao::ns(ctx, "不能修改已经锁定的数据".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
+  
   let res = tenant_dao::update_by_id(
     ctx,
     id,
@@ -127,6 +145,33 @@ pub async fn delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  let ids0 = ids.clone();
+  let mut ids: Vec<String> = vec![];
+  for id in ids0 {
+    let model = tenant_dao::find_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    
+    if model.is_none() {
+      continue;
+    }
+    
+    let is_locked = tenant_dao::get_is_locked_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    
+    if is_locked {
+      continue;
+    }
+    
+    ids.push(id);
+  }
+  let ids = ids;
   
   let num = tenant_dao::delete_by_ids(
     ctx,

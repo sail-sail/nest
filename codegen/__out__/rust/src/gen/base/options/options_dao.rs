@@ -18,7 +18,7 @@ use crate::common::context::{
   get_page_query,
 };
 
-use crate::src::base::i18n::i18n_dao::NRoute;
+use crate::src::base::i18n::i18n_dao;
 
 use crate::common::gql::model::{PageInput, SortInput};
 
@@ -123,6 +123,40 @@ fn get_where_query<'a>(
     }
   }
   {
+    let is_locked: Vec<u8> = match &search {
+      Some(item) => item.is_locked.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_locked.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_locked.len());
+        for item in is_locked {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_locked in ({})", arg);
+    }
+  }
+  {
+    let is_enabled: Vec<u8> = match &search {
+      Some(item) => item.is_enabled.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_enabled.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_enabled.len());
+        for item in is_enabled {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_enabled in ({})", arg);
+    }
+  }
+  {
     let order_by: Vec<u32> = match &search {
       Some(item) => item.order_by.clone().unwrap_or_default(),
       None => vec![],
@@ -144,23 +178,6 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_enabled: Vec<u8> = match &search {
-      Some(item) => item.is_enabled.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_enabled.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_enabled.len());
-        for item in is_enabled {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_enabled in ({})", arg);
-    }
-  }
-  {
     let rem = match &search {
       Some(item) => item.rem.clone(),
       None => None,
@@ -174,23 +191,6 @@ fn get_where_query<'a>(
     };
     if let Some(rem_like) = rem_like {
       where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
-    }
-  }
-  {
-    let is_locked: Vec<u8> = match &search {
-      Some(item) => item.is_locked.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_locked.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_locked.len());
-        for item in is_locked {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_locked in ({})", arg);
     }
   }
   {
@@ -308,6 +308,23 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
+  {
+    let is_sys: Vec<i8> = match &search {
+      Some(item) => item.is_sys.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_sys.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_sys.len());
+        for item in is_sys {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_sys in ({})", arg);
+    }
+  }
   where_query
 }
 
@@ -371,14 +388,24 @@ pub async fn find_all<'a>(
   ).await?;
   
   let dict_vec = get_dict(ctx, &vec![
-    "is_enabled",
     "is_locked",
+    "is_enabled",
+    "is_sys",
   ]).await?;
   
-  let is_enabled_dict = &dict_vec[0];
-  let is_locked_dict = &dict_vec[1];
+  let is_locked_dict = &dict_vec[0];
+  let is_enabled_dict = &dict_vec[1];
+  let is_sys_dict = &dict_vec[2];
   
   for model in &mut res {
+    
+    // 锁定
+    model.is_locked_lbl = {
+      is_locked_dict.iter()
+        .find(|item| item.val == model.is_locked.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_locked.to_string())
+    };
     
     // 启用
     model.is_enabled_lbl = {
@@ -388,12 +415,12 @@ pub async fn find_all<'a>(
         .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict.iter()
-        .find(|item| item.val == model.is_locked.to_string())
+    // 系统字段
+    model.is_sys_lbl = {
+      is_sys_dict.iter()
+        .find(|item| item.val == model.is_sys.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
+        .unwrap_or_else(|| model.is_sys.to_string())
     };
     
   }
@@ -464,7 +491,7 @@ pub async fn get_field_comments<'a>(
   _options: Option<Options>,
 ) -> Result<OptionsFieldComment> {
   
-  let n_route = NRoute {
+  let n_route = i18n_dao::NRoute {
     route_path: "/base/options".to_owned().into(),
   };
   
@@ -472,12 +499,12 @@ pub async fn get_field_comments<'a>(
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
     ky: n_route.n(ctx, "键".to_owned(), None).await?,
     val: n_route.n(ctx, "值".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
+    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
+    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
+    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     version: n_route.n(ctx, "版本号".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
@@ -487,6 +514,8 @@ pub async fn get_field_comments<'a>(
     update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
     update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
     update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    is_sys: n_route.n(ctx, "系统字段".to_owned(), None).await?,
+    is_sys_lbl: n_route.n(ctx, "系统字段".to_owned(), None).await?,
   };
   Ok(field_comments)
 }
@@ -631,10 +660,7 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
-    let n_route = NRoute {
-      route_path: "/base/options".to_owned().into(),
-    };
-    let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
+    let str = i18n_dao::ns(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
       "{}: {} {str}",
       field_comments.ky,
@@ -655,13 +681,29 @@ pub async fn set_id_by_lbl<'a>(
   let mut input = input;
   
   let dict_vec = get_dict(ctx, &vec![
-    "is_enabled",
     "is_locked",
+    "is_enabled",
+    "is_sys",
   ]).await?;
+  
+  // 锁定
+  if input.is_locked.is_none() {
+    let is_locked_dict = &dict_vec[0];
+    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
+      input.is_locked = is_locked_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_locked_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
+  }
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[0];
+    let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict.into_iter()
         .find(|item| {
@@ -674,13 +716,13 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict.into_iter()
+  // 系统字段
+  if input.is_sys.is_none() {
+    let is_sys_dict = &dict_vec[2];
+    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
+      input.is_sys = is_sys_dict.into_iter()
         .find(|item| {
-          item.lbl == is_locked_lbl
+          item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -770,11 +812,11 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(val.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
-    sql_fields += ",order_by";
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
+    sql_fields += ",is_locked";
     sql_values += ",?";
-    args.push(order_by.into());
+    args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -782,17 +824,17 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(is_enabled.into());
   }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    sql_fields += ",order_by";
+    sql_values += ",?";
+    args.push(order_by.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     sql_fields += ",rem";
     sql_values += ",?";
     args.push(rem.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    sql_fields += ",is_locked";
-    sql_values += ",?";
-    args.push(is_locked.into());
   }
   // 版本号
   if let Some(version) = input.version {
@@ -811,6 +853,12 @@ pub async fn create<'a>(
     sql_fields += ",update_time";
     sql_values += ",?";
     args.push(update_time.into());
+  }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    sql_fields += ",is_sys";
+    sql_values += ",?";
+    args.push(is_sys.into());
   }
   
   let sql = format!(
@@ -896,11 +944,11 @@ pub async fn update_by_id<'a>(
     sql_fields += ",val = ?";
     args.push(val.into());
   }
-  // 排序
-  if let Some(order_by) = input.order_by {
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
     field_num += 1;
-    sql_fields += ",order_by = ?";
-    args.push(order_by.into());
+    sql_fields += ",is_locked = ?";
+    args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -908,23 +956,29 @@ pub async fn update_by_id<'a>(
     sql_fields += ",is_enabled = ?";
     args.push(is_enabled.into());
   }
+  // 排序
+  if let Some(order_by) = input.order_by {
+    field_num += 1;
+    sql_fields += ",order_by = ?";
+    args.push(order_by.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
     sql_fields += ",rem = ?";
     args.push(rem.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    field_num += 1;
-    sql_fields += ",is_locked = ?";
-    args.push(is_locked.into());
-  }
   // 版本号
   if let Some(version) = input.version {
     field_num += 1;
     sql_fields += ",version = ?";
     args.push(version.into());
+  }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    field_num += 1;
+    sql_fields += ",is_sys = ?";
+    args.push(is_sys.into());
   }
   
   if field_num > 0 {
