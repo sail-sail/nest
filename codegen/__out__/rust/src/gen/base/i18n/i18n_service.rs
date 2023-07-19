@@ -108,10 +108,11 @@ pub async fn create<'a>(
 /// 根据id修改数据
 #[instrument(skip(ctx))]
 #[allow(dead_code)]
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  input: I18nInput,
+  mut input: I18nInput,
   options: Option<Options>,
 ) -> Result<String> {
   
