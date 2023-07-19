@@ -35,6 +35,7 @@ const hasDictbiz = columns.some((column) => {
 #>use tracing::instrument;
 use anyhow::Result;
 
+#[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
   SrvErr,
@@ -45,6 +46,7 @@ use crate::common::gql::model::{PageInput, SortInput};<#
 if (table !== "i18n") {
 #>
 
+#[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao;<#
 }
 #>
