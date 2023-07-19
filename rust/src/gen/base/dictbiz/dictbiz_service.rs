@@ -169,19 +169,10 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  let len = ids.len();
   let ids0 = ids.clone();
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
-    let model = dictbiz_dao::find_by_id(
-      ctx,
-      id.clone(),
-      None,
-    ).await?;
-    
-    if model.is_none() {
-      continue;
-    }
-    
     let is_locked = dictbiz_dao::get_is_locked_by_id(
       ctx,
       id.clone(),
@@ -194,22 +185,32 @@ pub async fn delete_by_ids<'a>(
     
     ids.push(id);
   }
+  if ids.len() == 0 && len > 0 {
+    let err_msg = i18n_dao::ns(ctx, "不能删除已经锁定的数据".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
   let ids = ids;
   
+  let len = ids.len();
   let ids0 = ids.clone();
-  let mut locked_ids: Vec<String> = vec![];
+  let mut ids: Vec<String> = vec![];
   for id in ids0 {
-    let is_locked = dictbiz_dao::get_is_locked_by_id(
+    let model = dictbiz_dao::find_by_id(
       ctx,
       id.clone(),
       None,
     ).await?;
-    if is_locked {
-      locked_ids.push(id);
+    if model.is_none() {
+      continue;
     }
+    let model = model.unwrap();
+    if model.is_sys == 1 {
+      continue;
+    }
+    ids.push(id);
   }
-  if locked_ids.len() > 0 && locked_ids.len() == ids.len() {
-    let err_msg = i18n_dao::ns(ctx, "不能删除已经锁定的数据".to_owned(), None).await?;
+  if ids.len() == 0 && len > 0 {
+    let err_msg = i18n_dao::ns(ctx, "不能删除系统记录".to_owned(), None).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
   

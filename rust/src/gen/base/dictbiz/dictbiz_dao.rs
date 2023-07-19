@@ -309,7 +309,7 @@ fn get_where_query<'a>(
     }
   }
   {
-    let is_sys: Vec<i8> = match &search {
+    let is_sys: Vec<u8> = match &search {
       Some(item) => item.is_sys.clone().unwrap_or_default(),
       None => Default::default(),
     };
@@ -1341,8 +1341,7 @@ pub async fn force_delete_by_ids<'a>(
     let mut args = QueryArgs::new();
     
     let sql = format!(
-      "delete from {} set where id=? and is_deleted = 1 limit 1",
-      table,
+      "delete from {table} where id=? and is_deleted = 1 limit 1",
     );
     
     args.push(id.into());

@@ -28,7 +28,7 @@ pub struct DictDetailModel {
   /// 备注
   pub rem: String,
   /// 系统字段
-  pub is_sys: i8,
+  pub is_sys: u8,
   /// 系统字段
   pub is_sys_lbl: String,
   /// 是否已删除
@@ -58,7 +58,7 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
     // 备注
     let rem: String = row.try_get("rem")?;
     // 系统字段
-    let is_sys: i8 = row.try_get("is_sys")?;
+    let is_sys: u8 = row.try_get("is_sys")?;
     let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -142,7 +142,7 @@ pub struct DictDetailSearch {
   /// 备注
   pub rem_like: Option<String>,
   /// 系统字段
-  pub is_sys: Option<Vec<i8>>,
+  pub is_sys: Option<Vec<u8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -170,7 +170,7 @@ pub struct DictDetailInput {
   /// 备注
   pub rem: Option<String>,
   /// 系统字段
-  pub is_sys: Option<i8>,
+  pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
 }
