@@ -146,35 +146,36 @@ export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   
-  const lockedIds: string[] = [ ];
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const is_locked = await optionsDao.getIsLockedById(id);
-    if (is_locked) {
-      lockedIds.push(id);
+  {
+    const ids2: string[] = [ ];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const is_locked = await optionsDao.getIsLockedById(id);
+      if (!is_locked) {
+        ids2.push(id);
+      }
     }
-  }
-  if (lockedIds.length > 0 && lockedIds.length === ids.length) {
-    throw await ns("不能删除已经锁定的数据");
+    if (ids2.length === 0 && ids.length > 0) {
+      throw await ns("不能删除已经锁定的数据");
+    }
+    ids = ids2;
   }
   
-  const ids2: string[] = [ ];
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    
-    // 不能修改系统记录的系统字段
-    const model = await optionsDao.findById(id);
-    if (model && model.is_sys === 1) {
-      continue;
+  {
+    const ids2: string[] = [ ];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const model = await optionsDao.findById(id);
+      if (model && model.is_sys === 1) {
+        continue;
+      }
+      ids2.push(id);
     }
-    
-    ids2.push(id);
+    if (ids2.length === 0 && ids.length > 0) {
+      throw await ns("不能删除系统记录");
+    }
+    ids = ids2;
   }
-  
-  if (ids2.length === 0 && ids.length > 0) {
-    throw await ns("不能删除系统记录");
-  }
-  ids = ids2;
   
   const data = await optionsDao.deleteByIds(ids);
   return data;
