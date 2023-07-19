@@ -28,7 +28,7 @@
     "element-plus": "2.3.8",
     "file-saver": "2.0.5",
     "filesize": "10.0.7",
-    "graphql": "16.6.0",
+    "graphql": "16.7.1",
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.1",
     "pinia": "2.1.4",

@@ -34,12 +34,12 @@ export async function findAll(
           lbl
           ky
           val
-          order_by
-          is_enabled
-          is_enabled_lbl
-          rem
           is_locked
           is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
           version
           create_usr_id
           create_usr_id_lbl
@@ -167,12 +167,12 @@ export async function findById(
           lbl
           ky
           val
-          order_by
-          is_enabled
-          is_enabled_lbl
-          rem
           is_locked
           is_locked_lbl
+          is_enabled
+          is_enabled_lbl
+          order_by
+          rem
           version
           create_usr_id
           create_usr_id_lbl
@@ -400,12 +400,12 @@ export function useExportExcel(routePath: string) {
             lbl
             ky
             val
-            order_by
-            is_enabled
-            is_enabled_lbl
-            rem
             is_locked
             is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
             version
             create_usr_id
             create_usr_id_lbl
@@ -420,12 +420,12 @@ export function useExportExcel(routePath: string) {
             lbl
             ky
             val
-            order_by
-            is_enabled
-            is_enabled_lbl
-            rem
             is_locked
             is_locked_lbl
+            is_enabled
+            is_enabled_lbl
+            order_by
+            rem
             version
             create_usr_id
             create_usr_id_lbl

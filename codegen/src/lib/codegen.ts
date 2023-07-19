@@ -127,6 +127,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           if (column.ignoreCodegen) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
+          if (column_name === "version") {
+            continue;
+          }
           if (column.onlyCodegenDeno) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;

@@ -9,7 +9,9 @@ function getArg(name: string): string | undefined {
   return Deno.args[index + 1];
 }
 
-const buildDir = getArg("--build-dir") || `${ Deno.cwd() }/../build/deno`;
+const denoDir = Deno.cwd();
+const pcDir = denoDir + "/../pc";
+const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
 const commands = (getArg("--command") || "").split(",").filter((v) => v);
 let target = getArg("--target") || "";
 if (target === "linux") {
@@ -20,17 +22,17 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
-  await Deno.copyFile(Deno.cwd()+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
-  await Deno.copyFile(Deno.cwd()+"/.env.prod", `${ buildDir }/.env.prod`);
+  await Deno.copyFile(denoDir+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
+  await Deno.copyFile(denoDir+"/.env.prod", `${ buildDir }/.env.prod`);
   await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
-  await Deno.copyFile(Deno.cwd()+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
-  await Deno.copyFile(Deno.cwd()+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
+  await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
+  await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
 }
 
 async function gqlgen() {
   console.log("gqlgen");
   const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
-    cwd: Deno.cwd(),
+    cwd: denoDir,
     args: [
       "run",
       "gqlgen",
@@ -52,9 +54,9 @@ async function gqlgen() {
 async function compile() {
   console.log("compile");
   try {
-    for await (const dirEntry of Deno.readDir(Deno.cwd()+"/../build/")) {
+    for await (const dirEntry of Deno.readDir(denoDir+"/../build/")) {
       if (dirEntry.isFile) {
-        await Deno.remove(Deno.cwd()+"/../build/"+dirEntry.name);
+        await Deno.remove(denoDir+"/../build/"+dirEntry.name);
       }
     }
     const allowReads = [
@@ -161,7 +163,7 @@ async function compile() {
     cmds = cmds.concat([ "--output", `${ buildDir }/${ server_title }`, "./mod.ts", "--", "-e=prod" ]);
     console.log("deno " + cmds.join(" "));
     const command = new Deno.Command(Deno.execPath(), {
-      cwd: Deno.cwd(),
+      cwd: denoDir,
       args: cmds,
       stderr: "piped",
       stdout: "null",
@@ -172,14 +174,14 @@ async function compile() {
       console.error(stderrStr);
     }
   } finally {
-    // await Deno.writeTextFile(Deno.cwd()+"/deps.ts", depsStr);
+    // await Deno.writeTextFile(denoDir+"/deps.ts", depsStr);
   }
 }
 
 async function pc() {
   console.log("pc");
   const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
-    cwd: Deno.cwd() + "/../pc",
+    cwd: pcDir,
     args: [
       "run",
       "build",
@@ -200,7 +202,7 @@ async function pc() {
 async function docs() {
   console.log("docs");
   const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
-    cwd: Deno.cwd() + "/../",
+    cwd: denoDir + "/../",
     args: [
       "run",
       "docs:build",
@@ -218,7 +220,7 @@ async function docs() {
 async function publish() {
   console.log("publish");
   const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
-    cwd: Deno.cwd(),
+    cwd: denoDir,
     args: [
       "run",
       "publish",

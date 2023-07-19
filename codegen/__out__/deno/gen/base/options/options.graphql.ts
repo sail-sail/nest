@@ -13,18 +13,18 @@ type OptionsModel {
   ky: String!
   "值"
   val: String!
-  "排序"
-  order_by: Int!
-  "启用"
-  is_enabled: Int!
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String!
   "锁定"
   is_locked: Int!
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int!
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int!
+  "备注"
+  rem: String!
   "版本号"
   version: Int!
   "创建人"
@@ -43,6 +43,10 @@ type OptionsModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
+  "系统字段"
+  is_sys: Int!
+  "系统字段"
+  is_sys_lbl: String
   "是否已删除"
   is_deleted: Int!
 }
@@ -53,18 +57,18 @@ type OptionsFieldComment {
   ky: String!
   "值"
   val: String!
-  "排序"
-  order_by: String!
-  "启用"
-  is_enabled: String!
-  "启用"
-  is_enabled_lbl: String!
-  "备注"
-  rem: String!
   "锁定"
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
+  "启用"
+  is_enabled: String!
+  "启用"
+  is_enabled_lbl: String!
+  "排序"
+  order_by: String!
+  "备注"
+  rem: String!
   "版本号"
   version: String!
   "创建人"
@@ -93,18 +97,18 @@ input OptionsInput {
   ky: String
   "值"
   val: String
-  "排序"
-  order_by: Int
-  "启用"
-  is_enabled: Int
-  "启用"
-  is_enabled_lbl: String
-  "备注"
-  rem: String
   "锁定"
   is_locked: Int
   "锁定"
   is_locked_lbl: String
+  "启用"
+  is_enabled: Int
+  "启用"
+  is_enabled_lbl: String
+  "排序"
+  order_by: Int
+  "备注"
+  rem: String
   "版本号"
   version: Int
   "创建人"
@@ -123,6 +127,10 @@ input OptionsInput {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String
+  "系统字段"
+  is_sys: Int
+  "系统字段"
+  is_sys_lbl: String
 }
 input OptionsSearch {
   "是否已删除"
@@ -140,15 +148,15 @@ input OptionsSearch {
   "值"
   val: String
   val_like: String
-  "排序"
-  order_by: [Int!]
+  "锁定"
+  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
+  "排序"
+  order_by: [Int!]
   "备注"
   rem: String
   rem_like: String
-  "锁定"
-  is_locked: [Int!]
   "版本号"
   version: [Int!]
   "创建人"
@@ -161,6 +169,8 @@ input OptionsSearch {
   update_usr_id_is_null: Boolean
   "更新时间"
   update_time: [NaiveDateTime!]
+  "系统字段"
+  is_sys: [Int!]
 }
 type Query {
   "根据条件查找据数总数"
