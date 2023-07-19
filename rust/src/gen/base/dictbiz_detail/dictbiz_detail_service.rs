@@ -131,10 +131,11 @@ pub async fn update_tenant_by_id<'a>(
 /// 根据id修改数据
 #[instrument(skip(ctx))]
 #[allow(dead_code)]
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  input: DictbizDetailInput,
+  mut input: DictbizDetailInput,
   options: Option<Options>,
 ) -> Result<String> {
   
@@ -194,6 +195,23 @@ pub async fn delete_by_ids<'a>(
     ids.push(id);
   }
   let ids = ids;
+  
+  let ids0 = ids.clone();
+  let mut locked_ids: Vec<String> = vec![];
+  for id in ids0 {
+    let is_locked = dictbiz_detail_dao::get_is_locked_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if is_locked {
+      locked_ids.push(id);
+    }
+  }
+  if locked_ids.len() > 0 && locked_ids.len() == ids.len() {
+    let err_msg = i18n_dao::ns(ctx, "不能删除已经锁定的数据".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
   
   let num = dictbiz_detail_dao::delete_by_ids(
     ctx,

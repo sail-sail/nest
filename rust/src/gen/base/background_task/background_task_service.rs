@@ -131,10 +131,11 @@ pub async fn update_tenant_by_id<'a>(
 /// 根据id修改数据
 #[instrument(skip(ctx))]
 #[allow(dead_code)]
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  input: BackgroundTaskInput,
+  mut input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<String> {
   

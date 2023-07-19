@@ -6,6 +6,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -197,10 +198,11 @@ pub async fn update_dept_by_id<'a>(
 /// 根据id修改数据
 #[instrument(skip(ctx))]
 #[allow(dead_code)]
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  input: <#=tableUP#>Input,
+  mut input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<String> {<#
   if (hasLocked) {
@@ -215,6 +217,28 @@ pub async fn update_by_id<'a>(
   if is_locked {
     let err_msg = i18n_dao::ns(ctx, "不能修改已经锁定的数据".to_owned(), None).await?;
     return Err(SrvErr::msg(err_msg).into());
+  }<#
+  }
+  #><#
+  if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
+  #>
+  
+  // 不能修改系统记录的系统字段
+  let model = <#=table#>_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if let Some(model) = model {
+    if model.is_sys == 1 {<#
+      for (let i = 0; i < opts.sys_fields.length; i++) {
+        const sys_field = opts.sys_fields[i];
+      #>
+      input.<#=rustKeyEscape(sys_field)#> = None;<#
+      }
+      #>
+    }
   }<#
   }
   #>
@@ -266,6 +290,27 @@ pub async fn delete_by_ids<'a>(
     ids.push(id);
   }
   let ids = ids;<#
+  }
+  #><#
+  if (hasIsSys) {
+  #>
+  
+  let ids0 = ids.clone();
+  let mut locked_ids: Vec<String> = vec![];
+  for id in ids0 {
+    let is_locked = <#=table#>_dao::get_is_locked_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if is_locked {
+      locked_ids.push(id);
+    }
+  }
+  if locked_ids.len() > 0 && locked_ids.len() == ids.len() {
+    let err_msg = i18n_dao::ns(ctx, "不能删除已经锁定的数据".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }<#
   }
   #>
   

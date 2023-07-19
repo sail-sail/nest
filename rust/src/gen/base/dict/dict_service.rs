@@ -111,10 +111,11 @@ pub async fn create<'a>(
 /// 根据id修改数据
 #[instrument(skip(ctx))]
 #[allow(dead_code)]
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  input: DictInput,
+  mut input: DictInput,
   options: Option<Options>,
 ) -> Result<String> {
   
@@ -127,6 +128,21 @@ pub async fn update_by_id<'a>(
   if is_locked {
     let err_msg = i18n_dao::ns(ctx, "不能修改已经锁定的数据".to_owned(), None).await?;
     return Err(SrvErr::msg(err_msg).into());
+  }
+  
+  // 不能修改系统记录的系统字段
+  let model = dict_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if let Some(model) = model {
+    if model.is_sys == 1 {
+      input.code = None;
+      input.r#type = None;
+      input.is_enabled = None;
+    }
   }
   
   let res = dict_dao::update_by_id(
@@ -174,6 +190,23 @@ pub async fn delete_by_ids<'a>(
     ids.push(id);
   }
   let ids = ids;
+  
+  let ids0 = ids.clone();
+  let mut locked_ids: Vec<String> = vec![];
+  for id in ids0 {
+    let is_locked = dict_dao::get_is_locked_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if is_locked {
+      locked_ids.push(id);
+    }
+  }
+  if locked_ids.len() > 0 && locked_ids.len() == ids.len() {
+    let err_msg = i18n_dao::ns(ctx, "不能删除已经锁定的数据".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
   
   let num = dict_dao::delete_by_ids(
     ctx,
