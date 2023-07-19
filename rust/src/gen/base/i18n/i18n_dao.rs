@@ -17,7 +17,7 @@ use crate::common::context::{
   get_page_query,
 };
 
-use crate::src::base::i18n::i18n_dao::NRoute;
+use crate::src::base::i18n::i18n_dao;
 
 use crate::common::gql::model::{PageInput, SortInput};
 
@@ -403,7 +403,7 @@ pub async fn get_field_comments<'a>(
   _options: Option<Options>,
 ) -> Result<I18nFieldComment> {
   
-  let n_route = NRoute {
+  let n_route = i18n_dao::NRoute {
     route_path: "/base/i18n".to_owned().into(),
   };
   
@@ -575,10 +575,7 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
-    let n_route = NRoute {
-      route_path: "/base/i18n".to_owned().into(),
-    };
-    let str = n_route.n(ctx, "已经存在".to_owned(), None).await?;
+    let str = i18n_dao::ns(ctx, "已经存在".to_owned(), None).await?;
     let err_msg: String = format!(
       "{}: {}, {}: {}, {}: {} {str}",
       field_comments.lang_id,

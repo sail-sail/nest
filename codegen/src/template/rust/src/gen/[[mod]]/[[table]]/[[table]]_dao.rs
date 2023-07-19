@@ -65,13 +65,9 @@ use crate::common::context::{
   get_short_uuid,
   get_order_by_query,
   get_page_query,
-};<#
-if (table !== "i18n") {
-#>
+};
 
-use crate::src::base::i18n::i18n_dao;<#
-}
-#>
+use crate::src::base::i18n::i18n_dao;
 
 use crate::common::gql::model::{PageInput, SortInput};<#
   if (hasDict) {

@@ -13,18 +13,18 @@ pub struct OptionsModel {
   pub ky: String,
   /// 值
   pub val: String,
-  /// 排序
-  pub order_by: u32,
-  /// 启用
-  pub is_enabled: u8,
-  /// 启用
-  pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
   pub is_locked_lbl: String,
+  /// 启用
+  pub is_enabled: u8,
+  /// 启用
+  pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: u32,
+  /// 备注
+  pub rem: String,
   /// 版本号
   pub version: u32,
   /// 创建人
@@ -43,6 +43,10 @@ pub struct OptionsModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 系统字段
+  pub is_sys: i8,
+  /// 系统字段
+  pub is_sys_lbl: String,
   /// 是否已删除
   is_deleted: u8,
 }
@@ -57,16 +61,16 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
     let ky: String = row.try_get("ky")?;
     // 值
     let val: String = row.try_get("val")?;
-    // 排序
-    let order_by: u32 = row.try_get("order_by")?;
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
-    // 备注
-    let rem: String = row.try_get("rem")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
+    // 启用
+    let is_enabled: u8 = row.try_get("is_enabled")?;
+    let is_enabled_lbl: String = is_enabled.to_string();
+    // 排序
+    let order_by: u32 = row.try_get("order_by")?;
+    // 备注
+    let rem: String = row.try_get("rem")?;
     // 版本号
     let version: u32 = row.try_get("version")?;
     // 创建人
@@ -89,6 +93,9 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
       Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
+    // 系统字段
+    let is_sys: i8 = row.try_get("is_sys")?;
+    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -97,12 +104,12 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
       lbl,
       ky,
       val,
-      order_by,
-      is_enabled,
-      is_enabled_lbl,
-      rem,
       is_locked,
       is_locked_lbl,
+      is_enabled,
+      is_enabled_lbl,
+      order_by,
+      rem,
       version,
       create_usr_id,
       create_usr_id_lbl,
@@ -112,6 +119,8 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
+      is_sys,
+      is_sys_lbl,
       is_deleted,
     };
     
@@ -128,18 +137,18 @@ pub struct OptionsFieldComment {
   pub ky: String,
   /// 值
   pub val: String,
-  /// 排序
-  pub order_by: String,
-  /// 启用
-  pub is_enabled: String,
-  /// 启用
-  pub is_enabled_lbl: String,
-  /// 备注
-  pub rem: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
   pub is_locked_lbl: String,
+  /// 启用
+  pub is_enabled: String,
+  /// 启用
+  pub is_enabled_lbl: String,
+  /// 排序
+  pub order_by: String,
+  /// 备注
+  pub rem: String,
   /// 版本号
   pub version: String,
   /// 创建人
@@ -158,6 +167,10 @@ pub struct OptionsFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 系统字段
+  pub is_sys: String,
+  /// 系统字段
+  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -178,16 +191,16 @@ pub struct OptionsSearch {
   pub val: Option<String>,
   /// 值
   pub val_like: Option<String>,
-  /// 排序
-  pub order_by: Option<Vec<u32>>,
+  /// 锁定
+  pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
+  /// 排序
+  pub order_by: Option<Vec<u32>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 锁定
-  pub is_locked: Option<Vec<u8>>,
   /// 版本号
   pub version: Option<Vec<u32>>,
   /// 创建人
@@ -202,6 +215,8 @@ pub struct OptionsSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 系统字段
+  pub is_sys: Option<Vec<i8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -214,18 +229,18 @@ pub struct OptionsInput {
   pub ky: Option<String>,
   /// 值
   pub val: Option<String>,
-  /// 排序
-  pub order_by: Option<u32>,
-  /// 启用
-  pub is_enabled: Option<u8>,
-  /// 启用
-  pub is_enabled_lbl: Option<String>,
-  /// 备注
-  pub rem: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
   pub is_locked_lbl: Option<String>,
+  /// 启用
+  pub is_enabled: Option<u8>,
+  /// 启用
+  pub is_enabled_lbl: Option<String>,
+  /// 排序
+  pub order_by: Option<u32>,
+  /// 备注
+  pub rem: Option<String>,
   /// 版本号
   pub version: Option<u32>,
   /// 创建人
@@ -244,6 +259,10 @@ pub struct OptionsInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+  /// 系统字段
+  pub is_sys: Option<i8>,
+  /// 系统字段
+  pub is_sys_lbl: Option<String>,
 }
 
 impl From<OptionsInput> for OptionsSearch {
@@ -258,14 +277,14 @@ impl From<OptionsInput> for OptionsSearch {
       ky: input.ky,
       // 值
       val: input.val,
-      // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
-      // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 备注
-      rem: input.rem,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
+      // 启用
+      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      // 排序
+      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 备注
+      rem: input.rem,
       // 版本号
       version: input.version.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 创建人
@@ -276,6 +295,8 @@ impl From<OptionsInput> for OptionsSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 系统字段
+      is_sys: input.is_sys.map(|x| vec![x.into()]),
       ..Default::default()
     }
   }

@@ -17,7 +17,7 @@ use crate::common::context::{
   get_page_query,
 };
 
-use crate::src::base::i18n::i18n_dao::NRoute;
+use crate::src::base::i18n::i18n_dao;
 
 use crate::common::gql::model::{PageInput, SortInput};
 
@@ -441,7 +441,7 @@ pub async fn get_field_comments<'a>(
   _options: Option<Options>,
 ) -> Result<OperationRecordFieldComment> {
   
-  let n_route = NRoute {
+  let n_route = i18n_dao::NRoute {
     route_path: "/base/operation_record".to_owned().into(),
   };
   
