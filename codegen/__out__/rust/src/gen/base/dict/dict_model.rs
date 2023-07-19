@@ -44,7 +44,7 @@ pub struct DictModel {
   /// 更新时间
   pub update_time_lbl: String,
   /// 系统字段
-  pub is_sys: i8,
+  pub is_sys: u8,
   /// 系统字段
   pub is_sys_lbl: String,
   /// 是否已删除
@@ -93,7 +93,7 @@ impl FromRow<'_, MySqlRow> for DictModel {
       None => "".to_owned(),
     };
     // 系统字段
-    let is_sys: i8 = row.try_get("is_sys")?;
+    let is_sys: u8 = row.try_get("is_sys")?;
     let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -211,7 +211,7 @@ pub struct DictSearch {
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
   /// 系统字段
-  pub is_sys: Option<Vec<i8>>,
+  pub is_sys: Option<Vec<u8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -255,7 +255,7 @@ pub struct DictInput {
   /// 更新时间
   pub update_time_lbl: Option<String>,
   /// 系统字段
-  pub is_sys: Option<i8>,
+  pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
 }

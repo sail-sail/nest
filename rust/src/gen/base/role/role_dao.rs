@@ -1306,8 +1306,7 @@ pub async fn force_delete_by_ids<'a>(
     let mut args = QueryArgs::new();
     
     let sql = format!(
-      "delete from {} set where id=? and is_deleted = 1 limit 1",
-      table,
+      "delete from {table} where id=? and is_deleted = 1 limit 1",
     );
     
     args.push(id.into());
