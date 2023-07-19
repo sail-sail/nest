@@ -1057,11 +1057,6 @@ export async function deleteByIds(
     if (!isExist) {
       continue;
     }
-    
-    const is_locked = await getIsLockedById(id);
-    if (is_locked) {
-      continue;
-    }
     const args = new QueryArgs();
     const sql = /*sql*/ `
       update

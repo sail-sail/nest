@@ -133,16 +133,19 @@ export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
   
-  const lockedIds: string[] = [ ];
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const is_locked = await orgDao.getIsLockedById(id);
-    if (is_locked) {
-      lockedIds.push(id);
+  {
+    const ids2: string[] = [ ];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const is_locked = await orgDao.getIsLockedById(id);
+      if (!is_locked) {
+        ids2.push(id);
+      }
     }
-  }
-  if (lockedIds.length > 0 && lockedIds.length === ids.length) {
-    throw await ns("不能删除已经锁定的数据");
+    if (ids2.length === 0 && ids.length > 0) {
+      throw await ns("不能删除已经锁定的数据");
+    }
+    ids = ids2;
   }
   
   const data = await orgDao.deleteByIds(ids);

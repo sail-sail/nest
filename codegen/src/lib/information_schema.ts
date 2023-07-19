@@ -119,7 +119,7 @@ async function getSchema0(
   if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "is_sys",
-      COLUMN_TYPE: "tinyint(1)",
+      COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
       COLUMN_COMMENT: "系统字段",
       dict: "is_sys",
