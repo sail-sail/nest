@@ -514,7 +514,6 @@ import {
 
 import {
   type BackgroundTaskModel,
-  type BackgroundTaskInput,
   type BackgroundTaskSearch,
   type UsrModel,
 } from "#/types";

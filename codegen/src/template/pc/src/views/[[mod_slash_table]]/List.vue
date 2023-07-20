@@ -1115,8 +1115,12 @@ import {
 } from "./Api";
 
 import {
-  type <#=modelName#>,
-  type <#=inputName#>,
+  type <#=modelName#>,<#
+  if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
+  #>
+  type <#=inputName#>,<#
+  }
+  #>
   type <#=searchName#>,<#
 {
 const foreignTableUpArr = [ ];

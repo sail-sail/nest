@@ -542,7 +542,6 @@ import {
 
 import {
   type OperationRecordModel,
-  type OperationRecordInput,
   type OperationRecordSearch,
   type UsrModel,
 } from "#/types";
