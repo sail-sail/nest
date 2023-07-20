@@ -38,21 +38,20 @@ for (let i = 0; i < columns.length; i++) {
   ref="customDialogRef"
   :before-close="beforeClose"
 >
-  <template
-    v-if="!isLocked"
-    #extra_header
-  >
-    <ElIconUnlock
-      v-if="!isReadonly"
-      class="unlock_but"
-      @click="isReadonly = true"
-    >
-    </ElIconUnlock>
-    <ElIconLock
-      v-else
-      class="lock_but"
-      @click="isReadonly = false"
-    ></ElIconLock>
+  <template #extra_header>
+    <template v-if="!isLocked">
+      <ElIconUnlock
+        v-if="!isReadonly"
+        class="unlock_but"
+        @click="isReadonly = true"
+      >
+      </ElIconUnlock>
+      <ElIconLock
+        v-else
+        class="lock_but"
+        @click="isReadonly = false"
+      ></ElIconLock>
+    </template>
   </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -646,15 +645,14 @@ import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=for
 }
 #>
 
-const emit = defineEmits<
-  (
-    e: "nextId",
-    value: {
+const emit = defineEmits<{
+  nextId: [
+    {
       dialogAction: DialogAction,
       id: string,
     },
-  ) => void
->();
+  ],
+}>();
 
 const {
   n,
@@ -1119,7 +1117,10 @@ async function getOrgListApi() {
 }
 
 watch(
-  () => dialogModel.org_ids,
+  () => [
+    dialogModel.org_ids,
+    default_org_idRef,
+  ],
   async () => {
     if (!default_org_idRef) {
       return;
@@ -1153,7 +1154,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 }
 
 /** 初始化ts中的国际化信息 */
-async function initI18nsEfc() {
+async function onInitI18ns() {
   const codes: string[] = [<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1183,7 +1184,7 @@ async function initI18nsEfc() {
     initI18ns(codes),
   ]);
 }
-initI18nsEfc();
+onInitI18ns();
 
 defineExpose({
   showDialog,

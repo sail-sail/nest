@@ -612,15 +612,25 @@ const permit = permitStore.getPermit("/base/i18n");
 
 let inited = $ref(false);
 
-const emit = defineEmits([
-  "selectedIdsChg",
-  "add",
-  "edit",
-  "remove",
-  "revert",
-  "refresh",
-  "beforeSearchReset",
-]);
+const emit = defineEmits<{
+  selectedIdsChg: [
+    string[],
+  ],
+  add: [
+    string[],
+  ],
+  edit: [
+    string[],
+  ],
+  remove: [
+    number,
+  ],
+  revert: [
+    number,
+  ],
+  refresh: [ ],
+  beforeSearchReset: [ ],
+}>();
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();

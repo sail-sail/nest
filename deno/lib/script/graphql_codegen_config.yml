@@ -23,7 +23,31 @@ generates:
     plugins:
       - typescript
       - typescript-operations
+    config:
+      useTypeImports: true
+      scalars:
+        Decimal:
+          input: string
+          output: string
+        NaiveDate:
+          input: string
+          output: string
+        NaiveDateTime:
+          input: string
+          output: string
   ../uni/src/typings/types.ts:
     plugins:
       - typescript
       - typescript-operations
+    config:
+      useTypeImports: true
+      scalars:
+        Decimal:
+          input: string
+          output: string
+        NaiveDate:
+          input: string
+          output: string
+        NaiveDateTime:
+          input: string
+          output: string
