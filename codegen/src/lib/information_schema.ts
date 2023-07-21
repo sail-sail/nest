@@ -154,6 +154,50 @@ async function getSchema0(
         item.width = 150;
       }
     }
+    if (column_name === "lbl") {
+      if (item.width == null) {
+        item.width = 200;
+      }
+      if (item.require == null) {
+        item.require = true;
+      }
+      if (item.search == null) {
+        item.search = true;
+      }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = true;
+      }
+      if (item.align == null) {
+        item.align = "left";
+      }
+      if (item.fixed === undefined) {
+        item.fixed = "left";
+      } else if (item.fixed === null) {
+        delete item.fixed;
+      }
+    }
+    if (column_name === "code") {
+      if (item.width == null) {
+        item.width = 140;
+      }
+      if (item.require == null) {
+        item.require = true;
+      }
+      if (item.search == null) {
+        item.search = true;
+      }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = true;
+      }
+      if (item.align == null) {
+        item.align = "left";
+      }
+      if (item.fixed === undefined) {
+        item.fixed = "left";
+      } else if (item.fixed === null) {
+        delete item.fixed;
+      }
+    }
     if ([ "is_locked" ].includes(column_name)) {
       if (item.noAdd == null) {
         item.noAdd = true;
@@ -272,6 +316,18 @@ async function getSchema0(
     ) {
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
+      }
+    }
+    if (
+      item.foreignKey
+      && (item.foreignKey.multiple || item.COLUMN_NAME.endsWith("_ids"))
+      && (item.foreignKey.showType === "dialog")
+    ) {
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
+      if (item.width == null) {
+        item.width = 80;
       }
     }
   }

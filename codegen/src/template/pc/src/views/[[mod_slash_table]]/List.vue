@@ -1115,8 +1115,12 @@ import {
 } from "./Api";
 
 import {
-  type <#=modelName#>,
-  type <#=inputName#>,
+  type <#=modelName#>,<#
+  if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
+  #>
+  type <#=inputName#>,<#
+  }
+  #>
   type <#=searchName#>,<#
 {
 const foreignTableUpArr = [ ];
@@ -1220,15 +1224,25 @@ const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
 
 let inited = $ref(false);
 
-const emit = defineEmits([
-  "selectedIdsChg",
-  "add",
-  "edit",
-  "remove",
-  "revert",
-  "refresh",
-  "beforeSearchReset",
-]);
+const emit = defineEmits<{
+  selectedIdsChg: [
+    string[],
+  ],
+  add: [
+    string[],
+  ],
+  edit: [
+    string[],
+  ],
+  remove: [
+    number,
+  ],
+  revert: [
+    number,
+  ],
+  refresh: [ ],
+  beforeSearchReset: [ ],
+}>();
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();

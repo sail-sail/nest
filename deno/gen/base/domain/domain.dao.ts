@@ -77,6 +77,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.is_locked && !Array.isArray(search?.is_locked)) {
+    search.is_locked = [ search.is_locked ];
+  }
+  if (search?.is_locked && search?.is_locked?.length > 0) {
+    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+  }
   if (search?.is_default && !Array.isArray(search?.is_default)) {
     search.is_default = [ search.is_default ];
   }
@@ -279,15 +285,27 @@ export async function findAll(
   );
   
   const [
+    is_lockedDict, // 锁定
     is_defaultDict, // 默认
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_default",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 锁定
+    let is_locked_lbl = model.is_locked.toString();
+    if (model.is_locked !== undefined && model.is_locked !== null) {
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      if (dictItem) {
+        is_locked_lbl = dictItem.lbl;
+      }
+    }
+    model.is_locked_lbl = is_locked_lbl;
     
     // 默认
     let is_default_lbl = model.is_default.toString();
@@ -344,6 +362,8 @@ export async function getFieldComments() {
   const n = initN("/domain");
   const fieldComments = {
     lbl: await n("名称"),
+    is_locked: await n("锁定"),
+    is_locked_lbl: await n("锁定"),
     is_default: await n("默认"),
     is_default_lbl: await n("默认"),
     is_enabled: await n("启用"),
@@ -589,13 +609,23 @@ export async function create(
   const method = "create";
   
   const [
+    is_lockedDict, // 锁定
     is_defaultDict, // 默认
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_default",
     "is_enabled",
   ]);
   
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
   
   // 默认
   if (isNotEmpty(model.is_default_lbl) && model.is_default === undefined) {
@@ -642,6 +672,9 @@ export async function create(
   if (model.lbl !== undefined) {
     sql += `,lbl`;
   }
+  if (model.is_locked !== undefined) {
+    sql += `,is_locked`;
+  }
   if (model.is_default !== undefined) {
     sql += `,is_default`;
   }
@@ -671,6 +704,9 @@ export async function create(
   }
   if (model.lbl !== undefined) {
     sql += `,${ args.push(model.lbl) }`;
+  }
+  if (model.is_locked !== undefined) {
+    sql += `,${ args.push(model.is_locked) }`;
   }
   if (model.is_default !== undefined) {
     sql += `,${ args.push(model.is_default) }`;
@@ -747,12 +783,22 @@ export async function updateById(
   }
   
   const [
+    is_lockedDict, // 锁定
     is_defaultDict, // 默认
     is_enabledDict, // 启用
   ] = await dictSrcDao.getDict([
+    "is_locked",
     "is_default",
     "is_enabled",
   ]);
+  
+  // 锁定
+  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      model.is_locked = Number(val);
+    }
+  }
   
   // 默认
   if (isNotEmpty(model.is_default_lbl) && model.is_default === undefined) {
@@ -784,6 +830,12 @@ export async function updateById(
   if (model.lbl !== undefined) {
     if (model.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(model.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_locked !== undefined) {
+    if (model.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(model.is_locked) },`;
       updateFldNum++;
     }
   }
@@ -978,6 +1030,72 @@ export async function enableByIds(
       base_domain
     set
       is_enabled = ${ args.push(is_enabled) }
+    
+  `;
+  {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+    }
+  }
+  sql += /*sql*/ `
+  
+  where
+      id in ${ args.push(ids) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 ID 查找是否已锁定
+ * 已锁定的记录不能修改和删除
+ * 记录不存在则返回 undefined
+ * @param {string} id
+ * @return {Promise<0 | 1 | undefined>}
+ */
+export async function getIsLockedById(
+  id: string,
+  options?: {
+  },
+): Promise<0 | 1 | undefined> {
+  const model = await findById(
+    id,
+    options,
+  );
+  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  return is_locked;
+}
+
+/**
+ * 根据 ids 锁定或者解锁数据
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @return {Promise<number>}
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  options?: {
+  },
+): Promise<number> {
+  const table = "base_domain";
+  const method = "lockByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  let sql = /*sql*/ `
+    update
+      base_domain
+    set
+      is_locked = ${ args.push(is_locked) }
     
   `;
   {

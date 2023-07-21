@@ -9,6 +9,10 @@ type DomainModel {
   id: String!
   "名称"
   lbl: String!
+  "锁定"
+  is_locked: Int!
+  "锁定"
+  is_locked_lbl: String
   "默认"
   is_default: Int!
   "默认"
@@ -43,6 +47,10 @@ type DomainModel {
 type DomainFieldComment {
   "名称"
   lbl: String!
+  "锁定"
+  is_locked: String!
+  "锁定"
+  is_locked_lbl: String!
   "默认"
   is_default: String!
   "默认"
@@ -77,6 +85,10 @@ input DomainInput {
   id: String
   "名称"
   lbl: String
+  "锁定"
+  is_locked: Int
+  "锁定"
+  is_locked_lbl: String
   "默认"
   is_default: Int
   "默认"
@@ -116,6 +128,8 @@ input DomainSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "锁定"
+  is_locked: [Int!]
   "默认"
   is_default: [Int!]
   "启用"
@@ -161,6 +175,8 @@ type Mutation {
   defaultByIdDomain(id: String!): Int!
   "根据 ids 启用或者禁用数据"
   enableByIdsDomain(ids: [String!]!, is_enabled: Int!): Int!
+  "根据 ids 锁定或者解锁数据"
+  lockByIdsDomain(ids: [String!]!, is_locked: Int!): Int!
   "根据 ids 还原数据"
   revertByIdsDomain(ids: [String!]!): Int!
   "根据 ids 彻底删除数据"

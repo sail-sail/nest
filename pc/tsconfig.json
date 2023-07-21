@@ -10,6 +10,7 @@
     "moduleResolution": "node",
     "allowJs": true,
     "jsx": "preserve",
+    "jsxImportSource": "vue",
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
