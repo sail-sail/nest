@@ -32,6 +32,8 @@ export async function findAll(
         findAllDomain(search: $search, page: $page, sort: $sort) {
           id
           lbl
+          is_locked
+          is_locked_lbl
           is_default
           is_default_lbl
           is_enabled
@@ -162,6 +164,8 @@ export async function findById(
         findByIdDomain(id: $id) {
           id
           lbl
+          is_locked
+          is_locked_lbl
           is_default
           is_default_lbl
           is_enabled
@@ -265,6 +269,35 @@ export async function enableByIds(
     },
   }, opt);
   const res = data.enableByIdsDomain;
+  return res;
+}
+
+/**
+ * 根据 ids 锁定或解锁数据
+ * @export lockByIds
+ * @param {string[]} ids
+ * @param {0 | 1} is_locked
+ * @param {GqlOpt} opt?
+ */
+export async function lockByIds(
+  ids: string[],
+  is_locked: 0 | 1,
+  opt?: GqlOpt,
+) {
+  const data: {
+    lockByIdsDomain: Mutation["lockByIdsDomain"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [String!]!, $is_locked: Int!) {
+        lockByIdsDomain(ids: $ids, is_locked: $is_locked)
+      }
+    `,
+    variables: {
+      ids,
+      is_locked,
+    },
+  }, opt);
+  const res = data.lockByIdsDomain;
   return res;
 }
 
@@ -389,6 +422,8 @@ export function useExportExcel(routePath: string) {
           findAllDomain(search: $search, sort: $sort) {
             id
             lbl
+            is_locked
+            is_locked_lbl
             is_default
             is_default_lbl
             is_enabled
@@ -406,6 +441,8 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsDomain {
             lbl
+            is_locked
+            is_locked_lbl
             is_default
             is_default_lbl
             is_enabled

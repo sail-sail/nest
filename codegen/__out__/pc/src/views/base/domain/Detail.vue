@@ -3,21 +3,20 @@
   ref="customDialogRef"
   :before-close="beforeClose"
 >
-  <template
-    v-if="!isLocked"
-    #extra_header
-  >
-    <ElIconUnlock
-      v-if="!isReadonly"
-      class="unlock_but"
-      @click="isReadonly = true"
-    >
-    </ElIconUnlock>
-    <ElIconLock
-      v-else
-      class="lock_but"
-      @click="isReadonly = false"
-    ></ElIconLock>
+  <template #extra_header>
+    <template v-if="!isLocked">
+      <ElIconUnlock
+        v-if="!isReadonly"
+        class="unlock_but"
+        @click="isReadonly = true"
+      >
+      </ElIconUnlock>
+      <ElIconLock
+        v-else
+        class="lock_but"
+        @click="isReadonly = false"
+      ></ElIconLock>
+    </template>
   </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -193,15 +192,14 @@ import {
 import {
 } from "./Api";
 
-const emit = defineEmits<
-  (
-    e: "nextId",
-    value: {
+const emit = defineEmits<{
+  nextId: [
+    {
       dialogAction: DialogAction,
       id: string,
     },
-  ) => void
->();
+  ],
+}>();
 
 const {
   n,
@@ -240,6 +238,12 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
     ],
+    is_locked: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
+      },
+    ],
     is_enabled: [
       {
         required: true,
@@ -273,6 +277,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DomainInput = {
+    is_locked: 0,
     is_default: 0,
     is_enabled: 1,
     order_by: 1,
@@ -317,7 +322,7 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = toValue(arg?.isLocked) ?? isLocked;
+    isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];
@@ -350,6 +355,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_locked: undefined,
+        is_locked_lbl: undefined,
       };
     }
   } else if (dialogAction === "edit") {
@@ -532,9 +539,10 @@ async function beforeClose(done: (cancel: boolean) => void) {
 }
 
 /** 初始化ts中的国际化信息 */
-async function initI18nsEfc() {
+async function onInitI18ns() {
   const codes: string[] = [
     "名称",
+    "锁定",
     "默认",
     "启用",
     "排序",
@@ -549,7 +557,7 @@ async function initI18nsEfc() {
     initI18ns(codes),
   ]);
 }
-initI18nsEfc();
+onInitI18ns();
 
 defineExpose({
   showDialog,
