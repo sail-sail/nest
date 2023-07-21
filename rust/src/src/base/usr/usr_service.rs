@@ -1,3 +1,4 @@
+use tracing::instrument;
 use anyhow::Result;
 use crate::common::context::Ctx;
 
@@ -18,6 +19,8 @@ use super::usr_model::{
   GetLoginInfoorgIdModel,
 };
 
+/// 登录, 获得token
+#[instrument(skip(ctx))]
 pub async fn login<'a>(
   ctx: &mut impl Ctx<'a>,
   username: String,
@@ -91,6 +94,7 @@ pub async fn login<'a>(
 }
 
 /// 选择语言
+#[instrument(skip(ctx))]
 pub async fn select_lang<'a>(
   ctx: &mut impl Ctx<'a>,
   lang: String,
