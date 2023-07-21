@@ -243,6 +243,12 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    lbl: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+      },
+    ],
     ky: [
       {
         required: true,

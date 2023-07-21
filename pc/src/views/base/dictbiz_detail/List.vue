@@ -858,6 +858,7 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "值",

@@ -192,6 +192,32 @@ export async function enableByIdsDomain(
 }
 
 /**
+ * 根据 ids 锁定或者解锁数据
+ */
+export async function lockByIdsDomain(
+  ids: string[],
+  is_locked: 0 | 1,
+) {
+  const context = useContext();
+  
+  context.is_tran = true;
+  if (is_locked !== 0 && is_locked !== 1) {
+    throw new Error(`lockByIdsDomain.is_locked expect 0 or 1 but got ${ is_locked }`);
+  }
+  
+  await usePermit(
+    "/base/domain",
+    "lock",
+  );
+  
+  const {
+    lockByIds,
+  } = await import("./domain.service.ts");
+  const res = await lockByIds(ids, is_locked);
+  return res;
+}
+
+/**
  * 根据 ids 还原数据
  */
 export async function revertByIdsDomain(

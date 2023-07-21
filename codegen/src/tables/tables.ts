@@ -10,18 +10,11 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        align: "left",
-        width: 240,
-        fixed: "left",
       },
       {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单",
-        require: false,
         search: true,
-        width: 80,
         foreignKey: {
           showType: "dialog",
         },
@@ -58,10 +51,6 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        align: "left",
-        width: 140,
         fixed: "left",
       },
       {
@@ -75,7 +64,6 @@ export default defineConfig({
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单权限",
         search: true,
-        width: 80,
         foreignKey: {
           showType: "dialog",
           selectType: "tree",
@@ -116,11 +104,11 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        align: "left",
         width: 280,
         fixed: "left",
+      },
+      {
+        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "is_default",
@@ -162,11 +150,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        sortable: true,
-        align: "left",
-        width: 140,
         fixed: "left",
       },
       {
@@ -207,7 +190,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "org_ids",
         COLUMN_COMMENT: "拥有组织",
-        require: false,
         search: true,
         width: 280,
         align: "left",
@@ -228,7 +210,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "拥有角色",
-        require: false,
         search: true,
         width: 280,
         align: "left",
@@ -528,6 +509,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
+        fixed: null,
       },
       {
         COLUMN_NAME: "lbl",
@@ -535,6 +517,7 @@ export default defineConfig({
         search: true,
         width: 160,
         align: "left",
+        fixed: null,
       },
       {
         COLUMN_NAME: "is_visible",

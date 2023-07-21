@@ -266,6 +266,22 @@
               <span>{{ ns('禁用') }}</span>
             </el-dropdown-item>
             
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onLockByIds(1)"
+            >
+              <span>{{ ns('锁定') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onLockByIds(0)"
+            >
+              <span>{{ ns('解锁') }}</span>
+            </el-dropdown-item>
+            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -395,6 +411,22 @@
             </el-table-column>
           </template>
           
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_locked"
+                  @change="is_lockedChg(row.id, row.is_locked)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 默认 -->
           <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
             <el-table-column
@@ -403,7 +435,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_default"
                   :before-change="() => row.is_default == 0"
                   @change="is_defaultChg(row.id)"
@@ -420,7 +452,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
                   @change="is_enabledChg(row.id, row.is_enabled)"
                 ></CustomSwitch>
@@ -436,7 +468,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
@@ -554,6 +586,7 @@ import {
   forceDeleteByIds,
   defaultById,
   enableByIds,
+  lockByIds,
   useExportExcel,
   updateById,
   importModels,
@@ -664,6 +697,7 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  is_locked?: string|string[]; // 锁定
   is_default?: string|string[]; // 默认
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
@@ -683,6 +717,8 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
+  is_locked: "number[]",
+  is_locked_lbl: "string[]",
   is_default: "number[]",
   is_default_lbl: "string[]",
   is_enabled: "number[]",
@@ -815,6 +851,14 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
+    },
+    {
+      label: "锁定",
+      prop: "is_locked_lbl",
+      width: 60,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
     },
     {
       label: "默认",
@@ -1088,6 +1132,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ n("名称") ]: "lbl",
+    [ n("锁定") ]: "is_locked_lbl",
     [ n("默认") ]: "is_default_lbl",
     [ n("启用") ]: "is_enabled_lbl",
     [ n("排序") ]: "order_by",
@@ -1143,6 +1188,27 @@ async function cancelImport() {
   isCancelImport = true;
   isImporting = false;
   importPercentage = 0;
+}
+
+/** 锁定 */
+async function is_lockedChg(id: string, is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await lockByIds(
+    [ id ],
+    is_locked,
+    {
+      notLoading,
+    },
+  );
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 默认 */
@@ -1346,6 +1412,34 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   }
 }
 
+/** 点击锁定或者解锁 */
+async function onLockByIds(is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  if (selectedIds.length === 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("请选择需要 锁定 的数据");
+    } else {
+      msg = await nsAsync("请选择需要 解锁 的数据");
+    }
+    ElMessage.warning(msg);
+    return;
+  }
+  const num = await lockByIds(selectedIds, is_locked);
+  if (num > 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("锁定 {0} 条数据成功", num);
+    } else {
+      msg = await nsAsync("解锁 {0} 条数据成功", num);
+    }
+    ElMessage.success(msg);
+    await dataGrid(true);
+  }
+}
+
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (isLocked) {
@@ -1379,6 +1473,7 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "锁定",
     "默认",
     "启用",
     "排序",

@@ -827,9 +827,10 @@ function getTableColumns(): ColumnType[] {
       label: "操作",
       prop: "lbl",
       width: 180,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
+      fixed: "left",
     },
     {
       label: "操作前数据",
