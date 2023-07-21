@@ -91,6 +91,23 @@ fn get_where_query<'a>(
     }
   }
   {
+    let is_locked: Vec<u8> = match &search {
+      Some(item) => item.is_locked.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_locked.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_locked.len());
+        for item in is_locked {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_locked in ({})", arg);
+    }
+  }
+  {
     let is_default: Vec<u8> = match &search {
       Some(item) => item.is_default.clone().unwrap_or_default(),
       None => Default::default(),
@@ -318,14 +335,24 @@ pub async fn find_all<'a>(
   ).await?;
   
   let dict_vec = get_dict(ctx, &vec![
+    "is_locked",
     "is_default",
     "is_enabled",
   ]).await?;
   
-  let is_default_dict = &dict_vec[0];
-  let is_enabled_dict = &dict_vec[1];
+  let is_locked_dict = &dict_vec[0];
+  let is_default_dict = &dict_vec[1];
+  let is_enabled_dict = &dict_vec[2];
   
   for model in &mut res {
+    
+    // 锁定
+    model.is_locked_lbl = {
+      is_locked_dict.iter()
+        .find(|item| item.val == model.is_locked.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_locked.to_string())
+    };
     
     // 默认
     model.is_default_lbl = {
@@ -417,6 +444,8 @@ pub async fn get_field_comments<'a>(
   
   let field_comments = DomainFieldComment {
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
+    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
+    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_default: n_route.n(ctx, "默认".to_owned(), None).await?,
     is_default_lbl: n_route.n(ctx, "默认".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
@@ -596,13 +625,29 @@ pub async fn set_id_by_lbl<'a>(
   let mut input = input;
   
   let dict_vec = get_dict(ctx, &vec![
+    "is_locked",
     "is_default",
     "is_enabled",
   ]).await?;
   
+  // 锁定
+  if input.is_locked.is_none() {
+    let is_locked_dict = &dict_vec[0];
+    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
+      input.is_locked = is_locked_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_locked_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
+  }
+  
   // 默认
   if input.is_default.is_none() {
-    let is_default_dict = &dict_vec[0];
+    let is_default_dict = &dict_vec[1];
     if let Some(is_default_lbl) = input.is_default_lbl.clone() {
       input.is_default = is_default_dict.into_iter()
         .find(|item| {
@@ -617,7 +662,7 @@ pub async fn set_id_by_lbl<'a>(
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict.into_iter()
         .find(|item| {
@@ -698,6 +743,12 @@ pub async fn create<'a>(
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
+  }
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
+    sql_fields += ",is_locked";
+    sql_values += ",?";
+    args.push(is_locked.into());
   }
   // 默认
   if let Some(is_default) = input.is_default {
@@ -792,6 +843,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
+  }
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
+    field_num += 1;
+    sql_fields += ",is_locked = ?";
+    args.push(is_locked.into());
   }
   // 默认
   if let Some(is_default) = input.is_default {
@@ -1024,6 +1081,73 @@ pub async fn enable_by_ids<'a>(
     );
     
     args.push(is_enabled.into());
+    args.push(id.into());
+    
+    let args = args.into();
+    
+    let options = options.clone().into();
+    
+    num += ctx.execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}
+
+/// 根据 ID 查找是否已锁定
+/// 已锁定的记录不能修改和删除
+/// 记录不存在则返回 false
+#[instrument(skip(ctx))]
+pub async fn get_is_locked_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let model = find_by_id(ctx, id, options).await?;
+  
+  let is_locked = {
+    if let Some(model) = model {
+      model.is_locked == 1
+    } else {
+      false
+    }
+  };
+  
+  Ok(is_locked)
+}
+
+/// 根据 ids 锁定或者解锁数据
+#[instrument(skip(ctx))]
+pub async fn lock_by_ids<'a>(
+  ctx: &mut impl Ctx<'a>,
+  ids: Vec<String>,
+  is_locked: u8,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "base_domain";
+  let _method = "lock_by_ids";
+  
+  let options = Options::from(options);
+  
+  let options = options.set_is_debug(false);
+  
+  let options = options.set_del_cache_key1s(get_foreign_tables());
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!(
+      "update {} set is_locked=? where id=? limit 1",
+      table,
+    );
+    
+    args.push(is_locked.into());
     args.push(id.into());
     
     let args = args.into();

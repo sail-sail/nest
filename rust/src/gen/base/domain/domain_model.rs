@@ -9,6 +9,10 @@ pub struct DomainModel {
   pub id: String,
   /// 名称
   pub lbl: String,
+  /// 锁定
+  pub is_locked: u8,
+  /// 锁定
+  pub is_locked_lbl: String,
   /// 默认
   pub is_default: u8,
   /// 默认
@@ -47,6 +51,9 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
+    // 锁定
+    let is_locked: u8 = row.try_get("is_locked")?;
+    let is_locked_lbl: String = is_locked.to_string();
     // 默认
     let is_default: u8 = row.try_get("is_default")?;
     let is_default_lbl: String = is_default.to_string();
@@ -83,6 +90,8 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     let model = Self {
       id,
       lbl,
+      is_locked,
+      is_locked_lbl,
       is_default,
       is_default_lbl,
       is_enabled,
@@ -109,6 +118,10 @@ impl FromRow<'_, MySqlRow> for DomainModel {
 pub struct DomainFieldComment {
   /// 名称
   pub lbl: String,
+  /// 锁定
+  pub is_locked: String,
+  /// 锁定
+  pub is_locked_lbl: String,
   /// 默认
   pub is_default: String,
   /// 默认
@@ -149,6 +162,8 @@ pub struct DomainSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
+  /// 锁定
+  pub is_locked: Option<Vec<u8>>,
   /// 默认
   pub is_default: Option<Vec<u8>>,
   /// 启用
@@ -179,6 +194,10 @@ pub struct DomainInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 锁定
+  pub is_locked: Option<u8>,
+  /// 锁定
+  pub is_locked_lbl: Option<String>,
   /// 默认
   pub is_default: Option<u8>,
   /// 默认
@@ -217,6 +236,8 @@ impl From<DomainInput> for DomainSearch {
       is_deleted: None,
       // 名称
       lbl: input.lbl,
+      // 锁定
+      is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 默认
       is_default: input.is_default.map(|x| vec![x.into()]),
       // 启用

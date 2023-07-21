@@ -112,6 +112,26 @@ impl DomainGenQuery {
     ctx.ok(res).await
   }
   
+  /// 根据 ID 查找是否已锁定
+  /// 已锁定的记录不能修改和删除
+  /// 记录不存在则返回 false
+  #[instrument(skip(self, ctx))]
+  async fn get_is_locked_by_id_domain<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+  ) -> Result<bool> {
+    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    
+    let res = domain_resolver::get_is_locked_by_id(
+      &mut ctx,
+      id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
   /// 获取字段对应的名称
   #[instrument(skip(self, ctx))]
   async fn get_field_comments_domain<'a>(
@@ -240,6 +260,26 @@ impl DomainGenMutation {
       &mut ctx,
       ids,
       is_enabled,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+  /// 根据 ids 锁定或解锁数据
+  #[instrument(skip(self, ctx))]
+  async fn lock_by_ids_domain<'a>(
+    &self,
+    ctx: &Context<'a>,
+    ids: Vec<String>,
+    is_locked: u8,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = domain_resolver::lock_by_ids(
+      &mut ctx,
+      ids,
+      is_locked,
       None,
     ).await;
     
