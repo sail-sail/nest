@@ -521,8 +521,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_visible",
-        require: true,
-        width: 60,
       },
       {
         COLUMN_NAME: "rem",

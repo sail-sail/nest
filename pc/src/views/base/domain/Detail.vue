@@ -244,6 +244,12 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
+    is_default: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("默认") }`,
+      },
+    ],
     is_enabled: [
       {
         required: true,
