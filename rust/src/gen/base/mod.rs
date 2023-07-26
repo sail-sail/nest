@@ -12,6 +12,7 @@ pub mod operation_record;
 pub mod options;
 pub mod org;
 pub mod permit;
+pub mod permit_history;
 pub mod role;
 pub mod tenant;
 pub mod usr;
