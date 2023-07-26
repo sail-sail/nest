@@ -19,6 +19,7 @@
     "hdevalke.rust-test-lens",
     "vadimcn.vscode-lldb",
     "ms-vscode.cpptools",
-    "caponetto.vscode-diff-viewer"
+    "caponetto.vscode-diff-viewer",
+    "tamasfe.even-better-toml"
   ]
 }
