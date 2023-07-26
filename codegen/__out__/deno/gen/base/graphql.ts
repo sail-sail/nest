@@ -12,6 +12,7 @@ import "/gen/base/operation_record/operation_record.graphql.ts";
 import "/gen/base/options/options.graphql.ts";
 import "/gen/base/org/org.graphql.ts";
 import "/gen/base/permit/permit.graphql.ts";
+import "/gen/base/permit_history/permit_history.graphql.ts";
 import "/gen/base/role/role.graphql.ts";
 import "/gen/base/tenant/tenant.graphql.ts";
 import "/gen/base/usr/usr.graphql.ts";

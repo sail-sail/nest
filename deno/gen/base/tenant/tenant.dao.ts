@@ -33,6 +33,10 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import {
+  deepCompare,
+} from "/lib/util/object_util.ts";
+
 import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -676,7 +680,6 @@ export async function create(
     "is_enabled",
   ]);
   
-  
   // 所属域名
   if (!model.domain_ids && model.domain_ids_lbl) {
     if (typeof model.domain_ids_lbl === "string" || model.domain_ids_lbl instanceof String) {
@@ -875,7 +878,7 @@ export async function updateById(
     throw new Error("updateById: id cannot be empty");
   }
   if (!model) {
-    throw new Error("updateById: model cannot be empty");
+    throw new Error("updateById: model cannot be null");
   }
   
   const [
@@ -953,7 +956,7 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update base_tenant set
   `;
   let updateFldNum = 0;
@@ -1011,6 +1014,12 @@ export async function updateById(
   
   if (updateFldNum > 0) {
     await delCache();
+  }
+  
+  const newModel = await findById(id);
+  
+  if (!deepCompare(oldModel, newModel)) {
+    console.log(JSON.stringify(oldModel));
   }
   
   return id;

@@ -129,7 +129,11 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
-} from "/lib/util/string_util.ts";<#
+} from "/lib/util/string_util.ts";
+
+import {
+  deepCompare,
+} from "/lib/util/object_util.ts";<#
   if (hasDict) {
 #>
 
@@ -909,8 +913,12 @@ export async function getFieldComments() {
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
-    <#=column_name#>: await n("<#=column_comment#>"),
+    <#=column_name#>: await n("<#=column_comment#>"),<#
+        if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+    #>
     <#=column_name#>_lbl: await n("<#=column_comment#>"),<#
+        }
+    #><#
       } else {
     #>
     <#=column_name#>: await n("<#=column_comment#>"),<#
@@ -1282,8 +1290,7 @@ export async function create(
     #><#
     }
     #>
-  ]);
-  <#
+  ]);<#
   }
   #><#
   if (hasDictbiz) {
@@ -1453,6 +1460,116 @@ export async function create(
   }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (foreignTable) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    if (column.dict) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#> != null) {
+    const dictModel = <#=column_name#>Dict.find((itemTmp) => {
+      return itemTmp.val === dictSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+    });<#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>
+    model.<#=val#> = dictModel?.<#=key#>;<#
+    }
+    #>
+  }<#
+    } else if (column.dictbiz) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#> != null) {
+    const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
+      return itemTmp.val === dictbizSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+    });<#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>
+    model.<#=val#> = dictbizModel?.<#=key#>;<#
+    }
+    #>
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (!foreignTable) {
+      continue;
+    }
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model.<#=column_name#>)) {
+    const {
+      findById: findById<#=foreignTableUp#>,
+    } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
+    
+    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(model.<#=column_name#>);
+    if (<#=foreignTable#>Model) {<#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+      #>
+      model.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
+      }
+      #>
+    }
+  }<#
+  }
   #>
   
   const oldModel = await findByUnique(model, options);
@@ -1562,6 +1679,40 @@ export async function create(
     }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+  for (const key of redundLblKeys) {
+    const val = redundLbl[key];
+  #>
+  
+  if (model.<#=val#> !== undefined) {
+    sql += `,<#=val#>`;
+  }<#
+  }
+  #><#
+  }
   #>
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;<#
   if (hasTenant_id) {
@@ -1638,6 +1789,40 @@ export async function create(
     sql += `,${ args.push(model.<#=column_name#>) }`;
   }<#
     }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+  for (const key of redundLblKeys) {
+    const val = redundLbl[key];
+  #>
+  
+  if (model.<#=val#> !== undefined) {
+    sql += `,${ args.push(model.<#=val#>) }`;
+  }<#
+  }
   #><#
   }
   #>
@@ -1871,7 +2056,7 @@ export async function updateById(
     throw new Error("updateById: id cannot be empty");
   }
   if (!model) {
-    throw new Error("updateById: model cannot be empty");
+    throw new Error("updateById: model cannot be null");
   }<#
   if (hasDict) {
   #>
@@ -2102,6 +2287,116 @@ export async function updateById(
     }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (foreignTable) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    if (column.dict) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#> != null) {
+    const dictModel = <#=column_name#>Dict.find((itemTmp) => {
+      return itemTmp.val === dictSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+    });<#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>
+    model.<#=val#> = dictModel?.<#=key#>;<#
+    }
+    #>
+  }<#
+    } else if (column.dictbiz) {
+  #>
+  
+  // <#=column_comment#>
+  if (model.<#=column_name#> != null) {
+    const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
+      return itemTmp.val === dictbizSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+    });<#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>
+    model.<#=val#> = dictbizModel?.<#=key#>;<#
+    }
+    #>
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (!foreignTable) {
+      continue;
+    }
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(model.<#=column_name#>)) {
+    const {
+      findById: findById<#=foreignTableUp#>,
+    } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
+    
+    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(model.<#=column_name#>);
+    if (<#=foreignTable#>Model) {<#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+      #>
+      model.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
+      }
+      #>
+    }
+  }<#
+  }
   #>
   
   const oldModel = await findById(id);
@@ -2123,7 +2418,7 @@ export async function updateById(
   #>
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update <#=mod#>_<#=table#> set
   `;
   let updateFldNum = 0;<#
@@ -2182,6 +2477,42 @@ export async function updateById(
   if (model.<#=column_name#> !== undefined) {
     if (model.<#=column_name#> != oldModel.<#=column_name#>) {
       sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
+      updateFldNum++;
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+  #>
+  if (model.<#=val#> !== undefined) {
+    if (model.<#=val#> != oldModel.<#=val#>) {
+      sql += `<#=val#> = ${ args.push(model.<#=val#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2254,6 +2585,26 @@ export async function updateById(
   }<#
   }
   #>
+  
+  const newModel = await findById(id);
+  
+  if (!deepCompare(oldModel, newModel)) {
+    console.log(JSON.stringify(oldModel));<#
+    if (opts?.history_table) {
+    #>
+    
+    const {
+      create: createHistory,
+    } = await import("/gen/<#=mod#>/<#=opts.history_table#>/<#=opts.history_table#>.dao.ts");
+    
+    await createHistory({
+      ...oldModel,
+      <#=table#>_id: id,
+      id: undefined,
+    });<#
+    }
+    #>
+  }
   
   return id;
 }

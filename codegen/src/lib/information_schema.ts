@@ -245,6 +245,9 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "center";
       }
+      if (item.require == null) {
+        item.require = true;
+      }
     }
     if ([ "order_by" ].includes(column_name)) {
       if (item.width == null) {

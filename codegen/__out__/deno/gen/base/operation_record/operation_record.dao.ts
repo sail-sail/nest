@@ -33,6 +33,10 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import {
+  deepCompare,
+} from "/lib/util/object_util.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -772,7 +776,7 @@ export async function updateById(
     throw new Error("updateById: id cannot be empty");
   }
   if (!model) {
-    throw new Error("updateById: model cannot be empty");
+    throw new Error("updateById: model cannot be null");
   }
   
   // 修改租户id
@@ -787,7 +791,7 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update base_operation_record set
   `;
   let updateFldNum = 0;
@@ -851,6 +855,12 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
+  }
+  
+  const newModel = await findById(id);
+  
+  if (!deepCompare(oldModel, newModel)) {
+    console.log(JSON.stringify(oldModel));
   }
   
   return id;

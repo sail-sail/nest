@@ -2,6 +2,10 @@ import {
   useI18n,
 } from "@/locales/i18n";
 
+import {
+  type MaybeRefOrGetter,
+} from "vue";
+
 /** 初始化内置搜索条件 */
 export function initBuiltInSearch<T>(
   props: Record<string, any>,
@@ -141,7 +145,7 @@ export function useSelect<T = any>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index?: number) => boolean),
-    multiple?: Ref<boolean> | ComputedRef<boolean> | boolean,
+    multiple?: MaybeRefOrGetter<boolean>,
     tabIndex?: number,
   },
 ) {

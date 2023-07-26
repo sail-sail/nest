@@ -157,7 +157,7 @@ async function showDialog(
   },
 ) {
   inited = false;
-  const title = arg?.title || n("关联列表");
+  const title = arg?.title || "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "large",
     title,
@@ -180,7 +180,6 @@ async function initI18nsEfc() {
     initI18ns,
   } = useI18n();
   const codes: string[] = [
-    "关联列表",
   ];
   await initI18ns(codes);
 }

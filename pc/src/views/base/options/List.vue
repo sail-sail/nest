@@ -213,11 +213,11 @@
         @click="openView"
       >
         <template #icon>
-          <ElIconView />
+          <ElIconReading />
         </template>
         <span>{{ ns('查看') }}</span>
       </el-button>
-    
+      
       <el-button
         plain
         @click="onRefresh"
