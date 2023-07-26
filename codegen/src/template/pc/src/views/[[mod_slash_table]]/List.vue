@@ -25,6 +25,28 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
 }
 const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
+const hasForeignTabsButton = columns.some((item) => {
+  if (!item.foreignTabs) {
+    return false;
+  }
+  if (item.foreignTabs.length === 0) {
+    return false;
+  }
+  return item.foreignTabs.some((item2) => {
+    return item2.linkType === "button";
+  });
+});
+const hasForeignTabsMore = columns.some((item) => {
+  if (!item.foreignTabs) {
+    return false;
+  }
+  if (item.foreignTabs.length === 0) {
+    return false;
+  }
+  return item.foreignTabs.some((item2) => {
+    return item2.linkType === "more";
+  });
+});
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
 #><template>
@@ -380,11 +402,11 @@ const hasAtt = columns.some((item) => item.isAtt);
         @click="openView"
       >
         <template #icon>
-          <ElIconView />
+          <ElIconReading />
         </template>
         <span>{{ ns('查看') }}</span>
       </el-button>
-    
+      
       <el-button
         plain
         @click="onRefresh"
@@ -393,7 +415,39 @@ const hasAtt = columns.some((item) => item.isAtt);
           <ElIconRefresh />
         </template>
         <span>{{ ns('刷新') }}</span>
-      </el-button>
+      </el-button><#
+      if (hasForeignTabsButton) {
+        let label = "";
+        for (let ii = 0; ii < columns.length; ii++) {
+          const column = columns[ii];
+          if (!column.foreignTabs) {
+            continue;
+          }
+          if (column.foreignTabs.length === 0) {
+            continue;
+          }
+          for (let iii = 0; iii < column.foreignTabs.length; iii++) {
+            const foreignTab = column.foreignTabs[iii];
+            if (foreignTab.linkType !== "button") {
+              continue;
+            }
+            label = foreignTab.label;
+            break;
+          }
+        }
+      #>
+      
+      <el-button
+        plain
+        @click="onOpenForeignTabs"
+      >
+        <template #icon>
+          <ElIconTickets />
+        </template>
+        <span>{{ ns('<#=label#>') }}</span>
+      </el-button><#
+      }
+      #>
       
       <el-dropdown
         trigger="click"
@@ -500,6 +554,35 @@ const hasAtt = columns.some((item) => item.isAtt);
               @click="onLockByIds(0)"
             >
               <span>{{ ns('解锁') }}</span>
+            </el-dropdown-item><#
+            }
+            #><#
+            if (hasForeignTabsMore) {
+              let label = "";
+              for (let ii = 0; ii < columns.length; ii++) {
+                const column = columns[ii];
+                if (!column.foreignTabs) {
+                  continue;
+                }
+                if (column.foreignTabs.length === 0) {
+                  continue;
+                }
+                for (let iii = 0; iii < column.foreignTabs.length; iii++) {
+                  const foreignTab = column.foreignTabs[iii];
+                  if (foreignTab.linkType !== "more") {
+                    continue;
+                  }
+                  label = foreignTab.label;
+                  break;
+                }
+              }
+            #>
+            
+            <el-dropdown-item
+              un-justify-center
+              @click="onOpenForeignTabs"
+            >
+              <span>{{ ns('<#=label#>') }}</span>
             </el-dropdown-item><#
             }
             #>
@@ -771,7 +854,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (foreignTabs.length > 0) {
+              if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
               <template #default="{ row, column }">
                 <el-link
@@ -821,7 +904,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (foreignTabs.length > 0) {
+              if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
               <template #default="{ row, column }">
                 <el-link
@@ -1010,7 +1093,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   ></ImportPercentageDialog><#
     }
   #><#
-  if (hasForeignTabs > 0) {
+  if (hasForeignTabs) {
   #>
   
   <ForeignTabs
@@ -1193,7 +1276,7 @@ import {<#
 } from "./Api";<#
 }
 #><#
-if (hasForeignTabs > 0) {
+if (hasForeignTabs) {
 #>
 
 import ForeignTabs from "./ForeignTabs.vue";<#
@@ -2575,10 +2658,27 @@ async function revertByIdsEfc() {
 }<#
 }
 #><#
-if (hasForeignTabs > 0) {
+if (hasForeignTabs) {
 #>
 
-let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
+let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();<#
+if (hasForeignTabsButton || hasForeignTabsMore) {
+#>
+
+async function onOpenForeignTabs() {
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
+    return;
+  }
+  if (selectedIds.length > 1) {
+    ElMessage.warning(await nsAsync("只能选择一条数据"));
+    return;
+  }
+  const id = selectedIds[0];
+  await openForeignTabs(id, "");
+}<#
+}
+#>
 
 async function openForeignTabs(id: string, title: string) {
   if (!foreignTabsRef) {
