@@ -308,6 +308,13 @@ export interface TableCloumn {
   },
   
   foreignTabs?: {
+    /**
+     * 外键关联的按钮类型, 默认为: link
+     *  link: 单元格上的链接
+     *  button: 表格操作栏的按钮
+     *  more: 表格操作栏的 更多操作 里面
+     */
+    linkType?: "link" | "button" | "more",
     mod: string;
     mod_slash_table?: string;
     table: string;
@@ -502,6 +509,11 @@ export interface TableCloumn {
    */
   fixed?: boolean | "left" | "right",
   
+  /**
+   * 指定这个字段对应的lbl冗余字段
+   */
+  redundLbl?: {[key: string]: string},
+  
 }
 
 export interface TablesConfigItem {
@@ -624,6 +636,11 @@ export interface TablesConfigItem {
      * 不可改和不可删除的系统字段, 配合 is_sys 字段使用
      */
     sys_fields?: string[];
+    
+    /**
+     * 此表是否记录历史记录, 通常对应的历史记录表名为: [表名]_history
+     */
+    history_table?: string;
     
   },
   columns?: TableCloumn[];
