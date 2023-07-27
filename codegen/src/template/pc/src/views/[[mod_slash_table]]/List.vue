@@ -224,7 +224,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </template><#
       } else {
       #>
-      <template v-if="showBuildIn || builtInSearch?.<#=column_name#>_like == null && builtInSearch?.<#=column_name#> == null">
+      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
@@ -1046,9 +1046,13 @@ const hasAtt = columns.some((item) => item.isAtt);
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
   #><#
-    if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
+    if (
+      (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
+      && (foreignKey && [ "selectType", "select" ].includes(foreignKey.selectType))
+    ) {
   #>
   
+  <!-- <#=column_comment#> -->
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
     :is-locked="isLocked"
@@ -1062,6 +1066,27 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       v-bind="listSelectProps"
     ></<#=Foreign_Table_Up#>List>
+  </ListSelectDialog><#
+    } else if (
+      (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
+      && (foreignKey && [ "tree" ].includes(foreignKey.selectType))
+    ) {
+  #>
+  
+  <!-- <#=column_comment#> -->
+  <ListSelectDialog
+    ref="<#=column_name#>ListSelectDialogRef"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
+  >
+    <<#=Foreign_Table_Up#>TreeList<#
+      if (mod === "base" && table === "role" && column_name === "menu_ids") {
+      #>
+      :tenant_ids="[ usrStore.tenant_id ]"<#
+      }
+      #>
+      v-bind="listSelectProps"
+    ></<#=Foreign_Table_Up#>TreeList>
   </ListSelectDialog><#
     }
   #><#
@@ -1133,10 +1158,21 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
 #><#
-  if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
+  if (
+    (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
+    && (foreignKey && [ "selectType", "select" ].includes(foreignKey.selectType))
+  ) {
 #>
+
 import <#=Foreign_Table_Up#>List from "../<#=foreignTable#>/List.vue";<#
-  }
+  } else if (
+    (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
+    && (foreignKey && [ "tree" ].includes(foreignKey.selectType))
+  ) {
+#>
+
+import <#=Foreign_Table_Up#>TreeList from "../<#=foreignTable#>/TreeList.vue";<#
+}
 #><#
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
@@ -1636,7 +1672,7 @@ watch(
 );
 
 function resetSelectedIds() {
-  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+  selectedIds = [ ];
 }
 
 /** 取消已选择筛选 */
@@ -2023,7 +2059,13 @@ let exportExcel = $ref(useExportExcel("/<#=mod#>/<#=table#>"));
 
 /** 导出Excel */
 async function onExport() {
-  await exportExcel.workerFn(search, [ sort ]);
+  const search2 = getDataSearch();
+  await exportExcel.workerFn(
+    search2,
+    [
+      sort,
+    ],
+  );
 }
 
 /** 取消导出Excel */
@@ -2063,7 +2105,7 @@ function summaryMethod(
     const column = columns[i];
     let val = summarys[column.property] || "";
     if (i === 0) {
-      val = `合计:${ val }`;
+      val = `合计: ${ val }`;
     }
     sums.push(val);
   }
