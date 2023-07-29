@@ -32,8 +32,7 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
-#>use tracing::instrument;
-use anyhow::Result;
+#>use anyhow::Result;
 use async_graphql::{Context, Object};
 
 use crate::common::context::{CtxImpl, Ctx};
@@ -50,7 +49,6 @@ pub struct <#=tableUP#>GenQuery;
 impl <#=tableUP#>GenQuery {
   
   /// 根据搜索条件和分页查找数据
-  #[instrument(skip(self, ctx))]
   async fn find_all_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -72,7 +70,6 @@ impl <#=tableUP#>GenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  #[instrument(skip(self, ctx))]
   async fn find_count_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -90,7 +87,6 @@ impl <#=tableUP#>GenQuery {
   }
   
   /// 根据条件查找第一条数据
-  #[instrument(skip(self, ctx))]
   async fn find_one_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -110,7 +106,6 @@ impl <#=tableUP#>GenQuery {
   }
   
   /// 根据ID查找第一条数据
-  #[instrument(skip(self, ctx))]
   async fn find_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -131,7 +126,6 @@ impl <#=tableUP#>GenQuery {
   
   /// 根据 ID 查找是否已启用
   /// 记录不存在则返回 false
-  #[instrument(skip(self, ctx))]
   async fn get_is_enabled_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -155,7 +149,6 @@ impl <#=tableUP#>GenQuery {
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  #[instrument(skip(self, ctx))]
   async fn get_is_locked_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -175,7 +168,6 @@ impl <#=tableUP#>GenQuery {
   #>
   
   /// 获取字段对应的名称
-  #[instrument(skip(self, ctx))]
   async fn get_field_comments_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -193,7 +185,6 @@ impl <#=tableUP#>GenQuery {
   #>
   
   /// 查找 order_by 字段的最大值
-  #[instrument(skip(self, ctx))]
   async fn find_last_order_by_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -221,7 +212,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 创建数据
-  #[instrument(skip(self, ctx))]
   async fn create_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -243,7 +233,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据id修改租户id
-  #[instrument(skip(self, ctx))]
   async fn update_tenant_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -267,7 +256,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据id修改部门id
-  #[instrument(skip(self, ctx))]
   async fn update_dept_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -291,7 +279,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据id修改数据
-  #[instrument(skip(self, ctx))]
   async fn update_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -315,7 +302,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 删除数据
-  #[instrument(skip(self, ctx))]
   async fn delete_by_ids_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -337,7 +323,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 id 设置默认记录
-  #[instrument(skip(self, ctx))]
   async fn default_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -359,7 +344,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 启用或禁用数据
-  #[instrument(skip(self, ctx))]
   async fn enable_by_ids_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -383,7 +367,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 锁定或解锁数据
-  #[instrument(skip(self, ctx))]
   async fn lock_by_ids_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -407,7 +390,6 @@ impl <#=tableUP#>GenMutation {<#
   #>
   
   /// 根据 ids 还原数据
-  #[instrument(skip(self, ctx))]
   async fn revert_by_ids_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
@@ -425,7 +407,6 @@ impl <#=tableUP#>GenMutation {<#
   }
   
   /// 根据 ids 彻底删除数据
-  #[instrument(skip(self, ctx))]
   async fn force_delete_by_ids_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,

@@ -25,6 +25,7 @@ use async_graphql::{
 use poem::{
   get, post,
   listener::TcpListener,
+  middleware::{TokioMetrics, Tracing},
   EndpointExt, Route, Server,
 };
 
@@ -137,33 +138,83 @@ async fn main() -> Result<(), std::io::Error> {
       .unwrap();
   }
   
+  let metrics_graphql = TokioMetrics::new();
+  
   let app = {
     let mut app = Route::new();
     #[cfg(debug_assertions)]
     {
       app = app.at("/graphiql", get(common::gql::gql_router::graphql_playground));
     }
-    app = app.at("/graphql",
+    
+    app = app.at("/metrics/graphql", metrics_graphql.exporter());
+    
+    app = app.at(
+      "/graphql",
       post(common::gql::gql_router::graphql_handler)
       .get(common::gql::gql_router::graphql_handler_get)
+      .with(metrics_graphql)
     );
     
-    app = app.at("/api/oss/upload", post(common::oss::oss_router::upload));
-    app = app.at("/api/oss/delete", post(common::oss::oss_router::delete));
-    app = app.at("/api/oss/download/:filename", get(common::oss::oss_router::download_filename));
-    app = app.at("/api/oss/download/", get(common::oss::oss_router::download));
-    app = app.at("/api/oss/img", get(common::oss::oss_router::img));
+    // 上传附件
+    app = app.at(
+      "/api/oss/upload",
+      post(common::oss::oss_router::upload),
+    );
     
-    app = app.at("/api/tmpfile/upload", post(common::tmpfile::tmpfile_router::upload));
-    app = app.at("/api/tmpfile/delete", post(common::tmpfile::tmpfile_router::delete));
-    app = app.at("/api/tmpfile/download/:filename", get(common::tmpfile::tmpfile_router::download_filename));
-    app = app.at("/api/tmpfile/download/", get(common::tmpfile::tmpfile_router::download));
+    // 删除附件
+    app = app.at(
+      "/api/oss/delete",
+      post(common::oss::oss_router::delete),
+    );
+    
+    // 下载附件带文件名
+    app = app.at(
+      "/api/oss/download/:filename",
+      get(common::oss::oss_router::download_filename),
+    );
+    
+    // 下载附件
+    app = app.at(
+      "/api/oss/download/", 
+      get(common::oss::oss_router::download),
+    );
+    
+    // 下载图片
+    app = app.at(
+      "/api/oss/img",
+      get(common::oss::oss_router::img),
+    );
+    
+    // 上传临时文件
+    app = app.at(
+      "/api/tmpfile/upload", 
+      post(common::tmpfile::tmpfile_router::upload),
+    );
+    
+    // 删除临时文件
+    app = app.at(
+      "/api/tmpfile/delete",
+      post(common::tmpfile::tmpfile_router::delete),
+    );
+    
+    // 下载临时文件带文件名
+    app = app.at(
+      "/api/tmpfile/download/:filename",
+      get(common::tmpfile::tmpfile_router::download_filename),
+    );
+    
+    // 下载临时文件
+    app = app.at(
+      "/api/tmpfile/download/",
+      get(common::tmpfile::tmpfile_router::download),
+    );
     
     app
   };
   let app = app
-    .data(schema)
-    ;
+    .with(Tracing)
+    .data(schema);
   
   let server_port = env::var("server_port").unwrap_or("4001".to_owned());
   let server_host = env::var("server_host").unwrap_or("127.0.0.1".to_owned());

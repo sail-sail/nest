@@ -1,4 +1,3 @@
-use tracing::instrument;
 use anyhow::Result;
 use tracing::info;
 
@@ -282,7 +281,6 @@ fn get_from_query() -> &'static str {
 }
 
 /// 根据搜索条件和分页查找数据
-#[instrument(skip(ctx))]
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -321,8 +319,6 @@ pub async fn find_all<'a>(
   
   let options = Options::from(options);
   
-  let options = options.set_is_debug(false);
-  
   let options = options.set_cache_key(table, &sql, &args);
   
   let options = options.into();
@@ -341,7 +337,6 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查询数据总数
-#[instrument(skip(ctx))]
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<I18nSearch>,
@@ -376,8 +371,6 @@ pub async fn find_count<'a>(
   
   let options = Options::from(options);
   
-  let options = options.set_is_debug(false);
-  
   let options = options.set_cache_key(table, &sql, &args);
   
   let options = options.into();
@@ -397,7 +390,6 @@ pub async fn find_count<'a>(
 }
 
 /// 获取字段对应的国家化后的名称
-#[instrument(skip(ctx))]
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
@@ -439,7 +431,6 @@ pub fn get_unique_keys() -> Vec<&'static str> {
 }
 
 /// 根据条件查找第一条数据
-#[instrument(skip(ctx))]
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<I18nSearch>,
@@ -466,7 +457,6 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-#[instrument(skip(ctx))]
 pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -489,7 +479,6 @@ pub async fn find_by_id<'a>(
 }
 
 /// 通过唯一约束获得一行数据
-#[instrument(skip(ctx))]
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -546,7 +535,6 @@ fn equals_by_unique(
 }
 
 /// 通过唯一约束检查数据是否已经存在
-#[instrument(skip(ctx))]
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -645,7 +633,6 @@ pub async fn set_id_by_lbl<'a>(
 }
 
 /// 创建数据
-#[instrument(skip(ctx))]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
   mut input: I18nInput,
@@ -758,8 +745,6 @@ pub async fn create<'a>(
   
   let options = Options::from(options);
   
-  let options = options.set_is_debug(false);
-  
   let options = options.set_del_cache_key1s(get_foreign_tables());
   
   let options = options.into();
@@ -774,7 +759,6 @@ pub async fn create<'a>(
 }
 
 /// 根据id修改数据
-#[instrument(skip(ctx))]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -883,7 +867,6 @@ fn get_foreign_tables() -> Vec<&'static str> {
 }
 
 /// 根据 ids 删除数据
-#[instrument(skip(ctx))]
 pub async fn delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
@@ -894,8 +877,6 @@ pub async fn delete_by_ids<'a>(
   let _method = "delete_by_ids";
   
   let options = Options::from(options);
-  
-  let options = options.set_is_debug(false);
   
   let mut num = 0;
   for id in ids {
@@ -930,7 +911,6 @@ pub async fn delete_by_ids<'a>(
 }
 
 /// 根据 ids 还原数据
-#[instrument(skip(ctx))]
 pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
@@ -941,8 +921,6 @@ pub async fn revert_by_ids<'a>(
   let _method = "revert_by_ids";
   
   let options = Options::from(options);
-  
-  let options = options.set_is_debug(false);
   
   let mut num = 0;
   for id in ids {
@@ -974,7 +952,6 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
-#[instrument(skip(ctx))]
 pub async fn force_delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
@@ -985,8 +962,6 @@ pub async fn force_delete_by_ids<'a>(
   let _method = "force_delete_by_ids";
   
   let options = Options::from(options);
-  
-  let options = options.set_is_debug(false);
   
   let mut num = 0;
   for id in ids {

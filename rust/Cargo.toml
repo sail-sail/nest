@@ -22,7 +22,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 tokio = { version = "1.29", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
-poem = { version = "1.3", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "embed"], default-features = false }
+poem = { version = "1.3", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics"], default-features = false }
 async-graphql = { version = "5.0", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }

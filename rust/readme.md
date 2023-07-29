@@ -1,7 +1,15 @@
 rust 静态链接:
 ```bash
 
-#安装musl
+# windows安装scoop
+  iwr -useb get.scoop.sh | iex
+  # 或者
+  Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+
+# windows安装llvm
+  scoop install llvm
+
+# 安装musl
   
   # unbuntu
   sudo apt install build-essential
