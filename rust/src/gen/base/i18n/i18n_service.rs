@@ -1,4 +1,3 @@
-use tracing::instrument;
 use anyhow::Result;
 
 #[allow(unused_imports)]
@@ -14,7 +13,6 @@ use super::i18n_model::*;
 use super::i18n_dao;
 
 /// 根据搜索条件和分页查找数据
-#[instrument(skip(ctx))]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<I18nSearch>,
@@ -35,7 +33,6 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查找总数
-#[instrument(skip(ctx))]
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<I18nSearch>,
@@ -52,7 +49,6 @@ pub async fn find_count<'a>(
 }
 
 /// 根据条件查找第一条数据
-#[instrument(skip(ctx))]
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
   search: Option<I18nSearch>,
@@ -71,7 +67,6 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-#[instrument(skip(ctx))]
 pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -88,7 +83,6 @@ pub async fn find_by_id<'a>(
 }
 
 /// 创建数据
-#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -106,7 +100,6 @@ pub async fn create<'a>(
 }
 
 /// 根据id修改数据
-#[instrument(skip(ctx))]
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id<'a>(
@@ -127,7 +120,6 @@ pub async fn update_by_id<'a>(
 }
 
 /// 根据 ids 删除数据
-#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -159,7 +151,6 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据 ids 还原数据
-#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -177,7 +168,6 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
-#[instrument(skip(ctx))]
 #[allow(dead_code)]
 pub async fn force_delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,

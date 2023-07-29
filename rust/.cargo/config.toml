@@ -2,8 +2,10 @@
 linker = "rust-lld"
 rustflags = ["-C", "linker-flavor=ld.lld"]
 
-#[target.x86_64-pc-windows-msvc]
+[target.x86_64-pc-windows-msvc]
+linker = "lld-link.exe"
 #rustflags = ["-Ctarget-feature=+crt-static"]
 
 [build]
 incremental = true
+#rustc-wrapper = "C:\\Users\\15126\\.cargo\\bin\\sccache.exe"

@@ -1,4 +1,3 @@
-use tracing::instrument;
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
@@ -16,7 +15,6 @@ pub struct OperationRecordGenQuery;
 impl OperationRecordGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  #[instrument(skip(self, ctx))]
   async fn find_all_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -38,7 +36,6 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  #[instrument(skip(self, ctx))]
   async fn find_count_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -56,7 +53,6 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  #[instrument(skip(self, ctx))]
   async fn find_one_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -76,7 +72,6 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  #[instrument(skip(self, ctx))]
   async fn find_by_id_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -94,7 +89,6 @@ impl OperationRecordGenQuery {
   }
   
   /// 获取字段对应的名称
-  #[instrument(skip(self, ctx))]
   async fn get_field_comments_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -118,7 +112,6 @@ pub struct OperationRecordGenMutation;
 impl OperationRecordGenMutation {
   
   /// 根据id修改租户id
-  #[instrument(skip(self, ctx))]
   async fn update_tenant_by_id_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -138,7 +131,6 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 删除数据
-  #[instrument(skip(self, ctx))]
   async fn delete_by_ids_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -156,7 +148,6 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 还原数据
-  #[instrument(skip(self, ctx))]
   async fn revert_by_ids_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
@@ -174,7 +165,6 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  #[instrument(skip(self, ctx))]
   async fn force_delete_by_ids_operation_record<'a>(
     &self,
     ctx: &Context<'a>,
