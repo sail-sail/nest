@@ -682,6 +682,34 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 角色
+  if is_not_empty_opt(&input.role_id) {
+    let find_by_id_role = crate::gen::base::role::role_dao::find_by_id;
+    let role_model = find_by_id_role(
+      ctx,
+      input.role_id.clone().unwrap(),
+      None,
+    ).await?;
+    if role_model.is_some() {
+      let role_model = role_model.unwrap();
+      input.role_id_lbl = role_model.lbl.into();
+    }
+  }
+  
+  // 菜单
+  if is_not_empty_opt(&input.menu_id) {
+    let find_by_id_menu = crate::gen::base::menu::menu_dao::find_by_id;
+    let menu_model = find_by_id_menu(
+      ctx,
+      input.menu_id.clone().unwrap(),
+      None,
+    ).await?;
+    if menu_model.is_some() {
+      let menu_model = menu_model.unwrap();
+      input.menu_id_lbl = menu_model.lbl.into();
+    }
+  }
+  
   Ok(input)
 }
 
@@ -736,7 +764,6 @@ pub async fn create<'a>(
   
   args.push(id.clone().into());
   args.push(now.into());
-  
   
   if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_fields += ",tenant_id";
@@ -803,6 +830,18 @@ pub async fn create<'a>(
     sql_fields += ",update_time";
     sql_values += ",?";
     args.push(update_time.into());
+  }
+  // 角色
+  if let Some(role_id_lbl) = input.role_id_lbl {
+    sql_fields += ",role_id_lbl";
+    sql_values += ",?";
+    args.push(role_id_lbl.into());
+  }
+  // 菜单
+  if let Some(menu_id_lbl) = input.menu_id_lbl {
+    sql_fields += ",menu_id_lbl";
+    sql_values += ",?";
+    args.push(menu_id_lbl.into());
   }
   
   let sql = format!(
@@ -933,6 +972,18 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",rem = ?";
     args.push(rem.into());
+  }
+  // 角色
+  if let Some(role_id_lbl) = input.role_id_lbl {
+    field_num += 1;
+    sql_fields += ",role_id_lbl = ?";
+    args.push(role_id_lbl.into());
+  }
+  // 菜单
+  if let Some(menu_id_lbl) = input.menu_id_lbl {
+    field_num += 1;
+    sql_fields += ",menu_id_lbl = ?";
+    args.push(menu_id_lbl.into());
   }
   
   if field_num > 0 {

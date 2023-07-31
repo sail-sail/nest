@@ -34,6 +34,7 @@
     "deno.suggest.autoImports": false,
     "rust-analyzer.inlayHints.closureCaptureHints.enable": true,
     "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "always",
+	"rust-analyzer.checkOnSave.enable": false,
     "workbench.colorCustomizations": {
       // Overrides Theme Default Colors for InlayHints feature 
       "editorInlayHint.background": "#08000088",
