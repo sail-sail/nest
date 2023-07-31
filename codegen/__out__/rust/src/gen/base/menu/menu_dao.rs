@@ -888,7 +888,6 @@ pub async fn create<'a>(
   args.push(id.clone().into());
   args.push(now.into());
   
-  
   if let Some(auth_model) = ctx.get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";

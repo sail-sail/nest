@@ -757,8 +757,12 @@ pub async fn get_field_comments<'a>(
         || data_type === "datetime" || data_type === "date"
       ) {
     #>
-    <#=column_name#>: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,
+    <#=column_name#>: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,<#
+        if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+    #>
     <#=column_name#>_lbl: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,<#
+        }
+    #><#
       } else {
     #>
     <#=column_name#>: n_route.n(ctx, "<#=column_comment#>".to_owned(), None).await?,<#
@@ -1070,8 +1074,7 @@ pub async fn set_id_by_lbl<'a>(
     "<#=column.dictbiz#>",<#
   }
   #>
-  ]).await?;
-  <#
+  ]).await?;<#
   let dictBizNum = 0;
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1194,6 +1197,122 @@ pub async fn set_id_by_lbl<'a>(
     }
   #><#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (foreignTable) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    if (column.dict) {
+  #>
+  
+  // <#=column_comment#>
+  if is_not_empty_opt(&input.<#=column_name#>) {
+    let dict_model = <#=column_name#>_dict.find(|itemTmp| {
+      itemTmp.val.to_string() == model.<#=column_name#>.unwrap_or_default().to_string()
+    });
+    if let Some(dict_model) = dict_model {<#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+      #>
+      input.<#=rustKeyEscape(val)#> = dict_model.map(|item| item.<#=rustKeyEscape(key)#>);<#
+      }
+      #>
+    }
+  }<#
+    } else if (column.dictbiz) {
+  #>
+  
+  // <#=column_comment#>
+  if is_not_empty_opt(&input.<#=column_name#>) {
+    let dictbiz_model = <#=column_name#>_dict.find(|itemTmp| {
+      itemTmp.val.to_string() == model.<#=column_name#>.unwrap_or_default().to_string()
+    });
+    if let Some(dictbiz_model) = dictbiz_model {<#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+      #>
+      input.<#=rustKeyEscape(val)#> = dictbiz_model.map(|item| item.<#=rustKeyEscape(key)#>);<#
+      }
+      #>
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (!foreignTable) {
+      continue;
+    }
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #>
+  
+  // <#=column_comment#>
+  if is_not_empty_opt(&input.<#=column_name#>) {
+    let find_by_id_<#=foreignTable#> = crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_dao::find_by_id;
+    let <#=foreignTable#>_model = find_by_id_<#=foreignTable#>(
+      ctx,
+      input.<#=column_name#>.clone().unwrap(),
+      None,
+    ).await?;
+    if <#=foreignTable#>_model.is_some() {
+      let <#=foreignTable#>_model = <#=foreignTable#>_model.unwrap();<#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+      #>
+      input.<#=rustKeyEscape(val)#> = <#=foreignTable#>_model.<#=rustKeyEscape(key)#>.into();<#
+      }
+      #>
+    }
+  }<#
+  }
   #>
   
   Ok(input)
@@ -1260,8 +1379,7 @@ pub async fn create<'a>(
   let mut sql_values = "?,?".to_owned();
   
   args.push(id.clone().into());
-  args.push(now.into());
-  <#
+  args.push(now.into());<#
   if (hasTenant_id) {
   #>
   
@@ -1328,6 +1446,42 @@ pub async fn create<'a>(
     sql_fields += ",<#=column_name#>";
     sql_values += ",?";
     args.push(<#=column_name_rust#>.into());
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+  #>
+  // <#=column_comment#>
+  if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
+    sql_fields += ",<#=val#>";
+    sql_values += ",?";
+    args.push(<#=rustKeyEscape(val)#>.into());
   }<#
     }
   #><#
@@ -1580,6 +1734,42 @@ pub async fn update_by_id<'a>(
     args.push(<#=column_name_rust#>.into());
   }<#
   }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+  #>
+  // <#=column_comment#>
+  if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
+    field_num += 1;
+    sql_fields += ",<#=val#> = ?";
+    args.push(<#=rustKeyEscape(val)#>.into());
+  }<#
+    }
   #><#
   }
   #>
