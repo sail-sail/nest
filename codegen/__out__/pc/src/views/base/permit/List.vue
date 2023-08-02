@@ -72,7 +72,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.code_like == null && builtInSearch?.code == null">
+      <template v-if="builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null)">
         <el-form-item
           :label="n('编码')"
           prop="code_like"
@@ -87,7 +87,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -309,13 +309,6 @@
               @click="onImportExcel"
             >
               <span>{{ ns('导入') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              un-justify-center
-              @click="onOpenForeignTabs"
-            >
-              <span>{{ ns('权限历史记录') }}</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -585,10 +578,6 @@
     @cancel="cancelImport"
   ></ImportPercentageDialog>
   
-  <ForeignTabs
-    ref="foreignTabsRef"
-  ></ForeignTabs>
-  
 </div>
 </template>
 
@@ -619,8 +608,6 @@ import {
   getRoleList,
   getMenuList,
 } from "./Api";
-
-import ForeignTabs from "./ForeignTabs.vue";
 
 defineOptions({
   name: "权限",
@@ -836,7 +823,7 @@ watch(
 );
 
 function resetSelectedIds() {
-  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+  selectedIds = [ ];
 }
 
 /** 取消已选择筛选 */
@@ -1070,7 +1057,13 @@ let exportExcel = $ref(useExportExcel("/base/permit"));
 
 /** 导出Excel */
 async function onExport() {
-  await exportExcel.workerFn(search, [ sort ]);
+  const search2 = getDataSearch();
+  await exportExcel.workerFn(
+    search2,
+    [
+      sort,
+    ],
+  );
 }
 
 /** 取消导出Excel */
@@ -1397,33 +1390,6 @@ async function revertByIdsEfc() {
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
-}
-
-let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
-
-async function onOpenForeignTabs() {
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的数据"));
-    return;
-  }
-  if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择一条数据"));
-    return;
-  }
-  const id = selectedIds[0];
-  await openForeignTabs(id, "");
-}
-
-async function openForeignTabs(id: string, title: string) {
-  if (!foreignTabsRef) {
-    return;
-  }
-  await foreignTabsRef.showDialog({
-    title,
-    model: {
-      id,
-    },
-  });
 }
 
 /** 初始化ts中的国际化信息 */

@@ -26,7 +26,7 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -729,7 +729,7 @@ watch(
 );
 
 function resetSelectedIds() {
-  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+  selectedIds = [ ];
 }
 
 /** 取消已选择筛选 */

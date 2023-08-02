@@ -26,7 +26,7 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.module_lbl_like == null && builtInSearch?.module_lbl == null">
+      <template v-if="builtInSearch?.module_lbl == null && (showBuildIn || builtInSearch?.module_lbl_like == null)">
         <el-form-item
           :label="n('模块名称')"
           prop="module_lbl_like"
@@ -41,7 +41,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.method_lbl_like == null && builtInSearch?.method_lbl == null">
+      <template v-if="builtInSearch?.method_lbl == null && (showBuildIn || builtInSearch?.method_lbl_like == null)">
         <el-form-item
           :label="n('方法名称')"
           prop="method_lbl_like"
@@ -56,7 +56,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
           :label="n('操作')"
           prop="lbl_like"
@@ -757,7 +757,7 @@ watch(
 );
 
 function resetSelectedIds() {
-  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+  selectedIds = [ ];
 }
 
 /** 取消已选择筛选 */
@@ -1008,7 +1008,13 @@ let exportExcel = $ref(useExportExcel("/base/operation_record"));
 
 /** 导出Excel */
 async function onExport() {
-  await exportExcel.workerFn(search, [ sort ]);
+  const search2 = getDataSearch();
+  await exportExcel.workerFn(
+    search2,
+    [
+      sort,
+    ],
+  );
 }
 
 /** 取消导出Excel */

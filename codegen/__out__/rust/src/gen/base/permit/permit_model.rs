@@ -269,39 +269,3 @@ impl From<PermitInput> for PermitSearch {
     }
   }
 }
-
-impl From<PermitModel> for crate::gen::base::permit_history::permit_history_model::PermitHistoryInput {
-  fn from(model: PermitModel) -> Self {
-    Self {
-      /// 角色
-      role_id: model.role_id.into(),
-      role_id_lbl: model.role_id_lbl.into(),
-      /// 菜单
-      menu_id: model.menu_id.into(),
-      menu_id_lbl: model.menu_id_lbl.into(),
-      /// 编码
-      code: model.code.into(),
-      /// 名称
-      lbl: model.lbl.into(),
-      /// 可见
-      is_visible: model.is_visible.into(),
-      is_visible_lbl: model.is_visible_lbl.into(),
-      /// 备注
-      rem: model.rem.into(),
-      /// 创建人
-      create_usr_id: model.create_usr_id.into(),
-      create_usr_id_lbl: model.create_usr_id_lbl.into(),
-      /// 创建时间
-      create_time: model.create_time.into(),
-      create_time_lbl: model.create_time_lbl.into(),
-      /// 更新人
-      update_usr_id: model.update_usr_id.into(),
-      update_usr_id_lbl: model.update_usr_id_lbl.into(),
-      /// 更新时间
-      update_time: model.update_time.into(),
-      update_time_lbl: model.update_time_lbl.into(),
-      permit_id: model.id.into(),
-      ..Default::default()
-    }
-  }
-}

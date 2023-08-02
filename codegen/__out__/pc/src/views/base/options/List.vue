@@ -26,7 +26,7 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -41,7 +41,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.ky_like == null && builtInSearch?.ky == null">
+      <template v-if="builtInSearch?.ky == null && (showBuildIn || builtInSearch?.ky_like == null)">
         <el-form-item
           :label="n('键')"
           prop="ky_like"
@@ -56,7 +56,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.val_like == null && builtInSearch?.val == null">
+      <template v-if="builtInSearch?.val == null && (showBuildIn || builtInSearch?.val_like == null)">
         <el-form-item
           :label="n('值')"
           prop="val_like"
@@ -842,7 +842,7 @@ watch(
 );
 
 function resetSelectedIds() {
-  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+  selectedIds = [ ];
 }
 
 /** 取消已选择筛选 */
@@ -1086,7 +1086,13 @@ let exportExcel = $ref(useExportExcel("/base/options"));
 
 /** 导出Excel */
 async function onExport() {
-  await exportExcel.workerFn(search, [ sort ]);
+  const search2 = getDataSearch();
+  await exportExcel.workerFn(
+    search2,
+    [
+      sort,
+    ],
+  );
 }
 
 /** 取消导出Excel */

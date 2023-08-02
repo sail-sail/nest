@@ -17,7 +17,7 @@ async function dropTable(
 }
 
 export async function coderemove(context: Context, table_name: string) {
-  const mod_slash_table = table_name.replace(/_/gm, "/");
+  const mod_slash_table = table_name.replace("_", "/");
   
   console.log(`删除: ${ out }/deno/gen/${ mod_slash_table }/`);
   await rm(`${ out }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });

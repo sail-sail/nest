@@ -26,7 +26,7 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.lbl_like == null && builtInSearch?.lbl == null">
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -596,14 +596,15 @@
     </div>
   </div>
   
+  <!-- 菜单权限 -->
   <ListSelectDialog
     ref="menu_idsListSelectDialogRef"
     :is-locked="isLocked"
     v-slot="listSelectProps"
   >
-    <MenuList
+    <MenuTreeList
       v-bind="listSelectProps"
-    ></MenuList>
+    ></MenuTreeList>
   </ListSelectDialog>
   
   <Detail
@@ -625,7 +626,8 @@
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
-import MenuList from "../menu/List.vue";
+
+import MenuTreeList from "../menu/TreeList.vue";
 
 import {
   findAll,
@@ -869,7 +871,7 @@ watch(
 );
 
 function resetSelectedIds() {
-  selectedIds = props.selectedIds ? [ ...props.selectedIds ] : [ ];
+  selectedIds = [ ];
 }
 
 /** 取消已选择筛选 */
@@ -1113,7 +1115,13 @@ let exportExcel = $ref(useExportExcel("/base/tenant"));
 
 /** 导出Excel */
 async function onExport() {
-  await exportExcel.workerFn(search, [ sort ]);
+  const search2 = getDataSearch();
+  await exportExcel.workerFn(
+    search2,
+    [
+      sort,
+    ],
+  );
 }
 
 /** 取消导出Excel */
