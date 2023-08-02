@@ -209,7 +209,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {<#
-      for (let i = 0; i < columns.length; i++) {
+    for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
@@ -551,4 +551,70 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       ..Default::default()
     }
   }
+}<#
+if (opts?.history_table) {
+  const historyTable = opts.history_table;
+  const historyTableUp = historyTable.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+#>
+
+impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_model::<#=historyTableUp#>Input {
+  fn from(model: <#=tableUP#>Model) -> Self {
+    Self {<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        const column_name = rustKeyEscape(column.COLUMN_NAME);
+        if (column_name === "id") {
+          continue;
+        }
+        let data_type = column.DATA_TYPE;
+        let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+        let column_comment = column.COLUMN_COMMENT || "";
+        let selectList = [ ];
+        let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+        if (selectStr) {
+          selectList = eval(`(${ selectStr })`);
+        }
+        if (column_comment.indexOf("[") !== -1) {
+          column_comment = column_comment.substring(0, column_comment.indexOf("["));
+        }
+        const isPassword = column.isPassword;
+        const foreignKey = column.foreignKey;
+        if (isPassword) {
+          continue;
+        }
+      #><#
+        if (foreignKey && foreignKey.multiple) {
+      #>
+      /// <#=column_comment#>
+      <#=column_name#>: model.<#=column_name#>.into(),
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        } else if (foreignKey && !foreignKey.multiple) {
+      #>
+      /// <#=column_comment#>
+      <#=column_name#>: model.<#=column_name#>.into(),
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        } else if (selectList.length > 0 || column.dict || column.dictbiz
+          || data_type === "date" || data_type === "datetime"
+        ) {
+      #>
+      /// <#=column_comment#>
+      <#=column_name#>: model.<#=column_name#>.into(),
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        } else {
+      #>
+      /// <#=column_comment#>
+      <#=column_name#>: model.<#=column_name#>.into(),<#
+        }
+      #><#
+      }
+      #>
+      <#=table#>_id: model.id.into(),
+      ..Default::default()
+    }
+  }
+}<#
 }
+#>

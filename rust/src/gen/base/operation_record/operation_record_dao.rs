@@ -18,7 +18,10 @@ use crate::common::context::{
 
 use crate::src::base::i18n::i18n_dao;
 
-use crate::common::gql::model::{PageInput, SortInput};
+use crate::common::gql::model::{
+  PageInput,
+  SortInput,
+};
 
 use super::operation_record_model::*;
 
@@ -755,6 +758,22 @@ pub async fn update_by_id<'a>(
   mut input: OperationRecordInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  let old_model = find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if old_model.is_none() {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "记录已删除".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
+  let old_model = old_model.unwrap();
   
   input = set_id_by_lbl(
     ctx,

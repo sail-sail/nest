@@ -11,7 +11,7 @@
     "codegen": "cd codegen && node -r ts-node/register src/bin/codegen.ts",
     "gqlgen": "cd rust && npm run gqlgen",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
-    "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
+    "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove_rs.ts",
     "initdb": "cd codegen && node -r ts-node/register src/util/npmInitDB.ts",
     "importCsv": "cd codegen && node -r ts-node/register src/util/npmImportCsv.ts",
     "uuid": "cd codegen && node -r ts-node/register src/util/npmShortUuidV4.ts",

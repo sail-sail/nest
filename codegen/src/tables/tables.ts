@@ -605,6 +605,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_visible",
+        redundLbl: {
+          lbl: "is_visible_lbl",
+        },
       },
       {
         COLUMN_NAME: "rem",
