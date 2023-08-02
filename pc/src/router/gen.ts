@@ -171,18 +171,6 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/base/permit_history",
-    component: Layout1,
-    children: [
-      {
-        path: "",
-        name: "权限历史记录",
-        component: () => import("@/views/base/permit_history/List.vue"),
-        props: (route) => route.query,
-      },
-    ],
-  },
-  {
     path: "/base/role",
     component: Layout1,
     children: [
