@@ -710,17 +710,6 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 可见
-  if input.is_visible.is_some() {
-    let is_visible_dict = &dict_vec[0];
-    let dict_model = is_visible_dict.iter().find(|item| {
-      item.val.to_string() == input.is_visible.unwrap_or_default().to_string()
-    });
-    if let Some(dict_model) = dict_model {
-      input.is_visible_lbl = dict_model.lbl.to_owned().into();
-    }
-  }
-  
   Ok(input)
 }
 
@@ -835,12 +824,6 @@ pub async fn create<'a>(
     sql_fields += ",update_time";
     sql_values += ",?";
     args.push(update_time.into());
-  }
-  // 可见
-  if let Some(is_visible_lbl) = input.is_visible_lbl {
-    sql_fields += ",is_visible_lbl";
-    sql_values += ",?";
-    args.push(is_visible_lbl.into());
   }
   
   let sql = format!(
@@ -983,12 +966,6 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",rem = ?";
     args.push(rem.into());
-  }
-  // 可见
-  if let Some(is_visible_lbl) = input.is_visible_lbl {
-    field_num += 1;
-    sql_fields += ",is_visible_lbl = ?";
-    args.push(is_visible_lbl.into());
   }
   
   if field_num > 0 {

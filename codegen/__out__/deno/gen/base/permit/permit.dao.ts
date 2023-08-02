@@ -655,14 +655,6 @@ export async function create(
     }
   }
   
-  // 可见
-  if (model.is_visible != null) {
-    const dictModel = is_visibleDict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(model.is_visible, itemTmp.type as any);
-    });
-    model.is_visible_lbl = dictModel?.lbl;
-  }
-  
   const oldModel = await findByUnique(model, options);
   if (oldModel) {
     const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
@@ -722,10 +714,6 @@ export async function create(
   if (model.update_time !== undefined) {
     sql += `,update_time`;
   }
-  
-  if (model.is_visible_lbl !== undefined) {
-    sql += `,is_visible_lbl`;
-  }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
     sql += `,${ args.push(model.tenant_id) }`;
@@ -767,10 +755,6 @@ export async function create(
   }
   if (model.update_time !== undefined) {
     sql += `,${ args.push(model.update_time) }`;
-  }
-  
-  if (model.is_visible_lbl !== undefined) {
-    sql += `,${ args.push(model.is_visible_lbl) }`;
   }
   sql += `)`;
   
@@ -906,14 +890,6 @@ export async function updateById(
     }
   }
   
-  // 可见
-  if (model.is_visible != null) {
-    const dictModel = is_visibleDict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(model.is_visible, itemTmp.type as any);
-    });
-    model.is_visible_lbl = dictModel?.lbl;
-  }
-  
   const oldModel = await findById(id);
   
   if (!oldModel) {
@@ -958,12 +934,6 @@ export async function updateById(
   if (model.rem !== undefined) {
     if (model.rem != oldModel.rem) {
       sql += `rem = ${ args.push(model.rem) },`;
-      updateFldNum++;
-    }
-  }
-  if (model.is_visible_lbl !== undefined) {
-    if (model.is_visible_lbl != oldModel.is_visible_lbl) {
-      sql += `is_visible_lbl = ${ args.push(model.is_visible_lbl) },`;
       updateFldNum++;
     }
   }
