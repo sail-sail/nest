@@ -1700,7 +1700,6 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
-  let old_model = old_model.unwrap();
   
   input = set_id_by_lbl(
     ctx,
@@ -1946,6 +1945,7 @@ pub async fn update_by_id<'a>(
   #>
   
   if field_num > 0 {
+    let old_model = old_model.unwrap();
     crate::gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_dao::create(
       ctx,
       old_model.into(),

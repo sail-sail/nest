@@ -786,7 +786,6 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
-  let old_model = old_model.unwrap();
   
   input = set_id_by_lbl(
     ctx,
