@@ -959,16 +959,6 @@ export async function updateById(
   
   if (!deepCompare(oldModel, newModel)) {
     console.log(JSON.stringify(oldModel));
-    
-    const {
-      create: createHistory,
-    } = await import("/gen/base/permit_history/permit_history.dao.ts");
-    
-    await createHistory({
-      ...oldModel,
-      permit_id: id,
-      id: undefined,
-    });
   }
   
   return id;

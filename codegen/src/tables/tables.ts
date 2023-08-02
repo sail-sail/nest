@@ -482,7 +482,6 @@ export default defineConfig({
     opts: {
       cache: true,
       unique: [ "role_id", "menu_id", "code" ],
-      history_table: "permit_history",
     },
     columns: [
       {
@@ -502,86 +501,6 @@ export default defineConfig({
           mod: "base",
           table: "menu",
           selectType: "selectInput",
-        },
-      },
-      {
-        COLUMN_NAME: "code",
-        require: true,
-        search: true,
-        width: 160,
-        align: "left",
-        fixed: null,
-      },
-      {
-        COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 160,
-        align: "left",
-        fixed: null,
-        foreignTabs: [
-          {
-            linkType: "more",
-            mod: "base",
-            table: "permit_history",
-            label: "权限历史记录",
-            column: "permit_id",
-          },
-        ],
-      },
-      {
-        COLUMN_NAME: "is_visible",
-      },
-      {
-        COLUMN_NAME: "rem",
-      },
-      {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
-        COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
-      },
-    ],
-  },
-  // 权限历史记录
-  base_permit_history: {
-    opts: {
-      noAdd: false,
-      noEdit: false,
-    },
-    columns: [
-      {
-        COLUMN_NAME: "permit_id",
-        search: true,
-        align: "left",
-      },
-      {
-        COLUMN_NAME: "role_id",
-        search: true,
-        width: 160,
-        align: "left",
-        redundLbl: {
-          lbl: "role_id_lbl",
-        },
-      },
-      {
-        COLUMN_NAME: "menu_id",
-        search: true,
-        width: 160,
-        align: "left",
-        foreignKey: {
-          mod: "base",
-          table: "menu",
-          selectType: "selectInput",
-        },
-        redundLbl: {
-          lbl: "menu_id_lbl",
         },
       },
       {
