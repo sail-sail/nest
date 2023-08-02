@@ -19,7 +19,10 @@ use crate::common::context::{
 
 use crate::src::base::i18n::i18n_dao;
 
-use crate::common::gql::model::{PageInput, SortInput};
+use crate::common::gql::model::{
+  PageInput,
+  SortInput,
+};
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
@@ -551,7 +554,11 @@ pub async fn check_by_unique<'a>(
   }
   if unique_type == UniqueType::Throw {
     let field_comments = get_field_comments(ctx, None).await?;
-    let str = i18n_dao::ns(ctx, "已经存在".to_owned(), None).await?;
+    let str = i18n_dao::ns(
+      ctx,
+      "已经存在".to_owned(),
+      None,
+    ).await?;
     let err_msg: String = format!(
       "{}: {} {str}",
       field_comments.code,
@@ -725,6 +732,22 @@ pub async fn update_by_id<'a>(
   mut input: LangInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  let old_model = find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if old_model.is_none() {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "记录已删除".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
+  let old_model = old_model.unwrap();
   
   input = set_id_by_lbl(
     ctx,

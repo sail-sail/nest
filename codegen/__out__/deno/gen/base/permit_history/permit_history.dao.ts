@@ -663,6 +663,14 @@ export async function create(
     }
   }
   
+  // 可见
+  if (model.is_visible != null) {
+    const dictModel = is_visibleDict.find((itemTmp) => {
+      return itemTmp.val === dictSrcDao.val2Str(model.is_visible, itemTmp.type as any);
+    });
+    model.is_visible_lbl = dictModel?.lbl;
+  }
+  
   // 角色
   if (isNotEmpty(model.role_id)) {
     const {
@@ -757,6 +765,10 @@ export async function create(
   if (model.menu_id_lbl !== undefined) {
     sql += `,menu_id_lbl`;
   }
+  
+  if (model.is_visible_lbl !== undefined) {
+    sql += `,is_visible_lbl`;
+  }
   sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
   if (model.tenant_id != null) {
     sql += `,${ args.push(model.tenant_id) }`;
@@ -809,6 +821,10 @@ export async function create(
   
   if (model.menu_id_lbl !== undefined) {
     sql += `,${ args.push(model.menu_id_lbl) }`;
+  }
+  
+  if (model.is_visible_lbl !== undefined) {
+    sql += `,${ args.push(model.is_visible_lbl) }`;
   }
   sql += `)`;
   
@@ -929,6 +945,14 @@ export async function updateById(
     }
   }
   
+  // 可见
+  if (model.is_visible != null) {
+    const dictModel = is_visibleDict.find((itemTmp) => {
+      return itemTmp.val === dictSrcDao.val2Str(model.is_visible, itemTmp.type as any);
+    });
+    model.is_visible_lbl = dictModel?.lbl;
+  }
+  
   // 角色
   if (isNotEmpty(model.role_id)) {
     const {
@@ -1015,6 +1039,12 @@ export async function updateById(
   if (model.menu_id_lbl !== undefined) {
     if (model.menu_id_lbl != oldModel.menu_id_lbl) {
       sql += `menu_id_lbl = ${ args.push(model.menu_id_lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (model.is_visible_lbl !== undefined) {
+    if (model.is_visible_lbl != oldModel.is_visible_lbl) {
+      sql += `is_visible_lbl = ${ args.push(model.is_visible_lbl) },`;
       updateFldNum++;
     }
   }
