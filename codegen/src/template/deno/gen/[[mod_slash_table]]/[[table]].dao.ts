@@ -931,45 +931,6 @@ export async function getFieldComments() {
 }
 
 /**
- * 获得表的唯一字段名列表
- */
-export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof <#=modelName#>)[];
-  uniqueComments: { [key: string]: string };
-}> {
-  const n = initN("/i18n");
-  const uniqueKeys: (keyof <#=modelName#>)[] = [<#
-  for (let i = 0; i < (opts.unique || []).length; i++) {
-    const uniqueKey = opts.unique[i];
-  #>
-    "<#=uniqueKey#>",<#
-  }
-  #>
-  ];
-  const uniqueComments = {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      const unique = opts.unique || [ ];
-      if (!unique.includes(column_name)) continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-  #>
-    <#=column_name#>: await n("<#=column_comment#>"),<#
-    }
-  #>
-  };
-  return { uniqueKeys, uniqueComments };
-}
-
-/**
  * 通过唯一约束获得一行数据
  * @param {<#=searchName#> | PartialNull<<#=modelName#>>} search0
  */
@@ -979,24 +940,30 @@ export async function findByUnique(
   },
 ) {
   if (search0.id) {
-    const model = await findOne({ id: search0.id });
+    const model = await findOne({
+      id: search0.id,
+    });
     return model;
-  }
-  const { uniqueKeys } = await getUniqueKeys();
-  if (!uniqueKeys || uniqueKeys.length === 0) {
-    return;
-  }
-  const search: <#=searchName#> = { };
-  for (let i = 0; i < uniqueKeys.length; i++) {
-    const key = uniqueKeys[i];
-    const val = (search0 as any)[key];
-    if (isEmpty(val)) {
-      return;
+  }<#
+  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+    const uniques = opts.uniques[i];
+  #>
+  {
+    const model = await findOne({<#
+      for (let k = 0; k < uniques.length; k++) {
+        const unique = uniques[k];
+      #>
+      <#=unique#>: search0.<#=unique#>,<#
+      }
+      #>
+    });
+    if (model) {
+      return model;
     }
-    (search as any)[key] = val;
+  }<#
   }
-  const model = await findOne(search);
-  return model;
+  #>
+  return;
 }
 
 /**
@@ -1005,24 +972,29 @@ export async function findByUnique(
  * @param {PartialNull<<#=modelName#>>} model
  * @return {boolean}
  */
-export async function equalsByUnique(
+export function equalsByUnique(
   oldModel: <#=modelName#>,
   model: PartialNull<<#=modelName#>>,
-): Promise<boolean> {
-  if (!oldModel || !model) return false;
-  const { uniqueKeys } = await getUniqueKeys();
-  if (!uniqueKeys || uniqueKeys.length === 0) return false;
-  let isEquals = true;
-  for (let i = 0; i < uniqueKeys.length; i++) {
-    const key = uniqueKeys[i];
-    const oldVal = oldModel[key];
-    const val = model[key];
-    if (oldVal != val) {
-      isEquals = false;
-      break;
+): boolean {
+  if (!oldModel || !model) {
+    return false;
+  }<#
+  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+    const uniques = opts.uniques[i];
+  #>
+  if (<#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+    #>
+    oldModel.<#=unique#> === model.<#=unique#><#=(k === uniques.length - 1) ? "" : " &&" #><#
     }
+    #>
+  ) {
+    return true;
+  }<#
   }
-  return isEquals;
+  #>
+  return false;
 }
 
 /**
@@ -1039,14 +1011,10 @@ export async function checkByUnique(
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = await equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = await getUniqueKeys();
-      const lbl = uniqueKeys
-        .filter((key) => typeof key !== "symbol")
-        .map((key) => uniqueComments[key as string]).join(", ");
-      throw new UniqueException(await ns("{0} 的值已经存在", lbl));
+      throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === "update") {
       const result = await updateById(

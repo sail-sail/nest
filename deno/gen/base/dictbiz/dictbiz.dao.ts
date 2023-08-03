@@ -430,23 +430,6 @@ export async function getFieldComments() {
 }
 
 /**
- * 获得表的唯一字段名列表
- */
-export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof DictbizModel)[];
-  uniqueComments: { [key: string]: string };
-}> {
-  const n = initN("/i18n");
-  const uniqueKeys: (keyof DictbizModel)[] = [
-    "code",
-  ];
-  const uniqueComments = {
-    code: await n("编码"),
-  };
-  return { uniqueKeys, uniqueComments };
-}
-
-/**
  * 通过唯一约束获得一行数据
  * @param {DictbizSearch | PartialNull<DictbizModel>} search0
  */
@@ -456,24 +439,20 @@ export async function findByUnique(
   },
 ) {
   if (search0.id) {
-    const model = await findOne({ id: search0.id });
+    const model = await findOne({
+      id: search0.id,
+    });
     return model;
   }
-  const { uniqueKeys } = await getUniqueKeys();
-  if (!uniqueKeys || uniqueKeys.length === 0) {
-    return;
-  }
-  const search: DictbizSearch = { };
-  for (let i = 0; i < uniqueKeys.length; i++) {
-    const key = uniqueKeys[i];
-    const val = (search0 as any)[key];
-    if (isEmpty(val)) {
-      return;
+  {
+    const model = await findOne({
+      code: search0.code,
+    });
+    if (model) {
+      return model;
     }
-    (search as any)[key] = val;
   }
-  const model = await findOne(search);
-  return model;
+  return;
 }
 
 /**
@@ -482,24 +461,19 @@ export async function findByUnique(
  * @param {PartialNull<DictbizModel>} model
  * @return {boolean}
  */
-export async function equalsByUnique(
+export function equalsByUnique(
   oldModel: DictbizModel,
   model: PartialNull<DictbizModel>,
-): Promise<boolean> {
-  if (!oldModel || !model) return false;
-  const { uniqueKeys } = await getUniqueKeys();
-  if (!uniqueKeys || uniqueKeys.length === 0) return false;
-  let isEquals = true;
-  for (let i = 0; i < uniqueKeys.length; i++) {
-    const key = uniqueKeys[i];
-    const oldVal = oldModel[key];
-    const val = model[key];
-    if (oldVal != val) {
-      isEquals = false;
-      break;
-    }
+): boolean {
+  if (!oldModel || !model) {
+    return false;
   }
-  return isEquals;
+  if (
+    oldModel.code === model.code
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -516,14 +490,10 @@ export async function checkByUnique(
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = await equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = await getUniqueKeys();
-      const lbl = uniqueKeys
-        .filter((key) => typeof key !== "symbol")
-        .map((key) => uniqueComments[key as string]).join(", ");
-      throw new UniqueException(await ns("{0} 的值已经存在", lbl));
+      throw new UniqueException(await ns("记录已经存在"));
     }
     if (uniqueType === "update") {
       const result = await updateById(

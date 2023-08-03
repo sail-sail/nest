@@ -5,7 +5,9 @@ export default defineConfig({
   base_role: {
     opts: {
       cache: true,
-      unique: [ "lbl" ],
+      uniques: [
+        [ "lbl" ],
+      ],
     },
     columns: [
       {
@@ -46,7 +48,9 @@ export default defineConfig({
   base_tenant: {
     opts: {
       cache: true,
-      unique: [ "lbl" ],
+      uniques: [
+        [ "lbl" ],
+      ],
     },
     columns: [
       {
@@ -99,7 +103,9 @@ export default defineConfig({
   base_domain: {
     opts: {
       cache: true,
-      unique: [ "lbl" ],
+      uniques: [
+        [ "lbl" ],
+      ],
     },
     columns: [
       {
@@ -141,7 +147,9 @@ export default defineConfig({
     opts: {
       cache: true,
       ignoreCodegen: false,
-      unique: [ "lbl" ],
+      uniques: [
+        [ "lbl" ],
+      ],
     },
     columns: [
       {
@@ -223,7 +231,9 @@ export default defineConfig({
   base_menu: {
     opts: {
       cache: true,
-      unique: [ "parent_id", "lbl" ],
+      uniques: [
+        [ "parent_id", "lbl" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
@@ -386,7 +396,9 @@ export default defineConfig({
   base_lang: {
     opts: {
       cache: true,
-      unique: [ "code" ],
+      uniques: [
+        [ "code" ],
+      ],
     },
     columns: [
       {
@@ -431,7 +443,9 @@ export default defineConfig({
   base_i18n: {
     opts: {
       cache: true,
-      unique: [ "lang_id", "menu_id", "code" ],
+      uniques: [
+        [ "lang_id", "menu_id", "code" ],
+      ],
     },
     columns: [
       {
@@ -481,7 +495,9 @@ export default defineConfig({
   base_permit: {
     opts: {
       cache: true,
-      unique: [ "role_id", "menu_id", "code" ],
+      uniques: [
+        [ "role_id", "menu_id", "code" ],
+      ],
     },
     columns: [
       {
@@ -543,7 +559,9 @@ export default defineConfig({
   base_options: {
     opts: {
       cache: true,
-      unique: [ "ky" ],
+      uniques: [
+        [ "ky" ],
+      ],
     },
     columns: [
       {
@@ -662,7 +680,9 @@ export default defineConfig({
   base_org: {
     opts: {
       cache: true,
-      unique: [ "lbl" ],
+      uniques: [
+        [ "lbl" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
@@ -707,7 +727,9 @@ export default defineConfig({
   base_dept: {
     opts: {
       cache: true,
-      unique: [ "lbl" ],
+      uniques: [
+        [ "lbl" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
@@ -771,7 +793,10 @@ export default defineConfig({
   base_dict: {
     opts: {
       cache: true,
-      unique: [ "code" ],
+      uniques: [
+        [ "code" ],
+        [ "lbl" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
@@ -842,7 +867,9 @@ export default defineConfig({
   base_dict_detail: {
     opts: {
       cache: true,
-      unique: [ "dict_id", "lbl" ],
+      uniques: [
+        [ "dict_id", "lbl" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
@@ -893,7 +920,9 @@ export default defineConfig({
   base_dictbiz: {
     opts: {
       cache: true,
-      unique: [ "code" ],
+      uniques: [
+        [ "code" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",
@@ -958,7 +987,9 @@ export default defineConfig({
   base_dictbiz_detail: {
     opts: {
       cache: true,
-      unique: [ "dictbiz_id", "lbl" ],
+      uniques: [
+        [ "dictbiz_id", "lbl" ],
+      ],
       defaultSort: {
         prop: "order_by",
         order: "ascending",

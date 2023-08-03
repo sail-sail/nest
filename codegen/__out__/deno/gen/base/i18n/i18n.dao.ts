@@ -354,27 +354,6 @@ export async function getFieldComments() {
 }
 
 /**
- * 获得表的唯一字段名列表
- */
-export async function getUniqueKeys(): Promise<{
-  uniqueKeys: (keyof I18Nmodel)[];
-  uniqueComments: { [key: string]: string };
-}> {
-  const n = initN("/i18n");
-  const uniqueKeys: (keyof I18Nmodel)[] = [
-    "lang_id",
-    "menu_id",
-    "code",
-  ];
-  const uniqueComments = {
-    lang_id: await n("语言"),
-    menu_id: await n("菜单"),
-    code: await n("编码"),
-  };
-  return { uniqueKeys, uniqueComments };
-}
-
-/**
  * 通过唯一约束获得一行数据
  * @param {I18Nsearch | PartialNull<I18Nmodel>} search0
  */
@@ -384,24 +363,22 @@ export async function findByUnique(
   },
 ) {
   if (search0.id) {
-    const model = await findOne({ id: search0.id });
+    const model = await findOne({
+      id: search0.id,
+    });
     return model;
   }
-  const { uniqueKeys } = await getUniqueKeys();
-  if (!uniqueKeys || uniqueKeys.length === 0) {
-    return;
-  }
-  const search: I18Nsearch = { };
-  for (let i = 0; i < uniqueKeys.length; i++) {
-    const key = uniqueKeys[i];
-    const val = (search0 as any)[key];
-    if (isEmpty(val)) {
-      return;
+  {
+    const model = await findOne({
+      lang_id: search0.lang_id,
+      menu_id: search0.menu_id,
+      code: search0.code,
+    });
+    if (model) {
+      return model;
     }
-    (search as any)[key] = val;
   }
-  const model = await findOne(search);
-  return model;
+  return;
 }
 
 /**
@@ -410,24 +387,21 @@ export async function findByUnique(
  * @param {PartialNull<I18Nmodel>} model
  * @return {boolean}
  */
-export async function equalsByUnique(
+export function equalsByUnique(
   oldModel: I18Nmodel,
   model: PartialNull<I18Nmodel>,
-): Promise<boolean> {
-  if (!oldModel || !model) return false;
-  const { uniqueKeys } = await getUniqueKeys();
-  if (!uniqueKeys || uniqueKeys.length === 0) return false;
-  let isEquals = true;
-  for (let i = 0; i < uniqueKeys.length; i++) {
-    const key = uniqueKeys[i];
-    const oldVal = oldModel[key];
-    const val = model[key];
-    if (oldVal != val) {
-      isEquals = false;
-      break;
-    }
+): boolean {
+  if (!oldModel || !model) {
+    return false;
   }
-  return isEquals;
+  if (
+    oldModel.lang_id === model.lang_id &&
+    oldModel.menu_id === model.menu_id &&
+    oldModel.code === model.code
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -444,14 +418,10 @@ export async function checkByUnique(
   options?: {
   },
 ): Promise<string | undefined> {
-  const isEquals = await equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      const { uniqueKeys, uniqueComments } = await getUniqueKeys();
-      const lbl = uniqueKeys
-        .filter((key) => typeof key !== "symbol")
-        .map((key) => uniqueComments[key as string]).join(", ");
-      throw new UniqueException(await ns("{0} 的值已经存在", lbl));
+      throw new UniqueException(await ns("记录已经存在"));
     }
     if (uniqueType === "update") {
       const result = await updateById(
