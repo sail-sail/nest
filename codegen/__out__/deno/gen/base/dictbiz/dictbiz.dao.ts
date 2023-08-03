@@ -493,7 +493,7 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
     if (uniqueType === "throw") {
-      throw new UniqueException(await ns("记录已经存在"));
+      throw new UniqueException(await ns("数据已经存在"));
     }
     if (uniqueType === "update") {
       const result = await updateById(
