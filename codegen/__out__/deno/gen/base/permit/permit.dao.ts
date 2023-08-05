@@ -409,10 +409,27 @@ export async function findByUnique(
     return model;
   }
   {
+    let role_id: string[] = [ ];
+    if (search0.role_id) {
+      if (!Array.isArray(search0.role_id)) {
+        role_id.push(search0.role_id);
+      } else {
+        role_id = search0.role_id;
+      }
+    }
+    let menu_id: string[] = [ ];
+    if (search0.menu_id) {
+      if (!Array.isArray(search0.menu_id)) {
+        menu_id.push(search0.menu_id);
+      } else {
+        menu_id = search0.menu_id;
+      }
+    }
+    let code = search0.code;
     const model = await findOne({
-      role_id: search0.role_id,
-      menu_id: search0.menu_id,
-      code: search0.code,
+      role_id,
+      menu_id,
+      code,
     });
     if (model) {
       return model;

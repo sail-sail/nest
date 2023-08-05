@@ -948,12 +948,49 @@ export async function findByUnique(
   for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
     const uniques = opts.uniques[i];
   #>
-  {
+  {<#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      const data_type = column.DATA_TYPE;
+      const foreignKey = column.foreignKey;
+    #><#
+    if (
+      foreignKey
+      || data_type === "datetime"
+      || data_type === "date"
+      || data_type === "int"
+      || data_type === "decimal"
+      || column.dict
+      || column.dictbiz
+    ) {
+      let _data_type = "string";
+      if (column.dict || column.dictbiz) {
+        if (data_type === "tinyint" || data_type === "int") {
+          _data_type = "number";
+        }
+      }
+    #>
+    let <#=unique#>: <#=_data_type#>[] = [ ];
+    if (search0.<#=unique#>) {
+      if (!Array.isArray(search0.<#=unique#>)) {
+        <#=unique#>.push(search0.<#=unique#>);
+      } else {
+        <#=unique#> = search0.<#=unique#>;
+      }
+    }<#
+    } else {
+    #>
+    let <#=unique#> = search0.<#=unique#>;<#
+    }
+    #><#
+    }
+    #>
     const model = await findOne({<#
       for (let k = 0; k < uniques.length; k++) {
         const unique = uniques[k];
       #>
-      <#=unique#>: search0.<#=unique#>,<#
+      <#=unique#>,<#
       }
       #>
     });

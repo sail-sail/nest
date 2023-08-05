@@ -481,9 +481,18 @@ export async function findByUnique(
     return model;
   }
   {
+    let parent_id: string[] = [ ];
+    if (search0.parent_id) {
+      if (!Array.isArray(search0.parent_id)) {
+        parent_id.push(search0.parent_id);
+      } else {
+        parent_id = search0.parent_id;
+      }
+    }
+    let lbl = search0.lbl;
     const model = await findOne({
-      parent_id: search0.parent_id,
-      lbl: search0.lbl,
+      parent_id,
+      lbl,
     });
     if (model) {
       return model;

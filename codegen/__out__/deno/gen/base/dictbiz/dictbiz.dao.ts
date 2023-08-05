@@ -445,8 +445,9 @@ export async function findByUnique(
     return model;
   }
   {
+    let code = search0.code;
     const model = await findOne({
-      code: search0.code,
+      code,
     });
     if (model) {
       return model;

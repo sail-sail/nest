@@ -353,9 +353,18 @@ export async function findByUnique(
     return model;
   }
   {
+    let dict_id: string[] = [ ];
+    if (search0.dict_id) {
+      if (!Array.isArray(search0.dict_id)) {
+        dict_id.push(search0.dict_id);
+      } else {
+        dict_id = search0.dict_id;
+      }
+    }
+    let lbl = search0.lbl;
     const model = await findOne({
-      dict_id: search0.dict_id,
-      lbl: search0.lbl,
+      dict_id,
+      lbl,
     });
     if (model) {
       return model;

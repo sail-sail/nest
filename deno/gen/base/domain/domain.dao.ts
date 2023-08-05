@@ -402,8 +402,9 @@ export async function findByUnique(
     return model;
   }
   {
+    let lbl = search0.lbl;
     const model = await findOne({
-      lbl: search0.lbl,
+      lbl,
     });
     if (model) {
       return model;

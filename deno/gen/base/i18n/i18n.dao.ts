@@ -369,10 +369,27 @@ export async function findByUnique(
     return model;
   }
   {
+    let lang_id: string[] = [ ];
+    if (search0.lang_id) {
+      if (!Array.isArray(search0.lang_id)) {
+        lang_id.push(search0.lang_id);
+      } else {
+        lang_id = search0.lang_id;
+      }
+    }
+    let menu_id: string[] = [ ];
+    if (search0.menu_id) {
+      if (!Array.isArray(search0.menu_id)) {
+        menu_id.push(search0.menu_id);
+      } else {
+        menu_id = search0.menu_id;
+      }
+    }
+    let code = search0.code;
     const model = await findOne({
-      lang_id: search0.lang_id,
-      menu_id: search0.menu_id,
-      code: search0.code,
+      lang_id,
+      menu_id,
+      code,
     });
     if (model) {
       return model;

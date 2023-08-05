@@ -431,8 +431,9 @@ export async function findByUnique(
     return model;
   }
   {
+    let ky = search0.ky;
     const model = await findOne({
-      ky: search0.ky,
+      ky,
     });
     if (model) {
       return model;

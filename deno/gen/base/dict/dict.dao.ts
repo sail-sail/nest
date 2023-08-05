@@ -432,16 +432,18 @@ export async function findByUnique(
     return model;
   }
   {
+    let code = search0.code;
     const model = await findOne({
-      code: search0.code,
+      code,
     });
     if (model) {
       return model;
     }
   }
   {
+    let lbl = search0.lbl;
     const model = await findOne({
-      lbl: search0.lbl,
+      lbl,
     });
     if (model) {
       return model;
