@@ -565,6 +565,18 @@
     </div>
   </div>
   
+  <!-- 菜单 -->
+  <ListSelectDialog
+    ref="menu_idsListSelectDialogRef"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
+  >
+    <MenuList
+      :tenant_ids="[ usrStore.tenant_id ]"
+      v-bind="listSelectProps"
+    ></MenuList>
+  </ListSelectDialog>
+  
   <Detail
     ref="detailRef"
   ></Detail>
@@ -584,6 +596,8 @@
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
+
+import MenuList from "../menu/List.vue";
 
 import {
   findAll,
