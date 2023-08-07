@@ -399,16 +399,6 @@ pub async fn get_field_comments<'a>(
   Ok(field_comments)
 }
 
-/// 获得表的唯一字段名列表
-#[allow(dead_code)]
-pub fn get_unique_keys() -> Vec<&'static str> {
-  let unique_keys = vec![
-    "dict_id",
-    "lbl",
-  ];
-  unique_keys
-}
-
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -466,28 +456,40 @@ pub async fn find_by_unique<'a>(
   options: Option<Options>,
 ) -> Result<Option<DictDetailModel>> {
   
-  if search.id.is_none() {
-    if
-      search.dict_id.is_none() ||
-      search.lbl.is_none()
-    {
-      return Ok(None);
-    }
+  if let Some(id) = search.id {
+    let model = find_by_id(
+      ctx,
+      id.into(),
+      None,
+    ).await?;
+    return Ok(model);
   }
   
-  let search = DictDetailSearch {
-    id: search.id,
-    dict_id: search.dict_id,
-    lbl: search.lbl,
-    ..Default::default()
-  }.into();
+  let mut model: Option<DictDetailModel> = None;
   
-  let model = find_one(
-    ctx,
-    search,
-    sort,
-    options,
-  ).await?;
+  if model.is_none() {
+    model = {
+      if
+        search.dict_id.is_none() ||
+        search.lbl.is_none()
+      {
+        return Ok(None);
+      }
+      
+      let search = DictDetailSearch {
+        dict_id: search.dict_id,
+        lbl: search.lbl,
+        ..Default::default()
+      };
+      
+      find_one(
+        ctx,
+        search.into(),
+        None,
+        None,
+      ).await?
+    };
+  }
   
   Ok(model)
 }
@@ -501,13 +503,14 @@ fn equals_by_unique(
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
   if
-    input.dict_id.as_ref().is_none() || input.dict_id.as_ref().unwrap() != &model.dict_id ||
-    input.lbl.as_ref().is_none() || input.lbl.as_ref().unwrap() != &model.lbl
+    input.dict_id.as_ref().is_some() && input.dict_id.as_ref().unwrap() == &model.dict_id &&
+    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
   {
-    return false;
+    return true;
   }
-  true
+  false
 }
 
 /// 通过唯一约束检查数据是否已经存在
@@ -538,19 +541,11 @@ pub async fn check_by_unique<'a>(
     return Ok(res.into());
   }
   if unique_type == UniqueType::Throw {
-    let field_comments = get_field_comments(ctx, None).await?;
-    let str = i18n_dao::ns(
+    let err_msg = i18n_dao::ns(
       ctx,
-      "已经存在".to_owned(),
+      "记录已经存在".to_owned(),
       None,
     ).await?;
-    let err_msg: String = format!(
-      "{}: {}, {}: {} {str}",
-      field_comments.dict_id,
-      input.dict_id.unwrap_or_default(),
-      field_comments.lbl,
-      input.lbl.unwrap_or_default(),
-    );
     return Err(SrvErr::msg(err_msg).into());
   }
   Ok(None)

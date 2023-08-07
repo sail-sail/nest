@@ -461,14 +461,6 @@ pub async fn get_field_comments<'a>(
   Ok(field_comments)
 }
 
-/// 获得表的唯一字段名列表
-#[allow(dead_code)]
-pub fn get_unique_keys() -> Vec<&'static str> {
-  let unique_keys = vec![
-  ];
-  unique_keys
-}
-
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -525,6 +517,16 @@ pub async fn find_by_unique<'a>(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<OperationRecordModel>> {
+  
+  if let Some(id) = search.id {
+    let model = find_by_id(
+      ctx,
+      id.into(),
+      None,
+    ).await?;
+    return Ok(model);
+  }
+  
   Ok(None)
 }
 
@@ -548,6 +550,33 @@ pub async fn check_by_unique<'a>(
   model: OperationRecordModel,
   unique_type: UniqueType,
 ) -> Result<Option<String>> {
+  let is_equals = equals_by_unique(
+    &input,
+    &model,
+  );
+  if !is_equals {
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Ignore {
+    return Ok(None);
+  }
+  if unique_type == UniqueType::Update {
+    let res = update_by_id(
+      ctx,
+      model.id.clone(),
+      input,
+      None,
+    ).await?;
+    return Ok(res.into());
+  }
+  if unique_type == UniqueType::Throw {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "记录已经存在".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
   Ok(None)
 }
 

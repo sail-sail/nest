@@ -515,15 +515,6 @@ pub async fn get_field_comments<'a>(
   Ok(field_comments)
 }
 
-/// 获得表的唯一字段名列表
-#[allow(dead_code)]
-pub fn get_unique_keys() -> Vec<&'static str> {
-  let unique_keys = vec![
-    "ky",
-  ];
-  unique_keys
-}
-
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -581,26 +572,38 @@ pub async fn find_by_unique<'a>(
   options: Option<Options>,
 ) -> Result<Option<OptionsModel>> {
   
-  if search.id.is_none() {
-    if
-      search.ky.is_none()
-    {
-      return Ok(None);
-    }
+  if let Some(id) = search.id {
+    let model = find_by_id(
+      ctx,
+      id.into(),
+      None,
+    ).await?;
+    return Ok(model);
   }
   
-  let search = OptionsSearch {
-    id: search.id,
-    ky: search.ky,
-    ..Default::default()
-  }.into();
+  let mut model: Option<OptionsModel> = None;
   
-  let model = find_one(
-    ctx,
-    search,
-    sort,
-    options,
-  ).await?;
+  if model.is_none() {
+    model = {
+      if
+        search.ky.is_none()
+      {
+        return Ok(None);
+      }
+      
+      let search = OptionsSearch {
+        ky: search.ky,
+        ..Default::default()
+      };
+      
+      find_one(
+        ctx,
+        search.into(),
+        None,
+        None,
+      ).await?
+    };
+  }
   
   Ok(model)
 }
@@ -614,12 +617,13 @@ fn equals_by_unique(
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
   if
-    input.ky.as_ref().is_none() || input.ky.as_ref().unwrap() != &model.ky
+    input.ky.as_ref().is_some() && input.ky.as_ref().unwrap() == &model.ky
   {
-    return false;
+    return true;
   }
-  true
+  false
 }
 
 /// 通过唯一约束检查数据是否已经存在
@@ -650,17 +654,11 @@ pub async fn check_by_unique<'a>(
     return Ok(res.into());
   }
   if unique_type == UniqueType::Throw {
-    let field_comments = get_field_comments(ctx, None).await?;
-    let str = i18n_dao::ns(
+    let err_msg = i18n_dao::ns(
       ctx,
-      "已经存在".to_owned(),
+      "记录已经存在".to_owned(),
       None,
     ).await?;
-    let err_msg: String = format!(
-      "{}: {} {str}",
-      field_comments.ky,
-      input.ky.unwrap_or_default(),
-    );
     return Err(SrvErr::msg(err_msg).into());
   }
   Ok(None)
