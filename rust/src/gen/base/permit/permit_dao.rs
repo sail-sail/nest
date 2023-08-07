@@ -477,17 +477,6 @@ pub async fn get_field_comments<'a>(
   Ok(field_comments)
 }
 
-/// 获得表的唯一字段名列表
-#[allow(dead_code)]
-pub fn get_unique_keys() -> Vec<&'static str> {
-  let unique_keys = vec![
-    "role_id",
-    "menu_id",
-    "code",
-  ];
-  unique_keys
-}
-
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -545,30 +534,42 @@ pub async fn find_by_unique<'a>(
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
-  if search.id.is_none() {
-    if
-      search.role_id.is_none() ||
-      search.menu_id.is_none() ||
-      search.code.is_none()
-    {
-      return Ok(None);
-    }
+  if let Some(id) = search.id {
+    let model = find_by_id(
+      ctx,
+      id.into(),
+      None,
+    ).await?;
+    return Ok(model);
   }
   
-  let search = PermitSearch {
-    id: search.id,
-    role_id: search.role_id,
-    menu_id: search.menu_id,
-    code: search.code,
-    ..Default::default()
-  }.into();
+  let mut model: Option<PermitModel> = None;
   
-  let model = find_one(
-    ctx,
-    search,
-    sort,
-    options,
-  ).await?;
+  if model.is_none() {
+    model = {
+      if
+        search.role_id.is_none() ||
+        search.menu_id.is_none() ||
+        search.code.is_none()
+      {
+        return Ok(None);
+      }
+      
+      let search = PermitSearch {
+        role_id: search.role_id,
+        menu_id: search.menu_id,
+        code: search.code,
+        ..Default::default()
+      };
+      
+      find_one(
+        ctx,
+        search.into(),
+        None,
+        None,
+      ).await?
+    };
+  }
   
   Ok(model)
 }
@@ -582,14 +583,15 @@ fn equals_by_unique(
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
   if
-    input.role_id.as_ref().is_none() || input.role_id.as_ref().unwrap() != &model.role_id ||
-    input.menu_id.as_ref().is_none() || input.menu_id.as_ref().unwrap() != &model.menu_id ||
-    input.code.as_ref().is_none() || input.code.as_ref().unwrap() != &model.code
+    input.role_id.as_ref().is_some() && input.role_id.as_ref().unwrap() == &model.role_id &&
+    input.menu_id.as_ref().is_some() && input.menu_id.as_ref().unwrap() == &model.menu_id &&
+    input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
   {
-    return false;
+    return true;
   }
-  true
+  false
 }
 
 /// 通过唯一约束检查数据是否已经存在
@@ -620,21 +622,11 @@ pub async fn check_by_unique<'a>(
     return Ok(res.into());
   }
   if unique_type == UniqueType::Throw {
-    let field_comments = get_field_comments(ctx, None).await?;
-    let str = i18n_dao::ns(
+    let err_msg = i18n_dao::ns(
       ctx,
-      "已经存在".to_owned(),
+      "记录已经存在".to_owned(),
       None,
     ).await?;
-    let err_msg: String = format!(
-      "{}: {}, {}: {}, {}: {} {str}",
-      field_comments.role_id,
-      input.role_id.unwrap_or_default(),
-      field_comments.menu_id,
-      input.menu_id.unwrap_or_default(),
-      field_comments.code,
-      input.code.unwrap_or_default(),
-    );
     return Err(SrvErr::msg(err_msg).into());
   }
   Ok(None)

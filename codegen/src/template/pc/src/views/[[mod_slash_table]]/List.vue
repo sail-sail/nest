@@ -1048,7 +1048,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   #><#
     if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-      && (foreignKey && [ "selectType", "select" ].includes(foreignKey.selectType))
+      && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
     ) {
   #>
   
@@ -1160,7 +1160,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
   if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-    && (foreignKey && [ "selectType", "select" ].includes(foreignKey.selectType))
+    && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
   ) {
 #>
 

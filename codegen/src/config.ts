@@ -628,9 +628,9 @@ export interface TablesConfigItem {
     
     /**
      * 唯一约束
-     * @type {string[]}
+     * @type {string[][]}
      */
-    unique?: string[];
+    uniques?: string[][];
     
     /**
      * 不可改和不可删除的系统字段, 配合 is_sys 字段使用

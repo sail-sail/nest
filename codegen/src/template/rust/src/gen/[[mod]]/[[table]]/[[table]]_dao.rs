@@ -777,20 +777,6 @@ pub async fn get_field_comments<'a>(
   Ok(field_comments)
 }
 
-/// 获得表的唯一字段名列表
-#[allow(dead_code)]
-pub fn get_unique_keys() -> Vec<&'static str> {
-  let unique_keys = vec![<#
-    for (let i = 0; i < (opts.unique || []).length; i++) {
-      const uniqueKey = opts.unique[i];
-    #>
-    "<#=uniqueKey#>",<#
-    }
-    #>
-  ];
-  unique_keys
-}
-
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -846,49 +832,63 @@ pub async fn find_by_unique<'a>(
   search: <#=tableUP#>Search,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<<#=tableUP#>Model>> {<#
-  if (opts.unique && opts.unique.length > 0) {
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  if let Some(id) = search.id {
+    let model = find_by_id(
+      ctx,
+      id.into(),
+      None,
+    ).await?;
+    return Ok(model);
+  }<#
+  if (!opts.uniques || opts.uniques.length === 0) {
   #>
   
-  if search.id.is_none() {
-    if<#
-    for (let i = 0; i < (opts.unique || []).length; i++) {
-      const uniqueKey = opts.unique[i];
-    #>
-      search.<#=uniqueKey#>.is_none()<#
-      if (i !== (opts.unique || []).length - 1) {
-      #> ||<#
-      }
-      #><#
-    }
-    #>
-    {
-      return Ok(None);
-    }
-  }
-  
-  let search = <#=tableUP#>Search {
-    id: search.id,<#
-    for (let i = 0; i < (opts.unique || []).length; i++) {
-      const uniqueKey = opts.unique[i];
-    #>
-    <#=uniqueKey#>: search.<#=uniqueKey#>,<#
-    }
-    #>
-    ..Default::default()
-  }.into();
-  
-  let model = find_one(
-    ctx,
-    search,
-    sort,
-    options,
-  ).await?;
-  
-  Ok(model)<#
+  Ok(None)<#
   } else {
   #>
-  Ok(None)<#
+  
+  let mut model: Option<<#=tableUP#>Model> = None;<#
+  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+    const uniques = opts.uniques[i];
+  #>
+  
+  if model.is_none() {
+    model = {
+      if<#
+        for (let k = 0; k < uniques.length; k++) {
+          const unique = uniques[k];
+        #>
+        search.<#=unique#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+        }
+        #>
+      {
+        return Ok(None);
+      }
+      
+      let search = <#=tableUP#>Search {<#
+        for (let k = 0; k < uniques.length; k++) {
+          const unique = uniques[k];
+        #>
+        <#=unique#>: search.<#=unique#>,<#
+        }
+        #>
+        ..Default::default()
+      };
+      
+      find_one(
+        ctx,
+        search.into(),
+        None,
+        None,
+      ).await?
+    };
+  }<#
+  }
+  #>
+  
+  Ok(model)<#
   }
   #>
 }
@@ -902,23 +902,29 @@ fn equals_by_unique(
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }<#
-  if (opts.unique && opts.unique.length > 0) {
+  if (opts.uniques && opts.uniques.length > 0) {
+  #><#
+  for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+    const uniques = opts.uniques[i];
   #>
+  
   if<#
-    for (let i = 0; i < opts.unique.length; i++) {
-      const uniqueKey = opts.unique[i];
+    for (let i = 0; i < uniques.length; i++) {
+      const unique = uniques[i];
     #>
-    input.<#=uniqueKey#>.as_ref().is_none() || input.<#=uniqueKey#>.as_ref().unwrap() != &model.<#=uniqueKey#><#
-      if (i !== opts.unique.length - 1) {
-      #> ||<#
+    input.<#=unique#>.as_ref().is_some() && input.<#=unique#>.as_ref().unwrap() == &model.<#=unique#><#
+      if (i !== uniques.length - 1) {
+    #> &&<#
       }
-      #><#
+    #><#
     }
     #>
   {
-    return false;
+    return true;
+  }<#
   }
-  true<#
+  #>
+  false<#
   } else {
   #>
   false<#
@@ -933,9 +939,7 @@ pub async fn check_by_unique<'a>(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
   unique_type: UniqueType,
-) -> Result<Option<String>> {<#
-  if (opts.unique && opts.unique.length > 0) {
-  #>
+) -> Result<Option<String>> {
   let is_equals = equals_by_unique(
     &input,
     &model,
@@ -956,35 +960,13 @@ pub async fn check_by_unique<'a>(
     return Ok(res.into());
   }
   if unique_type == UniqueType::Throw {
-    let field_comments = get_field_comments(ctx, None).await?;
-    let str = i18n_dao::ns(
+    let err_msg = i18n_dao::ns(
       ctx,
-      "已经存在".to_owned(),
+      "记录已经存在".to_owned(),
       None,
     ).await?;
-    let err_msg: String = format!(
-      "<#
-      for (let i = 0; i < (opts.unique || []).length; i++) {
-        const uniqueKey = opts.unique[i];
-      #>{}: {}<#
-        if (i !== (opts.unique || []).length - 1) {
-      #>, <#
-        }
-      #><#
-      }
-      #> {str}",<#
-      for (let i = 0; i < (opts.unique || []).length; i++) {
-        const uniqueKey = opts.unique[i];
-      #>
-      field_comments.<#=uniqueKey#>,
-      input.<#=uniqueKey#>.unwrap_or_default(),<#
-      }
-      #>
-    );
     return Err(SrvErr::msg(err_msg).into());
-  }<#
   }
-  #>
   Ok(None)
 }
 

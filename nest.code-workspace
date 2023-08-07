@@ -48,5 +48,6 @@
       "editorInlayHint.typeBackground": "#08000088",
       "editorInlayHint.typeForeground": "#ddeeff7d"
     },
+    "diffEditor.experimental.useVersion2": true
   }
 }
