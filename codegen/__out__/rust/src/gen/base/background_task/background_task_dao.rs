@@ -551,14 +551,14 @@ pub async fn find_by_id<'a>(
   Ok(res)
 }
 
-/// 通过唯一约束获得一行数据
+/// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
   search: BackgroundTaskSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<BackgroundTaskModel>> {
+) -> Result<Vec<BackgroundTaskModel>> {
   
   if let Some(id) = search.id {
     let model = find_by_id(
@@ -566,10 +566,13 @@ pub async fn find_by_unique<'a>(
       id.into(),
       None,
     ).await?;
-    return Ok(model);
+    if let Some(model) = model {
+      return Ok(vec![model]);
+    }
+    return Ok(vec![]);
   }
   
-  Ok(None)
+  Ok(vec![])
 }
 
 /// 根据唯一约束对比对象是否相等
@@ -603,13 +606,13 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let res = update_by_id(
+    let id = update_by_id(
       ctx,
       model.id.clone(),
       input,
       None,
     ).await?;
-    return Ok(res.into());
+    return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
     let err_msg = i18n_dao::ns(
@@ -686,28 +689,39 @@ pub async fn create<'a>(
     input,
   ).await?;
   
-  let old_model = find_by_unique(
+  let old_models = find_by_unique(
     ctx,
     input.clone().into(),
     None,
     None,
   ).await?;
   
-  if old_model.is_some() {
+  if old_models.len() > 0 {
+    
     let unique_type = options.as_ref()
-      .map(|item| 
+      .map(|item|
         item.get_unique_type()
           .map(|item| item.clone())
           .unwrap_or(UniqueType::Throw)
       )
       .unwrap_or(UniqueType::Throw);
     
-    let id = check_by_unique(
-      ctx,
-      input.clone().into(),
-      old_model.unwrap(),
-      unique_type,
-    ).await?;
+    let mut id: Option<String> = None;
+    
+    for old_model in old_models {
+      
+      id = check_by_unique(
+        ctx,
+        input.clone(),
+        old_model,
+        unique_type,
+      ).await?;
+      
+      if id.is_some() {
+        break;
+      }
+    }
+    
     match id {
       Some(id) => return Ok(id),
       None => {},
@@ -882,7 +896,7 @@ pub async fn update_by_id<'a>(
   if old_model.is_none() {
     let err_msg = i18n_dao::ns(
       ctx,
-      "记录已删除".to_owned(),
+      "数据已删除".to_owned(),
       None,
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
@@ -892,6 +906,33 @@ pub async fn update_by_id<'a>(
     ctx,
     input,
   ).await?;
+  
+  {
+    let mut input = input.clone();
+    input.id = None;
+    
+    let models = find_by_unique(
+      ctx,
+      input.into(),
+      None,
+      None,
+    ).await?;
+    
+    let models: Vec<BackgroundTaskModel> = models.into_iter()
+      .filter(|item| 
+        &item.id != &id
+      )
+      .collect();
+    
+    if models.len() > 0 {
+      let err_msg = i18n_dao::ns(
+        ctx,
+        "数据已经存在".to_owned(),
+        None,
+      ).await?;
+      return Err(SrvErr::msg(err_msg).into());
+    }
+  }
   
   let table = "base_background_task";
   let _method = "update_by_id";
