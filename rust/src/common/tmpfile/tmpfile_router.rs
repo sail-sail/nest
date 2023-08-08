@@ -68,7 +68,6 @@ async fn _download(
     return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
   }
   let if_none_match = req.header("if-none-match");
-  drop(req);
   let inline = inline.unwrap_or("1".to_owned());
   let attachment = match inline.as_str() {
     "1" => "inline",
