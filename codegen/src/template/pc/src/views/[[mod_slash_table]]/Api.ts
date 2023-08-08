@@ -33,6 +33,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 const importForeignTables = [ ];
 importForeignTables.push(Table_Up);
 #>import {
+  UniqueType,
   type Query,
   type Mutation,
   type PageInput,
@@ -295,22 +296,25 @@ if (opts.noAdd !== true) {
  * 创建一条数据
  * @export create
  * @param {<#=inputName#>} model
+ * @param {UniqueType} uniqueType?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: <#=inputName#>,
+  unique_type?: UniqueType,
   opt?: GqlOpt,
 ) {
   const data: {
     create<#=Table_Up#>: Mutation["create<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: <#=inputName#>!) {
-        create<#=Table_Up#>(model: $model)
+      mutation($model: <#=inputName#>!, $unique_type: UniqueType) {
+        create<#=Table_Up#>(model: $model, unique_type: $unique_type)
       }
     `,
     variables: {
       model,
+      unique_type,
     },
   }, opt);
   const res = data.create<#=Table_Up#>;
@@ -855,7 +859,11 @@ export async function importModels(
     opt.notLoading = true;
     
     try {
-      await create(item, opt);
+      await create(
+        item,
+        UniqueType.Update,
+        opt,
+      );
       succNum++;
     } catch (err) {
       failNum++;

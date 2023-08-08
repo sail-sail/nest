@@ -185,7 +185,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createDictbiz(model: DictbizInput!): String!
+  createDictbiz(model: DictbizInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdDictbiz(id: String!, model: DictbizInput!): String!
   "根据 ids 删除数据"

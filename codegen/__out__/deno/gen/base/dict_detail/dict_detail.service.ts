@@ -3,6 +3,7 @@ import {
 } from "/src/base/i18n/i18n.ts";
 
 import {
+  type UniqueType,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -99,8 +100,11 @@ export async function existById(
  */
 export async function create(
   input: DictDetailInput,
+  options?: {
+    uniqueType?: UniqueType;
+  },
 ): Promise<string> {
-  const data = await dict_detailDao.create(input);
+  const data = await dict_detailDao.create(input, options);
   return data;
 }
 

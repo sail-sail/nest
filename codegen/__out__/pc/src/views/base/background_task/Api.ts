@@ -1,4 +1,5 @@
 import {
+  UniqueType,
   type Query,
   type Mutation,
   type PageInput,

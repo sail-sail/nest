@@ -157,7 +157,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createRole(model: RoleInput!): String!
+  createRole(model: RoleInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdRole(id: String!, model: RoleInput!): String!
   "根据 ids 删除数据"
