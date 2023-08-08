@@ -35,8 +35,18 @@ const hasDictbiz = columns.some((column) => {
 #>use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
-use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
+use crate::common::context::{
+  CtxImpl,
+  Ctx,
+  Options,
+  UniqueType,
+};
+
+use crate::common::gql::model::{
+  PageInput,
+  SortInput,
+};
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_resolver;
@@ -216,13 +226,19 @@ impl <#=tableUP#>GenMutation {<#
     &self,
     ctx: &Context<'a>,
     model: <#=tableUP#>Input,
+    unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
     
     let id = <#=table#>_resolver::create(
       &mut ctx,
       model,
-      None,
+      options.into(),
     ).await;
     
     ctx.ok(id).await

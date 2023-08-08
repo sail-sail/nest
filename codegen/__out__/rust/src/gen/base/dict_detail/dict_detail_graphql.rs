@@ -1,8 +1,18 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
-use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
+use crate::common::context::{
+  CtxImpl,
+  Ctx,
+  Options,
+  UniqueType,
+};
+
+use crate::common::gql::model::{
+  PageInput,
+  SortInput,
+};
 
 use super::dict_detail_model::*;
 use super::dict_detail_resolver;
@@ -168,13 +178,19 @@ impl DictDetailGenMutation {
     &self,
     ctx: &Context<'a>,
     model: DictDetailInput,
+    unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let mut options = Options::new();
+    if let Some(unique_type) = unique_type {
+      options = options.set_unique_type(unique_type);
+    }
     
     let id = dict_detail_resolver::create(
       &mut ctx,
       model,
-      None,
+      options.into(),
     ).await;
     
     ctx.ok(id).await
