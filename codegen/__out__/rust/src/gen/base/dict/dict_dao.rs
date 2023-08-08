@@ -1278,7 +1278,7 @@ pub async fn revert_by_ids<'a>(
       table,
     );
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args = args.into();
     
@@ -1293,6 +1293,46 @@ pub async fn revert_by_ids<'a>(
       args,
       options,
     ).await?;
+    
+    // 检查数据的唯一索引
+    {
+      let old_model = find_by_id(
+        ctx,
+        id.clone(),
+        None,
+      ).await?;
+      
+      if old_model.is_none() {
+        continue;
+      }
+      let old_model = old_model.unwrap();
+      
+      let mut input: DictInput = old_model.into();
+      input.id = None;
+      
+      let models = find_by_unique(
+        ctx,
+        input.into(),
+        None,
+        None,
+      ).await?;
+      
+      let models: Vec<DictModel> = models.into_iter()
+        .filter(|item| 
+          &item.id != &id
+        )
+        .collect();
+      
+      if models.len() > 0 {
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "数据已经存在".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(err_msg).into());
+      }
+    }
+    
   }
   
   Ok(num)
