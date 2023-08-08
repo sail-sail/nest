@@ -660,11 +660,19 @@ pub async fn create<'a>(
   ).await?;
   
   if old_model.is_some() {
+    let unique_type = options.as_ref()
+      .map(|item| 
+        item.get_unique_type()
+          .map(|item| item.clone())
+          .unwrap_or(UniqueType::Throw)
+      )
+      .unwrap_or(UniqueType::Throw);
+    
     let id = check_by_unique(
       ctx,
       input.clone().into(),
       old_model.unwrap(),
-      UniqueType::Update,
+      unique_type,
     ).await?;
     match id {
       Some(id) => return Ok(id),

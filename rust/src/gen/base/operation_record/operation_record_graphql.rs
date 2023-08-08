@@ -1,8 +1,18 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
-use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
+use crate::common::context::{
+  CtxImpl,
+  Ctx,
+  Options,
+  UniqueType,
+};
+
+use crate::common::gql::model::{
+  PageInput,
+  SortInput,
+};
 
 use super::operation_record_model::*;
 use super::operation_record_resolver;

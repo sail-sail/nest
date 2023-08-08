@@ -23,6 +23,8 @@ use super::auth::auth_model::{AuthModel, AUTHORIZATION};
 use super::cache::cache_dao::{get_cache, set_cache, del_caches, del_cache};
 use super::gql::model::{SortInput, PageInput};
 
+pub use super::gql::model::UniqueType;
+
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
     .parse::<i64>()
@@ -1356,15 +1358,6 @@ pub struct OrderByModel {
   
 }
 
-/// "ignore" | "throw" | "update" = "throw"
-#[allow(dead_code)]
-#[derive(PartialEq, Clone, Debug)]
-pub enum UniqueType {
-  Ignore,
-  Throw,
-  Update,
-}
-
 #[derive(Debug)]
 pub struct SrvErr {
   #[allow(dead_code)]
@@ -1707,6 +1700,18 @@ impl Options {
   #[inline]
   pub fn get_is_tran(&self) -> Option<bool> {
     self.is_tran
+  }
+  
+  #[inline]
+  pub fn set_unique_type(self, unique_type: UniqueType) -> Self {
+    let mut self_ = self;
+    self_.unique_type = Some(unique_type);
+    self_
+  }
+  
+  #[inline]
+  pub fn get_unique_type(&self) -> Option<UniqueType> {
+    self.unique_type
   }
   
 }
