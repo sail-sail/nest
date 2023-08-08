@@ -166,7 +166,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createDomain(model: DomainInput!): String!
+  createDomain(model: DomainInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdDomain(id: String!, model: DomainInput!): String!
   "根据 ids 删除数据"

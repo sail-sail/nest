@@ -147,7 +147,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createLang(model: LangInput!): String!
+  createLang(model: LangInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdLang(id: String!, model: LangInput!): String!
   "根据 ids 删除数据"

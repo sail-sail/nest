@@ -46,6 +46,7 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
 import {
+  UniqueType,
   SortOrderEnum,
   type PageInput,
   type SortInput,
@@ -410,22 +411,22 @@ export function equalsByUnique(
  * 通过唯一约束检查数据是否已经存在
  * @param {OperationRecordInput} model
  * @param {OperationRecordModel} oldModel
- * @param {("ignore" | "throw" | "update")} uniqueType
+ * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
   model: OperationRecordInput,
   oldModel: OperationRecordModel,
-  uniqueType: "ignore" | "throw" | "update" = "throw",
+  uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
 ): Promise<string | undefined> {
   const isEquals = equalsByUnique(oldModel, model);
   if (isEquals) {
-    if (uniqueType === "throw") {
+    if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
     }
-    if (uniqueType === "update") {
+    if (uniqueType === UniqueType.Update) {
       const result = await updateById(
         oldModel.id,
         {
@@ -436,7 +437,7 @@ export async function checkByUnique(
       );
       return result;
     }
-    if (uniqueType === "ignore") {
+    if (uniqueType === UniqueType.Ignore) {
       return;
     }
   }
@@ -536,7 +537,7 @@ export async function existById(
  * 创建数据
  * @param {OperationRecordInput} model
  * @param {({
- *   uniqueType?: "ignore" | "throw" | "update",
+ *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
@@ -546,7 +547,7 @@ export async function existById(
 export async function create(
   model: OperationRecordInput,
   options?: {
-    uniqueType?: "ignore" | "throw" | "update";
+    uniqueType?: UniqueType;
   },
 ): Promise<string> {
   const table = "base_operation_record";

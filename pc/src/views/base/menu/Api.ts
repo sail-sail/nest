@@ -1,4 +1,5 @@
 import {
+  UniqueType,
   type Query,
   type Mutation,
   type PageInput,
@@ -132,22 +133,25 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {MenuInput} model
+ * @param {UniqueType} uniqueType?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: MenuInput,
+  unique_type?: UniqueType,
   opt?: GqlOpt,
 ) {
   const data: {
     createMenu: Mutation["createMenu"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: MenuInput!) {
-        createMenu(model: $model)
+      mutation($model: MenuInput!, $unique_type: UniqueType) {
+        createMenu(model: $model, unique_type: $unique_type)
       }
     `,
     variables: {
       model,
+      unique_type,
     },
   }, opt);
   const res = data.createMenu;
@@ -652,7 +656,11 @@ export async function importModels(
     opt.notLoading = true;
     
     try {
-      await create(item, opt);
+      await create(
+        item,
+        UniqueType.Update,
+        opt,
+      );
       succNum++;
     } catch (err) {
       failNum++;

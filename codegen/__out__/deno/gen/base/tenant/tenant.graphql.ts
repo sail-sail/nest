@@ -182,7 +182,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createTenant(model: TenantInput!): String!
+  createTenant(model: TenantInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdTenant(id: String!, model: TenantInput!): String!
   "根据 ids 删除数据"

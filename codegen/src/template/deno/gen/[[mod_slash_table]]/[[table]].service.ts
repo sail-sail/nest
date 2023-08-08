@@ -42,6 +42,7 @@ import * as authDao from "/lib/auth/auth.dao.ts";<#
 #>
 
 import {
+  type UniqueType,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -208,8 +209,11 @@ export async function existById(
  */
 export async function create(
   input: <#=inputName#>,
+  options?: {
+    uniqueType?: UniqueType;
+  },
 ): Promise<string> {
-  const data = await <#=table#>Dao.create(input);
+  const data = await <#=table#>Dao.create(input, options);
   return data;
 }<#
 if (hasVersion) {

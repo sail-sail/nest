@@ -167,7 +167,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createPermit(model: PermitInput!): String!
+  createPermit(model: PermitInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdPermit(id: String!, model: PermitInput!): String!
   "根据 ids 删除数据"

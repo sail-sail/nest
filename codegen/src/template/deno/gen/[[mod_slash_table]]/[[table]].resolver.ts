@@ -61,6 +61,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type UniqueType,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -152,6 +153,7 @@ if (opts.noAdd !== true) {
  */
 export async function create<#=Table_Up#>(
   input: <#=inputName#>,
+  unique_type?: UniqueType,
 ) {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -210,7 +212,8 @@ export async function create<#=Table_Up#>(
   const { log } = await import("/src/base/operation_record/operation_record.service.ts");<#
   }
   #>
-  const res = await create(input);<#
+  const uniqueType = unique_type;
+  const res = await create(input, { uniqueType });<#
   if (log) {
   #>
   

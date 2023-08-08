@@ -451,7 +451,7 @@ type Mutation {<#
   if (opts.noAdd !== true) {
   #>
   "创建一条数据"
-  create<#=Table_Up#>(model: <#=inputName#>!): String!<#
+  create<#=Table_Up#>(model: <#=inputName#>!, unique_type: UniqueType): String!<#
   }
   #><#
   if (opts.noEdit !== true) {

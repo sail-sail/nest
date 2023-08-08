@@ -153,7 +153,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createI18N(model: I18Ninput!): String!
+  createI18N(model: I18Ninput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdI18N(id: String!, model: I18Ninput!): String!
   "根据 ids 删除数据"

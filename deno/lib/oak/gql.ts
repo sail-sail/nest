@@ -15,8 +15,8 @@ import {
   execute,
   validateSchema,
   validate,
-  GraphQLScalarType,
-  Kind,
+  // GraphQLScalarType,
+  // Kind,
   type GraphQLSchema,
   type GraphQLError,
   type DocumentNode,
@@ -55,6 +55,11 @@ enum SortOrderEnum {
   ascending
   desc
   descending
+}
+enum UniqueType {
+  throw
+  update
+  ignore
 }
 type Query {
   _version: String
