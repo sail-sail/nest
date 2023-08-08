@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type UniqueType,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -81,6 +82,7 @@ export async function findByIdOptions(
  */
 export async function createOptions(
   input: OptionsInput,
+  unique_type?: UniqueType,
 ) {
   const context = useContext();
   
@@ -94,7 +96,8 @@ export async function createOptions(
   const {
     create,
   } = await import("./options.service.ts");
-  const res = await create(input);
+  const uniqueType = unique_type;
+  const res = await create(input, { uniqueType });
   return res;
 }
 

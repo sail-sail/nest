@@ -151,7 +151,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createUsr(model: UsrInput!): String!
+  createUsr(model: UsrInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdUsr(id: String!, model: UsrInput!): String!
   "根据 ids 删除数据"

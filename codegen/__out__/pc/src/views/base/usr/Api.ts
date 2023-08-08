@@ -1,4 +1,5 @@
 import {
+  UniqueType,
   type Query,
   type Mutation,
   type PageInput,
@@ -93,22 +94,25 @@ export async function findCount(
  * 创建一条数据
  * @export create
  * @param {UsrInput} model
+ * @param {UniqueType} uniqueType?
  * @param {GqlOpt} opt?
  */
 export async function create(
   model: UsrInput,
+  unique_type?: UniqueType,
   opt?: GqlOpt,
 ) {
   const data: {
     createUsr: Mutation["createUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($model: UsrInput!) {
-        createUsr(model: $model)
+      mutation($model: UsrInput!, $unique_type: UniqueType) {
+        createUsr(model: $model, unique_type: $unique_type)
       }
     `,
     variables: {
       model,
+      unique_type,
     },
   }, opt);
   const res = data.createUsr;
@@ -525,7 +529,11 @@ export async function importModels(
     opt.notLoading = true;
     
     try {
-      await create(item, opt);
+      await create(
+        item,
+        UniqueType.Update,
+        opt,
+      );
       succNum++;
     } catch (err) {
       failNum++;

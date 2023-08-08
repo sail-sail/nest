@@ -1,6 +1,7 @@
 
 
 import {
+  type UniqueType,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -97,8 +98,11 @@ export async function existById(
  */
 export async function create(
   input: OperationRecordInput,
+  options?: {
+    uniqueType?: UniqueType;
+  },
 ): Promise<string> {
-  const data = await operation_recordDao.create(input);
+  const data = await operation_recordDao.create(input, options);
   return data;
 }
 

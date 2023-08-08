@@ -7,6 +7,7 @@ import {
 } from "/lib/util/dao_util.ts";
 
 import {
+  type UniqueType,
   type PageInput,
   type SortInput,
 } from "/gen/types.ts";
@@ -81,6 +82,7 @@ export async function findByIdDept(
  */
 export async function createDept(
   input: DeptInput,
+  unique_type?: UniqueType,
 ) {
   const context = useContext();
   
@@ -94,7 +96,8 @@ export async function createDept(
   const {
     create,
   } = await import("./dept.service.ts");
-  const res = await create(input);
+  const uniqueType = unique_type;
+  const res = await create(input, { uniqueType });
   return res;
 }
 

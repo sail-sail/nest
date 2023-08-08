@@ -167,7 +167,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createDept(model: DeptInput!): String!
+  createDept(model: DeptInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdDept(id: String!, model: DeptInput!): String!
   "根据 ids 删除数据"

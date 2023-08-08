@@ -188,7 +188,7 @@ type Query {
 }
 type Mutation {
   "创建一条数据"
-  createOptions(model: OptionsInput!): String!
+  createOptions(model: OptionsInput!, unique_type: UniqueType): String!
   "根据id修改一条数据"
   updateByIdOptions(id: String!, model: OptionsInput!): String!
   "根据 ids 删除数据"
