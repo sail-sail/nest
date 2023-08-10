@@ -44,7 +44,7 @@ fn get_where_query<'a>(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id) {
+    let id = match trim_opt(id.as_ref()) {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,

@@ -1,7 +1,7 @@
 
-pub fn trim_opt(s: &Option<String>) -> Option<String> {
+pub fn trim_opt(s: Option<impl AsRef<str>>) -> Option<String> {
   if let Some(s) = s {
-    let s = s.trim();
+    let s = s.as_ref().trim();
     if s.is_empty() {
       None
     } else {
