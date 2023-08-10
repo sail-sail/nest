@@ -31,6 +31,12 @@
         >
           {{ dialogTitle }}
         </span>
+        <span
+          v-if="dialogNotice"
+          class="notice_span"
+        >
+          {{ dialogNotice }}
+        </span>
       </div>
       <slot
         name="extra_header"
@@ -64,6 +70,7 @@ export type CustomDialogType = "auto" | "medium" | "large" | "default";
 
 let dialogVisible = $ref(false);
 let dialogTitle = $ref("");
+let dialogNotice = $ref("");
 let fullscreen = $ref(true);
 let dialogType = $ref<CustomDialogType>("default");
 
@@ -83,11 +90,13 @@ const props = defineProps<{
 }>();
 
 let titleWatchHandle: WatchStopHandle | undefined;
+let noticeWatchHandle: WatchStopHandle | undefined;
 
 function showDialog<OnCloseResolveType>(
   arg: {
     type?: typeof dialogType;
     title?: Ref<string> | string;
+    notice?: Ref<string> | string;
     pointerPierce?: boolean;
     fullscreen?: boolean;
   },
@@ -109,6 +118,19 @@ function showDialog<OnCloseResolveType>(
   } else {
     dialogTitle = arg.title || "";
   }
+  if (isRef(arg.notice)) {
+    noticeWatchHandle = watch(
+      arg.notice,
+      () => {
+        dialogNotice = resolveUnref(arg.notice) || "";
+      },
+      {
+        immediate: true,
+      },
+    );
+  } else {
+    dialogNotice = arg.notice || "";
+  }
   fullscreen = arg.fullscreen ?? true;
   dialogType = arg.type ?? "default";
   pointerPierce = arg.pointerPierce ?? false;
@@ -126,6 +148,9 @@ async function beforeClose(done: (cancel: boolean) => void) {
   done(false);
   if (titleWatchHandle) {
     titleWatchHandle();
+  }
+  if (noticeWatchHandle) {
+    noticeWatchHandle();
   }
 }
 

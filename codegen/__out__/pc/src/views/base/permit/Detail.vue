@@ -249,6 +249,7 @@ let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
+let dialogNotice = $ref("");
 
 let dialogModel = $ref({
 } as PermitInput);
@@ -353,6 +354,7 @@ async function showDialog(
     type: "auto",
     title,
     pointerPierce: true,
+    notice: $$(dialogNotice),
   });
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
