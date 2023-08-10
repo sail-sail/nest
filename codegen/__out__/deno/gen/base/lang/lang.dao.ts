@@ -358,30 +358,32 @@ export async function getFieldComments() {
 }
 
 /**
- * 通过唯一约束获得一行数据
+ * 通过唯一约束获得数据列表
  * @param {LangSearch | PartialNull<LangModel>} search0
  */
 export async function findByUnique(
   search0: LangSearch | PartialNull<LangModel>,
   options?: {
   },
-) {
+): Promise<LangModel[]> {
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
     });
-    return model;
+    if (!model) {
+      return [ ];
+    }
+    return [ model ];
   }
+  const models: LangModel[] = [ ];
   {
-    let code = search0.code;
-    const model = await findOne({
+    const code = search0.code;
+    const modelTmps = await findAll({
       code,
     });
-    if (model) {
-      return model;
-    }
+    models.push(...modelTmps);
   }
-  return;
+  return models;
 }
 
 /**
@@ -568,11 +570,22 @@ export async function create(
     }
   }
   
-  const oldModel = await findByUnique(model, options);
-  if (oldModel) {
-    const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
-    if (result) {
-      return result;
+  const oldModels = await findByUnique(model, options);
+  if (oldModels.length > 0) {
+    let id: string | undefined = undefined;
+    for (const oldModel of oldModels) {
+      id = await checkByUnique(
+        model,
+        oldModel,
+        options?.uniqueType,
+        options,
+      );
+      if (id) {
+        break;
+      }
+    }
+    if (id) {
+      return id;
     }
   }
   
@@ -581,7 +594,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     insert into base_lang(
       id
       ,create_time
@@ -712,6 +725,18 @@ export async function updateById(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
     if (val !== undefined) {
       model.is_enabled = Number(val);
+    }
+  }
+  
+  {
+    const input = {
+      ...model,
+      id: undefined,
+    };
+    let models = await findByUnique(input);
+    models = models.filter((item) => item.id !== id);
+    if (models.length > 0) {
+      throw await ns("数据已经存在");
     }
   }
   
@@ -924,6 +949,22 @@ export async function revertByIds(
     `;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    // 检查数据的唯一索引
+    {
+      const old_model = await findById(id);
+      if (!old_model) {
+        continue;
+      }
+      const input = {
+        ...old_model,
+        id: undefined,
+      };
+      let models = await findByUnique(input);
+      models = models.filter((item) => item.id !== id);
+      if (models.length > 0) {
+        throw await ns("数据已经存在");
+      }
+    }
   }
   await delCache();
   
@@ -991,7 +1032,7 @@ export async function findLastOrderBy(
   const table = "base_lang";
   const method = "findLastOrderBy";
   
-  let sql = /*sql*/ `
+  let sql = `
     select
       t.order_by order_by
     from

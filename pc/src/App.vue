@@ -244,6 +244,10 @@ html,body {
     .unlock_but:hover,.lock_but:hover {
       color: var(--el-color-primary);
     }
+    .notice_span {
+      color: red;
+      margin-left: 5px;
+    }
   }
 }
 div.el-overlay.is-message-box::after {

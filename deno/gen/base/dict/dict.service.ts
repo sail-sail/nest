@@ -127,9 +127,14 @@ export async function updateById(
   // 不能修改系统记录的系统字段
   const model = await dictDao.findById(id);
   if (model && model.is_sys === 1) {
+    // 编码
     input.code = undefined;
+    // 数据类型
     input.type = undefined;
+    input.type_lbl = "";
+    // 启用
     input.is_enabled = undefined;
+    input.is_enabled_lbl = "";
   }
   
   const data = await dictDao.updateById(id, input);
