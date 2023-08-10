@@ -106,7 +106,7 @@ fn get_where_query<'a>(
       Some(item) => &item.id,
       None => &None,
     };
-    let id = match trim_opt(id) {
+    let id = match trim_opt(id.as_ref()) {
       None => None,
       Some(item) => match item.as_str() {
         "-" => None,
@@ -143,7 +143,7 @@ fn get_where_query<'a>(
         Some(item) => &item.tenant_id,
         None => &None,
       };
-      let tenant_id = match trim_opt(tenant_id) {
+      let tenant_id = match trim_opt(tenant_id.as_ref()) {
         None => ctx.get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
@@ -167,7 +167,7 @@ fn get_where_query<'a>(
         Some(item) => &item.dept_id,
         None => &None,
       };
-      let dept_id = match trim_opt(dept_id) {
+      let dept_id = match trim_opt(dept_id.as_ref()) {
         None => ctx.get_auth_dept_id(),
         Some(item) => match item.as_str() {
           "-" => None,
