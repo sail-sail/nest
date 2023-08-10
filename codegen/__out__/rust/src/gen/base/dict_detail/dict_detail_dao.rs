@@ -616,7 +616,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 系统字典
   if input.dict_id.is_none() {
-    if is_not_empty_opt(&input.dict_id_lbl) && input.dict_id.is_none() {
+    if input.dict_id_lbl.is_some()
+      && !input.dict_id_lbl.as_ref().unwrap().is_empty()
+      && input.dict_id.is_none()
+    {
       input.dict_id_lbl = input.dict_id_lbl.map(|item| 
         item.trim().to_owned()
       );

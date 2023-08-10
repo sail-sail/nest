@@ -636,7 +636,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 业务字典
   if input.dictbiz_id.is_none() {
-    if is_not_empty_opt(&input.dictbiz_id_lbl) && input.dictbiz_id.is_none() {
+    if input.dictbiz_id_lbl.is_some()
+      && !input.dictbiz_id_lbl.as_ref().unwrap().is_empty()
+      && input.dictbiz_id.is_none()
+    {
       input.dictbiz_id_lbl = input.dictbiz_id_lbl.map(|item| 
         item.trim().to_owned()
       );

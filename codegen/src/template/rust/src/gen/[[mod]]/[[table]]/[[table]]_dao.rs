@@ -1138,7 +1138,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // <#=column_comment#>
   if input.<#=column_name_rust#>.is_none() {
-    if is_not_empty_opt(&input.<#=column_name#>_lbl) && input.<#=column_name_rust#>.is_none() {
+    if input.<#=column_name#>_lbl.is_some()
+      && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty()
+      && input.<#=column_name_rust#>.is_none()
+    {
       input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
         item.trim().to_owned()
       );
@@ -1293,7 +1296,9 @@ pub async fn set_id_by_lbl<'a>(
   #>
   
   // <#=column_comment#>
-  if is_not_empty_opt(&input.<#=column_name#>) {
+  if input.<#=column_name#>.is_some()
+    && !input.<#=column_name#>.as_ref().unwrap().is_empty()
+  {
     let find_by_id_<#=foreignTable#> = crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_dao::find_by_id;
     let <#=foreignTable#>_model = find_by_id_<#=foreignTable#>(
       ctx,
