@@ -666,6 +666,7 @@ let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
+let dialogNotice = $ref("");
 
 let dialogModel = $ref({<#
   for (let i = 0; i < columns.length; i++) {
@@ -845,6 +846,7 @@ async function showDialog(
     #>
     title,
     pointerPierce: true,
+    notice: $$(dialogNotice),
   });
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
@@ -938,7 +940,22 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
+}<#
+if (hasLocked) {
+#>
+
+watch(
+  () => dialogModel.is_locked,
+  async () => {
+    if (dialogModel.is_locked == 1) {
+      dialogNotice = await nsAsync("(已锁定)");
+    } else if (dialogModel.is_locked == 0) {
+      dialogNotice = "";
+    }
+  },
+);<#
 }
+#>
 
 /** 刷新 */
 async function onRefresh() {

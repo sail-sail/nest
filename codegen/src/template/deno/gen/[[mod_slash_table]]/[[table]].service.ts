@@ -257,8 +257,46 @@ export async function updateById(
   opts.sys_fields = opts.sys_fields || [ ];
   for (let i = 0; i < opts.sys_fields.length; i++) {
     const sys_field = opts.sys_fields[i];
+    const column = columns.find(item => item.COLUMN_NAME === sys_field);
+    if (!column) {
+      throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
+    }
+    let column_comment = column.COLUMN_COMMENT;
+    let selectList = [ ];
+    if (column_comment.endsWith("multiple")) {
+      _data_type = "[String]";
+    }
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+  #><#
+    if (!foreignKey && selectList.length === 0 && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+    ) {
   #>
+    // <#=column_comment#>
     input.<#=sys_field#> = undefined;<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;
+    input.<#=sys_field#>_lbl = "";<#
+    } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;
+    input.<#=sys_field#>_lbl = "";<#
+    } else {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;<#
+    }
+  #><#
   }
   #>
   }<#

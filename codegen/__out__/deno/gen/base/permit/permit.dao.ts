@@ -395,20 +395,24 @@ export async function getFieldComments() {
 }
 
 /**
- * 通过唯一约束获得一行数据
+ * 通过唯一约束获得数据列表
  * @param {PermitSearch | PartialNull<PermitModel>} search0
  */
 export async function findByUnique(
   search0: PermitSearch | PartialNull<PermitModel>,
   options?: {
   },
-) {
+): Promise<PermitModel[]> {
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
     });
-    return model;
+    if (!model) {
+      return [ ];
+    }
+    return [ model ];
   }
+  const models: PermitModel[] = [ ];
   {
     let role_id: string[] = [ ];
     if (search0.role_id) {
@@ -426,17 +430,15 @@ export async function findByUnique(
         menu_id = search0.menu_id;
       }
     }
-    let code = search0.code;
-    const model = await findOne({
+    const code = search0.code;
+    const modelTmps = await findAll({
       role_id,
       menu_id,
       code,
     });
-    if (model) {
-      return model;
-    }
+    models.push(...modelTmps);
   }
-  return;
+  return models;
 }
 
 /**
@@ -643,11 +645,22 @@ export async function create(
     }
   }
   
-  const oldModel = await findByUnique(model, options);
-  if (oldModel) {
-    const result = await checkByUnique(model, oldModel, options?.uniqueType, options);
-    if (result) {
-      return result;
+  const oldModels = await findByUnique(model, options);
+  if (oldModels.length > 0) {
+    let id: string | undefined = undefined;
+    for (const oldModel of oldModels) {
+      id = await checkByUnique(
+        model,
+        oldModel,
+        options?.uniqueType,
+        options,
+      );
+      if (id) {
+        break;
+      }
+    }
+    if (id) {
+      return id;
     }
   }
   
@@ -656,7 +669,7 @@ export async function create(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     insert into base_permit(
       id
       ,create_time
@@ -878,6 +891,18 @@ export async function updateById(
     }
   }
   
+  {
+    const input = {
+      ...model,
+      id: undefined,
+    };
+    let models = await findByUnique(input);
+    models = models.filter((item) => item.id !== id);
+    if (models.length > 0) {
+      throw await ns("数据已经存在");
+    }
+  }
+  
   const oldModel = await findById(id);
   
   if (!oldModel) {
@@ -1028,6 +1053,22 @@ export async function revertByIds(
     `;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    // 检查数据的唯一索引
+    {
+      const old_model = await findById(id);
+      if (!old_model) {
+        continue;
+      }
+      const input = {
+        ...old_model,
+        id: undefined,
+      };
+      let models = await findByUnique(input);
+      models = models.filter((item) => item.id !== id);
+      if (models.length > 0) {
+        throw await ns("数据已经存在");
+      }
+    }
   }
   await delCache();
   
