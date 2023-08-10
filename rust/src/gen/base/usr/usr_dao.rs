@@ -688,7 +688,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 默认组织
   if input.default_org_id.is_none() {
-    if is_not_empty_opt(&input.default_org_id_lbl) && input.default_org_id.is_none() {
+    if input.default_org_id_lbl.is_some()
+      && !input.default_org_id_lbl.as_ref().unwrap().is_empty()
+      && input.default_org_id.is_none()
+    {
       input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
         item.trim().to_owned()
       );

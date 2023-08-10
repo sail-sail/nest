@@ -591,7 +591,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 语言
   if input.lang_id.is_none() {
-    if is_not_empty_opt(&input.lang_id_lbl) && input.lang_id.is_none() {
+    if input.lang_id_lbl.is_some()
+      && !input.lang_id_lbl.as_ref().unwrap().is_empty()
+      && input.lang_id.is_none()
+    {
       input.lang_id_lbl = input.lang_id_lbl.map(|item| 
         item.trim().to_owned()
       );
@@ -612,7 +615,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 菜单
   if input.menu_id.is_none() {
-    if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
+    if input.menu_id_lbl.is_some()
+      && !input.menu_id_lbl.as_ref().unwrap().is_empty()
+      && input.menu_id.is_none()
+    {
       input.menu_id_lbl = input.menu_id_lbl.map(|item| 
         item.trim().to_owned()
       );

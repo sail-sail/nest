@@ -665,7 +665,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 角色
   if input.role_id.is_none() {
-    if is_not_empty_opt(&input.role_id_lbl) && input.role_id.is_none() {
+    if input.role_id_lbl.is_some()
+      && !input.role_id_lbl.as_ref().unwrap().is_empty()
+      && input.role_id.is_none()
+    {
       input.role_id_lbl = input.role_id_lbl.map(|item| 
         item.trim().to_owned()
       );
@@ -686,7 +689,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 菜单
   if input.menu_id.is_none() {
-    if is_not_empty_opt(&input.menu_id_lbl) && input.menu_id.is_none() {
+    if input.menu_id_lbl.is_some()
+      && !input.menu_id_lbl.as_ref().unwrap().is_empty()
+      && input.menu_id.is_none()
+    {
       input.menu_id_lbl = input.menu_id_lbl.map(|item| 
         item.trim().to_owned()
       );

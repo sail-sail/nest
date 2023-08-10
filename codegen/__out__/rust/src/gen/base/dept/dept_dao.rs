@@ -679,7 +679,10 @@ pub async fn set_id_by_lbl<'a>(
   
   // 父部门
   if input.parent_id.is_none() {
-    if is_not_empty_opt(&input.parent_id_lbl) && input.parent_id.is_none() {
+    if input.parent_id_lbl.is_some()
+      && !input.parent_id_lbl.as_ref().unwrap().is_empty()
+      && input.parent_id.is_none()
+    {
       input.parent_id_lbl = input.parent_id_lbl.map(|item| 
         item.trim().to_owned()
       );
