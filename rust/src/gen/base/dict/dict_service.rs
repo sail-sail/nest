@@ -132,9 +132,14 @@ pub async fn update_by_id<'a>(
   
   if let Some(model) = model {
     if model.is_sys == 1 {
+      // 编码
       input.code = None;
+      // 数据类型
       input.r#type = None;
+      input.type_lbl = "".to_owned().into();
+      // 启用
       input.is_enabled = None;
+      input.is_enabled_lbl = "".to_owned().into();
     }
   }
   
