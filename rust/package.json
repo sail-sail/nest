@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "cargo run",
-    "gqlgen": "node ./src/common/script/schema.js && graphql-codegen --config ./src/common/script/graphql_codegen_config.yml",
+    "gqlgen": "cargo run --bin schema && graphql-codegen --config ./src/common/script/graphql_codegen_config.yml",
     "build": "node ./src/common/script/build.js && node ./src/common/script/publish.js",
     "publish": "node ./src/common/script/publish.js",
     "codegen": "cd .. && npm run codegen",
