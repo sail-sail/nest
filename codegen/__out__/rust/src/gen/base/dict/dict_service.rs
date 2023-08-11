@@ -136,10 +136,10 @@ pub async fn update_by_id<'a>(
       input.code = None;
       // 数据类型
       input.r#type = None;
-      input.type_lbl = "".to_owned().into();
+      input.type_lbl = None;
       // 启用
       input.is_enabled = None;
-      input.is_enabled_lbl = "".to_owned().into();
+      input.is_enabled_lbl = None;
     }
   }
   
