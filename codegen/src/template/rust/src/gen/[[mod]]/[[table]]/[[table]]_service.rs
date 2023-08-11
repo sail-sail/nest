@@ -253,12 +253,12 @@ pub async fn update_by_id<'a>(
       #>
       // <#=column_comment#>
       input.<#=rustKeyEscape(sys_field)#> = None;
-      input.<#=sys_field#>_lbl = "".to_owned().into();<#
+      input.<#=sys_field#>_lbl = None;<#
         } else if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
       #>
       // <#=column_comment#>
       input.<#=rustKeyEscape(sys_field)#> = None;
-      input.<#=sys_field#>_lbl = "".to_owned().into();<#
+      input.<#=sys_field#>_lbl = None;<#
         } else {
       #>
       // <#=column_comment#>
