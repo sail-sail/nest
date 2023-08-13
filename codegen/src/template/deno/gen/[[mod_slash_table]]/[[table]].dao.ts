@@ -120,8 +120,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -184,20 +184,23 @@ import {
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type <#=inputName#>,
-  type <#=modelName#>,
-  type <#=searchName#>,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  <#=inputName#>,
+  <#=modelName#>,
+  <#=searchName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
 
-import {
-  type <#=Table_Up#>Summary,
+import type {
+  <#=Table_Up#>Summary,
 } from "/gen/types.ts";<#
 }
 #><#

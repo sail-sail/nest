@@ -2,16 +2,16 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictDetailInput,
-  type DictDetailModel,
-  type DictDetailSearch,
+import type {
+  DictDetailInput,
+  DictDetailModel,
+  DictDetailSearch,
 } from "./dict_detail.model.ts";
 
 import * as dict_detailDao from "./dict_detail.dao.ts";

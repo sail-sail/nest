@@ -2,16 +2,16 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type MenuInput,
-  type MenuModel,
-  type MenuSearch,
+import type {
+  MenuInput,
+  MenuModel,
+  MenuSearch,
 } from "./menu.model.ts";
 
 import * as menuDao from "./menu.dao.ts";

@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type MenuInput as MenuInputType,
-  type MenuModel as MenuModelType,
-  type MenuSearch as MenuSearchType,
+import type {
+  MenuInput as MenuInputType,
+  MenuModel as MenuModelType,
+  MenuSearch as MenuSearchType,
 } from "/gen/types.ts";
 
 export interface MenuSearch extends MenuSearchType {

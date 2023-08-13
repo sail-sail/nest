@@ -3,6 +3,8 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasSummary = columns.some((column) => column.showSummary);
+const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -28,29 +30,33 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   modelNameTree = Table_Up + "ModelTree";
 }
 #><#
-const hasSummary = columns.some((column) => column.showSummary);
-#><#
-const importForeignTables = [ ];
-importForeignTables.push(Table_Up);
+if (hasUniques) {
 #>import {
   UniqueType,
-  type Query,
-  type Mutation,
-  type PageInput,
-  type <#=searchName#>,<#
+} from "#/types";<#
+}
+#>
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+  <#=searchName#>,<#
   if (opts.noAdd !== true || opts.noEdit !== true) {
   #>
-  type <#=inputName#>,<#
+  <#=inputName#>,<#
   }
   #><#
   if (list_tree) {
   #>
-  type <#=modelName#>,<#
+  <#=modelName#>,<#
   }
   #>
 } from "#/types";
 
-import {<#
+import type {<#
+const importForeignTables = [ ];
+importForeignTables.push(Table_Up);
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -70,7 +76,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   importForeignTables.push(Foreign_Table_Up);
 #>
-  type <#=Foreign_Table_Up#>Search,<#
+  <#=Foreign_Table_Up#>Search,<#
 }
 #>
 } from "#/types";<#

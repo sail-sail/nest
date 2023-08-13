@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -46,14 +46,17 @@ import * as authDao from "/lib/auth/auth.dao.ts";
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictInput,
-  type DictModel,
-  type DictSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  DictInput,
+  DictModel,
+  DictSearch,
 } from "./dict.model.ts";
 
 async function getWhereQuery(

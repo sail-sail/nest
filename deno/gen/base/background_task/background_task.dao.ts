@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -50,14 +50,17 @@ import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type BackgroundTaskInput,
-  type BackgroundTaskModel,
-  type BackgroundTaskSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  BackgroundTaskInput,
+  BackgroundTaskModel,
+  BackgroundTaskSearch,
 } from "./background_task.model.ts";
 
 async function getWhereQuery(

@@ -116,9 +116,9 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import SelectList from "./SelectList.vue";
@@ -127,8 +127,8 @@ import {
   findAll,
 } from "./Api";
 
-import {
-  type <#=modelName#>,
+import type {
+  <#=modelName#>,
 } from "#/types";
 
 let emit = defineEmits<{

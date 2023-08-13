@@ -619,11 +619,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type DictModel,
-  type DictInput,
-  type DictSearch,
-  type UsrModel,
+import type {
+  DictModel,
+  DictInput,
+  DictSearch,
+  UsrModel,
 } from "#/types";
 
 import ForeignTabs from "./ForeignTabs.vue";

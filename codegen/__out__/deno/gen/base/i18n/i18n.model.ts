@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type I18Ninput as I18NinputType,
-  type I18Nmodel as I18NmodelType,
-  type I18Nsearch as I18NsearchType,
+import type {
+  I18Ninput as I18NinputType,
+  I18Nmodel as I18NmodelType,
+  I18Nsearch as I18NsearchType,
 } from "/gen/types.ts";
 
 export interface I18Nsearch extends I18NsearchType {

@@ -2,16 +2,16 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type OrgInput,
-  type OrgModel,
-  type OrgSearch,
+import type {
+  OrgInput,
+  OrgModel,
+  OrgSearch,
 } from "./org.model.ts";
 
 import * as orgDao from "./org.dao.ts";

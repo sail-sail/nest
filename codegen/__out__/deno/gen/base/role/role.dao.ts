@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -54,14 +54,17 @@ import {
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type RoleInput,
-  type RoleModel,
-  type RoleSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  RoleInput,
+  RoleModel,
+  RoleSearch,
 } from "./role.model.ts";
 
 async function getWhereQuery(

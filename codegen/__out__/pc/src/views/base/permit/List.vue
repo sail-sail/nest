@@ -595,13 +595,13 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type PermitModel,
-  type PermitInput,
-  type PermitSearch,
-  type RoleModel,
-  type MenuModel,
-  type UsrModel,
+import type {
+  PermitModel,
+  PermitInput,
+  PermitSearch,
+  RoleModel,
+  MenuModel,
+  UsrModel,
 } from "#/types";
 
 import {

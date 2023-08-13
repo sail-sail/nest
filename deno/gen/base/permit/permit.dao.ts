@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -50,14 +50,17 @@ import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type PermitInput,
-  type PermitModel,
-  type PermitSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  PermitInput,
+  PermitModel,
+  PermitSearch,
 } from "./permit.model.ts";
 
 import * as roleDao from "/gen/base/role/role.dao.ts";

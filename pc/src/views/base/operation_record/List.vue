@@ -540,10 +540,10 @@ import {
   useExportExcel,
 } from "./Api";
 
-import {
-  type OperationRecordModel,
-  type OperationRecordSearch,
-  type UsrModel,
+import type {
+  OperationRecordModel,
+  OperationRecordSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({

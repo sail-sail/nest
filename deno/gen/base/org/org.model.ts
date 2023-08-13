@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type OrgInput as OrgInputType,
-  type OrgModel as OrgModelType,
-  type OrgSearch as OrgSearchType,
+import type {
+  OrgInput as OrgInputType,
+  OrgModel as OrgModelType,
+  OrgSearch as OrgSearchType,
 } from "/gen/types.ts";
 
 export interface OrgSearch extends OrgSearchType {

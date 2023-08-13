@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type OperationRecordInput as OperationRecordInputType,
-  type OperationRecordModel as OperationRecordModelType,
-  type OperationRecordSearch as OperationRecordSearchType,
+import type {
+  OperationRecordInput as OperationRecordInputType,
+  OperationRecordModel as OperationRecordModelType,
+  OperationRecordSearch as OperationRecordSearchType,
 } from "/gen/types.ts";
 
 export interface OperationRecordSearch extends OperationRecordSearchType {

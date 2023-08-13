@@ -94,9 +94,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import SelectList from "./SelectList.vue";
@@ -105,8 +105,8 @@ import {
   findAll,
 } from "./Api";
 
-import {
-  type MenuModel,
+import type {
+  MenuModel,
 } from "#/types";
 
 let emit = defineEmits<{

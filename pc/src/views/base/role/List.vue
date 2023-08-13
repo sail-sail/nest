@@ -612,12 +612,12 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type RoleModel,
-  type RoleInput,
-  type RoleSearch,
-  type MenuModel,
-  type UsrModel,
+import type {
+  RoleModel,
+  RoleInput,
+  RoleSearch,
+  MenuModel,
+  UsrModel,
 } from "#/types";
 
 import {

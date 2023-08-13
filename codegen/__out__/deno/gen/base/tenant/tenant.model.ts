@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type TenantInput as TenantInputType,
-  type TenantModel as TenantModelType,
-  type TenantSearch as TenantSearchType,
+import type {
+  TenantInput as TenantInputType,
+  TenantModel as TenantModelType,
+  TenantSearch as TenantSearchType,
 } from "/gen/types.ts";
 
 export interface TenantSearch extends TenantSearchType {

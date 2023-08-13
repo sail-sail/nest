@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -50,14 +50,17 @@ import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictbizDetailInput,
-  type DictbizDetailModel,
-  type DictbizDetailSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  DictbizDetailInput,
+  DictbizDetailModel,
+  DictbizDetailSearch,
 } from "./dictbiz_detail.model.ts";
 
 import * as dictbizDao from "/gen/base/dictbiz/dictbiz.dao.ts";

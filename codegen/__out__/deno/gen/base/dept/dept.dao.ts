@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -52,14 +52,17 @@ import * as orgDao from "/gen/base/org/org.dao.ts";
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DeptInput,
-  type DeptModel,
-  type DeptSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  DeptInput,
+  DeptModel,
+  DeptSearch,
 } from "./dept.model.ts";
 
 async function getWhereQuery(

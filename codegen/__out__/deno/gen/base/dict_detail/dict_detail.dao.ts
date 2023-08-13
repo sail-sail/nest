@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -46,14 +46,17 @@ import * as authDao from "/lib/auth/auth.dao.ts";
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictDetailInput,
-  type DictDetailModel,
-  type DictDetailSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  DictDetailInput,
+  DictDetailModel,
+  DictDetailSearch,
 } from "./dict_detail.model.ts";
 
 import * as dictDao from "/gen/base/dict/dict.dao.ts";

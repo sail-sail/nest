@@ -22,8 +22,8 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type PartialNull,
+import type {
+  PartialNull,
 } from "/typings/types.ts";
 
 import {
@@ -54,14 +54,17 @@ import {
 import {
   UniqueType,
   SortOrderEnum,
-  type PageInput,
-  type SortInput,
 } from "/gen/types.ts";
 
-import {
-  type UsrInput,
-  type UsrModel,
-  type UsrSearch,
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  UsrInput,
+  UsrModel,
+  UsrSearch,
 } from "./usr.model.ts";
 
 import * as orgDao from "/gen/base/org/org.dao.ts";
