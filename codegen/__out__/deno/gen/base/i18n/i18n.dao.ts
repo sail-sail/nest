@@ -558,7 +558,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {I18Ninput} model
+ * @param {I18Ninput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -568,7 +568,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: I18Ninput,
+  input: I18Ninput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -577,29 +577,29 @@ export async function create(
   const method = "create";
   
   // 语言
-  if (isNotEmpty(model.lang_id_lbl) && model.lang_id === undefined) {
-    model.lang_id_lbl = String(model.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: model.lang_id_lbl });
+  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
+    input.lang_id_lbl = String(input.lang_id_lbl).trim();
+    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
     if (langModel) {
-      model.lang_id = langModel.id;
+      input.lang_id = langModel.id;
     }
   }
   
   // 菜单
-  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
-    model.menu_id_lbl = String(model.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: model.menu_id_lbl });
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+    input.menu_id_lbl = String(input.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
-      model.menu_id = menuModel.id;
+      input.menu_id = menuModel.id;
     }
   }
   
-  const oldModels = await findByUnique(model, options);
+  const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
-        model,
+        input,
         oldModel,
         options?.uniqueType,
         options,
@@ -613,8 +613,8 @@ export async function create(
     }
   }
   
-  if (!model.id) {
-    model.id = shortUuidV4();
+  if (!input.id) {
+    input.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
@@ -623,7 +623,7 @@ export async function create(
       id
       ,create_time
   `;
-  if (model.create_usr_id != null) {
+  if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -631,56 +631,56 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
-  if (model.lang_id !== undefined) {
+  if (input.lang_id !== undefined) {
     sql += `,lang_id`;
   }
-  if (model.menu_id !== undefined) {
+  if (input.menu_id !== undefined) {
     sql += `,menu_id`;
   }
-  if (model.code !== undefined) {
+  if (input.code !== undefined) {
     sql += `,code`;
   }
-  if (model.lbl !== undefined) {
+  if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.rem !== undefined) {
+  if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.update_usr_id !== undefined) {
+  if (input.update_usr_id !== undefined) {
     sql += `,update_usr_id`;
   }
-  if (model.update_time !== undefined) {
+  if (input.update_time !== undefined) {
     sql += `,update_time`;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
-  if (model.create_usr_id != null && model.create_usr_id !== "-") {
-    sql += `,${ args.push(model.create_usr_id) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.lang_id !== undefined) {
-    sql += `,${ args.push(model.lang_id) }`;
+  if (input.lang_id !== undefined) {
+    sql += `,${ args.push(input.lang_id) }`;
   }
-  if (model.menu_id !== undefined) {
-    sql += `,${ args.push(model.menu_id) }`;
+  if (input.menu_id !== undefined) {
+    sql += `,${ args.push(input.menu_id) }`;
   }
-  if (model.code !== undefined) {
-    sql += `,${ args.push(model.code) }`;
+  if (input.code !== undefined) {
+    sql += `,${ args.push(input.code) }`;
   }
-  if (model.lbl !== undefined) {
-    sql += `,${ args.push(model.lbl) }`;
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
   }
-  if (model.rem !== undefined) {
-    sql += `,${ args.push(model.rem) }`;
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
-  if (model.update_usr_id !== undefined) {
-    sql += `,${ args.push(model.update_usr_id) }`;
+  if (input.update_usr_id !== undefined) {
+    sql += `,${ args.push(input.update_usr_id) }`;
   }
-  if (model.update_time !== undefined) {
-    sql += `,${ args.push(model.update_time) }`;
+  if (input.update_time !== undefined) {
+    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
@@ -688,7 +688,7 @@ export async function create(
   
   await delCache();
   
-  return model.id;
+  return input.id;
 }
 
 /**
@@ -714,7 +714,7 @@ export async function delCache() {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {I18Ninput} model
+ * @param {I18Ninput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -725,7 +725,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: string,
-  model: I18Ninput,
+  input: I18Ninput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -736,34 +736,34 @@ export async function updateById(
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
-  if (!model) {
-    throw new Error("updateById: model cannot be null");
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
   }
   
   // 语言
-  if (isNotEmpty(model.lang_id_lbl) && model.lang_id === undefined) {
-    model.lang_id_lbl = String(model.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: model.lang_id_lbl });
+  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
+    input.lang_id_lbl = String(input.lang_id_lbl).trim();
+    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
     if (langModel) {
-      model.lang_id = langModel.id;
+      input.lang_id = langModel.id;
     }
   }
   
   // 菜单
-  if (isNotEmpty(model.menu_id_lbl) && model.menu_id === undefined) {
-    model.menu_id_lbl = String(model.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: model.menu_id_lbl });
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+    input.menu_id_lbl = String(input.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
-      model.menu_id = menuModel.id;
+      input.menu_id = menuModel.id;
     }
   }
   
   {
-    const input = {
-      ...model,
+    const input2 = {
+      ...input,
       id: undefined,
     };
-    let models = await findByUnique(input);
+    let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       throw await ns("数据已经存在");
@@ -781,39 +781,39 @@ export async function updateById(
     update base_i18n set
   `;
   let updateFldNum = 0;
-  if (model.lang_id !== undefined) {
-    if (model.lang_id != oldModel.lang_id) {
-      sql += `lang_id = ${ args.push(model.lang_id) },`;
+  if (input.lang_id !== undefined) {
+    if (input.lang_id != oldModel.lang_id) {
+      sql += `lang_id = ${ args.push(input.lang_id) },`;
       updateFldNum++;
     }
   }
-  if (model.menu_id !== undefined) {
-    if (model.menu_id != oldModel.menu_id) {
-      sql += `menu_id = ${ args.push(model.menu_id) },`;
+  if (input.menu_id !== undefined) {
+    if (input.menu_id != oldModel.menu_id) {
+      sql += `menu_id = ${ args.push(input.menu_id) },`;
       updateFldNum++;
     }
   }
-  if (model.code !== undefined) {
-    if (model.code != oldModel.code) {
-      sql += `code = ${ args.push(model.code) },`;
+  if (input.code !== undefined) {
+    if (input.code != oldModel.code) {
+      sql += `code = ${ args.push(input.code) },`;
       updateFldNum++;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(model.lbl) },`;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(model.rem) },`;
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id && model.update_usr_id !== "-") {
-      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {

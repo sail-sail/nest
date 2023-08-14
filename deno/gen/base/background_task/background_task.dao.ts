@@ -593,7 +593,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {BackgroundTaskInput} model
+ * @param {BackgroundTaskInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -603,7 +603,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: BackgroundTaskInput,
+  input: BackgroundTaskInput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -620,39 +620,39 @@ export async function create(
   ]);
   
   // 状态
-  if (isNotEmpty(model.state_lbl) && model.state === undefined) {
-    const val = stateDict.find((itemTmp) => itemTmp.lbl === model.state_lbl)?.val;
+  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
+    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
     if (val !== undefined) {
-      model.state = val;
+      input.state = val;
     }
   }
   
   // 类型
-  if (isNotEmpty(model.type_lbl) && model.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === model.type_lbl)?.val;
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      model.type = val;
+      input.type = val;
     }
   }
   
   // 开始时间
-  if (isNotEmpty(model.begin_time_lbl) && model.begin_time === undefined) {
-    model.begin_time_lbl = String(model.begin_time_lbl).trim();
-    model.begin_time = model.begin_time_lbl;
+  if (isNotEmpty(input.begin_time_lbl) && input.begin_time === undefined) {
+    input.begin_time_lbl = String(input.begin_time_lbl).trim();
+    input.begin_time = input.begin_time_lbl;
   }
   
   // 结束时间
-  if (isNotEmpty(model.end_time_lbl) && model.end_time === undefined) {
-    model.end_time_lbl = String(model.end_time_lbl).trim();
-    model.end_time = model.end_time_lbl;
+  if (isNotEmpty(input.end_time_lbl) && input.end_time === undefined) {
+    input.end_time_lbl = String(input.end_time_lbl).trim();
+    input.end_time = input.end_time_lbl;
   }
   
-  const oldModels = await findByUnique(model, options);
+  const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
-        model,
+        input,
         oldModel,
         options?.uniqueType,
         options,
@@ -666,8 +666,8 @@ export async function create(
     }
   }
   
-  if (!model.id) {
-    model.id = shortUuidV4();
+  if (!input.id) {
+    input.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
@@ -676,7 +676,7 @@ export async function create(
       id
       ,create_time
   `;
-  if (model.tenant_id != null) {
+  if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -685,7 +685,7 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
-  if (model.create_usr_id != null) {
+  if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -693,39 +693,39 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
-  if (model.lbl !== undefined) {
+  if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.state !== undefined) {
+  if (input.state !== undefined) {
     sql += `,state`;
   }
-  if (model.type !== undefined) {
+  if (input.type !== undefined) {
     sql += `,type`;
   }
-  if (model.result !== undefined) {
+  if (input.result !== undefined) {
     sql += `,result`;
   }
-  if (model.err_msg !== undefined) {
+  if (input.err_msg !== undefined) {
     sql += `,err_msg`;
   }
-  if (model.begin_time !== undefined) {
+  if (input.begin_time !== undefined) {
     sql += `,begin_time`;
   }
-  if (model.end_time !== undefined) {
+  if (input.end_time !== undefined) {
     sql += `,end_time`;
   }
-  if (model.rem !== undefined) {
+  if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.update_usr_id !== undefined) {
+  if (input.update_usr_id !== undefined) {
     sql += `,update_usr_id`;
   }
-  if (model.update_time !== undefined) {
+  if (input.update_time !== undefined) {
     sql += `,update_time`;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
-  if (model.tenant_id != null) {
-    sql += `,${ args.push(model.tenant_id) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  if (input.tenant_id != null) {
+    sql += `,${ args.push(input.tenant_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
@@ -733,49 +733,49 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (model.create_usr_id != null && model.create_usr_id !== "-") {
-    sql += `,${ args.push(model.create_usr_id) }`;
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    sql += `,${ args.push(model.lbl) }`;
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
   }
-  if (model.state !== undefined) {
-    sql += `,${ args.push(model.state) }`;
+  if (input.state !== undefined) {
+    sql += `,${ args.push(input.state) }`;
   }
-  if (model.type !== undefined) {
-    sql += `,${ args.push(model.type) }`;
+  if (input.type !== undefined) {
+    sql += `,${ args.push(input.type) }`;
   }
-  if (model.result !== undefined) {
-    sql += `,${ args.push(model.result) }`;
+  if (input.result !== undefined) {
+    sql += `,${ args.push(input.result) }`;
   }
-  if (model.err_msg !== undefined) {
-    sql += `,${ args.push(model.err_msg) }`;
+  if (input.err_msg !== undefined) {
+    sql += `,${ args.push(input.err_msg) }`;
   }
-  if (model.begin_time !== undefined) {
-    sql += `,${ args.push(model.begin_time) }`;
+  if (input.begin_time !== undefined) {
+    sql += `,${ args.push(input.begin_time) }`;
   }
-  if (model.end_time !== undefined) {
-    sql += `,${ args.push(model.end_time) }`;
+  if (input.end_time !== undefined) {
+    sql += `,${ args.push(input.end_time) }`;
   }
-  if (model.rem !== undefined) {
-    sql += `,${ args.push(model.rem) }`;
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
-  if (model.update_usr_id !== undefined) {
-    sql += `,${ args.push(model.update_usr_id) }`;
+  if (input.update_usr_id !== undefined) {
+    sql += `,${ args.push(input.update_usr_id) }`;
   }
-  if (model.update_time !== undefined) {
-    sql += `,${ args.push(model.update_time) }`;
+  if (input.update_time !== undefined) {
+    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
   const result = await execute(sql, args);
   
-  return model.id;
+  return input.id;
 }
 
 /**
@@ -818,7 +818,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {BackgroundTaskInput} model
+ * @param {BackgroundTaskInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -829,7 +829,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: BackgroundTaskInput,
+  input: BackgroundTaskInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -840,8 +840,8 @@ export async function updateById(
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
-  if (!model) {
-    throw new Error("updateById: model cannot be null");
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
   }
   
   const [
@@ -853,32 +853,32 @@ export async function updateById(
   ]);
   
   // 修改租户id
-  if (isNotEmpty(model.tenant_id)) {
-    await updateTenantById(id, model.tenant_id);
+  if (isNotEmpty(input.tenant_id)) {
+    await updateTenantById(id, input.tenant_id);
   }
   
   // 状态
-  if (isNotEmpty(model.state_lbl) && model.state === undefined) {
-    const val = stateDict.find((itemTmp) => itemTmp.lbl === model.state_lbl)?.val;
+  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
+    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
     if (val !== undefined) {
-      model.state = val;
+      input.state = val;
     }
   }
   
   // 类型
-  if (isNotEmpty(model.type_lbl) && model.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === model.type_lbl)?.val;
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      model.type = val;
+      input.type = val;
     }
   }
   
   {
-    const input = {
-      ...model,
+    const input2 = {
+      ...input,
       id: undefined,
     };
-    let models = await findByUnique(input);
+    let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       throw await ns("数据已经存在");
@@ -896,57 +896,57 @@ export async function updateById(
     update base_background_task set
   `;
   let updateFldNum = 0;
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(model.lbl) },`;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.state !== undefined) {
-    if (model.state != oldModel.state) {
-      sql += `state = ${ args.push(model.state) },`;
+  if (input.state !== undefined) {
+    if (input.state != oldModel.state) {
+      sql += `state = ${ args.push(input.state) },`;
       updateFldNum++;
     }
   }
-  if (model.type !== undefined) {
-    if (model.type != oldModel.type) {
-      sql += `type = ${ args.push(model.type) },`;
+  if (input.type !== undefined) {
+    if (input.type != oldModel.type) {
+      sql += `type = ${ args.push(input.type) },`;
       updateFldNum++;
     }
   }
-  if (model.result !== undefined) {
-    if (model.result != oldModel.result) {
-      sql += `result = ${ args.push(model.result) },`;
+  if (input.result !== undefined) {
+    if (input.result != oldModel.result) {
+      sql += `result = ${ args.push(input.result) },`;
       updateFldNum++;
     }
   }
-  if (model.err_msg !== undefined) {
-    if (model.err_msg != oldModel.err_msg) {
-      sql += `err_msg = ${ args.push(model.err_msg) },`;
+  if (input.err_msg !== undefined) {
+    if (input.err_msg != oldModel.err_msg) {
+      sql += `err_msg = ${ args.push(input.err_msg) },`;
       updateFldNum++;
     }
   }
-  if (model.begin_time !== undefined) {
-    if (model.begin_time != oldModel.begin_time) {
-      sql += `begin_time = ${ args.push(model.begin_time) },`;
+  if (input.begin_time !== undefined) {
+    if (input.begin_time != oldModel.begin_time) {
+      sql += `begin_time = ${ args.push(input.begin_time) },`;
       updateFldNum++;
     }
   }
-  if (model.end_time !== undefined) {
-    if (model.end_time != oldModel.end_time) {
-      sql += `end_time = ${ args.push(model.end_time) },`;
+  if (input.end_time !== undefined) {
+    if (input.end_time != oldModel.end_time) {
+      sql += `end_time = ${ args.push(input.end_time) },`;
       updateFldNum++;
     }
   }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(model.rem) },`;
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id && model.update_usr_id !== "-") {
-      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {

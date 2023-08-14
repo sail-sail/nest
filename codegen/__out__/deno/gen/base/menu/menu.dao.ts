@@ -660,7 +660,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {MenuInput} model
+ * @param {MenuInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -670,7 +670,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: MenuInput,
+  input: MenuInput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -689,36 +689,36 @@ export async function create(
   ]);
   
   // 类型
-  if (isNotEmpty(model.type_lbl) && model.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === model.type_lbl)?.val;
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      model.type = val;
+      input.type = val;
     }
   }
   
   // 父菜单
-  if (isNotEmpty(model.parent_id_lbl) && model.parent_id === undefined) {
-    model.parent_id_lbl = String(model.parent_id_lbl).trim();
-    const menuModel = await findOne({ lbl: model.parent_id_lbl });
+  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
+    input.parent_id_lbl = String(input.parent_id_lbl).trim();
+    const menuModel = await findOne({ lbl: input.parent_id_lbl });
     if (menuModel) {
-      model.parent_id = menuModel.id;
+      input.parent_id = menuModel.id;
     }
   }
   
   // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      input.is_locked = Number(val);
     }
   }
   
   // 所在租户
-  if (!model.tenant_ids && model.tenant_ids_lbl) {
-    if (typeof model.tenant_ids_lbl === "string" || model.tenant_ids_lbl instanceof String) {
-      model.tenant_ids_lbl = model.tenant_ids_lbl.split(",");
+  if (!input.tenant_ids && input.tenant_ids_lbl) {
+    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
+      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
     }
-    model.tenant_ids_lbl = model.tenant_ids_lbl.map((item: string) => item.trim());
+    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -726,29 +726,29 @@ export async function create(
       from
         base_tenant t
       where
-        t.lbl in ${ args.push(model.tenant_ids_lbl) }
+        t.lbl in ${ args.push(input.tenant_ids_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.tenant_ids = models.map((item: { id: string }) => item.id);
+    input.tenant_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
-      model.is_enabled = Number(val);
+      input.is_enabled = Number(val);
     }
   }
   
-  const oldModels = await findByUnique(model, options);
+  const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
-        model,
+        input,
         oldModel,
         options?.uniqueType,
         options,
@@ -762,8 +762,8 @@ export async function create(
     }
   }
   
-  if (!model.id) {
-    model.id = shortUuidV4();
+  if (!input.id) {
+    input.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
@@ -772,7 +772,7 @@ export async function create(
       id
       ,create_time
   `;
-  if (model.create_usr_id != null) {
+  if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -780,90 +780,100 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
-  if (model.type !== undefined) {
+  if (input.type !== undefined) {
     sql += `,type`;
   }
-  if (model.parent_id !== undefined) {
+  if (input.parent_id !== undefined) {
     sql += `,parent_id`;
   }
-  if (model.lbl !== undefined) {
+  if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.route_path !== undefined) {
+  if (input.route_path !== undefined) {
     sql += `,route_path`;
   }
-  if (model.route_query !== undefined) {
+  if (input.route_query !== undefined) {
     sql += `,route_query`;
   }
-  if (model.is_locked !== undefined) {
+  if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
-  if (model.is_enabled !== undefined) {
+  if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
-  if (model.order_by !== undefined) {
+  if (input.order_by !== undefined) {
     sql += `,order_by`;
   }
-  if (model.rem !== undefined) {
+  if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.update_usr_id !== undefined) {
+  if (input.update_usr_id !== undefined) {
     sql += `,update_usr_id`;
   }
-  if (model.update_time !== undefined) {
+  if (input.update_time !== undefined) {
     sql += `,update_time`;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
-  if (model.create_usr_id != null && model.create_usr_id !== "-") {
-    sql += `,${ args.push(model.create_usr_id) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.type !== undefined) {
-    sql += `,${ args.push(model.type) }`;
+  if (input.type !== undefined) {
+    sql += `,${ args.push(input.type) }`;
   }
-  if (model.parent_id !== undefined) {
-    sql += `,${ args.push(model.parent_id) }`;
+  if (input.parent_id !== undefined) {
+    sql += `,${ args.push(input.parent_id) }`;
   }
-  if (model.lbl !== undefined) {
-    sql += `,${ args.push(model.lbl) }`;
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
   }
-  if (model.route_path !== undefined) {
-    sql += `,${ args.push(model.route_path) }`;
+  if (input.route_path !== undefined) {
+    sql += `,${ args.push(input.route_path) }`;
   }
-  if (model.route_query !== undefined) {
-    sql += `,${ args.push(model.route_query) }`;
+  if (input.route_query !== undefined) {
+    sql += `,${ args.push(input.route_query) }`;
   }
-  if (model.is_locked !== undefined) {
-    sql += `,${ args.push(model.is_locked) }`;
+  if (input.is_locked !== undefined) {
+    sql += `,${ args.push(input.is_locked) }`;
   }
-  if (model.is_enabled !== undefined) {
-    sql += `,${ args.push(model.is_enabled) }`;
+  if (input.is_enabled !== undefined) {
+    sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (model.order_by !== undefined) {
-    sql += `,${ args.push(model.order_by) }`;
+  if (input.order_by !== undefined) {
+    sql += `,${ args.push(input.order_by) }`;
   }
-  if (model.rem !== undefined) {
-    sql += `,${ args.push(model.rem) }`;
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
-  if (model.update_usr_id !== undefined) {
-    sql += `,${ args.push(model.update_usr_id) }`;
+  if (input.update_usr_id !== undefined) {
+    sql += `,${ args.push(input.update_usr_id) }`;
   }
-  if (model.update_time !== undefined) {
-    sql += `,${ args.push(model.update_time) }`;
+  if (input.update_time !== undefined) {
+    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
   const result = await execute(sql, args);
+  
   // 所在租户
-  await many2manyUpdate(model, "tenant_ids", { mod: "base", table: "tenant_menu", column1: "menu_id", column2: "tenant_id" });
+  await many2manyUpdate(
+    input,
+    "tenant_ids",
+    {
+      mod: "base",
+      table: "tenant_menu",
+      column1: "menu_id",
+      column2: "tenant_id",
+    },
+  );
   
   await delCache();
   
-  return model.id;
+  return input.id;
 }
 
 /**
@@ -890,7 +900,7 @@ export async function delCache() {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {MenuInput} model
+ * @param {MenuInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -901,7 +911,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: string,
-  model: MenuInput,
+  input: MenuInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -912,8 +922,8 @@ export async function updateById(
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
-  if (!model) {
-    throw new Error("updateById: model cannot be null");
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
   }
   
   const [
@@ -927,36 +937,36 @@ export async function updateById(
   ]);
   
   // 类型
-  if (isNotEmpty(model.type_lbl) && model.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === model.type_lbl)?.val;
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val !== undefined) {
-      model.type = val;
+      input.type = val;
     }
   }
   
   // 父菜单
-  if (isNotEmpty(model.parent_id_lbl) && model.parent_id === undefined) {
-    model.parent_id_lbl = String(model.parent_id_lbl).trim();
-    const menuModel = await findOne({ lbl: model.parent_id_lbl });
+  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
+    input.parent_id_lbl = String(input.parent_id_lbl).trim();
+    const menuModel = await findOne({ lbl: input.parent_id_lbl });
     if (menuModel) {
-      model.parent_id = menuModel.id;
+      input.parent_id = menuModel.id;
     }
   }
   
   // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      input.is_locked = Number(val);
     }
   }
 
   // 所在租户
-  if (!model.tenant_ids && model.tenant_ids_lbl) {
-    if (typeof model.tenant_ids_lbl === "string" || model.tenant_ids_lbl instanceof String) {
-      model.tenant_ids_lbl = model.tenant_ids_lbl.split(",");
+  if (!input.tenant_ids && input.tenant_ids_lbl) {
+    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
+      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
     }
-    model.tenant_ids_lbl = model.tenant_ids_lbl.map((item: string) => item.trim());
+    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -964,29 +974,29 @@ export async function updateById(
       from
         base_tenant t
       where
-        t.lbl in ${ args.push(model.tenant_ids_lbl) }
+        t.lbl in ${ args.push(input.tenant_ids_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.tenant_ids = models.map((item: { id: string }) => item.id);
+    input.tenant_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
-      model.is_enabled = Number(val);
+      input.is_enabled = Number(val);
     }
   }
   
   {
-    const input = {
-      ...model,
+    const input2 = {
+      ...input,
       id: undefined,
     };
-    let models = await findByUnique(input);
+    let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       throw await ns("数据已经存在");
@@ -1004,63 +1014,63 @@ export async function updateById(
     update base_menu set
   `;
   let updateFldNum = 0;
-  if (model.type !== undefined) {
-    if (model.type != oldModel.type) {
-      sql += `type = ${ args.push(model.type) },`;
+  if (input.type !== undefined) {
+    if (input.type != oldModel.type) {
+      sql += `type = ${ args.push(input.type) },`;
       updateFldNum++;
     }
   }
-  if (model.parent_id !== undefined) {
-    if (model.parent_id != oldModel.parent_id) {
-      sql += `parent_id = ${ args.push(model.parent_id) },`;
+  if (input.parent_id !== undefined) {
+    if (input.parent_id != oldModel.parent_id) {
+      sql += `parent_id = ${ args.push(input.parent_id) },`;
       updateFldNum++;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(model.lbl) },`;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.route_path !== undefined) {
-    if (model.route_path != oldModel.route_path) {
-      sql += `route_path = ${ args.push(model.route_path) },`;
+  if (input.route_path !== undefined) {
+    if (input.route_path != oldModel.route_path) {
+      sql += `route_path = ${ args.push(input.route_path) },`;
       updateFldNum++;
     }
   }
-  if (model.route_query !== undefined) {
-    if (model.route_query != oldModel.route_query) {
-      sql += `route_query = ${ args.push(model.route_query) },`;
+  if (input.route_query !== undefined) {
+    if (input.route_query != oldModel.route_query) {
+      sql += `route_query = ${ args.push(input.route_query) },`;
       updateFldNum++;
     }
   }
-  if (model.is_locked !== undefined) {
-    if (model.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(model.is_locked) },`;
+  if (input.is_locked !== undefined) {
+    if (input.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
+  if (input.is_enabled !== undefined) {
+    if (input.is_enabled != oldModel.is_enabled) {
+      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
-  if (model.order_by !== undefined) {
-    if (model.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(model.order_by) },`;
+  if (input.order_by !== undefined) {
+    if (input.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(model.rem) },`;
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id && model.update_usr_id !== "-") {
-      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
@@ -1073,8 +1083,21 @@ export async function updateById(
   }
   
   updateFldNum++;
+  
   // 所在租户
-  await many2manyUpdate({ ...model, id }, "tenant_ids", { mod: "base", table: "tenant_menu", column1: "menu_id", column2: "tenant_id" });
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "tenant_ids",
+    {
+      mod: "base",
+      table: "tenant_menu",
+      column1: "menu_id",
+      column2: "tenant_id",
+    },
+  );
   
   if (updateFldNum > 0) {
     await delCache();

@@ -1235,7 +1235,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -1245,7 +1245,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -1384,8 +1384,8 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();<#
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
       for (let i = 0; i < selectList.length; i++) {
         const item = selectList[i];
         let value = item.value;
@@ -1395,8 +1395,8 @@ export async function create(
         } else if (typeof(value) === "number") {
           value = value.toString();
         }
-    #><#=i>0?" else ":"\n      "#>if (model.<#=column_name#>_lbl === "<#=label#>") {
-      model.<#=column_name#> = <#=value#>;
+    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
+      input.<#=column_name#> = <#=value#>;
     }<#
       }
     #>
@@ -1405,20 +1405,20 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
-      model.<#=column_name#> = val;
+      input.<#=column_name#> = val;
     }
   }<#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
-      model.<#=column_name#> = Number(val);
+      input.<#=column_name#> = Number(val);
     }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
@@ -1429,22 +1429,22 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model.<#=column_name#>_lbl });
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
     if (<#=foreignTable#>Model) {
-      model.<#=column_name#> = <#=foreignTable#>Model.id;
+      input.<#=column_name#> = <#=foreignTable#>Model.id;
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
   #>
   
   // <#=column_comment#>
-  if (!model.<#=column_name#> && model.<#=column_name#>_lbl) {
-    if (typeof model.<#=column_name#>_lbl === "string" || model.<#=column_name#>_lbl instanceof String) {
-      model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.split(",");
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
+      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
     }
-    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.map((item: string) => item.trim());
+    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -1452,21 +1452,21 @@ export async function create(
       from
         <#=foreignKey.mod#>_<#=foreignTable#> t
       where
-        t.<#=foreignKey.lbl#> in ${ args.push(model.<#=column_name#>_lbl) }
+        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.<#=column_name#> = models.map((item: { id: string }) => item.id);
+    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
   }<#
   } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();
-    model.<#=column_name#> = model.<#=column_name#>_lbl;
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
+    input.<#=column_name#> = input.<#=column_name#>_lbl;
   }<#
   }
   #><#
@@ -1504,14 +1504,14 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (model.<#=column_name#> != null) {
+  if (input.<#=column_name#> != null) {
     const dictModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
     });<#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
     #>
-    model.<#=val#> = dictModel?.<#=key#>;<#
+    input.<#=val#> = dictModel?.<#=key#>;<#
     }
     #>
   }<#
@@ -1519,14 +1519,14 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (model.<#=column_name#> != null) {
+  if (input.<#=column_name#> != null) {
     const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictbizSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
     });<#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
     #>
-    model.<#=val#> = dictbizModel?.<#=key#>;<#
+    input.<#=val#> = dictbizModel?.<#=key#>;<#
     }
     #>
   }<#
@@ -1565,17 +1565,17 @@ export async function create(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>)) {
+  if (isNotEmpty(input.<#=column_name#>)) {
     const {
       findById: findById<#=foreignTableUp#>,
     } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
     
-    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(model.<#=column_name#>);
+    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(input.<#=column_name#>);
     if (<#=foreignTable#>Model) {<#
       for (const key of redundLblKeys) {
         const val = redundLbl[key];
       #>
-      model.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
+      input.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
       }
       #>
     }
@@ -1583,12 +1583,12 @@ export async function create(
   }
   #>
   
-  const oldModels = await findByUnique(model, options);
+  const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
-        model,
+        input,
         oldModel,
         options?.uniqueType,
         options,
@@ -1609,13 +1609,13 @@ export async function create(
       filterMenuIdsByTenant,
     } = await import("/src/base/tenant/tenant.dao.ts");
     
-    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+    input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
   }<#
   }
   #>
   
-  if (!model.id) {
-    model.id = shortUuidV4();
+  if (!input.id) {
+    input.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
@@ -1626,7 +1626,7 @@ export async function create(
   `;<#
   if (hasTenant_id) {
   #>
-  if (model.tenant_id != null) {
+  if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -1639,7 +1639,7 @@ export async function create(
   #><#
   if (hasOrgId) {
   #>
-  if (model.org_id != null) {
+  if (input.org_id != null) {
     sql += `,org_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -1649,7 +1649,7 @@ export async function create(
   }<#
   }
   #>
-  if (model.create_usr_id != null) {
+  if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -1678,24 +1678,24 @@ export async function create(
   #><#
     if (column.isPassword) {
   #>
-  if (isNotEmpty(model.<#=column_name#>)) {
+  if (isNotEmpty(input.<#=column_name#>)) {
     sql += `,<#=column_name#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (model.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> !== undefined) {
     sql += `,<#=column_name#>`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (model.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> !== undefined) {
     sql += `,<#=column_name#>`;
   }<#
     } else {
   #>
-  if (model.<#=column_name#> !== undefined) {
+  if (input.<#=column_name#> !== undefined) {
     sql += `,<#=column_name#>`;
   }<#
     }
@@ -1729,18 +1729,18 @@ export async function create(
     const val = redundLbl[key];
   #>
   
-  if (model.<#=val#> !== undefined) {
+  if (input.<#=val#> !== undefined) {
     sql += `,<#=val#>`;
   }<#
   }
   #><#
   }
   #>
-  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;<#
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;<#
   if (hasTenant_id) {
   #>
-  if (model.tenant_id != null) {
-    sql += `,${ args.push(model.tenant_id) }`;
+  if (input.tenant_id != null) {
+    sql += `,${ args.push(input.tenant_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
@@ -1752,8 +1752,8 @@ export async function create(
   #><#
   if (hasOrgId) {
   #>
-  if (model.org_id != null) {
-    sql += `,${ args.push(model.org_id) }`;
+  if (input.org_id != null) {
+    sql += `,${ args.push(input.org_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.org_id) {
@@ -1762,8 +1762,8 @@ export async function create(
   }<#
   }
   #>
-  if (model.create_usr_id != null && model.create_usr_id !== "-") {
-    sql += `,${ args.push(model.create_usr_id) }`;
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
@@ -1790,25 +1790,25 @@ export async function create(
   #><#
     if (column.isPassword) {
   #>
-  if (isNotEmpty(model.<#=column_name#>)) {
-    sql += `,${ args.push(await authDao.getPassword(model.<#=column_name#>)) }`;
+  if (isNotEmpty(input.<#=column_name#>)) {
+    sql += `,${ args.push(await authDao.getPassword(input.<#=column_name#>)) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (model.<#=column_name#> !== undefined) {
-    sql += `,${ args.push(model.<#=column_name#>) }`;
+  if (input.<#=column_name#> !== undefined) {
+    sql += `,${ args.push(input.<#=column_name#>) }`;
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #><#
     } else if (!foreignKey) {
   #>
-  if (model.<#=column_name#> !== undefined) {
-    sql += `,${ args.push(model.<#=column_name#>) }`;
+  if (input.<#=column_name#> !== undefined) {
+    sql += `,${ args.push(input.<#=column_name#>) }`;
   }<#
     } else {
   #>
-  if (model.<#=column_name#> !== undefined) {
-    sql += `,${ args.push(model.<#=column_name#>) }`;
+  if (input.<#=column_name#> !== undefined) {
+    sql += `,${ args.push(input.<#=column_name#>) }`;
   }<#
     }
   #><#
@@ -1841,8 +1841,8 @@ export async function create(
     const val = redundLbl[key];
   #>
   
-  if (model.<#=val#> !== undefined) {
-    sql += `,${ args.push(model.<#=val#>) }`;
+  if (input.<#=val#> !== undefined) {
+    sql += `,${ args.push(input.<#=val#>) }`;
   }<#
   }
   #><#
@@ -1872,8 +1872,18 @@ export async function create(
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
+  
   // <#=column_comment#>
-  await many2manyUpdate(model, "<#=column_name#>", { mod: "<#=many2many.mod#>", table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
+  await many2manyUpdate(
+    input,
+    "<#=column_name#>",
+    {
+      mod: "<#=many2many.mod#>",
+      table: "<#=many2many.table#>",
+      column1: "<#=many2many.column1#>",
+      column2: "<#=many2many.column2#>",
+    },
+  );<#
     } else if (!foreignKey) {
   #><#
     } else {
@@ -1889,7 +1899,7 @@ export async function create(
   }
   #>
   
-  return model.id;
+  return input.id;
 }<#
 if (cache) {
 #>
@@ -2055,7 +2065,7 @@ export async function getVersionById(id: string) {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -2066,7 +2076,7 @@ export async function getVersionById(id: string) {
  */
 export async function updateById(
   id: string,
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -2077,8 +2087,8 @@ export async function updateById(
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
-  if (!model) {
-    throw new Error("updateById: model cannot be null");
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
   }<#
   if (hasDict) {
   #>
@@ -2188,8 +2198,8 @@ export async function updateById(
   #>
   
   // 修改租户id
-  if (isNotEmpty(model.tenant_id)) {
-    await updateTenantById(id, model.tenant_id);
+  if (isNotEmpty(input.tenant_id)) {
+    await updateTenantById(id, input.tenant_id);
   }<#
   }
   #><#
@@ -2197,8 +2207,8 @@ export async function updateById(
   #>
   
   // 修改部门id
-  if (isNotEmpty(model.org_id)) {
-    await updateOrgById(id, model.org_id);
+  if (isNotEmpty(input.org_id)) {
+    await updateOrgById(id, input.org_id);
   }<#
   }
   #><#
@@ -2230,8 +2240,8 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();<#
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
       for (let i = 0; i < selectList.length; i++) {
         const item = selectList[i];
         let value = item.value;
@@ -2241,8 +2251,8 @@ export async function updateById(
         } else if (typeof(value) === "number") {
           value = value.toString();
         }
-    #><#=i>0?" else ":"\n      "#>if (model.<#=column_name#>_lbl === "<#=label#>") {
-      model.<#=column_name#> = <#=value#>;
+    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
+      input.<#=column_name#> = <#=value#>;
     }<#
       }
     #>
@@ -2251,20 +2261,20 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
-      model.<#=column_name#> = val;
+      input.<#=column_name#> = val;
     }
   }<#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === model.<#=column_name#>_lbl)?.val;
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
     if (val !== undefined) {
-      model.<#=column_name#> = Number(val);
+      input.<#=column_name#> = Number(val);
     }
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
@@ -2275,22 +2285,22 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>_lbl) && model.<#=column_name#> === undefined) {
-    model.<#=column_name#>_lbl = String(model.<#=column_name#>_lbl).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: model.<#=column_name#>_lbl });
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
     if (<#=foreignTable#>Model) {
-      model.<#=column_name#> = <#=foreignTable#>Model.id;
+      input.<#=column_name#> = <#=foreignTable#>Model.id;
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
   #>
 
   // <#=column_comment#>
-  if (!model.<#=column_name#> && model.<#=column_name#>_lbl) {
-    if (typeof model.<#=column_name#>_lbl === "string" || model.<#=column_name#>_lbl instanceof String) {
-      model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.split(",");
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
+      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
     }
-    model.<#=column_name#>_lbl = model.<#=column_name#>_lbl.map((item: string) => item.trim());
+    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -2298,13 +2308,13 @@ export async function updateById(
       from
         <#=foreignKey.mod#>_<#=foreignTable#> t
       where
-        t.<#=foreignKey.lbl#> in ${ args.push(model.<#=column_name#>_lbl) }
+        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.<#=column_name#> = models.map((item: { id: string }) => item.id);
+    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
   }<#
     }
   #><#
@@ -2342,14 +2352,14 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (model.<#=column_name#> != null) {
+  if (input.<#=column_name#> != null) {
     const dictModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
     });<#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
     #>
-    model.<#=val#> = dictModel?.<#=key#>;<#
+    input.<#=val#> = dictModel?.<#=key#>;<#
     }
     #>
   }<#
@@ -2357,14 +2367,14 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (model.<#=column_name#> != null) {
+  if (input.<#=column_name#> != null) {
     const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictbizSrcDao.val2Str(model.<#=column_name#>, itemTmp.type as any);
+      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
     });<#
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
     #>
-    model.<#=val#> = dictbizModel?.<#=key#>;<#
+    input.<#=val#> = dictbizModel?.<#=key#>;<#
     }
     #>
   }<#
@@ -2403,17 +2413,17 @@ export async function updateById(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(model.<#=column_name#>)) {
+  if (isNotEmpty(input.<#=column_name#>)) {
     const {
       findById: findById<#=foreignTableUp#>,
     } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
     
-    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(model.<#=column_name#>);
+    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(input.<#=column_name#>);
     if (<#=foreignTable#>Model) {<#
       for (const key of redundLblKeys) {
         const val = redundLbl[key];
       #>
-      model.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
+      input.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
       }
       #>
     }
@@ -2422,11 +2432,11 @@ export async function updateById(
   #>
   
   {
-    const input = {
-      ...model,
+    const input2 = {
+      ...input,
       id: undefined,
     };
-    let models = await findByUnique(input);
+    let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       throw await ns("数据已经存在");
@@ -2446,7 +2456,7 @@ export async function updateById(
       filterMenuIdsByTenant,
     } = await import("/src/base/tenant/tenant.dao.ts");
     
-    model.menu_ids = await filterMenuIdsByTenant(model.menu_ids);
+    input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
   }<#
   }
   #>
@@ -2480,19 +2490,19 @@ export async function updateById(
   #><#
     if (column.isPassword) {
   #>
-  if (isNotEmpty(model.<#=column_name#>)) {
+  if (isNotEmpty(input.<#=column_name#>)) {
     sql += `<#=column_name#> = ?,`;
-    args.push(await authDao.getPassword(model.<#=column_name#>));
+    args.push(await authDao.getPassword(input.<#=column_name#>));
     updateFldNum++;
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
-  if (model.<#=column_name#> !== undefined) {
-    if (isEmpty(model.<#=column_name#>)) {
-      model.<#=column_name#> = null;
+  if (input.<#=column_name#> !== undefined) {
+    if (isEmpty(input.<#=column_name#>)) {
+      input.<#=column_name#> = null;
     }
-    if (model.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
+      sql += `<#=column_name#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2500,17 +2510,17 @@ export async function updateById(
   #><#
     } else if (!foreignKey) {
   #>
-  if (model.<#=column_name#> !== undefined) {
-    if (model.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
+  if (input.<#=column_name#> !== undefined) {
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
+      sql += `<#=column_name#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
     } else {
   #>
-  if (model.<#=column_name#> !== undefined) {
-    if (model.<#=column_name#> != oldModel.<#=column_name#>) {
-      sql += `<#=column_name#> = ${ args.push(model.<#=column_name#>) },`;
+  if (input.<#=column_name#> !== undefined) {
+    if (input.<#=column_name#> != oldModel.<#=column_name#>) {
+      sql += `<#=column_name#> = ${ args.push(input.<#=column_name#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2544,9 +2554,9 @@ export async function updateById(
     for (const key of redundLblKeys) {
       const val = redundLbl[key];
   #>
-  if (model.<#=val#> !== undefined) {
-    if (model.<#=val#> != oldModel.<#=val#>) {
-      sql += `<#=val#> = ${ args.push(model.<#=val#>) },`;
+  if (input.<#=val#> !== undefined) {
+    if (input.<#=val#> != oldModel.<#=val#>) {
+      sql += `<#=val#> = ${ args.push(input.<#=val#>) },`;
       updateFldNum++;
     }
   }<#
@@ -2555,8 +2565,8 @@ export async function updateById(
   }
   #>
   if (updateFldNum > 0) {
-    if (model.update_usr_id && model.update_usr_id !== "-") {
-      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
@@ -2565,9 +2575,9 @@ export async function updateById(
     }<#
     if (hasVersion) {
     #>
-    if (model.version != null && model.version > 0) {
+    if (input.version != null && input.version > 0) {
       const version = await getVersionById(id);
-      if (version && version > model.version) {
+      if (version && version > input.version) {
         throw await ns("数据已被修改，请刷新后重试");
       }
       sql += `version = ${ args.push(version + 1) },`;
@@ -2601,8 +2611,21 @@ export async function updateById(
   #>
   
   updateFldNum++;
+  
   // <#=column_comment#>
-  await many2manyUpdate({ ...model, id }, "<#=column_name#>", { mod: "<#=many2many.mod#>", table: "<#=many2many.table#>", column1: "<#=many2many.column1#>", column2: "<#=many2many.column2#>" });<#
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "<#=column_name#>",
+    {
+      mod: "<#=many2many.mod#>",
+      table: "<#=many2many.table#>",
+      column1: "<#=many2many.column1#>",
+      column2: "<#=many2many.column2#>",
+    },
+  );<#
     } else if (!foreignKey) {
   #><#
     } else {

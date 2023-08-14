@@ -631,7 +631,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {TenantInput} model
+ * @param {TenantInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -641,7 +641,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: TenantInput,
+  input: TenantInput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -658,11 +658,11 @@ export async function create(
   ]);
   
   // 所属域名
-  if (!model.domain_ids && model.domain_ids_lbl) {
-    if (typeof model.domain_ids_lbl === "string" || model.domain_ids_lbl instanceof String) {
-      model.domain_ids_lbl = model.domain_ids_lbl.split(",");
+  if (!input.domain_ids && input.domain_ids_lbl) {
+    if (typeof input.domain_ids_lbl === "string" || input.domain_ids_lbl instanceof String) {
+      input.domain_ids_lbl = input.domain_ids_lbl.split(",");
     }
-    model.domain_ids_lbl = model.domain_ids_lbl.map((item: string) => item.trim());
+    input.domain_ids_lbl = input.domain_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -670,21 +670,21 @@ export async function create(
       from
         base_domain t
       where
-        t.lbl in ${ args.push(model.domain_ids_lbl) }
+        t.lbl in ${ args.push(input.domain_ids_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.domain_ids = models.map((item: { id: string }) => item.id);
+    input.domain_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 菜单权限
-  if (!model.menu_ids && model.menu_ids_lbl) {
-    if (typeof model.menu_ids_lbl === "string" || model.menu_ids_lbl instanceof String) {
-      model.menu_ids_lbl = model.menu_ids_lbl.split(",");
+  if (!input.menu_ids && input.menu_ids_lbl) {
+    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
+      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
     }
-    model.menu_ids_lbl = model.menu_ids_lbl.map((item: string) => item.trim());
+    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -692,37 +692,37 @@ export async function create(
       from
         base_menu t
       where
-        t.lbl in ${ args.push(model.menu_ids_lbl) }
+        t.lbl in ${ args.push(input.menu_ids_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.menu_ids = models.map((item: { id: string }) => item.id);
+    input.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      input.is_locked = Number(val);
     }
   }
   
   // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
-      model.is_enabled = Number(val);
+      input.is_enabled = Number(val);
     }
   }
   
-  const oldModels = await findByUnique(model, options);
+  const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
-        model,
+        input,
         oldModel,
         options?.uniqueType,
         options,
@@ -736,8 +736,8 @@ export async function create(
     }
   }
   
-  if (!model.id) {
-    model.id = shortUuidV4();
+  if (!input.id) {
+    input.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
@@ -746,7 +746,7 @@ export async function create(
       id
       ,create_time
   `;
-  if (model.create_usr_id != null) {
+  if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -754,68 +754,88 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
-  if (model.lbl !== undefined) {
+  if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.is_locked !== undefined) {
+  if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
-  if (model.is_enabled !== undefined) {
+  if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
   }
-  if (model.order_by !== undefined) {
+  if (input.order_by !== undefined) {
     sql += `,order_by`;
   }
-  if (model.rem !== undefined) {
+  if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.update_usr_id !== undefined) {
+  if (input.update_usr_id !== undefined) {
     sql += `,update_usr_id`;
   }
-  if (model.update_time !== undefined) {
+  if (input.update_time !== undefined) {
     sql += `,update_time`;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
-  if (model.create_usr_id != null && model.create_usr_id !== "-") {
-    sql += `,${ args.push(model.create_usr_id) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.lbl !== undefined) {
-    sql += `,${ args.push(model.lbl) }`;
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
   }
-  if (model.is_locked !== undefined) {
-    sql += `,${ args.push(model.is_locked) }`;
+  if (input.is_locked !== undefined) {
+    sql += `,${ args.push(input.is_locked) }`;
   }
-  if (model.is_enabled !== undefined) {
-    sql += `,${ args.push(model.is_enabled) }`;
+  if (input.is_enabled !== undefined) {
+    sql += `,${ args.push(input.is_enabled) }`;
   }
-  if (model.order_by !== undefined) {
-    sql += `,${ args.push(model.order_by) }`;
+  if (input.order_by !== undefined) {
+    sql += `,${ args.push(input.order_by) }`;
   }
-  if (model.rem !== undefined) {
-    sql += `,${ args.push(model.rem) }`;
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
-  if (model.update_usr_id !== undefined) {
-    sql += `,${ args.push(model.update_usr_id) }`;
+  if (input.update_usr_id !== undefined) {
+    sql += `,${ args.push(input.update_usr_id) }`;
   }
-  if (model.update_time !== undefined) {
-    sql += `,${ args.push(model.update_time) }`;
+  if (input.update_time !== undefined) {
+    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
   const result = await execute(sql, args);
+  
   // 所属域名
-  await many2manyUpdate(model, "domain_ids", { mod: "base", table: "tenant_domain", column1: "tenant_id", column2: "domain_id" });
+  await many2manyUpdate(
+    input,
+    "domain_ids",
+    {
+      mod: "base",
+      table: "tenant_domain",
+      column1: "tenant_id",
+      column2: "domain_id",
+    },
+  );
+  
   // 菜单权限
-  await many2manyUpdate(model, "menu_ids", { mod: "base", table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
+  await many2manyUpdate(
+    input,
+    "menu_ids",
+    {
+      mod: "base",
+      table: "tenant_menu",
+      column1: "tenant_id",
+      column2: "menu_id",
+    },
+  );
   
   await delCache();
   
-  return model.id;
+  return input.id;
 }
 
 /**
@@ -843,7 +863,7 @@ export async function delCache() {
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {TenantInput} model
+ * @param {TenantInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -854,7 +874,7 @@ export async function delCache() {
  */
 export async function updateById(
   id: string,
-  model: TenantInput,
+  input: TenantInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -865,8 +885,8 @@ export async function updateById(
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
-  if (!model) {
-    throw new Error("updateById: model cannot be null");
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
   }
   
   const [
@@ -878,11 +898,11 @@ export async function updateById(
   ]);
 
   // 所属域名
-  if (!model.domain_ids && model.domain_ids_lbl) {
-    if (typeof model.domain_ids_lbl === "string" || model.domain_ids_lbl instanceof String) {
-      model.domain_ids_lbl = model.domain_ids_lbl.split(",");
+  if (!input.domain_ids && input.domain_ids_lbl) {
+    if (typeof input.domain_ids_lbl === "string" || input.domain_ids_lbl instanceof String) {
+      input.domain_ids_lbl = input.domain_ids_lbl.split(",");
     }
-    model.domain_ids_lbl = model.domain_ids_lbl.map((item: string) => item.trim());
+    input.domain_ids_lbl = input.domain_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -890,21 +910,21 @@ export async function updateById(
       from
         base_domain t
       where
-        t.lbl in ${ args.push(model.domain_ids_lbl) }
+        t.lbl in ${ args.push(input.domain_ids_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.domain_ids = models.map((item: { id: string }) => item.id);
+    input.domain_ids = models.map((item: { id: string }) => item.id);
   }
 
   // 菜单权限
-  if (!model.menu_ids && model.menu_ids_lbl) {
-    if (typeof model.menu_ids_lbl === "string" || model.menu_ids_lbl instanceof String) {
-      model.menu_ids_lbl = model.menu_ids_lbl.split(",");
+  if (!input.menu_ids && input.menu_ids_lbl) {
+    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
+      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
     }
-    model.menu_ids_lbl = model.menu_ids_lbl.map((item: string) => item.trim());
+    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
     const sql = /*sql*/ `
       select
@@ -912,37 +932,37 @@ export async function updateById(
       from
         base_menu t
       where
-        t.lbl in ${ args.push(model.menu_ids_lbl) }
+        t.lbl in ${ args.push(input.menu_ids_lbl) }
     `;
     interface Result {
       id: string;
     }
     const models = await query<Result>(sql, args);
-    model.menu_ids = models.map((item: { id: string }) => item.id);
+    input.menu_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 锁定
-  if (isNotEmpty(model.is_locked_lbl) && model.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === model.is_locked_lbl)?.val;
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
     if (val !== undefined) {
-      model.is_locked = Number(val);
+      input.is_locked = Number(val);
     }
   }
   
   // 启用
-  if (isNotEmpty(model.is_enabled_lbl) && model.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === model.is_enabled_lbl)?.val;
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
-      model.is_enabled = Number(val);
+      input.is_enabled = Number(val);
     }
   }
   
   {
-    const input = {
-      ...model,
+    const input2 = {
+      ...input,
       id: undefined,
     };
-    let models = await findByUnique(input);
+    let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       throw await ns("数据已经存在");
@@ -960,39 +980,39 @@ export async function updateById(
     update base_tenant set
   `;
   let updateFldNum = 0;
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(model.lbl) },`;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.is_locked !== undefined) {
-    if (model.is_locked != oldModel.is_locked) {
-      sql += `is_locked = ${ args.push(model.is_locked) },`;
+  if (input.is_locked !== undefined) {
+    if (input.is_locked != oldModel.is_locked) {
+      sql += `is_locked = ${ args.push(input.is_locked) },`;
       updateFldNum++;
     }
   }
-  if (model.is_enabled !== undefined) {
-    if (model.is_enabled != oldModel.is_enabled) {
-      sql += `is_enabled = ${ args.push(model.is_enabled) },`;
+  if (input.is_enabled !== undefined) {
+    if (input.is_enabled != oldModel.is_enabled) {
+      sql += `is_enabled = ${ args.push(input.is_enabled) },`;
       updateFldNum++;
     }
   }
-  if (model.order_by !== undefined) {
-    if (model.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(model.order_by) },`;
+  if (input.order_by !== undefined) {
+    if (input.order_by != oldModel.order_by) {
+      sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(model.rem) },`;
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id && model.update_usr_id !== "-") {
-      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
@@ -1005,12 +1025,38 @@ export async function updateById(
   }
   
   updateFldNum++;
+  
   // 所属域名
-  await many2manyUpdate({ ...model, id }, "domain_ids", { mod: "base", table: "tenant_domain", column1: "tenant_id", column2: "domain_id" });
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "domain_ids",
+    {
+      mod: "base",
+      table: "tenant_domain",
+      column1: "tenant_id",
+      column2: "domain_id",
+    },
+  );
   
   updateFldNum++;
+  
   // 菜单权限
-  await many2manyUpdate({ ...model, id }, "menu_ids", { mod: "base", table: "tenant_menu", column1: "tenant_id", column2: "menu_id" });
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "menu_ids",
+    {
+      mod: "base",
+      table: "tenant_menu",
+      column1: "tenant_id",
+      column2: "menu_id",
+    },
+  );
   
   if (updateFldNum > 0) {
     await delCache();

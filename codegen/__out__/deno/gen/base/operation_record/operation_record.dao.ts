@@ -542,7 +542,7 @@ export async function existById(
 
 /**
  * 创建数据
- * @param {OperationRecordInput} model
+ * @param {OperationRecordInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -552,7 +552,7 @@ export async function existById(
  * @return {Promise<string>} 
  */
 export async function create(
-  model: OperationRecordInput,
+  input: OperationRecordInput,
   options?: {
     uniqueType?: UniqueType;
   },
@@ -560,12 +560,12 @@ export async function create(
   const table = "base_operation_record";
   const method = "create";
   
-  const oldModels = await findByUnique(model, options);
+  const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
     for (const oldModel of oldModels) {
       id = await checkByUnique(
-        model,
+        input,
         oldModel,
         options?.uniqueType,
         options,
@@ -579,8 +579,8 @@ export async function create(
     }
   }
   
-  if (!model.id) {
-    model.id = shortUuidV4();
+  if (!input.id) {
+    input.id = shortUuidV4();
   }
   
   const args = new QueryArgs();
@@ -589,7 +589,7 @@ export async function create(
       id
       ,create_time
   `;
-  if (model.tenant_id != null) {
+  if (input.tenant_id != null) {
     sql += `,tenant_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -598,7 +598,7 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
-  if (model.create_usr_id != null) {
+  if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
     const authModel = await authDao.getAuthModel();
@@ -606,39 +606,39 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
-  if (model.module !== undefined) {
+  if (input.module !== undefined) {
     sql += `,module`;
   }
-  if (model.module_lbl !== undefined) {
+  if (input.module_lbl !== undefined) {
     sql += `,module_lbl`;
   }
-  if (model.method !== undefined) {
+  if (input.method !== undefined) {
     sql += `,method`;
   }
-  if (model.method_lbl !== undefined) {
+  if (input.method_lbl !== undefined) {
     sql += `,method_lbl`;
   }
-  if (model.lbl !== undefined) {
+  if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (model.old_data !== undefined) {
+  if (input.old_data !== undefined) {
     sql += `,old_data`;
   }
-  if (model.new_data !== undefined) {
+  if (input.new_data !== undefined) {
     sql += `,new_data`;
   }
-  if (model.rem !== undefined) {
+  if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (model.update_usr_id !== undefined) {
+  if (input.update_usr_id !== undefined) {
     sql += `,update_usr_id`;
   }
-  if (model.update_time !== undefined) {
+  if (input.update_time !== undefined) {
     sql += `,update_time`;
   }
-  sql += `) values(${ args.push(model.id) },${ args.push(reqDate()) }`;
-  if (model.tenant_id != null) {
-    sql += `,${ args.push(model.tenant_id) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  if (input.tenant_id != null) {
+    sql += `,${ args.push(input.tenant_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
@@ -646,49 +646,49 @@ export async function create(
       sql += `,${ args.push(tenant_id) }`;
     }
   }
-  if (model.create_usr_id != null && model.create_usr_id !== "-") {
-    sql += `,${ args.push(model.create_usr_id) }`;
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (model.module !== undefined) {
-    sql += `,${ args.push(model.module) }`;
+  if (input.module !== undefined) {
+    sql += `,${ args.push(input.module) }`;
   }
-  if (model.module_lbl !== undefined) {
-    sql += `,${ args.push(model.module_lbl) }`;
+  if (input.module_lbl !== undefined) {
+    sql += `,${ args.push(input.module_lbl) }`;
   }
-  if (model.method !== undefined) {
-    sql += `,${ args.push(model.method) }`;
+  if (input.method !== undefined) {
+    sql += `,${ args.push(input.method) }`;
   }
-  if (model.method_lbl !== undefined) {
-    sql += `,${ args.push(model.method_lbl) }`;
+  if (input.method_lbl !== undefined) {
+    sql += `,${ args.push(input.method_lbl) }`;
   }
-  if (model.lbl !== undefined) {
-    sql += `,${ args.push(model.lbl) }`;
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
   }
-  if (model.old_data !== undefined) {
-    sql += `,${ args.push(model.old_data) }`;
+  if (input.old_data !== undefined) {
+    sql += `,${ args.push(input.old_data) }`;
   }
-  if (model.new_data !== undefined) {
-    sql += `,${ args.push(model.new_data) }`;
+  if (input.new_data !== undefined) {
+    sql += `,${ args.push(input.new_data) }`;
   }
-  if (model.rem !== undefined) {
-    sql += `,${ args.push(model.rem) }`;
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
   }
-  if (model.update_usr_id !== undefined) {
-    sql += `,${ args.push(model.update_usr_id) }`;
+  if (input.update_usr_id !== undefined) {
+    sql += `,${ args.push(input.update_usr_id) }`;
   }
-  if (model.update_time !== undefined) {
-    sql += `,${ args.push(model.update_time) }`;
+  if (input.update_time !== undefined) {
+    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
   const result = await execute(sql, args);
   
-  return model.id;
+  return input.id;
 }
 
 /**
@@ -731,7 +731,7 @@ export async function updateTenantById(
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {OperationRecordInput} model
+ * @param {OperationRecordInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -742,7 +742,7 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  model: OperationRecordInput,
+  input: OperationRecordInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
@@ -753,21 +753,21 @@ export async function updateById(
   if (!id) {
     throw new Error("updateById: id cannot be empty");
   }
-  if (!model) {
-    throw new Error("updateById: model cannot be null");
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
   }
   
   // 修改租户id
-  if (isNotEmpty(model.tenant_id)) {
-    await updateTenantById(id, model.tenant_id);
+  if (isNotEmpty(input.tenant_id)) {
+    await updateTenantById(id, input.tenant_id);
   }
   
   {
-    const input = {
-      ...model,
+    const input2 = {
+      ...input,
       id: undefined,
     };
-    let models = await findByUnique(input);
+    let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       throw await ns("数据已经存在");
@@ -785,57 +785,57 @@ export async function updateById(
     update base_operation_record set
   `;
   let updateFldNum = 0;
-  if (model.module !== undefined) {
-    if (model.module != oldModel.module) {
-      sql += `module = ${ args.push(model.module) },`;
+  if (input.module !== undefined) {
+    if (input.module != oldModel.module) {
+      sql += `module = ${ args.push(input.module) },`;
       updateFldNum++;
     }
   }
-  if (model.module_lbl !== undefined) {
-    if (model.module_lbl != oldModel.module_lbl) {
-      sql += `module_lbl = ${ args.push(model.module_lbl) },`;
+  if (input.module_lbl !== undefined) {
+    if (input.module_lbl != oldModel.module_lbl) {
+      sql += `module_lbl = ${ args.push(input.module_lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.method !== undefined) {
-    if (model.method != oldModel.method) {
-      sql += `method = ${ args.push(model.method) },`;
+  if (input.method !== undefined) {
+    if (input.method != oldModel.method) {
+      sql += `method = ${ args.push(input.method) },`;
       updateFldNum++;
     }
   }
-  if (model.method_lbl !== undefined) {
-    if (model.method_lbl != oldModel.method_lbl) {
-      sql += `method_lbl = ${ args.push(model.method_lbl) },`;
+  if (input.method_lbl !== undefined) {
+    if (input.method_lbl != oldModel.method_lbl) {
+      sql += `method_lbl = ${ args.push(input.method_lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.lbl !== undefined) {
-    if (model.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(model.lbl) },`;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
-  if (model.old_data !== undefined) {
-    if (model.old_data != oldModel.old_data) {
-      sql += `old_data = ${ args.push(model.old_data) },`;
+  if (input.old_data !== undefined) {
+    if (input.old_data != oldModel.old_data) {
+      sql += `old_data = ${ args.push(input.old_data) },`;
       updateFldNum++;
     }
   }
-  if (model.new_data !== undefined) {
-    if (model.new_data != oldModel.new_data) {
-      sql += `new_data = ${ args.push(model.new_data) },`;
+  if (input.new_data !== undefined) {
+    if (input.new_data != oldModel.new_data) {
+      sql += `new_data = ${ args.push(input.new_data) },`;
       updateFldNum++;
     }
   }
-  if (model.rem !== undefined) {
-    if (model.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(model.rem) },`;
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
   if (updateFldNum > 0) {
-    if (model.update_usr_id && model.update_usr_id !== "-") {
-      sql += `update_usr_id = ${ args.push(model.update_usr_id) },`;
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
     } else {
       const authModel = await authDao.getAuthModel();
       if (authModel?.id !== undefined) {
