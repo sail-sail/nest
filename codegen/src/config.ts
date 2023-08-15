@@ -514,7 +514,88 @@ export interface TableCloumn {
    */
   redundLbl?: {[key: string]: string},
   
+  /**
+   * 校验
+   */
+  validators?: Validator[],
+  
 }
+
+/**
+ * https://async-graphql.github.io/async-graphql/zh-CN/input_value_validators.html
+ * 
+ * maximum=N 指定数字不能大于N
+ * minimum=N 指定数字不能小于N
+ * multiple_of=N 指定数字必须是N的倍数
+ * max_items=N 指定列表的长度不能大于N
+ * min_items=N 指定列表的长度不能小于N
+ * max_length=N 字符串的长度不能大于N
+ * min_length=N 字符串的长度不能小于N
+ * chars_max_length=N 字符串中 unicode 字符的的数量不能小于N
+ * chars_min_length=N 字符串中 unicode 字符的的数量不能大于N
+ * email 有效的 email
+ * url 有效的 url
+ * ip 有效的 ip 地址
+ * regex=RE 匹配正则表达式
+ */
+export type Validator = {
+  
+  /**
+   * maximum=N 指定数字不能大于N
+   */
+  maximum?: number;
+  
+  /**
+   * minimum=N 指定数字不能小于N
+   */
+  minimum?: number;
+  
+  /**
+   * multiple_of=N 指定数字必须是N的倍数
+   */
+  multiple_of?: number;
+  
+  /**
+   * max_items=N 指定列表的长度不能大于N
+   */
+  max_items?: number;
+  
+  /**
+   * min_items=N 指定列表的长度不能小于N
+   */
+  min_items?: number;
+  
+  /**
+   * chars_max_length=N 字符串中 unicode 字符的的数量不能小于N
+   */
+  chars_max_length?: number;
+  
+  /**
+   * chars_min_length=N 字符串中 unicode 字符的的数量不能大于N
+   */
+  chars_min_length?: number;
+  
+  /**
+   * email 有效的 email
+   */
+  email?: boolean;
+  
+  /**
+   * url 有效的 url
+   */
+  url?: boolean;
+  
+  /**
+   * ip 有效的 ip 地址
+   */
+  ip?: boolean;
+  
+  /**
+   * regex=RE 匹配正则表达式
+   */
+  regex?: string;
+  
+};
 
 export interface TablesConfigItem {
   opts?: {
