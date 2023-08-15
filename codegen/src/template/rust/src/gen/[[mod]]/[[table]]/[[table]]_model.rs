@@ -2,9 +2,21 @@
 const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
-#>use serde::{Serialize, Deserialize};
-use sqlx::{FromRow, mysql::MySqlRow, Row};
-use async_graphql::{SimpleObject, InputObject};
+#>use serde::{
+  Serialize,
+  Deserialize,
+};
+
+use sqlx::{
+  FromRow,
+  mysql::MySqlRow,
+  Row,
+};
+
+use async_graphql::{
+  SimpleObject,
+  InputObject,
+};
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
@@ -459,12 +471,69 @@ pub struct <#=tableUP#>Input {
     if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
+  #[graphql(
+    validator(
+      list,
+      min_length = 22,
+      max_length = 22,<#
+      for (let j = 0; j < opts.validators.length; j++) {
+        const validator = opts.validators[j];
+      #><#
+        if (validator.max_items != null) {
+      #>
+      max_items = <#=validator.max_items#>,<#
+        } else if (validator.min_items != null) {
+      #>
+      min_items = <#=validator.min_items#>,<#
+        }
+      #><#
+      }
+      #>
+    )
+  )]
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#>
+  #[graphql(
+    validator(
+      list,
+      min_length = 22,
+      max_length = 22,<#
+      for (let j = 0; j < opts.validators.length; j++) {
+        const validator = opts.validators[j];
+      #><#
+        if (validator.max_items != null) {
+      #>
+      max_items = <#=validator.max_items#>,<#
+        } else if (validator.min_items != null) {
+      #>
+      min_items = <#=validator.min_items#>,<#
+        }
+      #><#
+      }
+      #>
+    )
+  )]
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#>
+  #[graphql(
+    validator(<#
+      for (let j = 0; j < opts.validators.length; j++) {
+        const validator = opts.validators[j];
+      #><#
+        if (validator.chars_max_length != null) {
+      #>
+      chars_max_length = <#=validator.chars_max_length#>,<#
+        } else if (validator.chars_min_length != null) {
+      #>
+      chars_min_length = <#=validator.chars_min_length#>,<#
+        }
+      #><#
+      }
+      #>
+    )
+  )]
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<String>,<#
@@ -476,7 +545,49 @@ pub struct <#=tableUP#>Input {
   pub <#=column_name#>_lbl: Option<String>,<#
   } else {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (opts.validators && opts.validators.length > 0) {
+  #>
+  #[graphql(
+    validator(<#
+      for (let j = 0; j < opts.validators.length; j++) {
+        const validator = opts.validators[j];
+      #><#
+        if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>
+      maximum = <#=validator.maximum#>,<#
+        } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>
+      minimum = <#=validator.minimum#>,<#
+        } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>
+      multiple_of = <#=validator.multiple_of#>,<#
+        } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      chars_max_length = <#=validator.chars_max_length#>,<#
+        } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      chars_min_length = <#=validator.chars_min_length#>,<#
+        } else if (validator.email && data_type === "varchar") {
+      #>
+      email,<#
+        } else if (validator.url && data_type === "varchar") {
+      #>
+      url,<#
+        } else if (validator.ip && data_type === "varchar") {
+      #>
+      ip,<#
+        } else if (validator.regex && data_type === "varchar") {
+      #>
+      regex = <#=validator.regex#>,<#
+        }
+      #><#
+      }
+      #>
+    )
+  )]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
   }
   #><#
