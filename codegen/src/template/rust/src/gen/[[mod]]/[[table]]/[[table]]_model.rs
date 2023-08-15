@@ -470,7 +470,9 @@ pub struct <#=tableUP#>Input {
   #><#
     if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (opts.validators && opts.validators.length > 0) {
+  #>
   #[graphql(
     validator(
       list,
@@ -490,9 +492,13 @@ pub struct <#=tableUP#>Input {
       }
       #>
     )
-  )]
+  )]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (opts.validators && opts.validators.length > 0) {
+  #>
   #[graphql(
     validator(
       list,
@@ -512,11 +518,15 @@ pub struct <#=tableUP#>Input {
       }
       #>
     )
-  )]
+  )]<#
+  }
+  #>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (opts.validators && opts.validators.length > 0) {
+  #>
   #[graphql(
     validator(<#
       for (let j = 0; j < opts.validators.length; j++) {
@@ -533,7 +543,9 @@ pub struct <#=tableUP#>Input {
       }
       #>
     )
-  )]
+  )]<#
+  }
+  #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<String>,<#
