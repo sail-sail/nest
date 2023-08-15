@@ -255,9 +255,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {
@@ -266,10 +266,10 @@ import {
   updateById,
 } from "./Api";
 
-import {
-  type UsrInput,
-  type OrgModel,
-  type RoleModel,
+import type {
+  UsrInput,
+  OrgModel,
+  RoleModel,
 } from "#/types";
 
 import {

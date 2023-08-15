@@ -665,12 +665,12 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type MenuModel,
-  type MenuInput,
-  type MenuSearch,
-  type TenantModel,
-  type UsrModel,
+import type {
+  MenuModel,
+  MenuInput,
+  MenuSearch,
+  TenantModel,
+  UsrModel,
 } from "#/types";
 
 import {

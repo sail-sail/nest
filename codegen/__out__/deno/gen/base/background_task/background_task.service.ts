@@ -1,16 +1,16 @@
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type BackgroundTaskInput,
-  type BackgroundTaskModel,
-  type BackgroundTaskSearch,
+import type {
+  BackgroundTaskInput,
+  BackgroundTaskModel,
+  BackgroundTaskSearch,
 } from "./background_task.model.ts";
 
 import * as background_taskDao from "./background_task.dao.ts";

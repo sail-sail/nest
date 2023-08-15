@@ -180,9 +180,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {
@@ -192,9 +192,9 @@ import {
   updateById,
 } from "./Api";
 
-import {
-  type TenantInput,
-  type DomainModel,
+import type {
+  TenantInput,
+  DomainModel,
 } from "#/types";
 
 import {

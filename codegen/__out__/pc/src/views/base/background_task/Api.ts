@@ -1,13 +1,14 @@
-import {
-  UniqueType,
-  type Query,
-  type Mutation,
-  type PageInput,
-  type BackgroundTaskSearch,
+
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+  BackgroundTaskSearch,
 } from "#/types";
 
-import {
-  type UsrSearch,
+import type {
+  UsrSearch,
 } from "#/types";
 
 /**

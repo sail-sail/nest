@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type BackgroundTaskInput as BackgroundTaskInputType,
-  type BackgroundTaskModel as BackgroundTaskModelType,
-  type BackgroundTaskSearch as BackgroundTaskSearchType,
+import type {
+  BackgroundTaskInput as BackgroundTaskInputType,
+  BackgroundTaskModel as BackgroundTaskModelType,
+  BackgroundTaskSearch as BackgroundTaskSearchType,
 } from "/gen/types.ts";
 
 export interface BackgroundTaskSearch extends BackgroundTaskSearchType {

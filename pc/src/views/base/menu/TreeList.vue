@@ -77,13 +77,16 @@
 <script lang="ts" setup>
 import List from "./List.vue";
 
-import {
-  findTree,
-  type MenuModelTree,
+import type {
+  MenuModelTree,
 } from "./Api";
 
 import {
-  type TreeNodeData,
+  findTree,
+} from "./Api";
+
+import type {
+  TreeNodeData,
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({

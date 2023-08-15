@@ -1,15 +1,15 @@
 
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type I18Ninput,
-  type I18Nmodel,
-  type I18Nsearch,
+import type {
+  I18Ninput,
+  I18Nmodel,
+  I18Nsearch,
 } from "./i18n.model.ts";
 
 import * as i18nDao from "./i18n.dao.ts";
