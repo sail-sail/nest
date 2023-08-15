@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type DomainInput as DomainInputType,
-  type DomainModel as DomainModelType,
-  type DomainSearch as DomainSearchType,
+import type {
+  DomainInput as DomainInputType,
+  DomainModel as DomainModelType,
+  DomainSearch as DomainSearchType,
 } from "/gen/types.ts";
 
 export interface DomainSearch extends DomainSearchType {

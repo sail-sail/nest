@@ -10,8 +10,8 @@ import * as usrDaoGen from "/gen/base/usr/usr.dao.ts";
 
 import * as orgDaoGen from "/gen/base/org/org.dao.ts";
 
-import {
-  type MutationLoginArgs,
+import type {
+  MutationLoginArgs,
 } from "/gen/types.ts";
 
 import {
@@ -20,19 +20,21 @@ import {
 
 /**
  * 登录获得 authorization
- * @param {MutationLoginArgs["username"]} username 用户名
- * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
- * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
- * @param {MutationLoginArgs["org_id"]} org_id 组织id
- * @param {MutationLoginArgs["lang"]} lang 语言编码
+ * @param {MutationLoginArgs["input"]} input 登录信息
+ *  username 用户名
+ *  password 密码,传递进来的密码已经被前端md5加密过一次
+ *  tenant_id 租户id
+ *  org_id 组织id
+ *  lang 语言编码
  */
 export async function login(
-  username: MutationLoginArgs["username"],
-  password: MutationLoginArgs["password"],
-  tenant_id: MutationLoginArgs["tenant_id"],
-  org_id: MutationLoginArgs["org_id"],
-  lang: MutationLoginArgs["lang"],
+  input: MutationLoginArgs["input"],
 ) {
+  const username = input.username;
+  const password = input.password;
+  const tenant_id = input.tenant_id;
+  let org_id = input.org_id;
+  const lang = input.lang;
   if (isEmpty(username) || isEmpty(password)) {
     throw await ns("用户名或密码不能为空");
   }

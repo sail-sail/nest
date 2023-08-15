@@ -55,22 +55,22 @@ export async function getLoginLangs(
 }
 
 export async function login(
-  model: MutationLoginArgs,
+  input: MutationLoginArgs["input"],
   opt?: GqlOpt,
 ) {
   const res: {
     login: Mutation["login"],
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($username: String!, $password: String!, $tenant_id: String!, $org_id: String, $lang: String!) {
-        login(username: $username, password: $password, tenant_id: $tenant_id, org_id: $org_id, lang: $lang) {
+      mutation($input: LoginInput!) {
+        login(input: $input) {
           authorization
           org_id
         }
       }
     `,
     variables: {
-      ...model,
+      input,
     },
   }, opt);
   const data = res.login;

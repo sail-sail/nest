@@ -592,11 +592,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type DomainModel,
-  type DomainInput,
-  type DomainSearch,
-  type UsrModel,
+import type {
+  DomainModel,
+  DomainInput,
+  DomainSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({

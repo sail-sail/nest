@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type OptionsInput as OptionsInputType,
-  type OptionsModel as OptionsModelType,
-  type OptionsSearch as OptionsSearchType,
+import type {
+  OptionsInput as OptionsInputType,
+  OptionsModel as OptionsModelType,
+  OptionsSearch as OptionsSearchType,
 } from "/gen/types.ts";
 
 export interface OptionsSearch extends OptionsSearchType {

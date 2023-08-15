@@ -1,15 +1,15 @@
 
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type PermitInput,
-  type PermitModel,
-  type PermitSearch,
+import type {
+  PermitInput,
+  PermitModel,
+  PermitSearch,
 } from "./permit.model.ts";
 
 import * as permitDao from "./permit.dao.ts";

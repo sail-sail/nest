@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UsrInput as UsrInputType,
-  type UsrModel as UsrModelType,
-  type UsrSearch as UsrSearchType,
+import type {
+  UsrInput as UsrInputType,
+  UsrModel as UsrModelType,
+  UsrSearch as UsrSearchType,
 } from "/gen/types.ts";
 
 export interface UsrSearch extends UsrSearchType {

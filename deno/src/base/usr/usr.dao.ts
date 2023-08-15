@@ -7,20 +7,16 @@ import {
 
 import * as authDao from "/lib/auth/auth.dao.ts";
 
-import {
-  type MutationLoginArgs,
-} from "/gen/types.ts";
-
 /**
  * 返回当前登录的用户
- * @param {MutationLoginArgs["username"]} username 用户名
+ * @param {string} username 用户名
  * @param {MutationLoginArgs["password"]} password 密码,传递进来的密码已经被前端md5加密过一次
  * @param {MutationLoginArgs["tenant_id"]} tenant_id 租户id
  */
 export async function findLoginUsr(
-  username: MutationLoginArgs["username"],
-  password: MutationLoginArgs["password"],
-  tenant_id: MutationLoginArgs["tenant_id"],
+  username: string,
+  password: string,
+  tenant_id: string,
 ) {
   const args = new QueryArgs();
   const sql = /*sql*/`

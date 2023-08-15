@@ -583,11 +583,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type DeptModel,
-  type DeptInput,
-  type DeptSearch,
-  type UsrModel,
+import type {
+  DeptModel,
+  DeptInput,
+  DeptSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({

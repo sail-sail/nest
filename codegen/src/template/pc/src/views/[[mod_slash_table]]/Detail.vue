@@ -481,9 +481,9 @@ for (let i = 0; i < columns.length; i++) {
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {<#
@@ -505,8 +505,8 @@ import {<#
   #>
 } from "./Api";
 
-import {
-  type <#=inputName#>,<#
+import type {
+  <#=inputName#>,<#
   const foreignTableArr = [];
   for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -534,7 +534,7 @@ import {
     continue;
   }
 #>
-  type <#=Foreign_Table_Up#>Model,<#
+  <#=Foreign_Table_Up#>Model,<#
 }
 #>
 } from "#/types";

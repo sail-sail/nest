@@ -565,11 +565,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type LangModel,
-  type LangInput,
-  type LangSearch,
-  type UsrModel,
+import type {
+  LangModel,
+  LangInput,
+  LangSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({

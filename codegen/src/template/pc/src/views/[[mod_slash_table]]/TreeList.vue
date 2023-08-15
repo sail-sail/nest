@@ -102,13 +102,16 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 <script lang="ts" setup>
 import List from "./List.vue";
 
-import {
-  findTree,
-  type <#=modelNameTree#>,
+import type {
+  <#=modelNameTree#>,
 } from "./Api";
 
 import {
-  type TreeNodeData,
+  findTree,
+} from "./Api";
+
+import type {
+  TreeNodeData,
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({

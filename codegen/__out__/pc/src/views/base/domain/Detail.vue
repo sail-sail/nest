@@ -173,9 +173,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {
@@ -185,8 +185,8 @@ import {
   updateById,
 } from "./Api";
 
-import {
-  type DomainInput,
+import type {
+  DomainInput,
 } from "#/types";
 
 import {

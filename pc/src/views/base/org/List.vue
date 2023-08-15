@@ -574,11 +574,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type OrgModel,
-  type OrgInput,
-  type OrgSearch,
-  type UsrModel,
+import type {
+  OrgModel,
+  OrgInput,
+  OrgSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({

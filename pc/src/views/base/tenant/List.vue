@@ -642,13 +642,13 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type TenantModel,
-  type TenantInput,
-  type TenantSearch,
-  type DomainModel,
-  type MenuModel,
-  type UsrModel,
+import type {
+  TenantModel,
+  TenantInput,
+  TenantSearch,
+  DomainModel,
+  MenuModel,
+  UsrModel,
 } from "#/types";
 
 import {

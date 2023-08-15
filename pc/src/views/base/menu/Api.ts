@@ -1,16 +1,17 @@
-import {
-  UniqueType,
-  type Query,
-  type Mutation,
-  type PageInput,
-  type MenuSearch,
-  type MenuInput,
-  type MenuModel,
+
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+  MenuSearch,
+  MenuInput,
+  MenuModel,
 } from "#/types";
 
-import {
-  type TenantSearch,
-  type UsrSearch,
+import type {
+  TenantSearch,
+  UsrSearch,
 } from "#/types";
 
 import {

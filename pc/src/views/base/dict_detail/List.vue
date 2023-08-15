@@ -594,11 +594,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type DictDetailModel,
-  type DictDetailInput,
-  type DictDetailSearch,
-  type DictModel,
+import type {
+  DictDetailModel,
+  DictDetailInput,
+  DictDetailSearch,
+  DictModel,
 } from "#/types";
 
 import {

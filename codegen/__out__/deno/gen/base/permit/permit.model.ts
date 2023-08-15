@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type PermitInput as PermitInputType,
-  type PermitModel as PermitModelType,
-  type PermitSearch as PermitSearchType,
+import type {
+  PermitInput as PermitInputType,
+  PermitModel as PermitModelType,
+  PermitSearch as PermitSearchType,
 } from "/gen/types.ts";
 
 export interface PermitSearch extends PermitSearchType {

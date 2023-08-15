@@ -21,9 +21,17 @@ defineGraphql(usrResolver, /* GraphQL */`
     authorization: String!
   }
   
+  input LoginInput {
+    username: String!
+    password: String!
+    tenant_id: String!
+    org_id: String
+    lang: String!
+  }
+  
   type Mutation {
     "登录"
-    login(username: String!, password: String!, tenant_id: String!, org_id: String, lang: String!): LoginModel!
+    login(input: LoginInput!): LoginModel!
     selectLang(lang: String!): String!
   }
   

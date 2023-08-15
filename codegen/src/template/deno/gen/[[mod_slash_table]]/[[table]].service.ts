@@ -41,16 +41,16 @@ import * as authDao from "/lib/auth/auth.dao.ts";<#
 }
 #>
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type <#=inputName#>,
-  type <#=modelName#>,
-  type <#=searchName#>,
+import type {
+  <#=inputName#>,
+  <#=modelName#>,
+  <#=searchName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>

@@ -1,15 +1,15 @@
 
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type LangInput,
-  type LangModel,
-  type LangSearch,
+import type {
+  LangInput,
+  LangModel,
+  LangSearch,
 } from "./lang.model.ts";
 
 import * as langDao from "./lang.dao.ts";

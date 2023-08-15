@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type RoleInput as RoleInputType,
-  type RoleModel as RoleModelType,
-  type RoleSearch as RoleSearchType,
+import type {
+  RoleInput as RoleInputType,
+  RoleModel as RoleModelType,
+  RoleSearch as RoleSearchType,
 } from "/gen/types.ts";
 
 export interface RoleSearch extends RoleSearchType {

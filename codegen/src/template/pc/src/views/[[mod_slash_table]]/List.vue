@@ -1233,14 +1233,14 @@ import {
   #>
 } from "./Api";
 
-import {
-  type <#=modelName#>,<#
+import type {
+  <#=modelName#>,<#
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
-  type <#=inputName#>,<#
+  <#=inputName#>,<#
   }
   #>
-  type <#=searchName#>,<#
+  <#=searchName#>,<#
 {
 const foreignTableUpArr = [ ];
 for (let i = 0; i < columns.length; i++) {
@@ -1260,7 +1260,7 @@ for (let i = 0; i < columns.length; i++) {
   }).join("");
   foreignTableUpArr.push(Foreign_Table_Up);
 #>
-  type <#=Foreign_Table_Up#>Model,<#
+  <#=Foreign_Table_Up#>Model,<#
 }
 #><#
 }

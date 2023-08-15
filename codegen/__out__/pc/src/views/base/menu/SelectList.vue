@@ -46,9 +46,9 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {
@@ -57,8 +57,8 @@ import {
 
 import TreeList from "./TreeList.vue";
 
-import {
-  type MenuModel,
+import type {
+  MenuModel,
 } from "#/types";
 
 const emit = defineEmits<{

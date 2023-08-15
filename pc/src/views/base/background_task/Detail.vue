@@ -220,17 +220,17 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {
   findById,
 } from "./Api";
 
-import {
-  type BackgroundTaskInput,
+import type {
+  BackgroundTaskInput,
 } from "#/types";
 
 import {

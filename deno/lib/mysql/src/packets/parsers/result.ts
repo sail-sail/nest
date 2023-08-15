@@ -87,7 +87,10 @@ export function parseRow(reader: BufferReader, fields: FieldInfo[], config: Clie
 
 /** @ignore */
 function convertType(field: FieldInfo, val: string, config: ClientConfig): any {
-  const { fieldType, fieldLen } = field;
+  const { fieldType, fieldLen, fieldFlag } = field;
+  // if (fieldType === MYSQL_TYPE_TINY && fieldLen === 1 && fieldFlag === 33) {
+  //   return parseInt(val) > 0;
+  // }
   switch (fieldType) {
     case MYSQL_TYPE_DECIMAL:
     case MYSQL_TYPE_DOUBLE:

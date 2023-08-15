@@ -2,16 +2,16 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DomainInput,
-  type DomainModel,
-  type DomainSearch,
+import type {
+  DomainInput,
+  DomainModel,
+  DomainSearch,
 } from "./domain.model.ts";
 
 import * as domainDao from "./domain.dao.ts";

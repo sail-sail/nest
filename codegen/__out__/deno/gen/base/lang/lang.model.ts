@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type LangInput as LangInputType,
-  type LangModel as LangModelType,
-  type LangSearch as LangSearchType,
+import type {
+  LangInput as LangInputType,
+  LangModel as LangModelType,
+  LangSearch as LangSearchType,
 } from "/gen/types.ts";
 
 export interface LangSearch extends LangSearchType {

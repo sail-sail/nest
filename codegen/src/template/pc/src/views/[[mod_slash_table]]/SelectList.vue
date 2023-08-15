@@ -81,9 +81,9 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </template>
 
 <script lang="ts" setup>
-import {
-  type MaybeRefOrGetter,
-  type WatchStopHandle,
+import type {
+  MaybeRefOrGetter,
+  WatchStopHandle,
 } from "vue";
 
 import {
@@ -100,8 +100,8 @@ import TreeList from "./TreeList.vue";<#
 }
 #>
 
-import {
-  type <#=modelName#>,
+import type {
+  <#=modelName#>,
 } from "#/types";
 
 const emit = defineEmits<{

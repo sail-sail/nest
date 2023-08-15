@@ -579,13 +579,13 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type I18Nmodel,
-  type I18Ninput,
-  type I18Nsearch,
-  type LangModel,
-  type MenuModel,
-  type UsrModel,
+import type {
+  I18Nmodel,
+  I18Ninput,
+  I18Nsearch,
+  LangModel,
+  MenuModel,
+  UsrModel,
 } from "#/types";
 
 import {

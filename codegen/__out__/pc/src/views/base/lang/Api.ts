@@ -1,14 +1,15 @@
-import {
-  UniqueType,
-  type Query,
-  type Mutation,
-  type PageInput,
-  type LangSearch,
-  type LangInput,
+
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+  LangSearch,
+  LangInput,
 } from "#/types";
 
-import {
-  type UsrSearch,
+import type {
+  UsrSearch,
 } from "#/types";
 
 /**

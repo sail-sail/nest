@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type DeptInput as DeptInputType,
-  type DeptModel as DeptModelType,
-  type DeptSearch as DeptSearchType,
+import type {
+  DeptInput as DeptInputType,
+  DeptModel as DeptModelType,
+  DeptSearch as DeptSearchType,
 } from "/gen/types.ts";
 
 export interface DeptSearch extends DeptSearchType {

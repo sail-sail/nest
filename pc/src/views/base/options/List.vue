@@ -622,11 +622,11 @@ import {
   importModels,
 } from "./Api";
 
-import {
-  type OptionsModel,
-  type OptionsInput,
-  type OptionsSearch,
-  type UsrModel,
+import type {
+  OptionsModel,
+  OptionsInput,
+  OptionsSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({

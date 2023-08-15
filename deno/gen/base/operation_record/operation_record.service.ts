@@ -1,15 +1,15 @@
 
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type OperationRecordInput,
-  type OperationRecordModel,
-  type OperationRecordSearch,
+import type {
+  OperationRecordInput,
+  OperationRecordModel,
+  OperationRecordSearch,
 } from "./operation_record.model.ts";
 
 import * as operation_recordDao from "./operation_record.dao.ts";

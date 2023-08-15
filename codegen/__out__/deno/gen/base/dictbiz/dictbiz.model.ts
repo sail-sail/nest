@@ -1,11 +1,11 @@
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type DictbizInput as DictbizInputType,
-  type DictbizModel as DictbizModelType,
-  type DictbizSearch as DictbizSearchType,
+import type {
+  DictbizInput as DictbizInputType,
+  DictbizModel as DictbizModelType,
+  DictbizSearch as DictbizSearchType,
 } from "/gen/types.ts";
 
 export interface DictbizSearch extends DictbizSearchType {

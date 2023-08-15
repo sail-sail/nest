@@ -1,15 +1,16 @@
-import {
-  UniqueType,
-  type Query,
-  type Mutation,
-  type PageInput,
-  type DeptSearch,
-  type DeptInput,
-  type DeptModel,
+
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+  DeptSearch,
+  DeptInput,
+  DeptModel,
 } from "#/types";
 
-import {
-  type UsrSearch,
+import type {
+  UsrSearch,
 } from "#/types";
 
 import {

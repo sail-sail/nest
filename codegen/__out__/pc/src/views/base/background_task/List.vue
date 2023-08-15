@@ -512,10 +512,10 @@ import {
   forceDeleteByIds,
 } from "./Api";
 
-import {
-  type BackgroundTaskModel,
-  type BackgroundTaskSearch,
-  type UsrModel,
+import type {
+  BackgroundTaskModel,
+  BackgroundTaskSearch,
+  UsrModel,
 } from "#/types";
 
 defineOptions({
