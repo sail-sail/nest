@@ -1,4 +1,3 @@
-use tracing::instrument;
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
@@ -10,6 +9,7 @@ use crate::common::context::{
 use super::usr_resolver;
 
 use super::usr_model::{
+  LoginInput,
   Login,
   GetLoginInfo,
 };
@@ -21,32 +21,22 @@ pub struct UsrMutation;
 impl UsrMutation {
   
   /// 登录, 获得token
-  #[instrument(skip(self, ctx))]
   async fn login<'a>(
     &self,
     ctx: &Context<'a>,
-    username: String,
-    password: String,
-    tenant_id: String,
-    org_id: Option<String>,
-    lang: String,
+    input: LoginInput,
   ) -> Result<Login> {
     let mut ctx = CtxImpl::new(ctx);
     
     let res = usr_resolver::login(
       &mut ctx,
-      username,
-      password,
-      tenant_id,
-      org_id,
-      lang,
+      input
     ).await?;
     
     Ok(res)
   }
   
   /// 选择语言
-  #[instrument(skip(self, ctx))]
   async fn select_lang<'a>(
     &self,
     ctx: &Context<'a>,
@@ -71,7 +61,6 @@ pub struct UsrQuery;
 impl UsrQuery {
   
   /// 获取当前登录用户信息
-  #[instrument(skip(self, ctx))]
   async fn get_login_info<'a>(
     &self,
     ctx: &Context<'a>,
