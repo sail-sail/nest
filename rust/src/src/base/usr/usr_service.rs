@@ -1,4 +1,3 @@
-use tracing::instrument;
 use anyhow::Result;
 use crate::common::context::Ctx;
 
@@ -15,20 +14,23 @@ use crate::gen::base::usr::usr_dao;
 use crate::gen::base::usr::usr_model::UsrSearch;
 
 use super::usr_model::{
+  LoginInput,
   GetLoginInfo,
   GetLoginInfoorgIdModel,
 };
 
 /// 登录, 获得token
-#[instrument(skip(ctx))]
 pub async fn login<'a>(
   ctx: &mut impl Ctx<'a>,
-  username: String,
-  password: String,
-  tenant_id: String,
-  mut org_id: Option<String>,
-  lang: String,
+  input: LoginInput,
 ) -> Result<Login> {
+  let LoginInput {
+    username,
+    password,
+    tenant_id,
+    mut org_id,
+    lang,
+  } = input;
   if username.is_empty() || password.is_empty() {
     return Err(anyhow::anyhow!("用户名或密码不能为空"));
   }
@@ -94,7 +96,6 @@ pub async fn login<'a>(
 }
 
 /// 选择语言
-#[instrument(skip(ctx))]
 pub async fn select_lang<'a>(
   ctx: &mut impl Ctx<'a>,
   lang: String,
