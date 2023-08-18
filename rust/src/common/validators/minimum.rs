@@ -6,6 +6,7 @@ use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao;
 
+#[allow(dead_code)]
 pub async fn minimum<T>(
   ctx: &mut impl Ctx<'_>,
   value: Option<T>,

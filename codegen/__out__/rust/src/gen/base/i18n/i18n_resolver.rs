@@ -91,6 +91,8 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
+  input.validate(ctx).await?;
+  
   let id = i18n_service::create(
     ctx,
     input,
@@ -114,6 +116,8 @@ pub async fn update_by_id<'a>(
     "/base/i18n".to_owned(),
     "edit".to_owned(),
   ).await?;
+  
+  input.validate(ctx).await?;
   
   let res = i18n_service::update_by_id(
     ctx,

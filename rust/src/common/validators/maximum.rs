@@ -6,6 +6,7 @@ use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao;
 
+#[allow(dead_code)]
 pub async fn maximum<T>(
   ctx: &mut impl Ctx<'_>,
   value: Option<T>,
@@ -13,7 +14,7 @@ pub async fn maximum<T>(
   label: impl AsRef<str>,
 ) -> Result<()>
 where
-  T: PartialOrd + Display + Copy + 'static,
+  T: PartialOrd + Display + Copy,
 {
   
   if value.is_none() {

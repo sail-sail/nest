@@ -91,6 +91,8 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
+  input.validate(ctx).await?;
+  
   let id = operation_record_service::create(
     ctx,
     input,
@@ -133,6 +135,8 @@ pub async fn update_by_id<'a>(
     "/base/operation_record".to_owned(),
     "edit".to_owned(),
   ).await?;
+  
+  input.validate(ctx).await?;
   
   let res = operation_record_service::update_by_id(
     ctx,
