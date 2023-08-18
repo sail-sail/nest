@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuModel {
@@ -159,6 +162,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuFieldComment {
+  /// ID
+  pub id: String,
   /// 类型
   pub r#type: String,
   /// 类型
@@ -260,6 +265,7 @@ pub struct MenuSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct MenuInput {
+  /// ID
   pub id: Option<String>,
   /// 类型
   pub r#type: Option<String>,
@@ -307,6 +313,136 @@ pub struct MenuInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl MenuInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::menu_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 类型
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.r#type.as_ref(),
+      10,
+      &field_comments.r#type,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.r#type.as_ref(),
+      10,
+      &field_comments.r#type,
+    ).await?;
+    
+    // 类型
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.r#type.as_ref(),
+      10,
+      &field_comments.r#type,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.r#type.as_ref(),
+      10,
+      &field_comments.r#type,
+    ).await?;
+    
+    // 父菜单
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.parent_id.as_ref(),
+      22,
+      &field_comments.parent_id,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.parent_id.as_ref(),
+      22,
+      &field_comments.parent_id,
+    ).await?;
+    
+    // 父菜单
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.parent_id.as_ref(),
+      22,
+      &field_comments.parent_id,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.parent_id.as_ref(),
+      22,
+      &field_comments.parent_id,
+    ).await?;
+    
+    // 创建人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    
+    // 创建人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    
+    // 更新人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    
+    // 更新人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<MenuInput> for MenuSearch {

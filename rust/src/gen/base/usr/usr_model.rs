@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
@@ -117,6 +120,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrFieldComment {
+  /// ID
+  pub id: String,
   /// 头像
   pub img: String,
   /// 名称
@@ -196,6 +201,7 @@ pub struct UsrSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
+  /// ID
   pub id: Option<String>,
   /// 头像
   pub img: Option<String>,
@@ -227,6 +233,32 @@ pub struct UsrInput {
   pub role_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
+}
+
+impl UsrInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::usr_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 默认组织
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.default_org_id.as_ref(),
+      22,
+      &field_comments.default_org_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<UsrInput> for UsrSearch {

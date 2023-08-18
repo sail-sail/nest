@@ -445,17 +445,29 @@ pub async fn find_count<'a>(
   Ok(total)
 }
 
+/// 获取路由地址
+pub fn get_route_path() -> String {
+  "/base/permit".to_owned()
+}
+
+/// 获取当前路由的国际化
+pub fn get_n_route() -> i18n_dao::NRoute {
+  let n_route = i18n_dao::NRoute {
+    route_path: get_route_path().into(),
+  };
+  n_route
+}
+
 /// 获取字段对应的国家化后的名称
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<PermitFieldComment> {
   
-  let n_route = i18n_dao::NRoute {
-    route_path: "/base/permit".to_owned().into(),
-  };
+  let n_route = get_n_route();
   
   let field_comments = PermitFieldComment {
+    id: n_route.n(ctx, "ID".to_owned(), None).await?,
     role_id: n_route.n(ctx, "角色".to_owned(), None).await?,
     role_id_lbl: n_route.n(ctx, "角色".to_owned(), None).await?,
     menu_id: n_route.n(ctx, "菜单".to_owned(), None).await?,

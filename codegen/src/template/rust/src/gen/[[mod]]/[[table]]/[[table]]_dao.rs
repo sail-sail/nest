@@ -725,22 +725,32 @@ pub async fn find_count<'a>(
   Ok(total)
 }
 
+/// 获取路由地址
+pub fn get_route_path() -> String {
+  "/<#=mod#>/<#=table#>".to_owned()
+}
+
+/// 获取当前路由的国际化
+pub fn get_n_route() -> i18n_dao::NRoute {
+  let n_route = i18n_dao::NRoute {
+    route_path: get_route_path().into(),
+  };
+  n_route
+}
+
 /// 获取字段对应的国家化后的名称
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {
   
-  let n_route = i18n_dao::NRoute {
-    route_path: "/<#=mod#>/<#=table#>".to_owned().into(),
-  };
+  let n_route = get_n_route();
   
   let field_comments = <#=tableUP#>FieldComment {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = rustKeyEscape(column.COLUMN_NAME);
-      if (column_name === "id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";

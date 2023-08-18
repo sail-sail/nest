@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizDetailModel {
@@ -99,6 +102,8 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizDetailFieldComment {
+  /// ID
+  pub id: String,
   /// 业务字典
   pub dictbiz_id: String,
   /// 业务字典
@@ -162,6 +167,7 @@ pub struct DictbizDetailSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizDetailInput {
+  /// ID
   pub id: Option<String>,
   /// 业务字典
   pub dictbiz_id: Option<String>,
@@ -187,6 +193,32 @@ pub struct DictbizDetailInput {
   pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
+}
+
+impl DictbizDetailInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::dictbiz_detail_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 业务字典
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.dictbiz_id.as_ref(),
+      22,
+      &field_comments.dictbiz_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<DictbizDetailInput> for DictbizDetailSearch {
