@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizModel {
@@ -142,6 +145,8 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizFieldComment {
+  /// ID
+  pub id: String,
   /// 编码
   pub code: String,
   /// 名称
@@ -231,6 +236,7 @@ pub struct DictbizSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizInput {
+  /// ID
   pub id: Option<String>,
   /// 编码
   pub code: Option<String>,
@@ -272,6 +278,48 @@ pub struct DictbizInput {
   pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
+}
+
+impl DictbizInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::dictbiz_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 数据类型
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.r#type.as_ref(),
+      22,
+      &field_comments.r#type,
+    ).await?;
+    
+    // 创建人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    
+    // 更新人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<DictbizInput> for DictbizSearch {

@@ -18,6 +18,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
@@ -283,7 +286,6 @@ pub struct <#=tableUP#>FieldComment {<#
     if (column_comment.indexOf("[") !== -1) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
-    if (column_name === 'id') continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const foreignKey = column.foreignKey;
@@ -415,6 +417,7 @@ pub struct <#=tableUP#>Search {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {
+  /// ID
   pub id: Option<String>,<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -470,82 +473,13 @@ pub struct <#=tableUP#>Input {
   #><#
     if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
   #>
-  /// <#=column_comment#><#
-  if (opts.validators && opts.validators.length > 0) {
-  #>
-  #[graphql(
-    validator(
-      list,
-      min_length = 22,
-      max_length = 22,<#
-      for (let j = 0; j < opts.validators.length; j++) {
-        const validator = opts.validators[j];
-      #><#
-        if (validator.max_items != null) {
-      #>
-      max_items = <#=validator.max_items#>,<#
-        } else if (validator.min_items != null) {
-      #>
-      min_items = <#=validator.min_items#>,<#
-        }
-      #><#
-      }
-      #>
-    )
-  )]<#
-  }
-  #>
+  /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
-  /// <#=column_comment#><#
-  if (opts.validators && opts.validators.length > 0) {
-  #>
-  #[graphql(
-    validator(
-      list,
-      min_length = 22,
-      max_length = 22,<#
-      for (let j = 0; j < opts.validators.length; j++) {
-        const validator = opts.validators[j];
-      #><#
-        if (validator.max_items != null) {
-      #>
-      max_items = <#=validator.max_items#>,<#
-        } else if (validator.min_items != null) {
-      #>
-      min_items = <#=validator.min_items#>,<#
-        }
-      #><#
-      }
-      #>
-    )
-  )]<#
-  }
-  #>
+  /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<Vec<String>>,<#
   } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
   #>
-  /// <#=column_comment#><#
-  if (opts.validators && opts.validators.length > 0) {
-  #>
-  #[graphql(
-    validator(<#
-      for (let j = 0; j < opts.validators.length; j++) {
-        const validator = opts.validators[j];
-      #><#
-        if (validator.chars_max_length != null) {
-      #>
-      chars_max_length = <#=validator.chars_max_length#>,<#
-        } else if (validator.chars_min_length != null) {
-      #>
-      chars_min_length = <#=validator.chars_min_length#>,<#
-        }
-      #><#
-      }
-      #>
-    )
-  )]<#
-  }
-  #>
+  /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#>
   pub <#=column_name#>_lbl: Option<String>,<#
@@ -557,54 +491,209 @@ pub struct <#=tableUP#>Input {
   pub <#=column_name#>_lbl: Option<String>,<#
   } else {
   #>
-  /// <#=column_comment#><#
-  if (opts.validators && opts.validators.length > 0) {
-  #>
-  #[graphql(
-    validator(<#
-      for (let j = 0; j < opts.validators.length; j++) {
-        const validator = opts.validators[j];
-      #><#
-        if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-      #>
-      maximum = <#=validator.maximum#>,<#
-        } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-      #>
-      minimum = <#=validator.minimum#>,<#
-        } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-      #>
-      multiple_of = <#=validator.multiple_of#>,<#
-        } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
-      #>
-      chars_max_length = <#=validator.chars_max_length#>,<#
-        } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
-      #>
-      chars_min_length = <#=validator.chars_min_length#>,<#
-        } else if (validator.email && data_type === "varchar") {
-      #>
-      email,<#
-        } else if (validator.url && data_type === "varchar") {
-      #>
-      url,<#
-        } else if (validator.ip && data_type === "varchar") {
-      #>
-      ip,<#
-        } else if (validator.regex && data_type === "varchar") {
-      #>
-      regex = <#=validator.regex#>,<#
-        }
-      #><#
-      }
-      #>
-    )
-  )]<#
-  }
-  #>
+  /// <#=column_comment#>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
   }
   #><#
   }
   #>
+}
+
+impl <#=tableUP#>Input {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::<#=table#>_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const validators = column.validators || [ ];
+    #><#
+      for (let j = 0; j < validators.length; j++) {
+        const validator = validators[j];
+    #><#
+        if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+    #>
+    
+    // <#=column_comment#><#
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+    #><#
+      if (validator.max_items != null) {
+    #>
+    crate::common::validators::max_items::max_items(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.max_items#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;
+    crate::common::validators::max_items::max_items(
+      ctx,
+      self.<#=column_name#>_lbl.as_ref(),
+      <#=validator.max_items#>,
+      &field_comments.<#=column_name#>_lbl,
+    ).await?;<#
+      } else if (validator.min_items != null) {
+    #>
+    crate::common::validators::min_items::min_items(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.min_items#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;
+    crate::common::validators::min_items::min_items(
+      ctx,
+      self.<#=column_name#>_lbl.as_ref(),
+      <#=validator.min_items#>,
+      &field_comments.<#=column_name#>_lbl,
+    ).await?;<#
+      }
+    #><#
+    }
+    #><#
+        } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+    #>
+    
+    // <#=column_comment#><#
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+    #><#
+      if (validator.chars_max_length != null) {
+    #>
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.chars_max_length#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.chars_min_length != null) {
+    #>
+    crate::common::validators::chars_min_length::chars_min_length(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.chars_min_length#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else {
+    #>
+    
+    // <#=column_comment#><#
+    if (validators && validators.length > 0) {
+    #><#
+    for (let j = 0; j < validators.length; j++) {
+      const validator = validators[j];
+    #><#
+      if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #>
+    crate::common::validators::maximum::maximum(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.maximum#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #>
+    crate::common::validators::minimum::minimum(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.minimum#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+    #>
+    crate::common::validators::multiple_of::multiple_of(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.multiple_of#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.chars_max_length#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+    #>
+    crate::common::validators::chars_min_length::chars_min_length(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      <#=validator.chars_min_length#>,
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.email && data_type === "varchar") {
+    #>
+    crate::common::validators::email::email(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.url && data_type === "varchar") {
+    #>
+    crate::common::validators::url::url(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.ip && data_type === "varchar") {
+    #>
+    crate::common::validators::ip::ip(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.regex && data_type === "varchar") {
+    #>
+    crate::common::validators::regex::regex(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      "<#=validator.regex#>".to_owned(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      }
+    #><#
+    }
+    #><#
+      }
+    #><#
+    }
+    #><#
+        }
+    #><#
+        }
+    #><#
+      }
+    #><#
+    }
+    #>
+    
+    Ok(())
+  }
+  
 }
 
 impl From<<#=tableUP#>Input> for <#=tableUP#>Search {

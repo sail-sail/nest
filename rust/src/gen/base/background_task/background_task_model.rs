@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
@@ -148,6 +151,8 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskFieldComment {
+  /// ID
+  pub id: String,
   /// 名称
   pub lbl: String,
   /// 状态
@@ -239,6 +244,7 @@ pub struct BackgroundTaskSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
+  /// ID
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
@@ -280,6 +286,56 @@ pub struct BackgroundTaskInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl BackgroundTaskInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::background_task_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 状态
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.state.as_ref(),
+      10,
+      &field_comments.state,
+    ).await?;
+    
+    // 类型
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.r#type.as_ref(),
+      10,
+      &field_comments.r#type,
+    ).await?;
+    
+    // 创建人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    
+    // 更新人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<BackgroundTaskInput> for BackgroundTaskSearch {

@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsModel {
@@ -143,6 +146,8 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsFieldComment {
+  /// ID
+  pub id: String,
   /// 名称
   pub lbl: String,
   /// 键
@@ -234,6 +239,7 @@ pub struct OptionsSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptionsInput {
+  /// ID
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
@@ -275,6 +281,40 @@ pub struct OptionsInput {
   pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
+}
+
+impl OptionsInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::options_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 创建人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    
+    // 更新人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<OptionsInput> for OptionsSearch {

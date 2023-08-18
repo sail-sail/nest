@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordModel {
@@ -126,6 +129,8 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordFieldComment {
+  /// ID
+  pub id: String,
   /// 模块
   pub module: String,
   /// 模块名称
@@ -217,6 +222,7 @@ pub struct OperationRecordSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordInput {
+  /// ID
   pub id: Option<String>,
   /// 模块
   pub module: Option<String>,
@@ -250,6 +256,40 @@ pub struct OperationRecordInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+}
+
+impl OperationRecordInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::operation_record_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 创建人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.create_usr_id.as_ref(),
+      22,
+      &field_comments.create_usr_id,
+    ).await?;
+    
+    // 更新人
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.update_usr_id.as_ref(),
+      22,
+      &field_comments.update_usr_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<OperationRecordInput> for OperationRecordSearch {

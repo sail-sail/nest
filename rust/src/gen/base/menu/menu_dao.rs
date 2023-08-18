@@ -532,17 +532,29 @@ pub async fn find_count<'a>(
   Ok(total)
 }
 
+/// 获取路由地址
+pub fn get_route_path() -> String {
+  "/base/menu".to_owned()
+}
+
+/// 获取当前路由的国际化
+pub fn get_n_route() -> i18n_dao::NRoute {
+  let n_route = i18n_dao::NRoute {
+    route_path: get_route_path().into(),
+  };
+  n_route
+}
+
 /// 获取字段对应的国家化后的名称
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<MenuFieldComment> {
   
-  let n_route = i18n_dao::NRoute {
-    route_path: "/base/menu".to_owned().into(),
-  };
+  let n_route = get_n_route();
   
   let field_comments = MenuFieldComment {
+    id: n_route.n(ctx, "ID".to_owned(), None).await?,
     r#type: n_route.n(ctx, "类型".to_owned(), None).await?,
     r#type_lbl: n_route.n(ctx, "类型".to_owned(), None).await?,
     parent_id: n_route.n(ctx, "父菜单".to_owned(), None).await?,

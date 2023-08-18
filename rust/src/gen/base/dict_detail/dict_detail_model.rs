@@ -14,6 +14,9 @@ use async_graphql::{
   InputObject,
 };
 
+use anyhow::Result;
+use crate::common::context::Ctx;
+
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailModel {
@@ -99,6 +102,8 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailFieldComment {
+  /// ID
+  pub id: String,
   /// 系统字典
   pub dict_id: String,
   /// 系统字典
@@ -160,6 +165,7 @@ pub struct DictDetailSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailInput {
+  /// ID
   pub id: Option<String>,
   /// 系统字典
   pub dict_id: Option<String>,
@@ -185,6 +191,32 @@ pub struct DictDetailInput {
   pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
+}
+
+impl DictDetailInput {
+  
+  /// 校验, 校验失败时抛出SrvErr异常
+  pub async fn validate(
+    &self,
+    ctx: &mut impl Ctx<'_>,
+  ) -> Result<()> {
+    
+    let field_comments = super::dict_detail_dao::get_field_comments(
+      ctx,
+      None,
+    ).await?;
+    
+    // 系统字典
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.dict_id.as_ref(),
+      22,
+      &field_comments.dict_id,
+    ).await?;
+    
+    Ok(())
+  }
+  
 }
 
 impl From<DictDetailInput> for DictDetailSearch {
