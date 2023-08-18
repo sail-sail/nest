@@ -91,6 +91,8 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
+  input.validate(ctx).await?;
+  
   let id = domain_service::create(
     ctx,
     input,
@@ -114,6 +116,8 @@ pub async fn update_by_id<'a>(
     "/base/domain".to_owned(),
     "edit".to_owned(),
   ).await?;
+  
+  input.validate(ctx).await?;
   
   let res = domain_service::update_by_id(
     ctx,

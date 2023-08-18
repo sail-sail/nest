@@ -691,6 +691,8 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  input.validate(ctx).await?;
+  
   let table = "base_background_task";
   let _method = "create";
   
@@ -913,6 +915,8 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
+  
+  input.validate(ctx).await?;
   
   input = set_id_by_lbl(
     ctx,

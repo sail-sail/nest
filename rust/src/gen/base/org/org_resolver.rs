@@ -91,6 +91,8 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
+  input.validate(ctx).await?;
+  
   let id = org_service::create(
     ctx,
     input,
@@ -133,6 +135,8 @@ pub async fn update_by_id<'a>(
     "/base/org".to_owned(),
     "edit".to_owned(),
   ).await?;
+  
+  input.validate(ctx).await?;
   
   let res = org_service::update_by_id(
     ctx,
