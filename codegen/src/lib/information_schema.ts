@@ -81,6 +81,34 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  // 校验
+  for (const record of records) {
+    if (record.COLUMN_NAME === "id") {
+      record.validators = record.validators || [ ];
+      record.validators.push({
+        chars_max_length: 22,
+        chars_min_length: 22,
+      });
+    } else if (record.foreignKey && !record.foreignKey.multiple) {
+      record.validators = record.validators || [ ];
+      record.validators.push({
+        chars_max_length: 22,
+        chars_min_length: 22,
+      });
+    } else if (record.foreignKey && record.foreignKey.multiple) {
+      record.validators = record.validators || [ ];
+      record.validators.push({
+        max_items: Math.floor(record.CHARACTER_MAXIMUM_LENGTH / 22),
+      });
+    } else if (record.DATA_TYPE === "varchar" || record.DATA_TYPE === "char") {
+      record.validators = record.validators || [ ];
+      if (record.CHARACTER_MAXIMUM_LENGTH) {
+        record.validators.push({
+          chars_max_length: record.CHARACTER_MAXIMUM_LENGTH,
+        });
+      }
+    }
+  }
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];

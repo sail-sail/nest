@@ -84,18 +84,22 @@ export async function createOptions(
   input: OptionsInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./options.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/options",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./options.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

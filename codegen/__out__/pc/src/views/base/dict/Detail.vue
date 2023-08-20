@@ -246,30 +246,50 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 编码
     code: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("编码") }`,
       },
+      {
+        type: "string",
+        len: 50,
+        message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
+      },
     ],
+    // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
+      {
+        type: "string",
+        len: 200,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
+      },
     ],
+    // 数据类型
     type: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("数据类型") }`,
       },
+      {
+        type: "string",
+        len: 22,
+        message: `${ n("数据类型") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+      },
     ],
+    // 锁定
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
+    // 启用
     is_enabled: [
       {
         required: true,

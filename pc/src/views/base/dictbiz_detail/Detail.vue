@@ -253,30 +253,45 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 业务字典
     dictbiz_id: [
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("业务字典") }`,
       },
     ],
+    // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
+      {
+        type: "string",
+        len: 255,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 255) }`,
+      },
     ],
+    // 值
     val: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("值") }`,
       },
+      {
+        type: "string",
+        len: 255,
+        message: `${ n("值") } ${ await nsAsync("长度不能超过 {0}", 255) }`,
+      },
     ],
+    // 锁定
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
+    // 启用
     is_enabled: [
       {
         required: true,

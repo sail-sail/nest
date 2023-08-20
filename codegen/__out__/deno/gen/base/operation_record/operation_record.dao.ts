@@ -37,6 +37,8 @@ import {
   deepCompare,
 } from "/lib/util/object_util.ts";
 
+import * as validators from "/lib/validators/mod.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -356,6 +358,7 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/operation_record");
   const fieldComments = {
+    id: await n("ID"),
     module: await n("模块"),
     module_lbl: await n("模块名称"),
     method: await n("方法"),
@@ -538,6 +541,94 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: BackgroundTaskInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 模块
+  await validators.chars_max_length(
+    input.module,
+    50,
+    fieldComments.module,
+  );
+  
+  // 模块名称
+  await validators.chars_max_length(
+    input.module_lbl,
+    50,
+    fieldComments.module_lbl,
+  );
+  
+  // 方法
+  await validators.chars_max_length(
+    input.method,
+    50,
+    fieldComments.method,
+  );
+  
+  // 方法名称
+  await validators.chars_max_length(
+    input.method_lbl,
+    50,
+    fieldComments.method_lbl,
+  );
+  
+  // 操作
+  await validators.chars_max_length(
+    input.lbl,
+    100,
+    fieldComments.lbl,
+  );
+  
+  // 操作前数据
+  await validators.chars_max_length(
+    input.old_data,
+    5000,
+    fieldComments.old_data,
+  );
+  
+  // 操作后数据
+  await validators.chars_max_length(
+    input.new_data,
+    5000,
+    fieldComments.new_data,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    100,
+    fieldComments.rem,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
 }
 
 /**

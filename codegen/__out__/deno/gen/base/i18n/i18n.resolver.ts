@@ -84,18 +84,22 @@ export async function createI18N(
   input: I18Ninput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./i18n.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/i18n",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./i18n.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

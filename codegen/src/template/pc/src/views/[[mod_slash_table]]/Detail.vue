@@ -727,18 +727,90 @@ watchEffect(async () => {
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const validators = column.validators || [ ];
     #><#
       if (require) {
         if (!foreignKey) {
     #>
+    // <#=column_comment#>
     <#=column_name#>: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
-      },
+      },<#
+        for (let j = 0; j < validators.length; j++) {
+          const validator = validators[j];
+      #><#
+        if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>
+      {
+        type: "number",<#
+          if (validator.maximum != null) {
+        #>
+        max: <#=validator.maximum#>,<#
+          }
+        #>
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,
+      },<#
+        } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>
+      {
+        type: "number",<#
+          if (validator.minimum != null) {
+        #>
+        min: <#=validator.minimum#>,<#
+          }
+        #>
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,
+      },<#
+        } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      {
+        type: "string",<#
+          if (validator.chars_max_length != null) {
+        #>
+        len: <#=validator.chars_max_length#>,<#
+          }
+        #>
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,
+      },<#
+        } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      {
+        type: "regexp",<#
+          if (validator.regex != null) {
+        #>
+        pattern: "<#=validator.regex#>",<#
+          }
+        #>
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("格式不正确") }`,
+      },<#
+        } else if (validator.email) {
+      #>
+      {
+        type: "email",
+        message: `${ await nsAsync("请输入正确的电子邮件") }`,
+      },<#
+        } else if (validator.url) {
+      #>
+      {
+        type: "url",
+        message: `${ await nsAsync("请输入正确的网址") }`,
+      },<#
+        } else if (validator.ip) {
+      #>
+      {
+        type: "ip",
+        message: `${ await nsAsync("请输入正确的IP地址") }`,
+      },<#
+        }
+      #><#
+        }
+      #>
     ],<#
         } else {
     #>
+    // <#=column_comment#>
     <#=column_name#>: [
       {
         required: true,

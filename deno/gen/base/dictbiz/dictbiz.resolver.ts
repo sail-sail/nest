@@ -84,18 +84,22 @@ export async function createDictbiz(
   input: DictbizInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./dictbiz.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/dictbiz",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./dictbiz.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;
