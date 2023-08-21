@@ -268,7 +268,7 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        len: 255,
+        max: 255,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 255) }`,
       },
     ],
@@ -280,7 +280,7 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        len: 255,
+        max: 255,
         message: `${ n("值") } ${ await nsAsync("长度不能超过 {0}", 255) }`,
       },
     ],

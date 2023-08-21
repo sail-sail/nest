@@ -13,6 +13,7 @@
     v-bind="$attrs"
     :src="urlList[nowIndex]"
     un-object-contain
+    un-rounded
   >
     <template #placeholder>
       <div
