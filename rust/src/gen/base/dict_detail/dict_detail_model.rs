@@ -206,12 +206,44 @@ impl DictDetailInput {
       None,
     ).await?;
     
+    // ID
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.id.as_ref(),
+      22,
+      &field_comments.id,
+    ).await?;
+    
     // 系统字典
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
       self.dict_id.as_ref(),
       22,
       &field_comments.dict_id,
+    ).await?;
+    
+    // 名称
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.lbl.as_ref(),
+      255,
+      &field_comments.lbl,
+    ).await?;
+    
+    // 值
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.val.as_ref(),
+      255,
+      &field_comments.val,
+    ).await?;
+    
+    // 备注
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.rem.as_ref(),
+      255,
+      &field_comments.rem,
     ).await?;
     
     Ok(())

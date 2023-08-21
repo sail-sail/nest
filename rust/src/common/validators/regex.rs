@@ -1,16 +1,15 @@
-use std::collections::HashMap;
-use std::ops::Deref;
 use anyhow::Result;
+use regex::Regex;
 
 use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao;
 
 #[allow(dead_code)]
-pub async fn max_items<T: Deref<Target = [E]>, E>(
+pub async fn regex<T: AsRef<str>>(
   ctx: &mut impl Ctx<'_>,
   value: Option<&T>,
-  len: usize,
+  regex_str: &'static str,
   label: impl AsRef<str>,
 ) -> Result<()> {
   
@@ -18,18 +17,15 @@ pub async fn max_items<T: Deref<Target = [E]>, E>(
     return Ok(());
   }
   let value = value.unwrap();
-  
-  if value.deref().len() <= len {
+  let regex = Regex::new(regex_str)?;
+  if regex.is_match(value.as_ref()) {
     return Ok(());
   }
   
-  let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".to_owned(), len.to_string());
-  
   let err_msg = i18n_dao::ns(
     ctx,
-    "数量不能超过 {0}".to_owned(),
-    map.into(),
+    "格式不正确".to_owned(),
+    None,
   ).await?;
   
   let err_msg = format!("{} {}", label.as_ref(), err_msg);

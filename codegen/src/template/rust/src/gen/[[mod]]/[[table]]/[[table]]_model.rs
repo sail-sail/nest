@@ -528,11 +528,13 @@ impl <#=tableUP#>Input {
       if (column_comment.indexOf("[") !== -1) {
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
       const foreignKey = column.foreignKey;
       const validators = column.validators || [ ];
-    #><#
-      for (let j = 0; j < validators.length; j++) {
-        const validator = validators[j];
+      if (validators.length === 0) {
+        continue;
+      }
     #><#
         if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
     #>
@@ -588,7 +590,9 @@ impl <#=tableUP#>Input {
       <#=validator.chars_max_length#>,
       &field_comments.<#=column_name_rust#>,
     ).await?;<#
-      } else if (validator.chars_min_length != null) {
+      }
+    #><#
+      if (validator.chars_min_length != null) {
     #>
     crate::common::validators::chars_min_length::chars_min_length(
       ctx,
@@ -596,6 +600,10 @@ impl <#=tableUP#>Input {
       <#=validator.chars_min_length#>,
       &field_comments.<#=column_name_rust#>,
     ).await?;<#
+      }
+    #><#
+      }
+    #><#
       } else {
     #>
     
@@ -674,6 +682,27 @@ impl <#=tableUP#>Input {
       "<#=validator.regex#>".to_owned(),
       &field_comments.<#=column_name_rust#>,
     ).await?;<#
+      } else if (validator.email && data_type === "varchar") {
+    #>
+    crate::common::validators::email::email(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.url && data_type === "varchar") {
+    #>
+    crate::common::validators::url::url(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
+      } else if (validator.ip && data_type === "varchar") {
+    #>
+    crate::common::validators::ip::ip(
+      ctx,
+      self.<#=column_name_rust#>.as_ref(),
+      &field_comments.<#=column_name_rust#>,
+    ).await?;<#
       }
     #><#
     }
@@ -681,12 +710,6 @@ impl <#=tableUP#>Input {
       }
     #><#
     }
-    #><#
-        }
-    #><#
-        }
-    #><#
-      }
     #><#
     }
     #>

@@ -254,18 +254,46 @@ impl RoleInput {
       None,
     ).await?;
     
-    // 创建人
+    // ID
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
-      self.create_usr_id.as_ref(),
+      self.id.as_ref(),
       22,
-      &field_comments.create_usr_id,
+      &field_comments.id,
     ).await?;
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
-      self.create_usr_id.as_ref(),
+      self.id.as_ref(),
       22,
-      &field_comments.create_usr_id,
+      &field_comments.id,
+    ).await?;
+    
+    // 名称
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.lbl.as_ref(),
+      45,
+      &field_comments.lbl,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.lbl.as_ref(),
+      45,
+      &field_comments.lbl,
+    ).await?;
+    
+    // 备注
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.rem.as_ref(),
+      100,
+      &field_comments.rem,
+    ).await?;
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.rem.as_ref(),
+      100,
+      &field_comments.rem,
     ).await?;
     
     // 创建人
@@ -280,20 +308,6 @@ impl RoleInput {
       self.create_usr_id.as_ref(),
       22,
       &field_comments.create_usr_id,
-    ).await?;
-    
-    // 更新人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.update_usr_id.as_ref(),
-      22,
-      &field_comments.update_usr_id,
-    ).await?;
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.update_usr_id.as_ref(),
-      22,
-      &field_comments.update_usr_id,
     ).await?;
     
     // 更新人
