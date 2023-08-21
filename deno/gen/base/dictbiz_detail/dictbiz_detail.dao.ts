@@ -37,6 +37,8 @@ import {
   deepCompare,
 } from "/lib/util/object_util.ts";
 
+import * as validators from "/lib/validators/mod.ts";
+
 import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -338,6 +340,7 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/dictbiz_detail");
   const fieldComments = {
+    id: await n("ID"),
     dictbiz_id: await n("业务字典"),
     dictbiz_id_lbl: await n("业务字典"),
     lbl: await n("名称"),
@@ -541,6 +544,52 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: BackgroundTaskInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 业务字典
+  await validators.chars_max_length(
+    input.dictbiz_id,
+    22,
+    fieldComments.dictbiz_id,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    255,
+    fieldComments.lbl,
+  );
+  
+  // 值
+  await validators.chars_max_length(
+    input.val,
+    255,
+    fieldComments.val,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    255,
+    fieldComments.rem,
+  );
+  
 }
 
 /**

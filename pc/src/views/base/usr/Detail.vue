@@ -320,30 +320,45 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
     ],
+    // 用户名
     username: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("用户名") }`,
       },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("用户名") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
     ],
+    // 默认组织
     default_org_id: [
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("默认组织") }`,
       },
     ],
+    // 锁定
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
+    // 启用
     is_enabled: [
       {
         required: true,

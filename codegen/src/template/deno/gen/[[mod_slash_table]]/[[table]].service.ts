@@ -203,6 +203,17 @@ export async function existById(
 }
 
 /**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: <#=inputName#>,
+) {
+  const data = await <#=table#>Dao.validate(input);
+  return data;
+}
+
+/**
  * 创建数据
  * @param {<#=inputName#>} input
  * @return {Promise<string>} id

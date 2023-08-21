@@ -84,18 +84,22 @@ export async function createMenu(
   input: MenuInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./menu.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/menu",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./menu.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

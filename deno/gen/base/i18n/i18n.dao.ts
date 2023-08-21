@@ -37,6 +37,8 @@ import {
   deepCompare,
 } from "/lib/util/object_util.ts";
 
+import * as validators from "/lib/validators/mod.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -338,6 +340,7 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/i18n");
   const fieldComments = {
+    id: await n("ID"),
     lang_id: await n("语言"),
     lang_id_lbl: await n("语言"),
     menu_id: await n("菜单"),
@@ -554,6 +557,73 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: BackgroundTaskInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 语言
+  await validators.chars_max_length(
+    input.lang_id,
+    22,
+    fieldComments.lang_id,
+  );
+  
+  // 菜单
+  await validators.chars_max_length(
+    input.menu_id,
+    45,
+    fieldComments.menu_id,
+  );
+  
+  // 编码
+  await validators.chars_max_length(
+    input.code,
+    45,
+    fieldComments.code,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    100,
+    fieldComments.rem,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
 }
 
 /**

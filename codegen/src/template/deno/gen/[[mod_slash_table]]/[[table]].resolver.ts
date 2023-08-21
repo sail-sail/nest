@@ -189,14 +189,6 @@ export async function create<#=Table_Up#>(
   }<#
   }
   #>
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/<#=mod#>/<#=table#>",
-    "add",
-  );
   
   const {<#
     if (log) {
@@ -204,8 +196,20 @@ export async function create<#=Table_Up#>(
     findById,<#
     }
     #>
+    validate,
     create,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await validate(input);
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "add",
+  );<#
   if (log) {
   #>
   

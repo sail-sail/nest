@@ -267,10 +267,16 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 操作
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("操作") }`,
+      },
+      {
+        type: "string",
+        len: 100,
+        message: `${ n("操作") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
   };

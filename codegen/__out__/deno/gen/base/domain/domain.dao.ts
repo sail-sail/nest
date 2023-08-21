@@ -37,6 +37,8 @@ import {
   deepCompare,
 } from "/lib/util/object_util.ts";
 
+import * as validators from "/lib/validators/mod.ts";
+
 import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -369,6 +371,7 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/domain");
   const fieldComments = {
+    id: await n("ID"),
     lbl: await n("名称"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
@@ -567,6 +570,52 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: BackgroundTaskInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    100,
+    fieldComments.rem,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
 }
 
 /**
