@@ -246,7 +246,7 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        len: 22,
+        max: 22,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],

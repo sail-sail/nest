@@ -769,10 +769,21 @@ watchEffect(async () => {
         type: "string",<#
           if (validator.chars_max_length != null) {
         #>
-        len: <#=validator.chars_max_length#>,<#
+        max: <#=validator.chars_max_length#>,<#
           }
         #>
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,
+      },<#
+        } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+      #>
+      {
+        type: "string",<#
+          if (validator.chars_min_length != null) {
+        #>
+        min: <#=validator.chars_min_length#>,<#
+          }
+        #>
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能小于 {0}", <#=validator.chars_min_length#>) }`,
       },<#
         } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
       #>
