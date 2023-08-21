@@ -25,5 +25,5 @@ export async function minimum(
     "不能小于 {0}",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "minimum");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validate_minimum");
 }

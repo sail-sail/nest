@@ -1346,6 +1346,24 @@ export async function validate(
     "<#=validator.regex#>",
     fieldComments.<#=column_name#>,
   );<#
+    } else if (validator.email != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.email(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.url != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.url(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
+    } else if (validator.ip != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  await validators.ip(
+    input.<#=column_name#>,
+    fieldComments.<#=column_name#>,
+  );<#
     }
   #><#
     }

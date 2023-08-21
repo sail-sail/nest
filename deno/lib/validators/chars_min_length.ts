@@ -26,5 +26,5 @@ export async function chars_min_length(
     "长度不能超过 {0}",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "chars_min_length");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validate_chars_min_length");
 }

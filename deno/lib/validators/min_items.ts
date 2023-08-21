@@ -27,5 +27,5 @@ export async function min_items(
     "数量不能小于 {0}",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "min_items");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validate_min_items");
 }

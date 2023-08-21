@@ -32,5 +32,5 @@ export async function chars_max_length(
     "长度不能超过 {0}",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "chars_max_length");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validate_chars_max_length");
 }

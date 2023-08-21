@@ -6,3 +6,6 @@ export * from "./maximum.ts";
 export * from "./minimum.ts";
 export * from "./multiple_of.ts";
 export * from "./regex.ts";
+export * from "./email.ts";
+export * from "./url.ts";
+export * from "./ip.ts";

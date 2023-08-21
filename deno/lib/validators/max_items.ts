@@ -27,5 +27,5 @@ export async function max_items(
     "数量不能超过 {0}",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "max_items");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validate_max_items");
 }

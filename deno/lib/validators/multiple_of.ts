@@ -25,5 +25,5 @@ export async function multiple_of(
     "必须为 {0} 的整数倍",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "multiple_of");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validator_multiple_of");
 }

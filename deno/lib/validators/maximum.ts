@@ -25,5 +25,5 @@ export async function maximum(
     "不能大于 {0}",
     len,
   );
-  throw new ServiceException(`${ label } ${ err_msg }`, "maximum");
+  throw new ServiceException(`${ label } ${ err_msg }`, "validate_maximum");
 }
