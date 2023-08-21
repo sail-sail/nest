@@ -1239,7 +1239,7 @@ export async function existById(
  * @param input 
  */
 export async function validate(
-  input: BackgroundTaskInput,
+  input: <#=inputName#>,
 ) {
   const fieldComments = await getFieldComments();<#
   for (let i = 0; i < columns.length; i++) {
