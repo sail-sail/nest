@@ -631,13 +631,6 @@ export async function validate(
     fieldComments.username,
   );
   
-  // 密码
-  await validators.chars_max_length(
-    input.password,
-    43,
-    fieldComments.password,
-  );
-  
   // 默认组织
   await validators.chars_max_length(
     input.default_org_id,

@@ -1259,6 +1259,8 @@ export async function validate(
     if (column_comment.indexOf("[") !== -1) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
     const foreignKey = column.foreignKey;
     const validators = column.validators || [ ];
   #><#
