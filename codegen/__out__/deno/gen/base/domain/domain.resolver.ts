@@ -84,18 +84,22 @@ export async function createDomain(
   input: DomainInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/domain",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./domain.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

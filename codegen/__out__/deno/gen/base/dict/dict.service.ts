@@ -94,6 +94,17 @@ export async function existById(
 }
 
 /**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: DictInput,
+) {
+  const data = await dictDao.validate(input);
+  return data;
+}
+
+/**
  * 创建数据
  * @param {DictInput} input
  * @return {Promise<string>} id

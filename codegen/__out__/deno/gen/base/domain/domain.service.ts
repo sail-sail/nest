@@ -94,6 +94,17 @@ export async function existById(
 }
 
 /**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: DomainInput,
+) {
+  const data = await domainDao.validate(input);
+  return data;
+}
+
+/**
  * 创建数据
  * @param {DomainInput} input
  * @return {Promise<string>} id

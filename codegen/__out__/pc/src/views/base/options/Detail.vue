@@ -244,24 +244,38 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
+      {
+        type: "string",
+        len: 50,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
+      },
     ],
+    // 键
     ky: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("键") }`,
       },
+      {
+        type: "string",
+        len: 50,
+        message: `${ n("键") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
+      },
     ],
+    // 锁定
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
+    // 启用
     is_enabled: [
       {
         required: true,

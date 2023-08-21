@@ -94,6 +94,17 @@ export async function existById(
 }
 
 /**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: TenantInput,
+) {
+  const data = await tenantDao.validate(input);
+  return data;
+}
+
+/**
  * 创建数据
  * @param {TenantInput} input
  * @return {Promise<string>} id

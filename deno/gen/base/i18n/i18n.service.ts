@@ -92,6 +92,17 @@ export async function existById(
 }
 
 /**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: I18Ninput,
+) {
+  const data = await i18nDao.validate(input);
+  return data;
+}
+
+/**
  * 创建数据
  * @param {I18Ninput} input
  * @return {Promise<string>} id

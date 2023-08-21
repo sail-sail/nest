@@ -84,18 +84,22 @@ export async function createDictDetail(
   input: DictDetailInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./dict_detail.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/dict_detail",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./dict_detail.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

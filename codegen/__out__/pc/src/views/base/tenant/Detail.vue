@@ -244,24 +244,73 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
       },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
     ],
+    // 所属域名
     domain_ids: [
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("所属域名") }`,
       },
     ],
+    // 锁定
     is_locked: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
+    // 启用
     is_enabled: [
       {
         required: true,

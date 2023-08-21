@@ -261,22 +261,35 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 语言
     lang_id: [
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("语言") }`,
       },
     ],
+    // 编码
     code: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("编码") }`,
       },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
     ],
+    // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+      },
+      {
+        type: "string",
+        len: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
   };

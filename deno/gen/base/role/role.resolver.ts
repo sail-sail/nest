@@ -84,18 +84,22 @@ export async function createRole(
   input: RoleInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./role.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/role",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./role.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

@@ -84,18 +84,22 @@ export async function createDept(
   input: DeptInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./dept.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/dept",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./dept.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;

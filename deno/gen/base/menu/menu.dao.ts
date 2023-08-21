@@ -37,6 +37,8 @@ import {
   deepCompare,
 } from "/lib/util/object_util.ts";
 
+import * as validators from "/lib/validators/mod.ts";
+
 import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -442,6 +444,7 @@ export async function findAll(
 export async function getFieldComments() {
   const n = initN("/menu");
   const fieldComments = {
+    id: await n("ID"),
     type: await n("类型"),
     type_lbl: await n("类型"),
     parent_id: await n("父菜单"),
@@ -656,6 +659,129 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: BackgroundTaskInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 类型
+  await validators.chars_max_length(
+    input.type,
+    10,
+    fieldComments.type,
+  );
+  
+  // 类型
+  await validators.chars_max_length(
+    input.type,
+    10,
+    fieldComments.type,
+  );
+  
+  // 父菜单
+  await validators.chars_max_length(
+    input.parent_id,
+    22,
+    fieldComments.parent_id,
+  );
+  
+  // 父菜单
+  await validators.chars_max_length(
+    input.parent_id,
+    22,
+    fieldComments.parent_id,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 路由
+  await validators.chars_max_length(
+    input.route_path,
+    255,
+    fieldComments.route_path,
+  );
+  
+  // 路由
+  await validators.chars_max_length(
+    input.route_path,
+    255,
+    fieldComments.route_path,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    255,
+    fieldComments.rem,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    255,
+    fieldComments.rem,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
 }
 
 /**

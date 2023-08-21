@@ -94,6 +94,17 @@ export async function existById(
 }
 
 /**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: OrgInput,
+) {
+  const data = await orgDao.validate(input);
+  return data;
+}
+
+/**
  * 创建数据
  * @param {OrgInput} input
  * @return {Promise<string>} id

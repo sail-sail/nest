@@ -84,18 +84,22 @@ export async function createPermit(
   input: PermitInput,
   unique_type?: UniqueType,
 ) {
+  
+  const {
+    validate,
+    create,
+  } = await import("./permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await validate(input);
   
   await usePermit(
     "/base/permit",
     "add",
   );
-  
-  const {
-    create,
-  } = await import("./permit.service.ts");
   const uniqueType = unique_type;
   const res = await create(input, { uniqueType });
   return res;
