@@ -25,14 +25,15 @@ pub async fn chars_max_length<T: AsRef<str>>(
   }
   
   let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".to_owned(), label.as_ref().to_owned());
-  map.insert("1".to_owned(), len.to_string());
+  map.insert("0".to_owned(), len.to_string());
   
   let err_msg = i18n_dao::ns(
     ctx,
-    "{0} 长度不能超过 {1}".to_owned(),
+    "长度不能超过 {0}".to_owned(),
     map.into(),
   ).await?;
+  
+  let err_msg = format!("{} {}", label.as_ref(), err_msg);
   
   return Err(SrvErr::msg(err_msg).into());
 }

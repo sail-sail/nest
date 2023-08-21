@@ -5,3 +5,4 @@ pub mod minimum;
 pub mod max_items;
 pub mod min_items;
 pub mod multiple_of;
+pub mod regex;

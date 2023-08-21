@@ -296,6 +296,46 @@ impl OptionsInput {
       None,
     ).await?;
     
+    // ID
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.id.as_ref(),
+      22,
+      &field_comments.id,
+    ).await?;
+    
+    // 名称
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.lbl.as_ref(),
+      50,
+      &field_comments.lbl,
+    ).await?;
+    
+    // 键
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.ky.as_ref(),
+      50,
+      &field_comments.ky,
+    ).await?;
+    
+    // 值
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.val.as_ref(),
+      255,
+      &field_comments.val,
+    ).await?;
+    
+    // 备注
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.rem.as_ref(),
+      255,
+      &field_comments.rem,
+    ).await?;
+    
     // 创建人
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,

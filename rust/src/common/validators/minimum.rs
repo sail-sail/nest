@@ -27,14 +27,15 @@ where
   }
   
   let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".to_owned(), label.as_ref().to_owned());
-  map.insert("1".to_owned(), n.to_string());
+  map.insert("0".to_owned(), n.to_string());
   
   let err_msg = i18n_dao::ns(
     ctx,
-    "{0} 不能小于 {1}".to_owned(),
+    "不能小于 {0}".to_owned(),
     map.into(),
   ).await?;
+  
+  let err_msg = format!("{} {}", label.as_ref(), err_msg);
   
   return Err(SrvErr::msg(err_msg).into());
 }

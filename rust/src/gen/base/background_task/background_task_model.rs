@@ -301,6 +301,22 @@ impl BackgroundTaskInput {
       None,
     ).await?;
     
+    // ID
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.id.as_ref(),
+      22,
+      &field_comments.id,
+    ).await?;
+    
+    // 名称
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.lbl.as_ref(),
+      45,
+      &field_comments.lbl,
+    ).await?;
+    
     // 状态
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
@@ -315,6 +331,30 @@ impl BackgroundTaskInput {
       self.r#type.as_ref(),
       10,
       &field_comments.r#type,
+    ).await?;
+    
+    // 执行结果
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.result.as_ref(),
+      500,
+      &field_comments.result,
+    ).await?;
+    
+    // 错误信息
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.err_msg.as_ref(),
+      255,
+      &field_comments.err_msg,
+    ).await?;
+    
+    // 备注
+    crate::common::validators::chars_max_length::chars_max_length(
+      ctx,
+      self.rem.as_ref(),
+      255,
+      &field_comments.rem,
     ).await?;
     
     // 创建人
