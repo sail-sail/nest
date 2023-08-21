@@ -213,12 +213,12 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        len: 45,
+        max: 45,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
       {
         type: "string",
-        len: 45,
+        max: 45,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],

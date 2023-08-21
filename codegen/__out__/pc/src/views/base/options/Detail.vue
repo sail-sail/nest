@@ -252,7 +252,7 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        len: 50,
+        max: 50,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
       },
     ],
@@ -264,7 +264,7 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        len: 50,
+        max: 50,
         message: `${ n("键") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
       },
     ],
