@@ -21,6 +21,7 @@ const isH5 = process.env.UNI_PLATFORM === "h5";
 
 const presets = [
   presetIcons({
+    prefix: "n-i-",
     scale: 1.2,
     warn: true,
     extraProperties: {
@@ -35,9 +36,12 @@ const presets = [
    * you can add `presetAttributify()` here to enable unocss attributify mode prompt
    * although preset is not working for applet, but will generate useless css
    */
-  presetApplet({ enable: !isH5 }),
+  presetApplet({
+    prefix: "n-",
+    enable: !isH5,
+  }),
   presetAttributify({
-    prefix: "un-",
+    prefix: "u",
     prefixedOnly: true,
   }),
   presetRemRpx({ enable: true }),
@@ -58,7 +62,7 @@ export default defineConfig({
     transformerVariantGroup(),
     // Don't change the following order
     transformerAttributify({
-      prefix: "un-",
+      prefix: "u",
       prefixedOnly: true,
     }),
     transformerApplet(),

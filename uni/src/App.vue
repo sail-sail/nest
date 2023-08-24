@@ -40,8 +40,6 @@ onLaunch((async(options: any) => {
 }));
 </script>
 <style lang="scss">
-@import "@/uni_modules/uni-scss/index.scss";
-
 /* #ifdef APP-NVUE */
 @import "./tmui/scss/nvue.css";
 /* #endif */
@@ -49,23 +47,5 @@ onLaunch((async(options: any) => {
 @import "./tmui/scss/noNvue.css";
 /* #endif */
 
-page {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  font-size: 14px;
-}
-.uni-flex-card.uni-card, .uni-flex-card>.uni-card {
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 0;
-  overflow: hidden;
-  .uni-card__content {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 0;
-    overflow: hidden;
-  }
-}
+@import "./assets/style/common.scss";
 </style>
