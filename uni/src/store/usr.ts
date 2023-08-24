@@ -4,7 +4,7 @@ export default defineStore("usr", function() {
   
   let authorization = $ref(authorization0);
   
-  async function setAccessToken(authorization1: typeof authorization) {
+  async function setAuthorization(authorization1: typeof authorization) {
     if (authorization !== authorization1) {
       authorization = authorization1;
       await uni.setStorage({
@@ -29,7 +29,7 @@ export default defineStore("usr", function() {
   return $$({
     authorization,
     showAuth,
-    setAccessToken,
+    setAuthorization,
     setShowAuth,
     lang,
     setLang,

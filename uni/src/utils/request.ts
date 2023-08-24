@@ -54,7 +54,7 @@ export async function uploadFile(config: {
   }
   const header = res.header || { };
   if (header["authorization"]) {
-    await usrStore.setAccessToken(header["authorization"]);
+    await usrStore.setAuthorization(header["authorization"]);
   }
   if (config.reqType === "graphql") {
     return res;
@@ -72,7 +72,7 @@ export async function uploadFile(config: {
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAccessToken("");
+    await usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;
@@ -256,7 +256,7 @@ export async function request(
   }
   const header = res?.header;
   if (header && header["authorization"]) {
-    await usrStore.setAccessToken(header["authorization"]);
+    await usrStore.setAuthorization(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
     let errMsg = (err as any).errMsg || err.toString();
@@ -277,7 +277,7 @@ export async function request(
   }
   const data = res.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    await usrStore.setAccessToken("");
+    await usrStore.setAuthorization("");
     if (!config.notLogin) {
       if (await uniLogin()) {
         config.notLogin = true;

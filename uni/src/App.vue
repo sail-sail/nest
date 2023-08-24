@@ -35,7 +35,7 @@ onLaunch((async(options: any) => {
   if (!authorization) {
     await uniLogin();
   } else {
-    await usrStore.setAccessToken(authorization);
+    await usrStore.setAuthorization(authorization);
   }
 }));
 </script>
