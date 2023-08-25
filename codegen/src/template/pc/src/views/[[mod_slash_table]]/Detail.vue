@@ -666,6 +666,8 @@ let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
+let dialogTitle = $ref("");
+let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
 let dialogModel = $ref({<#
@@ -917,7 +919,8 @@ async function showDialog(
   },
 ) {
   inited = false;
-  const title = arg?.title;
+  dialogTitle = arg?.title ?? "";
+  oldDialogTitle = dialogTitle;
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({<#
     if (columnNum > 20) {
     #>
@@ -927,7 +930,7 @@ async function showDialog(
     type: "auto",<#
     }
     #>
-    title,
+    title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
   });
@@ -1053,6 +1056,11 @@ async function onRefresh() {
     if (mod === "base" && table === "usr") {
     #>
     old_default_org_id = dialogModel.default_org_id;<#
+    }
+    #><#
+    if (opts.lbl_field) {
+    #>
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.<#=opts.lbl_field#> }`;<#
     }
     #>
   }
