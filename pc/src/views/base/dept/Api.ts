@@ -1,4 +1,6 @@
-
+import {
+  UniqueType,
+} from "#/types";
 
 import type {
   Query,

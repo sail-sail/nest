@@ -29,13 +29,9 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
   modelNameTree = Table_Up + "ModelTree";
 }
-#><#
-if (hasUniques) {
 #>import {
   UniqueType,
-} from "#/types";<#
-}
-#>
+} from "#/types";
 
 import type {
   Query,
