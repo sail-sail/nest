@@ -430,7 +430,7 @@
                 <CustomSwitch
                   v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_locked"
-                  @change="is_lockedChg(row.id, row.is_locked)"
+                  @change="onIs_locked(row.id, row.is_locked)"
                 ></CustomSwitch>
               </template>
             </el-table-column>
@@ -446,7 +446,7 @@
                 <CustomSwitch
                   v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
-                  @change="is_enabledChg(row.id, row.is_enabled)"
+                  @change="onIs_enabled(row.id, row.is_enabled)"
                 ></CustomSwitch>
               </template>
             </el-table-column>
@@ -561,7 +561,7 @@
   <ImportPercentageDialog
     :percentage="importPercentage"
     :dialog_visible="isImporting"
-    @cancel="cancelImport"
+    @stop="stopImport"
   ></ImportPercentageDialog>
   
 </div>
@@ -1119,7 +1119,7 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
-let isCancelImport = $ref(false);
+let isStopImport = $ref(false);
 
 /** 弹出导入窗口 */
 async function onImportExcel() {
@@ -1147,7 +1147,7 @@ async function onImportExcel() {
   if (!file) {
     return;
   }
-  isCancelImport = false;
+  isStopImport = false;
   isImporting = true;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
@@ -1166,7 +1166,7 @@ async function onImportExcel() {
     const res = await importModels(
       models,
       $$(importPercentage),
-      $$(isCancelImport),
+      $$(isStopImport),
     );
     msg = res.msg;
     succNum = res.succNum;
@@ -1183,14 +1183,14 @@ async function onImportExcel() {
 }
 
 /** 取消导入 */
-async function cancelImport() {
-  isCancelImport = true;
+async function stopImport() {
+  isStopImport = true;
   isImporting = false;
   importPercentage = 0;
 }
 
 /** 锁定 */
-async function is_lockedChg(id: string, is_locked: 0 | 1) {
+async function onIs_locked(id: string, is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -1211,7 +1211,7 @@ async function is_lockedChg(id: string, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function is_enabledChg(id: string, is_enabled: 0 | 1) {
+async function onIs_enabled(id: string, is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }

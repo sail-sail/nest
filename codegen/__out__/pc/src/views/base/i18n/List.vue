@@ -559,7 +559,7 @@
   <ImportPercentageDialog
     :percentage="importPercentage"
     :dialog_visible="isImporting"
-    @cancel="cancelImport"
+    @stop="stopImport"
   ></ImportPercentageDialog>
   
 </div>
@@ -1113,7 +1113,7 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
-let isCancelImport = $ref(false);
+let isStopImport = $ref(false);
 
 /** 弹出导入窗口 */
 async function onImportExcel() {
@@ -1140,7 +1140,7 @@ async function onImportExcel() {
   if (!file) {
     return;
   }
-  isCancelImport = false;
+  isStopImport = false;
   isImporting = true;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
@@ -1159,7 +1159,7 @@ async function onImportExcel() {
     const res = await importModels(
       models,
       $$(importPercentage),
-      $$(isCancelImport),
+      $$(isStopImport),
     );
     msg = res.msg;
     succNum = res.succNum;
@@ -1176,8 +1176,8 @@ async function onImportExcel() {
 }
 
 /** 取消导入 */
-async function cancelImport() {
-  isCancelImport = true;
+async function stopImport() {
+  isStopImport = true;
   isImporting = false;
   importPercentage = 0;
 }
