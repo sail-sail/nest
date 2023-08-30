@@ -623,15 +623,12 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllDomain {
-            id
             lbl
           }
           findAllMenu {
-            id
             lbl
           }
           findAllUsr {
-            id
             lbl
           }
           getDict(codes: [

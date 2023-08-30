@@ -670,15 +670,12 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
-            id
             lbl
           }
           findAllTenant {
-            id
             lbl
           }
           findAllUsr {
-            id
             lbl
           }
           getDict(codes: [

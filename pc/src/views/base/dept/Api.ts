@@ -589,11 +589,9 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllDept {
-            id
             lbl
           }
           findAllUsr {
-            id
             lbl
           }
           getDict(codes: [

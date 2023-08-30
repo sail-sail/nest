@@ -469,7 +469,6 @@ export function useExportExcel(routePath: string) {
             rem
           }
           findAllDict {
-            id
             lbl
           }
           getDict(codes: [

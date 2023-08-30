@@ -537,11 +537,9 @@ export function useExportExcel(routePath: string) {
             rem
           }
           findAllOrg {
-            id
             lbl
           }
           findAllRole {
-            id
             lbl
           }
           getDict(codes: [

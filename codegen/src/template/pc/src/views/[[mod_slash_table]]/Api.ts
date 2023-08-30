@@ -1013,7 +1013,6 @@ export function useExportExcel(routePath: string) {
             }).join("");
           #>
           findAll<#=Foreign_Table_Up#> {
-            <#=foreignKey.column#>
             <#=foreignKey.lbl#>
           }<#
           }

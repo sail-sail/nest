@@ -378,7 +378,6 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllUsr {
-            id
             lbl
           }
           getDict(codes: [
