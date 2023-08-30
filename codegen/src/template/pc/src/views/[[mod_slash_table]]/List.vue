@@ -1109,6 +1109,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   
   <UploadFileDialog
     ref="uploadFileDialogRef"
+    @download-import-template="onDownloadImportTemplate"
   ></UploadFileDialog>
   
   <ImportPercentageDialog
@@ -1223,7 +1224,8 @@ import {
   #><#
     if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
-  importModels,<#
+  importModels,
+  useDownloadImportTemplate,<#
     }
   #><#
     if (hasSummary) {
@@ -1330,6 +1332,7 @@ defineOptions({
 
 const {
   n,
+  nAsync,
   ns,
   nsAsync,
   initI18ns,
@@ -2192,6 +2195,15 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
+const downloadImportTemplate = $ref(useDownloadImportTemplate("/<#=mod#>/<#=table#>"));
+
+/**
+ * 下载导入模板
+ */
+async function onDownloadImportTemplate() {
+  await downloadImportTemplate.workerFn();
+}
+
 /** 弹出导入窗口 */
 async function onImportExcel() {
   if (isLocked) {
@@ -2274,7 +2286,7 @@ async function onImportExcel() {
               continue;
             }
           #>
-          n("<#=column_comment#>"),<#
+          await nAsync("<#=column_comment#>"),<#
           }
           #>
         ],

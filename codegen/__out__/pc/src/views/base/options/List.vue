@@ -595,6 +595,7 @@
   
   <UploadFileDialog
     ref="uploadFileDialogRef"
+    @download-import-template="onDownloadImportTemplate"
   ></UploadFileDialog>
   
   <ImportPercentageDialog
@@ -620,6 +621,7 @@ import {
   useExportExcel,
   updateById,
   importModels,
+  useDownloadImportTemplate,
 } from "./Api";
 
 import type {
@@ -635,6 +637,7 @@ defineOptions({
 
 const {
   n,
+  nAsync,
   ns,
   nsAsync,
   initI18ns,
@@ -1169,6 +1172,15 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
+const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/options"));
+
+/**
+ * 下载导入模板
+ */
+async function onDownloadImportTemplate() {
+  await downloadImportTemplate.workerFn();
+}
+
 /** 弹出导入窗口 */
 async function onImportExcel() {
   if (isLocked) {
@@ -1207,8 +1219,8 @@ async function onImportExcel() {
       header,
       {
         date_keys: [
-          n("创建时间"),
-          n("更新时间"),
+          await nAsync("创建时间"),
+          await nAsync("更新时间"),
         ],
       },
     );

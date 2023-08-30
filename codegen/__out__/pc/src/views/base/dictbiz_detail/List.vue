@@ -567,6 +567,7 @@
   
   <UploadFileDialog
     ref="uploadFileDialogRef"
+    @download-import-template="onDownloadImportTemplate"
   ></UploadFileDialog>
   
   <ImportPercentageDialog
@@ -592,6 +593,7 @@ import {
   useExportExcel,
   updateById,
   importModels,
+  useDownloadImportTemplate,
 } from "./Api";
 
 import type {
@@ -611,6 +613,7 @@ defineOptions({
 
 const {
   n,
+  nAsync,
   ns,
   nsAsync,
   initI18ns,
@@ -1103,6 +1106,15 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
+
+const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/dictbiz_detail"));
+
+/**
+ * 下载导入模板
+ */
+async function onDownloadImportTemplate() {
+  await downloadImportTemplate.workerFn();
+}
 
 /** 弹出导入窗口 */
 async function onImportExcel() {

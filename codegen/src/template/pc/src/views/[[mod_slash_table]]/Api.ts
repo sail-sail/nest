@@ -713,6 +713,185 @@ export async function get<#=Foreign_Table_Up#>Tree() {
 #>
 
 /**
+ * 下载导入模板
+ */
+export function useDownloadImportTemplate(routePath: string) {
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(routePath);
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query {
+          getFieldComments<#=Table_Up#> {<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+              if (column_name === "id") {
+                continue;
+              }
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+            #><#
+              if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+                || data_type === "datetime" || data_type === "date"
+              ) {
+            #>
+            <#=column_name#>_lbl<#
+              } else {
+            #>
+            <#=column_name#><#
+              }
+            }
+            #>
+          }<#
+          const foreignTableArrTmp1 = [];
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            let column_type = column.COLUMN_TYPE;
+            let data_type = column.DATA_TYPE;
+            let column_comment = column.COLUMN_COMMENT;
+            let selectList = [ ];
+            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+            if (selectStr) {
+              selectList = eval(`(${ selectStr })`);
+            }
+            if (column_comment.includes("[")) {
+              column_comment = column_comment.substring(0, column_comment.indexOf("["));
+            }
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            const foreignKey = column.foreignKey;
+            if (!foreignKey) continue;
+            const foreignTable = foreignKey && foreignKey.table;
+            if (foreignTableArrTmp1.includes(foreignTable)) continue;
+            foreignTableArrTmp1.push(foreignTable);
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+          #>
+          findAll<#=Foreign_Table_Up#> {
+            <#=foreignKey.column#>
+            <#=foreignKey.lbl#>
+          }<#
+          }
+          #>
+          getDict(codes: [<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+              if (column_name === "id") {
+                continue;
+              }
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+            #><#
+              if (column.dict) {
+            #>
+            "<#=column_name#>",<#
+              }
+            #><#
+            }
+            #>
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+              if (column_name === "id") {
+                continue;
+              }
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+            #><#
+              if (column.dictbiz) {
+            #>
+            "<#=column_name#>",<#
+              }
+            #><#
+            }
+            #>
+          ]) {
+            code
+            lbl
+          }
+        }
+      `,
+      variables: {
+      },
+    });
+    const buffer = await workerFn(
+      `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    saveAsExcel(buffer, `${ await nAsync("<#=table_comment#>") }${ await nsAsync("导入模板") }`);
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
+}
+
+/**
  * 导出Excel
  */
 export function useExportExcel(routePath: string) {
@@ -793,7 +972,6 @@ export function useExportExcel(routePath: string) {
                 || data_type === "datetime" || data_type === "date"
               ) {
             #>
-            <#=column_name#>
             <#=column_name#>_lbl<#
               } else {
             #>

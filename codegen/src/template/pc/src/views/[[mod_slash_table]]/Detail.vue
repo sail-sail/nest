@@ -722,7 +722,7 @@ watchEffect(async () => {
       if (column_comment.indexOf("[") !== -1) {
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
-      let require = column.require;
+      const require = column.require;
       if (data_type == "datetime" || data_type == "date") {
         column_comment = column_comment + "开始";
       }

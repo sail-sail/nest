@@ -382,6 +382,71 @@ export async function getUsrList() {
 }
 
 /**
+ * 下载导入模板
+ */
+export function useDownloadImportTemplate(routePath: string) {
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(routePath);
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query {
+          getFieldCommentsOptions {
+            lbl
+            ky
+            val
+            is_locked_lbl
+            is_enabled_lbl
+            order_by
+            rem
+            version
+            create_usr_id_lbl
+            create_time_lbl
+            update_usr_id_lbl
+            update_time_lbl
+          }
+          findAllUsr {
+            id
+            lbl
+          }
+          getDict(codes: [
+            "is_locked",
+            "is_enabled",
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [
+          ]) {
+            code
+            lbl
+          }
+        }
+      `,
+      variables: {
+      },
+    });
+    const buffer = await workerFn(
+      `${ location.origin }/import_template/base/options.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    saveAsExcel(buffer, `${ await nAsync("系统选项") }${ await nsAsync("导入模板") }`);
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
+}
+
+/**
  * 导出Excel
  */
 export function useExportExcel(routePath: string) {
@@ -427,20 +492,14 @@ export function useExportExcel(routePath: string) {
             lbl
             ky
             val
-            is_locked
             is_locked_lbl
-            is_enabled
             is_enabled_lbl
             order_by
             rem
             version
-            create_usr_id
             create_usr_id_lbl
-            create_time
             create_time_lbl
-            update_usr_id
             update_usr_id_lbl
-            update_time
             update_time_lbl
           }
         }

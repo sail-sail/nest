@@ -376,6 +376,68 @@ export async function getUsrList() {
 }
 
 /**
+ * 下载导入模板
+ */
+export function useDownloadImportTemplate(routePath: string) {
+  const {
+    nAsync,
+    nsAsync,
+  } = useI18n(routePath);
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const queryStr = getQueryUrl({
+      query: /* GraphQL */ `
+        query {
+          getFieldCommentsOrg {
+            lbl
+            is_locked_lbl
+            is_enabled_lbl
+            order_by
+            rem
+            create_usr_id_lbl
+            create_time_lbl
+            update_usr_id_lbl
+            update_time_lbl
+          }
+          findAllUsr {
+            id
+            lbl
+          }
+          getDict(codes: [
+            "is_locked",
+            "is_enabled",
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [
+          ]) {
+            code
+            lbl
+          }
+        }
+      `,
+      variables: {
+      },
+    });
+    const buffer = await workerFn(
+      `${ location.origin }/import_template/base/org.xlsx`,
+      `${ location.origin }${ queryStr }`,
+    );
+    saveAsExcel(buffer, `${ await nAsync("组织") }${ await nsAsync("导入模板") }`);
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
+}
+
+/**
  * 导出Excel
  */
 export function useExportExcel(routePath: string) {
@@ -416,19 +478,13 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsOrg {
             lbl
-            is_locked
             is_locked_lbl
-            is_enabled
             is_enabled_lbl
             order_by
             rem
-            create_usr_id
             create_usr_id_lbl
-            create_time
             create_time_lbl
-            update_usr_id
             update_usr_id_lbl
-            update_time
             update_time_lbl
           }
         }
