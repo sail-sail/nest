@@ -1202,15 +1202,15 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("头像") ]: "img",
-    [ n("名称") ]: "lbl",
-    [ n("用户名") ]: "username",
-    [ n("默认组织") ]: "default_org_id_lbl",
-    [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("拥有组织") ]: "org_ids_lbl",
-    [ n("拥有角色") ]: "role_ids_lbl",
-    [ n("备注") ]: "rem",
+    [ await nAsync("头像") ]: "img",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("用户名") ]: "username",
+    [ await nAsync("默认组织") ]: "default_org_id_lbl",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("拥有组织") ]: "org_ids_lbl",
+    [ await nAsync("拥有角色") ]: "role_ids_lbl",
+    [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),

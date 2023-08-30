@@ -1125,13 +1125,13 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("业务字典") ]: "dictbiz_id_lbl",
-    [ n("名称") ]: "lbl",
-    [ n("值") ]: "val",
-    [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("排序") ]: "order_by",
-    [ n("备注") ]: "rem",
+    [ await nAsync("业务字典") ]: "dictbiz_id_lbl",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("值") ]: "val",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),

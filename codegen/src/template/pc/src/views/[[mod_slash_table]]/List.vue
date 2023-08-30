@@ -2241,7 +2241,7 @@ async function onImportExcel() {
       column_name2 = `${column_name}_lbl`;
     }
   #>
-    [ n("<#=column_comment#>") ]: "<#=column_name2#>",<#
+    [ await nAsync("<#=column_comment#>") ]: "<#=column_name2#>",<#
   }
   #>
   };

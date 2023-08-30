@@ -1111,15 +1111,15 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("编码") ]: "code",
-    [ n("名称") ]: "lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("排序") ]: "order_by",
-    [ n("备注") ]: "rem",
-    [ n("创建人") ]: "create_usr_id_lbl",
-    [ n("创建时间") ]: "create_time_lbl",
-    [ n("更新人") ]: "update_usr_id_lbl",
-    [ n("更新时间") ]: "update_time_lbl",
+    [ await nAsync("编码") ]: "code",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("备注") ]: "rem",
+    [ await nAsync("创建人") ]: "create_usr_id_lbl",
+    [ await nAsync("创建时间") ]: "create_time_lbl",
+    [ await nAsync("更新人") ]: "update_usr_id_lbl",
+    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
