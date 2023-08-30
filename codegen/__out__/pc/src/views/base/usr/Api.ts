@@ -536,6 +536,26 @@ export function useExportExcel(routePath: string) {
             role_ids_lbl
             rem
           }
+          findAllOrg {
+            id
+            lbl
+          }
+          findAllRole {
+            id
+            lbl
+          }
+          getDict(codes: [
+            "is_locked",
+            "is_enabled",
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [
+          ]) {
+            code
+            lbl
+          }
         }
       `,
       variables: {

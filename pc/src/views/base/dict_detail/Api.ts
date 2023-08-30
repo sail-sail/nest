@@ -468,6 +468,22 @@ export function useExportExcel(routePath: string) {
             order_by
             rem
           }
+          findAllDict {
+            id
+            lbl
+          }
+          getDict(codes: [
+            "is_locked",
+            "is_enabled",
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [
+          ]) {
+            code
+            lbl
+          }
         }
       `,
       variables: {
