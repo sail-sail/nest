@@ -1,0 +1,30 @@
+page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+}
+
+tm-app.n-flex {
+  > view {
+    flex: 1 0 0;
+    overflow: hidden;
+    background: inherit !important;
+  }
+}
+tm-form.n-flex {
+  > tm-sheet {
+    display: flex;
+    flex: 1 0 0;
+    overflow: hidden;
+    > .flex {
+      flex: 1 0 0;
+      overflow: hidden;
+      > .flex {
+        flex: 1 0 0;
+        overflow: hidden;
+      }
+    }
+  }
+}

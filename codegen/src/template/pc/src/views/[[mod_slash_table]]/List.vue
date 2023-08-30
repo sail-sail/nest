@@ -875,7 +875,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.<#=column_name#>"
                   :before-change="() => row.<#=column_name#> == 0"
-                  @change="<#=column_name#>Chg(row.id)"
+                  @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id)"
                 ></CustomSwitch>
               </template><#
               } else if(column.isSwitch && opts.noEdit !== true) {
@@ -888,7 +888,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   }
                   #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.<#=column_name#>"
-                  @change="<#=column_name#>Chg(row.id, row.<#=column_name#>)"
+                  @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
               </template><#
               }
@@ -1109,12 +1109,13 @@ const hasAtt = columns.some((item) => item.isAtt);
   
   <UploadFileDialog
     ref="uploadFileDialogRef"
+    @download-import-template="onDownloadImportTemplate"
   ></UploadFileDialog>
   
   <ImportPercentageDialog
     :percentage="importPercentage"
     :dialog_visible="isImporting"
-    @cancel="cancelImport"
+    @stop="stopImport"
   ></ImportPercentageDialog><#
     }
   #><#
@@ -1223,7 +1224,8 @@ import {
   #><#
     if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
-  importModels,<#
+  importModels,
+  useDownloadImportTemplate,<#
     }
   #><#
     if (hasSummary) {
@@ -1330,6 +1332,7 @@ defineOptions({
 
 const {
   n,
+  nAsync,
   ns,
   nsAsync,
   initI18ns,
@@ -2190,7 +2193,16 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
-let isCancelImport = $ref(false);
+let isStopImport = $ref(false);
+
+const downloadImportTemplate = $ref(useDownloadImportTemplate("/<#=mod#>/<#=table#>"));
+
+/**
+ * 下载导入模板
+ */
+async function onDownloadImportTemplate() {
+  await downloadImportTemplate.workerFn();
+}
 
 /** 弹出导入窗口 */
 async function onImportExcel() {
@@ -2239,7 +2251,7 @@ async function onImportExcel() {
   if (!file) {
     return;
   }
-  isCancelImport = false;
+  isStopImport = false;
   isImporting = true;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
@@ -2274,7 +2286,7 @@ async function onImportExcel() {
               continue;
             }
           #>
-          n("<#=column_comment#>"),<#
+          await nAsync("<#=column_comment#>"),<#
           }
           #>
         ],
@@ -2283,7 +2295,7 @@ async function onImportExcel() {
     const res = await importModels(
       models,
       $$(importPercentage),
-      $$(isCancelImport),
+      $$(isStopImport),
     );
     msg = res.msg;
     succNum = res.succNum;
@@ -2300,8 +2312,8 @@ async function onImportExcel() {
 }
 
 /** 取消导入 */
-async function cancelImport() {
-  isCancelImport = true;
+async function stopImport() {
+  isStopImport = true;
   isImporting = false;
   importPercentage = 0;
 }<#
@@ -2339,7 +2351,7 @@ if (column_name === "is_default") {
 #>
 
 /** <#=column_comment#> */
-async function <#=column_name#>Chg(id: string) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string) {
   if (isLocked) {
     return;
   }
@@ -2361,7 +2373,7 @@ async function <#=column_name#>Chg(id: string) {
 #>
 
 /** <#=column_comment#> */
-async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string, <#=column_name#>: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -2384,7 +2396,7 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 #>
 
 /** <#=column_comment#> */
-async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string, <#=column_name#>: 0 | 1) {
   if (isLocked) {
     return;
   }
@@ -2407,7 +2419,7 @@ async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
 #>
 
 /** <#=column_comment#> */
-async function <#=column_name#>Chg(id: string, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: string, <#=column_name#>: 0 | 1) {
   if (isLocked) {
     return;
   }

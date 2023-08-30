@@ -103,8 +103,7 @@
             <el-link
               un-m="l-1"
               type="primary"
-              :href="template"
-              :download="templateName || ns('导入模板') + '.xlsx'"
+              @click="onDownloadImportTemplate"
             >
               {{ ns("下载导入模板") }}
             </el-link>
@@ -164,8 +163,11 @@ let { fullscreen, setFullscreen } = $(useFullscreenEfc());
 let dialogTitle = $ref(ns("上传"));
 let dialogVisible = $ref(false);
 
-let template = $ref("");
-let templateName = $ref("");
+let template = $ref(true);
+
+const emit = defineEmits<{
+  downloadImportTemplate: [],
+}>();
 
 let fileRef = $ref<HTMLInputElement>();
 
@@ -180,18 +182,15 @@ let onCloseResolve = function(value?: File) { };
 async function showDialog(
   arg?: {
     title?: string,
-    template?: string,
+    template?: boolean,
     templateName?: string,
   },
 ) {
   if (arg) {
     dialogTitle = arg.title || await nsAsync("上传");
   }
-  if (arg?.template) {
+  if (arg?.template != null) {
     template = arg.template;
-  }
-  if (arg?.templateName) {
-    templateName = arg.templateName;
   }
   
   fileInfo = {
@@ -212,6 +211,13 @@ async function showDialog(
     onCloseResolve = resolve;
   });
   return reslut;
+}
+
+/**
+ * 下载导入模板
+ */
+function onDownloadImportTemplate() {
+  emit("downloadImportTemplate");
 }
 
 async function inputChg() {

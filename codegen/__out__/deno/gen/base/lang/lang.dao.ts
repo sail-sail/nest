@@ -547,7 +547,7 @@ export async function existById(
  * @param input 
  */
 export async function validate(
-  input: BackgroundTaskInput,
+  input: LangInput,
 ) {
   const fieldComments = await getFieldComments();
   

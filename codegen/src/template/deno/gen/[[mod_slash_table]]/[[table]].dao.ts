@@ -1239,7 +1239,7 @@ export async function existById(
  * @param input 
  */
 export async function validate(
-  input: BackgroundTaskInput,
+  input: <#=inputName#>,
 ) {
   const fieldComments = await getFieldComments();<#
   for (let i = 0; i < columns.length; i++) {
@@ -1259,6 +1259,8 @@ export async function validate(
     if (column_comment.indexOf("[") !== -1) {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
     const foreignKey = column.foreignKey;
     const validators = column.validators || [ ];
   #><#

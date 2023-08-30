@@ -3,12 +3,14 @@
   v-if="loading > 0"
   class="app_loading"
 >
-  <uni-icons
-    color="gray"
+  <i
+    un-i="iconfont-loading"
+    un-h="12"
+    un-w="12"
+    un-mb="2"
+    un-text="gray"
     class="loop_icon"
-    type="loop"
-    size="30"
-  ></uni-icons>
+  ></i>
 </view>
 </template>
 

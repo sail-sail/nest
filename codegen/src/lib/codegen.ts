@@ -144,10 +144,18 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           }
           const isPassword = column.isPassword;
           if (isPassword) continue;
+          const require = column.require;
           const foreignKey = column.foreignKey;
-          let lbl = ``;
+          const foreignTable = foreignKey && foreignKey.table;
+          const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+          const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          let lbl = "";
           if (lbls.length === 0) {
-            lbl += `<%const comment = _data_.data.getFieldComments${ Table_Up_IN };%>`;
+            lbl += `<%const data = _data_.data;%>`;
+            lbl += `<%const selectList = { };%>`;
+            lbl += `<%const comment = data.getFieldComments${ Table_Up_IN };%>`;
           }
           lbl += `<%=comment.`;
           if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
@@ -156,10 +164,30 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             lbl += column_name;
           }
           lbl += `%>`;
+          // Excel里面的下拉框
+          if (
+            (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null))
+            || (selectList.length > 0 || column.dict || column.dictbiz)
+          ) {
+            if (foreignKey && !foreignKey.multiple && (foreignKey.selectType === "select" || foreignKey.selectType == null)) {
+              lbl += `<%selectList.${ column_name } = data.findAll${ Foreign_Table_Up }.map((item) => item.${ foreignKey.lbl })%>`;
+            } else if (column.dict) {
+              lbl += `<%selectList.${ column_name } = data.getDict.find((item) => item[0]?.code === "${ column.dict }")?.map((item) => item.lbl) || [ ]%>`;
+            } else if (column.dictbiz) {
+              lbl += `<%selectList.${ column_name } = data.getDictbiz.find((item) => item[0]?.code === "${ column.dictbiz }")?.map((item) => item.lbl) || [ ]%>`;
+            } else if (selectList.length > 0) {
+              lbl += `<%selectList.${ column_name } = ${ JSON.stringify(selectList.map((item) => item.label)) }%>`;
+            }
+            lbl += `<%_dataValidation_({ sqref: \`\${ _col }2:\${ _col }\${ _lastRow }\`, formula1: \`"\${ selectList.${ column_name }.join(",") }"\``;
+            if (require) {
+              lbl += `, allowBlank: '0'`;
+            }
+            lbl += ` })%>`;
+          }
           lbls.push(lbl);
           let str = "";
           if (fields.length === 0) {
-            str += `<%forRow model in _data_.data.findAll${ Table_Up_IN }%>`;
+            str += `<%forRow model in data.findAll${ Table_Up_IN }%>`;
           }
           str += "<%";
           if (data_type === "varchar") {

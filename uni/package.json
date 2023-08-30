@@ -69,8 +69,6 @@
     "@typescript-eslint/eslint-plugin": "6.4.0",
     "@typescript-eslint/parser": "6.4.0",
     "@uni-helper/uni-app-types": "0.5.8",
-    "@uni-helper/uni-cloud-types": "0.5.2",
-    "@uni-helper/uni-ui-types": "0.5.11",
     "@unocss/preset-attributify": "0.55.2",
     "@vue-macros/reactivity-transform": "0.3.19",
     "@vue/runtime-core": "3.3.4",

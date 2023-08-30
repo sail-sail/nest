@@ -554,12 +554,13 @@
   
   <UploadFileDialog
     ref="uploadFileDialogRef"
+    @download-import-template="onDownloadImportTemplate"
   ></UploadFileDialog>
   
   <ImportPercentageDialog
     :percentage="importPercentage"
     :dialog_visible="isImporting"
-    @cancel="cancelImport"
+    @stop="stopImport"
   ></ImportPercentageDialog>
   
 </div>
@@ -577,6 +578,7 @@ import {
   useExportExcel,
   updateById,
   importModels,
+  useDownloadImportTemplate,
 } from "./Api";
 
 import type {
@@ -599,6 +601,7 @@ defineOptions({
 
 const {
   n,
+  nAsync,
   ns,
   nsAsync,
   initI18ns,
@@ -1113,7 +1116,16 @@ let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
-let isCancelImport = $ref(false);
+let isStopImport = $ref(false);
+
+const downloadImportTemplate = $ref(useDownloadImportTemplate("/base/i18n"));
+
+/**
+ * 下载导入模板
+ */
+async function onDownloadImportTemplate() {
+  await downloadImportTemplate.workerFn();
+}
 
 /** 弹出导入窗口 */
 async function onImportExcel() {
@@ -1140,7 +1152,7 @@ async function onImportExcel() {
   if (!file) {
     return;
   }
-  isCancelImport = false;
+  isStopImport = false;
   isImporting = true;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
@@ -1151,15 +1163,15 @@ async function onImportExcel() {
       header,
       {
         date_keys: [
-          n("创建时间"),
-          n("更新时间"),
+          await nAsync("创建时间"),
+          await nAsync("更新时间"),
         ],
       },
     );
     const res = await importModels(
       models,
       $$(importPercentage),
-      $$(isCancelImport),
+      $$(isStopImport),
     );
     msg = res.msg;
     succNum = res.succNum;
@@ -1176,8 +1188,8 @@ async function onImportExcel() {
 }
 
 /** 取消导入 */
-async function cancelImport() {
-  isCancelImport = true;
+async function stopImport() {
+  isStopImport = true;
   isImporting = false;
   importPercentage = 0;
 }

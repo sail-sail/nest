@@ -53,7 +53,7 @@ const props = defineProps<{
 
 const emit = defineEmits<
   (
-    e: "cancel",
+    e: "stop",
   ) => void
 >();
 
@@ -67,10 +67,10 @@ watch(
   },
 );
 
-async function beforeClose(done: (cancel: boolean) => void) {
+async function beforeClose(done: (stop: boolean) => void) {
   try {
-    await ElMessageBox.confirm(await nsAsync(`确定取消导入?`), {
-      confirmButtonText: await nsAsync("取消导入"),
+    await ElMessageBox.confirm(await nsAsync(`确定停止导入?`), {
+      confirmButtonText: await nsAsync("停止导入"),
       cancelButtonText: await nsAsync("我再想想"),
       type: "warning",
     });
@@ -79,6 +79,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
   }
   done(false);
   dialogVisible = false;
-  emit("cancel");
+  emit("stop");
 }
 </script>

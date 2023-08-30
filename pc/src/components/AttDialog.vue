@@ -147,8 +147,8 @@
           >
             <VueOfficeExcel
               v-if="iframeShoweds[i]"
+              v-show="i === nowIndex"
               :src="url"
-              :style="{ display: i === nowIndex ? '' : 'none' }"
               un-flex="~ [1_0_0]"
               un-overflow-auto
               un-w="full"
@@ -162,8 +162,8 @@
           >
             <VueOfficeDocx
               v-if="iframeShoweds[i]"
+              v-show="i === nowIndex"
               :src="url"
-              :style="{ display: i === nowIndex ? '' : 'none' }"
               un-flex="~ [1_0_0]"
               un-overflow-auto
               un-w="full"
@@ -299,8 +299,8 @@ import {
   getStatsOss,
 } from "./Api";
 
-const VueOfficeExcel = defineAsyncComponent(() => import("@vue-office/excel"));
-const VueOfficeDocx = defineAsyncComponent(() => import("@vue-office/docx"));
+const VueOfficeExcel = defineAsyncComponent(() => import("@vue-office/excel")) as any;
+const VueOfficeDocx = defineAsyncComponent(() => import("@vue-office/docx")) as any;
 
 const {
   ns,
