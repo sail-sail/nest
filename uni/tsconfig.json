@@ -18,9 +18,7 @@
     "types": [
       "node",
       "vite/client",
-      "@uni-helper/uni-app-types",
-      "@uni-helper/uni-cloud-types",
-      "@uni-helper/uni-ui-types"
+      "@uni-helper/uni-app-types"
     ],
     "paths": {
       "@/*": [ "./src/*" ],

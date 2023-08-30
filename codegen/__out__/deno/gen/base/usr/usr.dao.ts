@@ -599,7 +599,7 @@ export async function existById(
  * @param input 
  */
 export async function validate(
-  input: BackgroundTaskInput,
+  input: UsrInput,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -629,13 +629,6 @@ export async function validate(
     input.username,
     45,
     fieldComments.username,
-  );
-  
-  // 密码
-  await validators.chars_max_length(
-    input.password,
-    43,
-    fieldComments.password,
   );
   
   // 默认组织

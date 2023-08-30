@@ -185,7 +185,7 @@ const inputStyle = {
   borderRadius: 0,
 };
 
-let model = $ref<MutationLoginArgs>({
+let model = $ref<MutationLoginArgs["input"]>({
   username: "",
   password: "",
   tenant_id: "",

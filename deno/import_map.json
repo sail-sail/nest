@@ -2,9 +2,9 @@
   "imports": {
     "/": "./",
     "./": "./",
-    "std/": "https://deno.land/std@0.197.0/",
+    "std/": "https://deno.land/std@0.200.0/",
     "oak": "https://deno.land/x/oak@v12.6.0/mod.ts",
-    "graphql": "https://esm.sh/graphql@16.7.0",
+    "graphql": "https://esm.sh/graphql@16.8.0",
     "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
     "redis": "https://deno.land/x/redis@v0.31.0/mod.ts",
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",

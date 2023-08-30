@@ -601,6 +601,11 @@ export interface TablesConfigItem {
   opts?: {
     
     /**
+     * 用于显示的字段
+     */
+    lbl_field?: string;
+    
+    /**
      * 是否缓存
      * @type {boolean}
      */

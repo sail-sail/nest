@@ -226,6 +226,8 @@ let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
+let dialogTitle = $ref("");
+let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
 let dialogModel = $ref({
@@ -349,10 +351,11 @@ async function showDialog(
   },
 ) {
   inited = false;
-  const title = arg?.title;
+  dialogTitle = arg?.title ?? "";
+  oldDialogTitle = dialogTitle;
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
-    title,
+    title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
   });
@@ -451,6 +454,7 @@ async function onRefresh() {
     dialogModel = {
       ...data,
     };
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
 }
 

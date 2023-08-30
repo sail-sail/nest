@@ -524,6 +524,7 @@ defineOptions({
 
 const {
   n,
+  nAsync,
   ns,
   nsAsync,
   initI18ns,

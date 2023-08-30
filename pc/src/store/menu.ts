@@ -110,8 +110,8 @@ export default defineStore("menu", function() {
       for (let i = 0; i < menus0.length; i++) {
         const item = menus0[i];
         if (item.id === parentId) {
-          parentIds.push(item.menu_id);
-          parentId = item.menu_id;
+          parentIds.push(item.parent_id);
+          parentId = item.parent_id;
         }
         const children = item.children;
         if (children && children.length > 0) {

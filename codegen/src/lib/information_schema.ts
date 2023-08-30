@@ -81,34 +81,6 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
-  // 校验
-  for (const record of records) {
-    if (record.COLUMN_NAME === "id") {
-      record.validators = record.validators || [ ];
-      record.validators.push({
-        chars_max_length: 22,
-        chars_min_length: 22,
-      });
-    } else if (record.foreignKey && !record.foreignKey.multiple) {
-      record.validators = record.validators || [ ];
-      record.validators.push({
-        chars_max_length: 22,
-        chars_min_length: 22,
-      });
-    } else if (record.foreignKey && record.foreignKey.multiple) {
-      record.validators = record.validators || [ ];
-      record.validators.push({
-        max_items: Math.floor(record.CHARACTER_MAXIMUM_LENGTH / 22),
-      });
-    } else if (record.DATA_TYPE === "varchar" || record.DATA_TYPE === "char") {
-      record.validators = record.validators || [ ];
-      if (record.CHARACTER_MAXIMUM_LENGTH) {
-        record.validators.push({
-          chars_max_length: record.CHARACTER_MAXIMUM_LENGTH,
-        });
-      }
-    }
-  }
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
@@ -157,6 +129,7 @@ async function getSchema0(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
+    const record = records2.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
     if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;
@@ -361,6 +334,40 @@ async function getSchema0(
         item.width = 80;
       }
     }
+  }
+  // 校验
+  for (let i = 0; i < records2.length; i++) {
+    const record = records2[i];
+    if (record.COLUMN_NAME === "id") {
+      record.validators = record.validators || [ ];
+      record.validators.push({
+        chars_max_length: 22,
+        chars_min_length: 22,
+      });
+    } else if (record.foreignKey && !record.foreignKey.multiple) {
+      record.validators = record.validators || [ ];
+      record.validators.push({
+        chars_max_length: 22,
+        chars_min_length: 22,
+      });
+    } else if (record.foreignKey && record.foreignKey.multiple) {
+      record.validators = record.validators || [ ];
+      record.validators.push({
+        max_items: Math.floor(record.CHARACTER_MAXIMUM_LENGTH / 22),
+      });
+    } else if (record.DATA_TYPE === "varchar" || record.DATA_TYPE === "char") {
+      record.validators = record.validators || [ ];
+      if (record.CHARACTER_MAXIMUM_LENGTH) {
+        record.validators.push({
+          chars_max_length: record.CHARACTER_MAXIMUM_LENGTH,
+        });
+      }
+    }
+  }
+  // 用于显示的字段
+  if (!tables[table_name]?.opts?.lbl_field && records2.some((item: TableCloumn) => item.COLUMN_NAME === "lbl")) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.lbl_field = "lbl";
   }
   return records2;
 }
