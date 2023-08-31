@@ -340,7 +340,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -352,7 +352,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -509,7 +509,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             #>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >

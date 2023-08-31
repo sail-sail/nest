@@ -243,6 +243,10 @@ const {
   initSysI18ns,
 } = useI18n("/base/operation_record");
 
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/base/operation_record");
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
@@ -351,7 +355,11 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = toValue(arg?.isLocked) ?? isLocked;
+    if (!permit("edit")) {
+      isLocked = true;
+    } else {
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
+    }
   });
   dialogAction = action || "add";
   ids = [ ];

@@ -192,7 +192,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -204,7 +204,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -304,7 +304,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
