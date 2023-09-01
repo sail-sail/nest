@@ -12,10 +12,18 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
+        foreignTabs: [
+          {
+            mod: "base",
+            table: "permit",
+            label: "按钮权限",
+            column: "role_id",
+          },
+        ],
       },
       {
         COLUMN_NAME: "menu_ids",
-        COLUMN_COMMENT: "菜单",
+        COLUMN_COMMENT: "菜单权限",
         search: true,
         foreignKey: {
           showType: "dialog",
@@ -491,7 +499,7 @@ export default defineConfig({
       },
     ],
   },
-  // 权限
+  // 按钮权限
   base_permit: {
     opts: {
       cache: true,

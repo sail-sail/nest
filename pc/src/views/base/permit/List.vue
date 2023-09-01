@@ -612,7 +612,7 @@ import {
 } from "./Api";
 
 defineOptions({
-  name: "权限",
+  name: "按钮权限",
 });
 
 const {

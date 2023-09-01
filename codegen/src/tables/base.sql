@@ -206,7 +206,7 @@ CREATE TABLE if not exists `base_i18n` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='国际化';
 
------------------------------------------------------------------------------------------------- 权限
+------------------------------------------------------------------------------------------------ 按钮权限
 drop table if exists `base_permit`;
 CREATE TABLE if not exists `base_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -225,7 +225,7 @@ CREATE TABLE if not exists `base_permit` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`role_id`, `menu_id`, `code`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='按钮权限';
 
 ------------------------------------------------------------------------------------------------ 角色菜单
 drop table if exists `base_role_menu`;

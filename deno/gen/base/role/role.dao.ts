@@ -395,8 +395,8 @@ export async function getFieldComments() {
   const fieldComments = {
     id: await n("ID"),
     lbl: await n("名称"),
-    menu_ids: await n("菜单"),
-    menu_ids_lbl: await n("菜单"),
+    menu_ids: await n("菜单权限"),
+    menu_ids_lbl: await n("菜单权限"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -702,7 +702,7 @@ export async function create(
     "is_enabled",
   ]);
   
-  // 菜单
+  // 菜单权限
   if (!input.menu_ids && input.menu_ids_lbl) {
     if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
       input.menu_ids_lbl = input.menu_ids_lbl.split(",");
@@ -852,7 +852,7 @@ export async function create(
   
   const result = await execute(sql, args);
   
-  // 菜单
+  // 菜单权限
   await many2manyUpdate(
     input,
     "menu_ids",
@@ -970,7 +970,7 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id);
   }
 
-  // 菜单
+  // 菜单权限
   if (!input.menu_ids && input.menu_ids_lbl) {
     if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
       input.menu_ids_lbl = input.menu_ids_lbl.split(",");
@@ -1079,7 +1079,7 @@ export async function updateById(
   
   updateFldNum++;
   
-  // 菜单
+  // 菜单权限
   await many2manyUpdate(
     {
       ...input,

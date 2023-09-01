@@ -474,7 +474,7 @@ export function useDownloadImportTemplate(routePath: string) {
       `${ location.origin }/import_template/base/permit.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    saveAsExcel(buffer, `${ await nAsync("权限") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("按钮权限") }${ await nsAsync("导入模板") }`);
   }
   return {
     workerFn: workerFn2,
@@ -568,7 +568,7 @@ export function useExportExcel(routePath: string) {
         `${ location.origin }/excel_template/base/permit.xlsx`,
         `${ location.origin }${ queryStr }`,
       );
-      saveAsExcel(buffer, await nAsync("权限"));
+      saveAsExcel(buffer, await nAsync("按钮权限"));
     } catch (err) {
       ElMessage.error(await nsAsync("导出失败"));
       throw err;

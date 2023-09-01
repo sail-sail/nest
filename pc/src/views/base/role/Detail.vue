@@ -547,7 +547,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function onInitI18ns() {
   const codes: string[] = [
     "名称",
-    "菜单",
+    "菜单权限",
     "锁定",
     "启用",
     "备注",

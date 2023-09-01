@@ -43,7 +43,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_ids == null">
         <el-form-item
-          label="菜单"
+          label="菜单权限"
           prop="menu_ids"
         >
           <CustomSelect
@@ -57,7 +57,7 @@
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+            :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
             multiple
             @change="onSearch"
           ></CustomSelect>
@@ -431,10 +431,18 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignTabs(row.id, row[column.property])"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
-          <!-- 菜单 -->
+          <!-- 菜单权限 -->
           <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -565,7 +573,7 @@
     </div>
   </div>
   
-  <!-- 菜单 -->
+  <!-- 菜单权限 -->
   <ListSelectDialog
     ref="menu_idsListSelectDialogRef"
     :is-locked="isLocked"
@@ -591,6 +599,10 @@
     :dialog_visible="isImporting"
     @stop="stopImport"
   ></ImportPercentageDialog>
+  
+  <ForeignTabs
+    ref="foreignTabsRef"
+  ></ForeignTabs>
   
 </div>
 </template>
@@ -625,6 +637,8 @@ import type {
 import {
   getMenuList,
 } from "./Api";
+
+import ForeignTabs from "./ForeignTabs.vue";
 
 defineOptions({
   name: "角色",
@@ -726,8 +740,8 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  menu_ids?: string|string[]; // 菜单
-  menu_ids_lbl?: string|string[]; // 菜单
+  menu_ids?: string|string[]; // 菜单权限
+  menu_ids_lbl?: string|string[]; // 菜单权限
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
@@ -881,7 +895,7 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "菜单",
+      label: "菜单权限",
       prop: "menu_ids_lbl",
       width: 80,
       align: "center",
@@ -1166,7 +1180,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("菜单") ]: "menu_ids_lbl",
+    [ await nAsync("菜单权限") ]: "menu_ids_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1482,11 +1496,25 @@ async function revertByIdsEfc() {
   }
 }
 
+let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
+
+async function openForeignTabs(id: string, title: string) {
+  if (!foreignTabsRef) {
+    return;
+  }
+  await foreignTabsRef.showDialog({
+    title,
+    model: {
+      id,
+    },
+  });
+}
+
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "菜单",
+    "菜单权限",
     "锁定",
     "启用",
     "备注",

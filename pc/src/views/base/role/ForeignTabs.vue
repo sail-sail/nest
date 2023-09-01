@@ -25,15 +25,15 @@
         
         <el-tab-pane
           lazy
-          :label="'业务字典' + (dictbiz_detailTotal != null ? ` (${ dictbiz_detailTotal })` : '')"
-          name="业务字典"
+          :label="'按钮权限' + (permitTotal != null ? ` (${ permitTotal })` : '')"
+          name="按钮权限"
         >
-          <Dictbiz_detailList
-            :dictbiz_id="dialogModel.id"
+          <PermitList
+            :role_id="dialogModel.id"
             @add="useAllFindDebounce"
             @remove="useAllFindDebounce"
             @revert="useAllFindDebounce"
-          ></Dictbiz_detailList>
+          ></PermitList>
         </el-tab-pane>
         
       </el-tabs>
@@ -62,16 +62,16 @@
 
 <script lang="ts" setup>
 
-import Dictbiz_detailList from "@/views/base/dictbiz_detail/List.vue";
+import PermitList from "@/views/base/permit/List.vue";
 
 import {
-  findCount as findCountDictbiz_detail,
-} from "@/views/base/dictbiz_detail/Api";
+  findCount as findCountPermit,
+} from "@/views/base/permit/Api";
 
 const {
   n,
   initI18ns,
-} = useI18n("/base/dictbiz");
+} = useI18n("/base/role");
 
 let inited = $ref(false);
 
@@ -81,22 +81,22 @@ let dialogModel = $ref<{
   id?: string,
 }>({ });
 
-let tabName = $ref("业务字典");
+let tabName = $ref("按钮权限");
 
-let dictbiz_detailTotal = $ref<number>();
+let permitTotal = $ref<number>();
 
-async function useFindCountDictbiz_detail() {
-  const dictbiz_id = [ dialogModel.id! ];
-  dictbiz_detailTotal = await findCountDictbiz_detail(
+async function useFindCountPermit() {
+  const role_id = [ dialogModel.id! ];
+  permitTotal = await findCountPermit(
     {
-      dictbiz_id,
+      role_id,
     },
   );
 }
 
 async function useAllFindCount() {
   await Promise.all([
-    useFindCountDictbiz_detail(),
+    useFindCountPermit(),
   ]);
 }
 
