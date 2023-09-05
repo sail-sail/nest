@@ -50,11 +50,12 @@
             :label="n('菜单')"
             prop="menu_id"
           >
-            <SelectInputMenu
+            <CustomTreeSelect
               v-model="dialogModel.menu_id"
+              :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               :readonly="isLocked || isReadonly"
-            ></SelectInputMenu>
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -184,16 +185,16 @@ import {
 
 import type {
   PermitInput,
+  MenuModel,
 } from "#/types";
 
 import {
+  getMenuList,
 } from "./Api";
 
 import {
   getMenuTree,
 } from "@/views/base/menu/Api";
-
-import SelectInputMenu from "@/views/base/menu/SelectInput.vue";
 
 const emit = defineEmits<{
   nextId: [

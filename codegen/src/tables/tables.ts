@@ -515,7 +515,6 @@ export default defineConfig({
         foreignKey: {
           mod: "base",
           table: "menu",
-          selectType: "selectInput",
         },
       },
       {
