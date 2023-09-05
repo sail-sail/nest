@@ -70,18 +70,12 @@
             :label="n('菜单')"
             prop="menu_id"
           >
-            <CustomSelect
+            <CustomTreeSelect
               v-model="dialogModel.menu_id"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -219,6 +213,10 @@ import {
   getLangList,
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 const emit = defineEmits<{
   nextId: [

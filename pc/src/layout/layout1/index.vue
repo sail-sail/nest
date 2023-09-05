@@ -505,7 +505,6 @@ async function getUsrPermitsEfc() {
   permitStore.permits = permits;
 }
 
-
 async function initFrame() {
   if (usrStore.authorization) {
     const [

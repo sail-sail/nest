@@ -33,7 +33,6 @@
         >
           <CustomSelect
             :set="search.lang_id = search.lang_id || [ ]"
-            un-w="full"
             v-model="search.lang_id"
             :method="getLangList"
             :options-map="((item: LangModel) => {
@@ -54,11 +53,10 @@
           label="菜单"
           prop="menu_id"
         >
-          <CustomSelect
+          <CustomTreeSelect
             :set="search.menu_id = search.menu_id || [ ]"
-            un-w="full"
             v-model="search.menu_id"
-            :method="getMenuList"
+            :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -68,7 +66,7 @@
             :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
             multiple
             @change="onSearch"
-          ></CustomSelect>
+          ></CustomTreeSelect>
         </el-form-item>
       </template>
       
@@ -99,23 +97,6 @@
             clearable
             @clear="onSearchClear"
           ></el-input>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
         </el-form-item>
       </template>
       
@@ -150,6 +131,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -594,6 +592,10 @@ import {
   getLangList,
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 defineOptions({
   name: "国际化",

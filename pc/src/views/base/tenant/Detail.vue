@@ -296,11 +296,6 @@ watchEffect(async () => {
         max: 45,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
-      {
-        type: "string",
-        max: 45,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
-      },
     ],
     // 所属域名
     domain_ids: [

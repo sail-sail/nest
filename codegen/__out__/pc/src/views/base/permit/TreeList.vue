@@ -1,40 +1,4 @@
-<#
-let Table_Up = tableUp.split("_").map(function(item) {
-  return item.substring(0, 1).toUpperCase() + item.substring(1);
-}).join("");
-let modelName = "";
-let fieldCommentName = "";
-let inputName = "";
-let searchName = "";
-let modelNameTree = "";
-if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
-  && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
-) {
-  Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
-  modelName = Table_Up + "model";
-  fieldCommentName = Table_Up + "fieldComment";
-  inputName = Table_Up + "input";
-  searchName = Table_Up + "search";
-  modelNameTree = Table_Up + "modelTree";
-} else {
-  modelName = Table_Up + "Model";
-  fieldCommentName = Table_Up + "FieldComment";
-  inputName = Table_Up + "Input";
-  searchName = Table_Up + "Search";
-  modelNameTree = Table_Up + "ModelTree";
-}
-const list_tree = opts.list_tree;
-const lbl_field = opts.lbl_field;
-let list_treeColumn = undefined;
-let list_treeForeignKey = undefined;
-if (typeof list_tree === "string") {
-  list_treeColumn = columns.find((item) => item.COLUMN_NAME === list_tree);
-  list_treeForeignKey = list_treeColumn?.foreignKey;
-  if (!list_treeForeignKey) {
-    throw `表: ${ mod_table } 中的 list_tree 对应的外键字段: ${ list_tree } 不存在`;
-  }
-}
-#><template>
+<template>
 <div
   un-flex="~ [1_0_0]"
   un-overflow-hidden
@@ -74,7 +38,7 @@ if (typeof list_tree === "string") {
         :data="treeData"
         node-key="id"
         :props="{
-          label: '<#=lbl_field#>',
+          label: 'lbl',
           children: 'children',
           'class': nodeClass,
         }"
@@ -95,19 +59,14 @@ if (typeof list_tree === "string") {
   >
     <slot
       :show-build-in="props.showBuildIn"
-      :<#=list_tree === true ? "parent_id" : list_treeColumn.COLUMN_NAME#>="parent_id"
+      :menu_id="parent_id"
       :on-find-tree="onFindTree"
       :before-search-reset="beforeSearchReset"
     >
       <List
-        :show-build-in="props.showBuildIn || '1'"<#
-        if (list_tree === true) {
-        #>
-        is-pagination="0"<#
-        }
-        #>
+        :show-build-in="props.showBuildIn || '1'"
         v-bind="$attrs"
-        :<#=list_tree === true ? "parent_id" : list_treeColumn.COLUMN_NAME#>="parent_id"
+        :menu_id="parent_id"
         @add="onFindTree"
         @edit="onFindTree"
         @remove="onFindTree"
@@ -121,28 +80,18 @@ if (typeof list_tree === "string") {
 </template>
 
 <script lang="ts" setup>
-import List from "./List.vue";<#
-if (list_tree === true) {
-#>
+import List from "./List.vue";
 
 import {
   findTree,
-} from "./Api";<#
-} else {
-#>
-
-import {
-  findTree,
-} from "@/views/<#=list_treeForeignKey.mod#>/<#=list_treeForeignKey.table#>/Api";<#
-}
-#>
+} from "@/views/base/menu/Api";
 
 import type {
   TreeNodeData,
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({
-  name: "<#=table_comment#>",
+  name: "按钮权限",
 });
 
 const props = defineProps<{
@@ -152,7 +101,7 @@ const props = defineProps<{
 
 const {
   ns,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n("/base/permit");
 
 let inited = $ref(false);
 

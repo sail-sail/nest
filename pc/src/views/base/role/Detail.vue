@@ -194,6 +194,7 @@ let dialogNotice = $ref("");
 
 let dialogModel = $ref({
   menu_ids: [ ],
+  permit_ids: [ ],
 } as RoleInput);
 
 let ids = $ref<string[]>([ ]);
@@ -216,11 +217,6 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
-      },
-      {
-        type: "string",
-        max: 45,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
       {
         type: "string",
@@ -548,6 +544,7 @@ async function onInitI18ns() {
   const codes: string[] = [
     "名称",
     "菜单权限",
+    "按钮权限",
     "锁定",
     "启用",
     "备注",

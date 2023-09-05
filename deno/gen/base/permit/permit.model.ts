@@ -9,7 +9,6 @@ import type {
 } from "/gen/types.ts";
 
 export interface PermitSearch extends PermitSearchType {
-  tenant_id?: string | null;
   $extra?: SearchExtra[];
 }
 
@@ -18,7 +17,6 @@ export interface PermitModel extends PermitModelType {
   create_time?: string | null;
   update_usr_id: string;
   update_time?: string | null;
-  tenant_id?: string | null;
 }
 
 export interface PermitInput extends PermitInputType {
@@ -26,5 +24,4 @@ export interface PermitInput extends PermitInputType {
   create_time?: string | null;
   update_usr_id?: string;
   update_time?: string | null;
-  tenant_id?: string | null;
 }

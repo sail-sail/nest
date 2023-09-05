@@ -26,39 +26,15 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.role_id == null">
-        <el-form-item
-          label="角色"
-          prop="role_id"
-        >
-          <CustomSelect
-            :set="search.role_id = search.role_id || [ ]"
-            un-w="full"
-            v-model="search.role_id"
-            :method="getRoleList"
-            :options-map="((item: RoleModel) => {
-              return {
-                label: item.lbl,
-                value: item.id,
-              };
-            })"
-            :placeholder="`${ ns('请选择') } ${ n('角色') }`"
-            multiple
-            @change="onSearch"
-          ></CustomSelect>
-        </el-form-item>
-      </template>
-      
       <template v-if="showBuildIn || builtInSearch?.menu_id == null">
         <el-form-item
           label="菜单"
           prop="menu_id"
         >
-          <CustomSelect
+          <CustomTreeSelect
             :set="search.menu_id = search.menu_id || [ ]"
-            un-w="full"
             v-model="search.menu_id"
-            :method="getMenuList"
+            :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -68,7 +44,7 @@
             :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
             multiple
             @change="onSearch"
-          ></CustomSelect>
+          ></CustomTreeSelect>
         </el-form-item>
       </template>
       
@@ -99,23 +75,6 @@
             clearable
             @clear="onSearchClear"
           ></el-input>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
         </el-form-item>
       </template>
       
@@ -150,6 +109,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -431,17 +407,8 @@
           :key="col.prop"
         >
           
-          <!-- 角色 -->
-          <template v-if="'role_id_lbl' === col.prop && (showBuildIn || builtInSearch?.role_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+          <template v-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -464,22 +431,6 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-            </el-table-column>
-          </template>
-          
-          <!-- 可见 -->
-          <template v-else-if="'is_visible_lbl' === col.prop && (showBuildIn || builtInSearch?.is_visible == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_visible"
-                  @change="onIs_visible(row.id, row.is_visible)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
@@ -601,18 +552,20 @@ import type {
   PermitModel,
   PermitInput,
   PermitSearch,
-  RoleModel,
   MenuModel,
   UsrModel,
 } from "#/types";
 
 import {
-  getRoleList,
   getMenuList,
 } from "./Api";
 
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
+
 defineOptions({
-  name: "按钮权限",
+  name: "按钮权限List",
 });
 
 const {
@@ -658,7 +611,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
-    role_id: [ ],
     menu_id: [ ],
   } as PermitSearch;
 }
@@ -710,15 +662,12 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
-  role_id?: string|string[]; // 角色
-  role_id_lbl?: string|string[]; // 角色
   menu_id?: string|string[]; // 菜单
   menu_id_lbl?: string|string[]; // 菜单
   code?: string; // 编码
   code_like?: string; // 编码
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  is_visible?: string|string[]; // 可见
   rem?: string; // 备注
   rem_like?: string; // 备注
   create_usr_id?: string|string[]; // 创建人
@@ -735,12 +684,8 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
-  role_id: "string[]",
-  role_id_lbl: "string[]",
   menu_id: "string[]",
   menu_id_lbl: "string[]",
-  is_visible: "number[]",
-  is_visible_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -861,14 +806,6 @@ let tableData = $ref<PermitModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "角色",
-      prop: "role_id_lbl",
-      width: 160,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "菜单",
       prop: "menu_id_lbl",
       width: 160,
@@ -891,14 +828,6 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-    },
-    {
-      label: "可见",
-      prop: "is_visible_lbl",
-      width: 60,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
     },
     {
       label: "备注",
@@ -1161,11 +1090,9 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("角色") ]: "role_id_lbl",
     [ await nAsync("菜单") ]: "menu_id_lbl",
     [ await nAsync("编码") ]: "code",
     [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("可见") ]: "is_visible_lbl",
     [ await nAsync("备注") ]: "rem",
     [ await nAsync("创建人") ]: "create_usr_id_lbl",
     [ await nAsync("创建时间") ]: "create_time_lbl",
@@ -1218,29 +1145,6 @@ async function stopImport() {
   isStopImport = true;
   isImporting = false;
   importPercentage = 0;
-}
-
-/** 可见 */
-async function onIs_visible(id: string, is_visible: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await updateById(
-    id,
-    {
-      is_visible,
-    },
-    {
-      notLoading,
-    },
-  );
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
 }
 
 /** 打开修改页面 */
@@ -1407,11 +1311,9 @@ async function revertByIdsEfc() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "角色",
     "菜单",
     "编码",
     "名称",
-    "可见",
     "备注",
     "创建人",
     "创建时间",

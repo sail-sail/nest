@@ -116,6 +116,18 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.permit_ids && !Array.isArray(search?.permit_ids)) {
+    search.permit_ids = [ search.permit_ids ];
+  }
+  if (search?.permit_ids && search?.permit_ids.length > 0) {
+    whereQuery += ` and base_permit.id in ${ args.push(search.permit_ids) }`;
+  }
+  if (search?.permit_ids === null) {
+    whereQuery += ` and base_permit.id is null`;
+  }
+  if (search?.permit_ids_is_null) {
+    whereQuery += ` and base_permit.id is null`;
+  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -215,6 +227,28 @@ function getFromQuery() {
       group by role_id
     ) _menu
       on _menu.role_id = t.id
+    left join base_role_permit
+      on base_role_permit.role_id = t.id
+      and base_role_permit.is_deleted = 0
+    left join base_permit
+      on base_role_permit.permit_id = base_permit.id
+      and base_permit.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_permit.id) permit_ids,
+        json_arrayagg(base_permit.lbl) permit_ids_lbl,
+        base_role.id role_id
+      from base_role_permit
+      inner join base_permit
+        on base_permit.id = base_role_permit.permit_id
+        and base_permit.is_deleted = 0
+      inner join base_role
+        on base_role.id = base_role_permit.role_id
+      where
+        base_role_permit.is_deleted = 0
+      group by role_id
+    ) _permit
+      on _permit.role_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -284,6 +318,8 @@ export async function findAll(
     select t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
+      ,max(permit_ids) permit_ids
+      ,max(permit_ids_lbl) permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -397,6 +433,8 @@ export async function getFieldComments() {
     lbl: await n("名称"),
     menu_ids: await n("菜单权限"),
     menu_ids_lbl: await n("菜单权限"),
+    permit_ids: await n("按钮权限"),
+    permit_ids_lbl: await n("按钮权限"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -434,6 +472,9 @@ export async function findByUnique(
   }
   const models: RoleModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
     const lbl = search0.lbl;
     const modelTmps = await findAll({
       lbl,
@@ -609,20 +650,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    45,
-    fieldComments.lbl,
-  );
-  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -637,32 +664,11 @@ export async function validate(
     fieldComments.rem,
   );
   
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
   // 更新人
@@ -722,6 +728,28 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     input.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 按钮权限
+  if (!input.permit_ids && input.permit_ids_lbl) {
+    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
+      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
+    }
+    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_permit t
+      where
+        t.lbl in ${ args.push(input.permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.permit_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 锁定
@@ -864,6 +892,18 @@ export async function create(
     },
   );
   
+  // 按钮权限
+  await many2manyUpdate(
+    input,
+    "permit_ids",
+    {
+      mod: "base",
+      table: "role_permit",
+      column1: "role_id",
+      column2: "permit_id",
+    },
+  );
+  
   await delCache();
   
   return input.id;
@@ -880,6 +920,8 @@ export async function delCache() {
   const foreignTables: string[] = [
     "base_role_menu",
     "base_menu",
+    "base_role_permit",
+    "base_permit",
     "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
@@ -991,6 +1033,28 @@ export async function updateById(
     const models = await query<Result>(sql, args);
     input.menu_ids = models.map((item: { id: string }) => item.id);
   }
+
+  // 按钮权限
+  if (!input.permit_ids && input.permit_ids_lbl) {
+    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
+      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
+    }
+    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = /*sql*/ `
+      select
+        t.id
+      from
+        base_permit t
+      where
+        t.lbl in ${ args.push(input.permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.permit_ids = models.map((item: { id: string }) => item.id);
+  }
   
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
@@ -1091,6 +1155,23 @@ export async function updateById(
       table: "role_menu",
       column1: "role_id",
       column2: "menu_id",
+    },
+  );
+  
+  updateFldNum++;
+  
+  // 按钮权限
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "permit_ids",
+    {
+      mod: "base",
+      table: "role_permit",
+      column1: "role_id",
+      column2: "permit_id",
     },
   );
   

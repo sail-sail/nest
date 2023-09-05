@@ -15,8 +15,6 @@ defineGraphql(resolver, /* GraphQL */`
     code: String!
     "名称"
     lbl: String!
-    "可见"
-    is_visible: Boolean!
   }
   
   type Query {

@@ -63,7 +63,6 @@
         >
           <CustomSelect
             :set="search.org_ids = search.org_ids || [ ]"
-            un-w="full"
             v-model="search.org_ids"
             :method="getOrgList"
             :options-map="((item: OrgModel) => {
@@ -86,7 +85,6 @@
         >
           <CustomSelect
             :set="search.role_ids = search.role_ids || [ ]"
-            un-w="full"
             v-model="search.role_ids"
             :method="getRoleList"
             :options-map="((item: RoleModel) => {
@@ -99,23 +97,6 @@
             multiple
             @change="onSearch"
           ></CustomSelect>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
         </el-form-item>
       </template>
       
@@ -150,6 +131,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "

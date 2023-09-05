@@ -12,19 +12,18 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        foreignTabs: [
-          {
-            mod: "base",
-            table: "permit",
-            label: "按钮权限",
-            column: "role_id",
-          },
-        ],
       },
       {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单权限",
         search: true,
+        foreignKey: {
+          showType: "dialog",
+        },
+      },
+      {
+        COLUMN_NAME: "permit_ids",
+        COLUMN_COMMENT: "按钮权限",
         foreignKey: {
           showType: "dialog",
         },
@@ -78,7 +77,6 @@ export default defineConfig({
         search: true,
         foreignKey: {
           showType: "dialog",
-          selectType: "tree",
         },
       },
       {
@@ -266,7 +264,6 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
           multiple: false,
-          selectType: "tree",
           defaultSort: {
             prop: "order_by",
             order: "ascending",
@@ -504,17 +501,11 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "role_id", "menu_id", "code" ],
+        [ "menu_id", "code" ],
       ],
+      list_tree: "menu_id",
     },
     columns: [
-      {
-        COLUMN_NAME: "role_id",
-        require: true,
-        search: true,
-        width: 160,
-        align: "left",
-      },
       {
         COLUMN_NAME: "menu_id",
         require: true,
@@ -542,9 +533,6 @@ export default defineConfig({
         width: 160,
         align: "left",
         fixed: null,
-      },
-      {
-        COLUMN_NAME: "is_visible",
       },
       {
         COLUMN_NAME: "rem",
@@ -753,7 +741,6 @@ export default defineConfig({
           column: "id",
           lbl: "lbl",
           multiple: false,
-          selectType: "tree",
           defaultSort: {
             prop: "order_by",
             order: "ascending",

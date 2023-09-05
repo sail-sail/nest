@@ -12,8 +12,17 @@ import type {
 
 import type {
   MenuSearch,
+  PermitSearch,
   UsrSearch,
 } from "#/types";
+
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
+
+import {
+  findTree as findPermitTree,
+} from "@/views/base/permit/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -39,6 +48,8 @@ export async function findAll(
           lbl
           menu_ids
           menu_ids_lbl
+          permit_ids
+          permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -173,6 +184,8 @@ export async function findById(
           lbl
           menu_ids
           menu_ids_lbl
+          permit_ids
+          permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -378,6 +391,51 @@ export async function getMenuList() {
   return data;
 }
 
+export async function findAllPermit(
+  search?: PermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllPermit: Query["findAllPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllPermit(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllPermit;
+  return res;
+}
+
+export async function getPermitList() {
+  const data = await findAllPermit(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -423,6 +481,36 @@ export async function getUsrList() {
   return data;
 }
 
+export async function getMenuTree() {
+  const data = await findMenuTree(
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getPermitTree() {
+  const data = await findPermitTree(
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -443,6 +531,7 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsRole {
             lbl
             menu_ids_lbl
+            permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             rem
@@ -452,6 +541,10 @@ export function useDownloadImportTemplate(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
+            id
+            lbl
+          }
+          findAllPermit {
             id
             lbl
           }
@@ -515,6 +608,8 @@ export function useExportExcel(routePath: string) {
             lbl
             menu_ids
             menu_ids_lbl
+            permit_ids
+            permit_ids_lbl
             is_locked
             is_locked_lbl
             is_enabled
@@ -532,6 +627,7 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsRole {
             lbl
             menu_ids_lbl
+            permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             rem
@@ -541,6 +637,9 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllMenu {
+            lbl
+          }
+          findAllPermit {
             lbl
           }
           findAllUsr {

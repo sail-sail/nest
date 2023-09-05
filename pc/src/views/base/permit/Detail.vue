@@ -34,7 +34,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -44,26 +44,6 @@
         :validate-on-rule-change="false"
         @keyup.enter="onSave"
       >
-        
-        <template v-if="(showBuildIn || builtInModel?.role_id == null)">
-          <el-form-item
-            :label="n('角色')"
-            prop="role_id"
-          >
-            <CustomSelect
-              v-model="dialogModel.role_id"
-              :method="getRoleList"
-              :options-map="((item: RoleModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('角色') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
         
         <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
           <el-form-item
@@ -104,26 +84,11 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.is_visible == null)">
-          <el-form-item
-            :label="n('可见')"
-            prop="is_visible"
-          >
-            <DictSelect
-              :set="dialogModel.is_visible = dialogModel.is_visible ?? undefined"
-              v-model="dialogModel.is_visible"
-              code="yes_no"
-              :placeholder="`${ ns('请选择') } ${ n('可见') }`"
-              :readonly="isLocked || isReadonly"
-            ></DictSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-2"
+            un-grid="col-span-1"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -219,12 +184,14 @@ import {
 
 import type {
   PermitInput,
-  RoleModel,
 } from "#/types";
 
 import {
-  getRoleList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 import SelectInputMenu from "@/views/base/menu/SelectInput.vue";
 
@@ -275,13 +242,6 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 角色
-    role_id: [
-      {
-        required: true,
-        message: `${ await nsAsync("请选择") } ${ n("角色") }`,
-      },
-    ],
     // 菜单
     menu_id: [
       {
@@ -313,13 +273,6 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
-    // 可见
-    is_visible: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("可见") }`,
-      },
-    ],
   };
 });
 
@@ -347,7 +300,6 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: PermitInput = {
-    is_visible: 1,
   };
   return defaultInput;
 }
@@ -610,11 +562,9 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "角色",
     "菜单",
     "编码",
     "名称",
-    "可见",
     "备注",
     "创建人",
     "创建时间",

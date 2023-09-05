@@ -16,6 +16,10 @@ import type {
   UsrSearch,
 } from "#/types";
 
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -399,6 +403,21 @@ export async function getUsrList() {
     [
       {
         prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getMenuTree() {
+  const data = await findMenuTree(
+    [
+      {
+        prop: "order_by",
         order: "ascending",
       },
     ],

@@ -456,6 +456,9 @@ export async function findByUnique(
   }
   const models: DictbizModel[] = [ ];
   {
+    if (search0.code == null) {
+      return [ ];
+    }
     const code = search0.code;
     const modelTmps = await findAll({
       code,

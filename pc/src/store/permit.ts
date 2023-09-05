@@ -4,7 +4,7 @@ import {
 
 export default defineStore("permit", function() {
   
-  let permits = $ref<Pick<GetUsrPermits, "code" | "is_visible" | "route_path">[]>([]);
+  let permits = $ref<Pick<GetUsrPermits, "code" | "route_path">[]>([]);
   
   function getPermit(route_path?: string) {
     if (!route_path) {
@@ -14,12 +14,12 @@ export default defineStore("permit", function() {
     const permitObj = computed(() => permits
       .filter((permit) => permit.route_path === route_path)
       .map((permit) => ({
-        [permit.code]: permit.is_visible,
+        [permit.code]: true,
       })).reduce((prev, curr) => ({ ...prev, ...curr }), {})
     );
     
     return function(code: string) {
-      return permitObj.value[code] === false ? false : true;
+      return permitObj.value[code];
     };
   }
   

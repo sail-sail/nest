@@ -46,11 +46,10 @@
           label="菜单权限"
           prop="menu_ids"
         >
-          <CustomSelect
+          <CustomTreeSelect
             :set="search.menu_ids = search.menu_ids || [ ]"
-            un-w="full"
             v-model="search.menu_ids"
-            :method="getMenuList"
+            :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -60,24 +59,7 @@
             :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
             multiple
             @change="onSearch"
-          ></CustomSelect>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
+          ></CustomTreeSelect>
         </el-form-item>
       </template>
       
@@ -112,6 +94,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -656,6 +655,10 @@ import type {
 import {
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 defineOptions({
   name: "租户",

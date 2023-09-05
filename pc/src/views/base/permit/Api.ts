@@ -8,13 +8,17 @@ import type {
   PageInput,
   PermitSearch,
   PermitInput,
+  PermitModel,
 } from "#/types";
 
 import type {
-  RoleSearch,
   MenuSearch,
   UsrSearch,
 } from "#/types";
+
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -37,14 +41,10 @@ export async function findAll(
       query($search: PermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPermit(search: $search, page: $page, sort: $sort) {
           id
-          role_id
-          role_id_lbl
           menu_id
           menu_id_lbl
           code
           lbl
-          is_visible
-          is_visible_lbl
           rem
           create_usr_id
           create_usr_id_lbl
@@ -69,6 +69,30 @@ export async function findAll(
     const item = res[i];
   }
   return res;
+}
+
+export type PermitModelTree = PermitModel & {
+  children?: PermitModelTree[];
+}
+
+/**
+ * 查找树形数据
+ * @param sort 
+ * @param opt 
+ * @returns 
+ */
+export async function findTree(
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAll(
+    undefined,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData = list2tree(res);
+  return treeData;
 }
 
 /**
@@ -172,14 +196,10 @@ export async function findById(
       query($id: String!) {
         findByIdPermit(id: $id) {
           id
-          role_id
-          role_id_lbl
           menu_id
           menu_id_lbl
           code
           lbl
-          is_visible
-          is_visible_lbl
           rem
           create_usr_id
           create_usr_id_lbl
@@ -278,51 +298,6 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllRole(
-  search?: RoleSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllRole: Query["findAllRole"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllRole(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllRole;
-  return res;
-}
-
-export async function getRoleList() {
-  const data = await findAllRole(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function findAllMenu(
   search?: MenuSearch,
   page?: PageInput,
@@ -413,6 +388,21 @@ export async function getUsrList() {
   return data;
 }
 
+export async function getMenuTree() {
+  const data = await findMenuTree(
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -431,20 +421,14 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsPermit {
-            role_id_lbl
             menu_id_lbl
             code
             lbl
-            is_visible_lbl
             rem
             create_usr_id_lbl
             create_time_lbl
             update_usr_id_lbl
             update_time_lbl
-          }
-          findAllRole {
-            id
-            lbl
           }
           findAllMenu {
             id
@@ -455,7 +439,6 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "is_visible",
           ]) {
             code
             lbl
@@ -506,14 +489,10 @@ export function useExportExcel(routePath: string) {
         query($search: PermitSearch, $sort: [SortInput!]) {
           findAllPermit(search: $search, sort: $sort) {
             id
-            role_id
-            role_id_lbl
             menu_id
             menu_id_lbl
             code
             lbl
-            is_visible
-            is_visible_lbl
             rem
             create_usr_id
             create_usr_id_lbl
@@ -525,19 +504,14 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsPermit {
-            role_id_lbl
             menu_id_lbl
             code
             lbl
-            is_visible_lbl
             rem
             create_usr_id_lbl
             create_time_lbl
             update_usr_id_lbl
             update_time_lbl
-          }
-          findAllRole {
-            lbl
           }
           findAllMenu {
             lbl
@@ -546,7 +520,6 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "is_visible",
           ]) {
             code
             lbl

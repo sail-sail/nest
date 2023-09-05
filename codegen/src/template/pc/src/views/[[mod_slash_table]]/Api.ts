@@ -94,7 +94,17 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   importForeignTablesTree.push(Foreign_Table_Up);
-  if (foreignKey.selectType !== "tree") {
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    continue;
+  }
+  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    continue;
+  }
+  if (!foreignSchema.opts.list_tree) {
     continue;
   }
 #>
@@ -684,7 +694,6 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
-  if (foreignKey.selectType !== "tree") continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (foreignTableTreeArr.includes(foreignTable)) continue;
@@ -693,6 +702,19 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   const defaultSort = foreignKey && foreignKey.defaultSort;
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    continue;
+  }
+  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    continue;
+  }
+  if (!foreignSchema.opts.list_tree) {
+    continue;
+  }
 #>
 
 export async function get<#=Foreign_Table_Up#>Tree() {

@@ -101,12 +101,42 @@ const hasAtt = columns.some((item) => item.isAtt);
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        let foreignSchema = undefined;
+        if (foreignKey) {
+          foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+        }
       #><#
         if (search) {
       #>
       <#
       if (column.isImg) {
       #><#
+      } else if (foreignSchema && foreignSchema.opts.list_tree
+        && !foreignSchema.opts.ignoreCodegen
+        && !foreignSchema.opts.onlyCodegenDeno
+      ) {
+      #>
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
+          <CustomTreeSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            v-model="search.<#=column_name#>"
+            :method="get<#=Foreign_Table_Up#>Tree"
+            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+              return {
+                label: item.<#=foreignKey.lbl#>,
+                value: item.<#=foreignKey.column#>,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            multiple
+            @change="onSearch"
+          ></CustomTreeSelect>
+        </el-form-item>
+      </template><#
       } else if (foreignKey) {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
@@ -116,7 +146,6 @@ const hasAtt = columns.some((item) => item.isAtt);
         >
           <CustomSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            un-w="full"
             v-model="search.<#=column_name#>"
             :method="get<#=Foreign_Table_Up#>List"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
@@ -140,7 +169,6 @@ const hasAtt = columns.some((item) => item.isAtt);
         >
           <DictSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            un-w="full"
             :model-value="search.<#=column_name#>"
             @update:model-value="search.<#=column_name#> = $event"
             code="<#=column.dict#>"
@@ -243,27 +271,6 @@ const hasAtt = columns.some((item) => item.isAtt);
         }
       }
       #>
-      <#
-      if (opts.noDelete !== true && opts.noRevert !== true) {
-      #>
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template><#
-      }
-      #>
       
       <el-form-item
         label=" "
@@ -295,7 +302,28 @@ const hasAtt = columns.some((item) => item.isAtt);
         >
           <ElIconRemove />
         </el-icon>
-      </el-form-item>
+      </el-form-item><#
+      if (opts.noDelete !== true && opts.noRevert !== true) {
+      #>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template><#
+      }
+      #>
       
       <el-form-item
         label=" "
@@ -1040,15 +1068,24 @@ const hasAtt = columns.some((item) => item.isAtt);
     const require = column.require;
     const search = column.search;
     const foreignKey = column.foreignKey;
+    const many2many = column.many2many;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    let foreignSchema = undefined;
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+      if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+        continue;
+      }
+    }
   #><#
     if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
       && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
+      && !(foreignSchema && foreignSchema.opts.list_tree)
     ) {
   #>
   
@@ -1069,7 +1106,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   </ListSelectDialog><#
     } else if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-      && (foreignKey && [ "tree" ].includes(foreignKey.selectType))
+      && (foreignSchema && foreignSchema.opts.list_tree)
     ) {
   #>
   
@@ -1150,30 +1187,37 @@ for (let i = 0; i < columns.length; i++) {
   if (column_comment.indexOf("[") !== -1) {
     column_comment = column_comment.substring(0, column_comment.indexOf("["));
   }
-  const require = column.require;
-  const search = column.search;
   const foreignKey = column.foreignKey;
+  const many2many = column.many2many;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+      continue;
+    }
+  }
 #><#
   if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
     && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
+    && !(foreignSchema && foreignSchema.opts.list_tree)
   ) {
 #>
 
 import <#=Foreign_Table_Up#>List from "../<#=foreignTable#>/List.vue";<#
   } else if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-    && (foreignKey && [ "tree" ].includes(foreignKey.selectType))
+    && (foreignSchema && foreignSchema.opts.list_tree && foreignSchema.opts.list_tree)
   ) {
 #>
 
 import <#=Foreign_Table_Up#>TreeList from "../<#=foreignTable#>/TreeList.vue";<#
-}
+  }
 #><#
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
@@ -1312,6 +1356,53 @@ import {<#
   }
   #>
 } from "./Api";<#
+}
+#><#
+const foreignTableArr3 = [];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (!foreignSchema) {
+    continue;
+  }
+  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    continue;
+  }
+  if (!foreignSchema.opts.list_tree) {
+    continue;
+  }
+  if (!column.search) {
+    continue;
+  }
+  if (foreignTableArr3.includes(foreignTable)) continue;
+  foreignTableArr3.push(foreignTable);
+#>
+
+import {
+  get<#=Foreign_Table_Up#>Tree,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
 }
 #><#
 if (hasForeignTabs) {
@@ -2899,7 +2990,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
 
-let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs> | undefined>();
+let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>();
 
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: string, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({

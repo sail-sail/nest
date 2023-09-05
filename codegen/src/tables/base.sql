@@ -1,5 +1,5 @@
 -- Active: 1666076695194@@180.76.246.215@3389
------------------------------------------------------------------------------------------------- 租户
+------------------------------------------------------------------------ 租户
 drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -18,7 +18,7 @@ CREATE TABLE if not exists `base_tenant` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户';
 
------------------------------------------------------------------------------------------------- 域名
+------------------------------------------------------------------------ 域名
 drop table if exists `base_domain`;
 CREATE TABLE if not exists `base_domain` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -37,7 +37,7 @@ CREATE TABLE if not exists `base_domain` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='域名';
 
------------------------------------------------------------------------------------------------- 租户域名
+------------------------------------------------------------------------ 租户域名
 drop table if exists `base_tenant_domain`;
 CREATE TABLE if not exists `base_tenant_domain` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -53,7 +53,7 @@ CREATE TABLE if not exists `base_tenant_domain` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户域名';
 
------------------------------------------------------------------------------------------------- 租户菜单
+------------------------------------------------------------------------ 租户菜单
 drop table if exists `base_tenant_menu`;
 CREATE TABLE if not exists `base_tenant_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -69,7 +69,7 @@ CREATE TABLE if not exists `base_tenant_menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='租户菜单';
 
------------------------------------------------------------------------------------------------- 用户
+------------------------------------------------------------------------ 用户
 drop table if exists `base_usr`;
 CREATE TABLE if not exists `base_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -92,7 +92,7 @@ CREATE TABLE if not exists `base_usr` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户';
 
------------------------------------------------------------------------------------------------- 角色
+------------------------------------------------------------------------ 角色
 drop table if exists `base_role`;
 CREATE TABLE if not exists `base_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -111,7 +111,7 @@ CREATE TABLE if not exists `base_role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色';
 
------------------------------------------------------------------------------------------------- 用户角色
+------------------------------------------------------------------------ 用户角色
 drop table if exists `base_usr_role`;
 CREATE TABLE if not exists `base_usr_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -128,7 +128,7 @@ CREATE TABLE if not exists `base_usr_role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户角色';
 
------------------------------------------------------------------------------------------------- 用户组织
+------------------------------------------------------------------------ 用户组织
 drop table if exists `base_usr_org`;
 CREATE TABLE if not exists `base_usr_org` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -145,7 +145,7 @@ CREATE TABLE if not exists `base_usr_org` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户组织';
 
------------------------------------------------------------------------------------------------- 菜单
+------------------------------------------------------------------------ 菜单
 drop table if exists `base_menu`;
 CREATE TABLE if not exists `base_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -167,7 +167,7 @@ CREATE TABLE if not exists `base_menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='菜单';
 
------------------------------------------------------------------------------------------------- 语言
+------------------------------------------------------------------------ 语言
 drop table if exists `base_lang`;
 CREATE TABLE if not exists `base_lang` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -187,7 +187,7 @@ CREATE TABLE if not exists `base_lang` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='语言';
 
------------------------------------------------------------------------------------------------- 国际化
+------------------------------------------------------------------------ 国际化
 drop table if exists `base_i18n`;
 CREATE TABLE if not exists `base_i18n` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -206,28 +206,25 @@ CREATE TABLE if not exists `base_i18n` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='国际化';
 
------------------------------------------------------------------------------------------------- 按钮权限
+------------------------------------------------------------------------ 按钮权限
 drop table if exists `base_permit`;
 CREATE TABLE if not exists `base_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
   `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `is_visible` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '可见,dict:yes_no',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `menu_id`, `code`, `tenant_id`),
+  INDEX (`menu_id`, `code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='按钮权限';
 
------------------------------------------------------------------------------------------------- 角色菜单
+------------------------------------------------------------------------ 角色菜单
 drop table if exists `base_role_menu`;
 CREATE TABLE if not exists `base_role_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -244,7 +241,24 @@ CREATE TABLE if not exists `base_role_menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色菜单';
 
------------------------------------------------------------------------------------------------- 后台任务
+------------------------------------------------------------------------ 角色按钮权限
+drop table if exists `base_role_permit`;
+CREATE TABLE if not exists `base_role_permit` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
+  `permit_id` varchar(22) NOT NULL DEFAULT '' COMMENT '按钮权限',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`role_id`, `permit_id`, `tenant_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='角色按钮权限';
+
+------------------------------------------------------------------------ 后台任务
 drop table if exists `base_background_task`;
 CREATE TABLE if not exists `base_background_task` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -268,7 +282,7 @@ CREATE TABLE if not exists `base_background_task` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='后台任务';
 
------------------------------------------------------------------------------------------------- 选项
+------------------------------------------------------------------------ 选项
 drop table if exists `base_options`;
 CREATE TABLE if not exists `base_options` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -291,7 +305,7 @@ CREATE TABLE if not exists `base_options` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统选项';
 
------------------------------------------------------------------------------------------------- 操作记录
+------------------------------------------------------------------------ 操作记录
 drop table if exists `base_operation_record`;
 CREATE TABLE if not exists `base_operation_record` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -314,7 +328,7 @@ CREATE TABLE if not exists `base_operation_record` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='操作记录';
 
------------------------------------------------------------------------------------------------- 组织
+------------------------------------------------------------------------ 组织
 drop table if exists `base_org`;
 CREATE TABLE if not exists `base_org` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -334,7 +348,7 @@ CREATE TABLE if not exists `base_org` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='组织';
 
------------------------------------------------------------------------------------------------- 部门
+------------------------------------------------------------------------ 部门
 drop table if exists `base_dept`;
 CREATE TABLE if not exists `base_dept` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -356,7 +370,7 @@ CREATE TABLE if not exists `base_dept` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门';
 
------------------------------------------------------------------------------------------------- 系统字典
+------------------------------------------------------------------------ 系统字典
 drop table if exists `base_dict`;
 CREATE TABLE if not exists `base_dict` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -378,7 +392,7 @@ CREATE TABLE if not exists `base_dict` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统字典';
 
------------------------------------------------------------------------------------------------- 系统字典明细
+------------------------------------------------------------------------ 系统字典明细
 drop table if exists `base_dict_detail`;
 CREATE TABLE if not exists `base_dict_detail` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -400,7 +414,7 @@ CREATE TABLE if not exists `base_dict_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统字典明细';
 
------------------------------------------------------------------------------------------------- 业务字典
+------------------------------------------------------------------------ 业务字典
 drop table if exists `base_dictbiz`;
 CREATE TABLE if not exists `base_dictbiz` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -423,7 +437,7 @@ CREATE TABLE if not exists `base_dictbiz` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='业务字典';
 
------------------------------------------------------------------------------------------------- 业务字典明细
+------------------------------------------------------------------------ 业务字典明细
 drop table if exists `base_dictbiz_detail`;
 CREATE TABLE if not exists `base_dictbiz_detail` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
