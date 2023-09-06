@@ -23,8 +23,6 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use crate::src::base::dict_detail::dict_detail_dao::get_dict;
-
 use super::permit_model::*;
 
 #[allow(unused_variables)]
@@ -73,52 +71,6 @@ fn get_where_query<'a>(
         items.join(",")
       };
       where_query += &format!(" and t.id in ({})", arg);
-    }
-  }
-  {
-    let tenant_id = {
-      let tenant_id = match &search {
-        Some(item) => &item.tenant_id,
-        None => &None,
-      };
-      let tenant_id = match trim_opt(tenant_id.as_ref()) {
-        None => ctx.get_auth_tenant_id(),
-        Some(item) => match item.as_str() {
-          "-" => None,
-          _ => item.into(),
-        },
-      };
-      tenant_id
-    };
-    if let Some(tenant_id) = tenant_id {
-      where_query += " and t.tenant_id = ?";
-      args.push(tenant_id.into());
-    }
-  }
-  {
-    let role_id: Vec<String> = match &search {
-      Some(item) => item.role_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !role_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(role_id.len());
-        for item in role_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and role_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let role_id_is_null: bool = match &search {
-      Some(item) => item.role_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if role_id_is_null {
-      where_query += &format!(" and role_id_lbl.id is null");
     }
   }
   {
@@ -177,23 +129,6 @@ fn get_where_query<'a>(
     };
     if let Some(lbl_like) = lbl_like {
       where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
-    }
-  }
-  {
-    let is_visible: Vec<u8> = match &search {
-      Some(item) => item.is_visible.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !is_visible.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(is_visible.len());
-        for item in is_visible {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and t.is_visible in ({})", arg);
     }
   }
   {
@@ -311,8 +246,6 @@ fn get_where_query<'a>(
 
 fn get_from_query() -> &'static str {
   let from_query = r#"base_permit t
-    left join base_role role_id_lbl
-      on role_id_lbl.id = t.role_id
     left join base_menu menu_id_lbl
       on menu_id_lbl.id = t.menu_id
     left join base_usr create_usr_id_lbl
@@ -346,7 +279,6 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,role_id_lbl.lbl role_id_lbl
       ,menu_id_lbl.lbl menu_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -371,21 +303,7 @@ pub async fn find_all<'a>(
     options,
   ).await?;
   
-  let dict_vec = get_dict(ctx, &vec![
-    "yes_no",
-  ]).await?;
-  
-  let is_visible_dict = &dict_vec[0];
-  
   for model in &mut res {
-    
-    // 可见
-    model.is_visible_lbl = {
-      is_visible_dict.iter()
-        .find(|item| item.val == model.is_visible.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_visible.to_string())
-    };
     
   }
   
@@ -468,14 +386,10 @@ pub async fn get_field_comments<'a>(
   
   let field_comments = PermitFieldComment {
     id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    role_id: n_route.n(ctx, "角色".to_owned(), None).await?,
-    role_id_lbl: n_route.n(ctx, "角色".to_owned(), None).await?,
     menu_id: n_route.n(ctx, "菜单".to_owned(), None).await?,
     menu_id_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
     code: n_route.n(ctx, "编码".to_owned(), None).await?,
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    is_visible: n_route.n(ctx, "可见".to_owned(), None).await?,
-    is_visible_lbl: n_route.n(ctx, "可见".to_owned(), None).await?,
     rem: n_route.n(ctx, "备注".to_owned(), None).await?,
     create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
     create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
@@ -562,7 +476,6 @@ pub async fn find_by_unique<'a>(
   
   let mut models_tmp = {
     if
-      search.role_id.is_none() ||
       search.menu_id.is_none() ||
       search.code.is_none()
     {
@@ -570,7 +483,6 @@ pub async fn find_by_unique<'a>(
     }
     
     let search = PermitSearch {
-      role_id: search.role_id,
       menu_id: search.menu_id,
       code: search.code,
       ..Default::default()
@@ -600,7 +512,6 @@ fn equals_by_unique(
   }
   
   if
-    input.role_id.as_ref().is_some() && input.role_id.as_ref().unwrap() == &model.role_id &&
     input.menu_id.as_ref().is_some() && input.menu_id.as_ref().unwrap() == &model.menu_id &&
     input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
   {
@@ -655,49 +566,6 @@ pub async fn set_id_by_lbl<'a>(
   
   #[allow(unused_mut)]
   let mut input = input;
-  
-  let dict_vec = get_dict(ctx, &vec![
-    "yes_no",
-  ]).await?;
-  
-  // 可见
-  if input.is_visible.is_none() {
-    let is_visible_dict = &dict_vec[0];
-    if let Some(is_visible_lbl) = input.is_visible_lbl.clone() {
-      input.is_visible = is_visible_dict.into_iter()
-        .find(|item| {
-          item.lbl == is_visible_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        })
-        .into();
-    }
-  }
-  
-  // 角色
-  if input.role_id.is_none() {
-    if input.role_id_lbl.is_some()
-      && !input.role_id_lbl.as_ref().unwrap().is_empty()
-      && input.role_id.is_none()
-    {
-      input.role_id_lbl = input.role_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::base::role::role_dao::find_one(
-        ctx,
-        crate::gen::base::role::role_model::RoleSearch {
-          lbl: input.role_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.role_id = model.id.into();
-      }
-    }
-  }
   
   // 菜单
   if input.menu_id.is_none() {
@@ -799,23 +667,11 @@ pub async fn create<'a>(
   args.push(id.clone().into());
   args.push(now.into());
   
-  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
-    sql_fields += ",tenant_id";
-    sql_values += ",?";
-    args.push(tenant_id.into());
-  }
-  
   if let Some(auth_model) = ctx.get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";
     sql_values += ",?";
     args.push(usr_id.into());
-  }
-  // 角色
-  if let Some(role_id) = input.role_id {
-    sql_fields += ",role_id";
-    sql_values += ",?";
-    args.push(role_id.into());
   }
   // 菜单
   if let Some(menu_id) = input.menu_id {
@@ -834,12 +690,6 @@ pub async fn create<'a>(
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
-  }
-  // 可见
-  if let Some(is_visible) = input.is_visible {
-    sql_fields += ",is_visible";
-    sql_values += ",?";
-    args.push(is_visible.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -882,47 +732,6 @@ pub async fn create<'a>(
   ).await?;
   
   Ok(id)
-}
-
-/// 根据id修改租户id
-pub async fn update_tenant_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
-  id: String,
-  tenant_id: String,
-  options: Option<Options>,
-) -> Result<u64> {
-  let table = "base_permit";
-  let _method = "update_tenant_by_id";
-  
-  let mut args = QueryArgs::new();
-  
-  let sql_fields = "tenant_id = ?,update_time = ?";
-  args.push(tenant_id.into());
-  args.push(ctx.get_now().into());
-  
-  let sql_where = "id = ?";
-  args.push(id.into());
-  
-  let sql = format!(
-    "update {} set {} where {}",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  let num = ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  Ok(num)
 }
 
 /// 根据id修改数据
@@ -993,12 +802,6 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
-  // 角色
-  if let Some(role_id) = input.role_id {
-    field_num += 1;
-    sql_fields += ",role_id = ?";
-    args.push(role_id.into());
-  }
   // 菜单
   if let Some(menu_id) = input.menu_id {
     field_num += 1;
@@ -1016,12 +819,6 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
-  }
-  // 可见
-  if let Some(is_visible) = input.is_visible {
-    field_num += 1;
-    sql_fields += ",is_visible = ?";
-    args.push(is_visible.into());
   }
   // 备注
   if let Some(rem) = input.rem {
@@ -1075,7 +872,6 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "base_permit";
   vec![
     table,
-    "base_role",
     "base_menu",
     "base_usr",
   ]

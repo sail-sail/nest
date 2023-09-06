@@ -94,7 +94,17 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   importForeignTablesTree.push(Foreign_Table_Up);
-  if (foreignKey.selectType !== "tree") {
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    continue;
+  }
+  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    continue;
+  }
+  if (!foreignSchema.opts.list_tree) {
     continue;
   }
 #>
@@ -684,7 +694,6 @@ for (let i = 0; i < columns.length; i++) {
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
   if (!foreignKey) continue;
-  if (foreignKey.selectType !== "tree") continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (foreignTableTreeArr.includes(foreignTable)) continue;
@@ -693,6 +702,19 @@ for (let i = 0; i < columns.length; i++) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   const defaultSort = foreignKey && foreignKey.defaultSort;
+  let foreignSchema = undefined;
+  if (foreignKey) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (!foreignSchema) {
+    continue;
+  }
+  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    continue;
+  }
+  if (!foreignSchema.opts.list_tree) {
+    continue;
+  }
 #>
 
 export async function get<#=Foreign_Table_Up#>Tree() {
@@ -979,6 +1001,113 @@ export function useExportExcel(routePath: string) {
               }
             }
             #>
+          }<#
+          const foreignTableArrTmp2 = [];
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno) continue;
+            const column_name = column.COLUMN_NAME;
+            let column_type = column.COLUMN_TYPE;
+            let data_type = column.DATA_TYPE;
+            let column_comment = column.COLUMN_COMMENT;
+            let selectList = [ ];
+            let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+            if (selectStr) {
+              selectList = eval(`(${ selectStr })`);
+            }
+            if (column_comment.includes("[")) {
+              column_comment = column_comment.substring(0, column_comment.indexOf("["));
+            }
+            if (column_name === "id") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            const foreignKey = column.foreignKey;
+            if (!foreignKey) continue;
+            const foreignTable = foreignKey && foreignKey.table;
+            if (foreignTableArrTmp2.includes(foreignTable)) continue;
+            foreignTableArrTmp2.push(foreignTable);
+            const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+            const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+          #>
+          findAll<#=Foreign_Table_Up#> {
+            <#=foreignKey.lbl#>
+          }<#
+          }
+          #>
+          getDict(codes: [<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+              if (column_name === "id") {
+                continue;
+              }
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+            #><#
+              if (column.dict) {
+            #>
+            "<#=column_name#>",<#
+              }
+            #><#
+            }
+            #>
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [<#
+            for (let i = 0; i < columns.length; i++) {
+              const column = columns[i];
+              if (column.ignoreCodegen) continue;
+              if (column.onlyCodegenDeno) continue;
+              const column_name = column.COLUMN_NAME;
+              let column_type = column.COLUMN_TYPE;
+              let data_type = column.DATA_TYPE;
+              let column_comment = column.COLUMN_COMMENT;
+              let selectList = [ ];
+              let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+              if (selectStr) {
+                selectList = eval(`(${ selectStr })`);
+              }
+              if (column_comment.includes("[")) {
+                column_comment = column_comment.substring(0, column_comment.indexOf("["));
+              }
+              const foreignKey = column.foreignKey;
+              if (column_name === "id") {
+                continue;
+              }
+              const isPassword = column.isPassword;
+              if (isPassword) continue;
+            #><#
+              if (column.dictbiz) {
+            #>
+            "<#=column_name#>",<#
+              }
+            #><#
+            }
+            #>
+          ]) {
+            code
+            lbl
           }
         }
       `,

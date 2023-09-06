@@ -137,6 +137,10 @@ for (let i = 0; i < columns.length; i++) {
           if (column_type == null) {
             column_type = "";
           }
+          let foreignSchema = undefined;
+          if (foreignKey) {
+            foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+          }
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -181,6 +185,7 @@ for (let i = 0; i < columns.length; i++) {
             } else if (
               foreignKey
               && (foreignKey.selectType === "select" || foreignKey.selectType == null)
+              && !foreignSchema?.opts.list_tree
             ) {
             #>
             <CustomSelect<#
@@ -239,7 +244,10 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :readonly="isLocked || isReadonly"
             ></SelectInput<#=Foreign_Table_Up#>><#
-            } else if (foreignKey && foreignKey.selectType === "tree") {
+            } else if (foreignSchema && foreignSchema.opts.list_tree
+              && !foreignSchema.opts.ignoreCodegen
+              && !foreignSchema.opts.onlyCodegenDeno
+            ) {
             #>
             <CustomTreeSelect<#
               if (foreignKey.multiple) {
@@ -593,10 +601,7 @@ for (let i = 0; i < columns.length; i++) {
     continue;
   }
   const foreignKey = column.foreignKey;
-  if (!foreignKey || foreignKey.selectType !== "tree") {
-    continue;
-  }
-  if (foreignKey.showType === "dialog") {
+  if (!foreignKey) {
     continue;
   }
   const foreignTable = foreignKey && foreignKey.table;
@@ -604,6 +609,19 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  if (foreignKey.showType === "dialog") {
+    continue;
+  }
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (!foreignSchema) {
+    continue;
+  }
+  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    continue;
+  }
+  if (!foreignSchema.opts.list_tree) {
+    continue;
+  }
   if (foreignTableArr3.includes(foreignTable)) continue;
   foreignTableArr3.push(foreignTable);
 #>
@@ -661,6 +679,10 @@ const {
   initI18ns,
   initSysI18ns,
 } = useI18n("/<#=mod#>/<#=table#>");
+
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
 
 let inited = $ref(false);
 
@@ -947,11 +969,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = <#
-    if (hasLocked) {
-    #>dialogModel.is_locked == 1 ?? <#
+    if (!permit("edit")) {
+      isLocked = true;
+    } else {
+      isLocked = <#
+      if (hasLocked) {
+      #>dialogModel.is_locked == 1 ?? <#
+      }
+      #>toValue(arg?.isLocked) ?? isLocked;
     }
-    #>toValue(arg?.isLocked) ?? isLocked;
   });
   dialogAction = action || "add";
   ids = [ ];
@@ -1031,11 +1057,11 @@ if (hasLocked) {
 #>
 
 watch(
-  () => dialogModel.is_locked,
+  () => isLocked,
   async () => {
-    if (dialogModel.is_locked == 1) {
+    if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
-    } else if (dialogModel.is_locked == 0) {
+    } else {
       dialogNotice = "";
     }
   },

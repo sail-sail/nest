@@ -48,7 +48,6 @@
         >
           <DictSelect
             :set="search.state = search.state || [ ]"
-            un-w="full"
             :model-value="search.state"
             @update:model-value="search.state = $event"
             code="background_task_state"
@@ -66,7 +65,6 @@
         >
           <DictSelect
             :set="search.type = search.type || [ ]"
-            un-w="full"
             :model-value="search.type"
             @update:model-value="search.type = $event"
             code="background_task_type"
@@ -95,23 +93,6 @@
             @update:model-value="search.begin_time = $event"
             @clear="onSearchClear"
           ></el-date-picker>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
         </el-form-item>
       </template>
       
@@ -146,6 +127,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "

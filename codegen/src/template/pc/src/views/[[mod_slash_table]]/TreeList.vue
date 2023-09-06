@@ -23,6 +23,17 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
   modelNameTree = Table_Up + "ModelTree";
 }
+const list_tree = opts.list_tree;
+const lbl_field = opts.lbl_field;
+let list_treeColumn = undefined;
+let list_treeForeignKey = undefined;
+if (typeof list_tree === "string") {
+  list_treeColumn = columns.find((item) => item.COLUMN_NAME === list_tree);
+  list_treeForeignKey = list_treeColumn?.foreignKey;
+  if (!list_treeForeignKey) {
+    throw `表: ${ mod_table } 中的 list_tree 对应的外键字段: ${ list_tree } 不存在`;
+  }
+}
 #><template>
 <div
   un-flex="~ [1_0_0]"
@@ -63,7 +74,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         :data="treeData"
         node-key="id"
         :props="{
-          label: 'lbl',
+          label: '<#=lbl_field#>',
           children: 'children',
           'class': nodeClass,
         }"
@@ -82,33 +93,49 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     un-flex="~ [1_0_0] col"
     un-overflow-hidden
   >
-    <List
-      ref="listRef"
-      :show-build-in="props.showBuildIn || '1'"
-      is-pagination="0"
-      v-bind="$attrs"
-      :parent_id="parent_id"
-      @add="onFindTree"
-      @edit="onFindTree"
-      @remove="onFindTree"
-      @revert="onFindTree"
-      @refresh="onFindTree"
-      @before-search-reset="beforeSearchReset"
-    ></List>
+    <slot
+      :show-build-in="props.showBuildIn"
+      :<#=list_tree === true ? "parent_id" : list_treeColumn.COLUMN_NAME#>="parent_id"
+      :on-find-tree="onFindTree"
+      :before-search-reset="beforeSearchReset"
+    >
+      <List
+        :show-build-in="props.showBuildIn || '1'"<#
+        if (list_tree === true) {
+        #>
+        is-pagination="0"<#
+        }
+        #>
+        v-bind="$attrs"
+        :<#=list_tree === true ? "parent_id" : list_treeColumn.COLUMN_NAME#>="parent_id"
+        @add="onFindTree"
+        @edit="onFindTree"
+        @remove="onFindTree"
+        @revert="onFindTree"
+        @refresh="onFindTree"
+        @before-search-reset="beforeSearchReset"
+      ></List>
+    </slot>
   </div>
 </div>
 </template>
 
 <script lang="ts" setup>
-import List from "./List.vue";
-
-import type {
-  <#=modelNameTree#>,
-} from "./Api";
+import List from "./List.vue";<#
+if (list_tree === true) {
+#>
 
 import {
   findTree,
-} from "./Api";
+} from "./Api";<#
+} else {
+#>
+
+import {
+  findTree,
+} from "@/views/<#=list_treeForeignKey.mod#>/<#=list_treeForeignKey.table#>/Api";<#
+}
+#>
 
 import type {
   TreeNodeData,
@@ -129,8 +156,6 @@ const {
 
 let inited = $ref(false);
 
-let listRef = $ref<InstanceType<typeof List>>();
-
 let parent_id = $ref(props.parent_id);
 
 let treeRef = $ref<InstanceType<typeof ElTree>>();
@@ -140,16 +165,15 @@ watch(
   async () => {
     parent_id = props.parent_id;
     treeRef?.setCurrentKey(parent_id);
-    if (parent_id) {
-      await listRef?.refresh?.();
-    }
   },
   {
     immediate: true,
   },
 );
 
-let treeData = $ref<Awaited<ReturnType<typeof findTree>>>([ ]);
+type ModelTree = Awaited<ReturnType<typeof findTree>>[0];
+
+let treeData = $ref<ModelTree[]>([ ]);
 
 let search_value = $ref("");
 
@@ -174,7 +198,7 @@ function onSearchClear() {
   treeRef?.filter(search_value);
 }
 
-function filterNode(value: string, data: <#=modelNameTree#>) {
+function filterNode(value: string, data: ModelTree) {
   if (!value) {
     return true;
   }
@@ -190,8 +214,8 @@ function nodeClass(data: TreeNodeData, _: any): string {
 
 function getById(
   id: string,
-  data: <#=modelNameTree#>[],
-): <#=modelNameTree#> | undefined {
+  data: ModelTree[],
+): ModelTree | undefined {
   for (const item of data) {
     if (item.id === id) {
       return item;
@@ -214,7 +238,7 @@ async function onFindTree() {
   }
 }
 
-async function onNode(model: <#=modelNameTree#>) {
+async function onNode(model: ModelTree) {
   parent_id = model.id;
 }
 
@@ -225,10 +249,7 @@ function beforeSearchReset() {
 }
 
 async function onRefresh() {
-  await Promise.all([
-    listRef?.refresh?.(),
-    onFindTree(),
-  ]);
+  await onFindTree();
 }
 
 async function initFrame() {

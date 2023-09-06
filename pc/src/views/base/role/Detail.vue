@@ -180,6 +180,10 @@ const {
   initSysI18ns,
 } = useI18n("/base/role");
 
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/base/role");
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
@@ -190,6 +194,7 @@ let dialogNotice = $ref("");
 
 let dialogModel = $ref({
   menu_ids: [ ],
+  permit_ids: [ ],
 } as RoleInput);
 
 let ids = $ref<string[]>([ ]);
@@ -212,11 +217,6 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
-      },
-      {
-        type: "string",
-        max: 45,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
       {
         type: "string",
@@ -310,7 +310,11 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+    if (!permit("edit")) {
+      isLocked = true;
+    } else {
+      isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+    }
   });
   dialogAction = action || "add";
   ids = [ ];
@@ -369,11 +373,11 @@ async function showDialog(
 }
 
 watch(
-  () => dialogModel.is_locked,
+  () => isLocked,
   async () => {
-    if (dialogModel.is_locked == 1) {
+    if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
-    } else if (dialogModel.is_locked == 0) {
+    } else {
       dialogNotice = "";
     }
   },
@@ -539,7 +543,8 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function onInitI18ns() {
   const codes: string[] = [
     "名称",
-    "菜单",
+    "菜单权限",
+    "按钮权限",
     "锁定",
     "启用",
     "备注",

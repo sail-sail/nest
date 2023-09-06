@@ -88,6 +88,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   const uniqueID = uniqueID0;
   const isEmpty = isEmpty0;
   console.log(`${chalk.gray("生成表:")} ${chalk.green(table)}`);
+  const mod_table = table;
   const mod = table.substring(0, table.indexOf("_"));
   const mod_slash_table = table.replace("_", "/");
   table = table.substring(table.indexOf("_") + 1);
@@ -131,6 +132,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             continue;
           }
           if (column.onlyCodegenDeno) continue;
+          const isImport = dir.startsWith("/pc/public/import_template/");
+          if (isImport && [
+            "create_usr_id", "create_time", "update_usr_id", "update_time",
+          ].includes(column_name)) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -258,9 +263,13 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           return;
         }
       }
-      let htmlStr = includeFtl(await readFile(fileTng ,"utf8"), "<#", "#>");
+      let htmlStr = includeFtl(
+        await readFile(fileTng ,"utf8"),
+        "<#",
+        "#>",
+      );
       try {
-        let str2 = eval(htmlStr);
+        let str2 = await eval(`(async function() { ${ htmlStr }; return _out_; })`,)();
         let str0: string;
         try {
           str0 = await readFile(`${out}/${dir2}`, "utf8");

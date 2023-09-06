@@ -24,10 +24,14 @@ pub struct RoleModel {
   pub id: String,
   /// 名称
   pub lbl: String,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids: Vec<String>,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids_lbl: Vec<String>,
+  /// 按钮权限
+  pub permit_ids: Vec<String>,
+  /// 按钮权限
+  pub permit_ids_lbl: Vec<String>,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -64,11 +68,16 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let id: String = row.try_get("id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 菜单
+    // 菜单权限
     let menu_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
     let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
+    // 按钮权限
+    let permit_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("permit_ids")?;
+    let permit_ids = permit_ids.unwrap_or_default().0;
+    let permit_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("permit_ids_lbl")?;
+    let permit_ids_lbl = permit_ids_lbl.unwrap_or_default().0;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -105,6 +114,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       lbl,
       menu_ids,
       menu_ids_lbl,
+      permit_ids,
+      permit_ids_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -132,10 +143,14 @@ pub struct RoleFieldComment {
   pub id: String,
   /// 名称
   pub lbl: String,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids: String,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids_lbl: String,
+  /// 按钮权限
+  pub permit_ids: String,
+  /// 按钮权限
+  pub permit_ids_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -176,10 +191,14 @@ pub struct RoleSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids: Option<Vec<String>>,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids_is_null: Option<bool>,
+  /// 按钮权限
+  pub permit_ids: Option<Vec<String>>,
+  /// 按钮权限
+  pub permit_ids_is_null: Option<bool>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -209,10 +228,14 @@ pub struct RoleInput {
   pub id: Option<String>,
   /// 名称
   pub lbl: Option<String>,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids: Option<Vec<String>>,
-  /// 菜单
+  /// 菜单权限
   pub menu_ids_lbl: Option<Vec<String>>,
+  /// 按钮权限
+  pub permit_ids: Option<Vec<String>>,
+  /// 按钮权限
+  pub permit_ids_lbl: Option<Vec<String>>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
@@ -261,20 +284,8 @@ impl RoleInput {
       22,
       &field_comments.id,
     ).await?;
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.id.as_ref(),
-      22,
-      &field_comments.id,
-    ).await?;
     
     // 名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.lbl.as_ref(),
-      45,
-      &field_comments.lbl,
-    ).await?;
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
       self.lbl.as_ref(),
@@ -289,12 +300,6 @@ impl RoleInput {
       100,
       &field_comments.rem,
     ).await?;
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.rem.as_ref(),
-      100,
-      &field_comments.rem,
-    ).await?;
     
     // 创建人
     crate::common::validators::chars_max_length::chars_max_length(
@@ -303,20 +308,8 @@ impl RoleInput {
       22,
       &field_comments.create_usr_id,
     ).await?;
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.create_usr_id.as_ref(),
-      22,
-      &field_comments.create_usr_id,
-    ).await?;
     
     // 更新人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.update_usr_id.as_ref(),
-      22,
-      &field_comments.update_usr_id,
-    ).await?;
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
       self.update_usr_id.as_ref(),
@@ -338,8 +331,10 @@ impl From<RoleInput> for RoleSearch {
       is_deleted: None,
       // 名称
       lbl: input.lbl,
-      // 菜单
+      // 菜单权限
       menu_ids: input.menu_ids,
+      // 按钮权限
+      permit_ids: input.permit_ids,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用

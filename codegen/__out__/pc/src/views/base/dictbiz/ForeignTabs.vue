@@ -25,7 +25,7 @@
         
         <el-tab-pane
           lazy
-          :label="'业务字典' + (dictbiz_detailTotal ? ` (${ dictbiz_detailTotal })` : '')"
+          :label="'业务字典' + (dictbiz_detailTotal != null ? ` (${ dictbiz_detailTotal })` : '')"
           name="业务字典"
         >
           <Dictbiz_detailList

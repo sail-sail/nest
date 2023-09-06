@@ -139,6 +139,32 @@ fn get_where_query<'a>(
     }
   }
   {
+    let permit_ids: Vec<String> = match &search {
+      Some(item) => item.permit_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !permit_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(permit_ids.len());
+        for item in permit_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_permit.id in ({})", arg);
+    }
+  }
+  {
+    let permit_ids_is_null: bool = match &search {
+      Some(item) => item.permit_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if permit_ids_is_null {
+      where_query += &format!(" and permit_ids_lbl.id is null");
+    }
+  }
+  {
     let is_locked: Vec<u8> = match &search {
       Some(item) => item.is_locked.clone().unwrap_or_default(),
       None => Default::default(),
@@ -309,6 +335,28 @@ fn get_from_query() -> &'static str {
       group by role_id
     ) _menu
       on _menu.role_id = t.id
+    left join base_role_permit
+      on base_role_permit.role_id = t.id
+      and base_role_permit.is_deleted = 0
+    left join base_permit
+      on base_role_permit.permit_id = base_permit.id
+      and base_permit.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_permit.id) permit_ids,
+        json_arrayagg(base_permit.lbl) permit_ids_lbl,
+        base_role.id role_id
+      from base_role_permit
+      inner join base_permit
+        on base_permit.id = base_role_permit.permit_id
+        and base_permit.is_deleted = 0
+      inner join base_role
+        on base_role.id = base_role_permit.role_id
+      where
+        base_role_permit.is_deleted = 0
+      group by role_id
+    ) _permit
+      on _permit.role_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -342,6 +390,8 @@ pub async fn find_all<'a>(
       t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
+      ,max(permit_ids) permit_ids
+      ,max(permit_ids_lbl) permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -473,8 +523,10 @@ pub async fn get_field_comments<'a>(
   let field_comments = RoleFieldComment {
     id: n_route.n(ctx, "ID".to_owned(), None).await?,
     lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    menu_ids: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    menu_ids_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
+    menu_ids: n_route.n(ctx, "菜单权限".to_owned(), None).await?,
+    menu_ids_lbl: n_route.n(ctx, "菜单权限".to_owned(), None).await?,
+    permit_ids: n_route.n(ctx, "按钮权限".to_owned(), None).await?,
+    permit_ids_lbl: n_route.n(ctx, "按钮权限".to_owned(), None).await?,
     is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
     is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
@@ -688,7 +740,7 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 菜单
+  // 菜单权限
   if input.menu_ids.is_none() {
     if input.menu_ids_lbl.is_some() && input.menu_ids.is_none() {
       input.menu_ids_lbl = input.menu_ids_lbl.map(|item| 
@@ -713,6 +765,38 @@ pub async fn set_id_by_lbl<'a>(
       }
       if !models.is_empty() {
         input.menu_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
+    }
+  }
+  
+  // 按钮权限
+  if input.permit_ids.is_none() {
+    if input.permit_ids_lbl.is_some() && input.permit_ids.is_none() {
+      input.permit_ids_lbl = input.permit_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.permit_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::permit::permit_dao::find_one(
+          ctx,
+          crate::gen::base::permit::permit_model::PermitSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
+      }
+      if !models.is_empty() {
+        input.permit_ids = models.into_iter()
           .map(|item| item.id)
           .collect::<Vec<String>>()
           .into();
@@ -873,7 +957,7 @@ pub async fn create<'a>(
     options,
   ).await?;
   
-  // 菜单
+  // 菜单权限
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
       ctx,
@@ -884,6 +968,21 @@ pub async fn create<'a>(
         table: "role_menu",
         column1: "role_id",
         column2: "menu_id",
+      },
+    ).await?;
+  }
+  
+  // 按钮权限
+  if let Some(permit_ids) = input.permit_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      permit_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "role_permit",
+        column1: "role_id",
+        column2: "permit_id",
       },
     ).await?;
   }
@@ -1070,7 +1169,7 @@ pub async fn update_by_id<'a>(
   
   let mut field_num = 0;
   
-  // 菜单
+  // 菜单权限
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
       ctx,
@@ -1081,6 +1180,23 @@ pub async fn update_by_id<'a>(
         table: "role_menu",
         column1: "role_id",
         column2: "menu_id",
+      },
+    ).await?;
+    
+    field_num += 1;
+  }
+  
+  // 按钮权限
+  if let Some(permit_ids) = input.permit_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      permit_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "role_permit",
+        column1: "role_id",
+        column2: "permit_id",
       },
     ).await?;
     
@@ -1106,6 +1222,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
     table,
     "base_role_menu",
     "base_menu",
+    "base_role_permit",
+    "base_permit",
     "base_usr",
   ]
 }

@@ -253,6 +253,10 @@ const {
   initSysI18ns,
 } = useI18n("/base/background_task");
 
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/base/background_task");
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
@@ -385,7 +389,11 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = toValue(arg?.isLocked) ?? isLocked;
+    if (!permit("edit")) {
+      isLocked = true;
+    } else {
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
+    }
   });
   dialogAction = action || "add";
   ids = [ ];

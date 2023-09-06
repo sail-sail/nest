@@ -70,18 +70,12 @@
             :label="n('菜单')"
             prop="menu_id"
           >
-            <CustomSelect
+            <CustomTreeSelect
               v-model="dialogModel.menu_id"
-              :method="getMenuList"
-              :options-map="((item: MenuModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
+              :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></CustomTreeSelect>
           </el-form-item>
         </template>
         
@@ -220,6 +214,10 @@ import {
   getMenuList,
 } from "./Api";
 
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -236,6 +234,10 @@ const {
   initI18ns,
   initSysI18ns,
 } = useI18n("/base/i18n");
+
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/base/i18n");
 
 let inited = $ref(false);
 
@@ -364,7 +366,11 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = toValue(arg?.isLocked) ?? isLocked;
+    if (!permit("edit")) {
+      isLocked = true;
+    } else {
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
+    }
   });
   dialogAction = action || "add";
   ids = [ ];

@@ -7,10 +7,6 @@ defineGraphql(resolver, /* GraphQL */ `
 type PermitModel {
   "ID"
   id: String!
-  "角色"
-  role_id: String!
-  "角色"
-  role_id_lbl: String
   "菜单"
   menu_id: String!
   "菜单"
@@ -19,10 +15,6 @@ type PermitModel {
   code: String!
   "名称"
   lbl: String!
-  "可见"
-  is_visible: Int!
-  "可见"
-  is_visible_lbl: String
   "备注"
   rem: String!
   "创建人"
@@ -45,10 +37,6 @@ type PermitModel {
   is_deleted: Int!
 }
 type PermitFieldComment {
-  "角色"
-  role_id: String!
-  "角色"
-  role_id_lbl: String!
   "菜单"
   menu_id: String!
   "菜单"
@@ -57,10 +45,6 @@ type PermitFieldComment {
   code: String!
   "名称"
   lbl: String!
-  "可见"
-  is_visible: String!
-  "可见"
-  is_visible_lbl: String!
   "备注"
   rem: String!
   "创建人"
@@ -83,10 +67,6 @@ type PermitFieldComment {
 input PermitInput {
   ""
   id: String
-  "角色"
-  role_id: String
-  "角色"
-  role_id_lbl: String
   "菜单"
   menu_id: String
   "菜单"
@@ -95,10 +75,6 @@ input PermitInput {
   code: String
   "名称"
   lbl: String
-  "可见"
-  is_visible: Int
-  "可见"
-  is_visible_lbl: String
   "备注"
   rem: String
   "创建人"
@@ -125,9 +101,6 @@ input PermitSearch {
   ids: [String]
   "String"
   id: String
-  "角色"
-  role_id: [String!]
-  role_id_is_null: Boolean
   "菜单"
   menu_id: [String!]
   menu_id_is_null: Boolean
@@ -137,8 +110,6 @@ input PermitSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "可见"
-  is_visible: [Int!]
   "备注"
   rem: String
   rem_like: String

@@ -33,7 +33,6 @@
         >
           <CustomSelect
             :set="search.dictbiz_id = search.dictbiz_id || [ ]"
-            un-w="full"
             v-model="search.dictbiz_id"
             :method="getDictbizList"
             :options-map="((item: DictbizModel) => {
@@ -79,23 +78,6 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
-        </el-form-item>
-      </template>
-      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -127,6 +109,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -169,7 +168,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -181,7 +180,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -281,7 +280,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -1125,13 +1124,13 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("业务字典") ]: "dictbiz_id_lbl",
-    [ n("名称") ]: "lbl",
-    [ n("值") ]: "val",
-    [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("排序") ]: "order_by",
-    [ n("备注") ]: "rem",
+    [ await nAsync("业务字典") ]: "dictbiz_id_lbl",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("值") ]: "val",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),

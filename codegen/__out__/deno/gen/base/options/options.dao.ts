@@ -442,6 +442,9 @@ export async function findByUnique(
   }
   const models: OptionsModel[] = [ ];
   {
+    if (search0.ky == null) {
+      return [ ];
+    }
     const ky = search0.ky;
     const modelTmps = await findAll({
       ky,

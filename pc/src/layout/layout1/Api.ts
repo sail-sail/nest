@@ -105,7 +105,6 @@ export async function getUsrPermits(
         getUsrPermits {
           route_path
           code
-          is_visible
         }
       }
     `,

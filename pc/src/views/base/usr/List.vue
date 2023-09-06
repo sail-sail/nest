@@ -63,7 +63,6 @@
         >
           <CustomSelect
             :set="search.org_ids = search.org_ids || [ ]"
-            un-w="full"
             v-model="search.org_ids"
             :method="getOrgList"
             :options-map="((item: OrgModel) => {
@@ -86,7 +85,6 @@
         >
           <CustomSelect
             :set="search.role_ids = search.role_ids || [ ]"
-            un-w="full"
             v-model="search.role_ids"
             :method="getRoleList"
             :options-map="((item: RoleModel) => {
@@ -99,23 +97,6 @@
             multiple
             @change="onSearch"
           ></CustomSelect>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
         </el-form-item>
       </template>
       
@@ -150,6 +131,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -192,7 +190,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -204,7 +202,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -304,7 +302,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -1202,15 +1200,15 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("头像") ]: "img",
-    [ n("名称") ]: "lbl",
-    [ n("用户名") ]: "username",
-    [ n("默认组织") ]: "default_org_id_lbl",
-    [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("拥有组织") ]: "org_ids_lbl",
-    [ n("拥有角色") ]: "role_ids_lbl",
-    [ n("备注") ]: "rem",
+    [ await nAsync("头像") ]: "img",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("用户名") ]: "username",
+    [ await nAsync("默认组织") ]: "default_org_id_lbl",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("拥有组织") ]: "org_ids_lbl",
+    [ await nAsync("拥有角色") ]: "role_ids_lbl",
+    [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),

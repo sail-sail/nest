@@ -9,10 +9,14 @@ type RoleModel {
   id: String!
   "名称"
   lbl: String!
-  "菜单"
+  "菜单权限"
   menu_ids: [String!]
-  "菜单"
+  "菜单权限"
   menu_ids_lbl: [String!]
+  "按钮权限"
+  permit_ids: [String!]
+  "按钮权限"
+  permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -45,10 +49,14 @@ type RoleModel {
 type RoleFieldComment {
   "名称"
   lbl: String!
-  "菜单"
+  "菜单权限"
   menu_ids: String!
-  "菜单"
+  "菜单权限"
   menu_ids_lbl: String!
+  "按钮权限"
+  permit_ids: String!
+  "按钮权限"
+  permit_ids_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -81,10 +89,14 @@ input RoleInput {
   id: String
   "名称"
   lbl: String
-  "菜单"
+  "菜单权限"
   menu_ids: [String!]
-  "菜单"
+  "菜单权限"
   menu_ids_lbl: [String!]
+  "按钮权限"
+  permit_ids: [String!]
+  "按钮权限"
+  permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -122,9 +134,12 @@ input RoleSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "菜单"
+  "菜单权限"
   menu_ids: [String!]
   menu_ids_is_null: Boolean
+  "按钮权限"
+  permit_ids: [String!]
+  permit_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "启用"
