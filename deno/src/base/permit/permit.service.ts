@@ -181,15 +181,14 @@ export async function usePermit(
   for (let i = 0; i < batch_count; i++) {
     permit_idsArr.push(permit_ids.slice(i * batch_size, (i + 1) * batch_size));
   }
-  let permitModel: PermitModel | undefined = undefined;
   for (const permit_ids of permit_idsArr) {
-    permitModel = await findOnePermit({
+    const permitModel = await findOnePermit({
       ids: permit_ids,
       menu_id: [ menuModel.id ],
       code,
     });
     if (permitModel) {
-      break;
+      return;
     }
   }
   throw await ns("{0} {1} 无权限", menuModel.lbl, code);
