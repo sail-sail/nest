@@ -39,15 +39,9 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
-import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
-
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
-
-import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
-
-import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
 import {
   UniqueType,
@@ -65,8 +59,6 @@ import type {
   PermitSearch,
 } from "./permit.model.ts";
 
-import * as roleDao from "/gen/base/role/role.dao.ts";
-
 import * as menuDao from "/gen/base/menu/menu.dao.ts";
 
 async function getWhereQuery(
@@ -77,15 +69,6 @@ async function getWhereQuery(
 ) {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
-  if (search?.tenant_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    if (tenant_id) {
-      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
-    }
-  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
-    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
-  }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
   }
@@ -94,18 +77,6 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
-  }
-  if (search?.role_id && !Array.isArray(search?.role_id)) {
-    search.role_id = [ search.role_id ];
-  }
-  if (search?.role_id && search?.role_id.length > 0) {
-    whereQuery += ` and role_id_lbl.id in ${ args.push(search.role_id) }`;
-  }
-  if (search?.role_id === null) {
-    whereQuery += ` and role_id_lbl.id is null`;
-  }
-  if (search?.role_id_is_null) {
-    whereQuery += ` and role_id_lbl.id is null`;
   }
   if (search?.menu_id && !Array.isArray(search?.menu_id)) {
     search.menu_id = [ search.menu_id ];
@@ -136,12 +107,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
-  }
-  if (search?.is_visible && !Array.isArray(search?.is_visible)) {
-    search.is_visible = [ search.is_visible ];
-  }
-  if (search?.is_visible && search?.is_visible?.length > 0) {
-    whereQuery += ` and t.is_visible in ${ args.push(search.is_visible) }`;
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -208,8 +173,6 @@ async function getWhereQuery(
 function getFromQuery() {
   const fromQuery = /*sql*/ `
     base_permit t
-    left join base_role role_id_lbl
-      on role_id_lbl.id = t.role_id
     left join base_menu menu_id_lbl
       on menu_id_lbl.id = t.menu_id
     left join base_usr create_usr_id_lbl
@@ -279,7 +242,6 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = /*sql*/ `
     select t.*
-      ,role_id_lbl.lbl role_id_lbl
       ,menu_id_lbl.lbl menu_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
@@ -324,25 +286,8 @@ export async function findAll(
       cacheKey2,
     },
   );
-  
-  const [
-    is_visibleDict, // 可见
-  ] = await dictSrcDao.getDict([
-    "yes_no",
-  ]);
-  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 可见
-    let is_visible_lbl = model.is_visible.toString();
-    if (model.is_visible !== undefined && model.is_visible !== null) {
-      const dictItem = is_visibleDict.find((dictItem) => dictItem.val === model.is_visible.toString());
-      if (dictItem) {
-        is_visible_lbl = dictItem.lbl;
-      }
-    }
-    model.is_visible_lbl = is_visible_lbl;
     
     // 创建时间
     if (model.create_time) {
@@ -379,14 +324,10 @@ export async function getFieldComments() {
   const n = initN("/permit");
   const fieldComments = {
     id: await n("ID"),
-    role_id: await n("角色"),
-    role_id_lbl: await n("角色"),
     menu_id: await n("菜单"),
     menu_id_lbl: await n("菜单"),
     code: await n("编码"),
     lbl: await n("名称"),
-    is_visible: await n("可见"),
-    is_visible_lbl: await n("可见"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -420,25 +361,20 @@ export async function findByUnique(
   }
   const models: PermitModel[] = [ ];
   {
-    let role_id: string[] = [ ];
-    if (search0.role_id) {
-      if (!Array.isArray(search0.role_id)) {
-        role_id.push(search0.role_id);
-      } else {
-        role_id = search0.role_id;
-      }
+    if (search0.menu_id == null) {
+      return [ ];
     }
     let menu_id: string[] = [ ];
-    if (search0.menu_id) {
-      if (!Array.isArray(search0.menu_id)) {
-        menu_id.push(search0.menu_id);
-      } else {
-        menu_id = search0.menu_id;
-      }
+    if (!Array.isArray(search0.menu_id)) {
+      menu_id.push(search0.menu_id);
+    } else {
+      menu_id = search0.menu_id;
+    }
+    if (search0.code == null) {
+      return [ ];
     }
     const code = search0.code;
     const modelTmps = await findAll({
-      role_id,
       menu_id,
       code,
     });
@@ -461,7 +397,6 @@ export function equalsByUnique(
     return false;
   }
   if (
-    oldModel.role_id === model.role_id &&
     oldModel.menu_id === model.menu_id &&
     oldModel.code === model.code
   ) {
@@ -615,13 +550,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 角色
-  await validators.chars_max_length(
-    input.role_id,
-    22,
-    fieldComments.role_id,
-  );
-  
   // 菜单
   await validators.chars_max_length(
     input.menu_id,
@@ -646,7 +574,7 @@ export async function validate(
   // 备注
   await validators.chars_max_length(
     input.rem,
-    255,
+    100,
     fieldComments.rem,
   );
   
@@ -686,35 +614,12 @@ export async function create(
   const table = "base_permit";
   const method = "create";
   
-  const [
-    is_visibleDict, // 可见
-  ] = await dictSrcDao.getDict([
-    "yes_no",
-  ]);
-  
-  // 角色
-  if (isNotEmpty(input.role_id_lbl) && input.role_id === undefined) {
-    input.role_id_lbl = String(input.role_id_lbl).trim();
-    const roleModel = await roleDao.findOne({ lbl: input.role_id_lbl });
-    if (roleModel) {
-      input.role_id = roleModel.id;
-    }
-  }
-  
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 可见
-  if (isNotEmpty(input.is_visible_lbl) && input.is_visible === undefined) {
-    const val = is_visibleDict.find((itemTmp) => itemTmp.lbl === input.is_visible_lbl)?.val;
-    if (val !== undefined) {
-      input.is_visible = Number(val);
     }
   }
   
@@ -747,15 +652,6 @@ export async function create(
       id
       ,create_time
   `;
-  if (input.tenant_id != null) {
-    sql += `,tenant_id`;
-  } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,tenant_id`;
-    }
-  }
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
@@ -763,9 +659,6 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
-  }
-  if (input.role_id !== undefined) {
-    sql += `,role_id`;
   }
   if (input.menu_id !== undefined) {
     sql += `,menu_id`;
@@ -775,9 +668,6 @@ export async function create(
   }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
-  }
-  if (input.is_visible !== undefined) {
-    sql += `,is_visible`;
   }
   if (input.rem !== undefined) {
     sql += `,rem`;
@@ -789,15 +679,6 @@ export async function create(
     sql += `,update_time`;
   }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
-  if (input.tenant_id != null) {
-    sql += `,${ args.push(input.tenant_id) }`;
-  } else {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    if (tenant_id) {
-      sql += `,${ args.push(tenant_id) }`;
-    }
-  }
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
   } else {
@@ -805,9 +686,6 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
-  }
-  if (input.role_id !== undefined) {
-    sql += `,${ args.push(input.role_id) }`;
   }
   if (input.menu_id !== undefined) {
     sql += `,${ args.push(input.menu_id) }`;
@@ -817,9 +695,6 @@ export async function create(
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
-  }
-  if (input.is_visible !== undefined) {
-    sql += `,${ args.push(input.is_visible) }`;
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
@@ -848,7 +723,6 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
-    "base_role",
     "base_menu",
     "base_usr",
   ];
@@ -857,45 +731,6 @@ export async function delCache() {
     if (foreignTable === table) continue;
     await delCacheCtx(`dao.sql.${ foreignTable }`);
   }
-}
-
-/**
- * 根据id修改租户id
- * @param {string} id
- * @param {string} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateTenantById(
-  id: string,
-  tenant_id: string,
-  options?: {
-  },
-): Promise<number> {
-  const table = "base_permit";
-  const method = "updateTenantById";
-  
-  const tenantExist = await tenantDao.existById(tenant_id);
-  if (!tenantExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = /*sql*/ `
-    update
-      base_permit
-    set
-      update_time = ${ args.push(reqDate()) },
-      tenant_id = ${ args.push(tenant_id) }
-    where
-      id = ${ args.push(id) }
-  `;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  return num;
 }
 
 /**
@@ -927,40 +762,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_visibleDict, // 可见
-  ] = await dictSrcDao.getDict([
-    "yes_no",
-  ]);
-  
-  // 修改租户id
-  if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id);
-  }
-  
-  // 角色
-  if (isNotEmpty(input.role_id_lbl) && input.role_id === undefined) {
-    input.role_id_lbl = String(input.role_id_lbl).trim();
-    const roleModel = await roleDao.findOne({ lbl: input.role_id_lbl });
-    if (roleModel) {
-      input.role_id = roleModel.id;
-    }
-  }
-  
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 可见
-  if (isNotEmpty(input.is_visible_lbl) && input.is_visible === undefined) {
-    const val = is_visibleDict.find((itemTmp) => itemTmp.lbl === input.is_visible_lbl)?.val;
-    if (val !== undefined) {
-      input.is_visible = Number(val);
     }
   }
   
@@ -987,12 +794,6 @@ export async function updateById(
     update base_permit set
   `;
   let updateFldNum = 0;
-  if (input.role_id !== undefined) {
-    if (input.role_id != oldModel.role_id) {
-      sql += `role_id = ${ args.push(input.role_id) },`;
-      updateFldNum++;
-    }
-  }
   if (input.menu_id !== undefined) {
     if (input.menu_id != oldModel.menu_id) {
       sql += `menu_id = ${ args.push(input.menu_id) },`;
@@ -1008,12 +809,6 @@ export async function updateById(
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_visible !== undefined) {
-    if (input.is_visible != oldModel.is_visible) {
-      sql += `is_visible = ${ args.push(input.is_visible) },`;
       updateFldNum++;
     }
   }

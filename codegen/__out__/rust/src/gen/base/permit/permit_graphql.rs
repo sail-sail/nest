@@ -144,25 +144,6 @@ impl PermitGenMutation {
     ctx.ok(id).await
   }
   
-  /// 根据id修改租户id
-  async fn update_tenant_by_id_permit<'a>(
-    &self,
-    ctx: &Context<'a>,
-    id: String,
-    tenant_id: String,
-  ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
-    
-    let res = permit_resolver::update_tenant_by_id(
-      &mut ctx,
-      id,
-      tenant_id,
-      None,
-    ).await;
-    
-    ctx.ok(res).await
-  }
-  
   /// 根据id修改数据
   async fn update_by_id_permit<'a>(
     &self,

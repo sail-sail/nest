@@ -16,6 +16,10 @@ import type {
   UsrSearch,
 } from "#/types";
 
+import {
+  findTree as findMenuTree,
+} from "@/views/base/menu/Api";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -409,6 +413,21 @@ export async function getUsrList() {
   return data;
 }
 
+export async function getMenuTree() {
+  const data = await findMenuTree(
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -526,6 +545,25 @@ export function useExportExcel(routePath: string) {
             create_time_lbl
             update_usr_id_lbl
             update_time_lbl
+          }
+          findAllLang {
+            lbl
+          }
+          findAllMenu {
+            lbl
+          }
+          findAllUsr {
+            lbl
+          }
+          getDict(codes: [
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [
+          ]) {
+            code
+            lbl
           }
         }
       `,

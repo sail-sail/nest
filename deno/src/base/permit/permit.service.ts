@@ -1,5 +1,6 @@
-import {
-  type GetUsrPermits,
+import type {
+  PermitModel,
+  GetUsrPermits,
 } from "/gen/types.ts";
 
 /**
@@ -22,6 +23,10 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
     findById: findByIdMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
+  const {
+    findAll: findAllRole,
+  } = await import("/gen/base/role/role.dao.ts");
+  
   const authModel = await getAuthModel(false);
   if (!authModel) {
     return [ ];
@@ -35,9 +40,36 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   if (!role_ids || role_ids.length === 0) {
     return [ ];
   }
-  const permitModels = await findAllPermit({
-    role_id: role_ids,
+  const roleModels = await findAllRole({
+    ids: role_ids,
   });
+  const permit_ids: string[] = [ ];
+  for (const roleModel of roleModels) {
+    const permit_ids2 = roleModel.permit_ids;
+    if (!permit_ids2 || permit_ids2.length === 0) {
+      continue;
+    }
+    for (const permit_id of permit_ids2) {
+      if (permit_ids.includes(permit_id)) {
+        continue;
+      }
+      permit_ids.push(permit_id);
+    }
+  }
+  // 切分成多个批次查询
+  const permit_idsArr: string[][] = [ ];
+  const batch_size = 100;
+  const batch_count = Math.ceil(permit_ids.length / batch_size);
+  for (let i = 0; i < batch_count; i++) {
+    permit_idsArr.push(permit_ids.slice(i * batch_size, (i + 1) * batch_size));
+  }
+  const permitModels: PermitModel[] = [ ];
+  for (const permit_ids of permit_idsArr) {
+    const permitModels0 = await findAllPermit({
+      ids: permit_ids,
+    });
+    permitModels.push(...permitModels0);
+  }
   const menu_idMap = new Map<string, string>();
   for (const permitModel of permitModels) {
     const menu_id = permitModel.menu_id;
@@ -65,7 +97,6 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
       route_path,
       code: permitModel.code,
       lbl: permitModel.lbl,
-      is_visible: !!permitModel.is_visible,
     };
   });
   return permits;
@@ -95,6 +126,10 @@ export async function usePermit(
   } = await import("/gen/base/usr/usr.dao.ts");
   
   const {
+    findAll: findAllRole,
+  } = await import("/gen/base/role/role.dao.ts");
+  
+  const {
     findOne: findOneMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
@@ -103,28 +138,59 @@ export async function usePermit(
     is_enabled: [ 1 ],
   });
   if (!menuModel) {
-    return;
+    throw await ns("无权限");
   }
-  const authModel = await getAuthModel();
+  
+  const authModel = await getAuthModel(false);
+  
+  if (!authModel) {
+    throw await ns("无权限");
+  }
   const usr_id = authModel.id;
   const usrModel = await findByIdUsr(usr_id);
   if (!usrModel) {
+    throw await ns("无权限");
+  }
+  if (usrModel.username === "admin") {
     return;
   }
   const role_ids = usrModel.role_ids;
   if (!role_ids || role_ids.length === 0) {
-    return;
+    throw await ns("无权限");
   }
-  const permitModel = await findOnePermit({
-    menu_id: [ menuModel.id ],
-    role_id: role_ids,
-    code,
+  const roleModels = await findAllRole({
+    ids: role_ids,
   });
-  if (!permitModel) {
-    return;
+  const permit_ids: string[] = [ ];
+  for (const roleModel of roleModels) {
+    const permit_ids2 = roleModel.permit_ids;
+    if (!permit_ids2 || permit_ids2.length === 0) {
+      continue;
+    }
+    for (const permit_id of permit_ids2) {
+      if (permit_ids.includes(permit_id)) {
+        continue;
+      }
+      permit_ids.push(permit_id);
+    }
   }
-  if (permitModel.is_visible === 1) {
-    return;
+  // 切分成多个批次查询
+  const permit_idsArr: string[][] = [ ];
+  const batch_size = 100;
+  const batch_count = Math.ceil(permit_ids.length / batch_size);
+  for (let i = 0; i < batch_count; i++) {
+    permit_idsArr.push(permit_ids.slice(i * batch_size, (i + 1) * batch_size));
   }
-  throw await ns("{0} {1} 无权限", permitModel.menu_id_lbl, permitModel.lbl);
+  let permitModel: PermitModel | undefined = undefined;
+  for (const permit_ids of permit_idsArr) {
+    permitModel = await findOnePermit({
+      ids: permit_ids,
+      menu_id: [ menuModel.id ],
+      code,
+    });
+    if (permitModel) {
+      break;
+    }
+  }
+  throw await ns("{0} {1} 无权限", menuModel.lbl, code);
 }

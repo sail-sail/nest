@@ -102,25 +102,6 @@ pub async fn create<'a>(
   Ok(id)
 }
 
-/// 根据id修改租户id
-#[allow(dead_code)]
-pub async fn update_tenant_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
-  id: String,
-  tenant_id: String,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = permit_dao::update_tenant_by_id(
-    ctx,
-    id,
-    tenant_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 根据id修改数据
 #[allow(dead_code)]
 #[allow(unused_mut)]

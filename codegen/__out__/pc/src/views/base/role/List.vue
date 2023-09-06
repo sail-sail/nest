@@ -43,41 +43,23 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_ids == null">
         <el-form-item
-          label="菜单"
+          label="菜单权限"
           prop="menu_ids"
         >
-          <CustomSelect
+          <CustomTreeSelect
             :set="search.menu_ids = search.menu_ids || [ ]"
-            un-w="full"
             v-model="search.menu_ids"
-            :method="getMenuList"
+            :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+            :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
             multiple
             @change="onSearch"
-          ></CustomSelect>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
+          ></CustomTreeSelect>
         </el-form-item>
       </template>
       
@@ -112,6 +94,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -154,7 +153,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -166,7 +165,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -266,7 +265,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -434,7 +433,7 @@
             </el-table-column>
           </template>
           
-          <!-- 菜单 -->
+          <!-- 菜单权限 -->
           <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -445,6 +444,24 @@
                   type="primary"
                   un-min="w-7.5"
                   @click="onMenu_ids(row)"
+                >
+                  {{ row[column.property]?.length || 0 }}
+                </el-link>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 按钮权限 -->
+          <template v-else-if="'permit_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.permit_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  un-min="w-7.5"
+                  @click="onPermit_ids(row)"
                 >
                   {{ row[column.property]?.length || 0 }}
                 </el-link>
@@ -565,16 +582,27 @@
     </div>
   </div>
   
-  <!-- 菜单 -->
+  <!-- 菜单权限 -->
   <ListSelectDialog
     ref="menu_idsListSelectDialogRef"
     :is-locked="isLocked"
     v-slot="listSelectProps"
   >
-    <MenuList
+    <MenuTreeList
       :tenant_ids="[ usrStore.tenant_id ]"
       v-bind="listSelectProps"
-    ></MenuList>
+    ></MenuTreeList>
+  </ListSelectDialog>
+  
+  <!-- 按钮权限 -->
+  <ListSelectDialog
+    ref="permit_idsListSelectDialogRef"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
+  >
+    <PermitTreeList
+      v-bind="listSelectProps"
+    ></PermitTreeList>
   </ListSelectDialog>
   
   <Detail
@@ -598,7 +626,9 @@
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
 
-import MenuList from "../menu/List.vue";
+import MenuTreeList from "../menu/TreeList.vue";
+
+import PermitTreeList from "../permit/TreeList.vue";
 
 import {
   findAll,
@@ -619,12 +649,17 @@ import type {
   RoleInput,
   RoleSearch,
   MenuModel,
+  PermitModel,
   UsrModel,
 } from "#/types";
 
 import {
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 defineOptions({
   name: "角色",
@@ -726,8 +761,10 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  menu_ids?: string|string[]; // 菜单
-  menu_ids_lbl?: string|string[]; // 菜单
+  menu_ids?: string|string[]; // 菜单权限
+  menu_ids_lbl?: string|string[]; // 菜单权限
+  permit_ids?: string|string[]; // 按钮权限
+  permit_ids_lbl?: string|string[]; // 按钮权限
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
@@ -748,6 +785,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  permit_ids: "string[]",
+  permit_ids_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -881,8 +920,16 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "菜单",
+      label: "菜单权限",
       prop: "menu_ids_lbl",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "按钮权限",
+      prop: "permit_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1165,15 +1212,16 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("名称") ]: "lbl",
-    [ n("菜单") ]: "menu_ids_lbl",
-    [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("备注") ]: "rem",
-    [ n("创建人") ]: "create_usr_id_lbl",
-    [ n("创建时间") ]: "create_time_lbl",
-    [ n("更新人") ]: "update_usr_id_lbl",
-    [ n("更新时间") ]: "update_time_lbl",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("菜单权限") ]: "menu_ids_lbl",
+    [ await nAsync("按钮权限") ]: "permit_ids_lbl",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("备注") ]: "rem",
+    [ await nAsync("创建人") ]: "create_usr_id_lbl",
+    [ await nAsync("创建时间") ]: "create_time_lbl",
+    [ await nAsync("更新人") ]: "update_usr_id_lbl",
+    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1486,7 +1534,8 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
-    "菜单",
+    "菜单权限",
+    "按钮权限",
     "锁定",
     "启用",
     "备注",
@@ -1572,6 +1621,47 @@ async function onMenu_ids(row: RoleModel) {
   }
   row.menu_ids = selectedIds2;
   await updateById(row.id, { menu_ids: selectedIds2 });
+  await dataGrid();
+}
+
+let permit_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+
+async function onPermit_ids(row: RoleModel) {
+  if (!permit_idsListSelectDialogRef) {
+    return;
+  }
+  row.permit_ids = row.permit_ids || [ ];
+  let {
+    selectedIds: selectedIds2,
+    action
+  } = await permit_idsListSelectDialogRef.showDialog({
+    selectedIds: row.permit_ids as string[],
+    isLocked: row.is_locked == 1,
+  });
+  if (isLocked) {
+    return;
+  }
+  if (action !== "select") {
+    return;
+  }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.permit_ids.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.permit_ids.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.permit_ids = selectedIds2;
+  await updateById(row.id, { permit_ids: selectedIds2 });
   await dataGrid();
 }
 

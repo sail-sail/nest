@@ -22,10 +22,6 @@ use crate::common::context::Ctx;
 pub struct PermitModel {
   /// ID
   pub id: String,
-  /// 角色
-  pub role_id: String,
-  /// 角色
-  pub role_id_lbl: String,
   /// 菜单
   pub menu_id: String,
   /// 菜单
@@ -34,10 +30,6 @@ pub struct PermitModel {
   pub code: String,
   /// 名称
   pub lbl: String,
-  /// 可见
-  pub is_visible: u8,
-  /// 可见
-  pub is_visible_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -64,10 +56,6 @@ impl FromRow<'_, MySqlRow> for PermitModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    // 角色
-    let role_id: String = row.try_get("role_id")?;
-    let role_id_lbl: Option<String> = row.try_get("role_id_lbl")?;
-    let role_id_lbl = role_id_lbl.unwrap_or_default();
     // 菜单
     let menu_id: String = row.try_get("menu_id")?;
     let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
@@ -76,9 +64,6 @@ impl FromRow<'_, MySqlRow> for PermitModel {
     let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 可见
-    let is_visible: u8 = row.try_get("is_visible")?;
-    let is_visible_lbl: String = is_visible.to_string();
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -106,14 +91,10 @@ impl FromRow<'_, MySqlRow> for PermitModel {
     
     let model = Self {
       id,
-      role_id,
-      role_id_lbl,
       menu_id,
       menu_id_lbl,
       code,
       lbl,
-      is_visible,
-      is_visible_lbl,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -135,10 +116,6 @@ impl FromRow<'_, MySqlRow> for PermitModel {
 pub struct PermitFieldComment {
   /// ID
   pub id: String,
-  /// 角色
-  pub role_id: String,
-  /// 角色
-  pub role_id_lbl: String,
   /// 菜单
   pub menu_id: String,
   /// 菜单
@@ -147,10 +124,6 @@ pub struct PermitFieldComment {
   pub code: String,
   /// 名称
   pub lbl: String,
-  /// 可见
-  pub is_visible: String,
-  /// 可见
-  pub is_visible_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -176,13 +149,7 @@ pub struct PermitFieldComment {
 pub struct PermitSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
-  #[graphql(skip)]
-  pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
-  /// 角色
-  pub role_id: Option<Vec<String>>,
-  /// 角色
-  pub role_id_is_null: Option<bool>,
   /// 菜单
   pub menu_id: Option<Vec<String>>,
   /// 菜单
@@ -195,8 +162,6 @@ pub struct PermitSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
-  /// 可见
-  pub is_visible: Option<Vec<u8>>,
   /// 备注
   pub rem: Option<String>,
   /// 备注
@@ -220,10 +185,6 @@ pub struct PermitSearch {
 pub struct PermitInput {
   /// ID
   pub id: Option<String>,
-  /// 角色
-  pub role_id: Option<String>,
-  /// 角色
-  pub role_id_lbl: Option<String>,
   /// 菜单
   pub menu_id: Option<String>,
   /// 菜单
@@ -232,10 +193,6 @@ pub struct PermitInput {
   pub code: Option<String>,
   /// 名称
   pub lbl: Option<String>,
-  /// 可见
-  pub is_visible: Option<u8>,
-  /// 可见
-  pub is_visible_lbl: Option<String>,
   /// 备注
   pub rem: Option<String>,
   /// 创建人
@@ -277,14 +234,6 @@ impl PermitInput {
       &field_comments.id,
     ).await?;
     
-    // 角色
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.role_id.as_ref(),
-      22,
-      &field_comments.role_id,
-    ).await?;
-    
     // 菜单
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
@@ -313,7 +262,7 @@ impl PermitInput {
     crate::common::validators::chars_max_length::chars_max_length(
       ctx,
       self.rem.as_ref(),
-      255,
+      100,
       &field_comments.rem,
     ).await?;
     
@@ -343,18 +292,13 @@ impl From<PermitInput> for PermitSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
       is_deleted: None,
-      // 角色
-      role_id: input.role_id.map(|x| vec![x.into()]),
       // 菜单
       menu_id: input.menu_id.map(|x| vec![x.into()]),
       // 编码
       code: input.code,
       // 名称
       lbl: input.lbl,
-      // 可见
-      is_visible: input.is_visible.map(|x| vec![x.into()]),
       // 备注
       rem: input.rem,
       // 创建人

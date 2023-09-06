@@ -16,6 +16,7 @@
     "importCsv": "cd codegen && node -r ts-node/register src/util/npmImportCsv.ts",
     "uuid": "cd codegen && node -r ts-node/register src/util/npmShortUuidV4.ts",
     "pwd": "cd codegen && node -r ts-node/register src/util/npmPassword.ts",
+    "permit": "cd pc && node src/utils/permit_scan.js",
     "build": "cd rust && npm run build",
     "publish": "cd rust && npm run publish",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",

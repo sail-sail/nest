@@ -25,7 +25,7 @@
         
         <el-tab-pane
           lazy
-          :label="'系统字典' + (dict_detailTotal ? ` (${ dict_detailTotal })` : '')"
+          :label="'系统字典' + (dict_detailTotal != null ? ` (${ dict_detailTotal })` : '')"
           name="系统字典"
         >
           <Dict_detailList

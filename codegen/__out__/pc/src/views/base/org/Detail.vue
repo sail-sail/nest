@@ -194,6 +194,10 @@ const {
   initSysI18ns,
 } = useI18n("/base/org");
 
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit("/base/org");
+
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
@@ -324,7 +328,11 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+    if (!permit("edit")) {
+      isLocked = true;
+    } else {
+      isLocked = dialogModel.is_locked == 1 ?? toValue(arg?.isLocked) ?? isLocked;
+    }
   });
   dialogAction = action || "add";
   ids = [ ];
@@ -386,11 +394,11 @@ async function showDialog(
 }
 
 watch(
-  () => dialogModel.is_locked,
+  () => isLocked,
   async () => {
-    if (dialogModel.is_locked == 1) {
+    if (isLocked) {
       dialogNotice = await nsAsync("(已锁定)");
-    } else if (dialogModel.is_locked == 0) {
+    } else {
       dialogNotice = "";
     }
   },

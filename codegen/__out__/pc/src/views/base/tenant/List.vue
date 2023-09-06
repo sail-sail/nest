@@ -46,11 +46,10 @@
           label="菜单权限"
           prop="menu_ids"
         >
-          <CustomSelect
+          <CustomTreeSelect
             :set="search.menu_ids = search.menu_ids || [ ]"
-            un-w="full"
             v-model="search.menu_ids"
-            :method="getMenuList"
+            :method="getMenuTree"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -60,24 +59,7 @@
             :placeholder="`${ ns('请选择') } ${ n('菜单权限') }`"
             multiple
             @change="onSearch"
-          ></CustomSelect>
-        </el-form-item>
-      </template>
-      
-      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
-        <el-form-item
-          label=" "
-          prop="is_deleted"
-        >
-          <el-checkbox
-            :set="search.is_deleted = search.is_deleted || 0"
-            v-model="search.is_deleted"
-            :false-label="0"
-            :true-label="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
+          ></CustomTreeSelect>
         </el-form-item>
       </template>
       
@@ -112,6 +94,23 @@
           <ElIconRemove />
         </el-icon>
       </el-form-item>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_deleted == null">
+        <el-form-item
+          label=" "
+          prop="is_deleted"
+        >
+          <el-checkbox
+            :set="search.is_deleted = search.is_deleted || 0"
+            v-model="search.is_deleted"
+            :false-label="0"
+            :true-label="1"
+            @change="recycleChg"
+          >
+            <span>{{ ns('回收站') }}</span>
+          </el-checkbox>
+        </el-form-item>
+      </template>
       
       <el-form-item
         label=" "
@@ -154,7 +153,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -166,7 +165,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -266,7 +265,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -656,6 +655,10 @@ import type {
 import {
   getMenuList,
 } from "./Api";
+
+import {
+  getMenuTree,
+} from "@/views/base/menu/Api";
 
 defineOptions({
   name: "租户",
@@ -1219,17 +1222,17 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ n("名称") ]: "lbl",
-    [ n("所属域名") ]: "domain_ids_lbl",
-    [ n("菜单权限") ]: "menu_ids_lbl",
-    [ n("锁定") ]: "is_locked_lbl",
-    [ n("启用") ]: "is_enabled_lbl",
-    [ n("排序") ]: "order_by",
-    [ n("备注") ]: "rem",
-    [ n("创建人") ]: "create_usr_id_lbl",
-    [ n("创建时间") ]: "create_time_lbl",
-    [ n("更新人") ]: "update_usr_id_lbl",
-    [ n("更新时间") ]: "update_time_lbl",
+    [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("所属域名") ]: "domain_ids_lbl",
+    [ await nAsync("菜单权限") ]: "menu_ids_lbl",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("备注") ]: "rem",
+    [ await nAsync("创建人") ]: "create_usr_id_lbl",
+    [ await nAsync("创建时间") ]: "create_time_lbl",
+    [ await nAsync("更新人") ]: "update_usr_id_lbl",
+    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),

@@ -963,7 +963,10 @@ export async function findByUnique(
       const column = columns.find((item) => item.COLUMN_NAME === unique);
       const data_type = column.DATA_TYPE;
       const foreignKey = column.foreignKey;
-    #><#
+    #>
+    if (search0.<#=unique#> == null) {
+      return [ ];
+    }<#
     if (
       foreignKey
       || data_type === "datetime"
@@ -981,12 +984,10 @@ export async function findByUnique(
       }
     #>
     let <#=unique#>: <#=_data_type#>[] = [ ];
-    if (search0.<#=unique#>) {
-      if (!Array.isArray(search0.<#=unique#>)) {
-        <#=unique#>.push(search0.<#=unique#>);
-      } else {
-        <#=unique#> = search0.<#=unique#>;
-      }
+    if (!Array.isArray(search0.<#=unique#>)) {
+      <#=unique#>.push(search0.<#=unique#>);
+    } else {
+      <#=unique#> = search0.<#=unique#>;
     }<#
     } else {
     #>

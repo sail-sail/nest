@@ -492,13 +492,17 @@ export async function findByUnique(
   }
   const models: MenuModel[] = [ ];
   {
+    if (search0.parent_id == null) {
+      return [ ];
+    }
     let parent_id: string[] = [ ];
-    if (search0.parent_id) {
-      if (!Array.isArray(search0.parent_id)) {
-        parent_id.push(search0.parent_id);
-      } else {
-        parent_id = search0.parent_id;
-      }
+    if (!Array.isArray(search0.parent_id)) {
+      parent_id.push(search0.parent_id);
+    } else {
+      parent_id = search0.parent_id;
+    }
+    if (search0.lbl == null) {
+      return [ ];
     }
     const lbl = search0.lbl;
     const modelTmps = await findAll({

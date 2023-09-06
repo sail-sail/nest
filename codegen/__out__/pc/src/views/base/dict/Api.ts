@@ -501,6 +501,22 @@ export function useExportExcel(routePath: string) {
             update_usr_id_lbl
             update_time_lbl
           }
+          findAllUsr {
+            lbl
+          }
+          getDict(codes: [
+            "type",
+            "is_locked",
+            "is_enabled",
+          ]) {
+            code
+            lbl
+          }
+          getDictbiz(codes: [
+          ]) {
+            code
+            lbl
+          }
         }
       `,
       variables: {

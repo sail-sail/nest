@@ -164,8 +164,8 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "权限",
-        component: () => import("@/views/base/permit/List.vue"),
+        name: "按钮权限",
+        component: () => import("@/views/base/permit/TreeList.vue"),
         props: (route) => route.query,
       },
     ],

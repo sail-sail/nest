@@ -54,7 +54,10 @@ export async function getMenuIdsByTenant() {
 export async function filterMenuIdsByTenant(
   menu_ids?: string[] | null,
 ) {
-  if (!menu_ids || menu_ids.length === 0) {
+  if (!menu_ids) {
+    return menu_ids;
+  }
+  if (menu_ids.length === 0) {
     return [ ];
   }
   const menu_idsInTenant = await getMenuIdsByTenant();

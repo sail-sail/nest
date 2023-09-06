@@ -14,6 +14,4 @@ pub struct GetUsrPermits {
   pub code: String,
   /// 名称
   pub lbl: String,
-  /// 可见
-  pub is_visible: bool,
 }

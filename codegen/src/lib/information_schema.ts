@@ -1,5 +1,5 @@
 import * as mysql from "mysql2";
-import { Pool, PoolConnection } from "mysql2/promise";
+import type { Pool, PoolConnection } from "mysql2/promise";
 import nestConfig from "./nest_config";
 import tables from "../tables/tables";
 import config, { TableCloumn, TablesConfigItem } from "../config";

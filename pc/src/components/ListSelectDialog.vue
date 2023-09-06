@@ -38,8 +38,9 @@
       <slot
         v-bind="$attrs"
         :selected-ids="selectedIds"
-        :is-locked="isLocked ? '1' : '0'"
+        :is-locked="'1'"
         @selected-ids-chg="selectedIdsChg"
+        @before-search-reset="onRevert"
       ></slot>
     </div>
     <div
@@ -59,7 +60,7 @@
       </el-button>
       
       <el-button
-        @click="revertClk"
+        @click="onRevert"
       >
         <template #icon>
           <ElIconRefresh />
@@ -170,7 +171,7 @@ async function saveClk() {
   });
 }
 
-function revertClk() {
+function onRevert() {
   selectedIds = oldSelectedIds && [ ...oldSelectedIds ];
 }
 

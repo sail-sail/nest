@@ -473,6 +473,9 @@ export async function findByUnique(
   }
   const models: TenantModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
     const lbl = search0.lbl;
     const modelTmps = await findAll({
       lbl,
@@ -697,20 +700,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    45,
-    fieldComments.lbl,
-  );
-  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -823,13 +812,6 @@ export async function validate(
     fieldComments.rem,
   );
   
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
@@ -884,20 +866,6 @@ export async function validate(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
   // 更新人
