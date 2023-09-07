@@ -3,13 +3,13 @@ use fast_chemail::is_valid_email;
 
 use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
-pub async fn email<T: AsRef<str>>(
-  ctx: &mut impl Ctx<'_>,
-  value: Option<&T>,
-  label: impl AsRef<str>,
+pub async fn email<'a>(
+  ctx: &mut impl Ctx<'a>,
+  value: Option<String>,
+  label: &str,
 ) -> Result<()> {
   
   if value.is_none() {
@@ -17,17 +17,17 @@ pub async fn email<T: AsRef<str>>(
   }
   let value = value.unwrap();
   
-  if is_valid_email(value.as_ref()) {
+  if is_valid_email(&value) {
     return Ok(());
   }
   
-  let err_msg = i18n_dao::ns(
+  let err_msg = ns(
     ctx,
     "邮件格式不正确".to_owned(),
     None,
   ).await?;
   
-  let err_msg = format!("{} {}", label.as_ref(), err_msg);
+  let err_msg = format!("{} {}", label, err_msg);
   
   return Err(SrvErr::msg(err_msg).into());
 }

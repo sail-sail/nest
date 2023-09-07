@@ -1,25 +1,18 @@
 use anyhow::Result;
-use async_graphql::{Context, Object};
-
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::dict_detail_model::GetDict;
 use super::dict_detail_service;
 
-#[derive(Default)]
-pub struct DictDetailQuery;
-
-#[Object(rename_args = "snake_case")]
-impl DictDetailQuery {
+pub async fn get_dict<'a>(
+  ctx: &mut impl Ctx<'a>,
+  codes: &Vec<impl AsRef<str>>,
+) -> Result<Vec<Vec<GetDict>>> {
   
-  async fn get_dict<'a>(
-    &self,
-    ctx: &Context<'a>,
-    codes: Vec<String>,
-  ) -> Result<Vec<Vec<GetDict>>> {
-    let mut ctx = CtxImpl::new(&ctx);
-    let res = dict_detail_service::get_dict(&mut ctx, &codes).await;
-    ctx.ok(res).await
-  }
+  let data = dict_detail_service::get_dict(
+    ctx,
+    codes,
+  ).await?;
   
+  Ok(data)
 }

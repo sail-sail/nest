@@ -3,7 +3,7 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::{CtxImpl, Ctx};
 
-use super::i18n_service;
+use super::i18n_service::n_lang as service_n_lang;
 
 #[derive(Default)]
 pub struct I18nQuery;
@@ -20,7 +20,7 @@ impl I18nQuery {
   ) -> Result<String> {
     let mut ctx = CtxImpl::new(&ctx);
     
-    let res = i18n_service::n_lang(
+    let res = service_n_lang(
       &mut ctx,
       lang_code,
       route_path,

@@ -1336,9 +1336,16 @@ pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<String> {<#
+  if (false) {
+  #>
   
-  input.validate(ctx).await?;
+  validate(
+    ctx,
+    &input,
+  ).await?;<#
+  }
+  #>
   
   let table = "<#=mod#>_<#=table#>";
   let _method = "create";
@@ -1720,9 +1727,16 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
-  }
+  }<#
+  if (false) {
+  #>
   
-  input.validate(ctx).await?;
+  validate(
+    ctx,
+    &input,
+  ).await?;<#
+  }
+  #>
   
   input = set_id_by_lbl(
     ctx,
@@ -2521,6 +2535,239 @@ pub async fn find_last_order_by<'a>(
   };
   
   Ok(order_by)
+}<#
+}
+#><#
+if (false) {
+#>
+
+/// 校验, 校验失败时抛出SrvErr异常
+#[allow(unused_imports)]
+pub async fn validate<'a>(
+  ctx: &mut impl Ctx<'a>,
+  input: &<#=tableUP#>Input,
+) -> Result<()> {
+  
+  use crate::common::validators::max_items::max_items;
+  use crate::common::validators::min_items::min_items;
+  use crate::common::validators::maximum::maximum;
+  use crate::common::validators::minimum::minimum;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  use crate::common::validators::chars_min_length::chars_min_length;
+  use crate::common::validators::multiple_of::multiple_of;
+  use crate::common::validators::regex::regex;
+  use crate::common::validators::email::email;
+  use crate::common::validators::url::url;
+  use crate::common::validators::ip::ip;
+  
+  let field_comments = get_field_comments(
+    ctx,
+    None,
+  ).await?;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    const foreignKey = column.foreignKey;
+    const validators = column.validators || [ ];
+    if (validators.length === 0) {
+      continue;
+    }
+  #><#
+      if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && foreignKey?.multiple) {
+  #>
+  
+  // <#=column_comment#><#
+  for (let j = 0; j < validators.length; j++) {
+    const validator = validators[j];
+  #><#
+    if (validator.max_items != null) {
+  #>
+  max_items(
+    ctx,
+    input.<#=column_name_rust#>.as_ref(),
+    <#=validator.max_items#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;
+  max_items(
+    ctx,
+    input.<#=column_name#>_lbl.as_ref(),
+    <#=validator.max_items#>,
+    &field_comments.<#=column_name#>_lbl,
+  ).await?;<#
+    } else if (validator.min_items != null) {
+  #>
+  min_items(
+    ctx,
+    input.<#=column_name_rust#>.as_ref(),
+    <#=validator.min_items#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;
+  min_items(
+    ctx,
+    input.<#=column_name#>_lbl.as_ref(),
+    <#=validator.min_items#>,
+    &field_comments.<#=column_name#>_lbl,
+  ).await?;<#
+    }
+  #><#
+  }
+  #><#
+      } else if ((foreignKey || selectList.length > 0 || column.dict || column.dictbiz) && !foreignKey?.multiple) {
+  #>
+  
+  // <#=column_comment#><#
+  for (let j = 0; j < validators.length; j++) {
+    const validator = validators[j];
+  #><#
+    if (validator.chars_max_length != null) {
+  #>
+  chars_max_length(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    <#=validator.chars_max_length#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    }
+  #><#
+    if (validator.chars_min_length != null) {
+  #>
+  chars_min_length(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    <#=validator.chars_min_length#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    }
+  #><#
+    }
+  #><#
+    } else {
+  #>
+  
+  // <#=column_comment#><#
+  if (validators && validators.length > 0) {
+  #><#
+  for (let j = 0; j < validators.length; j++) {
+    const validator = validators[j];
+  #><#
+    if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  maximum(
+    ctx,
+    input.<#=column_name_rust#>.as_ref(),
+    <#=validator.maximum#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  minimum(
+    ctx,
+    input.<#=column_name_rust#>.as_ref(),
+    <#=validator.minimum#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  multiple_of(
+    ctx,
+    input.<#=column_name_rust#>.as_ref(),
+    <#=validator.multiple_of#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  chars_max_length(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    <#=validator.chars_max_length#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+  #>
+  chars_min_length(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    <#=validator.chars_min_length#>,
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.email && data_type === "varchar") {
+  #>
+  email(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.url && data_type === "varchar") {
+  #>
+  url(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.ip && data_type === "varchar") {
+  #>
+  ip(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.regex && data_type === "varchar") {
+  #>
+  regex(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    "<#=validator.regex#>".to_owned(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.email && data_type === "varchar") {
+  #>
+  email(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.url && data_type === "varchar") {
+  #>
+  url(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    } else if (validator.ip && data_type === "varchar") {
+  #>
+  ip(
+    ctx,
+    input.<#=column_name_rust#>.clone(),
+    &field_comments.<#=column_name_rust#>,
+  ).await?;<#
+    }
+  #><#
+  }
+  #><#
+    }
+  #><#
+  }
+  #><#
+  }
+  #>
+  
+  Ok(())
 }<#
 }
 #>

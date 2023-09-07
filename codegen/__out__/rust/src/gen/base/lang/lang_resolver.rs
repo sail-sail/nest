@@ -2,7 +2,6 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::src::base::permit::permit_service::use_permit;
 
 use super::lang_model::*;
 use super::lang_service;
@@ -85,14 +84,6 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
-  use_permit(
-    ctx,
-    "/base/lang".to_owned(),
-    "add".to_owned(),
-  ).await?;
-  
-  input.validate(ctx).await?;
-  
   let id = lang_service::create(
     ctx,
     input,
@@ -111,14 +102,6 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
-  use_permit(
-    ctx,
-    "/base/lang".to_owned(),
-    "edit".to_owned(),
-  ).await?;
-  
-  input.validate(ctx).await?;
-  
   let res = lang_service::update_by_id(
     ctx,
     id,
@@ -136,12 +119,6 @@ pub async fn delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  use_permit(
-    ctx,
-    "/base/lang".to_owned(),
-    "delete".to_owned(),
-  ).await?;
   
   let num = lang_service::delete_by_ids(
     ctx,
@@ -179,12 +156,6 @@ pub async fn enable_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/lang".to_owned(),
-    "enable".to_owned(),
-  ).await?;
-  
   let num = lang_service::enable_by_ids(
     ctx,
     ids,
@@ -217,12 +188,6 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  use_permit(
-    ctx,
-    "/base/lang".to_owned(),
-    "delete".to_owned(),
-  ).await?;
-  
   let num = lang_service::revert_by_ids(
     ctx,
     ids,
@@ -239,12 +204,6 @@ pub async fn force_delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  use_permit(
-    ctx,
-    "/base/lang".to_owned(),
-    "force_delete".to_owned(),
-  ).await?;
   
   let num = lang_service::force_delete_by_ids(
     ctx,

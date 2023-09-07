@@ -6,11 +6,11 @@ use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao;
 
 #[allow(dead_code)]
-pub async fn regex<T: AsRef<str>>(
-  ctx: &mut impl Ctx<'_>,
-  value: Option<&T>,
+pub async fn regex<'a>(
+  ctx: &mut impl Ctx<'a>,
+  value: Option<String>,
   regex_str: &'static str,
-  label: impl AsRef<str>,
+  label: &str,
 ) -> Result<()> {
   
   if value.is_none() {
@@ -18,7 +18,7 @@ pub async fn regex<T: AsRef<str>>(
   }
   let value = value.unwrap();
   let regex = Regex::new(regex_str)?;
-  if regex.is_match(value.as_ref()) {
+  if regex.is_match(&value) {
     return Ok(());
   }
   
@@ -28,7 +28,7 @@ pub async fn regex<T: AsRef<str>>(
     None,
   ).await?;
   
-  let err_msg = format!("{} {}", label.as_ref(), err_msg);
+  let err_msg = format!("{} {}", label, err_msg);
   
   return Err(SrvErr::msg(err_msg).into());
 }

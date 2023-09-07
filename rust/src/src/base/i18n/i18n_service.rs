@@ -3,7 +3,11 @@ use std::collections::HashMap;
 use anyhow::Result;
 use crate::common::context::Ctx;
 
-use super::i18n_dao;
+use super::i18n_dao::{
+  n as dao_n,
+  ns as dao_ns,
+  n_lang as dao_n_lang,
+};
 
 #[allow(dead_code)]
 pub async fn n<'a>(
@@ -12,7 +16,7 @@ pub async fn n<'a>(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let res = i18n_dao::n(ctx, route_path, code, map).await?;
+  let res = dao_n(ctx, route_path, code, map).await?;
   Ok(res)
 }
 
@@ -22,7 +26,7 @@ pub async fn ns<'a>(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let res = i18n_dao::ns(ctx, code, map).await?;
+  let res = dao_ns(ctx, code, map).await?;
   Ok(res)
 }
 
@@ -33,6 +37,6 @@ pub async fn n_lang<'a>(
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
-  let res = i18n_dao::n_lang(ctx, lang_code, route_path, code, map).await?;
+  let res = dao_n_lang(ctx, lang_code, route_path, code, map).await?;
   Ok(res)
 }

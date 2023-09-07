@@ -6,11 +6,11 @@ use crate::common::context::{Ctx, Options};
 
 use regex::{Regex, Captures};
 
-use crate::gen::base::lang::lang_dao;
+use crate::gen::base::lang::lang_dao::find_one as find_one_lang;
 use crate::gen::base::lang::lang_model::LangSearch;
-use crate::gen::base::i18n::i18n_dao;
+use crate::gen::base::i18n::i18n_dao::find_one as find_one_i18n;
 use crate::gen::base::i18n::i18n_model::{I18nSearch, I18nModel};
-use crate::gen::base::menu::menu_dao;
+use crate::gen::base::menu::menu_dao::find_one as find_one_menu;
 use crate::gen::base::menu::menu_model::MenuSearch;
 
 lazy_static! {
@@ -86,7 +86,7 @@ pub async fn n_lang<'a>(
   let options: Option<Options> = options.into();
   
   let mut i18n_lbl = code.clone();
-  let lang_model = lang_dao::find_one(
+  let lang_model = find_one_lang(
     ctx,
     LangSearch {
       code: lang_code.into(),
@@ -98,7 +98,7 @@ pub async fn n_lang<'a>(
   ).await?;
   let mut menu_id: Option<String> = None;
   if let Some(route_path) = route_path {
-    let menu_model = menu_dao::find_one(
+    let menu_model = find_one_menu(
       ctx,
       MenuSearch {
         route_path: route_path.into(),
@@ -116,7 +116,7 @@ pub async fn n_lang<'a>(
     #[allow(unused_assignments)]
     let mut i18n_model: Option<I18nModel> = None;
     if let Some(menu_id) = menu_id {
-      i18n_model = i18n_dao::find_one(
+      i18n_model = find_one_i18n(
         ctx,
         I18nSearch {
           lang_id: vec![lang_model.id.to_string()].into(),
@@ -128,7 +128,7 @@ pub async fn n_lang<'a>(
         options.clone(),
       ).await?;
       if i18n_model.is_none() {
-        i18n_model = i18n_dao::find_one(
+        i18n_model = find_one_i18n(
           ctx,
           I18nSearch {
             lang_id: vec![lang_model.id.to_string()].into(),
@@ -141,7 +141,7 @@ pub async fn n_lang<'a>(
         ).await?;
       }
     } else {
-      i18n_model = i18n_dao::find_one(
+      i18n_model = find_one_i18n(
         ctx,
         I18nSearch {
           lang_id: vec![lang_model.id.to_string()].into(),
