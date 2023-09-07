@@ -68,12 +68,20 @@ pub async fn get_usr_permits<'a>(
   let permit_len = permit_ids.len();
   
   // 切分成多个批次查询
-  let mut permit_ids_arr = Vec::<Vec<String>>::new();
   let batch_size = 100;
-  let batch_count = permit_len / batch_size;
+  let mut batch_count = permit_len / batch_size;
+  if permit_len % batch_size != 0 {
+    batch_count += 1;
+  }
+  let batch_count = batch_count;
+  let mut permit_ids_arr = Vec::<Vec<String>>::with_capacity(batch_count);
   for i in 0..batch_count {
     let start = i * batch_size;
-    let end = (i + 1) * batch_size;
+    let mut end = (i + 1) * batch_size;
+    if end > permit_len {
+      end = permit_len;
+    }
+    let end = end;
     let permit_ids = permit_ids[start..end].to_vec();
     permit_ids_arr.push(permit_ids);
   }
@@ -95,7 +103,7 @@ pub async fn get_usr_permits<'a>(
   }
   let permit_models = permit_models;
   
-  let mut menu_id_map = HashMap::<String, String>::new();
+  let mut menu_id_map = HashMap::<String, String>::with_capacity(permit_len);
   
   for permit_model in permit_models.iter() {
     let menu_id = permit_model.menu_id.clone();
