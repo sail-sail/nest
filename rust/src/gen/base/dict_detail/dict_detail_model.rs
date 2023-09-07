@@ -14,9 +14,6 @@ use async_graphql::{
   InputObject,
 };
 
-use anyhow::Result;
-use crate::common::context::Ctx;
-
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictDetailModel {
@@ -191,64 +188,6 @@ pub struct DictDetailInput {
   pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
-}
-
-impl DictDetailInput {
-  
-  /// 校验, 校验失败时抛出SrvErr异常
-  pub async fn validate(
-    &self,
-    ctx: &mut impl Ctx<'_>,
-  ) -> Result<()> {
-    
-    let field_comments = super::dict_detail_dao::get_field_comments(
-      ctx,
-      None,
-    ).await?;
-    
-    // ID
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.id.as_ref(),
-      22,
-      &field_comments.id,
-    ).await?;
-    
-    // 系统字典
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.dict_id.as_ref(),
-      22,
-      &field_comments.dict_id,
-    ).await?;
-    
-    // 名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.lbl.as_ref(),
-      255,
-      &field_comments.lbl,
-    ).await?;
-    
-    // 值
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.val.as_ref(),
-      255,
-      &field_comments.val,
-    ).await?;
-    
-    // 备注
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.rem.as_ref(),
-      255,
-      &field_comments.rem,
-    ).await?;
-    
-    Ok(())
-  }
-  
 }
 
 impl From<DictDetailInput> for DictDetailSearch {

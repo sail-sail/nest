@@ -14,9 +14,6 @@ use async_graphql::{
   InputObject,
 };
 
-use anyhow::Result;
-use crate::common::context::Ctx;
-
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
@@ -233,72 +230,6 @@ pub struct UsrInput {
   pub role_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
-}
-
-impl UsrInput {
-  
-  /// 校验, 校验失败时抛出SrvErr异常
-  pub async fn validate(
-    &self,
-    ctx: &mut impl Ctx<'_>,
-  ) -> Result<()> {
-    
-    let field_comments = super::usr_dao::get_field_comments(
-      ctx,
-      None,
-    ).await?;
-    
-    // ID
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.id.as_ref(),
-      22,
-      &field_comments.id,
-    ).await?;
-    
-    // 头像
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.img.as_ref(),
-      22,
-      &field_comments.img,
-    ).await?;
-    
-    // 名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.lbl.as_ref(),
-      45,
-      &field_comments.lbl,
-    ).await?;
-    
-    // 用户名
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.username.as_ref(),
-      45,
-      &field_comments.username,
-    ).await?;
-    
-    // 默认组织
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.default_org_id.as_ref(),
-      22,
-      &field_comments.default_org_id,
-    ).await?;
-    
-    // 备注
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.rem.as_ref(),
-      255,
-      &field_comments.rem,
-    ).await?;
-    
-    Ok(())
-  }
-  
 }
 
 impl From<UsrInput> for UsrSearch {

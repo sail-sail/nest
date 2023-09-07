@@ -3,27 +3,25 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::{CtxImpl, Ctx};
 
-use super::menu_service;
-use super::menu_model::GetMenus;
+use super::permit_resolver;
+use super::permit_model::GetUsrPermits;
 
 #[derive(Default)]
-pub struct MenuQuery;
+pub struct PermitQuery;
 
 #[Object(rename_args = "snake_case")]
-impl MenuQuery {
+impl PermitQuery {
   
-  /// 首页获取菜单列表
-  async fn get_menus<'a>(
+  /// 根据当前用户获取权限列表
+  async fn get_usr_permits<'a>(
     &self,
     ctx: &Context<'a>,
-    r#type: Option<String>,
-  ) -> Result<Vec<GetMenus>> {
+  ) -> Result<Vec<GetUsrPermits>> {
     
     let mut ctx = CtxImpl::new(&ctx).auth()?;
     
-    let res = menu_service::get_menus(
+    let res = permit_resolver::get_usr_permits(
       &mut ctx,
-      r#type,
     ).await?;
     
     Ok(res)

@@ -14,9 +14,6 @@ use async_graphql::{
   InputObject,
 };
 
-use anyhow::Result;
-use crate::common::context::Ctx;
-
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct PermitModel {
@@ -211,80 +208,6 @@ pub struct PermitInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-}
-
-impl PermitInput {
-  
-  /// 校验, 校验失败时抛出SrvErr异常
-  pub async fn validate(
-    &self,
-    ctx: &mut impl Ctx<'_>,
-  ) -> Result<()> {
-    
-    let field_comments = super::permit_dao::get_field_comments(
-      ctx,
-      None,
-    ).await?;
-    
-    // ID
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.id.as_ref(),
-      22,
-      &field_comments.id,
-    ).await?;
-    
-    // 菜单
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.menu_id.as_ref(),
-      22,
-      &field_comments.menu_id,
-    ).await?;
-    
-    // 编码
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.code.as_ref(),
-      45,
-      &field_comments.code,
-    ).await?;
-    
-    // 名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.lbl.as_ref(),
-      45,
-      &field_comments.lbl,
-    ).await?;
-    
-    // 备注
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.rem.as_ref(),
-      100,
-      &field_comments.rem,
-    ).await?;
-    
-    // 创建人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.create_usr_id.as_ref(),
-      22,
-      &field_comments.create_usr_id,
-    ).await?;
-    
-    // 更新人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.update_usr_id.as_ref(),
-      22,
-      &field_comments.update_usr_id,
-    ).await?;
-    
-    Ok(())
-  }
-  
 }
 
 impl From<PermitInput> for PermitSearch {

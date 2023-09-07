@@ -14,9 +14,6 @@ use async_graphql::{
   InputObject,
 };
 
-use anyhow::Result;
-use crate::common::context::Ctx;
-
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordModel {
@@ -256,112 +253,6 @@ pub struct OperationRecordInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
-}
-
-impl OperationRecordInput {
-  
-  /// 校验, 校验失败时抛出SrvErr异常
-  pub async fn validate(
-    &self,
-    ctx: &mut impl Ctx<'_>,
-  ) -> Result<()> {
-    
-    let field_comments = super::operation_record_dao::get_field_comments(
-      ctx,
-      None,
-    ).await?;
-    
-    // ID
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.id.as_ref(),
-      22,
-      &field_comments.id,
-    ).await?;
-    
-    // 模块
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.module.as_ref(),
-      50,
-      &field_comments.module,
-    ).await?;
-    
-    // 模块名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.module_lbl.as_ref(),
-      50,
-      &field_comments.module_lbl,
-    ).await?;
-    
-    // 方法
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.method.as_ref(),
-      50,
-      &field_comments.method,
-    ).await?;
-    
-    // 方法名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.method_lbl.as_ref(),
-      50,
-      &field_comments.method_lbl,
-    ).await?;
-    
-    // 操作
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.lbl.as_ref(),
-      100,
-      &field_comments.lbl,
-    ).await?;
-    
-    // 操作前数据
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.old_data.as_ref(),
-      5000,
-      &field_comments.old_data,
-    ).await?;
-    
-    // 操作后数据
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.new_data.as_ref(),
-      5000,
-      &field_comments.new_data,
-    ).await?;
-    
-    // 备注
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.rem.as_ref(),
-      100,
-      &field_comments.rem,
-    ).await?;
-    
-    // 创建人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.create_usr_id.as_ref(),
-      22,
-      &field_comments.create_usr_id,
-    ).await?;
-    
-    // 更新人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.update_usr_id.as_ref(),
-      22,
-      &field_comments.update_usr_id,
-    ).await?;
-    
-    Ok(())
-  }
-  
 }
 
 impl From<OperationRecordInput> for OperationRecordSearch {

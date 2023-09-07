@@ -14,9 +14,6 @@ use async_graphql::{
   InputObject,
 };
 
-use anyhow::Result;
-use crate::common::context::Ctx;
-
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictModel {
@@ -276,80 +273,6 @@ pub struct DictInput {
   pub is_sys: Option<u8>,
   /// 系统字段
   pub is_sys_lbl: Option<String>,
-}
-
-impl DictInput {
-  
-  /// 校验, 校验失败时抛出SrvErr异常
-  pub async fn validate(
-    &self,
-    ctx: &mut impl Ctx<'_>,
-  ) -> Result<()> {
-    
-    let field_comments = super::dict_dao::get_field_comments(
-      ctx,
-      None,
-    ).await?;
-    
-    // ID
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.id.as_ref(),
-      22,
-      &field_comments.id,
-    ).await?;
-    
-    // 编码
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.code.as_ref(),
-      50,
-      &field_comments.code,
-    ).await?;
-    
-    // 名称
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.lbl.as_ref(),
-      200,
-      &field_comments.lbl,
-    ).await?;
-    
-    // 数据类型
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.r#type.as_ref(),
-      22,
-      &field_comments.r#type,
-    ).await?;
-    
-    // 备注
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.rem.as_ref(),
-      255,
-      &field_comments.rem,
-    ).await?;
-    
-    // 创建人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.create_usr_id.as_ref(),
-      22,
-      &field_comments.create_usr_id,
-    ).await?;
-    
-    // 更新人
-    crate::common::validators::chars_max_length::chars_max_length(
-      ctx,
-      self.update_usr_id.as_ref(),
-      22,
-      &field_comments.update_usr_id,
-    ).await?;
-    
-    Ok(())
-  }
-  
 }
 
 impl From<DictInput> for DictSearch {

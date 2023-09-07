@@ -3,14 +3,14 @@ use anyhow::Result;
 
 use crate::common::context::Ctx;
 use crate::common::context::SrvErr;
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
-pub async fn chars_max_length<T: AsRef<str>>(
-  ctx: &mut impl Ctx<'_>,
-  value: Option<&T>,
+pub async fn chars_max_length<'a>(
+  ctx: &mut impl Ctx<'a>,
+  value: Option<String>,
   len: usize,
-  label: impl AsRef<str>,
+  label: &str,
 ) -> Result<()> {
   
   if value.is_none() {
@@ -18,7 +18,7 @@ pub async fn chars_max_length<T: AsRef<str>>(
   }
   let value = value.unwrap();
   
-  let value_len = value.as_ref().chars().count();
+  let value_len = value.chars().count();
   
   if value_len <= len {
     return Ok(());
@@ -27,13 +27,13 @@ pub async fn chars_max_length<T: AsRef<str>>(
   let mut map: HashMap<String, String> = HashMap::new();
   map.insert("0".to_owned(), len.to_string());
   
-  let err_msg = i18n_dao::ns(
+  let err_msg = ns(
     ctx,
     "长度不能超过 {0}".to_owned(),
     map.into(),
   ).await?;
   
-  let err_msg = format!("{} {}", label.as_ref(), err_msg);
+  let err_msg = format!("{} {}", label, err_msg);
   
   return Err(SrvErr::msg(err_msg).into());
 }

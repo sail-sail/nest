@@ -1261,7 +1261,7 @@ pub trait Ctx<'a>: Send + Sized {
   
 }
 
-#[async_trait]
+// #[async_trait]
 impl<'a> Ctx<'a> for CtxImpl<'a> {
   
   fn get_not_verify_token(&self) -> bool {

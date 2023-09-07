@@ -1,26 +1,17 @@
 use anyhow::Result;
-use async_graphql::{Context, Object};
-
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::permit_service;
 use super::permit_model::GetUsrPermits;
 
-#[derive(Default)]
-pub struct PermitQuery;
-
-#[Object(rename_args = "snake_case")]
-impl PermitQuery {
+/// 根据当前用户获取权限列表
+pub async fn get_usr_permits<'a>(
+  ctx: &mut impl Ctx<'a>,
+) -> Result<Vec<GetUsrPermits>> {
   
-  /// 根据当前用户获取权限列表
-  async fn get_usr_permits<'a>(
-    &self,
-    ctx: &Context<'a>,
-  ) -> Result<Vec<GetUsrPermits>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
-    
-    let res = permit_service::get_usr_permits(&mut ctx).await?;
-    Ok(res)
-  }
+  let permits = permit_service::get_usr_permits(
+    ctx,
+  ).await?;
   
+  Ok(permits)
 }
