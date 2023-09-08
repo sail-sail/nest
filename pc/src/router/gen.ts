@@ -93,7 +93,7 @@ export const routesGen: Array<RouteRecordRaw> = [
       {
         path: "",
         name: "国际化",
-        component: () => import("@/views/base/i18n/List.vue"),
+        component: () => import("@/views/base/i18n/TreeList.vue"),
         props: (route) => route.query,
       },
     ],

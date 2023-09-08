@@ -1082,8 +1082,8 @@ async function useFindCount(
 }
 
 let sort: Sort = $ref({
-  prop: "",
-  order: "ascending",
+  prop: "update_time",
+  order: "descending",
 });
 
 /** 排序 */

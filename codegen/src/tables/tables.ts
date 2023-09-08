@@ -451,6 +451,7 @@ export default defineConfig({
       uniques: [
         [ "lang_id", "menu_id", "code" ],
       ],
+      list_tree: "menu_id",
     },
     columns: [
       {
