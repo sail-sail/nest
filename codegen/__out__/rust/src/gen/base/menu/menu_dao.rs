@@ -553,31 +553,72 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "类型".into(),
+    "类型".into(),
+    "父菜单".into(),
+    "父菜单".into(),
+    "名称".into(),
+    "路由".into(),
+    "参数".into(),
+    "锁定".into(),
+    "锁定".into(),
+    "所在租户".into(),
+    "所在租户".into(),
+    "启用".into(),
+    "启用".into(),
+    "排序".into(),
+    "备注".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = MenuFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    r#type: n_route.n(ctx, "类型".to_owned(), None).await?,
-    r#type_lbl: n_route.n(ctx, "类型".to_owned(), None).await?,
-    parent_id: n_route.n(ctx, "父菜单".to_owned(), None).await?,
-    parent_id_lbl: n_route.n(ctx, "父菜单".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    route_path: n_route.n(ctx, "路由".to_owned(), None).await?,
-    route_query: n_route.n(ctx, "参数".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    tenant_ids: n_route.n(ctx, "所在租户".to_owned(), None).await?,
-    tenant_ids_lbl: n_route.n(ctx, "所在租户".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    r#type: vec[1].to_owned(),
+    r#type_lbl: vec[2].to_owned(),
+    parent_id: vec[3].to_owned(),
+    parent_id_lbl: vec[4].to_owned(),
+    lbl: vec[5].to_owned(),
+    route_path: vec[6].to_owned(),
+    route_query: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    tenant_ids: vec[10].to_owned(),
+    tenant_ids_lbl: vec[11].to_owned(),
+    is_enabled: vec[12].to_owned(),
+    is_enabled_lbl: vec[13].to_owned(),
+    order_by: vec[14].to_owned(),
+    rem: vec[15].to_owned(),
+    create_usr_id: vec[16].to_owned(),
+    create_usr_id_lbl: vec[17].to_owned(),
+    create_time: vec[18].to_owned(),
+    create_time_lbl: vec[19].to_owned(),
+    update_usr_id: vec[20].to_owned(),
+    update_usr_id_lbl: vec[21].to_owned(),
+    update_time: vec[22].to_owned(),
+    update_time_lbl: vec[23].to_owned(),
   };
   Ok(field_comments)
 }

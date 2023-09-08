@@ -451,24 +451,58 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "模块".into(),
+    "模块名称".into(),
+    "方法".into(),
+    "方法名称".into(),
+    "操作".into(),
+    "操作前数据".into(),
+    "操作后数据".into(),
+    "备注".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = OperationRecordFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    module: n_route.n(ctx, "模块".to_owned(), None).await?,
-    module_lbl: n_route.n(ctx, "模块名称".to_owned(), None).await?,
-    method: n_route.n(ctx, "方法".to_owned(), None).await?,
-    method_lbl: n_route.n(ctx, "方法名称".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "操作".to_owned(), None).await?,
-    old_data: n_route.n(ctx, "操作前数据".to_owned(), None).await?,
-    new_data: n_route.n(ctx, "操作后数据".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    module: vec[1].to_owned(),
+    module_lbl: vec[2].to_owned(),
+    method: vec[3].to_owned(),
+    method_lbl: vec[4].to_owned(),
+    lbl: vec[5].to_owned(),
+    old_data: vec[6].to_owned(),
+    new_data: vec[7].to_owned(),
+    rem: vec[8].to_owned(),
+    create_usr_id: vec[9].to_owned(),
+    create_usr_id_lbl: vec[10].to_owned(),
+    create_time: vec[11].to_owned(),
+    create_time_lbl: vec[12].to_owned(),
+    update_usr_id: vec[13].to_owned(),
+    update_usr_id_lbl: vec[14].to_owned(),
+    update_time: vec[15].to_owned(),
+    update_time_lbl: vec[16].to_owned(),
   };
   Ok(field_comments)
 }

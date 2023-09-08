@@ -470,25 +470,60 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "父部门".into(),
+    "父部门".into(),
+    "名称".into(),
+    "锁定".into(),
+    "锁定".into(),
+    "启用".into(),
+    "启用".into(),
+    "排序".into(),
+    "备注".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = DeptFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    parent_id: n_route.n(ctx, "父部门".to_owned(), None).await?,
-    parent_id_lbl: n_route.n(ctx, "父部门".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    parent_id: vec[1].to_owned(),
+    parent_id_lbl: vec[2].to_owned(),
+    lbl: vec[3].to_owned(),
+    is_locked: vec[4].to_owned(),
+    is_locked_lbl: vec[5].to_owned(),
+    is_enabled: vec[6].to_owned(),
+    is_enabled_lbl: vec[7].to_owned(),
+    order_by: vec[8].to_owned(),
+    rem: vec[9].to_owned(),
+    create_usr_id: vec[10].to_owned(),
+    create_usr_id_lbl: vec[11].to_owned(),
+    create_time: vec[12].to_owned(),
+    create_time_lbl: vec[13].to_owned(),
+    update_usr_id: vec[14].to_owned(),
+    update_usr_id_lbl: vec[15].to_owned(),
+    update_time: vec[16].to_owned(),
+    update_time_lbl: vec[17].to_owned(),
   };
   Ok(field_comments)
 }

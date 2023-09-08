@@ -482,22 +482,54 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "头像".into(),
+    "名称".into(),
+    "用户名".into(),
+    "默认组织".into(),
+    "默认组织".into(),
+    "锁定".into(),
+    "锁定".into(),
+    "启用".into(),
+    "启用".into(),
+    "拥有组织".into(),
+    "拥有组织".into(),
+    "拥有角色".into(),
+    "拥有角色".into(),
+    "备注".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = UsrFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    img: n_route.n(ctx, "头像".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    username: n_route.n(ctx, "用户名".to_owned(), None).await?,
-    default_org_id: n_route.n(ctx, "默认组织".to_owned(), None).await?,
-    default_org_id_lbl: n_route.n(ctx, "默认组织".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    org_ids: n_route.n(ctx, "拥有组织".to_owned(), None).await?,
-    org_ids_lbl: n_route.n(ctx, "拥有组织".to_owned(), None).await?,
-    role_ids: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
-    role_ids_lbl: n_route.n(ctx, "拥有角色".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    img: vec[1].to_owned(),
+    lbl: vec[2].to_owned(),
+    username: vec[3].to_owned(),
+    default_org_id: vec[4].to_owned(),
+    default_org_id_lbl: vec[5].to_owned(),
+    is_locked: vec[6].to_owned(),
+    is_locked_lbl: vec[7].to_owned(),
+    is_enabled: vec[8].to_owned(),
+    is_enabled_lbl: vec[9].to_owned(),
+    org_ids: vec[10].to_owned(),
+    org_ids_lbl: vec[11].to_owned(),
+    role_ids: vec[12].to_owned(),
+    role_ids_lbl: vec[13].to_owned(),
+    rem: vec[14].to_owned(),
   };
   Ok(field_comments)
 }

@@ -1,5 +1,5 @@
 pub mod context;
-// pub mod validators;
+pub mod validators;
 pub mod gql;
 pub mod auth;
 pub mod oss;

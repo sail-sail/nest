@@ -22,13 +22,17 @@ pub async fn ip<'a>(
     return Ok(());
   }
   
-  let err_msg = ns(
+  let msg = ns(
     ctx,
     "IP地址格式不正确".to_owned(),
     None,
   ).await?;
   
-  let err_msg = format!("{} {}", label, err_msg);
+  let mut err_msg = String::new();
+  err_msg.push_str(label);
+  err_msg.push_str(" ");
+  err_msg.push_str(&msg);
+  let err_msg = err_msg;
   
   return Err(SrvErr::msg(err_msg).into());
 }

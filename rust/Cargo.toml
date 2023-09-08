@@ -67,6 +67,7 @@ delay_timer = "0.11"
 num-traits = "0.2"
 fast_chemail = "0.9"
 http = "0.2"
+futures = "0.3"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.0"
