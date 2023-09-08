@@ -23,6 +23,7 @@ pub struct NRoute {
 
 impl NRoute {
   
+  #[allow(dead_code)]
   pub async fn n<'a>(
     &self,
     ctx: &mut impl Ctx<'a>,
@@ -30,6 +31,15 @@ impl NRoute {
     map: Option<HashMap<String, String>>,
   ) -> Result<String> {
     let res = n(ctx, self.route_path.clone().into(), code, map).await?;
+    Ok(res)
+  }
+  
+  pub async fn n_batch<'a>(
+    &self,
+    ctx: &mut impl Ctx<'a>,
+    i18n_code_maps: Vec<I18nCodeMap>,
+  ) -> Result<HashMap<String, String>> {
+    let res = n_batch(ctx, self.route_path.clone().into(), i18n_code_maps).await?;
     Ok(res)
   }
   
@@ -52,6 +62,79 @@ pub async fn n<'a>(
   }
   let i18n_lbl = n_lang(ctx, lang_code, route_path, code, map).await?;
   Ok(i18n_lbl)
+}
+
+#[derive(Debug, Clone)]
+pub struct I18nCodeMap {
+  pub code: String,
+  pub map: Option<HashMap<String, String>>,
+}
+
+impl From<String> for I18nCodeMap {
+  fn from(code: String) -> Self {
+    Self {
+      code,
+      map: None,
+    }
+  }
+}
+
+impl From<&str> for I18nCodeMap {
+  fn from(code: &str) -> Self {
+    Self {
+      code: code.to_owned(),
+      map: None,
+    }
+  }
+}
+
+impl From<(String, HashMap<String, String>)> for I18nCodeMap {
+  fn from((code, map): (String, HashMap<String, String>)) -> Self {
+    Self {
+      code,
+      map: Some(map),
+    }
+  }
+}
+
+#[allow(dead_code)]
+pub async fn n_batch<'a>(
+  ctx: &mut impl Ctx<'a>,
+  route_path: Option<String>,
+  i18n_code_maps: Vec<I18nCodeMap>,
+) -> Result<HashMap<String, String>> {
+  let lang_code = ctx.get_auth_lang();
+  if lang_code.is_none() {
+    return Ok(
+      i18n_code_maps.iter()
+      .map(
+        |item| (item.code.clone(), item.code.clone()),
+      )
+      .collect::<HashMap<String, String>>()
+    );
+  }
+  let lang_code = lang_code.unwrap();
+  if lang_code.is_empty() {
+    return Ok(
+      i18n_code_maps.iter()
+      .map(
+        |item| (item.code.clone(), item.code.clone()),
+      )
+      .collect::<HashMap<String, String>>()
+    );
+  }
+  let mut i18n_lbls: HashMap<String, String> = HashMap::new();
+  for i18n_code_map in i18n_code_maps {
+    let i18n_lbl = n_lang(
+      ctx,
+      lang_code.clone(),
+      route_path.clone(),
+      i18n_code_map.code.clone(),
+      i18n_code_map.map,
+    ).await?;
+    i18n_lbls.insert(i18n_code_map.code, i18n_lbl);
+  }
+  Ok(i18n_lbls)
 }
 
 #[allow(dead_code)]

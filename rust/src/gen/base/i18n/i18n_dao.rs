@@ -413,23 +413,56 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "语言".into(),
+    "语言".into(),
+    "菜单".into(),
+    "菜单".into(),
+    "编码".into(),
+    "名称".into(),
+    "备注".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = I18nFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    lang_id: n_route.n(ctx, "语言".to_owned(), None).await?,
-    lang_id_lbl: n_route.n(ctx, "语言".to_owned(), None).await?,
-    menu_id: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    menu_id_lbl: n_route.n(ctx, "菜单".to_owned(), None).await?,
-    code: n_route.n(ctx, "编码".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    lang_id: vec[1].to_owned(),
+    lang_id_lbl: vec[2].to_owned(),
+    menu_id: vec[3].to_owned(),
+    menu_id_lbl: vec[4].to_owned(),
+    code: vec[5].to_owned(),
+    lbl: vec[6].to_owned(),
+    rem: vec[7].to_owned(),
+    create_usr_id: vec[8].to_owned(),
+    create_usr_id_lbl: vec[9].to_owned(),
+    create_time: vec[10].to_owned(),
+    create_time_lbl: vec[11].to_owned(),
+    update_usr_id: vec[12].to_owned(),
+    update_usr_id_lbl: vec[13].to_owned(),
+    update_time: vec[14].to_owned(),
+    update_time_lbl: vec[15].to_owned(),
   };
   Ok(field_comments)
 }

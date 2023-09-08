@@ -11,7 +11,7 @@ pub async fn min_items<T: Deref<Target = [E]>, E>(
   ctx: &mut impl Ctx<'_>,
   value: Option<&T>,
   len: usize,
-  label: impl AsRef<str>,
+  label: &str,
 ) -> Result<()> {
   
   if value.is_none() {
@@ -26,13 +26,17 @@ pub async fn min_items<T: Deref<Target = [E]>, E>(
   let mut map: HashMap<String, String> = HashMap::new();
   map.insert("0".to_owned(), len.to_string());
   
-  let err_msg = i18n_dao::ns(
+  let msg = i18n_dao::ns(
     ctx,
     "数量不能小于 {0}".to_owned(),
     map.into(),
   ).await?;
   
-  let err_msg = format!("{} {}", label.as_ref(), err_msg);
+  let mut err_msg = String::new();
+  err_msg.push_str(label);
+  err_msg.push_str(" ");
+  err_msg.push_str(&msg);
+  let err_msg = err_msg;
   
   return Err(SrvErr::msg(err_msg).into());
 }

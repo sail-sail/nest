@@ -27,13 +27,17 @@ pub async fn chars_max_length<'a>(
   let mut map: HashMap<String, String> = HashMap::new();
   map.insert("0".to_owned(), len.to_string());
   
-  let err_msg = ns(
+  let msg = ns(
     ctx,
     "长度不能超过 {0}".to_owned(),
     map.into(),
   ).await?;
   
-  let err_msg = format!("{} {}", label, err_msg);
+  let mut err_msg = String::new();
+  err_msg.push_str(label);
+  err_msg.push_str(" ");
+  err_msg.push_str(&msg);
+  let err_msg = err_msg;
   
   return Err(SrvErr::msg(err_msg).into());
 }

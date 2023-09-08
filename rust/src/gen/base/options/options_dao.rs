@@ -501,28 +501,66 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "名称".into(),
+    "键".into(),
+    "值".into(),
+    "锁定".into(),
+    "锁定".into(),
+    "启用".into(),
+    "启用".into(),
+    "排序".into(),
+    "备注".into(),
+    "版本号".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
+    "系统字段".into(),
+    "系统字段".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = OptionsFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    ky: n_route.n(ctx, "键".to_owned(), None).await?,
-    val: n_route.n(ctx, "值".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    version: n_route.n(ctx, "版本号".to_owned(), None).await?,
-    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    is_sys: n_route.n(ctx, "系统字段".to_owned(), None).await?,
-    is_sys_lbl: n_route.n(ctx, "系统字段".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    lbl: vec[1].to_owned(),
+    ky: vec[2].to_owned(),
+    val: vec[3].to_owned(),
+    is_locked: vec[4].to_owned(),
+    is_locked_lbl: vec[5].to_owned(),
+    is_enabled: vec[6].to_owned(),
+    is_enabled_lbl: vec[7].to_owned(),
+    order_by: vec[8].to_owned(),
+    rem: vec[9].to_owned(),
+    version: vec[10].to_owned(),
+    create_usr_id: vec[11].to_owned(),
+    create_usr_id_lbl: vec[12].to_owned(),
+    create_time: vec[13].to_owned(),
+    create_time_lbl: vec[14].to_owned(),
+    update_usr_id: vec[15].to_owned(),
+    update_usr_id_lbl: vec[16].to_owned(),
+    update_time: vec[17].to_owned(),
+    update_time_lbl: vec[18].to_owned(),
+    is_sys: vec[19].to_owned(),
+    is_sys_lbl: vec[20].to_owned(),
   };
   Ok(field_comments)
 }

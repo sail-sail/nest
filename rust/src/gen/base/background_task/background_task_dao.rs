@@ -489,28 +489,66 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "名称".into(),
+    "状态".into(),
+    "状态".into(),
+    "类型".into(),
+    "类型".into(),
+    "执行结果".into(),
+    "错误信息".into(),
+    "开始时间".into(),
+    "开始时间".into(),
+    "结束时间".into(),
+    "结束时间".into(),
+    "备注".into(),
+    "创建人".into(),
+    "创建人".into(),
+    "创建时间".into(),
+    "创建时间".into(),
+    "更新人".into(),
+    "更新人".into(),
+    "更新时间".into(),
+    "更新时间".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = BackgroundTaskFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    state: n_route.n(ctx, "状态".to_owned(), None).await?,
-    state_lbl: n_route.n(ctx, "状态".to_owned(), None).await?,
-    r#type: n_route.n(ctx, "类型".to_owned(), None).await?,
-    r#type_lbl: n_route.n(ctx, "类型".to_owned(), None).await?,
-    result: n_route.n(ctx, "执行结果".to_owned(), None).await?,
-    err_msg: n_route.n(ctx, "错误信息".to_owned(), None).await?,
-    begin_time: n_route.n(ctx, "开始时间".to_owned(), None).await?,
-    begin_time_lbl: n_route.n(ctx, "开始时间".to_owned(), None).await?,
-    end_time: n_route.n(ctx, "结束时间".to_owned(), None).await?,
-    end_time_lbl: n_route.n(ctx, "结束时间".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    create_usr_id: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_usr_id_lbl: n_route.n(ctx, "创建人".to_owned(), None).await?,
-    create_time: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    create_time_lbl: n_route.n(ctx, "创建时间".to_owned(), None).await?,
-    update_usr_id: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_usr_id_lbl: n_route.n(ctx, "更新人".to_owned(), None).await?,
-    update_time: n_route.n(ctx, "更新时间".to_owned(), None).await?,
-    update_time_lbl: n_route.n(ctx, "更新时间".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    lbl: vec[1].to_owned(),
+    state: vec[2].to_owned(),
+    state_lbl: vec[3].to_owned(),
+    r#type: vec[4].to_owned(),
+    r#type_lbl: vec[5].to_owned(),
+    result: vec[6].to_owned(),
+    err_msg: vec[7].to_owned(),
+    begin_time: vec[8].to_owned(),
+    begin_time_lbl: vec[9].to_owned(),
+    end_time: vec[10].to_owned(),
+    end_time_lbl: vec[11].to_owned(),
+    rem: vec[12].to_owned(),
+    create_usr_id: vec[13].to_owned(),
+    create_usr_id_lbl: vec[14].to_owned(),
+    create_time: vec[15].to_owned(),
+    create_time_lbl: vec[16].to_owned(),
+    update_usr_id: vec[17].to_owned(),
+    update_usr_id_lbl: vec[18].to_owned(),
+    update_time: vec[19].to_owned(),
+    update_time_lbl: vec[20].to_owned(),
   };
   Ok(field_comments)
 }

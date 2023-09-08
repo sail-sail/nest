@@ -413,20 +413,50 @@ pub async fn get_field_comments<'a>(
   
   let n_route = get_n_route();
   
+  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
+    "ID".into(),
+    "业务字典".into(),
+    "业务字典".into(),
+    "名称".into(),
+    "值".into(),
+    "锁定".into(),
+    "锁定".into(),
+    "启用".into(),
+    "启用".into(),
+    "排序".into(),
+    "备注".into(),
+    "系统字段".into(),
+    "系统字段".into(),
+  ];
+  
+  let map = n_route.n_batch(
+    ctx,
+    i18n_code_maps.clone(),
+  ).await?;
+  
+  let vec = i18n_code_maps
+    .into_iter()
+    .map(|item|
+      map.get(&item.code)
+        .map(|item| item.clone())
+        .unwrap_or_default()
+    )
+    .collect::<Vec<String>>();
+  
   let field_comments = DictbizDetailFieldComment {
-    id: n_route.n(ctx, "ID".to_owned(), None).await?,
-    dictbiz_id: n_route.n(ctx, "业务字典".to_owned(), None).await?,
-    dictbiz_id_lbl: n_route.n(ctx, "业务字典".to_owned(), None).await?,
-    lbl: n_route.n(ctx, "名称".to_owned(), None).await?,
-    val: n_route.n(ctx, "值".to_owned(), None).await?,
-    is_locked: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_locked_lbl: n_route.n(ctx, "锁定".to_owned(), None).await?,
-    is_enabled: n_route.n(ctx, "启用".to_owned(), None).await?,
-    is_enabled_lbl: n_route.n(ctx, "启用".to_owned(), None).await?,
-    order_by: n_route.n(ctx, "排序".to_owned(), None).await?,
-    rem: n_route.n(ctx, "备注".to_owned(), None).await?,
-    is_sys: n_route.n(ctx, "系统字段".to_owned(), None).await?,
-    is_sys_lbl: n_route.n(ctx, "系统字段".to_owned(), None).await?,
+    id: vec[0].to_owned(),
+    dictbiz_id: vec[1].to_owned(),
+    dictbiz_id_lbl: vec[2].to_owned(),
+    lbl: vec[3].to_owned(),
+    val: vec[4].to_owned(),
+    is_locked: vec[5].to_owned(),
+    is_locked_lbl: vec[6].to_owned(),
+    is_enabled: vec[7].to_owned(),
+    is_enabled_lbl: vec[8].to_owned(),
+    order_by: vec[9].to_owned(),
+    rem: vec[10].to_owned(),
+    is_sys: vec[11].to_owned(),
+    is_sys_lbl: vec[12].to_owned(),
   };
   Ok(field_comments)
 }
