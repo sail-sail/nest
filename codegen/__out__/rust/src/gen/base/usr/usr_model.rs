@@ -39,9 +39,9 @@ pub struct UsrModel {
   pub is_enabled: u8,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids: Vec<String>,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids_lbl: Vec<String>,
   /// 拥有角色
   pub role_ids: Vec<String>,
@@ -75,7 +75,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
-    // 拥有组织
+    // 所属组织
     let org_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids")?;
     let org_ids = org_ids.unwrap_or_default().0;
     let org_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids_lbl")?;
@@ -137,9 +137,9 @@ pub struct UsrFieldComment {
   pub is_enabled: String,
   /// 启用
   pub is_enabled_lbl: String,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids: String,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids_lbl: String,
   /// 拥有角色
   pub role_ids: String,
@@ -181,9 +181,9 @@ pub struct UsrSearch {
   pub is_locked: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids: Option<Vec<String>>,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids_is_null: Option<bool>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
@@ -220,9 +220,9 @@ pub struct UsrInput {
   pub is_enabled: Option<u8>,
   /// 启用
   pub is_enabled_lbl: Option<String>,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids: Option<Vec<String>>,
-  /// 拥有组织
+  /// 所属组织
   pub org_ids_lbl: Option<Vec<String>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
@@ -253,7 +253,7 @@ impl From<UsrInput> for UsrSearch {
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
-      // 拥有组织
+      // 所属组织
       org_ids: input.org_ids,
       // 拥有角色
       role_ids: input.role_ids,
