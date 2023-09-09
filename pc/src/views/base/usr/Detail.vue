@@ -126,7 +126,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.org_ids == null)">
           <el-form-item
-            :label="n('拥有组织')"
+            :label="n('所属组织')"
             prop="org_ids"
           >
             <CustomSelect
@@ -139,7 +139,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('拥有组织') }`"
+              :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
               multiple
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
@@ -715,7 +715,7 @@ async function onInitI18ns() {
     "默认组织",
     "锁定",
     "启用",
-    "拥有组织",
+    "所属组织",
     "拥有角色",
     "备注",
   ];
