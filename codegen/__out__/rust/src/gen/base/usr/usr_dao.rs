@@ -493,8 +493,8 @@ pub async fn get_field_comments<'a>(
     "锁定".into(),
     "启用".into(),
     "启用".into(),
-    "拥有组织".into(),
-    "拥有组织".into(),
+    "所属组织".into(),
+    "所属组织".into(),
     "拥有角色".into(),
     "拥有角色".into(),
     "备注".into(),
@@ -754,7 +754,7 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 拥有组织
+  // 所属组织
   if input.org_ids.is_none() {
     if input.org_ids_lbl.is_some() && input.org_ids.is_none() {
       input.org_ids_lbl = input.org_ids_lbl.map(|item| 
@@ -974,7 +974,7 @@ pub async fn create<'a>(
     options,
   ).await?;
   
-  // 拥有组织
+  // 所属组织
   if let Some(org_ids) = input.org_ids {
     many2many_update(
       ctx,
@@ -1201,7 +1201,7 @@ pub async fn update_by_id<'a>(
   
   let mut field_num = 0;
   
-  // 拥有组织
+  // 所属组织
   if let Some(org_ids) = input.org_ids {
     many2many_update(
       ctx,
