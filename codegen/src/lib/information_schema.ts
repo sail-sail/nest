@@ -81,6 +81,7 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  const hasOrderBy = records.some((item) => item.COLUMN_NAME === 'order_by' && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
@@ -334,6 +335,12 @@ async function getSchema0(
         item.width = 80;
       }
     }
+    // 默认 create_time 跟 update_time 都是可以排序的, 如果有 order_by 字段, 则 order_by 字段优先级最高
+    if (item.COLUMN_NAME === "create_time" || item.COLUMN_NAME === "update_time") {
+      if (item.sortable == null) {
+        item.sortable = true;
+      }
+    }
   }
   // 校验
   for (let i = 0; i < records2.length; i++) {
@@ -368,6 +375,17 @@ async function getSchema0(
   if (!tables[table_name]?.opts?.lbl_field && records2.some((item: TableCloumn) => item.COLUMN_NAME === "lbl")) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.lbl_field = "lbl";
+  }
+  // 如果没有设置默认排序, 则设置默认排序为 update_time desc, 如果有 order_by 字段则其优先级最高
+  if (
+    !hasOrderBy
+    && (!tables[table_name]?.opts?.defaultSort)
+  ) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.defaultSort = {
+      prop: "update_time",
+      order: "descending",
+    };
   }
   return records2;
 }

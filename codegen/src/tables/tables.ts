@@ -206,7 +206,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "org_ids",
-        COLUMN_COMMENT: "拥有组织",
+        COLUMN_COMMENT: "所属组织",
         search: true,
         width: 280,
         align: "left",
@@ -454,6 +454,7 @@ export default defineConfig({
       uniques: [
         [ "lang_id", "menu_id", "code" ],
       ],
+      list_tree: "menu_id",
     },
     columns: [
       {

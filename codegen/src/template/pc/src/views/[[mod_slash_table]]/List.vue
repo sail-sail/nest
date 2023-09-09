@@ -114,6 +114,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       } else if (foreignSchema && foreignSchema.opts.list_tree
         && !foreignSchema.opts.ignoreCodegen
         && !foreignSchema.opts.onlyCodegenDeno
+        && typeof opts.list_tree !== "string"
       ) {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
@@ -132,6 +133,34 @@ const hasAtt = columns.some((item) => item.isAtt);
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            multiple
+            @change="onSearch"
+          ></CustomTreeSelect>
+        </el-form-item>
+      </template><#
+      } else if (foreignSchema && foreignSchema.opts.list_tree
+        && !foreignSchema.opts.ignoreCodegen
+        && !foreignSchema.opts.onlyCodegenDeno
+        && typeof opts.list_tree === "string"
+      ) {
+      #>
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
+          <CustomTreeSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            v-model="search.<#=column_name#>"
+            :method="get<#=Foreign_Table_Up#>Tree"
+            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+              return {
+                label: item.<#=foreignKey.lbl#>,
+                value: item.<#=foreignKey.column#>,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>

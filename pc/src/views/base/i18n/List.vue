@@ -64,6 +64,7 @@
               };
             })"
             :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+            :check-strictly="false"
             multiple
             @change="onSearch"
           ></CustomTreeSelect>
@@ -598,7 +599,7 @@ import {
 } from "@/views/base/menu/Api";
 
 defineOptions({
-  name: "国际化",
+  name: "国际化List",
 });
 
 const {
@@ -897,6 +898,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       width: 150,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -913,6 +915,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       width: 150,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1020,8 +1023,8 @@ async function useFindCount(
 }
 
 let sort: Sort = $ref({
-  prop: "",
-  order: "ascending",
+  prop: "update_time",
+  order: "descending",
 });
 
 /** 排序 */
