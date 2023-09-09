@@ -2,6 +2,7 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::domain_model::*;
 use super::domain_service;
@@ -84,6 +85,12 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
   let id = domain_service::create(
     ctx,
     input,
@@ -101,6 +108,12 @@ pub async fn update_by_id<'a>(
   input: DomainInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "edit".to_owned(),
+  ).await?;
   
   let res = domain_service::update_by_id(
     ctx,
@@ -120,6 +133,12 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "delete".to_owned(),
+  ).await?;
+  
   let num = domain_service::delete_by_ids(
     ctx,
     ids,
@@ -136,6 +155,12 @@ pub async fn default_by_id<'a>(
   id: String,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "default".to_owned(),
+  ).await?;
   
   let num = domain_service::default_by_id(
     ctx,
@@ -172,6 +197,12 @@ pub async fn enable_by_ids<'a>(
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "enable".to_owned(),
+  ).await?;
   
   let num = domain_service::enable_by_ids(
     ctx,
@@ -211,6 +242,12 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "lock".to_owned(),
+  ).await?;
+  
   let num = domain_service::lock_by_ids(
     ctx,
     ids,
@@ -243,6 +280,12 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "delete".to_owned(),
+  ).await?;
+  
   let num = domain_service::revert_by_ids(
     ctx,
     ids,
@@ -259,6 +302,12 @@ pub async fn force_delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/domain".to_owned(),
+    "force_delete".to_owned(),
+  ).await?;
   
   let num = domain_service::force_delete_by_ids(
     ctx,

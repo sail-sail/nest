@@ -1393,16 +1393,11 @@ pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {<#
-  if (false) {
-  #>
+) -> Result<String> {
   
   validate(
-    ctx,
     &input,
-  ).await?;<#
-  }
-  #>
+  )?;
   
   let table = "<#=mod#>_<#=table#>";
   let _method = "create";
@@ -1784,16 +1779,11 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
-  }<#
-  if (false) {
-  #>
+  }
   
   validate(
-    ctx,
     &input,
-  ).await?;<#
-  }
-  #>
+  )?;
   
   input = set_id_by_lbl(
     ctx,
@@ -2594,14 +2584,11 @@ pub async fn find_last_order_by<'a>(
   Ok(order_by)
 }<#
 }
-#><#
-if (false) {
 #>
 
 /// 校验, 校验失败时抛出SrvErr异常
 #[allow(unused_imports)]
-pub async fn validate<'a>(
-  ctx: &mut impl Ctx<'a>,
+pub fn validate<'a>(
   input: &<#=tableUP#>Input,
 ) -> Result<()> {
   
@@ -2615,14 +2602,7 @@ pub async fn validate<'a>(
   use crate::common::validators::regex::regex;
   use crate::common::validators::email::email;
   use crate::common::validators::url::url;
-  use crate::common::validators::ip::ip;
-  
-  let field_comments = get_field_comments(
-    ctx,
-    None,
-  ).await?;
-  
-  let mut res_vec: Vec<std::result::Result<(), anyhow::Error>> = vec![];<#
+  use crate::common::validators::ip::ip;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2657,32 +2637,28 @@ pub async fn validate<'a>(
   #><#
     if (validator.max_items != null) {
   #>
-  res_vec.push(max_items(
-    ctx,
+  max_items(
     input.<#=column_name_rust#>.as_ref(),
     <#=validator.max_items#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);
-  res_vec.push(max_items(
-    ctx,
+    "",
+  )?;
+  max_items(
     input.<#=column_name#>_lbl.as_ref(),
     <#=validator.max_items#>,
     &field_comments.<#=column_name#>_lbl,
-  ).await);<#
+  )?;<#
     } else if (validator.min_items != null) {
   #>
-  res_vec.push(min_items(
-    ctx,
+  min_items(
     input.<#=column_name_rust#>.as_ref(),
     <#=validator.min_items#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);
-  res_vec.push(min_items(
-    ctx,
+    "",
+  )?;
+  min_items(
     input.<#=column_name#>_lbl.as_ref(),
     <#=validator.min_items#>,
     &field_comments.<#=column_name#>_lbl,
-  ).await);<#
+  )?;<#
     }
   #><#
   }
@@ -2696,22 +2672,20 @@ pub async fn validate<'a>(
   #><#
     if (validator.chars_max_length != null) {
   #>
-  res_vec.push(chars_max_length(
-    ctx,
+  chars_max_length(
     input.<#=column_name_rust#>.clone(),
     <#=validator.chars_max_length#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     }
   #><#
     if (validator.chars_min_length != null) {
   #>
-  res_vec.push(chars_min_length(
-    ctx,
+  chars_min_length(
     input.<#=column_name_rust#>.clone(),
     <#=validator.chars_min_length#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     }
   #><#
     }
@@ -2727,94 +2701,82 @@ pub async fn validate<'a>(
   #><#
     if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
   #>
-  res_vec.push(maximum(
-    ctx,
+  maximum(
     input.<#=column_name_rust#>.as_ref(),
     <#=validator.maximum#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
   #>
-  res_vec.push(minimum(
-    ctx,
+  minimum(
     input.<#=column_name_rust#>.as_ref(),
     <#=validator.minimum#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.multiple_of != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
   #>
-  res_vec.push(multiple_of(
-    ctx,
+  multiple_of(
     input.<#=column_name_rust#>.as_ref(),
     <#=validator.multiple_of#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
   #>
-  res_vec.push(chars_max_length(
-    ctx,
+  chars_max_length(
     input.<#=column_name_rust#>.clone(),
     <#=validator.chars_max_length#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
   #>
-  res_vec.push(chars_min_length(
-    ctx,
+  chars_min_length(
     input.<#=column_name_rust#>.clone(),
     <#=validator.chars_min_length#>,
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.email && data_type === "varchar") {
   #>
-  res_vec.push(email(
-    ctx,
+  email(
     input.<#=column_name_rust#>.clone(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.url && data_type === "varchar") {
   #>
-  res_vec.push(url(
-    ctx,
+  url(
     input.<#=column_name_rust#>.clone(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.ip && data_type === "varchar") {
   #>
-  res_vec.push(ip(
-    ctx,
+  ip(
     input.<#=column_name_rust#>.clone(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.regex && data_type === "varchar") {
   #>
-  res_vec.push(regex(
-    ctx,
+  regex(
     input.<#=column_name_rust#>.clone(),
     "<#=validator.regex#>".to_owned(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.email && data_type === "varchar") {
   #>
-  res_vec.push(email(
-    ctx,
+  email(
     input.<#=column_name_rust#>.clone(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.url && data_type === "varchar") {
   #>
-  res_vec.push(url(
-    ctx,
+  url(
     input.<#=column_name_rust#>.clone(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     } else if (validator.ip && data_type === "varchar") {
   #>
-  res_vec.push(ip(
-    ctx,
+  ip(
     input.<#=column_name_rust#>.clone(),
-    &field_comments.<#=column_name_rust#>,
-  ).await);<#
+    "",
+  )?;<#
     }
   #><#
   }
@@ -2826,11 +2788,5 @@ pub async fn validate<'a>(
   }
   #>
   
-  for res in res_vec {
-    res?;
-  }
-  
   Ok(())
-}<#
 }
-#>

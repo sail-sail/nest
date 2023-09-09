@@ -2,6 +2,7 @@ use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::operation_record_model::*;
 use super::operation_record_service;
@@ -84,6 +85,12 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  use_permit(
+    ctx,
+    "/base/operation_record".to_owned(),
+    "add".to_owned(),
+  ).await?;
+  
   let id = operation_record_service::create(
     ctx,
     input,
@@ -121,6 +128,12 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  use_permit(
+    ctx,
+    "/base/operation_record".to_owned(),
+    "edit".to_owned(),
+  ).await?;
+  
   let res = operation_record_service::update_by_id(
     ctx,
     id,
@@ -138,6 +151,12 @@ pub async fn delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/operation_record".to_owned(),
+    "delete".to_owned(),
+  ).await?;
   
   let num = operation_record_service::delete_by_ids(
     ctx,
@@ -170,6 +189,12 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  use_permit(
+    ctx,
+    "/base/operation_record".to_owned(),
+    "delete".to_owned(),
+  ).await?;
+  
   let num = operation_record_service::revert_by_ids(
     ctx,
     ids,
@@ -186,6 +211,12 @@ pub async fn force_delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  use_permit(
+    ctx,
+    "/base/operation_record".to_owned(),
+    "force_delete".to_owned(),
+  ).await?;
   
   let num = operation_record_service::force_delete_by_ids(
     ctx,

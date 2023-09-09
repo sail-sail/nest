@@ -821,6 +821,10 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  validate(
+    &input,
+  )?;
+  
   let table = "base_dict";
   let _method = "create";
   
@@ -998,6 +1002,10 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
+  
+  validate(
+    &input,
+  )?;
   
   input = set_id_by_lbl(
     ctx,
@@ -1491,4 +1499,74 @@ pub async fn find_last_order_by<'a>(
   };
   
   Ok(order_by)
+}
+
+/// 校验, 校验失败时抛出SrvErr异常
+#[allow(unused_imports)]
+pub fn validate<'a>(
+  input: &DictInput,
+) -> Result<()> {
+  
+  use crate::common::validators::max_items::max_items;
+  use crate::common::validators::min_items::min_items;
+  use crate::common::validators::maximum::maximum;
+  use crate::common::validators::minimum::minimum;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  use crate::common::validators::chars_min_length::chars_min_length;
+  use crate::common::validators::multiple_of::multiple_of;
+  use crate::common::validators::regex::regex;
+  use crate::common::validators::email::email;
+  use crate::common::validators::url::url;
+  use crate::common::validators::ip::ip;
+  
+  // ID
+  chars_max_length(
+    input.id.clone(),
+    22,
+    "",
+  )?;
+  
+  // 编码
+  chars_max_length(
+    input.code.clone(),
+    50,
+    "",
+  )?;
+  
+  // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    200,
+    "",
+  )?;
+  
+  // 数据类型
+  chars_max_length(
+    input.r#type.clone(),
+    22,
+    "",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    255,
+    "",
+  )?;
+  
+  // 创建人
+  chars_max_length(
+    input.create_usr_id.clone(),
+    22,
+    "",
+  )?;
+  
+  // 更新人
+  chars_max_length(
+    input.update_usr_id.clone(),
+    22,
+    "",
+  )?;
+  
+  Ok(())
 }
