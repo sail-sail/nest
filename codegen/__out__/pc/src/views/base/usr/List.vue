@@ -58,7 +58,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.org_ids == null">
         <el-form-item
-          label="拥有组织"
+          label="所属组织"
           prop="org_ids"
         >
           <CustomSelect
@@ -71,7 +71,7 @@
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('拥有组织') }`"
+            :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
             multiple
             @change="onSearch"
           ></CustomSelect>
@@ -534,7 +534,7 @@
             </el-table-column>
           </template>
           
-          <!-- 拥有组织 -->
+          <!-- 所属组织 -->
           <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -766,8 +766,8 @@ const props = defineProps<{
   default_org_id_lbl?: string|string[]; // 默认组织
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  org_ids?: string|string[]; // 拥有组织
-  org_ids_lbl?: string|string[]; // 拥有组织
+  org_ids?: string|string[]; // 所属组织
+  org_ids_lbl?: string|string[]; // 所属组织
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
   rem?: string; // 备注
@@ -956,7 +956,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "拥有组织",
+      label: "所属组织",
       prop: "org_ids_lbl",
       width: 280,
       align: "left",
@@ -1206,7 +1206,7 @@ async function onImportExcel() {
     [ await nAsync("默认组织") ]: "default_org_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
-    [ await nAsync("拥有组织") ]: "org_ids_lbl",
+    [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("拥有角色") ]: "role_ids_lbl",
     [ await nAsync("备注") ]: "rem",
   };
@@ -1524,7 +1524,7 @@ async function initI18nsEfc() {
     "默认组织",
     "锁定",
     "启用",
-    "拥有组织",
+    "所属组织",
     "拥有角色",
     "备注",
   ];

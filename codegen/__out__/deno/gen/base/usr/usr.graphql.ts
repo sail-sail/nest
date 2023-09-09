@@ -27,9 +27,9 @@ type UsrModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
-  "拥有组织"
+  "所属组织"
   org_ids: [String!]
-  "拥有组织"
+  "所属组织"
   org_ids_lbl: [String!]
   "拥有角色"
   role_ids: [String!]
@@ -59,9 +59,9 @@ type UsrFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
-  "拥有组织"
+  "所属组织"
   org_ids: String!
-  "拥有组织"
+  "所属组织"
   org_ids_lbl: String!
   "拥有角色"
   role_ids: String!
@@ -93,9 +93,9 @@ input UsrInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
-  "拥有组织"
+  "所属组织"
   org_ids: [String!]
-  "拥有组织"
+  "所属组织"
   org_ids_lbl: [String!]
   "拥有角色"
   role_ids: [String!]
@@ -127,7 +127,7 @@ input UsrSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "拥有组织"
+  "所属组织"
   org_ids: [String!]
   org_ids_is_null: Boolean
   "拥有角色"

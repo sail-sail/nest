@@ -411,8 +411,8 @@ export async function getFieldComments() {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    org_ids: await n("拥有组织"),
-    org_ids_lbl: await n("拥有组织"),
+    org_ids: await n("所属组织"),
+    org_ids_lbl: await n("所属组织"),
     role_ids: await n("拥有角色"),
     role_ids_lbl: await n("拥有角色"),
     rem: await n("备注"),
@@ -708,7 +708,7 @@ export async function create(
     }
   }
   
-  // 拥有组织
+  // 所属组织
   if (!input.org_ids && input.org_ids_lbl) {
     if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
       input.org_ids_lbl = input.org_ids_lbl.split(",");
@@ -868,7 +868,7 @@ export async function create(
   
   const result = await execute(sql, args);
   
-  // 拥有组织
+  // 所属组织
   await many2manyUpdate(
     input,
     "org_ids",
@@ -1023,7 +1023,7 @@ export async function updateById(
     }
   }
 
-  // 拥有组织
+  // 所属组织
   if (!input.org_ids && input.org_ids_lbl) {
     if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
       input.org_ids_lbl = input.org_ids_lbl.split(",");
@@ -1153,7 +1153,7 @@ export async function updateById(
   
   updateFldNum++;
   
-  // 拥有组织
+  // 所属组织
   await many2manyUpdate(
     {
       ...input,
