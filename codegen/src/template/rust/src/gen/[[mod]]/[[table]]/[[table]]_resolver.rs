@@ -35,12 +35,8 @@ const hasDictbiz = columns.some((column) => {
 #>use anyhow::Result;
 
 use crate::common::context::{Ctx, Options};
-use crate::common::gql::model::{PageInput, SortInput};<#
-if (false) {
-#>
-use crate::src::base::permit::permit_service::use_permit;<#
-}
-#>
+use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
@@ -129,19 +125,13 @@ pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
   input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {<#
-  if (false) {
-  #>
+) -> Result<String> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "add".to_owned(),
   ).await?;
-  
-  input.validate(ctx).await?;<#
-  }
-  #>
   
   let id = <#=table#>_service::create(
     ctx,
@@ -232,19 +222,13 @@ pub async fn update_by_id<'a>(
   id: String,
   input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {<#
-  if (false) {
-  #>
+) -> Result<String> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "edit".to_owned(),
-  ).await?;
-  
-  input.validate(ctx).await?;<#
-  }
-  #><#
+  ).await?;<#
   if (log) {
   #>
   
@@ -299,17 +283,13 @@ pub async fn delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
-) -> Result<u64> {<#
-  if (false) {
-  #>
+) -> Result<u64> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "delete".to_owned(),
   ).await?;<#
-  }
-  #><#
   if (log) {
   #>
   
@@ -364,17 +344,13 @@ pub async fn default_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<u64> {<#
-  if (false) {
-  #>
+) -> Result<u64> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "default".to_owned(),
   ).await?;<#
-  }
-  #><#
   if (log) {
   #>
   
@@ -441,17 +417,13 @@ pub async fn enable_by_ids<'a>(
   ids: Vec<String>,
   is_enabled: u8,
   options: Option<Options>,
-) -> Result<u64> {<#
-  if (false) {
-  #>
+) -> Result<u64> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "enable".to_owned(),
   ).await?;<#
-  }
-  #><#
   if (log) {
   #>
   
@@ -520,17 +492,13 @@ pub async fn lock_by_ids<'a>(
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
-) -> Result<u64> {<#
-  if (false) {
-  #>
+) -> Result<u64> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "lock".to_owned(),
   ).await?;<#
-  }
-  #><#
   if (log) {
   #>
   
@@ -598,17 +566,13 @@ pub async fn revert_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
-) -> Result<u64> {<#
-  if (false) {
-  #>
+) -> Result<u64> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "delete".to_owned(),
   ).await?;<#
-  }
-  #><#
   if (log) {
   #>
   
@@ -652,17 +616,13 @@ pub async fn force_delete_by_ids<'a>(
   ctx: &mut impl Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
-) -> Result<u64> {<#
-  if (false) {
-  #>
+) -> Result<u64> {
   
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "force_delete".to_owned(),
   ).await?;<#
-  }
-  #><#
   if (log) {
   #>
   

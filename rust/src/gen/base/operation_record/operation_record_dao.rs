@@ -648,6 +648,10 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  validate(
+    &input,
+  )?;
+  
   let table = "base_operation_record";
   let _method = "create";
   
@@ -870,6 +874,10 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
+  
+  validate(
+    &input,
+  )?;
   
   input = set_id_by_lbl(
     ctx,
@@ -1184,4 +1192,102 @@ pub async fn force_delete_by_ids<'a>(
   }
   
   Ok(num)
+}
+
+/// 校验, 校验失败时抛出SrvErr异常
+#[allow(unused_imports)]
+pub fn validate<'a>(
+  input: &OperationRecordInput,
+) -> Result<()> {
+  
+  use crate::common::validators::max_items::max_items;
+  use crate::common::validators::min_items::min_items;
+  use crate::common::validators::maximum::maximum;
+  use crate::common::validators::minimum::minimum;
+  use crate::common::validators::chars_max_length::chars_max_length;
+  use crate::common::validators::chars_min_length::chars_min_length;
+  use crate::common::validators::multiple_of::multiple_of;
+  use crate::common::validators::regex::regex;
+  use crate::common::validators::email::email;
+  use crate::common::validators::url::url;
+  use crate::common::validators::ip::ip;
+  
+  // ID
+  chars_max_length(
+    input.id.clone(),
+    22,
+    "",
+  )?;
+  
+  // 模块
+  chars_max_length(
+    input.module.clone(),
+    50,
+    "",
+  )?;
+  
+  // 模块名称
+  chars_max_length(
+    input.module_lbl.clone(),
+    50,
+    "",
+  )?;
+  
+  // 方法
+  chars_max_length(
+    input.method.clone(),
+    50,
+    "",
+  )?;
+  
+  // 方法名称
+  chars_max_length(
+    input.method_lbl.clone(),
+    50,
+    "",
+  )?;
+  
+  // 操作
+  chars_max_length(
+    input.lbl.clone(),
+    100,
+    "",
+  )?;
+  
+  // 操作前数据
+  chars_max_length(
+    input.old_data.clone(),
+    5000,
+    "",
+  )?;
+  
+  // 操作后数据
+  chars_max_length(
+    input.new_data.clone(),
+    5000,
+    "",
+  )?;
+  
+  // 备注
+  chars_max_length(
+    input.rem.clone(),
+    100,
+    "",
+  )?;
+  
+  // 创建人
+  chars_max_length(
+    input.create_usr_id.clone(),
+    22,
+    "",
+  )?;
+  
+  // 更新人
+  chars_max_length(
+    input.update_usr_id.clone(),
+    22,
+    "",
+  )?;
+  
+  Ok(())
 }
