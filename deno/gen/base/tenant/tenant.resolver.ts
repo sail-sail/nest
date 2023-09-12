@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type TenantInput,
-  type TenantSearch,
+import type {
+  TenantInput,
+  TenantModel,
+  TenantSearch,
+  TenantFieldComment,
 } from "./tenant.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./tenant.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<TenantModel[]> {
   const { findAll } = await import("./tenant.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllTenant(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsTenant() {
+export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
   const { getFieldComments } = await import("./tenant.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsTenant() {
 export async function findOneTenant(
   search?: TenantSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<TenantModel | undefined> {
   const { findOne } = await import("./tenant.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneTenant(
  */
 export async function findByIdTenant(
   id: string,
-) {
+): Promise<TenantModel | undefined> {
   const { findById } = await import("./tenant.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdTenant(
 export async function createTenant(
   input: TenantInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createTenant(
 export async function updateByIdTenant(
   id: string,
   input: TenantInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdTenant(
  */
 export async function deleteByIdsTenant(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsTenant(
 export async function enableByIdsTenant(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsTenant(
 export async function lockByIdsTenant(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsTenant(
  */
 export async function revertByIdsTenant(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsTenant(
  */
 export async function forceDeleteByIdsTenant(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsTenant(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByTenant() {
+export async function findLastOrderByTenant(): Promise<number> {
   const { findLastOrderBy } = await import("./tenant.service.ts");
   const res = findLastOrderBy();
   return res;

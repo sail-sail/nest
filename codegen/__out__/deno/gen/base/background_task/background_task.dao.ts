@@ -63,6 +63,7 @@ import type {
   BackgroundTaskInput,
   BackgroundTaskModel,
   BackgroundTaskSearch,
+  BackgroundTaskFieldComment,
 } from "./background_task.model.ts";
 
 const route_path = "/base/background_task";
@@ -404,9 +405,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: BackgroundTaskFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
     state: await n("状态"),

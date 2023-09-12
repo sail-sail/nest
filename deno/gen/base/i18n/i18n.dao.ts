@@ -57,6 +57,7 @@ import type {
   I18Ninput,
   I18Nmodel,
   I18Nsearch,
+  I18NfieldComment,
 } from "./i18n.model.ts";
 
 import * as langDao from "/gen/base/lang/lang.dao.ts";
@@ -344,9 +345,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<I18NfieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: I18NfieldComment = {
     id: await n("ID"),
     lang_id: await n("语言"),
     lang_id_lbl: await n("语言"),

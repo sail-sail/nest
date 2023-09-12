@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DeptInput,
-  type DeptSearch,
+import type {
+  DeptInput,
+  DeptModel,
+  DeptSearch,
+  DeptFieldComment,
 } from "./dept.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./dept.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<DeptModel[]> {
   const { findAll } = await import("./dept.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllDept(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsDept() {
+export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
   const { getFieldComments } = await import("./dept.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsDept() {
 export async function findOneDept(
   search?: DeptSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<DeptModel | undefined> {
   const { findOne } = await import("./dept.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneDept(
  */
 export async function findByIdDept(
   id: string,
-) {
+): Promise<DeptModel | undefined> {
   const { findById } = await import("./dept.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdDept(
 export async function createDept(
   input: DeptInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createDept(
 export async function updateByIdDept(
   id: string,
   input: DeptInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdDept(
  */
 export async function deleteByIdsDept(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsDept(
 export async function enableByIdsDept(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsDept(
 export async function lockByIdsDept(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsDept(
  */
 export async function revertByIdsDept(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsDept(
  */
 export async function forceDeleteByIdsDept(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsDept(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDept() {
+export async function findLastOrderByDept(): Promise<number> {
   const { findLastOrderBy } = await import("./dept.service.ts");
   const res = findLastOrderBy();
   return res;

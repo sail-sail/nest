@@ -59,6 +59,7 @@ import type {
   DictDetailInput,
   DictDetailModel,
   DictDetailSearch,
+  DictDetailFieldComment,
 } from "./dict_detail.model.ts";
 
 import * as dictDao from "/gen/base/dict/dict.dao.ts";
@@ -326,9 +327,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DictDetailFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: DictDetailFieldComment = {
     id: await n("ID"),
     dict_id: await n("系统字典"),
     dict_id_lbl: await n("系统字典"),

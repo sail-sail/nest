@@ -63,6 +63,7 @@ import type {
   MenuInput,
   MenuModel,
   MenuSearch,
+  MenuFieldComment,
 } from "./menu.model.ts";
 
 const route_path = "/base/menu";
@@ -443,9 +444,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<MenuFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: MenuFieldComment = {
     id: await n("ID"),
     type: await n("类型"),
     type_lbl: await n("类型"),

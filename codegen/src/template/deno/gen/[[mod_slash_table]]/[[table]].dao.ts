@@ -198,6 +198,7 @@ import type {
   <#=inputName#>,
   <#=modelName#>,
   <#=searchName#>,
+  <#=fieldCommentName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -967,9 +968,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
   const n = initN(route_path);
-  const fieldComments = {<#
+  const fieldComments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;

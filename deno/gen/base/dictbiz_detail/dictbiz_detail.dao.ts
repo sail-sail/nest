@@ -63,6 +63,7 @@ import type {
   DictbizDetailInput,
   DictbizDetailModel,
   DictbizDetailSearch,
+  DictbizDetailFieldComment,
 } from "./dictbiz_detail.model.ts";
 
 import * as dictbizDao from "/gen/base/dictbiz/dictbiz.dao.ts";
@@ -339,9 +340,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: DictbizDetailFieldComment = {
     id: await n("ID"),
     dictbiz_id: await n("业务字典"),
     dictbiz_id_lbl: await n("业务字典"),

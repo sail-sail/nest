@@ -67,6 +67,7 @@ import type {
   UsrInput,
   UsrModel,
   UsrSearch,
+  UsrFieldComment,
 } from "./usr.model.ts";
 
 import * as orgDao from "/gen/base/org/org.dao.ts";
@@ -436,9 +437,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<UsrFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: UsrFieldComment = {
     id: await n("ID"),
     img: await n("头像"),
     lbl: await n("名称"),

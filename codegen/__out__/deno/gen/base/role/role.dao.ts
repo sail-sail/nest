@@ -67,6 +67,7 @@ import type {
   RoleInput,
   RoleModel,
   RoleSearch,
+  RoleFieldComment,
 } from "./role.model.ts";
 
 const route_path = "/base/role";
@@ -500,9 +501,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<RoleFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: RoleFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
     menu_ids: await n("菜单权限"),

@@ -59,6 +59,7 @@ import type {
   DomainInput,
   DomainModel,
   DomainSearch,
+  DomainFieldComment,
 } from "./domain.model.ts";
 
 const route_path = "/base/domain";
@@ -370,9 +371,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DomainFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: DomainFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
     is_locked: await n("锁定"),

@@ -59,6 +59,7 @@ import type {
   LangInput,
   LangModel,
   LangSearch,
+  LangFieldComment,
 } from "./lang.model.ts";
 
 const route_path = "/base/lang";
@@ -343,9 +344,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<LangFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: LangFieldComment = {
     id: await n("ID"),
     code: await n("编码"),
     lbl: await n("名称"),

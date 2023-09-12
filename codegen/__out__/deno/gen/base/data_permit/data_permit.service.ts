@@ -12,6 +12,7 @@ import type {
   DataPermitInput,
   DataPermitModel,
   DataPermitSearch,
+  DataPermitFieldComment,
 } from "./data_permit.model.ts";
 
 import * as data_permitDao from "./data_permit.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: DataPermitSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<DataPermitModel | undefined> {
   search = search || { };
   const data = await data_permitDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<DataPermitModel | undefined> {
   const data = await data_permitDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: DataPermitSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await data_permitDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await data_permitDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: DataPermitInput,
-) {
+): Promise<void> {
   const data = await data_permitDao.validate(input);
   return data;
 }
@@ -201,7 +202,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DataPermitFieldComment> {
   const data = await data_permitDao.getFieldComments();
   return data;
 }

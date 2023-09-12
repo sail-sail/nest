@@ -10,6 +10,7 @@ import type {
   LangInput,
   LangModel,
   LangSearch,
+  LangFieldComment,
 } from "./lang.model.ts";
 
 import * as langDao from "./lang.dao.ts";
@@ -51,7 +52,7 @@ export async function findAll(
 export async function findOne(
   search?: LangSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<LangModel | undefined> {
   search = search || { };
   const data = await langDao.findOne(search, sort);
   return data;
@@ -63,7 +64,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<LangModel | undefined> {
   const data = await langDao.findById(id);
   return data;
 }
@@ -74,7 +75,7 @@ export async function findById(
  */
 export async function exist(
   search?: LangSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await langDao.exist(search);
   return data;
@@ -86,7 +87,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await langDao.existById(id);
   return data;
 }
@@ -97,7 +98,7 @@ export async function existById(
  */
 export async function validate(
   input: LangInput,
-) {
+): Promise<void> {
   const data = await langDao.validate(input);
   return data;
 }
@@ -186,7 +187,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<LangFieldComment> {
   const data = await langDao.getFieldComments();
   return data;
 }

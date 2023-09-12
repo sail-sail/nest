@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type RoleInput,
-  type RoleSearch,
+import type {
+  RoleInput,
+  RoleModel,
+  RoleSearch,
+  RoleFieldComment,
 } from "./role.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./role.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<RoleModel[]> {
   const { findAll } = await import("./role.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllRole(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsRole() {
+export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
   const { getFieldComments } = await import("./role.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsRole() {
 export async function findOneRole(
   search?: RoleSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<RoleModel | undefined> {
   const { findOne } = await import("./role.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneRole(
  */
 export async function findByIdRole(
   id: string,
-) {
+): Promise<RoleModel | undefined> {
   const { findById } = await import("./role.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdRole(
 export async function createRole(
   input: RoleInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createRole(
 export async function updateByIdRole(
   id: string,
   input: RoleInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdRole(
  */
 export async function deleteByIdsRole(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsRole(
 export async function enableByIdsRole(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsRole(
 export async function lockByIdsRole(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsRole(
  */
 export async function revertByIdsRole(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsRole(
  */
 export async function forceDeleteByIdsRole(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

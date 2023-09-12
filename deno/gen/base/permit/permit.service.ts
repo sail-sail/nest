@@ -12,6 +12,7 @@ import type {
   PermitInput,
   PermitModel,
   PermitSearch,
+  PermitFieldComment,
 } from "./permit.model.ts";
 
 import * as permitDao from "./permit.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: PermitSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<PermitModel | undefined> {
   search = search || { };
   const data = await permitDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<PermitModel | undefined> {
   const data = await permitDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: PermitSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await permitDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await permitDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: PermitInput,
-) {
+): Promise<void> {
   const data = await permitDao.validate(input);
   return data;
 }
@@ -200,7 +201,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<PermitFieldComment> {
   const data = await permitDao.getFieldComments();
   return data;
 }

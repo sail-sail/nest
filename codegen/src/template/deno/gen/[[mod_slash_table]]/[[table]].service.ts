@@ -51,6 +51,7 @@ import type {
   <#=inputName#>,
   <#=modelName#>,
   <#=searchName#>,
+  <#=fieldCommentName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -144,7 +145,7 @@ export async function findSummary(
 export async function findOne(
   search?: <#=searchName#>,
   sort?: SortInput|SortInput[],
-) {
+): Promise<<#=modelName#> | undefined> {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
   #>
@@ -165,7 +166,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<<#=modelName#> | undefined> {
   const data = await <#=table#>Dao.findById(id);
   return data;
 }
@@ -176,7 +177,7 @@ export async function findById(
  */
 export async function exist(
   search?: <#=searchName#>,
-) {
+): Promise<boolean> {
   search = search || { };<#
     if (opts.filterDataByCreateUsr) {
   #>
@@ -197,7 +198,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await <#=table#>Dao.existById(id);
   return data;
 }
@@ -208,7 +209,7 @@ export async function existById(
  */
 export async function validate(
   input: <#=inputName#>,
-) {
+): Promise<void> {
   const data = await <#=table#>Dao.validate(input);
   return data;
 }
@@ -467,7 +468,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
   const data = await <#=table#>Dao.getFieldComments();
   return data;
 }<#

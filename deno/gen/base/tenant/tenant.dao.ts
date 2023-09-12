@@ -63,6 +63,7 @@ import type {
   TenantInput,
   TenantModel,
   TenantSearch,
+  TenantFieldComment,
 } from "./tenant.model.ts";
 
 const route_path = "/base/tenant";
@@ -428,9 +429,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<TenantFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: TenantFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
     domain_ids: await n("所属域名"),

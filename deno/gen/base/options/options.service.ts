@@ -12,6 +12,7 @@ import type {
   OptionsInput,
   OptionsModel,
   OptionsSearch,
+  OptionsFieldComment,
 } from "./options.model.ts";
 
 import * as optionsDao from "./options.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: OptionsSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<OptionsModel | undefined> {
   search = search || { };
   const data = await optionsDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<OptionsModel | undefined> {
   const data = await optionsDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: OptionsSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await optionsDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await optionsDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: OptionsInput,
-) {
+): Promise<void> {
   const data = await optionsDao.validate(input);
   return data;
 }
@@ -251,7 +252,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<OptionsFieldComment> {
   const data = await optionsDao.getFieldComments();
   return data;
 }

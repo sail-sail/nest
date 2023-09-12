@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type OrgInput,
-  type OrgSearch,
+import type {
+  OrgInput,
+  OrgModel,
+  OrgSearch,
+  OrgFieldComment,
 } from "./org.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./org.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<OrgModel[]> {
   const { findAll } = await import("./org.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllOrg(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsOrg() {
+export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
   const { getFieldComments } = await import("./org.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsOrg() {
 export async function findOneOrg(
   search?: OrgSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<OrgModel | undefined> {
   const { findOne } = await import("./org.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneOrg(
  */
 export async function findByIdOrg(
   id: string,
-) {
+): Promise<OrgModel | undefined> {
   const { findById } = await import("./org.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdOrg(
 export async function createOrg(
   input: OrgInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createOrg(
 export async function updateByIdOrg(
   id: string,
   input: OrgInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdOrg(
  */
 export async function deleteByIdsOrg(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsOrg(
 export async function enableByIdsOrg(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsOrg(
 export async function lockByIdsOrg(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsOrg(
  */
 export async function revertByIdsOrg(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsOrg(
  */
 export async function forceDeleteByIdsOrg(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsOrg(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByOrg() {
+export async function findLastOrderByOrg(): Promise<number> {
   const { findLastOrderBy } = await import("./org.service.ts");
   const res = findLastOrderBy();
   return res;

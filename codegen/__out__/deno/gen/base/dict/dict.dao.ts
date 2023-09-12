@@ -59,6 +59,7 @@ import type {
   DictInput,
   DictModel,
   DictSearch,
+  DictFieldComment,
 } from "./dict.model.ts";
 
 const route_path = "/base/dict";
@@ -397,9 +398,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DictFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: DictFieldComment = {
     id: await n("ID"),
     code: await n("编码"),
     lbl: await n("名称"),

@@ -61,6 +61,7 @@ import type {
   OperationRecordInput,
   OperationRecordModel,
   OperationRecordSearch,
+  OperationRecordFieldComment,
 } from "./operation_record.model.ts";
 
 const route_path = "/base/operation_record";
@@ -357,9 +358,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<OperationRecordFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: OperationRecordFieldComment = {
     id: await n("ID"),
     module: await n("模块"),
     module_lbl: await n("模块名称"),

@@ -28,3 +28,23 @@ export interface UsrInput extends UsrInputType {
   update_time?: string | null;
   tenant_id?: string | null;
 }
+
+export interface UsrFieldComment {
+  id: string;
+  img: string;
+  lbl: string;
+  username: string;
+  default_org_id: string;
+  default_org_id_lbl: string;
+  is_locked: string;
+  is_locked_lbl: string;
+  is_enabled: string;
+  is_enabled_lbl: string;
+  org_ids: string;
+  org_ids_lbl: string;
+  dept_ids: string;
+  dept_ids_lbl: string;
+  role_ids: string;
+  role_ids_lbl: string;
+  rem: string;
+}

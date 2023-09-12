@@ -63,6 +63,7 @@ import type {
   OrgInput,
   OrgModel,
   OrgSearch,
+  OrgFieldComment,
 } from "./org.model.ts";
 
 const route_path = "/base/org";
@@ -365,9 +366,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<OrgFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: OrgFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
     is_locked: await n("锁定"),

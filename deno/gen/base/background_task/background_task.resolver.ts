@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type BackgroundTaskInput,
-  type BackgroundTaskSearch,
+import type {
+  BackgroundTaskInput,
+  BackgroundTaskModel,
+  BackgroundTaskSearch,
+  BackgroundTaskFieldComment,
 } from "./background_task.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./background_task.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<BackgroundTaskModel[]> {
   const { findAll } = await import("./background_task.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllBackgroundTask(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsBackgroundTask() {
+export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFieldComment> {
   const { getFieldComments } = await import("./background_task.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsBackgroundTask() {
 export async function findOneBackgroundTask(
   search?: BackgroundTaskSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<BackgroundTaskModel | undefined> {
   const { findOne } = await import("./background_task.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneBackgroundTask(
  */
 export async function findByIdBackgroundTask(
   id: string,
-) {
+): Promise<BackgroundTaskModel | undefined> {
   const { findById } = await import("./background_task.service.ts");
   const res = await findById(id);
   return res;
@@ -82,7 +84,7 @@ export async function findByIdBackgroundTask(
  */
 export async function deleteByIdsBackgroundTask(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -104,7 +106,7 @@ export async function deleteByIdsBackgroundTask(
  */
 export async function revertByIdsBackgroundTask(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -126,7 +128,7 @@ export async function revertByIdsBackgroundTask(
  */
 export async function forceDeleteByIdsBackgroundTask(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

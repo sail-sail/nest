@@ -59,6 +59,7 @@ import type {
   PermitInput,
   PermitModel,
   PermitSearch,
+  PermitFieldComment,
 } from "./permit.model.ts";
 
 import * as menuDao from "/gen/base/menu/menu.dao.ts";
@@ -352,9 +353,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<PermitFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: PermitFieldComment = {
     id: await n("ID"),
     menu_id: await n("菜单"),
     menu_id_lbl: await n("菜单"),

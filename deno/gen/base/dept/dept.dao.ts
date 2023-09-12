@@ -65,6 +65,7 @@ import type {
   DeptInput,
   DeptModel,
   DeptSearch,
+  DeptFieldComment,
 } from "./dept.model.ts";
 
 const route_path = "/base/dept";
@@ -391,9 +392,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DeptFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: DeptFieldComment = {
     id: await n("ID"),
     parent_id: await n("父部门"),
     parent_id_lbl: await n("父部门"),

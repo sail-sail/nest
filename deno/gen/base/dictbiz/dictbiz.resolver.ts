@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictbizInput,
-  type DictbizSearch,
+import type {
+  DictbizInput,
+  DictbizModel,
+  DictbizSearch,
+  DictbizFieldComment,
 } from "./dictbiz.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./dictbiz.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<DictbizModel[]> {
   const { findAll } = await import("./dictbiz.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllDictbiz(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsDictbiz() {
+export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
   const { getFieldComments } = await import("./dictbiz.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsDictbiz() {
 export async function findOneDictbiz(
   search?: DictbizSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<DictbizModel | undefined> {
   const { findOne } = await import("./dictbiz.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneDictbiz(
  */
 export async function findByIdDictbiz(
   id: string,
-) {
+): Promise<DictbizModel | undefined> {
   const { findById } = await import("./dictbiz.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdDictbiz(
 export async function createDictbiz(
   input: DictbizInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createDictbiz(
 export async function updateByIdDictbiz(
   id: string,
   input: DictbizInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdDictbiz(
  */
 export async function deleteByIdsDictbiz(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsDictbiz(
 export async function enableByIdsDictbiz(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsDictbiz(
 export async function lockByIdsDictbiz(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsDictbiz(
  */
 export async function revertByIdsDictbiz(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsDictbiz(
  */
 export async function forceDeleteByIdsDictbiz(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsDictbiz(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDictbiz() {
+export async function findLastOrderByDictbiz(): Promise<number> {
   const { findLastOrderBy } = await import("./dictbiz.service.ts");
   const res = findLastOrderBy();
   return res;

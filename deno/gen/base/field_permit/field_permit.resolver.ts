@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type FieldPermitInput,
-  type FieldPermitSearch,
+import type {
+  FieldPermitInput,
+  FieldPermitModel,
+  FieldPermitSearch,
+  FieldPermitFieldComment,
 } from "./field_permit.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./field_permit.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<FieldPermitModel[]> {
   const { findAll } = await import("./field_permit.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllFieldPermit(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsFieldPermit() {
+export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldComment> {
   const { getFieldComments } = await import("./field_permit.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsFieldPermit() {
 export async function findOneFieldPermit(
   search?: FieldPermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<FieldPermitModel | undefined> {
   const { findOne } = await import("./field_permit.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneFieldPermit(
  */
 export async function findByIdFieldPermit(
   id: string,
-) {
+): Promise<FieldPermitModel | undefined> {
   const { findById } = await import("./field_permit.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdFieldPermit(
 export async function createFieldPermit(
   input: FieldPermitInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createFieldPermit(
 export async function updateByIdFieldPermit(
   id: string,
   input: FieldPermitInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdFieldPermit(
  */
 export async function deleteByIdsFieldPermit(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -155,7 +157,7 @@ export async function deleteByIdsFieldPermit(
  */
 export async function revertByIdsFieldPermit(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -177,7 +179,7 @@ export async function revertByIdsFieldPermit(
  */
 export async function forceDeleteByIdsFieldPermit(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

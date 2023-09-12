@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DomainInput,
-  type DomainSearch,
+import type {
+  DomainInput,
+  DomainModel,
+  DomainSearch,
+  DomainFieldComment,
 } from "./domain.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./domain.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<DomainModel[]> {
   const { findAll } = await import("./domain.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllDomain(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsDomain() {
+export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
   const { getFieldComments } = await import("./domain.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsDomain() {
 export async function findOneDomain(
   search?: DomainSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<DomainModel | undefined> {
   const { findOne } = await import("./domain.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneDomain(
  */
 export async function findByIdDomain(
   id: string,
-) {
+): Promise<DomainModel | undefined> {
   const { findById } = await import("./domain.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdDomain(
 export async function createDomain(
   input: DomainInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createDomain(
 export async function updateByIdDomain(
   id: string,
   input: DomainInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdDomain(
  */
 export async function deleteByIdsDomain(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -155,7 +157,7 @@ export async function deleteByIdsDomain(
  */
 export async function defaultByIdDomain(
   id: string,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -178,7 +180,7 @@ export async function defaultByIdDomain(
 export async function enableByIdsDomain(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -204,7 +206,7 @@ export async function enableByIdsDomain(
 export async function lockByIdsDomain(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function lockByIdsDomain(
  */
 export async function revertByIdsDomain(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -251,7 +253,7 @@ export async function revertByIdsDomain(
  */
 export async function forceDeleteByIdsDomain(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -271,7 +273,7 @@ export async function forceDeleteByIdsDomain(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDomain() {
+export async function findLastOrderByDomain(): Promise<number> {
   const { findLastOrderBy } = await import("./domain.service.ts");
   const res = findLastOrderBy();
   return res;

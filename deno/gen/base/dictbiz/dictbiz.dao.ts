@@ -63,6 +63,7 @@ import type {
   DictbizInput,
   DictbizModel,
   DictbizSearch,
+  DictbizFieldComment,
 } from "./dictbiz.model.ts";
 
 const route_path = "/base/dictbiz";
@@ -410,9 +411,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DictbizFieldComment> {
   const n = initN(route_path);
-  const fieldComments = {
+  const fieldComments: DictbizFieldComment = {
     id: await n("ID"),
     code: await n("编码"),
     lbl: await n("名称"),
