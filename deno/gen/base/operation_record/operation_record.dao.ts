@@ -943,6 +943,7 @@ export async function updateById(
     }
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
+    
     const result = await execute(sql, args);
   }
   

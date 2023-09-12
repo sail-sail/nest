@@ -1344,6 +1344,9 @@ export async function updateById(
     }
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
     const result = await execute(sql, args);
   }
   
@@ -1392,6 +1395,10 @@ export async function deleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
   }
   
   let num = 0;
@@ -1457,6 +1464,10 @@ export async function enableByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
   }
   
   const args = new QueryArgs();
@@ -1525,6 +1536,10 @@ export async function lockByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
   let sql = `
     update
@@ -1569,6 +1584,10 @@ export async function revertByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1601,6 +1620,7 @@ export async function revertByIds(
       }
     }
   }
+  
   await delCache();
   
   return num;
@@ -1621,6 +1641,10 @@ export async function forceDeleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
   }
   
   let num = 0;
@@ -1651,6 +1675,7 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
   await delCache();
   
   return num;

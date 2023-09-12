@@ -2299,7 +2299,13 @@ export async function updateOrgById(
       org_id = ${ args.push(org_id) }
     where
       id = ${ args.push(id) }
-  `;
+  `;<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
+  }
+  #>
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -2854,7 +2860,14 @@ export async function updateById(
     }
     #>
     sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id = ${ args.push(id) } limit 1`;<#
+    if (cache) {
+    #>
+    
+    await delCache();<#
+    }
+    #>
+    
     const result = await execute(sql, args);
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -2950,7 +2963,15 @@ export async function deleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -3000,7 +3021,13 @@ export async function defaultById(
   
   if (!id) {
     throw new Error("defaultById: id cannot be empty");
+  }<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
   }
+  #>
   
   {
     const args = new QueryArgs();
@@ -3087,7 +3114,15 @@ export async function enableByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = `
@@ -3161,7 +3196,15 @@ export async function lockByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   const args = new QueryArgs();
   let sql = `
@@ -3211,7 +3254,15 @@ export async function revertByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -3247,6 +3298,7 @@ export async function revertByIds(
   }<#
   if (cache) {
   #>
+  
   await delCache();<#
   }
   #>
@@ -3269,7 +3321,15 @@ export async function forceDeleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -3301,6 +3361,7 @@ export async function forceDeleteByIds(
   }<#
   if (cache) {
   #>
+  
   await delCache();<#
   }
   #>
