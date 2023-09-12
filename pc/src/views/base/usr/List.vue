@@ -78,6 +78,28 @@
         </el-form-item>
       </template>
       
+      <template v-if="showBuildIn || builtInSearch?.dept_ids == null">
+        <el-form-item
+          label="所属部门"
+          prop="dept_ids"
+        >
+          <CustomTreeSelect
+            :set="search.dept_ids = search.dept_ids || [ ]"
+            v-model="search.dept_ids"
+            :method="getDeptTree"
+            :options-map="((item: DeptModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('所属部门') }`"
+            multiple
+            @change="onSearch"
+          ></CustomTreeSelect>
+        </el-form-item>
+      </template>
+      
       <template v-if="showBuildIn || builtInSearch?.role_ids == null">
         <el-form-item
           label="拥有角色"
@@ -548,6 +570,20 @@
             </el-table-column>
           </template>
           
+          <!-- 所属部门 -->
+          <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 拥有角色 -->
           <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.role_ids == null)">
             <el-table-column
@@ -647,13 +683,19 @@ import type {
   UsrInput,
   UsrSearch,
   OrgModel,
+  DeptModel,
   RoleModel,
 } from "#/types";
 
 import {
   getOrgList,
+  getDeptList,
   getRoleList,
 } from "./Api";
+
+import {
+  getDeptTree,
+} from "@/views/base/dept/Api";
 
 defineOptions({
   name: "用户",
@@ -703,6 +745,7 @@ function initSearch() {
   return {
     is_deleted: 0,
     org_ids: [ ],
+    dept_ids: [ ],
     role_ids: [ ],
   } as UsrSearch;
 }
@@ -768,6 +811,8 @@ const props = defineProps<{
   is_enabled?: string|string[]; // 启用
   org_ids?: string|string[]; // 所属组织
   org_ids_lbl?: string|string[]; // 所属组织
+  dept_ids?: string|string[]; // 所属部门
+  dept_ids_lbl?: string|string[]; // 所属部门
   role_ids?: string|string[]; // 拥有角色
   role_ids_lbl?: string|string[]; // 拥有角色
   rem?: string; // 备注
@@ -788,6 +833,8 @@ const builtInSearchType: { [key: string]: string } = {
   is_enabled_lbl: "string[]",
   org_ids: "string[]",
   org_ids_lbl: "string[]",
+  dept_ids: "string[]",
+  dept_ids_lbl: "string[]",
   role_ids: "string[]",
   role_ids_lbl: "string[]",
 };
@@ -959,6 +1006,14 @@ function getTableColumns(): ColumnType[] {
       label: "所属组织",
       prop: "org_ids_lbl",
       width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "所属部门",
+      prop: "dept_ids_lbl",
+      width: 240,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1207,6 +1262,7 @@ async function onImportExcel() {
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("所属组织") ]: "org_ids_lbl",
+    [ await nAsync("所属部门") ]: "dept_ids_lbl",
     [ await nAsync("拥有角色") ]: "role_ids_lbl",
     [ await nAsync("备注") ]: "rem",
   };
@@ -1525,6 +1581,7 @@ async function initI18nsEfc() {
     "锁定",
     "启用",
     "所属组织",
+    "所属部门",
     "拥有角色",
     "备注",
   ];

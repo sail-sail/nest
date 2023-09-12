@@ -17,6 +17,14 @@ type RoleModel {
   permit_ids: [String!]
   "按钮权限"
   permit_ids_lbl: [String!]
+  "数据权限"
+  data_permit_ids: [String!]
+  "数据权限"
+  data_permit_ids_lbl: [String!]
+  "字段权限"
+  field_permit_ids: [String!]
+  "字段权限"
+  field_permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -57,6 +65,14 @@ type RoleFieldComment {
   permit_ids: String!
   "按钮权限"
   permit_ids_lbl: String!
+  "数据权限"
+  data_permit_ids: String!
+  "数据权限"
+  data_permit_ids_lbl: String!
+  "字段权限"
+  field_permit_ids: String!
+  "字段权限"
+  field_permit_ids_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -97,6 +113,14 @@ input RoleInput {
   permit_ids: [String!]
   "按钮权限"
   permit_ids_lbl: [String!]
+  "数据权限"
+  data_permit_ids: [String!]
+  "数据权限"
+  data_permit_ids_lbl: [String!]
+  "字段权限"
+  field_permit_ids: [String!]
+  "字段权限"
+  field_permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -140,6 +164,12 @@ input RoleSearch {
   "按钮权限"
   permit_ids: [String!]
   permit_ids_is_null: Boolean
+  "数据权限"
+  data_permit_ids: [String!]
+  data_permit_ids_is_null: Boolean
+  "字段权限"
+  field_permit_ids: [String!]
+  field_permit_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "启用"

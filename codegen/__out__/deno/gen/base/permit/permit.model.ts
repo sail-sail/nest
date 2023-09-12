@@ -13,6 +13,8 @@ export interface PermitSearch extends PermitSearchType {
 }
 
 export interface PermitModel extends PermitModelType {
+  /** 系统字段 */
+  is_sys: number;
   create_usr_id: string;
   create_time?: string | null;
   update_usr_id: string;
@@ -20,6 +22,8 @@ export interface PermitModel extends PermitModelType {
 }
 
 export interface PermitInput extends PermitInputType {
+  /** 系统字段 */
+  is_sys?: number;
   create_usr_id?: string;
   create_time?: string | null;
   update_usr_id?: string;

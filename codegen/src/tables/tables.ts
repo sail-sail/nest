@@ -29,6 +29,25 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "data_permit_ids",
+        COLUMN_COMMENT: "数据权限",
+        foreignKey: {
+          showType: "dialog",
+          mod: "base",
+          table: "data_permit",
+          column: "id",
+          lbl: "scope",
+          multiple: true,
+        },
+      },
+      {
+        COLUMN_NAME: "field_permit_ids",
+        COLUMN_COMMENT: "字段权限",
+        foreignKey: {
+          showType: "dialog",
+        },
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -222,6 +241,13 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "dept_ids",
+        COLUMN_COMMENT: "所属部门",
+        search: true,
+        width: 240,
+        align: "left",
+      },
+      {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "拥有角色",
         search: true,
@@ -239,6 +265,7 @@ export default defineConfig({
       cache: true,
       uniques: [
         [ "parent_id", "lbl" ],
+        [ "route_path" ],
       ],
       defaultSort: {
         prop: "order_by",
@@ -504,6 +531,10 @@ export default defineConfig({
       uniques: [
         [ "menu_id", "code" ],
       ],
+      sys_fields: [
+        "menu_id",
+        "code",
+      ],
       list_tree: "menu_id",
     },
     columns: [
@@ -533,6 +564,133 @@ export default defineConfig({
         width: 160,
         align: "left",
         fixed: null,
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 数据权限
+  base_data_permit: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "menu_id", "scope" ],
+      ],
+      sys_fields: [
+        "menu_id",
+        "scope",
+      ],
+      list_tree: "menu_id",
+    },
+    columns: [
+      {
+        COLUMN_NAME: "menu_id",
+        require: true,
+        search: true,
+        width: 160,
+        align: "left",
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+        },
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 220,
+        align: "left",
+        fixed: null,
+      },
+      {
+        COLUMN_NAME: "scope",
+        require: true,
+        search: true,
+        width: 120,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "type",
+        require: true,
+        width: 100,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 字段权限
+  base_field_permit: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "menu_id", "code" ],
+      ],
+      sys_fields: [
+        "menu_id",
+        "code",
+      ],
+      list_tree: "menu_id",
+    },
+    columns: [
+      {
+        COLUMN_NAME: "menu_id",
+        require: true,
+        search: true,
+        width: 160,
+        align: "left",
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+        },
+      },
+      {
+        COLUMN_NAME: "code",
+        require: true,
+        search: true,
+        width: 160,
+        align: "left",
+        fixed: null,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        require: true,
+        search: true,
+        width: 160,
+        align: "left",
+        fixed: null,
+      },
+      {
+        COLUMN_NAME: "type",
+        require: true,
+        width: 100,
+        align: "center",
       },
       {
         COLUMN_NAME: "rem",
@@ -724,7 +882,7 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "lbl" ],
+        [ "parent_id", "lbl" ],
       ],
       defaultSort: {
         prop: "order_by",

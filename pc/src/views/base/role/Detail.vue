@@ -34,7 +34,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -62,7 +62,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-1"
+            un-grid="col-span-2"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -195,6 +195,8 @@ let dialogNotice = $ref("");
 let dialogModel = $ref({
   menu_ids: [ ],
   permit_ids: [ ],
+  data_permit_ids: [ ],
+  field_permit_ids: [ ],
 } as RoleInput);
 
 let ids = $ref<string[]>([ ]);
@@ -545,6 +547,8 @@ async function onInitI18ns() {
     "名称",
     "菜单权限",
     "按钮权限",
+    "数据权限",
+    "字段权限",
     "锁定",
     "启用",
     "备注",

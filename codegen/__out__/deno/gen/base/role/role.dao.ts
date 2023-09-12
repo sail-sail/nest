@@ -69,12 +69,14 @@ import type {
   RoleSearch,
 } from "./role.model.ts";
 
+const route_path = "/base/role";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: RoleSearch,
   options?: {
   },
-) {
+): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
@@ -127,6 +129,30 @@ async function getWhereQuery(
   }
   if (search?.permit_ids_is_null) {
     whereQuery += ` and base_permit.id is null`;
+  }
+  if (search?.data_permit_ids && !Array.isArray(search?.data_permit_ids)) {
+    search.data_permit_ids = [ search.data_permit_ids ];
+  }
+  if (search?.data_permit_ids && search?.data_permit_ids.length > 0) {
+    whereQuery += ` and base_data_permit.id in ${ args.push(search.data_permit_ids) }`;
+  }
+  if (search?.data_permit_ids === null) {
+    whereQuery += ` and base_data_permit.id is null`;
+  }
+  if (search?.data_permit_ids_is_null) {
+    whereQuery += ` and base_data_permit.id is null`;
+  }
+  if (search?.field_permit_ids && !Array.isArray(search?.field_permit_ids)) {
+    search.field_permit_ids = [ search.field_permit_ids ];
+  }
+  if (search?.field_permit_ids && search?.field_permit_ids.length > 0) {
+    whereQuery += ` and base_field_permit.id in ${ args.push(search.field_permit_ids) }`;
+  }
+  if (search?.field_permit_ids === null) {
+    whereQuery += ` and base_field_permit.id is null`;
+  }
+  if (search?.field_permit_ids_is_null) {
+    whereQuery += ` and base_field_permit.id is null`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -202,8 +228,8 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {
+  let fromQuery = `
     base_role t
     left join base_role_menu
       on base_role_menu.role_id = t.id
@@ -249,6 +275,50 @@ function getFromQuery() {
       group by role_id
     ) _permit
       on _permit.role_id = t.id
+    left join base_role_data_permit
+      on base_role_data_permit.role_id = t.id
+      and base_role_data_permit.is_deleted = 0
+    left join base_data_permit
+      on base_role_data_permit.data_permit_id = base_data_permit.id
+      and base_data_permit.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_data_permit.id) data_permit_ids,
+        json_arrayagg(base_data_permit.scope) data_permit_ids_lbl,
+        base_role.id role_id
+      from base_role_data_permit
+      inner join base_data_permit
+        on base_data_permit.id = base_role_data_permit.data_permit_id
+        and base_data_permit.is_deleted = 0
+      inner join base_role
+        on base_role.id = base_role_data_permit.role_id
+      where
+        base_role_data_permit.is_deleted = 0
+      group by role_id
+    ) _data_permit
+      on _data_permit.role_id = t.id
+    left join base_role_field_permit
+      on base_role_field_permit.role_id = t.id
+      and base_role_field_permit.is_deleted = 0
+    left join base_field_permit
+      on base_role_field_permit.field_permit_id = base_field_permit.id
+      and base_field_permit.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_field_permit.id) field_permit_ids,
+        json_arrayagg(base_field_permit.lbl) field_permit_ids_lbl,
+        base_role.id role_id
+      from base_role_field_permit
+      inner join base_field_permit
+        on base_field_permit.id = base_role_field_permit.field_permit_id
+        and base_field_permit.is_deleted = 0
+      inner join base_role
+        on base_role.id = base_role_field_permit.role_id
+      where
+        base_role_field_permit.is_deleted = 0
+      group by role_id
+    ) _field_permit
+      on _field_permit.role_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -271,7 +341,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -279,7 +349,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -309,21 +379,25 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<RoleModel[]> {
   const table = "base_role";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
+      ,max(data_permit_ids) data_permit_ids
+      ,max(data_permit_ids_lbl) data_permit_ids_lbl
+      ,max(field_permit_ids) field_permit_ids
+      ,max(field_permit_ids_lbl) field_permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -427,7 +501,7 @@ export async function findAll(
  * 获取字段对应的名称
  */
 export async function getFieldComments() {
-  const n = initN("/role");
+  const n = initN(route_path);
   const fieldComments = {
     id: await n("ID"),
     lbl: await n("名称"),
@@ -435,6 +509,10 @@ export async function getFieldComments() {
     menu_ids_lbl: await n("菜单权限"),
     permit_ids: await n("按钮权限"),
     permit_ids_lbl: await n("按钮权限"),
+    data_permit_ids: await n("数据权限"),
+    data_permit_ids_lbl: await n("数据权限"),
+    field_permit_ids: await n("字段权限"),
+    field_permit_ids_lbl: await n("字段权限"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -551,7 +629,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<RoleModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -571,7 +649,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<RoleModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -587,7 +665,7 @@ export async function exist(
   search?: RoleSearch,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -608,7 +686,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -715,7 +793,7 @@ export async function create(
     }
     input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -737,7 +815,7 @@ export async function create(
     }
     input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -750,6 +828,50 @@ export async function create(
     }
     const models = await query<Result>(sql, args);
     input.permit_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 数据权限
+  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
+    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
+      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
+    }
+    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_data_permit t
+      where
+        t.scope in ${ args.push(input.data_permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.data_permit_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 字段权限
+  if (!input.field_permit_ids && input.field_permit_ids_lbl) {
+    if (typeof input.field_permit_ids_lbl === "string" || input.field_permit_ids_lbl instanceof String) {
+      input.field_permit_ids_lbl = input.field_permit_ids_lbl.split(",");
+    }
+    input.field_permit_ids_lbl = input.field_permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_field_permit t
+      where
+        t.lbl in ${ args.push(input.field_permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.field_permit_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 锁定
@@ -804,6 +926,7 @@ export async function create(
     insert into base_role(
       id
       ,create_time
+      ,update_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -822,6 +945,14 @@ export async function create(
       sql += `,create_usr_id`;
     }
   }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
+    }
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -834,13 +965,7 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (input.update_usr_id !== undefined) {
-    sql += `,update_usr_id`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,update_time`;
-  }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -858,6 +983,14 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
@@ -869,12 +1002,6 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.update_usr_id !== undefined) {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
@@ -904,6 +1031,30 @@ export async function create(
     },
   );
   
+  // 数据权限
+  await many2manyUpdate(
+    input,
+    "data_permit_ids",
+    {
+      mod: "base",
+      table: "role_data_permit",
+      column1: "role_id",
+      column2: "data_permit_id",
+    },
+  );
+  
+  // 字段权限
+  await many2manyUpdate(
+    input,
+    "field_permit_ids",
+    {
+      mod: "base",
+      table: "role_field_permit",
+      column1: "role_id",
+      column2: "field_permit_id",
+    },
+  );
+  
   await delCache();
   
   return input.id;
@@ -922,6 +1073,10 @@ export async function delCache() {
     "base_menu",
     "base_role_permit",
     "base_permit",
+    "base_role_data_permit",
+    "base_data_permit",
+    "base_role_field_permit",
+    "base_field_permit",
     "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
@@ -954,7 +1109,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     update
       base_role
     set
@@ -1019,7 +1174,7 @@ export async function updateById(
     }
     input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -1041,7 +1196,7 @@ export async function updateById(
     }
     input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -1054,6 +1209,50 @@ export async function updateById(
     }
     const models = await query<Result>(sql, args);
     input.permit_ids = models.map((item: { id: string }) => item.id);
+  }
+
+  // 数据权限
+  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
+    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
+      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
+    }
+    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_data_permit t
+      where
+        t.scope in ${ args.push(input.data_permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.data_permit_ids = models.map((item: { id: string }) => item.id);
+  }
+
+  // 字段权限
+  if (!input.field_permit_ids && input.field_permit_ids_lbl) {
+    if (typeof input.field_permit_ids_lbl === "string" || input.field_permit_ids_lbl instanceof String) {
+      input.field_permit_ids_lbl = input.field_permit_ids_lbl.split(",");
+    }
+    input.field_permit_ids_lbl = input.field_permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_field_permit t
+      where
+        t.lbl in ${ args.push(input.field_permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.field_permit_ids = models.map((item: { id: string }) => item.id);
   }
   
   // 锁定
@@ -1175,6 +1374,40 @@ export async function updateById(
     },
   );
   
+  updateFldNum++;
+  
+  // 数据权限
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "data_permit_ids",
+    {
+      mod: "base",
+      table: "role_data_permit",
+      column1: "role_id",
+      column2: "data_permit_id",
+    },
+  );
+  
+  updateFldNum++;
+  
+  // 字段权限
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "field_permit_ids",
+    {
+      mod: "base",
+      table: "role_field_permit",
+      column1: "role_id",
+      column2: "field_permit_id",
+    },
+  );
+  
   if (updateFldNum > 0) {
     await delCache();
   }
@@ -1213,7 +1446,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_role
       set
@@ -1271,7 +1504,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_role
     set
@@ -1281,10 +1514,10 @@ export async function enableByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1337,7 +1570,7 @@ export async function lockByIds(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_role
     set
@@ -1347,10 +1580,10 @@ export async function lockByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1384,7 +1617,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_role
       set
@@ -1439,7 +1672,7 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -1451,7 +1684,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         base_role
       where

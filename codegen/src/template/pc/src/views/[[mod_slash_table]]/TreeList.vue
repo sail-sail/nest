@@ -24,7 +24,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   modelNameTree = Table_Up + "ModelTree";
 }
 const list_tree = opts.list_tree;
-const lbl_field = opts.lbl_field;
 let list_treeColumn = undefined;
 let list_treeForeignKey = undefined;
 if (typeof list_tree === "string") {
@@ -74,7 +73,7 @@ if (typeof list_tree === "string") {
         :data="treeData"
         node-key="id"
         :props="{
-          label: '<#=lbl_field#>',
+          label: '<#=list_treeForeignKey?.lbl || "lbl"#>',
           children: 'children',
           'class': nodeClass,
         }"

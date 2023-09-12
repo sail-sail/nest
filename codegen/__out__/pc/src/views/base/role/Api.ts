@@ -13,6 +13,8 @@ import type {
 import type {
   MenuSearch,
   PermitSearch,
+  DataPermitSearch,
+  FieldPermitSearch,
   UsrSearch,
 } from "#/types";
 
@@ -23,6 +25,14 @@ import {
 import {
   findTree as findPermitTree,
 } from "@/views/base/permit/Api";
+
+import {
+  findTree as findDataPermitTree,
+} from "@/views/base/data_permit/Api";
+
+import {
+  findTree as findFieldPermitTree,
+} from "@/views/base/field_permit/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -50,6 +60,10 @@ export async function findAll(
           menu_ids_lbl
           permit_ids
           permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
+          field_permit_ids
+          field_permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -186,6 +200,10 @@ export async function findById(
           menu_ids_lbl
           permit_ids
           permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
+          field_permit_ids
+          field_permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -436,6 +454,96 @@ export async function getPermitList() {
   return data;
 }
 
+export async function findAllDataPermit(
+  search?: DataPermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDataPermit: Query["findAllDataPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDataPermit(search: $search, page: $page, sort: $sort) {
+          id
+          scope
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllDataPermit;
+  return res;
+}
+
+export async function getDataPermitList() {
+  const data = await findAllDataPermit(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllFieldPermit(
+  search?: FieldPermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllFieldPermit: Query["findAllFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: FieldPermitSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllFieldPermit(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllFieldPermit;
+  return res;
+}
+
+export async function getFieldPermitList() {
+  const data = await findAllFieldPermit(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -511,6 +619,36 @@ export async function getPermitTree() {
   return data;
 }
 
+export async function getDataPermitTree() {
+  const data = await findDataPermitTree(
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getFieldPermitTree() {
+  const data = await findFieldPermitTree(
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -532,6 +670,8 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             menu_ids_lbl
             permit_ids_lbl
+            data_permit_ids_lbl
+            field_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             rem
@@ -545,6 +685,14 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           findAllPermit {
+            id
+            lbl
+          }
+          findAllDataPermit {
+            id
+            scope
+          }
+          findAllFieldPermit {
             id
             lbl
           }
@@ -610,6 +758,10 @@ export function useExportExcel(routePath: string) {
             menu_ids_lbl
             permit_ids
             permit_ids_lbl
+            data_permit_ids
+            data_permit_ids_lbl
+            field_permit_ids
+            field_permit_ids_lbl
             is_locked
             is_locked_lbl
             is_enabled
@@ -628,6 +780,8 @@ export function useExportExcel(routePath: string) {
             lbl
             menu_ids_lbl
             permit_ids_lbl
+            data_permit_ids_lbl
+            field_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             rem
@@ -640,6 +794,12 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           findAllPermit {
+            lbl
+          }
+          findAllDataPermit {
+            scope
+          }
+          findAllFieldPermit {
             lbl
           }
           findAllUsr {

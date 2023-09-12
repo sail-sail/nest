@@ -61,12 +61,14 @@ import type {
   DictSearch,
 } from "./dict.model.ts";
 
+const route_path = "/base/dict";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: DictSearch,
   options?: {
   },
-) {
+): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (isNotEmpty(search?.id)) {
@@ -190,8 +192,8 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {
+  let fromQuery = `
     base_dict t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
@@ -215,7 +217,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -223,7 +225,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -253,17 +255,17 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<DictModel[]> {
   const table = "base_dict";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -396,7 +398,7 @@ export async function findAll(
  * 获取字段对应的名称
  */
 export async function getFieldComments() {
-  const n = initN("/dict");
+  const n = initN(route_path);
   const fieldComments = {
     id: await n("ID"),
     code: await n("编码"),
@@ -537,7 +539,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<DictModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -557,7 +559,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<DictModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -573,7 +575,7 @@ export async function exist(
   search?: DictSearch,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -594,7 +596,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -772,6 +774,7 @@ export async function create(
     insert into base_dict(
       id
       ,create_time
+      ,update_time
   `;
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
@@ -779,6 +782,14 @@ export async function create(
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
+    }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
     }
   }
   if (input.code !== undefined) {
@@ -802,18 +813,20 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (input.update_usr_id !== undefined) {
-    sql += `,update_usr_id`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,update_time`;
-  }
   if (input.is_sys !== undefined) {
     sql += `,is_sys`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
@@ -840,12 +853,6 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.update_usr_id !== undefined) {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,${ args.push(input.update_time) }`;
   }
   if (input.is_sys !== undefined) {
     sql += `,${ args.push(input.is_sys) }`;
@@ -1073,7 +1080,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_dict
       set
@@ -1131,7 +1138,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_dict
     set
@@ -1141,10 +1148,10 @@ export async function enableByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1197,7 +1204,7 @@ export async function lockByIds(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_dict
     set
@@ -1207,10 +1214,10 @@ export async function lockByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1244,7 +1251,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_dict
       set
@@ -1299,7 +1306,7 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -1311,7 +1318,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         base_dict
       where
@@ -1350,7 +1357,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += /*sql*/ `
+  sql += `
     order by
       t.order_by desc
     limit 1

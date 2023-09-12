@@ -39,6 +39,9 @@ export async function execCsvFile(context: Context, item: string) {
     for (let j = 0; j < keys.length; j++) {
       const key = keys[j];
       if (isEmpty(key)) {
+        if (key === "id") {
+          break;
+        }
         continue;
       }
       if (key.startsWith("_") || key.endsWith("_")) {

@@ -326,6 +326,16 @@ watchEffect(async () => {
         max: 45,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
+      {
+        type: "string",
+        max: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
+      {
+        type: "string",
+        max: 45,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+      },
     ],
     // 锁定
     is_locked: [

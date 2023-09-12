@@ -42,6 +42,13 @@ function rustKeyEscape(key: string) {
   return key;
 }
 
+function hasDataPermit(mod: string, table: string) {
+  if (mod === "base") {
+    return false;
+  }
+  return true;
+}
+
 /**
  * 检查此表是否有selectInput
  * @param table 

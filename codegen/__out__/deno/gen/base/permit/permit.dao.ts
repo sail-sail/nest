@@ -39,6 +39,8 @@ import {
 
 import * as validators from "/lib/validators/mod.ts";
 
+import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -61,12 +63,14 @@ import type {
 
 import * as menuDao from "/gen/base/menu/menu.dao.ts";
 
+const route_path = "/base/permit";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: PermitSearch,
   options?: {
   },
-) {
+): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (isNotEmpty(search?.id)) {
@@ -157,6 +161,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
+    search.is_sys = [ search.is_sys ];
+  }
+  if (search?.is_sys && search?.is_sys?.length > 0) {
+    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -170,8 +180,8 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {
+  let fromQuery = `
     base_permit t
     left join base_menu menu_id_lbl
       on menu_id_lbl.id = t.menu_id
@@ -197,7 +207,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -205,7 +215,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -235,18 +245,18 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<PermitModel[]> {
   const table = "base_permit";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*
       ,menu_id_lbl.lbl menu_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -291,6 +301,13 @@ export async function findAll(
       cacheKey2,
     },
   );
+  
+  const [
+    is_sysDict, // 系统字段
+  ] = await dictSrcDao.getDict([
+    "is_sys",
+  ]);
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -317,6 +334,16 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 系统字段
+    let is_sys_lbl = model.is_sys.toString();
+    if (model.is_sys !== undefined && model.is_sys !== null) {
+      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
+      if (dictItem) {
+        is_sys_lbl = dictItem.lbl;
+      }
+    }
+    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -326,7 +353,7 @@ export async function findAll(
  * 获取字段对应的名称
  */
 export async function getFieldComments() {
-  const n = initN("/permit");
+  const n = initN(route_path);
   const fieldComments = {
     id: await n("ID"),
     menu_id: await n("菜单"),
@@ -342,6 +369,8 @@ export async function getFieldComments() {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    is_sys: await n("系统字段"),
+    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
@@ -456,7 +485,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<PermitModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -476,7 +505,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<PermitModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -492,7 +521,7 @@ export async function exist(
   search?: PermitSearch,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -513,7 +542,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -572,7 +601,7 @@ export async function validate(
   // 名称
   await validators.chars_max_length(
     input.lbl,
-    45,
+    100,
     fieldComments.lbl,
   );
   
@@ -619,12 +648,26 @@ export async function create(
   const table = "base_permit";
   const method = "create";
   
+  const [
+    is_sysDict, // 系统字段
+  ] = await dictSrcDao.getDict([
+    "is_sys",
+  ]);
+  
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
     }
   }
   
@@ -656,6 +699,7 @@ export async function create(
     insert into base_permit(
       id
       ,create_time
+      ,update_time
   `;
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
@@ -663,6 +707,14 @@ export async function create(
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
+    }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
     }
   }
   if (input.menu_id !== undefined) {
@@ -677,15 +729,20 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (input.update_usr_id !== undefined) {
-    sql += `,update_usr_id`;
+  if (input.is_sys !== undefined) {
+    sql += `,is_sys`;
   }
-  if (input.update_time !== undefined) {
-    sql += `,update_time`;
-  }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
@@ -704,11 +761,8 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
   }
-  if (input.update_usr_id !== undefined) {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,${ args.push(input.update_time) }`;
+  if (input.is_sys !== undefined) {
+    sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
   
@@ -767,12 +821,26 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
+  const [
+    is_sysDict, // 系统字段
+  ] = await dictSrcDao.getDict([
+    "is_sys",
+  ]);
+  
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
     const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
     if (menuModel) {
       input.menu_id = menuModel.id;
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
     }
   }
   
@@ -820,6 +888,12 @@ export async function updateById(
   if (input.rem !== undefined) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_sys !== undefined) {
+    if (input.is_sys != oldModel.is_sys) {
+      sql += `is_sys = ${ args.push(input.is_sys) },`;
       updateFldNum++;
     }
   }
@@ -875,7 +949,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_permit
       set
@@ -915,7 +989,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_permit
       set
@@ -970,7 +1044,7 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -982,7 +1056,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         base_permit
       where

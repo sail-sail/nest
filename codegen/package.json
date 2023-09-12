@@ -11,6 +11,7 @@
     "importCsv": "ts-node src/util/npmImportCsv.ts",
     "uuid": "ts-node src/util/npmShortUuidV4.ts",
     "pwd": "ts-node src/util/npmPassword.ts",
+    "permit": "cd ../pc && node src/utils/permit_scan.js",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
