@@ -70,7 +70,7 @@ const hasForeignJson = columns.some((column) => {
 });
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
+#>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
   escape,
