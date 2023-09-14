@@ -143,18 +143,6 @@ async function getWhereQuery(
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
-  if (search?.field_permit_ids && !Array.isArray(search?.field_permit_ids)) {
-    search.field_permit_ids = [ search.field_permit_ids ];
-  }
-  if (search?.field_permit_ids && search?.field_permit_ids.length > 0) {
-    whereQuery += ` and base_field_permit.id in ${ args.push(search.field_permit_ids) }`;
-  }
-  if (search?.field_permit_ids === null) {
-    whereQuery += ` and base_field_permit.id is null`;
-  }
-  if (search?.field_permit_ids_is_null) {
-    whereQuery += ` and base_field_permit.id is null`;
-  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -298,28 +286,6 @@ async function getFromQuery() {
       group by role_id
     ) _data_permit
       on _data_permit.role_id = t.id
-    left join base_role_field_permit
-      on base_role_field_permit.role_id = t.id
-      and base_role_field_permit.is_deleted = 0
-    left join base_field_permit
-      on base_role_field_permit.field_permit_id = base_field_permit.id
-      and base_field_permit.is_deleted = 0
-    left join (
-      select
-        json_arrayagg(base_field_permit.id) field_permit_ids,
-        json_arrayagg(base_field_permit.lbl) field_permit_ids_lbl,
-        base_role.id role_id
-      from base_role_field_permit
-      inner join base_field_permit
-        on base_field_permit.id = base_role_field_permit.field_permit_id
-        and base_field_permit.is_deleted = 0
-      inner join base_role
-        on base_role.id = base_role_field_permit.role_id
-      where
-        base_role_field_permit.is_deleted = 0
-      group by role_id
-    ) _field_permit
-      on _field_permit.role_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -393,8 +359,6 @@ export async function findAll(
       ,max(permit_ids_lbl) permit_ids_lbl
       ,max(data_permit_ids) data_permit_ids
       ,max(data_permit_ids_lbl) data_permit_ids_lbl
-      ,max(field_permit_ids) field_permit_ids
-      ,max(field_permit_ids_lbl) field_permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -512,8 +476,6 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
     permit_ids_lbl: await n("按钮权限"),
     data_permit_ids: await n("数据权限"),
     data_permit_ids_lbl: await n("数据权限"),
-    field_permit_ids: await n("字段权限"),
-    field_permit_ids_lbl: await n("字段权限"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -853,28 +815,6 @@ export async function create(
     input.data_permit_ids = models.map((item: { id: string }) => item.id);
   }
   
-  // 字段权限
-  if (!input.field_permit_ids && input.field_permit_ids_lbl) {
-    if (typeof input.field_permit_ids_lbl === "string" || input.field_permit_ids_lbl instanceof String) {
-      input.field_permit_ids_lbl = input.field_permit_ids_lbl.split(",");
-    }
-    input.field_permit_ids_lbl = input.field_permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_field_permit t
-      where
-        t.lbl in ${ args.push(input.field_permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.field_permit_ids = models.map((item: { id: string }) => item.id);
-  }
-  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -1044,18 +984,6 @@ export async function create(
     },
   );
   
-  // 字段权限
-  await many2manyUpdate(
-    input,
-    "field_permit_ids",
-    {
-      mod: "base",
-      table: "role_field_permit",
-      column1: "role_id",
-      column2: "field_permit_id",
-    },
-  );
-  
   await delCache();
   
   return input.id;
@@ -1076,8 +1004,6 @@ export async function delCache() {
     "base_permit",
     "base_role_data_permit",
     "base_data_permit",
-    "base_role_field_permit",
-    "base_field_permit",
     "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
@@ -1233,28 +1159,6 @@ export async function updateById(
     const models = await query<Result>(sql, args);
     input.data_permit_ids = models.map((item: { id: string }) => item.id);
   }
-
-  // 字段权限
-  if (!input.field_permit_ids && input.field_permit_ids_lbl) {
-    if (typeof input.field_permit_ids_lbl === "string" || input.field_permit_ids_lbl instanceof String) {
-      input.field_permit_ids_lbl = input.field_permit_ids_lbl.split(",");
-    }
-    input.field_permit_ids_lbl = input.field_permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_field_permit t
-      where
-        t.lbl in ${ args.push(input.field_permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.field_permit_ids = models.map((item: { id: string }) => item.id);
-  }
   
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
@@ -1392,23 +1296,6 @@ export async function updateById(
       table: "role_data_permit",
       column1: "role_id",
       column2: "data_permit_id",
-    },
-  );
-  
-  updateFldNum++;
-  
-  // 字段权限
-  await many2manyUpdate(
-    {
-      ...input,
-      id,
-    },
-    "field_permit_ids",
-    {
-      mod: "base",
-      table: "role_field_permit",
-      column1: "role_id",
-      column2: "field_permit_id",
     },
   );
   

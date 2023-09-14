@@ -196,7 +196,6 @@ let dialogModel = $ref({
   menu_ids: [ ],
   permit_ids: [ ],
   data_permit_ids: [ ],
-  field_permit_ids: [ ],
 } as RoleInput);
 
 let ids = $ref<string[]>([ ]);
@@ -548,7 +547,6 @@ async function onInitI18ns() {
     "菜单权限",
     "按钮权限",
     "数据权限",
-    "字段权限",
     "锁定",
     "启用",
     "备注",

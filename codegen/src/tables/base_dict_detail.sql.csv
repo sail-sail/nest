@@ -41,5 +41,5 @@ KRyE05APQZ+nLxPsNsu+9w,w5P7uguASN2gSTY5HQKIKg,,本租户,tenant,5,1,1
 Z1tE9EpPQ+6PU9vDfMb1Tg,MQOcbGreQUqQG1EFWMbkVQ,数据权限-类型,只读,readonly,1,1,1
 L/kRr5ZiTcWmWCEQrdoDiQ,MQOcbGreQUqQG1EFWMbkVQ,,可改,editable,2,1,1
 ,,,,,,,
-mEMioODwQGCaarQuNOu2mQ,T0lgQA4dQuCqw2DhMBjo/Q,字段权限-类型,只读,readonly,1,1,1
-MMWtP2inR/Se6Q6nDRvIFw,T0lgQA4dQuCqw2DhMBjo/Q,,可改,editable,2,1,1
+9J6oA8lKRlyCZP+TsNAboQ,T0lgQA4dQuCqw2DhMBjo/Q,字段权限-类型,隐藏,hidden,1,1,1
+mEMioODwQGCaarQuNOu2mQ,T0lgQA4dQuCqw2DhMBjo/Q,,只读,readonly,2,1,1

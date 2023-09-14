@@ -38,8 +38,6 @@ export interface RoleFieldComment {
   permit_ids_lbl: string;
   data_permit_ids: string;
   data_permit_ids_lbl: string;
-  field_permit_ids: string;
-  field_permit_ids_lbl: string;
   is_locked: string;
   is_locked_lbl: string;
   is_enabled: string;

@@ -21,10 +21,6 @@ type RoleModel {
   data_permit_ids: [String!]
   "数据权限"
   data_permit_ids_lbl: [String!]
-  "字段权限"
-  field_permit_ids: [String!]
-  "字段权限"
-  field_permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -69,10 +65,6 @@ type RoleFieldComment {
   data_permit_ids: String!
   "数据权限"
   data_permit_ids_lbl: String!
-  "字段权限"
-  field_permit_ids: String!
-  "字段权限"
-  field_permit_ids_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -117,10 +109,6 @@ input RoleInput {
   data_permit_ids: [String!]
   "数据权限"
   data_permit_ids_lbl: [String!]
-  "字段权限"
-  field_permit_ids: [String!]
-  "字段权限"
-  field_permit_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -167,9 +155,6 @@ input RoleSearch {
   "数据权限"
   data_permit_ids: [String!]
   data_permit_ids_is_null: Boolean
-  "字段权限"
-  field_permit_ids: [String!]
-  field_permit_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "启用"

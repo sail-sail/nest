@@ -40,13 +40,13 @@ export default defineConfig({
           multiple: true,
         },
       },
-      {
-        COLUMN_NAME: "field_permit_ids",
-        COLUMN_COMMENT: "字段权限",
-        foreignKey: {
-          showType: "dialog",
-        },
-      },
+      // {
+      //   COLUMN_NAME: "field_permit_ids",
+      //   COLUMN_COMMENT: "字段权限",
+      //   foreignKey: {
+      //     showType: "dialog",
+      //   },
+      // },
       {
         COLUMN_NAME: "is_locked",
       },
