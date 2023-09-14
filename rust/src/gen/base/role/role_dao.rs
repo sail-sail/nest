@@ -165,6 +165,32 @@ fn get_where_query<'a>(
     }
   }
   {
+    let data_permit_ids: Vec<String> = match &search {
+      Some(item) => item.data_permit_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !data_permit_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(data_permit_ids.len());
+        for item in data_permit_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_data_permit.id in ({})", arg);
+    }
+  }
+  {
+    let data_permit_ids_is_null: bool = match &search {
+      Some(item) => item.data_permit_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if data_permit_ids_is_null {
+      where_query += &format!(" and data_permit_ids_lbl.id is null");
+    }
+  }
+  {
     let is_locked: Vec<u8> = match &search {
       Some(item) => item.is_locked.clone().unwrap_or_default(),
       None => Default::default(),
@@ -357,6 +383,28 @@ fn get_from_query() -> &'static str {
       group by role_id
     ) _permit
       on _permit.role_id = t.id
+    left join base_role_data_permit
+      on base_role_data_permit.role_id = t.id
+      and base_role_data_permit.is_deleted = 0
+    left join base_data_permit
+      on base_role_data_permit.data_permit_id = base_data_permit.id
+      and base_data_permit.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_data_permit.id) data_permit_ids,
+        json_arrayagg(base_data_permit.scope) data_permit_ids_lbl,
+        base_role.id role_id
+      from base_role_data_permit
+      inner join base_data_permit
+        on base_data_permit.id = base_role_data_permit.data_permit_id
+        and base_data_permit.is_deleted = 0
+      inner join base_role
+        on base_role.id = base_role_data_permit.role_id
+      where
+        base_role_data_permit.is_deleted = 0
+      group by role_id
+    ) _data_permit
+      on _data_permit.role_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -392,6 +440,8 @@ pub async fn find_all<'a>(
       ,max(menu_ids_lbl) menu_ids_lbl
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
+      ,max(data_permit_ids) data_permit_ids
+      ,max(data_permit_ids_lbl) data_permit_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -527,6 +577,8 @@ pub async fn get_field_comments<'a>(
     "菜单权限".into(),
     "按钮权限".into(),
     "按钮权限".into(),
+    "数据权限".into(),
+    "数据权限".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
@@ -563,19 +615,21 @@ pub async fn get_field_comments<'a>(
     menu_ids_lbl: vec[3].to_owned(),
     permit_ids: vec[4].to_owned(),
     permit_ids_lbl: vec[5].to_owned(),
-    is_locked: vec[6].to_owned(),
-    is_locked_lbl: vec[7].to_owned(),
-    is_enabled: vec[8].to_owned(),
-    is_enabled_lbl: vec[9].to_owned(),
-    rem: vec[10].to_owned(),
-    create_usr_id: vec[11].to_owned(),
-    create_usr_id_lbl: vec[12].to_owned(),
-    create_time: vec[13].to_owned(),
-    create_time_lbl: vec[14].to_owned(),
-    update_usr_id: vec[15].to_owned(),
-    update_usr_id_lbl: vec[16].to_owned(),
-    update_time: vec[17].to_owned(),
-    update_time_lbl: vec[18].to_owned(),
+    data_permit_ids: vec[6].to_owned(),
+    data_permit_ids_lbl: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
+    rem: vec[12].to_owned(),
+    create_usr_id: vec[13].to_owned(),
+    create_usr_id_lbl: vec[14].to_owned(),
+    create_time: vec[15].to_owned(),
+    create_time_lbl: vec[16].to_owned(),
+    update_usr_id: vec[17].to_owned(),
+    update_usr_id_lbl: vec[18].to_owned(),
+    update_time: vec[19].to_owned(),
+    update_time_lbl: vec[20].to_owned(),
   };
   Ok(field_comments)
 }
@@ -840,6 +894,38 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 数据权限
+  if input.data_permit_ids.is_none() {
+    if input.data_permit_ids_lbl.is_some() && input.data_permit_ids.is_none() {
+      input.data_permit_ids_lbl = input.data_permit_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.data_permit_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::data_permit::data_permit_dao::find_one(
+          ctx,
+          crate::gen::base::data_permit::data_permit_model::DataPermitSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
+      }
+      if !models.is_empty() {
+        input.data_permit_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
+    }
+  }
+  
   Ok(input)
 }
 
@@ -1021,6 +1107,21 @@ pub async fn create<'a>(
         table: "role_permit",
         column1: "role_id",
         column2: "permit_id",
+      },
+    ).await?;
+  }
+  
+  // 数据权限
+  if let Some(data_permit_ids) = input.data_permit_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      data_permit_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "role_data_permit",
+        column1: "role_id",
+        column2: "data_permit_id",
       },
     ).await?;
   }
@@ -1243,6 +1344,23 @@ pub async fn update_by_id<'a>(
     field_num += 1;
   }
   
+  // 数据权限
+  if let Some(data_permit_ids) = input.data_permit_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      data_permit_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "role_data_permit",
+        column1: "role_id",
+        column2: "data_permit_id",
+      },
+    ).await?;
+    
+    field_num += 1;
+  }
+  
   if field_num > 0 {
     let options = Options::from(None);
     let options = options.set_del_cache_key1s(get_foreign_tables());
@@ -1264,6 +1382,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
     "base_menu",
     "base_role_permit",
     "base_permit",
+    "base_role_data_permit",
+    "base_data_permit",
     "base_usr",
   ]
 }

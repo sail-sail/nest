@@ -12,19 +12,19 @@ use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao;
 
-use super::permit_model::*;
-use super::permit_dao;
+use super::field_permit_model::*;
+use super::field_permit_dao;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<PermitModel>> {
+) -> Result<Vec<FieldPermitModel>> {
   
-  let res = permit_dao::find_all(
+  let res = field_permit_dao::find_all(
     ctx,
     search,
     page,
@@ -38,11 +38,11 @@ pub async fn find_all<'a>(
 /// 根据搜索条件查找总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = permit_dao::find_count(
+  let res = field_permit_dao::find_count(
     ctx,
     search,
     options,
@@ -54,12 +54,12 @@ pub async fn find_count<'a>(
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<PermitModel>> {
+) -> Result<Option<FieldPermitModel>> {
   
-  let model = permit_dao::find_one(
+  let model = field_permit_dao::find_one(
     ctx,
     search,
     sort,
@@ -74,9 +74,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<PermitModel>> {
+) -> Result<Option<FieldPermitModel>> {
   
-  let model = permit_dao::find_by_id(
+  let model = field_permit_dao::find_by_id(
     ctx,
     id,
     options,
@@ -89,11 +89,11 @@ pub async fn find_by_id<'a>(
 #[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: PermitInput,
+  input: FieldPermitInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  let id = permit_dao::create(
+  let id = field_permit_dao::create(
     ctx,
     input,
     options,
@@ -108,12 +108,12 @@ pub async fn create<'a>(
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  mut input: PermitInput,
+  mut input: FieldPermitInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   // 不能修改系统记录的系统字段
-  let model = permit_dao::find_by_id(
+  let model = field_permit_dao::find_by_id(
     ctx,
     id.clone(),
     None,
@@ -129,7 +129,7 @@ pub async fn update_by_id<'a>(
     }
   }
   
-  let res = permit_dao::update_by_id(
+  let res = field_permit_dao::update_by_id(
     ctx,
     id,
     input,
@@ -151,7 +151,7 @@ pub async fn delete_by_ids<'a>(
   let ids0 = ids.clone();
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
-    let model = permit_dao::find_by_id(
+    let model = field_permit_dao::find_by_id(
       ctx,
       id.clone(),
       None,
@@ -170,7 +170,7 @@ pub async fn delete_by_ids<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  let num = permit_dao::delete_by_ids(
+  let num = field_permit_dao::delete_by_ids(
     ctx,
     ids,
     options,
@@ -183,9 +183,9 @@ pub async fn delete_by_ids<'a>(
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   options: Option<Options>,
-) -> Result<PermitFieldComment> {
+) -> Result<FieldPermitFieldComment> {
   
-  let comments = permit_dao::get_field_comments(
+  let comments = field_permit_dao::get_field_comments(
     ctx,
     options,
   ).await?;
@@ -201,7 +201,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = permit_dao::revert_by_ids(
+  let num = field_permit_dao::revert_by_ids(
     ctx,
     ids,
     options,
@@ -218,7 +218,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = permit_dao::force_delete_by_ids(
+  let num = field_permit_dao::force_delete_by_ids(
     ctx,
     ids,
     options,

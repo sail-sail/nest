@@ -12,19 +12,19 @@ use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao;
 
-use super::permit_model::*;
-use super::permit_dao;
+use super::data_permit_model::*;
+use super::data_permit_dao;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<PermitSearch>,
+  search: Option<DataPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<PermitModel>> {
+) -> Result<Vec<DataPermitModel>> {
   
-  let res = permit_dao::find_all(
+  let res = data_permit_dao::find_all(
     ctx,
     search,
     page,
@@ -38,11 +38,11 @@ pub async fn find_all<'a>(
 /// 根据搜索条件查找总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<PermitSearch>,
+  search: Option<DataPermitSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = permit_dao::find_count(
+  let res = data_permit_dao::find_count(
     ctx,
     search,
     options,
@@ -54,12 +54,12 @@ pub async fn find_count<'a>(
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<PermitSearch>,
+  search: Option<DataPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<PermitModel>> {
+) -> Result<Option<DataPermitModel>> {
   
-  let model = permit_dao::find_one(
+  let model = data_permit_dao::find_one(
     ctx,
     search,
     sort,
@@ -74,9 +74,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<PermitModel>> {
+) -> Result<Option<DataPermitModel>> {
   
-  let model = permit_dao::find_by_id(
+  let model = data_permit_dao::find_by_id(
     ctx,
     id,
     options,
@@ -89,11 +89,11 @@ pub async fn find_by_id<'a>(
 #[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: PermitInput,
+  input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  let id = permit_dao::create(
+  let id = data_permit_dao::create(
     ctx,
     input,
     options,
@@ -108,12 +108,12 @@ pub async fn create<'a>(
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  mut input: PermitInput,
+  mut input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   // 不能修改系统记录的系统字段
-  let model = permit_dao::find_by_id(
+  let model = data_permit_dao::find_by_id(
     ctx,
     id.clone(),
     None,
@@ -124,12 +124,13 @@ pub async fn update_by_id<'a>(
       // 菜单
       input.menu_id = None;
       input.menu_id_lbl = None;
-      // 编码
-      input.code = None;
+      // 范围
+      input.scope = None;
+      input.scope_lbl = None;
     }
   }
   
-  let res = permit_dao::update_by_id(
+  let res = data_permit_dao::update_by_id(
     ctx,
     id,
     input,
@@ -151,7 +152,7 @@ pub async fn delete_by_ids<'a>(
   let ids0 = ids.clone();
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
-    let model = permit_dao::find_by_id(
+    let model = data_permit_dao::find_by_id(
       ctx,
       id.clone(),
       None,
@@ -170,7 +171,7 @@ pub async fn delete_by_ids<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  let num = permit_dao::delete_by_ids(
+  let num = data_permit_dao::delete_by_ids(
     ctx,
     ids,
     options,
@@ -183,9 +184,9 @@ pub async fn delete_by_ids<'a>(
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   options: Option<Options>,
-) -> Result<PermitFieldComment> {
+) -> Result<DataPermitFieldComment> {
   
-  let comments = permit_dao::get_field_comments(
+  let comments = data_permit_dao::get_field_comments(
     ctx,
     options,
   ).await?;
@@ -201,7 +202,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = permit_dao::revert_by_ids(
+  let num = data_permit_dao::revert_by_ids(
     ctx,
     ids,
     options,
@@ -218,7 +219,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = permit_dao::force_delete_by_ids(
+  let num = data_permit_dao::force_delete_by_ids(
     ctx,
     ids,
     options,

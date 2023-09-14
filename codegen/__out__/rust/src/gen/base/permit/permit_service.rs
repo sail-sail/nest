@@ -112,6 +112,23 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  // 不能修改系统记录的系统字段
+  let model = permit_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if let Some(model) = model {
+    if model.is_sys == 1 {
+      // 菜单
+      input.menu_id = None;
+      input.menu_id_lbl = None;
+      // 编码
+      input.code = None;
+    }
+  }
+  
   let res = permit_dao::update_by_id(
     ctx,
     id,
@@ -129,6 +146,29 @@ pub async fn delete_by_ids<'a>(
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  let len = ids.len();
+  let ids0 = ids.clone();
+  let mut ids: Vec<String> = vec![];
+  for id in ids0 {
+    let model = permit_dao::find_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if model.is_none() {
+      continue;
+    }
+    let model = model.unwrap();
+    if model.is_sys == 1 {
+      continue;
+    }
+    ids.push(id);
+  }
+  if ids.len() == 0 && len > 0 {
+    let err_msg = i18n_dao::ns(ctx, "不能删除系统记录".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
   
   let num = permit_dao::delete_by_ids(
     ctx,
