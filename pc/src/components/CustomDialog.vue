@@ -21,6 +21,7 @@
     <div
       v-draggable
       class="dialog_title"
+      @dblclick="setFullscreen"
     >
       <div
         class="title_lbl"
@@ -41,11 +42,20 @@
       <slot
         name="extra_header"
       ></slot>
-      <ElIconFullScreen
+      <template
         v-if="fullscreen"
-        class="full_but"
-        @click="setFullscreen"
-      ></ElIconFullScreen>
+      >
+        <ElIconFullScreen
+          v-if="!isFullscreen"
+          class="full_but"
+          @click="setFullscreen"
+        ></ElIconFullScreen>
+        <ElIconCopyDocument
+          v-if="isFullscreen"
+          class="full_but"
+          @click="setFullscreen"
+        ></ElIconCopyDocument>
+      </template>
     </div>
   </template>
   <slot></slot>

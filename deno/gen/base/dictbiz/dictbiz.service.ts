@@ -12,6 +12,7 @@ import type {
   DictbizInput,
   DictbizModel,
   DictbizSearch,
+  DictbizFieldComment,
 } from "./dictbiz.model.ts";
 
 import * as dictbizDao from "./dictbiz.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: DictbizSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<DictbizModel | undefined> {
   search = search || { };
   const data = await dictbizDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<DictbizModel | undefined> {
   const data = await dictbizDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: DictbizSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await dictbizDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await dictbizDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: DictbizInput,
-) {
+): Promise<void> {
   const data = await dictbizDao.validate(input);
   return data;
 }
@@ -243,7 +244,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DictbizFieldComment> {
   const data = await dictbizDao.getFieldComments();
   return data;
 }

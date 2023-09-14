@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type OptionsInput,
-  type OptionsSearch,
+import type {
+  OptionsInput,
+  OptionsModel,
+  OptionsSearch,
+  OptionsFieldComment,
 } from "./options.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./options.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<OptionsModel[]> {
   const { findAll } = await import("./options.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllOptions(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsOptions() {
+export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
   const { getFieldComments } = await import("./options.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsOptions() {
 export async function findOneOptions(
   search?: OptionsSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<OptionsModel | undefined> {
   const { findOne } = await import("./options.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneOptions(
  */
 export async function findByIdOptions(
   id: string,
-) {
+): Promise<OptionsModel | undefined> {
   const { findById } = await import("./options.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdOptions(
 export async function createOptions(
   input: OptionsInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createOptions(
 export async function updateByIdOptions(
   id: string,
   input: OptionsInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdOptions(
  */
 export async function deleteByIdsOptions(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsOptions(
 export async function enableByIdsOptions(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsOptions(
 export async function lockByIdsOptions(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsOptions(
  */
 export async function revertByIdsOptions(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsOptions(
  */
 export async function forceDeleteByIdsOptions(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsOptions(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByOptions() {
+export async function findLastOrderByOptions(): Promise<number> {
   const { findLastOrderBy } = await import("./options.service.ts");
   const res = findLastOrderBy();
   return res;

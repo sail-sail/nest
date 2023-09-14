@@ -12,6 +12,7 @@ import type {
   RoleInput,
   RoleModel,
   RoleSearch,
+  RoleFieldComment,
 } from "./role.model.ts";
 
 import * as roleDao from "./role.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: RoleSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<RoleModel | undefined> {
   search = search || { };
   const data = await roleDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<RoleModel | undefined> {
   const data = await roleDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: RoleSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await roleDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await roleDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: RoleInput,
-) {
+): Promise<void> {
   const data = await roleDao.validate(input);
   return data;
 }
@@ -222,7 +223,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<RoleFieldComment> {
   const data = await roleDao.getFieldComments();
   return data;
 }

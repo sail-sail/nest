@@ -6,6 +6,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -69,7 +70,7 @@ const hasForeignJson = columns.some((column) => {
 });
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
+#>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
   escape,
@@ -197,6 +198,7 @@ import type {
   <#=inputName#>,
   <#=modelName#>,
   <#=searchName#>,
+  <#=fieldCommentName#>,
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
@@ -248,16 +250,65 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignKey.mod#>/<#=foreignTable#
   }
 #><#
 }
+#><#
+if (hasDataPermit()) {
 #>
+
+import {
+  getDataPermits,
+} from "/src/base/data_permit/data_permit.dao.ts";
+
+import {
+  getAuthDeptIds,
+  getAuthAndParentsDeptIds,
+} from "/src/base/dept/dept.dao.ts";
+
+import {
+  getAuthRoleIds,
+} from "/src/base/role/role.dao.ts";<#
+}
+#>
+
+const route_path = "/<#=mod#>/<#=table#>";
 
 async function getWhereQuery(
   args: QueryArgs,
   search?: <#=searchName#>,
   options?: {
   },
-) {
+): Promise<string> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  const dataPermitModels = await getDataPermits(route_path);
+  const hasUsrPermit = dataPermitModels.some((item) => item.type === "create_usr");
+  const hasRolePermit = dataPermitModels.some((item) => item.type === "role");
+  const hasDeptPermit = dataPermitModels.some((item) => item.type === "dept");
+  const hasDeptParentPermit = dataPermitModels.some((item) => item.type === "dept_parent");
+  const hasTenantPermit = dataPermitModels.some((item) => item.type === "tenant");<#
+  }
+  #>
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasUsrPermit) {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      whereQuery += ` and t.create_usr_id = ${ args.push(authModel.id) }`;
+    }
+  } else if (!hasTenantPermit && hasDeptParentPermit) {
+    const dept_ids = await getAuthAndParentsDeptIds();
+    whereQuery += ` and _permit_usr_dept_.dept_id in ${ args.push(dept_ids) }`;
+  } else if (!hasTenantPermit && hasDeptPermit) {
+    const dept_ids = await getAuthDeptIds();
+    whereQuery += ` and _permit_usr_dept_.dept_id in ${ args.push(dept_ids) }`;
+  }
+  if (!hasTenantPermit && hasRolePermit) {
+    const role_ids = await getAuthRoleIds();
+    whereQuery += ` and _permit_usr_role_.role_id in ${ args.push(role_ids) }`;
+  }<#
+  }
+  #><#
   if (hasTenant_id) {
   #>
   if (search?.tenant_id == null) {
@@ -347,7 +398,7 @@ async function getWhereQuery(
   if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }<#
-    } else if (column_name === "id") {
+  } else if (column_name === "id") {
   #>
   if (isNotEmpty(search?.<#=column_name#>)) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
@@ -363,7 +414,7 @@ async function getWhereQuery(
   if (isNotEmpty(search?.<#=column_name#>)) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }<#
-    } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
+  } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   if (search?.<#=column_name#> && search?.<#=column_name#>?.length > 0) {
     if (search.<#=column_name#>[0] != null) {
@@ -378,7 +429,7 @@ async function getWhereQuery(
   if (isNotEmpty(search?.<#=column_name#>)) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }<#
-    } else {
+  } else {
   #>
   if (search?.<#=column_name#> !== undefined) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
@@ -389,7 +440,7 @@ async function getWhereQuery(
   if (isNotEmpty(search?.<#=column_name#>_like)) {
     whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>_like) + "%") }`;
   }<#
-    }
+  }
   #><#
   }
   #>
@@ -406,8 +457,17 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {<#
+  if (hasDataPermit()) {
+  #>
+  const dataPermitModels = await getDataPermits(route_path);
+  const hasUsrPermit = dataPermitModels.some((item) => item.type === "create_usr");
+  const hasRolePermit = dataPermitModels.some((item) => item.type === "role");
+  const hasDeptPermit = dataPermitModels.some((item) => item.type === "dept" || item.type === "dept_parent");
+  const hasTenantPermit = dataPermitModels.some((item) => item.type === "tenant");<#
+  }
+  #>
+  let fromQuery = `
     <#=mod#>_<#=table#> t<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -457,7 +517,23 @@ function getFromQuery() {
     #><#
     }
     #>
-  `;
+  `;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  if (!hasTenantPermit && hasDeptPermit) {
+    fromQuery += `
+      left join base_usr_dept _permit_usr_dept_
+        on _permit_usr_dept_.usr_id  = t.create_usr_id
+    `;
+  }
+  if (!hasTenantPermit && hasRolePermit) {
+    fromQuery += `
+      left join base_usr_role _permit_usr_role_
+        on _permit_usr_role_.usr_id  = t.create_usr_id
+    `;
+  }<#
+  }
+  #>
   return fromQuery;
 }
 
@@ -475,7 +551,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -483,7 +559,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -521,12 +597,12 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<<#=modelName#>[]> {
   const table = "<#=mod#>_<#=table#>";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*<#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
@@ -552,7 +628,7 @@ export async function findAll(
       }
       #>
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -892,9 +968,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
-  const n = initN("/<#=table#>");
-  const fieldComments = {<#
+export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
+  const n = initN(route_path);
+  const fieldComments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -1120,7 +1196,7 @@ export async function findSummary(
       }
       #>
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
   `;
@@ -1144,7 +1220,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<<#=modelName#> | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -1164,7 +1240,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<<#=modelName#> | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -1180,7 +1256,7 @@ export async function exist(
   search?: <#=searchName#>,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -1201,7 +1277,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -1616,7 +1692,7 @@ export async function create(
     }
     input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -1793,6 +1869,7 @@ export async function create(
     insert into <#=mod#>_<#=table#>(
       id
       ,create_time
+      ,update_time
   `;<#
   if (hasTenant_id) {
   #>
@@ -1826,6 +1903,14 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
     }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
+    }
   }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1835,6 +1920,8 @@ export async function create(
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -1906,7 +1993,7 @@ export async function create(
   #><#
   }
   #>
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;<#
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;<#
   if (hasTenant_id) {
   #>
   if (input.tenant_id != null) {
@@ -1939,6 +2026,14 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
   }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1948,6 +2043,8 @@ export async function create(
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2146,7 +2243,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     update
       <#=mod#>_<#=table#>
     set
@@ -2194,7 +2291,7 @@ export async function updateOrgById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     update
       <#=mod#>_<#=table#>
     set
@@ -2202,7 +2299,13 @@ export async function updateOrgById(
       org_id = ${ args.push(org_id) }
     where
       id = ${ args.push(id) }
-  `;
+  `;<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
+  }
+  #>
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -2221,7 +2324,9 @@ if (hasVersion) {
 /**
  * 根据 id 获取版本号
  */
-export async function getVersionById(id: string) {
+export async function getVersionById(
+  id: string,
+): Promise<number> {
   const model = await findById(id);
   if (!model) {
     return 0;
@@ -2472,7 +2577,7 @@ export async function updateById(
     }
     input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -2755,7 +2860,14 @@ export async function updateById(
     }
     #>
     sql += `update_time = ${ args.push(new Date()) }`;
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id = ${ args.push(id) } limit 1`;<#
+    if (cache) {
+    #>
+    
+    await delCache();<#
+    }
+    #>
+    
     const result = await execute(sql, args);
   }<#
   for (let i = 0; i < columns.length; i++) {
@@ -2851,7 +2963,15 @@ export async function deleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -2861,7 +2981,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         <#=mod#>_<#=table#>
       set
@@ -2901,7 +3021,13 @@ export async function defaultById(
   
   if (!id) {
     throw new Error("defaultById: id cannot be empty");
+  }<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
   }
+  #>
   
   {
     const args = new QueryArgs();
@@ -2918,7 +3044,7 @@ export async function defaultById(
   }
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       <#=mod#>_<#=table#>
     set
@@ -2928,10 +3054,10 @@ export async function defaultById(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id = ${ args.push(id) }
@@ -2988,10 +3114,18 @@ export async function enableByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       <#=mod#>_<#=table#>
     set
@@ -3001,10 +3135,10 @@ export async function enableByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -3062,10 +3196,18 @@ export async function lockByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       <#=mod#>_<#=table#>
     set
@@ -3075,10 +3217,10 @@ export async function lockByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -3112,13 +3254,21 @@ export async function revertByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         <#=mod#>_<#=table#>
       set
@@ -3148,6 +3298,7 @@ export async function revertByIds(
   }<#
   if (cache) {
   #>
+  
   await delCache();<#
   }
   #>
@@ -3170,14 +3321,22 @@ export async function forceDeleteByIds(
   
   if (!ids || !ids.length) {
     return 0;
+  }<#
+  if (cache) {
+  #>
+  
+  if (ids.length > 0) {
+    await delCache();
+  }<#
   }
+  #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -3189,7 +3348,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         <#=mod#>_<#=table#>
       where
@@ -3202,6 +3361,7 @@ export async function forceDeleteByIds(
   }<#
   if (cache) {
   #>
+  
   await delCache();<#
   }
   #>
@@ -3254,7 +3414,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += /*sql*/ `
+  sql += `
     order by
       t.order_by desc
     limit 1

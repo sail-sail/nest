@@ -11,6 +11,7 @@ import type {
   BackgroundTaskInput,
   BackgroundTaskModel,
   BackgroundTaskSearch,
+  BackgroundTaskFieldComment,
 } from "./background_task.model.ts";
 
 import * as background_taskDao from "./background_task.dao.ts";
@@ -62,7 +63,7 @@ export async function findAll(
 export async function findOne(
   search?: BackgroundTaskSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<BackgroundTaskModel | undefined> {
   search = search || { };
   
   const authModel = await authDao.getAuthModel();
@@ -79,7 +80,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<BackgroundTaskModel | undefined> {
   const data = await background_taskDao.findById(id);
   return data;
 }
@@ -90,7 +91,7 @@ export async function findById(
  */
 export async function exist(
   search?: BackgroundTaskSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   
   const authModel = await authDao.getAuthModel();
@@ -107,7 +108,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await background_taskDao.existById(id);
   return data;
 }
@@ -118,7 +119,7 @@ export async function existById(
  */
 export async function validate(
   input: BackgroundTaskInput,
-) {
+): Promise<void> {
   const data = await background_taskDao.validate(input);
   return data;
 }
@@ -193,7 +194,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
   const data = await background_taskDao.getFieldComments();
   return data;
 }

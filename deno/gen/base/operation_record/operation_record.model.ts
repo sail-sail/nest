@@ -28,3 +28,23 @@ export interface OperationRecordInput extends OperationRecordInputType {
   update_time?: string | null;
   tenant_id?: string | null;
 }
+
+export interface OperationRecordFieldComment {
+  id: string;
+  module: string;
+  module_lbl: string;
+  method: string;
+  method_lbl: string;
+  lbl: string;
+  old_data: string;
+  new_data: string;
+  rem: string;
+  create_usr_id: string;
+  create_usr_id_lbl: string;
+  create_time: string;
+  create_time_lbl: string;
+  update_usr_id: string;
+  update_usr_id_lbl: string;
+  update_time: string;
+  update_time_lbl: string;
+}

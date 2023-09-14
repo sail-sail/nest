@@ -97,6 +97,16 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   
+  function hasDataPermit() {
+    if (mod === "base") {
+      return false;
+    }
+    if (schema.opts.dataPermit === true) {
+      return true;
+    }
+    return false;
+  }
+  
   let optTables = tables;
   const result = await context.conn.query(`
     select

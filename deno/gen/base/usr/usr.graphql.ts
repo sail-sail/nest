@@ -31,6 +31,10 @@ type UsrModel {
   org_ids: [String!]
   "所属组织"
   org_ids_lbl: [String!]
+  "所属部门"
+  dept_ids: [String!]
+  "所属部门"
+  dept_ids_lbl: [String!]
   "拥有角色"
   role_ids: [String!]
   "拥有角色"
@@ -63,6 +67,10 @@ type UsrFieldComment {
   org_ids: String!
   "所属组织"
   org_ids_lbl: String!
+  "所属部门"
+  dept_ids: String!
+  "所属部门"
+  dept_ids_lbl: String!
   "拥有角色"
   role_ids: String!
   "拥有角色"
@@ -97,6 +105,10 @@ input UsrInput {
   org_ids: [String!]
   "所属组织"
   org_ids_lbl: [String!]
+  "所属部门"
+  dept_ids: [String!]
+  "所属部门"
+  dept_ids_lbl: [String!]
   "拥有角色"
   role_ids: [String!]
   "拥有角色"
@@ -130,6 +142,9 @@ input UsrSearch {
   "所属组织"
   org_ids: [String!]
   org_ids_is_null: Boolean
+  "所属部门"
+  dept_ids: [String!]
+  dept_ids_is_null: Boolean
   "拥有角色"
   role_ids: [String!]
   role_ids_is_null: Boolean

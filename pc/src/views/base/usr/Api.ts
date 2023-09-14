@@ -12,8 +12,13 @@ import type {
 
 import type {
   OrgSearch,
+  DeptSearch,
   RoleSearch,
 } from "#/types";
+
+import {
+  findTree as findDeptTree,
+} from "@/views/base/dept/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -47,6 +52,8 @@ export async function findAll(
           is_enabled_lbl
           org_ids
           org_ids_lbl
+          dept_ids
+          dept_ids_lbl
           role_ids
           role_ids_lbl
           rem
@@ -180,6 +187,8 @@ export async function findById(
           is_enabled_lbl
           org_ids
           org_ids_lbl
+          dept_ids
+          dept_ids_lbl
           role_ids
           role_ids_lbl
           rem
@@ -375,6 +384,51 @@ export async function getOrgList() {
   return data;
 }
 
+export async function findAllDept(
+  search?: DeptSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDept: Query["findAllDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDept(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllDept;
+  return res;
+}
+
+export async function getDeptList() {
+  const data = await findAllDept(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllRole(
   search?: RoleSearch,
   page?: PageInput,
@@ -420,6 +474,21 @@ export async function getRoleList() {
   return data;
 }
 
+export async function getDeptTree() {
+  const data = await findDeptTree(
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -445,10 +514,15 @@ export function useDownloadImportTemplate(routePath: string) {
             is_locked_lbl
             is_enabled_lbl
             org_ids_lbl
+            dept_ids_lbl
             role_ids_lbl
             rem
           }
           findAllOrg {
+            id
+            lbl
+          }
+          findAllDept {
             id
             lbl
           }
@@ -521,6 +595,8 @@ export function useExportExcel(routePath: string) {
             is_enabled_lbl
             org_ids
             org_ids_lbl
+            dept_ids
+            dept_ids_lbl
             role_ids
             role_ids_lbl
             rem
@@ -533,10 +609,14 @@ export function useExportExcel(routePath: string) {
             is_locked_lbl
             is_enabled_lbl
             org_ids_lbl
+            dept_ids_lbl
             role_ids_lbl
             rem
           }
           findAllOrg {
+            lbl
+          }
+          findAllDept {
             lbl
           }
           findAllRole {

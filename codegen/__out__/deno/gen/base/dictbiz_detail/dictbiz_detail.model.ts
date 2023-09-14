@@ -32,3 +32,19 @@ export interface DictbizDetailInput extends DictbizDetailInputType {
   update_time?: string | null;
   tenant_id?: string | null;
 }
+
+export interface DictbizDetailFieldComment {
+  id: string;
+  dictbiz_id: string;
+  dictbiz_id_lbl: string;
+  lbl: string;
+  val: string;
+  is_locked: string;
+  is_locked_lbl: string;
+  is_enabled: string;
+  is_enabled_lbl: string;
+  order_by: string;
+  rem: string;
+  is_sys: string;
+  is_sys_lbl: string;
+}

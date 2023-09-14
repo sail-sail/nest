@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictbizDetailInput,
-  type DictbizDetailSearch,
+import type {
+  DictbizDetailInput,
+  DictbizDetailModel,
+  DictbizDetailSearch,
+  DictbizDetailFieldComment,
 } from "./dictbiz_detail.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountDictbizDetail(
   search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./dictbiz_detail.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllDictbizDetail(
   search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<DictbizDetailModel[]> {
   const { findAll } = await import("./dictbiz_detail.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllDictbizDetail(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsDictbizDetail() {
+export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFieldComment> {
   const { getFieldComments } = await import("./dictbiz_detail.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsDictbizDetail() {
 export async function findOneDictbizDetail(
   search?: DictbizDetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<DictbizDetailModel | undefined> {
   const { findOne } = await import("./dictbiz_detail.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneDictbizDetail(
  */
 export async function findByIdDictbizDetail(
   id: string,
-) {
+): Promise<DictbizDetailModel | undefined> {
   const { findById } = await import("./dictbiz_detail.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdDictbizDetail(
 export async function createDictbizDetail(
   input: DictbizDetailInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createDictbizDetail(
 export async function updateByIdDictbizDetail(
   id: string,
   input: DictbizDetailInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdDictbizDetail(
  */
 export async function deleteByIdsDictbizDetail(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsDictbizDetail(
 export async function enableByIdsDictbizDetail(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsDictbizDetail(
 export async function lockByIdsDictbizDetail(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsDictbizDetail(
  */
 export async function revertByIdsDictbizDetail(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsDictbizDetail(
  */
 export async function forceDeleteByIdsDictbizDetail(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsDictbizDetail(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDictbizDetail() {
+export async function findLastOrderByDictbizDetail(): Promise<number> {
   const { findLastOrderBy } = await import("./dictbiz_detail.service.ts");
   const res = findLastOrderBy();
   return res;

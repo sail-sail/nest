@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictInput,
-  type DictSearch,
+import type {
+  DictInput,
+  DictModel,
+  DictSearch,
+  DictFieldComment,
 } from "./dict.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./dict.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<DictModel[]> {
   const { findAll } = await import("./dict.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllDict(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsDict() {
+export async function getFieldCommentsDict(): Promise<DictFieldComment> {
   const { getFieldComments } = await import("./dict.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsDict() {
 export async function findOneDict(
   search?: DictSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<DictModel | undefined> {
   const { findOne } = await import("./dict.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneDict(
  */
 export async function findByIdDict(
   id: string,
-) {
+): Promise<DictModel | undefined> {
   const { findById } = await import("./dict.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdDict(
 export async function createDict(
   input: DictInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createDict(
 export async function updateByIdDict(
   id: string,
   input: DictInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdDict(
  */
 export async function deleteByIdsDict(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsDict(
 export async function enableByIdsDict(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsDict(
 export async function lockByIdsDict(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsDict(
  */
 export async function revertByIdsDict(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsDict(
  */
 export async function forceDeleteByIdsDict(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsDict(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDict() {
+export async function findLastOrderByDict(): Promise<number> {
   const { findLastOrderBy } = await import("./dict.service.ts");
   const res = findLastOrderBy();
   return res;

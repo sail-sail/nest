@@ -29,3 +29,19 @@ export interface DictDetailInput extends DictDetailInputType {
   update_usr_id?: string;
   update_time?: string | null;
 }
+
+export interface DictDetailFieldComment {
+  id: string;
+  dict_id: string;
+  dict_id_lbl: string;
+  lbl: string;
+  val: string;
+  is_locked: string;
+  is_locked_lbl: string;
+  is_enabled: string;
+  is_enabled_lbl: string;
+  order_by: string;
+  rem: string;
+  is_sys: string;
+  is_sys_lbl: string;
+}

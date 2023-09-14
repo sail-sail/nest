@@ -7,6 +7,8 @@ const {
   writeFile,
 } = require("node:fs/promises");
 
+const SparkMD5 = require("spark-md5");
+
 const {
   initContext,
 } = require("./database/Context");
@@ -55,8 +57,9 @@ async function findAllPermit(context) {
   return rows;
 }
 
-function shortUuidV4() {
-  return Buffer.from(crypto.randomUUID().replace(/-/gm, "")).toString("base64").substring(0, 22);
+function shortUuidV4(str) {
+  const hash = SparkMD5.hash(str, true);
+  return Buffer.from(hash, "binary").toString("base64").substring(0, 22);
 }
 
 /**
@@ -75,7 +78,8 @@ async function savePermit(context, model) {
       UPDATE
         base_permit
       SET
-        lbl = ?
+        lbl = ?,
+        is_sys = 1
       WHERE
         id = ?
     `
@@ -91,15 +95,22 @@ async function savePermit(context, model) {
       id,
       menu_id,
       code,
-      lbl
+      lbl,
+      is_sys
     ) VALUES (
       ?,
       ?,
       ?,
-      ?
+      ?,
+      1
     )
   `;
-  const id = shortUuidV4();
+  const id = shortUuidV4(
+    JSON.stringify({
+      menu_id: model.menu_id,
+      code: model.code,
+    }),
+  );
   const args = [
     id,
     model.menu_id,

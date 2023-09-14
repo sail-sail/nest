@@ -239,3 +239,42 @@ export interface <#=inputName#> extends <#=inputName#>Type {<#
   }
   #>
 }
+
+export interface <#=fieldCommentName#> {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    const foreignKey = column.foreignKey;
+  #><#
+    if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+      || data_type === "datetime" || data_type === "date"
+    ) {
+  #>
+  <#=column_name#>: string;<#
+      if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+  #>
+  <#=column_name#>_lbl: string;<#
+      }
+  #><#
+    } else {
+  #>
+  <#=column_name#>: string;<#
+    }
+  #><#
+  }
+  #>
+}

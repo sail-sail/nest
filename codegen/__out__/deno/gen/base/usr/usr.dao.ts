@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
   escape,
@@ -67,16 +67,19 @@ import type {
   UsrInput,
   UsrModel,
   UsrSearch,
+  UsrFieldComment,
 } from "./usr.model.ts";
 
 import * as orgDao from "/gen/base/org/org.dao.ts";
+
+const route_path = "/base/usr";
 
 async function getWhereQuery(
   args: QueryArgs,
   search?: UsrSearch,
   options?: {
   },
-) {
+): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
@@ -160,6 +163,18 @@ async function getWhereQuery(
   if (search?.org_ids_is_null) {
     whereQuery += ` and base_org.id is null`;
   }
+  if (search?.dept_ids && !Array.isArray(search?.dept_ids)) {
+    search.dept_ids = [ search.dept_ids ];
+  }
+  if (search?.dept_ids && search?.dept_ids.length > 0) {
+    whereQuery += ` and base_dept.id in ${ args.push(search.dept_ids) }`;
+  }
+  if (search?.dept_ids === null) {
+    whereQuery += ` and base_dept.id is null`;
+  }
+  if (search?.dept_ids_is_null) {
+    whereQuery += ` and base_dept.id is null`;
+  }
   if (search?.role_ids && !Array.isArray(search?.role_ids)) {
     search.role_ids = [ search.role_ids ];
   }
@@ -194,8 +209,8 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {
+  let fromQuery = `
     base_usr t
     left join base_org default_org_id_lbl
       on default_org_id_lbl.id = t.default_org_id
@@ -221,6 +236,28 @@ function getFromQuery() {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_usr_dept
+      on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = 0
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_dept.id) dept_ids,
+        json_arrayagg(base_dept.lbl) dept_ids_lbl,
+        base_usr.id usr_id
+      from base_usr_dept
+      inner join base_dept
+        on base_dept.id = base_usr_dept.dept_id
+        and base_dept.is_deleted = 0
+      inner join base_usr
+        on base_usr.id = base_usr_dept.usr_id
+      where
+        base_usr_dept.is_deleted = 0
+      group by usr_id
+    ) _dept
+      on _dept.usr_id = t.id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
       and base_usr_role.is_deleted = 0
@@ -261,7 +298,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -269,7 +306,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -299,20 +336,22 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<UsrModel[]> {
   const table = "base_usr";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*
       ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,max(dept_ids) dept_ids
+      ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -398,9 +437,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
-  const n = initN("/usr");
-  const fieldComments = {
+export async function getFieldComments(): Promise<UsrFieldComment> {
+  const n = initN(route_path);
+  const fieldComments: UsrFieldComment = {
     id: await n("ID"),
     img: await n("头像"),
     lbl: await n("名称"),
@@ -413,6 +452,8 @@ export async function getFieldComments() {
     is_enabled_lbl: await n("启用"),
     org_ids: await n("所属组织"),
     org_ids_lbl: await n("所属组织"),
+    dept_ids: await n("所属部门"),
+    dept_ids_lbl: await n("所属部门"),
     role_ids: await n("拥有角色"),
     role_ids_lbl: await n("拥有角色"),
     rem: await n("备注"),
@@ -519,7 +560,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<UsrModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -539,7 +580,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<UsrModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -555,7 +596,7 @@ export async function exist(
   search?: UsrSearch,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -576,7 +617,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -715,7 +756,7 @@ export async function create(
     }
     input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -730,6 +771,28 @@ export async function create(
     input.org_ids = models.map((item: { id: string }) => item.id);
   }
   
+  // 所属部门
+  if (!input.dept_ids && input.dept_ids_lbl) {
+    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
+      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
+    }
+    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_dept t
+      where
+        t.lbl in ${ args.push(input.dept_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.dept_ids = models.map((item: { id: string }) => item.id);
+  }
+  
   // 拥有角色
   if (!input.role_ids && input.role_ids_lbl) {
     if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
@@ -737,7 +800,7 @@ export async function create(
     }
     input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -780,6 +843,7 @@ export async function create(
     insert into base_usr(
       id
       ,create_time
+      ,update_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -796,6 +860,14 @@ export async function create(
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
+    }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
     }
   }
   if (input.img !== undefined) {
@@ -822,7 +894,7 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -834,6 +906,14 @@ export async function create(
   }
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
@@ -880,6 +960,18 @@ export async function create(
     },
   );
   
+  // 所属部门
+  await many2manyUpdate(
+    input,
+    "dept_ids",
+    {
+      mod: "base",
+      table: "usr_dept",
+      column1: "usr_id",
+      column2: "dept_id",
+    },
+  );
+  
   // 拥有角色
   await many2manyUpdate(
     input,
@@ -907,6 +999,8 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
     "base_org",
+    "base_usr_dept",
+    "base_dept",
     "base_usr_role",
     "base_role",
   ];
@@ -940,7 +1034,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     update
       base_usr
     set
@@ -1030,7 +1124,7 @@ export async function updateById(
     }
     input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -1045,6 +1139,28 @@ export async function updateById(
     input.org_ids = models.map((item: { id: string }) => item.id);
   }
 
+  // 所属部门
+  if (!input.dept_ids && input.dept_ids_lbl) {
+    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
+      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
+    }
+    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_dept t
+      where
+        t.lbl in ${ args.push(input.dept_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.dept_ids = models.map((item: { id: string }) => item.id);
+  }
+
   // 拥有角色
   if (!input.role_ids && input.role_ids_lbl) {
     if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
@@ -1052,7 +1168,7 @@ export async function updateById(
     }
     input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -1148,6 +1264,9 @@ export async function updateById(
     }
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
     const result = await execute(sql, args);
   }
   
@@ -1165,6 +1284,23 @@ export async function updateById(
       table: "usr_org",
       column1: "usr_id",
       column2: "org_id",
+    },
+  );
+  
+  updateFldNum++;
+  
+  // 所属部门
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "dept_ids",
+    {
+      mod: "base",
+      table: "usr_dept",
+      column1: "usr_id",
+      column2: "dept_id",
     },
   );
   
@@ -1215,6 +1351,10 @@ export async function deleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1223,7 +1363,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_usr
       set
@@ -1280,8 +1420,12 @@ export async function enableByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_usr
     set
@@ -1291,10 +1435,10 @@ export async function enableByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1346,8 +1490,12 @@ export async function lockByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_usr
     set
@@ -1357,10 +1505,10 @@ export async function lockByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1390,11 +1538,15 @@ export async function revertByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_usr
       set
@@ -1422,6 +1574,7 @@ export async function revertByIds(
       }
     }
   }
+  
   await delCache();
   
   return num;
@@ -1444,12 +1597,16 @@ export async function forceDeleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -1461,7 +1618,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         base_usr
       where
@@ -1472,6 +1629,7 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
   await delCache();
   
   return num;
