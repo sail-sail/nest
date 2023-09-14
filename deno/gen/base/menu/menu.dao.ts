@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
   escape,
@@ -63,14 +63,17 @@ import type {
   MenuInput,
   MenuModel,
   MenuSearch,
+  MenuFieldComment,
 } from "./menu.model.ts";
+
+const route_path = "/base/menu";
 
 async function getWhereQuery(
   args: QueryArgs,
   search?: MenuSearch,
   options?: {
   },
-) {
+): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (isNotEmpty(search?.id)) {
@@ -221,8 +224,8 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {
+  let fromQuery = `
     base_menu t
     left join base_menu parent_id_lbl
       on parent_id_lbl.id = t.parent_id
@@ -270,7 +273,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -278,7 +281,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -308,12 +311,12 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<MenuModel[]> {
   const table = "base_menu";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*
       ,parent_id_lbl.lbl parent_id_lbl
       ,max(tenant_ids) tenant_ids
@@ -321,7 +324,7 @@ export async function findAll(
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -441,9 +444,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
-  const n = initN("/menu");
-  const fieldComments = {
+export async function getFieldComments(): Promise<MenuFieldComment> {
+  const n = initN(route_path);
+  const fieldComments: MenuFieldComment = {
     id: await n("ID"),
     type: await n("类型"),
     type_lbl: await n("类型"),
@@ -511,6 +514,16 @@ export async function findByUnique(
     });
     models.push(...modelTmps);
   }
+  {
+    if (search0.route_path == null) {
+      return [ ];
+    }
+    const route_path = search0.route_path;
+    const modelTmps = await findAll({
+      route_path,
+    });
+    models.push(...modelTmps);
+  }
   return models;
 }
 
@@ -530,6 +543,11 @@ export function equalsByUnique(
   if (
     oldModel.parent_id === model.parent_id &&
     oldModel.lbl === model.lbl
+  ) {
+    return true;
+  }
+  if (
+    oldModel.route_path === model.route_path
   ) {
     return true;
   }
@@ -582,7 +600,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<MenuModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -602,7 +620,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<MenuModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -618,7 +636,7 @@ export async function exist(
   search?: MenuSearch,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -639,7 +657,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -688,6 +706,20 @@ export async function validate(
     fieldComments.id,
   );
   
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
   // 类型
   await validators.chars_max_length(
     input.type,
@@ -700,6 +732,34 @@ export async function validate(
     input.type,
     10,
     fieldComments.type,
+  );
+  
+  // 类型
+  await validators.chars_max_length(
+    input.type,
+    10,
+    fieldComments.type,
+  );
+  
+  // 类型
+  await validators.chars_max_length(
+    input.type,
+    10,
+    fieldComments.type,
+  );
+  
+  // 父菜单
+  await validators.chars_max_length(
+    input.parent_id,
+    22,
+    fieldComments.parent_id,
+  );
+  
+  // 父菜单
+  await validators.chars_max_length(
+    input.parent_id,
+    22,
+    fieldComments.parent_id,
   );
   
   // 父菜单
@@ -730,6 +790,34 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 名称
+  await validators.chars_max_length(
+    input.lbl,
+    45,
+    fieldComments.lbl,
+  );
+  
+  // 路由
+  await validators.chars_max_length(
+    input.route_path,
+    255,
+    fieldComments.route_path,
+  );
+  
+  // 路由
+  await validators.chars_max_length(
+    input.route_path,
+    255,
+    fieldComments.route_path,
+  );
+  
   // 路由
   await validators.chars_max_length(
     input.route_path,
@@ -758,6 +846,20 @@ export async function validate(
     fieldComments.rem,
   );
   
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    255,
+    fieldComments.rem,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    255,
+    fieldComments.rem,
+  );
+  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
@@ -770,6 +872,34 @@ export async function validate(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
   );
   
   // 更新人
@@ -850,7 +980,7 @@ export async function create(
     }
     input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -901,6 +1031,7 @@ export async function create(
     insert into base_menu(
       id
       ,create_time
+      ,update_time
   `;
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
@@ -908,6 +1039,14 @@ export async function create(
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
+    }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
     }
   }
   if (input.type !== undefined) {
@@ -937,15 +1076,17 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
-  if (input.update_usr_id !== undefined) {
-    sql += `,update_usr_id`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,update_time`;
-  }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
@@ -978,12 +1119,6 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
-  }
-  if (input.update_usr_id !== undefined) {
-    sql += `,${ args.push(input.update_usr_id) }`;
-  }
-  if (input.update_time !== undefined) {
-    sql += `,${ args.push(input.update_time) }`;
   }
   sql += `)`;
   
@@ -1098,7 +1233,7 @@ export async function updateById(
     }
     input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       select
         t.id
       from
@@ -1209,6 +1344,9 @@ export async function updateById(
     }
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
     const result = await execute(sql, args);
   }
   
@@ -1259,6 +1397,10 @@ export async function deleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1267,7 +1409,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_menu
       set
@@ -1324,8 +1466,12 @@ export async function enableByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_menu
     set
@@ -1335,10 +1481,10 @@ export async function enableByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1390,8 +1536,12 @@ export async function lockByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_menu
     set
@@ -1401,10 +1551,10 @@ export async function lockByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1434,11 +1584,15 @@ export async function revertByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_menu
       set
@@ -1466,6 +1620,7 @@ export async function revertByIds(
       }
     }
   }
+  
   await delCache();
   
   return num;
@@ -1488,12 +1643,16 @@ export async function forceDeleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -1505,7 +1664,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         base_menu
       where
@@ -1516,6 +1675,7 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
   await delCache();
   
   return num;
@@ -1544,7 +1704,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += /*sql*/ `
+  sql += `
     order by
       t.order_by desc
     limit 1

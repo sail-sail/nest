@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type UsrInput,
-  type UsrSearch,
+import type {
+  UsrInput,
+  UsrModel,
+  UsrSearch,
+  UsrFieldComment,
 } from "./usr.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./usr.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<UsrModel[]> {
   const { findAll } = await import("./usr.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllUsr(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsUsr() {
+export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
   const { getFieldComments } = await import("./usr.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsUsr() {
 export async function findOneUsr(
   search?: UsrSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<UsrModel | undefined> {
   const { findOne } = await import("./usr.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneUsr(
  */
 export async function findByIdUsr(
   id: string,
-) {
+): Promise<UsrModel | undefined> {
   const { findById } = await import("./usr.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdUsr(
 export async function createUsr(
   input: UsrInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createUsr(
 export async function updateByIdUsr(
   id: string,
   input: UsrInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdUsr(
  */
 export async function deleteByIdsUsr(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsUsr(
 export async function enableByIdsUsr(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsUsr(
 export async function lockByIdsUsr(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsUsr(
  */
 export async function revertByIdsUsr(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsUsr(
  */
 export async function forceDeleteByIdsUsr(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

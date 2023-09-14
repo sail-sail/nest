@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type DictDetailInput,
-  type DictDetailSearch,
+import type {
+  DictDetailInput,
+  DictDetailModel,
+  DictDetailSearch,
+  DictDetailFieldComment,
 } from "./dict_detail.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountDictDetail(
   search?: DictDetailSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./dict_detail.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllDictDetail(
   search?: DictDetailSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<DictDetailModel[]> {
   const { findAll } = await import("./dict_detail.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllDictDetail(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsDictDetail() {
+export async function getFieldCommentsDictDetail(): Promise<DictDetailFieldComment> {
   const { getFieldComments } = await import("./dict_detail.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsDictDetail() {
 export async function findOneDictDetail(
   search?: DictDetailSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<DictDetailModel | undefined> {
   const { findOne } = await import("./dict_detail.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneDictDetail(
  */
 export async function findByIdDictDetail(
   id: string,
-) {
+): Promise<DictDetailModel | undefined> {
   const { findById } = await import("./dict_detail.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdDictDetail(
 export async function createDictDetail(
   input: DictDetailInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createDictDetail(
 export async function updateByIdDictDetail(
   id: string,
   input: DictDetailInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdDictDetail(
  */
 export async function deleteByIdsDictDetail(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsDictDetail(
 export async function enableByIdsDictDetail(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsDictDetail(
 export async function lockByIdsDictDetail(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsDictDetail(
  */
 export async function revertByIdsDictDetail(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsDictDetail(
  */
 export async function forceDeleteByIdsDictDetail(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsDictDetail(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByDictDetail() {
+export async function findLastOrderByDictDetail(): Promise<number> {
   const { findLastOrderBy } = await import("./dict_detail.service.ts");
   const res = findLastOrderBy();
   return res;

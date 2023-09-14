@@ -10,6 +10,7 @@ import type {
   OperationRecordInput,
   OperationRecordModel,
   OperationRecordSearch,
+  OperationRecordFieldComment,
 } from "./operation_record.model.ts";
 
 import * as operation_recordDao from "./operation_record.dao.ts";
@@ -51,7 +52,7 @@ export async function findAll(
 export async function findOne(
   search?: OperationRecordSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<OperationRecordModel | undefined> {
   search = search || { };
   const data = await operation_recordDao.findOne(search, sort);
   return data;
@@ -63,7 +64,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<OperationRecordModel | undefined> {
   const data = await operation_recordDao.findById(id);
   return data;
 }
@@ -74,7 +75,7 @@ export async function findById(
  */
 export async function exist(
   search?: OperationRecordSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await operation_recordDao.exist(search);
   return data;
@@ -86,7 +87,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await operation_recordDao.existById(id);
   return data;
 }
@@ -97,7 +98,7 @@ export async function existById(
  */
 export async function validate(
   input: OperationRecordInput,
-) {
+): Promise<void> {
   const data = await operation_recordDao.validate(input);
   return data;
 }
@@ -172,7 +173,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<OperationRecordFieldComment> {
   const data = await operation_recordDao.getFieldComments();
   return data;
 }

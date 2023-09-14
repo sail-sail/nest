@@ -469,6 +469,24 @@
             </el-table-column>
           </template>
           
+          <!-- 数据权限 -->
+          <template v-else-if="'data_permit_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.data_permit_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  un-min="w-7.5"
+                  @click="onData_permit_ids(row)"
+                >
+                  {{ row[column.property]?.length || 0 }}
+                </el-link>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
@@ -605,6 +623,17 @@
     ></PermitTreeList>
   </ListSelectDialog>
   
+  <!-- 数据权限 -->
+  <ListSelectDialog
+    ref="data_permit_idsListSelectDialogRef"
+    :is-locked="isLocked"
+    v-slot="listSelectProps"
+  >
+    <DataPermitTreeList
+      v-bind="listSelectProps"
+    ></DataPermitTreeList>
+  </ListSelectDialog>
+  
   <Detail
     ref="detailRef"
   ></Detail>
@@ -630,6 +659,8 @@ import MenuTreeList from "../menu/TreeList.vue";
 
 import PermitTreeList from "../permit/TreeList.vue";
 
+import DataPermitTreeList from "../data_permit/TreeList.vue";
+
 import {
   findAll,
   findCount,
@@ -650,6 +681,7 @@ import type {
   RoleSearch,
   MenuModel,
   PermitModel,
+  DataPermitModel,
   UsrModel,
 } from "#/types";
 
@@ -765,6 +797,8 @@ const props = defineProps<{
   menu_ids_lbl?: string|string[]; // 菜单权限
   permit_ids?: string|string[]; // 按钮权限
   permit_ids_lbl?: string|string[]; // 按钮权限
+  data_permit_ids?: string|string[]; // 数据权限
+  data_permit_ids_lbl?: string|string[]; // 数据权限
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
@@ -787,6 +821,8 @@ const builtInSearchType: { [key: string]: string } = {
   menu_ids_lbl: "string[]",
   permit_ids: "string[]",
   permit_ids_lbl: "string[]",
+  data_permit_ids: "string[]",
+  data_permit_ids_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -930,6 +966,14 @@ function getTableColumns(): ColumnType[] {
     {
       label: "按钮权限",
       prop: "permit_ids_lbl",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "数据权限",
+      prop: "data_permit_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1217,6 +1261,7 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("菜单权限") ]: "menu_ids_lbl",
     [ await nAsync("按钮权限") ]: "permit_ids_lbl",
+    [ await nAsync("数据权限") ]: "data_permit_ids_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
@@ -1538,6 +1583,7 @@ async function initI18nsEfc() {
     "名称",
     "菜单权限",
     "按钮权限",
+    "数据权限",
     "锁定",
     "启用",
     "备注",
@@ -1664,6 +1710,47 @@ async function onPermit_ids(row: RoleModel) {
   }
   row.permit_ids = selectedIds2;
   await updateById(row.id, { permit_ids: selectedIds2 });
+  await dataGrid();
+}
+
+let data_permit_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+
+async function onData_permit_ids(row: RoleModel) {
+  if (!data_permit_idsListSelectDialogRef) {
+    return;
+  }
+  row.data_permit_ids = row.data_permit_ids || [ ];
+  let {
+    selectedIds: selectedIds2,
+    action
+  } = await data_permit_idsListSelectDialogRef.showDialog({
+    selectedIds: row.data_permit_ids as string[],
+    isLocked: row.is_locked == 1,
+  });
+  if (isLocked) {
+    return;
+  }
+  if (action !== "select") {
+    return;
+  }
+  selectedIds2 = selectedIds2 || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === row.data_permit_ids.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!row.data_permit_ids.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  row.data_permit_ids = selectedIds2;
+  await updateById(row.id, { data_permit_ids: selectedIds2 });
   await dataGrid();
 }
 

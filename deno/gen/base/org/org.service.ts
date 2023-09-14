@@ -12,6 +12,7 @@ import type {
   OrgInput,
   OrgModel,
   OrgSearch,
+  OrgFieldComment,
 } from "./org.model.ts";
 
 import * as orgDao from "./org.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: OrgSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<OrgModel | undefined> {
   search = search || { };
   const data = await orgDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<OrgModel | undefined> {
   const data = await orgDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: OrgSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await orgDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await orgDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: OrgInput,
-) {
+): Promise<void> {
   const data = await orgDao.validate(input);
   return data;
 }
@@ -222,7 +223,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<OrgFieldComment> {
   const data = await orgDao.getFieldComments();
   return data;
 }

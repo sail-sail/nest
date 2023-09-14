@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type LangInput,
-  type LangSearch,
+import type {
+  LangInput,
+  LangModel,
+  LangSearch,
+  LangFieldComment,
 } from "./lang.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./lang.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<LangModel[]> {
   const { findAll } = await import("./lang.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllLang(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsLang() {
+export async function getFieldCommentsLang(): Promise<LangFieldComment> {
   const { getFieldComments } = await import("./lang.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsLang() {
 export async function findOneLang(
   search?: LangSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<LangModel | undefined> {
   const { findOne } = await import("./lang.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneLang(
  */
 export async function findByIdLang(
   id: string,
-) {
+): Promise<LangModel | undefined> {
   const { findById } = await import("./lang.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdLang(
 export async function createLang(
   input: LangInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createLang(
 export async function updateByIdLang(
   id: string,
   input: LangInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdLang(
  */
 export async function deleteByIdsLang(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsLang(
 export async function enableByIdsLang(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -181,7 +183,7 @@ export async function enableByIdsLang(
  */
 export async function revertByIdsLang(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -203,7 +205,7 @@ export async function revertByIdsLang(
  */
 export async function forceDeleteByIdsLang(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -223,7 +225,7 @@ export async function forceDeleteByIdsLang(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByLang() {
+export async function findLastOrderByLang(): Promise<number> {
   const { findLastOrderBy } = await import("./lang.service.ts");
   const res = findLastOrderBy();
   return res;

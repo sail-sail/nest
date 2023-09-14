@@ -1,7 +1,4 @@
-import {
-  type ComputedRef,
-  type Ref,
-} from "vue";
+import type { ComputedRef, Ref } from 'vue';
 
 function addUnit(value: string | number, defaultUnit = 'px') {
   if (!value) return '';
@@ -83,10 +80,22 @@ export const useDraggable = (
     document.addEventListener('mousemove', onMousemove);
     document.addEventListener('mouseup', onMouseup);
   };
+  
+  function onDragreset(e: Event) {
+    const customEvent = e as CustomEvent;
+    if (customEvent.detail.fullscreen) {
+      transform = {
+        offsetX: 0,
+        offsetY: 0,
+      };
+      targetRef.value!.style.transform = 'translate(0, 0)';
+    }
+  } 
 
   const onDraggable = () => {
     if (dragRef.value && targetRef.value) {
       dragRef.value.addEventListener('mousedown', onMousedown);
+      dragRef.value.addEventListener('fullscreenchange', onDragreset);
     }
   };
 

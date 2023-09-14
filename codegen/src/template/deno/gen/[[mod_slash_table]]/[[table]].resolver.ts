@@ -56,20 +56,30 @@ import Decimal from "decimal.js";<#
 }
 #>
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
+import type {
+  <#=inputName#>,
+  <#=modelName#>,
+  <#=searchName#>,
+  <#=fieldCommentName#>,
+} from "./<#=table#>.model.ts";<#
+if (hasSummary) {
+#>
+
 import {
-  type <#=inputName#>,
-  type <#=searchName#>,
-} from "./<#=table#>.model.ts";
+  <#=Table_Up#>Summary,
+} from "/gen/types.ts";<#
+}
+#>
 
 import {
   usePermit,
@@ -80,7 +90,7 @@ import {
  */
 export async function findCount<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./<#=table#>.service.ts");
   const res = await findCount(search);
   return res;
@@ -93,7 +103,7 @@ export async function findAll<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<<#=modelName#>[]> {
   const { findAll } = await import("./<#=table#>.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -102,7 +112,7 @@ export async function findAll<#=Table_Up#>(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments<#=Table_Up#>() {
+export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {
   const { getFieldComments } = await import("./<#=table#>.service.ts");
   const res = await getFieldComments();
   return res;
@@ -115,7 +125,7 @@ if (hasSummary) {
  */
 export async function findSummary<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
-) {
+): Promise<<#=Table_Up#>Summary> {
   const { findSummary } = await import("./<#=table#>.service.ts");
   const res = await findSummary(search);
   return res;
@@ -129,7 +139,7 @@ export async function findSummary<#=Table_Up#>(
 export async function findOne<#=Table_Up#>(
   search?: <#=searchName#> & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<<#=modelName#> | undefined> {
   const { findOne } = await import("./<#=table#>.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -140,7 +150,7 @@ export async function findOne<#=Table_Up#>(
  */
 export async function findById<#=Table_Up#>(
   id: string,
-) {
+): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
   const res = await findById(id);
   return res;
@@ -154,7 +164,7 @@ if (opts.noAdd !== true) {
 export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
-) {<#
+): Promise<string> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -247,7 +257,7 @@ if (opts.noEdit !== true) {
 export async function updateById<#=Table_Up#>(
   id: string,
   input: <#=inputName#>,
-) {<#
+): Promise<string> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -335,7 +345,7 @@ if (opts.noDelete !== true) {
  */
 export async function deleteByIds<#=Table_Up#>(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -389,7 +399,7 @@ export async function deleteByIds<#=Table_Up#>(
  */
 export async function defaultById<#=Table_Up#>(
   id: string,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -436,7 +446,7 @@ export async function defaultById<#=Table_Up#>(
 export async function enableByIds<#=Table_Up#>(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -486,7 +496,7 @@ export async function enableByIds<#=Table_Up#>(
 export async function lockByIds<#=Table_Up#>(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -538,7 +548,7 @@ if (opts.noDelete !== true) {
  */
 export async function revertByIds<#=Table_Up#>(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -580,7 +590,7 @@ export async function revertByIds<#=Table_Up#>(
  */
 export async function forceDeleteByIds<#=Table_Up#>(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -624,7 +634,7 @@ if (hasOrderBy) {
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderBy<#=Table_Up#>() {
+export async function findLastOrderBy<#=Table_Up#>(): Promise<number> {
   const { findLastOrderBy } = await import("./<#=table#>.service.ts");
   const res = findLastOrderBy();
   return res;

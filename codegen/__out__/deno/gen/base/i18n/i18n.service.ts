@@ -10,6 +10,7 @@ import type {
   I18Ninput,
   I18Nmodel,
   I18Nsearch,
+  I18NfieldComment,
 } from "./i18n.model.ts";
 
 import * as i18nDao from "./i18n.dao.ts";
@@ -51,7 +52,7 @@ export async function findAll(
 export async function findOne(
   search?: I18Nsearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<I18Nmodel | undefined> {
   search = search || { };
   const data = await i18nDao.findOne(search, sort);
   return data;
@@ -63,7 +64,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<I18Nmodel | undefined> {
   const data = await i18nDao.findById(id);
   return data;
 }
@@ -74,7 +75,7 @@ export async function findById(
  */
 export async function exist(
   search?: I18Nsearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await i18nDao.exist(search);
   return data;
@@ -86,7 +87,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await i18nDao.existById(id);
   return data;
 }
@@ -97,7 +98,7 @@ export async function existById(
  */
 export async function validate(
   input: I18Ninput,
-) {
+): Promise<void> {
   const data = await i18nDao.validate(input);
   return data;
 }
@@ -182,7 +183,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<I18NfieldComment> {
   const data = await i18nDao.getFieldComments();
   return data;
 }

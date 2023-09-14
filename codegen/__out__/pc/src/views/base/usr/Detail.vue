@@ -146,6 +146,22 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
+          <el-form-item
+            :label="n('所属部门')"
+            prop="dept_ids"
+          >
+            <CustomTreeSelect
+              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
+              v-model="dialogModel.dept_ids"
+              :method="getDeptTree"
+              :placeholder="`${ ns('请选择') } ${ n('所属部门') }`"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomTreeSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
           <el-form-item
             :label="n('拥有角色')"
@@ -269,13 +285,19 @@ import {
 import type {
   UsrInput,
   OrgModel,
+  DeptModel,
   RoleModel,
 } from "#/types";
 
 import {
   getOrgList,
+  getDeptList,
   getRoleList,
 } from "./Api";
+
+import {
+  getDeptTree,
+} from "@/views/base/dept/Api";
 
 const emit = defineEmits<{
   nextId: [
@@ -308,6 +330,7 @@ let dialogNotice = $ref("");
 
 let dialogModel = $ref({
   org_ids: [ ],
+  dept_ids: [ ],
   role_ids: [ ],
 } as UsrInput);
 
@@ -716,6 +739,7 @@ async function onInitI18ns() {
     "锁定",
     "启用",
     "所属组织",
+    "所属部门",
     "拥有角色",
     "备注",
   ];

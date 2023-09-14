@@ -13,6 +13,7 @@ import type {
 import type {
   MenuSearch,
   PermitSearch,
+  DataPermitSearch,
   UsrSearch,
 } from "#/types";
 
@@ -23,6 +24,10 @@ import {
 import {
   findTree as findPermitTree,
 } from "@/views/base/permit/Api";
+
+import {
+  findTree as findDataPermitTree,
+} from "@/views/base/data_permit/Api";
 
 /**
  * 根据搜索条件查找数据
@@ -50,6 +55,8 @@ export async function findAll(
           menu_ids_lbl
           permit_ids
           permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -186,6 +193,8 @@ export async function findById(
           menu_ids_lbl
           permit_ids
           permit_ids_lbl
+          data_permit_ids
+          data_permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -436,6 +445,51 @@ export async function getPermitList() {
   return data;
 }
 
+export async function findAllDataPermit(
+  search?: DataPermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDataPermit: Query["findAllDataPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDataPermit(search: $search, page: $page, sort: $sort) {
+          id
+          scope
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllDataPermit;
+  return res;
+}
+
+export async function getDataPermitList() {
+  const data = await findAllDataPermit(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -511,6 +565,21 @@ export async function getPermitTree() {
   return data;
 }
 
+export async function getDataPermitTree() {
+  const data = await findDataPermitTree(
+    [
+      {
+        prop: "",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -532,6 +601,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             menu_ids_lbl
             permit_ids_lbl
+            data_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             rem
@@ -547,6 +617,10 @@ export function useDownloadImportTemplate(routePath: string) {
           findAllPermit {
             id
             lbl
+          }
+          findAllDataPermit {
+            id
+            scope
           }
           findAllUsr {
             id
@@ -610,6 +684,8 @@ export function useExportExcel(routePath: string) {
             menu_ids_lbl
             permit_ids
             permit_ids_lbl
+            data_permit_ids
+            data_permit_ids_lbl
             is_locked
             is_locked_lbl
             is_enabled
@@ -628,6 +704,7 @@ export function useExportExcel(routePath: string) {
             lbl
             menu_ids_lbl
             permit_ids_lbl
+            data_permit_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             rem
@@ -641,6 +718,9 @@ export function useExportExcel(routePath: string) {
           }
           findAllPermit {
             lbl
+          }
+          findAllDataPermit {
+            scope
           }
           findAllUsr {
             lbl

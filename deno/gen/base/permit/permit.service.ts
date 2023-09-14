@@ -1,4 +1,6 @@
-
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
 
 import type {
   UniqueType,
@@ -10,6 +12,7 @@ import type {
   PermitInput,
   PermitModel,
   PermitSearch,
+  PermitFieldComment,
 } from "./permit.model.ts";
 
 import * as permitDao from "./permit.dao.ts";
@@ -51,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: PermitSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<PermitModel | undefined> {
   search = search || { };
   const data = await permitDao.findOne(search, sort);
   return data;
@@ -63,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<PermitModel | undefined> {
   const data = await permitDao.findById(id);
   return data;
 }
@@ -74,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: PermitSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await permitDao.exist(search);
   return data;
@@ -86,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await permitDao.existById(id);
   return data;
 }
@@ -97,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: PermitInput,
-) {
+): Promise<void> {
   const data = await permitDao.validate(input);
   return data;
 }
@@ -128,6 +131,16 @@ export async function updateById(
   input: PermitInput,
 ): Promise<string> {
   
+  // 不能修改系统记录的系统字段
+  const model = await permitDao.findById(id);
+  if (model && model.is_sys === 1) {
+    // 菜单
+    input.menu_id = undefined;
+    input.menu_id_lbl = "";
+    // 编码
+    input.code = undefined;
+  }
+  
   const data = await permitDao.updateById(id, input);
   return data;
 }
@@ -140,6 +153,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
+  {
+    const ids2: string[] = [ ];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const model = await permitDao.findById(id);
+      if (model && model.is_sys === 1) {
+        continue;
+      }
+      ids2.push(id);
+    }
+    if (ids2.length === 0 && ids.length > 0) {
+      throw await ns("不能删除系统记录");
+    }
+    ids = ids2;
+  }
   
   const data = await permitDao.deleteByIds(ids);
   return data;
@@ -172,7 +201,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<PermitFieldComment> {
   const data = await permitDao.getFieldComments();
   return data;
 }

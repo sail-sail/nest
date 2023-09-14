@@ -12,6 +12,7 @@ import type {
   DomainInput,
   DomainModel,
   DomainSearch,
+  DomainFieldComment,
 } from "./domain.model.ts";
 
 import * as domainDao from "./domain.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: DomainSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<DomainModel | undefined> {
   search = search || { };
   const data = await domainDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<DomainModel | undefined> {
   const data = await domainDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: DomainSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await domainDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await domainDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: DomainInput,
-) {
+): Promise<void> {
   const data = await domainDao.validate(input);
   return data;
 }
@@ -234,7 +235,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DomainFieldComment> {
   const data = await domainDao.getFieldComments();
   return data;
 }

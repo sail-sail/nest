@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type I18Ninput,
-  type I18Nsearch,
+import type {
+  I18Ninput,
+  I18Nmodel,
+  I18Nsearch,
+  I18NfieldComment,
 } from "./i18n.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./i18n.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<I18Nmodel[]> {
   const { findAll } = await import("./i18n.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllI18N(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsI18N() {
+export async function getFieldCommentsI18N(): Promise<I18NfieldComment> {
   const { getFieldComments } = await import("./i18n.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsI18N() {
 export async function findOneI18N(
   search?: I18Nsearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<I18Nmodel | undefined> {
   const { findOne } = await import("./i18n.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneI18N(
  */
 export async function findByIdI18N(
   id: string,
-) {
+): Promise<I18Nmodel | undefined> {
   const { findById } = await import("./i18n.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdI18N(
 export async function createI18N(
   input: I18Ninput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createI18N(
 export async function updateByIdI18N(
   id: string,
   input: I18Ninput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdI18N(
  */
 export async function deleteByIdsI18N(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -155,7 +157,7 @@ export async function deleteByIdsI18N(
  */
 export async function revertByIdsI18N(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -177,7 +179,7 @@ export async function revertByIdsI18N(
  */
 export async function forceDeleteByIdsI18N(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

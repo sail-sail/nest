@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type MenuInput,
-  type MenuSearch,
+import type {
+  MenuInput,
+  MenuModel,
+  MenuSearch,
+  MenuFieldComment,
 } from "./menu.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./menu.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<MenuModel[]> {
   const { findAll } = await import("./menu.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllMenu(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsMenu() {
+export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
   const { getFieldComments } = await import("./menu.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsMenu() {
 export async function findOneMenu(
   search?: MenuSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<MenuModel | undefined> {
   const { findOne } = await import("./menu.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneMenu(
  */
 export async function findByIdMenu(
   id: string,
-) {
+): Promise<MenuModel | undefined> {
   const { findById } = await import("./menu.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdMenu(
 export async function createMenu(
   input: MenuInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createMenu(
 export async function updateByIdMenu(
   id: string,
   input: MenuInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdMenu(
  */
 export async function deleteByIdsMenu(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -156,7 +158,7 @@ export async function deleteByIdsMenu(
 export async function enableByIdsMenu(
   ids: string[],
   is_enabled: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -182,7 +184,7 @@ export async function enableByIdsMenu(
 export async function lockByIdsMenu(
   ids: string[],
   is_locked: 0 | 1,
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -207,7 +209,7 @@ export async function lockByIdsMenu(
  */
 export async function revertByIdsMenu(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -229,7 +231,7 @@ export async function revertByIdsMenu(
  */
 export async function forceDeleteByIdsMenu(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -249,7 +251,7 @@ export async function forceDeleteByIdsMenu(
 /**
  * 查找 order_by 字段的最大值
  */
-export async function findLastOrderByMenu() {
+export async function findLastOrderByMenu(): Promise<number> {
   const { findLastOrderBy } = await import("./menu.service.ts");
   const res = findLastOrderBy();
   return res;

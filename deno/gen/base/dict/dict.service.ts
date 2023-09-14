@@ -12,6 +12,7 @@ import type {
   DictInput,
   DictModel,
   DictSearch,
+  DictFieldComment,
 } from "./dict.model.ts";
 
 import * as dictDao from "./dict.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: DictSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<DictModel | undefined> {
   search = search || { };
   const data = await dictDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<DictModel | undefined> {
   const data = await dictDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: DictSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await dictDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await dictDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: DictInput,
-) {
+): Promise<void> {
   const data = await dictDao.validate(input);
   return data;
 }
@@ -251,7 +252,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DictFieldComment> {
   const data = await dictDao.getFieldComments();
   return data;
 }

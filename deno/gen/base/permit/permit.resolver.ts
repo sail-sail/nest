@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type PermitInput,
-  type PermitSearch,
+import type {
+  PermitInput,
+  PermitModel,
+  PermitSearch,
+  PermitFieldComment,
 } from "./permit.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./permit.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllPermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<PermitModel[]> {
   const { findAll } = await import("./permit.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllPermit(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsPermit() {
+export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
   const { getFieldComments } = await import("./permit.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsPermit() {
 export async function findOnePermit(
   search?: PermitSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<PermitModel | undefined> {
   const { findOne } = await import("./permit.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOnePermit(
  */
 export async function findByIdPermit(
   id: string,
-) {
+): Promise<PermitModel | undefined> {
   const { findById } = await import("./permit.service.ts");
   const res = await findById(id);
   return res;
@@ -83,7 +85,7 @@ export async function findByIdPermit(
 export async function createPermit(
   input: PermitInput,
   unique_type?: UniqueType,
-) {
+): Promise<string> {
   
   const {
     validate,
@@ -111,7 +113,7 @@ export async function createPermit(
 export async function updateByIdPermit(
   id: string,
   input: PermitInput,
-) {
+): Promise<string> {
   const context = useContext();
   
   context.is_tran = true;
@@ -133,7 +135,7 @@ export async function updateByIdPermit(
  */
 export async function deleteByIdsPermit(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -155,7 +157,7 @@ export async function deleteByIdsPermit(
  */
 export async function revertByIdsPermit(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -177,7 +179,7 @@ export async function revertByIdsPermit(
  */
 export async function forceDeleteByIdsPermit(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

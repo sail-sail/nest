@@ -28,3 +28,27 @@ export interface BackgroundTaskInput extends BackgroundTaskInputType {
   update_time?: string | null;
   tenant_id?: string | null;
 }
+
+export interface BackgroundTaskFieldComment {
+  id: string;
+  lbl: string;
+  state: string;
+  state_lbl: string;
+  type: string;
+  type_lbl: string;
+  result: string;
+  err_msg: string;
+  begin_time: string;
+  begin_time_lbl: string;
+  end_time: string;
+  end_time_lbl: string;
+  rem: string;
+  create_usr_id: string;
+  create_usr_id_lbl: string;
+  create_time: string;
+  create_time_lbl: string;
+  update_usr_id: string;
+  update_usr_id_lbl: string;
+  update_time: string;
+  update_time_lbl: string;
+}

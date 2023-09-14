@@ -2,19 +2,21 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type SearchExtra,
+import type {
+  SearchExtra,
 } from "/lib/util/dao_util.ts";
 
-import {
-  type UniqueType,
-  type PageInput,
-  type SortInput,
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
 } from "/gen/types.ts";
 
-import {
-  type OperationRecordInput,
-  type OperationRecordSearch,
+import type {
+  OperationRecordInput,
+  OperationRecordModel,
+  OperationRecordSearch,
+  OperationRecordFieldComment,
 } from "./operation_record.model.ts";
 
 import {
@@ -26,7 +28,7 @@ import {
  */
 export async function findCountOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
-) {
+): Promise<number> {
   const { findCount } = await import("./operation_record.service.ts");
   const res = await findCount(search);
   return res;
@@ -39,7 +41,7 @@ export async function findAllOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   page?: PageInput,
   sort?: SortInput[],
-) {
+): Promise<OperationRecordModel[]> {
   const { findAll } = await import("./operation_record.service.ts");
   const res = await findAll(search, page, sort);
   return res;
@@ -48,7 +50,7 @@ export async function findAllOperationRecord(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldCommentsOperationRecord() {
+export async function getFieldCommentsOperationRecord(): Promise<OperationRecordFieldComment> {
   const { getFieldComments } = await import("./operation_record.service.ts");
   const res = await getFieldComments();
   return res;
@@ -60,7 +62,7 @@ export async function getFieldCommentsOperationRecord() {
 export async function findOneOperationRecord(
   search?: OperationRecordSearch & { $extra?: SearchExtra[] },
   sort?: SortInput[],
-) {
+): Promise<OperationRecordModel | undefined> {
   const { findOne } = await import("./operation_record.service.ts");
   const res = await findOne(search, sort);
   return res;
@@ -71,7 +73,7 @@ export async function findOneOperationRecord(
  */
 export async function findByIdOperationRecord(
   id: string,
-) {
+): Promise<OperationRecordModel | undefined> {
   const { findById } = await import("./operation_record.service.ts");
   const res = await findById(id);
   return res;
@@ -82,7 +84,7 @@ export async function findByIdOperationRecord(
  */
 export async function deleteByIdsOperationRecord(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -104,7 +106,7 @@ export async function deleteByIdsOperationRecord(
  */
 export async function revertByIdsOperationRecord(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;
@@ -126,7 +128,7 @@ export async function revertByIdsOperationRecord(
  */
 export async function forceDeleteByIdsOperationRecord(
   ids: string[],
-) {
+): Promise<number> {
   const context = useContext();
   
   context.is_tran = true;

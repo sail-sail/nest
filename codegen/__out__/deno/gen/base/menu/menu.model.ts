@@ -25,3 +25,30 @@ export interface MenuInput extends MenuInputType {
   update_usr_id?: string;
   update_time?: string | null;
 }
+
+export interface MenuFieldComment {
+  id: string;
+  type: string;
+  type_lbl: string;
+  parent_id: string;
+  parent_id_lbl: string;
+  lbl: string;
+  route_path: string;
+  route_query: string;
+  is_locked: string;
+  is_locked_lbl: string;
+  tenant_ids: string;
+  tenant_ids_lbl: string;
+  is_enabled: string;
+  is_enabled_lbl: string;
+  order_by: string;
+  rem: string;
+  create_usr_id: string;
+  create_usr_id_lbl: string;
+  create_time: string;
+  create_time_lbl: string;
+  update_usr_id: string;
+  update_usr_id_lbl: string;
+  update_time: string;
+  update_time_lbl: string;
+}

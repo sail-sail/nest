@@ -214,9 +214,11 @@ html,body {
     }
   }
   .el-dialog__header {
+    --el-dialog-padding-primary: 0;
     .dialog_title {
       display: flex;
-      padding-right: 14px;
+      padding: 10px;
+      padding-right: 26px;
       color: var(--el-text-color-regular);
     }
     .title_lbl {

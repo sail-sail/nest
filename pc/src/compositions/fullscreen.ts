@@ -35,6 +35,15 @@ export function useFullscreenEfc() {
       }
       fullscreen = false;
     }
+    const customEvent = new CustomEvent(
+      "fullscreenchange",
+      {
+        detail: {
+          fullscreen,
+        },
+      },
+    );
+    dialogHeaderEl.dispatchEvent(customEvent);
   }
   return $$({
     fullscreen,

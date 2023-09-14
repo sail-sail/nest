@@ -12,6 +12,7 @@ import type {
   DeptInput,
   DeptModel,
   DeptSearch,
+  DeptFieldComment,
 } from "./dept.model.ts";
 
 import * as deptDao from "./dept.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: DeptSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<DeptModel | undefined> {
   search = search || { };
   const data = await deptDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<DeptModel | undefined> {
   const data = await deptDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: DeptSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await deptDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await deptDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: DeptInput,
-) {
+): Promise<void> {
   const data = await deptDao.validate(input);
   return data;
 }
@@ -222,7 +223,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<DeptFieldComment> {
   const data = await deptDao.getFieldComments();
   return data;
 }

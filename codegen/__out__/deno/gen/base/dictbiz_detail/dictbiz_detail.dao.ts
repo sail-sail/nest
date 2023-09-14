@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any prefer-const no-unused-vars ban-types
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
 import {
   escapeId,
   escape,
@@ -63,16 +63,19 @@ import type {
   DictbizDetailInput,
   DictbizDetailModel,
   DictbizDetailSearch,
+  DictbizDetailFieldComment,
 } from "./dictbiz_detail.model.ts";
 
 import * as dictbizDao from "/gen/base/dictbiz/dictbiz.dao.ts";
+
+const route_path = "/base/dictbiz_detail";
 
 async function getWhereQuery(
   args: QueryArgs,
   search?: DictbizDetailSearch,
   options?: {
   },
-) {
+): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.tenant_id == null) {
@@ -171,8 +174,8 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-function getFromQuery() {
-  const fromQuery = /*sql*/ `
+async function getFromQuery() {
+  let fromQuery = `
     base_dictbiz_detail t
     left join base_dictbiz dictbiz_id_lbl
       on dictbiz_id_lbl.id = t.dictbiz_id
@@ -194,7 +197,7 @@ export async function findCount(
   const method = "findCount";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select
       count(1) total
     from
@@ -202,7 +205,7 @@ export async function findCount(
         select
           1
         from
-          ${ getFromQuery() }
+          ${ await getFromQuery() }
         where
           ${ await getWhereQuery(args, search, options) }
         group by t.id
@@ -232,16 +235,16 @@ export async function findAll(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<DictbizDetailModel[]> {
   const table = "base_dictbiz_detail";
   const method = "findAll";
   
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select t.*
       ,dictbiz_id_lbl.lbl dictbiz_id_lbl
     from
-      ${ getFromQuery() }
+      ${ await getFromQuery() }
     where
       ${ await getWhereQuery(args, search, options) }
     group by t.id
@@ -337,9 +340,9 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
-  const n = initN("/dictbiz_detail");
-  const fieldComments = {
+export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
+  const n = initN(route_path);
+  const fieldComments: DictbizDetailFieldComment = {
     id: await n("ID"),
     dictbiz_id: await n("业务字典"),
     dictbiz_id_lbl: await n("业务字典"),
@@ -467,7 +470,7 @@ export async function findOne(
   sort?: SortInput | SortInput[],
   options?: {
   },
-) {
+): Promise<DictbizDetailModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -487,7 +490,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-) {
+): Promise<DictbizDetailModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -503,7 +506,7 @@ export async function exist(
   search?: DictbizDetailSearch,
   options?: {
   },
-) {
+): Promise<boolean> {
   const model = await findOne(search);
   const exist = !!model;
   return exist;
@@ -524,7 +527,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     select
       1 e
     from
@@ -687,6 +690,7 @@ export async function create(
     insert into base_dictbiz_detail(
       id
       ,create_time
+      ,update_time
   `;
   if (input.tenant_id != null) {
     sql += `,tenant_id`;
@@ -703,6 +707,14 @@ export async function create(
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
       sql += `,create_usr_id`;
+    }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
     }
   }
   if (input.dictbiz_id !== undefined) {
@@ -729,7 +741,7 @@ export async function create(
   if (input.is_sys !== undefined) {
     sql += `,is_sys`;
   }
-  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) }`;
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.tenant_id != null) {
     sql += `,${ args.push(input.tenant_id) }`;
   } else {
@@ -741,6 +753,14 @@ export async function create(
   }
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
   } else {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
@@ -821,7 +841,7 @@ export async function updateTenantById(
   }
   
   const args = new QueryArgs();
-  const sql = /*sql*/ `
+  const sql = `
     update
       base_dictbiz_detail
     set
@@ -996,6 +1016,9 @@ export async function updateById(
     }
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
     const result = await execute(sql, args);
   }
   
@@ -1029,6 +1052,10 @@ export async function deleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1037,7 +1064,7 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_dictbiz_detail
       set
@@ -1094,8 +1121,12 @@ export async function enableByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_dictbiz_detail
     set
@@ -1105,10 +1136,10 @@ export async function enableByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1160,8 +1191,12 @@ export async function lockByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     update
       base_dictbiz_detail
     set
@@ -1171,10 +1206,10 @@ export async function lockByIds(
   {
     const authModel = await authDao.getAuthModel();
     if (authModel?.id !== undefined) {
-      sql += /*sql*/ `,update_usr_id = ${ args.push(authModel.id) }`;
+      sql += `,update_usr_id = ${ args.push(authModel.id) }`;
     }
   }
-  sql += /*sql*/ `
+  sql += `
   
   where
       id in ${ args.push(ids) }
@@ -1204,11 +1239,15 @@ export async function revertByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       update
         base_dictbiz_detail
       set
@@ -1236,6 +1275,7 @@ export async function revertByIds(
       }
     }
   }
+  
   await delCache();
   
   return num;
@@ -1258,12 +1298,16 @@ export async function forceDeleteByIds(
     return 0;
   }
   
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = /*sql*/ `
+      const sql = `
         select
           *
         from
@@ -1275,7 +1319,7 @@ export async function forceDeleteByIds(
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = /*sql*/ `
+    const sql = `
       delete from
         base_dictbiz_detail
       where
@@ -1286,6 +1330,7 @@ export async function forceDeleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
+  
   await delCache();
   
   return num;
@@ -1319,7 +1364,7 @@ export async function findLastOrderBy(
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
   }
-  sql += /*sql*/ `
+  sql += `
     order by
       t.order_by desc
     limit 1

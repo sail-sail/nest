@@ -12,6 +12,7 @@ import type {
   UsrInput,
   UsrModel,
   UsrSearch,
+  UsrFieldComment,
 } from "./usr.model.ts";
 
 import * as usrDao from "./usr.dao.ts";
@@ -53,7 +54,7 @@ export async function findAll(
 export async function findOne(
   search?: UsrSearch,
   sort?: SortInput|SortInput[],
-) {
+): Promise<UsrModel | undefined> {
   search = search || { };
   const data = await usrDao.findOne(search, sort);
   return data;
@@ -65,7 +66,7 @@ export async function findOne(
  */
 export async function findById(
   id?: string | null,
-) {
+): Promise<UsrModel | undefined> {
   const data = await usrDao.findById(id);
   return data;
 }
@@ -76,7 +77,7 @@ export async function findById(
  */
 export async function exist(
   search?: UsrSearch,
-) {
+): Promise<boolean> {
   search = search || { };
   const data = await usrDao.exist(search);
   return data;
@@ -88,7 +89,7 @@ export async function exist(
  */
 export async function existById(
   id?: string | null,
-) {
+): Promise<boolean> {
   const data = await usrDao.existById(id);
   return data;
 }
@@ -99,7 +100,7 @@ export async function existById(
  */
 export async function validate(
   input: UsrInput,
-) {
+): Promise<void> {
   const data = await usrDao.validate(input);
   return data;
 }
@@ -222,7 +223,7 @@ export async function forceDeleteByIds(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments() {
+export async function getFieldComments(): Promise<UsrFieldComment> {
   const data = await usrDao.getFieldComments();
   return data;
 }

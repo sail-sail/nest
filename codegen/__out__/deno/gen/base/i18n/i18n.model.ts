@@ -25,3 +25,22 @@ export interface I18Ninput extends I18NinputType {
   update_usr_id?: string;
   update_time?: string | null;
 }
+
+export interface I18NfieldComment {
+  id: string;
+  lang_id: string;
+  lang_id_lbl: string;
+  menu_id: string;
+  menu_id_lbl: string;
+  code: string;
+  lbl: string;
+  rem: string;
+  create_usr_id: string;
+  create_usr_id_lbl: string;
+  create_time: string;
+  create_time_lbl: string;
+  update_usr_id: string;
+  update_usr_id_lbl: string;
+  update_time: string;
+  update_time_lbl: string;
+}
