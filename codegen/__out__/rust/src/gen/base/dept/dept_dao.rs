@@ -601,12 +601,14 @@ pub async fn find_by_unique<'a>(
   
   let mut models_tmp = {
     if
+      search.parent_id.is_none() ||
       search.lbl.is_none()
     {
       return Ok(vec![]);
     }
     
     let search = DeptSearch {
+      parent_id: search.parent_id,
       lbl: search.lbl,
       ..Default::default()
     };
@@ -635,6 +637,7 @@ fn equals_by_unique(
   }
   
   if
+    input.parent_id.as_ref().is_some() && input.parent_id.as_ref().unwrap() == &model.parent_id &&
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
   {
     return true;

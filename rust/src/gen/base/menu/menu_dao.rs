@@ -718,6 +718,28 @@ pub async fn find_by_unique<'a>(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.route_path.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = MenuSearch {
+      route_path: search.route_path,
+      ..Default::default()
+    };
+    
+    find_all(
+      ctx,
+      search.into(),
+      None,
+      None,
+      None,
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -734,6 +756,12 @@ fn equals_by_unique(
   if
     input.parent_id.as_ref().is_some() && input.parent_id.as_ref().unwrap() == &model.parent_id &&
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
+  {
+    return true;
+  }
+  
+  if
+    input.route_path.as_ref().is_some() && input.route_path.as_ref().unwrap() == &model.route_path
   {
     return true;
   }
@@ -1670,8 +1698,28 @@ pub fn validate<'a>(
     22,
     "",
   )?;
+  chars_max_length(
+    input.id.clone(),
+    22,
+    "",
+  )?;
+  chars_max_length(
+    input.id.clone(),
+    22,
+    "",
+  )?;
   
   // 类型
+  chars_max_length(
+    input.r#type.clone(),
+    10,
+    "",
+  )?;
+  chars_max_length(
+    input.r#type.clone(),
+    10,
+    "",
+  )?;
   chars_max_length(
     input.r#type.clone(),
     10,
@@ -1694,8 +1742,28 @@ pub fn validate<'a>(
     22,
     "",
   )?;
+  chars_max_length(
+    input.parent_id.clone(),
+    22,
+    "",
+  )?;
+  chars_max_length(
+    input.parent_id.clone(),
+    22,
+    "",
+  )?;
   
   // 名称
+  chars_max_length(
+    input.lbl.clone(),
+    45,
+    "",
+  )?;
+  chars_max_length(
+    input.lbl.clone(),
+    45,
+    "",
+  )?;
   chars_max_length(
     input.lbl.clone(),
     45,
@@ -1718,8 +1786,28 @@ pub fn validate<'a>(
     255,
     "",
   )?;
+  chars_max_length(
+    input.route_path.clone(),
+    255,
+    "",
+  )?;
+  chars_max_length(
+    input.route_path.clone(),
+    255,
+    "",
+  )?;
   
   // 备注
+  chars_max_length(
+    input.rem.clone(),
+    255,
+    "",
+  )?;
+  chars_max_length(
+    input.rem.clone(),
+    255,
+    "",
+  )?;
   chars_max_length(
     input.rem.clone(),
     255,
@@ -1742,8 +1830,28 @@ pub fn validate<'a>(
     22,
     "",
   )?;
+  chars_max_length(
+    input.create_usr_id.clone(),
+    22,
+    "",
+  )?;
+  chars_max_length(
+    input.create_usr_id.clone(),
+    22,
+    "",
+  )?;
   
   // 更新人
+  chars_max_length(
+    input.update_usr_id.clone(),
+    22,
+    "",
+  )?;
+  chars_max_length(
+    input.update_usr_id.clone(),
+    22,
+    "",
+  )?;
   chars_max_length(
     input.update_usr_id.clone(),
     22,

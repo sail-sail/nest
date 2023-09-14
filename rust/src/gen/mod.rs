@@ -6,12 +6,14 @@ use async_graphql::MergedObject;
 #[derive(MergedObject, Default)]
 pub struct GenQuery(
   crate::gen::base::background_task::background_task_graphql::BackgroundTaskGenQuery,
+  crate::gen::base::data_permit::data_permit_graphql::DataPermitGenQuery,
   crate::gen::base::dept::dept_graphql::DeptGenQuery,
   crate::gen::base::dict::dict_graphql::DictGenQuery,
   crate::gen::base::dict_detail::dict_detail_graphql::DictDetailGenQuery,
   crate::gen::base::dictbiz::dictbiz_graphql::DictbizGenQuery,
   crate::gen::base::dictbiz_detail::dictbiz_detail_graphql::DictbizDetailGenQuery,
   crate::gen::base::domain::domain_graphql::DomainGenQuery,
+  crate::gen::base::field_permit::field_permit_graphql::FieldPermitGenQuery,
   crate::gen::base::i18n::i18n_graphql::I18nGenQuery,
   crate::gen::base::lang::lang_graphql::LangGenQuery,
   crate::gen::base::menu::menu_graphql::MenuGenQuery,
@@ -27,12 +29,14 @@ pub struct GenQuery(
 #[derive(MergedObject, Default)]
 pub struct GenMutation(
   crate::gen::base::background_task::background_task_graphql::BackgroundTaskGenMutation,
+  crate::gen::base::data_permit::data_permit_graphql::DataPermitGenMutation,
   crate::gen::base::dept::dept_graphql::DeptGenMutation,
   crate::gen::base::dict::dict_graphql::DictGenMutation,
   crate::gen::base::dict_detail::dict_detail_graphql::DictDetailGenMutation,
   crate::gen::base::dictbiz::dictbiz_graphql::DictbizGenMutation,
   crate::gen::base::dictbiz_detail::dictbiz_detail_graphql::DictbizDetailGenMutation,
   crate::gen::base::domain::domain_graphql::DomainGenMutation,
+  crate::gen::base::field_permit::field_permit_graphql::FieldPermitGenMutation,
   crate::gen::base::i18n::i18n_graphql::I18nGenMutation,
   crate::gen::base::lang::lang_graphql::LangGenMutation,
   crate::gen::base::menu::menu_graphql::MenuGenMutation,

@@ -29,6 +29,10 @@ pub struct RoleModel {
   pub permit_ids: Vec<String>,
   /// 按钮权限
   pub permit_ids_lbl: Vec<String>,
+  /// 数据权限
+  pub data_permit_ids: Vec<String>,
+  /// 数据权限
+  pub data_permit_ids_lbl: Vec<String>,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -75,6 +79,11 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let permit_ids = permit_ids.unwrap_or_default().0;
     let permit_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("permit_ids_lbl")?;
     let permit_ids_lbl = permit_ids_lbl.unwrap_or_default().0;
+    // 数据权限
+    let data_permit_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("data_permit_ids")?;
+    let data_permit_ids = data_permit_ids.unwrap_or_default().0;
+    let data_permit_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("data_permit_ids_lbl")?;
+    let data_permit_ids_lbl = data_permit_ids_lbl.unwrap_or_default().0;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -113,6 +122,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       menu_ids_lbl,
       permit_ids,
       permit_ids_lbl,
+      data_permit_ids,
+      data_permit_ids_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -148,6 +159,10 @@ pub struct RoleFieldComment {
   pub permit_ids: String,
   /// 按钮权限
   pub permit_ids_lbl: String,
+  /// 数据权限
+  pub data_permit_ids: String,
+  /// 数据权限
+  pub data_permit_ids_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -196,6 +211,10 @@ pub struct RoleSearch {
   pub permit_ids: Option<Vec<String>>,
   /// 按钮权限
   pub permit_ids_is_null: Option<bool>,
+  /// 数据权限
+  pub data_permit_ids: Option<Vec<String>>,
+  /// 数据权限
+  pub data_permit_ids_is_null: Option<bool>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -233,6 +252,10 @@ pub struct RoleInput {
   pub permit_ids: Option<Vec<String>>,
   /// 按钮权限
   pub permit_ids_lbl: Option<Vec<String>>,
+  /// 数据权限
+  pub data_permit_ids: Option<Vec<String>>,
+  /// 数据权限
+  pub data_permit_ids_lbl: Option<Vec<String>>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
@@ -274,6 +297,8 @@ impl From<RoleInput> for RoleSearch {
       menu_ids: input.menu_ids,
       // 按钮权限
       permit_ids: input.permit_ids,
+      // 数据权限
+      data_permit_ids: input.data_permit_ids,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用

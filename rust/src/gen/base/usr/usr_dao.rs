@@ -232,6 +232,32 @@ fn get_where_query<'a>(
     }
   }
   {
+    let dept_ids: Vec<String> = match &search {
+      Some(item) => item.dept_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !dept_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(dept_ids.len());
+        for item in dept_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_dept.id in ({})", arg);
+    }
+  }
+  {
+    let dept_ids_is_null: bool = match &search {
+      Some(item) => item.dept_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if dept_ids_is_null {
+      where_query += &format!(" and dept_ids_lbl.id is null");
+    }
+  }
+  {
     let role_ids: Vec<String> = match &search {
       Some(item) => item.role_ids.clone().unwrap_or_default(),
       None => Default::default(),
@@ -302,6 +328,28 @@ fn get_from_query() -> &'static str {
       group by usr_id
     ) _org
       on _org.usr_id = t.id
+    left join base_usr_dept
+      on base_usr_dept.usr_id = t.id
+      and base_usr_dept.is_deleted = 0
+    left join base_dept
+      on base_usr_dept.dept_id = base_dept.id
+      and base_dept.is_deleted = 0
+    left join (
+      select
+        json_arrayagg(base_dept.id) dept_ids,
+        json_arrayagg(base_dept.lbl) dept_ids_lbl,
+        base_usr.id usr_id
+      from base_usr_dept
+      inner join base_dept
+        on base_dept.id = base_usr_dept.dept_id
+        and base_dept.is_deleted = 0
+      inner join base_usr
+        on base_usr.id = base_usr_dept.usr_id
+      where
+        base_usr_dept.is_deleted = 0
+      group by usr_id
+    ) _dept
+      on _dept.usr_id = t.id
     left join base_usr_role
       on base_usr_role.usr_id = t.id
       and base_usr_role.is_deleted = 0
@@ -354,6 +402,8 @@ pub async fn find_all<'a>(
       ,default_org_id_lbl.lbl default_org_id_lbl
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
+      ,max(dept_ids) dept_ids
+      ,max(dept_ids_lbl) dept_ids_lbl
       ,max(role_ids) role_ids
       ,max(role_ids_lbl) role_ids_lbl
     from
@@ -495,6 +545,8 @@ pub async fn get_field_comments<'a>(
     "启用".into(),
     "所属组织".into(),
     "所属组织".into(),
+    "所属部门".into(),
+    "所属部门".into(),
     "拥有角色".into(),
     "拥有角色".into(),
     "备注".into(),
@@ -527,9 +579,11 @@ pub async fn get_field_comments<'a>(
     is_enabled_lbl: vec[9].to_owned(),
     org_ids: vec[10].to_owned(),
     org_ids_lbl: vec[11].to_owned(),
-    role_ids: vec[12].to_owned(),
-    role_ids_lbl: vec[13].to_owned(),
-    rem: vec[14].to_owned(),
+    dept_ids: vec[12].to_owned(),
+    dept_ids_lbl: vec[13].to_owned(),
+    role_ids: vec[14].to_owned(),
+    role_ids_lbl: vec[15].to_owned(),
+    rem: vec[16].to_owned(),
   };
   Ok(field_comments)
 }
@@ -786,6 +840,38 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 所属部门
+  if input.dept_ids.is_none() {
+    if input.dept_ids_lbl.is_some() && input.dept_ids.is_none() {
+      input.dept_ids_lbl = input.dept_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::dept::dept_dao::find_one(
+          ctx,
+          crate::gen::base::dept::dept_model::DeptSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
+      }
+      if !models.is_empty() {
+        input.dept_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
+    }
+  }
+  
   // 拥有角色
   if input.role_ids.is_none() {
     if input.role_ids_lbl.is_some() && input.role_ids.is_none() {
@@ -989,6 +1075,21 @@ pub async fn create<'a>(
         table: "usr_org",
         column1: "usr_id",
         column2: "org_id",
+      },
+    ).await?;
+  }
+  
+  // 所属部门
+  if let Some(dept_ids) = input.dept_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      dept_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "usr_dept",
+        column1: "usr_id",
+        column2: "dept_id",
       },
     ).await?;
   }
@@ -1226,6 +1327,23 @@ pub async fn update_by_id<'a>(
     field_num += 1;
   }
   
+  // 所属部门
+  if let Some(dept_ids) = input.dept_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      dept_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "usr_dept",
+        column1: "usr_id",
+        column2: "dept_id",
+      },
+    ).await?;
+    
+    field_num += 1;
+  }
+  
   // 拥有角色
   if let Some(role_ids) = input.role_ids {
     many2many_update(
@@ -1261,6 +1379,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
   vec![
     table,
     "base_org",
+    "base_usr_dept",
+    "base_dept",
     "base_usr_role",
     "base_role",
   ]

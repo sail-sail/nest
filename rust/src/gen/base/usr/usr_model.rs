@@ -43,6 +43,10 @@ pub struct UsrModel {
   pub org_ids: Vec<String>,
   /// 所属组织
   pub org_ids_lbl: Vec<String>,
+  /// 所属部门
+  pub dept_ids: Vec<String>,
+  /// 所属部门
+  pub dept_ids_lbl: Vec<String>,
   /// 拥有角色
   pub role_ids: Vec<String>,
   /// 拥有角色
@@ -80,6 +84,11 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let org_ids = org_ids.unwrap_or_default().0;
     let org_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids_lbl")?;
     let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
+    // 所属部门
+    let dept_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids")?;
+    let dept_ids = dept_ids.unwrap_or_default().0;
+    let dept_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids_lbl")?;
+    let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
     // 拥有角色
     let role_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
@@ -104,6 +113,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       is_enabled_lbl,
       org_ids,
       org_ids_lbl,
+      dept_ids,
+      dept_ids_lbl,
       role_ids,
       role_ids_lbl,
       rem,
@@ -141,6 +152,10 @@ pub struct UsrFieldComment {
   pub org_ids: String,
   /// 所属组织
   pub org_ids_lbl: String,
+  /// 所属部门
+  pub dept_ids: String,
+  /// 所属部门
+  pub dept_ids_lbl: String,
   /// 拥有角色
   pub role_ids: String,
   /// 拥有角色
@@ -185,6 +200,10 @@ pub struct UsrSearch {
   pub org_ids: Option<Vec<String>>,
   /// 所属组织
   pub org_ids_is_null: Option<bool>,
+  /// 所属部门
+  pub dept_ids: Option<Vec<String>>,
+  /// 所属部门
+  pub dept_ids_is_null: Option<bool>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   /// 拥有角色
@@ -224,6 +243,10 @@ pub struct UsrInput {
   pub org_ids: Option<Vec<String>>,
   /// 所属组织
   pub org_ids_lbl: Option<Vec<String>>,
+  /// 所属部门
+  pub dept_ids: Option<Vec<String>>,
+  /// 所属部门
+  pub dept_ids_lbl: Option<Vec<String>>,
   /// 拥有角色
   pub role_ids: Option<Vec<String>>,
   /// 拥有角色
@@ -255,6 +278,8 @@ impl From<UsrInput> for UsrSearch {
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 所属组织
       org_ids: input.org_ids,
+      // 所属部门
+      dept_ids: input.dept_ids,
       // 拥有角色
       role_ids: input.role_ids,
       // 备注
