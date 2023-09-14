@@ -730,6 +730,11 @@ export interface TablesConfigItem {
      */
     history_table?: string;
     
+    /**
+     * 是否需要做数据权限校验, 默认为否
+     */
+    dataPermit?: boolean;
+    
   },
   columns?: TableCloumn[];
 }

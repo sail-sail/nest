@@ -42,13 +42,6 @@ function rustKeyEscape(key: string) {
   return key;
 }
 
-function hasDataPermit(mod: string, table: string) {
-  if (mod === "base") {
-    return false;
-  }
-  return true;
-}
-
 /**
  * 检查此表是否有selectInput
  * @param table 
@@ -103,6 +96,16 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   const Table_Up_IN = tableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  
+  function hasDataPermit() {
+    if (mod === "base") {
+      return false;
+    }
+    if (schema.opts.dataPermit === true) {
+      return true;
+    }
+    return false;
+  }
   
   let optTables = tables;
   const result = await context.conn.query(`

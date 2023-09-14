@@ -251,7 +251,7 @@ import * as <#=foreignTable#>Dao from "/gen/<#=foreignKey.mod#>/<#=foreignTable#
 #><#
 }
 #><#
-if (hasDataPermit(mod, table)) {
+if (hasDataPermit()) {
 #>
 
 import {
@@ -261,11 +261,11 @@ import {
 import {
   getAuthDeptIds,
   getAuthAndParentsDeptIds,
-} from "/gen/base/dept/dept.dao.ts";
+} from "/src/base/dept/dept.dao.ts";
 
 import {
   getAuthRoleIds,
-} from "/gen/base/role/role.dao.ts";<#
+} from "/src/base/role/role.dao.ts";<#
 }
 #>
 
@@ -277,7 +277,7 @@ async function getWhereQuery(
   options?: {
   },
 ): Promise<string> {<#
-  if (hasDataPermit(mod, table) && hasCreateUsrId) {
+  if (hasDataPermit() && hasCreateUsrId) {
   #>
   const dataPermitModels = await getDataPermits(route_path);
   const hasUsrPermit = dataPermitModels.some((item) => item.type === "create_usr");
@@ -289,7 +289,7 @@ async function getWhereQuery(
   #>
   let whereQuery = "";
   whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
-  if (hasDataPermit(mod, table) && hasCreateUsrId) {
+  if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasUsrPermit) {
     const authModel = await authDao.getAuthModel();
@@ -458,7 +458,7 @@ async function getWhereQuery(
 }
 
 async function getFromQuery() {<#
-  if (hasDataPermit(mod, table)) {
+  if (hasDataPermit()) {
   #>
   const dataPermitModels = await getDataPermits(route_path);
   const hasUsrPermit = dataPermitModels.some((item) => item.type === "create_usr");
@@ -518,7 +518,7 @@ async function getFromQuery() {<#
     }
     #>
   `;<#
-  if (hasDataPermit(mod, table) && hasCreateUsrId) {
+  if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
     fromQuery += `
