@@ -210,6 +210,12 @@ pub trait Ctx<'a>: Send + Sized {
       }
     }
     
+    if let Some(options) = &options {
+      if let Some(del_cache_key1s) = &options.del_cache_key1s {
+        del_caches(del_cache_key1s).await?;
+      }
+    }
+    
     if is_tran {
       if self.get_tran().is_none() {
         self.begin().await?;
