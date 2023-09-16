@@ -56,6 +56,7 @@ redis = { version = "0.23", features = ["tokio-rustls-comp"], default-features =
 bigdecimal = "0.4"
 time = "0.3"
 rust_decimal = "1.31"
+rust_decimal_macros = "1.32"
 # enum_dispatch = "0.3"
 # pin-project-lite = "0.2"
 # rayon = "1.7"

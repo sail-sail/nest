@@ -205,6 +205,8 @@ pub struct DeptSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 组织ID
+  pub org_id: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]

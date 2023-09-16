@@ -28,11 +28,11 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::permit_model::*;
 
 #[allow(unused_variables)]
-fn get_where_query<'a>(
+async fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<PermitSearch>,
-) -> String {
+) -> Result<String> {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -260,18 +260,18 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.is_sys in ({})", arg);
     }
   }
-  where_query
+  Ok(where_query)
 }
 
-fn get_from_query() -> &'static str {
+async fn get_from_query() -> Result<String> {
   let from_query = r#"base_permit t
     left join base_menu menu_id_lbl
       on menu_id_lbl.id = t.menu_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
-      on update_usr_id_lbl.id = t.update_usr_id"#;
-  from_query
+      on update_usr_id_lbl.id = t.update_usr_id"#.to_owned();
+  Ok(from_query)
 }
 
 /// 根据搜索条件和分页查找数据
@@ -290,8 +290,8 @@ pub async fn find_all<'a>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search);
+  let from_query = get_from_query().await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -356,8 +356,8 @@ pub async fn find_count<'a>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search);
+  let from_query = get_from_query().await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;
   
   let sql = format!(r#"
     select

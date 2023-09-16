@@ -124,6 +124,13 @@ pub trait Ctx<'a>: Send + Sized {
     auth_model.into()
   }
   
+  fn get_auth_id(&mut self) -> Option<String> {
+    match self.get_auth_model() {
+      Some(item) => item.id.into(),
+      None => None,
+    }
+  }
+  
   fn get_auth_tenant_id(&mut self) -> Option<String> {
     match self.get_auth_model() {
       Some(item) => item.tenant_id.into(),

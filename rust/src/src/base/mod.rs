@@ -9,3 +9,6 @@ pub mod options;
 pub mod tenant;
 pub mod permit;
 pub mod operation_record;
+pub mod data_permit;
+pub mod dept;
+pub mod role;

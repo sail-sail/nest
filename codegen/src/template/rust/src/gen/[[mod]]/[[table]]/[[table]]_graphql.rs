@@ -4,7 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -268,22 +268,22 @@ impl <#=tableUP#>GenMutation {<#
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
   
   /// 根据id修改部门id
-  async fn update_dept_by_id_<#=table#><'a>(
+  async fn update_org_by_id_<#=table#><'a>(
     &self,
     ctx: &Context<'a>,
     id: String,
-    dept_id: String,
+    org_id: String,
   ) -> Result<u64> {
     let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
     
-    let res = <#=table#>_resolver::update_dept_by_id(
+    let res = <#=table#>_resolver::update_org_by_id(
       &mut ctx,
       id,
-      dept_id,
+      org_id,
       None,
     ).await;
     
