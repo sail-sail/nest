@@ -981,6 +981,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "默认组织",
       prop: "default_org_id_lbl",
+      sortBy: "default_org_id",
       width: 140,
       align: "left",
       headerAlign: "center",
@@ -989,6 +990,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "锁定",
       prop: "is_locked_lbl",
+      sortBy: "is_locked",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -997,6 +999,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "启用",
       prop: "is_enabled_lbl",
+      sortBy: "is_enabled",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1005,6 +1008,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属组织",
       prop: "org_ids_lbl",
+      sortBy: "org_ids",
       width: 280,
       align: "left",
       headerAlign: "center",
@@ -1013,6 +1017,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属部门",
       prop: "dept_ids_lbl",
+      sortBy: "dept_ids",
       width: 240,
       align: "left",
       headerAlign: "center",
@@ -1021,6 +1026,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "拥有角色",
       prop: "role_ids_lbl",
+      sortBy: "role_ids",
       width: 280,
       align: "left",
       headerAlign: "center",
@@ -1145,7 +1151,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<UsrModel> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }

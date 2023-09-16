@@ -1947,7 +1947,8 @@ function getTableColumns(): ColumnType[] {
     #>
     {
       label: "<#=column_comment#>",
-      prop: "<#=column_name#>_lbl",<#
+      prop: "<#=column_name#>_lbl",
+      sortBy: "<#=column_name#>",<#
       if (column.width) {
       #>
       width: <#=column.width#>,<#
@@ -2171,7 +2172,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }<#

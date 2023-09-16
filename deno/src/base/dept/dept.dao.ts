@@ -38,15 +38,13 @@ export async function getParentsById(ids: string[], parent_ids: string[]) {
  * 获取当前用户及其所有父部门的id
  */
 export async function getAuthAndParentsDeptIds() {
-  const authModel = await authDao.getAuthModel(false);
-  if (!authModel) {
-    return [ ];
-  }
-  const usrModel = await findByIdUsr(authModel.id);
-  if (!usrModel || !usrModel.is_enabled) {
-    return [ ];
-  }
-  const dept_ids: string[] = [ ];
-  await getParentsById(usrModel.dept_ids || [ ], dept_ids);
-  return dept_ids;
+  
+  const dept_ids: string[] = await getAuthDeptIds();
+  
+  const parent_ids: string[] = [
+    ...dept_ids,
+  ];
+  
+  await getParentsById(dept_ids || [ ], parent_ids);
+  return parent_ids;
 }
