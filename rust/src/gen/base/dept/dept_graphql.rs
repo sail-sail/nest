@@ -215,6 +215,25 @@ impl DeptGenMutation {
     ctx.ok(res).await
   }
   
+  /// 根据id修改部门id
+  async fn update_org_by_id_dept<'a>(
+    &self,
+    ctx: &Context<'a>,
+    id: String,
+    org_id: String,
+  ) -> Result<u64> {
+    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    
+    let res = dept_resolver::update_org_by_id(
+      &mut ctx,
+      id,
+      org_id,
+      None,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
   /// 根据id修改数据
   async fn update_by_id_dept<'a>(
     &self,

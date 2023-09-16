@@ -2,6 +2,7 @@
 const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 #>use serde::{
   Serialize,
   Deserialize,
@@ -407,6 +408,12 @@ pub struct <#=tableUP#>Search {
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     }
   #><#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+  /// 组织ID
+  pub org_id: Option<String>,<#
   }
   #>
 }

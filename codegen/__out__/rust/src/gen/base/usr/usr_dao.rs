@@ -30,11 +30,11 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::usr_model::*;
 
 #[allow(unused_variables)]
-fn get_where_query<'a>(
+async fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<UsrSearch>,
-) -> String {
+) -> Result<String> {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -299,10 +299,10 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
     }
   }
-  where_query
+  Ok(where_query)
 }
 
-fn get_from_query() -> &'static str {
+async fn get_from_query() -> Result<String> {
   let from_query = r#"base_usr t
     left join base_org default_org_id_lbl
       on default_org_id_lbl.id = t.default_org_id
@@ -371,8 +371,8 @@ fn get_from_query() -> &'static str {
         base_usr_role.is_deleted = 0
       group by usr_id
     ) _role
-      on _role.usr_id = t.id"#;
-  from_query
+      on _role.usr_id = t.id"#.to_owned();
+  Ok(from_query)
 }
 
 /// 根据搜索条件和分页查找数据
@@ -391,8 +391,8 @@ pub async fn find_all<'a>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search);
+  let from_query = get_from_query().await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -471,8 +471,8 @@ pub async fn find_count<'a>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search);
+  let from_query = get_from_query().await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;
   
   let sql = format!(r#"
     select

@@ -4,7 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -45,6 +45,16 @@ use crate::common::util::string::*;<#
 if (hasMany2many) {
 #>
 use crate::common::util::dao::{many2many_update, ManyOpts};<#
+}
+#><#
+if (hasDataPermit()) {
+#>
+use crate::src::data_permit::data_permit_dao::get_data_permits;
+use crate::src::dept::dept_dao::{
+  get_auth_dept_ids,
+  get_auth_and_parents_dept_ids,
+};
+use crate::src::role::role_dao::get_auth_role_ids;<#
 }
 #>
 
@@ -88,11 +98,34 @@ use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
 use super::<#=table#>_model::*;
 
 #[allow(unused_variables)]
-fn get_where_query<'a>(
+async fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<<#=tableUP#>Search>,
-) -> String {
+) -> Result<String> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  let data_permit_models = get_data_permits(
+    ctx,
+    get_route_path(),
+  ).await?;
+  let has_usr_permit = data_permit_models.iter()
+    .any(|item| item.type === "create_usr")
+    .is_some();
+  let has_role_permit = data_permit_models.iter()
+    .any(|item| item.type === "role")
+    .is_some();
+  let has_dept_permit = data_permit_models.iter()
+    .any(|item| item.type === "dept")
+    .is_some();
+  let has_dept_parent_permit = data_permit_models.iter()
+    .any(|item| item.type === "dept_parent")
+    .is_some();
+  let has_tenant_permit = data_permit_models.iter()
+    .any(|item| item.type === "tenant")
+    .is_some();<#
+  }
+  #>
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
     let is_deleted = search.as_ref()
@@ -135,6 +168,39 @@ fn get_where_query<'a>(
       where_query += &format!(" and t.id in ({})", arg);
     }
   }<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_usr_permit {
+    where_query += " and t.create_usr_id = ?";
+    args.push(ctx.get_auth_id().into());
+  } else if (!has_tenant_permit && has_dept_parent_permit)
+    || (!has_tenant_permit && has_dept_permit)
+  {
+    let dept_ids = get_auth_and_parents_dept_ids(ctx).await?;
+    let arg = {
+      let mut dept_ids2 = Vec::with_capacity(dept_ids.len());
+      for dept_id in dept_ids {
+        args.push(dept_id.into());
+        items.push("?");
+      }
+      items.join(",")
+    };
+    where_query += &format!(" and _permit_usr_dept_.dept_id in ({})", arg);
+  }
+  if !has_tenant_permit && has_dept_parent_permit {
+    let role_ids = get_auth_role_ids(ctx).await?;
+    let arg = {
+      let mut items = Vec::with_capacity(role_ids.len());
+      for role_id in role_ids {
+        args.push(role_id.into());
+        items.push("?");
+      }
+      items.join(",")
+    };
+    where_query += &format!(" and _permit_usr_role_.role_id in {}", arg);
+  }<#
+  }
+  #><#
     if (hasTenant_id) {
   #>
   {
@@ -159,26 +225,26 @@ fn get_where_query<'a>(
   }<#
     }
   #><#
-    if (hasDeptId) {
+    if (hasOrgId) {
   #>
   {
-    let dept_id = {
-      let dept_id = match &search {
-        Some(item) => &item.dept_id,
+    let org_id = {
+      let org_id = match &search {
+        Some(item) => &item.org_id,
         None => &None,
       };
-      let dept_id = match trim_opt(dept_id.as_ref()) {
-        None => ctx.get_auth_dept_id(),
+      let org_id = match trim_opt(org_id.as_ref()) {
+        None => ctx.get_auth_org_id(),
         Some(item) => match item.as_str() {
           "-" => None,
           _ => item.into(),
         },
       };
-      dept_id
+      org_id
     };
-    if let Some(dept_id) = dept_id {
-      where_query += " and base_dept.id = ?";
-      args.push(dept_id.into());
+    if let Some(org_id) = org_id {
+      where_query += " and t.org_id = ?";
+      args.push(org_id.into());
     }
   }<#
     }
@@ -392,11 +458,38 @@ fn get_where_query<'a>(
   #><#
   }
   #>
-  where_query
+  Ok(where_query)
 }
 
-fn get_from_query() -> &'static str {
-  let from_query = r#"<#=mod#>_<#=table#> t<#
+async fn get_from_query() -> Result<String> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  let data_permit_models = get_data_permits(
+    ctx,
+    get_route_path(),
+  ).await?;
+  let has_usr_permit = data_permit_models.iter()
+    .any(|item| item.type === "create_usr")
+    .is_some();
+  let has_role_permit = data_permit_models.iter()
+    .any(|item| item.type === "role")
+    .is_some();
+  let has_dept_permit = data_permit_models.iter()
+    .any(|item| item.type === "dept")
+    .is_some();
+  let has_dept_parent_permit = data_permit_models.iter()
+    .any(|item| item.type === "dept_parent")
+    .is_some();
+  let has_tenant_permit = data_permit_models.iter()
+    .any(|item| item.type === "tenant")
+    .is_some();<#
+  }
+  #>
+  let<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #> mut<#
+  }
+  #> from_query = r#"<#=mod#>_<#=table#> t<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -444,8 +537,24 @@ fn get_from_query() -> &'static str {
       }
     #><#
     }
-    #>"#;
-  from_query
+    #>"#.to_owned();<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  if !has_tenant_permit && has_dept_permit {
+    from_query += r#"
+      left join base_usr_dept _permit_usr_dept_
+        on _permit_usr_dept_.usr_id  = t.create_usr_id
+    "#;
+  }
+  if !has_tenant_permit && has_role_permit {
+    from_query += r#"
+      left join base_usr_role _permit_usr_role_
+        on _permit_usr_role_.usr_id  = t.create_usr_id
+    "#;
+  }<#
+  }
+  #>
+  Ok(from_query)
 }
 
 /// 根据搜索条件和分页查找数据
@@ -464,8 +573,8 @@ pub async fn find_all<'a>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search);
+  let from_query = get_from_query().await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -681,8 +790,8 @@ pub async fn find_count<'a>(
   
   let mut args = QueryArgs::new();
   
-  let from_query = get_from_query();
-  let where_query = get_where_query(ctx, &mut args, search);
+  let from_query = get_from_query().await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;
   
   let sql = format!(r#"
     select
@@ -1483,13 +1592,13 @@ pub async fn create<'a>(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
   
-  if let Some(dept_id) = ctx.get_auth_dept_id() {
-    sql_fields += ",dept_id";
+  if let Some(org_id) = ctx.get_auth_org_id() {
+    sql_fields += ",org_id";
     sql_values += ",?";
-    args.push(dept_id.into());
+    args.push(org_id.into());
   }<#
   }
   #>
@@ -1694,23 +1803,23 @@ pub async fn update_tenant_by_id<'a>(
 }<#
 }
 #><#
-if (hasDeptId) {
+if (hasOrgId) {
 #>
 
-/// 根据id修改部门id
-pub async fn update_dept_by_id<'a>(
+/// 根据id修改组织id
+pub async fn update_org_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  dept_id: String,
+  org_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "<#=mod#>_<#=table#>";
-  let _method = "update_dept_by_id";
+  let _method = "update_org_by_id";
   
   let mut args = QueryArgs::new();
   
-  let sql_fields = "dept_id = ?,update_time = ?";
-  args.push(dept_id.into());
+  let sql_fields = "org_id = ?,update_time = ?";
+  args.push(org_id.into());
   args.push(ctx.get_now().into());
   
   let sql_where = "id = ?";
@@ -2543,12 +2652,12 @@ pub async fn find_last_order_by<'a>(
   }<#
   }
   #><#
-  if (hasDeptId) {
+  if (hasOrgId) {
   #>
   
-  if let Some(dept_id) = ctx.get_auth_dept_id() {
-    sql_where += " and t.dept_id = ?";
-    args.push(dept_id.into());
+  if let Some(org_id) = ctx.get_auth_org_id() {
+    sql_where += " and t.org_id = ?";
+    args.push(org_id.into());
   }<#
   }
   #>

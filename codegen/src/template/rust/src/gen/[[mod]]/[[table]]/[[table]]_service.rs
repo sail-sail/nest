@@ -4,7 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasDeptId = columns.some((column) => column.COLUMN_NAME === "dept_id");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -163,22 +163,22 @@ pub async fn update_tenant_by_id<'a>(
 }<#
 }
 #><#
-if (hasDeptId) {
+if (hasOrgId) {
 #>
 
-/// 根据id修改部门id
+/// 根据id修改组织id
 #[allow(dead_code)]
-pub async fn update_dept_by_id<'a>(
+pub async fn update_org_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  dept_id: String,
+  org_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = <#=table#>_dao::update_dept_by_id(
+  let num = <#=table#>_dao::update_org_by_id(
     ctx,
     id,
-    dept_id,
+    org_id,
     options,
   ).await?;
   
