@@ -1,5 +1,5 @@
-import {
-  type GetLoginInfo,
+import type {
+  GetLoginInfo,
 } from "@/typings/types";
 
 export default defineStore("usr", function() {

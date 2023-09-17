@@ -106,29 +106,26 @@ export async function many2manyUpdate(
     `, [ model.id ]);
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
-      if (column2Ids.includes(model.column2Id) && model.is_deleted === 1) {
-        const sql = /*sql*/ `
-          update
-            ${ escapeId(many.mod + "_" + many.table) }
-          set
-            is_deleted = 0
-            ,delete_time = ?
-          where
-            id = ?
-        `;
-        await execute(sql, [ reqDate(), model.id ]);
-      } else if (!column2Ids.includes(model.column2Id) && model.is_deleted === 0) {
-        const sql = /*sql*/ `
-          update
-            ${ escapeId(many.mod + "_" + many.table) }
-          set
-            is_deleted = 1
-            ,delete_time = ?
-          where
-            id = ?
-        `;
-        await execute(sql, [ reqDate(), model.id ]);
-      }
+      const idx = column2Ids.indexOf(model.column2Id);
+      const sql = /*sql*/ `
+        update
+          ${ escapeId(many.mod + "_" + many.table) }
+        set
+          is_deleted = ?
+          ,delete_time = ?
+          ,order_by = ?
+        where
+          id = ?
+      `;
+      await execute(
+        sql,
+        [
+          idx === -1 ? 1 : 0,
+          reqDate(),
+          idx + 1,
+          model.id,
+        ],
+      );
     }
   }
   const column2Ids2 = column2Ids.filter((column2Id) => models.every((model) => model.column2Id !== column2Id));
@@ -141,6 +138,7 @@ export async function many2manyUpdate(
         insert into ${ many.mod }_${ many.table }(
           id
           ,create_time
+          ,order_by
       `;
       if (many.column1 !== "tenant_id" && many.column2 !== "tenant_id") {
         if (tenant_id) {
@@ -151,9 +149,10 @@ export async function many2manyUpdate(
         sql += `,create_usr_id`;
       }
       sql += `,${ many.column1 },${ many.column2 }`;
-      sql += `) values(?,?`;
+      sql += `) values(?,?,?`;
       args.push(id);
       args.push(reqDate());
+      args.push(models.length + i + 1);
       if (many.column1 !== "tenant_id" && many.column2 !== "tenant_id") {
         if (tenant_id) {
           sql += `,?`;

@@ -917,6 +917,11 @@ export default defineConfig({
         fixed: "left",
       },
       {
+        COLUMN_NAME: "usr_ids",
+        COLUMN_COMMENT: "部门负责人",
+        width: 200,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
