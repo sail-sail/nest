@@ -347,8 +347,8 @@ async fn get_from_query() -> Result<String> {
       and base_menu.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_menu.id) menu_ids,
-        json_arrayagg(base_menu.lbl) menu_ids_lbl,
+        json_objectagg(base_role_menu.order_by, base_menu.id) menu_ids,
+        json_objectagg(base_role_menu.order_by, base_menu.lbl) menu_ids_lbl,
         base_role.id role_id
       from base_role_menu
       inner join base_menu
@@ -369,8 +369,8 @@ async fn get_from_query() -> Result<String> {
       and base_permit.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_permit.id) permit_ids,
-        json_arrayagg(base_permit.lbl) permit_ids_lbl,
+        json_objectagg(base_role_permit.order_by, base_permit.id) permit_ids,
+        json_objectagg(base_role_permit.order_by, base_permit.lbl) permit_ids_lbl,
         base_role.id role_id
       from base_role_permit
       inner join base_permit
@@ -391,8 +391,8 @@ async fn get_from_query() -> Result<String> {
       and base_data_permit.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_data_permit.id) data_permit_ids,
-        json_arrayagg(base_data_permit.scope) data_permit_ids_lbl,
+        json_objectagg(base_role_data_permit.order_by, base_data_permit.id) data_permit_ids,
+        json_objectagg(base_role_data_permit.order_by, base_data_permit.scope) data_permit_ids_lbl,
         base_role.id role_id
       from base_role_data_permit
       inner join base_data_permit

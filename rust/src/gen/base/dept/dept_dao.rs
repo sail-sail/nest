@@ -2,6 +2,7 @@ use anyhow::Result;
 use tracing::info;
 
 use crate::common::util::string::*;
+use crate::common::util::dao::{many2many_update, ManyOpts};
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -156,6 +157,32 @@ async fn get_where_query<'a>(
     };
     if let Some(lbl_like) = lbl_like {
       where_query += &format!(" and t.lbl like {}", args.push((sql_like(&lbl_like) + "%").into()));
+    }
+  }
+  {
+    let usr_ids: Vec<String> = match &search {
+      Some(item) => item.usr_ids.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !usr_ids.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(usr_ids.len());
+        for item in usr_ids {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and base_usr.id in ({})", arg);
+    }
+  }
+  {
+    let usr_ids_is_null: bool = match &search {
+      Some(item) => item.usr_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if usr_ids_is_null {
+      where_query += &format!(" and usr_ids_lbl.id is null");
     }
   }
   {
@@ -330,6 +357,28 @@ async fn get_from_query() -> Result<String> {
   let from_query = r#"base_dept t
     left join base_dept parent_id_lbl
       on parent_id_lbl.id = t.parent_id
+    left join base_dept_usr
+      on base_dept_usr.dept_id = t.id
+      and base_dept_usr.is_deleted = 0
+    left join base_usr
+      on base_dept_usr.usr_id = base_usr.id
+      and base_usr.is_deleted = 0
+    left join (
+      select
+        json_objectagg(base_dept_usr.order_by, base_usr.id) usr_ids,
+        json_objectagg(base_dept_usr.order_by, base_usr.lbl) usr_ids_lbl,
+        base_dept.id dept_id
+      from base_dept_usr
+      inner join base_usr
+        on base_usr.id = base_dept_usr.usr_id
+        and base_usr.is_deleted = 0
+      inner join base_dept
+        on base_dept.id = base_dept_usr.dept_id
+      where
+        base_dept_usr.is_deleted = 0
+      group by dept_id
+    ) _usr
+      on _usr.dept_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -362,6 +411,8 @@ pub async fn find_all<'a>(
     select
       t.*
       ,parent_id_lbl.lbl parent_id_lbl
+      ,max(usr_ids) usr_ids
+      ,max(usr_ids_lbl) usr_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -495,6 +546,8 @@ pub async fn get_field_comments<'a>(
     "父部门".into(),
     "父部门".into(),
     "名称".into(),
+    "部门负责人".into(),
+    "部门负责人".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
@@ -530,20 +583,22 @@ pub async fn get_field_comments<'a>(
     parent_id: vec[1].to_owned(),
     parent_id_lbl: vec[2].to_owned(),
     lbl: vec[3].to_owned(),
-    is_locked: vec[4].to_owned(),
-    is_locked_lbl: vec[5].to_owned(),
-    is_enabled: vec[6].to_owned(),
-    is_enabled_lbl: vec[7].to_owned(),
-    order_by: vec[8].to_owned(),
-    rem: vec[9].to_owned(),
-    create_usr_id: vec[10].to_owned(),
-    create_usr_id_lbl: vec[11].to_owned(),
-    create_time: vec[12].to_owned(),
-    create_time_lbl: vec[13].to_owned(),
-    update_usr_id: vec[14].to_owned(),
-    update_usr_id_lbl: vec[15].to_owned(),
-    update_time: vec[16].to_owned(),
-    update_time_lbl: vec[17].to_owned(),
+    usr_ids: vec[4].to_owned(),
+    usr_ids_lbl: vec[5].to_owned(),
+    is_locked: vec[6].to_owned(),
+    is_locked_lbl: vec[7].to_owned(),
+    is_enabled: vec[8].to_owned(),
+    is_enabled_lbl: vec[9].to_owned(),
+    order_by: vec[10].to_owned(),
+    rem: vec[11].to_owned(),
+    create_usr_id: vec[12].to_owned(),
+    create_usr_id_lbl: vec[13].to_owned(),
+    create_time: vec[14].to_owned(),
+    create_time_lbl: vec[15].to_owned(),
+    update_usr_id: vec[16].to_owned(),
+    update_usr_id_lbl: vec[17].to_owned(),
+    update_time: vec[18].to_owned(),
+    update_time_lbl: vec[19].to_owned(),
   };
   Ok(field_comments)
 }
@@ -771,6 +826,38 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
+  // 部门负责人
+  if input.usr_ids.is_none() {
+    if input.usr_ids_lbl.is_some() && input.usr_ids.is_none() {
+      input.usr_ids_lbl = input.usr_ids_lbl.map(|item| 
+        item.into_iter()
+          .map(|item| item.trim().to_owned())
+          .collect::<Vec<String>>()
+      );
+      let mut models = vec![];
+      for lbl in input.usr_ids_lbl.clone().unwrap_or_default() {
+        let model = crate::gen::base::usr::usr_dao::find_one(
+          ctx,
+          crate::gen::base::usr::usr_model::UsrSearch {
+            lbl: lbl.into(),
+            ..Default::default()
+          }.into(),
+          None,
+          None,
+        ).await?;
+        if let Some(model) = model {
+          models.push(model);
+        }
+      }
+      if !models.is_empty() {
+        input.usr_ids = models.into_iter()
+          .map(|item| item.id)
+          .collect::<Vec<String>>()
+          .into();
+      }
+    }
+  }
+  
   Ok(input)
 }
 
@@ -936,6 +1023,21 @@ pub async fn create<'a>(
     args,
     options,
   ).await?;
+  
+  // 部门负责人
+  if let Some(usr_ids) = input.usr_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      usr_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "dept_usr",
+        column1: "dept_id",
+        column2: "usr_id",
+      },
+    ).await?;
+  }
   
   Ok(id)
 }
@@ -1165,6 +1267,33 @@ pub async fn update_by_id<'a>(
     
   }
   
+  let mut field_num = 0;
+  
+  // 部门负责人
+  if let Some(usr_ids) = input.usr_ids {
+    many2many_update(
+      ctx,
+      id.clone(),
+      usr_ids.clone(),
+      ManyOpts {
+        r#mod: "base",
+        table: "dept_usr",
+        column1: "dept_id",
+        column2: "usr_id",
+      },
+    ).await?;
+    
+    field_num += 1;
+  }
+  
+  if field_num > 0 {
+    let options = Options::from(None);
+    let options = options.set_del_cache_key1s(get_foreign_tables());
+    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
+      crate::common::cache::cache_dao::del_caches(del_cache_key1s).await?;
+    }
+  }
+  
   Ok(id)
 }
 
@@ -1175,6 +1304,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   vec![
     table,
     "base_dept",
+    "base_dept_usr",
     "base_usr",
   ]
 }

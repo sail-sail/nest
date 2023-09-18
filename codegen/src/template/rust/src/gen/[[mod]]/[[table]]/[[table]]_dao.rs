@@ -512,10 +512,10 @@ async fn get_from_query() -> Result<String> {<#
       and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
     left join (
       select
-        json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
           if (foreignKey.lbl) {
         #>
-        json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
+        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
           }
         #>
         <#=mod#>_<#=table#>.id <#=many2many.column1#>

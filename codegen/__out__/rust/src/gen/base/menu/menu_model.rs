@@ -90,10 +90,40 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
     // 所在租户
-    let tenant_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("tenant_ids")?;
+    let tenant_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("tenant_ids")?;
     let tenant_ids = tenant_ids.unwrap_or_default().0;
-    let tenant_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("tenant_ids_lbl")?;
+    let tenant_ids = {
+      let mut keys: Vec<u32> = tenant_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          tenant_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let tenant_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("tenant_ids_lbl")?;
     let tenant_ids_lbl = tenant_ids_lbl.unwrap_or_default().0;
+    let tenant_ids_lbl = {
+      let mut keys: Vec<u32> = tenant_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          tenant_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();

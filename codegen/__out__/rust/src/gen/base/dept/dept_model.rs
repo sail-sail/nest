@@ -25,6 +25,10 @@ pub struct DeptModel {
   pub parent_id_lbl: String,
   /// 名称
   pub lbl: String,
+  /// 部门负责人
+  pub usr_ids: Vec<String>,
+  /// 部门负责人
+  pub usr_ids_lbl: Vec<String>,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
@@ -67,6 +71,41 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     let parent_id_lbl = parent_id_lbl.unwrap_or_default();
     // 名称
     let lbl: String = row.try_get("lbl")?;
+    // 部门负责人
+    let usr_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("usr_ids")?;
+    let usr_ids = usr_ids.unwrap_or_default().0;
+    let usr_ids = {
+      let mut keys: Vec<u32> = usr_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          usr_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let usr_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("usr_ids_lbl")?;
+    let usr_ids_lbl = usr_ids_lbl.unwrap_or_default().0;
+    let usr_ids_lbl = {
+      let mut keys: Vec<u32> = usr_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          usr_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -105,6 +144,8 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       parent_id,
       parent_id_lbl,
       lbl,
+      usr_ids,
+      usr_ids_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -137,6 +178,10 @@ pub struct DeptFieldComment {
   pub parent_id_lbl: String,
   /// 名称
   pub lbl: String,
+  /// 部门负责人
+  pub usr_ids: String,
+  /// 部门负责人
+  pub usr_ids_lbl: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
@@ -183,6 +228,10 @@ pub struct DeptSearch {
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
+  /// 部门负责人
+  pub usr_ids: Option<Vec<String>>,
+  /// 部门负责人
+  pub usr_ids_is_null: Option<bool>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
   /// 启用
@@ -220,6 +269,10 @@ pub struct DeptInput {
   pub parent_id_lbl: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 部门负责人
+  pub usr_ids: Option<Vec<String>>,
+  /// 部门负责人
+  pub usr_ids_lbl: Option<Vec<String>>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
@@ -261,6 +314,8 @@ impl From<DeptInput> for DeptSearch {
       parent_id: input.parent_id.map(|x| vec![x.into()]),
       // 名称
       lbl: input.lbl,
+      // 部门负责人
+      usr_ids: input.usr_ids,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
       // 启用

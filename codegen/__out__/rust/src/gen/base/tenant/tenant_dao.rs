@@ -323,8 +323,8 @@ async fn get_from_query() -> Result<String> {
       and base_domain.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_domain.id) domain_ids,
-        json_arrayagg(base_domain.lbl) domain_ids_lbl,
+        json_objectagg(base_tenant_domain.order_by, base_domain.id) domain_ids,
+        json_objectagg(base_tenant_domain.order_by, base_domain.lbl) domain_ids_lbl,
         base_tenant.id tenant_id
       from base_tenant_domain
       inner join base_domain
@@ -345,8 +345,8 @@ async fn get_from_query() -> Result<String> {
       and base_menu.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_menu.id) menu_ids,
-        json_arrayagg(base_menu.lbl) menu_ids_lbl,
+        json_objectagg(base_tenant_menu.order_by, base_menu.id) menu_ids,
+        json_objectagg(base_tenant_menu.order_by, base_menu.lbl) menu_ids_lbl,
         base_tenant.id tenant_id
       from base_tenant_menu
       inner join base_menu
