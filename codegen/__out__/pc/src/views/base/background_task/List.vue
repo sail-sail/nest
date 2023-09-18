@@ -774,6 +774,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "状态",
       prop: "state_lbl",
+      sortBy: "state",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -782,6 +783,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "类型",
       prop: "type_lbl",
+      sortBy: "type",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -806,6 +808,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "开始时间",
       prop: "begin_time_lbl",
+      sortBy: "begin_time",
       width: 180,
       sortable: "custom",
       align: "center",
@@ -815,6 +818,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "结束时间",
       prop: "end_time_lbl",
+      sortBy: "end_time",
       width: 180,
       sortable: "custom",
       align: "center",
@@ -832,6 +836,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
+      sortBy: "create_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -840,6 +845,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建时间",
       prop: "create_time_lbl",
+      sortBy: "create_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -849,6 +855,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
+      sortBy: "update_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -857,6 +864,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新时间",
       prop: "update_time_lbl",
+      sortBy: "update_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -974,7 +982,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<BackgroundTaskModel> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }

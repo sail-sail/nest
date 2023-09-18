@@ -8,7 +8,6 @@ import type {
   PageInput,
   PermitSearch,
   PermitInput,
-  PermitModel,
 } from "#/types";
 
 import type {
@@ -69,30 +68,6 @@ export async function findAll(
     const item = res[i];
   }
   return res;
-}
-
-export type PermitModelTree = PermitModel & {
-  children?: PermitModelTree[];
-}
-
-/**
- * 查找树形数据
- * @param sort 
- * @param opt 
- * @returns 
- */
-export async function findTree(
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const res = await findAll(
-    undefined,
-    undefined,
-    sort,
-    opt,
-  );
-  const treeData = list2tree(res);
-  return treeData;
 }
 
 /**

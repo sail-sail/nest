@@ -211,8 +211,8 @@ async function getFromQuery() {
       and base_domain.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_domain.id) domain_ids,
-        json_arrayagg(base_domain.lbl) domain_ids_lbl,
+        json_objectagg(base_tenant_domain.order_by, base_domain.id) domain_ids,
+        json_objectagg(base_tenant_domain.order_by, base_domain.lbl) domain_ids_lbl,
         base_tenant.id tenant_id
       from base_tenant_domain
       inner join base_domain
@@ -233,8 +233,8 @@ async function getFromQuery() {
       and base_menu.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_menu.id) menu_ids,
-        json_arrayagg(base_menu.lbl) menu_ids_lbl,
+        json_objectagg(base_tenant_menu.order_by, base_menu.id) menu_ids,
+        json_objectagg(base_tenant_menu.order_by, base_menu.lbl) menu_ids_lbl,
         base_tenant.id tenant_id
       from base_tenant_menu
       inner join base_menu
@@ -366,6 +366,48 @@ export async function findAll(
       cacheKey2,
     },
   );
+  for (const item of result) {
+    
+    // 所属域名
+    if (item.domain_ids) {
+      const obj = item.domain_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.domain_ids = keys.map((key) => obj[key]);
+    }
+    if (item.domain_ids_lbl) {
+      const obj = item.domain_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.domain_ids_lbl = keys.map((key) => obj[key]);
+    }
+    
+    // 菜单权限
+    if (item.menu_ids) {
+      const obj = item.menu_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.menu_ids = keys.map((key) => obj[key]);
+    }
+    if (item.menu_ids_lbl) {
+      const obj = item.menu_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.menu_ids_lbl = keys.map((key) => obj[key]);
+    }
+  }
   
   const [
     is_lockedDict, // 锁定

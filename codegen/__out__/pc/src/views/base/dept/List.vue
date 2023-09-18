@@ -420,6 +420,20 @@
             </el-table-column>
           </template>
           
+          <!-- 部门负责人 -->
+          <template v-else-if="'usr_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
@@ -693,6 +707,8 @@ const props = defineProps<{
   parent_id_lbl?: string|string[]; // 父部门
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  usr_ids?: string|string[]; // 部门负责人
+  usr_ids_lbl?: string|string[]; // 部门负责人
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
@@ -714,6 +730,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
+  usr_ids: "string[]",
+  usr_ids_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -841,6 +859,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "父部门",
       prop: "parent_id_lbl",
+      sortBy: "parent_id",
       width: 140,
       align: "left",
       headerAlign: "center",
@@ -857,8 +876,18 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
+      label: "部门负责人",
+      prop: "usr_ids_lbl",
+      sortBy: "usr_ids",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
+      sortBy: "is_locked",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -867,6 +896,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "启用",
       prop: "is_enabled_lbl",
+      sortBy: "is_enabled",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -892,6 +922,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
+      sortBy: "create_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -900,6 +931,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建时间",
       prop: "create_time_lbl",
+      sortBy: "create_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -909,6 +941,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
+      sortBy: "update_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -917,6 +950,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新时间",
       prop: "update_time_lbl",
+      sortBy: "update_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1034,7 +1068,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<DeptModel> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }
@@ -1146,6 +1186,7 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ await nAsync("父部门") ]: "parent_id_lbl",
     [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("部门负责人") ]: "usr_ids_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
@@ -1467,6 +1508,7 @@ async function initI18nsEfc() {
   const codes: string[] = [
     "父部门",
     "名称",
+    "部门负责人",
     "锁定",
     "启用",
     "排序",

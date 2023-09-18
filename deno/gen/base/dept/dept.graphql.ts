@@ -13,6 +13,10 @@ type DeptModel {
   parent_id_lbl: String
   "名称"
   lbl: String!
+  "部门负责人"
+  usr_ids: [String!]
+  "部门负责人"
+  usr_ids_lbl: [String!]
   "锁定"
   is_locked: Int!
   "锁定"
@@ -51,6 +55,10 @@ type DeptFieldComment {
   parent_id_lbl: String!
   "名称"
   lbl: String!
+  "部门负责人"
+  usr_ids: String!
+  "部门负责人"
+  usr_ids_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -89,6 +97,10 @@ input DeptInput {
   parent_id_lbl: String
   "名称"
   lbl: String
+  "部门负责人"
+  usr_ids: [String!]
+  "部门负责人"
+  usr_ids_lbl: [String!]
   "锁定"
   is_locked: Int
   "锁定"
@@ -131,6 +143,9 @@ input DeptSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "部门负责人"
+  usr_ids: [String!]
+  usr_ids_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "启用"

@@ -1,11 +1,11 @@
 import "vue-router";
 
-import {
-  type AutocompleteFetchSuggestionsCallback as AutocompleteFetchSuggestionsCallback2,
-  type UploadProps as UploadProps2,
-  type Sort as Sort2,
-  type TableColumnCtx as TableColumnCtx2,
-  type FormItemRule as FormItemRule2,
+import type {
+  AutocompleteFetchSuggestionsCallback as AutocompleteFetchSuggestionsCallback2,
+  UploadProps as UploadProps2,
+  Sort as Sort2,
+  TableColumnCtx as TableColumnCtx2,
+  FormItemRule as FormItemRule2,
 } from "element-plus";
 
 declare module 'vue-router' {
@@ -29,6 +29,7 @@ declare global {
   interface ColumnType {
     prop: string;
     label: string;
+    sortBy?: string;
     hide?: boolean;
     width?: string | number;
     minWidth?: string | number;

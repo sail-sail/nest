@@ -52,6 +52,10 @@ import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 import * as orgDao from "/gen/base/org/org.dao.ts";
 
 import {
+  many2manyUpdate,
+} from "/lib/util/dao_util.ts";
+
+import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -125,6 +129,18 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.usr_ids && !Array.isArray(search?.usr_ids)) {
+    search.usr_ids = [ search.usr_ids ];
+  }
+  if (search?.usr_ids && search?.usr_ids.length > 0) {
+    whereQuery += ` and base_usr.id in ${ args.push(search.usr_ids) }`;
+  }
+  if (search?.usr_ids === null) {
+    whereQuery += ` and base_usr.id is null`;
+  }
+  if (search?.usr_ids_is_null) {
+    whereQuery += ` and base_usr.id is null`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -213,6 +229,28 @@ async function getFromQuery() {
     base_dept t
     left join base_dept parent_id_lbl
       on parent_id_lbl.id = t.parent_id
+    left join base_dept_usr
+      on base_dept_usr.dept_id = t.id
+      and base_dept_usr.is_deleted = 0
+    left join base_usr
+      on base_dept_usr.usr_id = base_usr.id
+      and base_usr.is_deleted = 0
+    left join (
+      select
+        json_objectagg(base_dept_usr.order_by, base_usr.id) usr_ids,
+        json_objectagg(base_dept_usr.order_by, base_usr.lbl) usr_ids_lbl,
+        base_dept.id dept_id
+      from base_dept_usr
+      inner join base_usr
+        on base_usr.id = base_dept_usr.usr_id
+        and base_usr.is_deleted = 0
+      inner join base_dept
+        on base_dept.id = base_dept_usr.dept_id
+      where
+        base_dept_usr.is_deleted = 0
+      group by dept_id
+    ) _usr
+      on _usr.dept_id = t.id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -281,6 +319,8 @@ export async function findAll(
   let sql = `
     select t.*
       ,parent_id_lbl.lbl parent_id_lbl
+      ,max(usr_ids) usr_ids
+      ,max(usr_ids_lbl) usr_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -329,6 +369,28 @@ export async function findAll(
       cacheKey2,
     },
   );
+  for (const item of result) {
+    
+    // 部门负责人
+    if (item.usr_ids) {
+      const obj = item.usr_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.usr_ids = keys.map((key) => obj[key]);
+    }
+    if (item.usr_ids_lbl) {
+      const obj = item.usr_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.usr_ids_lbl = keys.map((key) => obj[key]);
+    }
+  }
   
   const [
     is_lockedDict, // 锁定
@@ -399,6 +461,8 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
     parent_id: await n("父部门"),
     parent_id_lbl: await n("父部门"),
     lbl: await n("名称"),
+    usr_ids: await n("部门负责人"),
+    usr_ids_lbl: await n("部门负责人"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -700,6 +764,28 @@ export async function create(
     }
   }
   
+  // 部门负责人
+  if (!input.usr_ids && input.usr_ids_lbl) {
+    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
+      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
+    }
+    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_usr t
+      where
+        t.lbl in ${ args.push(input.usr_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.usr_ids = models.map((item: { id: string }) => item.id);
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -853,6 +939,18 @@ export async function create(
   
   const result = await execute(sql, args);
   
+  // 部门负责人
+  await many2manyUpdate(
+    input,
+    "usr_ids",
+    {
+      mod: "base",
+      table: "dept_usr",
+      column1: "dept_id",
+      column2: "usr_id",
+    },
+  );
+  
   await delCache();
   
   return input.id;
@@ -868,6 +966,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
     "base_dept",
+    "base_dept_usr",
     "base_usr",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
@@ -1013,6 +1112,28 @@ export async function updateById(
       input.parent_id = deptModel.id;
     }
   }
+
+  // 部门负责人
+  if (!input.usr_ids && input.usr_ids_lbl) {
+    if (typeof input.usr_ids_lbl === "string" || input.usr_ids_lbl instanceof String) {
+      input.usr_ids_lbl = input.usr_ids_lbl.split(",");
+    }
+    input.usr_ids_lbl = input.usr_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_usr t
+      where
+        t.lbl in ${ args.push(input.usr_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.usr_ids = models.map((item: { id: string }) => item.id);
+  }
   
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
@@ -1105,6 +1226,23 @@ export async function updateById(
     
     const result = await execute(sql, args);
   }
+  
+  updateFldNum++;
+  
+  // 部门负责人
+  await many2manyUpdate(
+    {
+      ...input,
+      id,
+    },
+    "usr_ids",
+    {
+      mod: "base",
+      table: "dept_usr",
+      column1: "dept_id",
+      column2: "usr_id",
+    },
+  );
   
   if (updateFldNum > 0) {
     await delCache();

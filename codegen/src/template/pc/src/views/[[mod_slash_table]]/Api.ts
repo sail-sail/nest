@@ -43,7 +43,7 @@ import type {
   <#=inputName#>,<#
   }
   #><#
-  if (list_tree) {
+  if (list_tree === true) {
   #>
   <#=modelName#>,<#
   }
@@ -104,7 +104,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts.list_tree) {
+  if (foreignSchema.opts.list_tree !== true) {
     continue;
   }
 #>
@@ -203,7 +203,7 @@ export async function findAll(
   }
   return res;
 }<#
-if (list_tree) {
+if (list_tree === true) {
 #>
 
 export type <#=modelNameTree#> = <#=modelName#> & {
@@ -712,7 +712,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts.list_tree) {
+  if (foreignSchema.opts.list_tree !== true) {
     continue;
   }
 #>

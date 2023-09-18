@@ -222,8 +222,8 @@ async function getFromQuery() {
       and base_org.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_org.id) org_ids,
-        json_arrayagg(base_org.lbl) org_ids_lbl,
+        json_objectagg(base_usr_org.order_by, base_org.id) org_ids,
+        json_objectagg(base_usr_org.order_by, base_org.lbl) org_ids_lbl,
         base_usr.id usr_id
       from base_usr_org
       inner join base_org
@@ -244,8 +244,8 @@ async function getFromQuery() {
       and base_dept.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_dept.id) dept_ids,
-        json_arrayagg(base_dept.lbl) dept_ids_lbl,
+        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
+        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
         base_usr.id usr_id
       from base_usr_dept
       inner join base_dept
@@ -266,8 +266,8 @@ async function getFromQuery() {
       and base_role.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_role.id) role_ids,
-        json_arrayagg(base_role.lbl) role_ids_lbl,
+        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
+        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
         base_usr.id usr_id
       from base_usr_role
       inner join base_role
@@ -396,6 +396,68 @@ export async function findAll(
       cacheKey2,
     },
   );
+  for (const item of result) {
+    
+    // 所属组织
+    if (item.org_ids) {
+      const obj = item.org_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.org_ids = keys.map((key) => obj[key]);
+    }
+    if (item.org_ids_lbl) {
+      const obj = item.org_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.org_ids_lbl = keys.map((key) => obj[key]);
+    }
+    
+    // 所属部门
+    if (item.dept_ids) {
+      const obj = item.dept_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.dept_ids = keys.map((key) => obj[key]);
+    }
+    if (item.dept_ids_lbl) {
+      const obj = item.dept_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.dept_ids_lbl = keys.map((key) => obj[key]);
+    }
+    
+    // 拥有角色
+    if (item.role_ids) {
+      const obj = item.role_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.role_ids = keys.map((key) => obj[key]);
+    }
+    if (item.role_ids_lbl) {
+      const obj = item.role_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.role_ids_lbl = keys.map((key) => obj[key]);
+    }
+  }
   
   const [
     is_lockedDict, // 锁定

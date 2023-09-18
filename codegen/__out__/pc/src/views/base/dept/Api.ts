@@ -43,6 +43,8 @@ export async function findAll(
           parent_id
           parent_id_lbl
           lbl
+          usr_ids
+          usr_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -202,6 +204,8 @@ export async function findById(
           parent_id
           parent_id_lbl
           lbl
+          usr_ids
+          usr_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
@@ -488,6 +492,7 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsDept {
             parent_id_lbl
             lbl
+            usr_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             order_by
@@ -561,6 +566,8 @@ export function useExportExcel(routePath: string) {
             parent_id
             parent_id_lbl
             lbl
+            usr_ids
+            usr_ids_lbl
             is_locked
             is_locked_lbl
             is_enabled
@@ -579,6 +586,7 @@ export function useExportExcel(routePath: string) {
           getFieldCommentsDept {
             parent_id_lbl
             lbl
+            usr_ids_lbl
             is_locked_lbl
             is_enabled_lbl
             order_by

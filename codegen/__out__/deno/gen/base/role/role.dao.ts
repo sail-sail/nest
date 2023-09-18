@@ -228,8 +228,8 @@ async function getFromQuery() {
       and base_menu.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_menu.id) menu_ids,
-        json_arrayagg(base_menu.lbl) menu_ids_lbl,
+        json_objectagg(base_role_menu.order_by, base_menu.id) menu_ids,
+        json_objectagg(base_role_menu.order_by, base_menu.lbl) menu_ids_lbl,
         base_role.id role_id
       from base_role_menu
       inner join base_menu
@@ -250,8 +250,8 @@ async function getFromQuery() {
       and base_permit.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_permit.id) permit_ids,
-        json_arrayagg(base_permit.lbl) permit_ids_lbl,
+        json_objectagg(base_role_permit.order_by, base_permit.id) permit_ids,
+        json_objectagg(base_role_permit.order_by, base_permit.lbl) permit_ids_lbl,
         base_role.id role_id
       from base_role_permit
       inner join base_permit
@@ -272,8 +272,8 @@ async function getFromQuery() {
       and base_data_permit.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_data_permit.id) data_permit_ids,
-        json_arrayagg(base_data_permit.scope) data_permit_ids_lbl,
+        json_objectagg(base_role_data_permit.order_by, base_data_permit.id) data_permit_ids,
+        json_objectagg(base_role_data_permit.order_by, base_data_permit.scope) data_permit_ids_lbl,
         base_role.id role_id
       from base_role_data_permit
       inner join base_data_permit
@@ -402,6 +402,68 @@ export async function findAll(
       cacheKey2,
     },
   );
+  for (const item of result) {
+    
+    // 菜单权限
+    if (item.menu_ids) {
+      const obj = item.menu_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.menu_ids = keys.map((key) => obj[key]);
+    }
+    if (item.menu_ids_lbl) {
+      const obj = item.menu_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.menu_ids_lbl = keys.map((key) => obj[key]);
+    }
+    
+    // 按钮权限
+    if (item.permit_ids) {
+      const obj = item.permit_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.permit_ids = keys.map((key) => obj[key]);
+    }
+    if (item.permit_ids_lbl) {
+      const obj = item.permit_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.permit_ids_lbl = keys.map((key) => obj[key]);
+    }
+    
+    // 数据权限
+    if (item.data_permit_ids) {
+      const obj = item.data_permit_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.data_permit_ids = keys.map((key) => obj[key]);
+    }
+    if (item.data_permit_ids_lbl) {
+      const obj = item.data_permit_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.data_permit_ids_lbl = keys.map((key) => obj[key]);
+    }
+  }
   
   const [
     is_lockedDict, // 锁定

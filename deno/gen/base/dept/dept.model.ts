@@ -37,6 +37,8 @@ export interface DeptFieldComment {
   parent_id: string;
   parent_id_lbl: string;
   lbl: string;
+  usr_ids: string;
+  usr_ids_lbl: string;
   is_locked: string;
   is_locked_lbl: string;
   is_enabled: string;
