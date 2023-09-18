@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
@@ -61,19 +61,11 @@ pub async fn many2many_update<'a>(
   ).await?;
   
   for model in &models {
-    if foreign_ids.contains(&model.column2_id) && model.is_deleted {
-      let mut args = QueryArgs::new();
-      let sql = format!(r#"
-        update {mod_table}
-        set
-          is_deleted = 0
-        where
-          id = ?
-      "#);
-      args.push(model.id.clone().into());
-      let args = args.into();
-      ctx.execute(sql, args, None).await?;
-    } else if !foreign_ids.contains(&model.column2_id) && !model.is_deleted {
+    let idx: Option<usize> = foreign_ids.iter()
+      .position(|foreign_id| 
+        foreign_id == &model.column2_id
+      );
+    if idx.is_none() {
       let mut args = QueryArgs::new();
       let sql = format!(r#"
         update {mod_table}
@@ -87,12 +79,32 @@ pub async fn many2many_update<'a>(
       args.push(model.id.clone().into());
       let args = args.into();
       ctx.execute(sql, args, None).await?;
+      continue;
     }
+    let idx = idx.unwrap();
+    if idx > u32::MAX as usize {
+      return Err(anyhow!("many2many_update: idx > u32::MAX as usize"));
+    }
+    let idx = idx as u32;
+    let mut args = QueryArgs::new();
+    let sql = format!(r#"
+      update {mod_table}
+      set
+        is_deleted = 0
+        ,order_by = ?
+      where
+        id = ?
+    "#);
+    args.push((idx + 1).into());
+    args.push(model.id.clone().into());
+    let args = args.into();
+    ctx.execute(sql, args, None).await?;
   }
   
-  let foreign_ids2 = foreign_ids.into_iter().filter(|column2_id| {
-    models.iter().all(|model| model.column2_id != *column2_id)
-  }).collect::<Vec<String>>();
+  let foreign_ids2 = foreign_ids.clone().into_iter()
+    .filter(|column2_id| {
+      models.iter().all(|model| model.column2_id != *column2_id)
+    }).collect::<Vec<String>>();
   
   for foreign_id in foreign_ids2 {
     let mut args = QueryArgs::new();
@@ -106,6 +118,20 @@ pub async fn many2many_update<'a>(
     sql_fields += ",create_time";
     sql_values += ",?";
     args.push(ctx.get_now().into());
+    
+    let idx: usize = foreign_ids.iter()
+      .position(|x| 
+        x == &foreign_id
+      )
+      .map(|idx| idx + 1)
+      .unwrap();
+    if idx > u32::MAX as usize {
+      return Err(anyhow!("many2many_update: idx > u32::MAX as usize"));
+    }
+    let idx = idx as u32;
+    sql_fields += ",order_by";
+    sql_values += ",?";
+    args.push(idx.into());
     
     if many_opts.column1 != "tenant_id" && many_opts.column2 != "tenant_id" {
       if let Some(tenant_id) = &tenant_id {
