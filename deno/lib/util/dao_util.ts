@@ -94,7 +94,7 @@ export async function many2manyUpdate(
       column1Id: string,
       column2Id: string,
       is_deleted: 0|1,
-    }>(/*sql*/ `
+    }>(`
       select
         t.id,
         t.${ escapeId(many.column1) } column1Id,
@@ -107,12 +107,31 @@ export async function many2manyUpdate(
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       const idx = column2Ids.indexOf(model.column2Id);
-      const sql = /*sql*/ `
+      if (idx === -1) {
+        const sql = /*sql*/ `
+          update
+            ${ escapeId(many.mod + "_" + many.table) }
+          set
+            is_deleted = ?
+            ,delete_time = ?
+          where
+            id = ?
+        `;
+        await execute(
+          sql,
+          [
+            1,
+            reqDate(),
+            model.id,
+          ],
+        );
+        continue;
+      }
+      const sql = `
         update
           ${ escapeId(many.mod + "_" + many.table) }
         set
           is_deleted = ?
-          ,delete_time = ?
           ,order_by = ?
         where
           id = ?
@@ -120,8 +139,7 @@ export async function many2manyUpdate(
       await execute(
         sql,
         [
-          idx === -1 ? 1 : 0,
-          reqDate(),
+          0,
           idx + 1,
           model.id,
         ],
@@ -134,7 +152,7 @@ export async function many2manyUpdate(
     const id = shortUuidV4();
     {
       const args = [ ];
-      let sql = /*sql*/ `
+      let sql = `
         insert into ${ many.mod }_${ many.table }(
           id
           ,create_time
@@ -152,7 +170,7 @@ export async function many2manyUpdate(
       sql += `) values(?,?,?`;
       args.push(id);
       args.push(reqDate());
-      args.push(models.length + i + 1);
+      args.push(column2Ids.indexOf(column2Id) + 1);
       if (many.column1 !== "tenant_id" && many.column2 !== "tenant_id") {
         if (tenant_id) {
           sql += `,?`;
