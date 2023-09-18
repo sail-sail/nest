@@ -237,8 +237,8 @@ async function getFromQuery() {
       and base_tenant.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_tenant.id) tenant_ids,
-        json_arrayagg(base_tenant.lbl) tenant_ids_lbl,
+        json_objectagg(base_tenant_menu.order_by, base_tenant.id) tenant_ids,
+        json_objectagg(base_tenant_menu.order_by, base_tenant.lbl) tenant_ids_lbl,
         base_menu.id menu_id
       from base_tenant_menu
       inner join base_tenant
@@ -369,6 +369,28 @@ export async function findAll(
       cacheKey2,
     },
   );
+  for (const item of result) {
+    
+    // 所在租户
+    if (item.tenant_ids) {
+      const obj = item.tenant_ids as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.tenant_ids = keys.map((key) => obj[key]);
+    }
+    if (item.tenant_ids_lbl) {
+      const obj = item.tenant_ids_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.tenant_ids_lbl = keys.map((key) => obj[key]);
+    }
+  }
   
   const [
     typeDict, // 类型

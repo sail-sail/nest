@@ -21,14 +21,6 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
-import {
-  findTree as findPermitTree,
-} from "@/views/base/permit/Api";
-
-import {
-  findTree as findDataPermitTree,
-} from "@/views/base/data_permit/Api";
-
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -537,36 +529,6 @@ export async function getUsrList() {
 
 export async function getMenuTree() {
   const data = await findMenuTree(
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function getPermitTree() {
-  const data = await findPermitTree(
-    [
-      {
-        prop: "",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function getDataPermitTree() {
-  const data = await findDataPermitTree(
     [
       {
         prop: "",

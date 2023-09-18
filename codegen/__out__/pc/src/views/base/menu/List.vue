@@ -942,6 +942,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "类型",
       prop: "type_lbl",
+      sortBy: "type",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -951,6 +952,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "父菜单",
       prop: "parent_id_lbl",
+      sortBy: "parent_id",
       width: 140,
       sortable: "custom",
       align: "left",
@@ -986,6 +988,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "锁定",
       prop: "is_locked_lbl",
+      sortBy: "is_locked",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -994,6 +997,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所在租户",
       prop: "tenant_ids_lbl",
+      sortBy: "tenant_ids",
       width: 180,
       align: "left",
       headerAlign: "center",
@@ -1002,6 +1006,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "启用",
       prop: "is_enabled_lbl",
+      sortBy: "is_enabled",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1027,6 +1032,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
+      sortBy: "create_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -1035,6 +1041,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建时间",
       prop: "create_time_lbl",
+      sortBy: "create_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1044,6 +1051,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
+      sortBy: "update_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -1052,6 +1060,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新时间",
       prop: "update_time_lbl",
+      sortBy: "update_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1169,7 +1178,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<MenuModel> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }

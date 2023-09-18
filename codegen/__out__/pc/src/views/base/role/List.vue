@@ -958,6 +958,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单权限",
       prop: "menu_ids_lbl",
+      sortBy: "menu_ids",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -966,6 +967,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "按钮权限",
       prop: "permit_ids_lbl",
+      sortBy: "permit_ids",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -974,6 +976,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "数据权限",
       prop: "data_permit_ids_lbl",
+      sortBy: "data_permit_ids",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -982,6 +985,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "锁定",
       prop: "is_locked_lbl",
+      sortBy: "is_locked",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -990,6 +994,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "启用",
       prop: "is_enabled_lbl",
+      sortBy: "is_enabled",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1006,6 +1011,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
+      sortBy: "create_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -1014,6 +1020,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建时间",
       prop: "create_time_lbl",
+      sortBy: "create_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1023,6 +1030,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
+      sortBy: "update_usr_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -1031,6 +1039,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新时间",
       prop: "update_time_lbl",
+      sortBy: "update_time",
       width: 150,
       sortable: "custom",
       align: "center",
@@ -1148,7 +1157,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<RoleModel> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }

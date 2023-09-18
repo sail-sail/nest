@@ -1,8 +1,10 @@
-import {
-  type GetUsrPermits,
+import type {
+  GetUsrPermits,
 } from "@/typings/types";
 
 export default defineStore("permit", function() {
+  
+  const usrStore = useUsrStore();
   
   let permits = $ref<Pick<GetUsrPermits, "code" | "route_path">[]>([]);
   
@@ -19,6 +21,9 @@ export default defineStore("permit", function() {
     );
     
     return function(code: string) {
+      if (usrStore.username === "admin") {
+        return true;
+      }
       return permitObj.value[code];
     };
   }

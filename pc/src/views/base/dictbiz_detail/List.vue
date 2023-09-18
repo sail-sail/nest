@@ -848,6 +848,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "业务字典",
       prop: "dictbiz_id_lbl",
+      sortBy: "dictbiz_id",
       width: 120,
       align: "left",
       headerAlign: "center",
@@ -873,6 +874,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "锁定",
       prop: "is_locked_lbl",
+      sortBy: "is_locked",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -881,6 +883,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "启用",
       prop: "is_enabled_lbl",
+      sortBy: "is_enabled",
       width: 60,
       align: "center",
       headerAlign: "center",
@@ -1014,7 +1017,13 @@ let sort: Sort = $ref({
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<DictbizDetailModel> } & Sort,
 ) {
-  sort.prop = prop || "";
+  let sortBy = "";
+  if (Array.isArray(column.sortBy)) {
+    sortBy = column.sortBy[0];
+  } else {
+    sortBy = (column.sortBy as string) || prop || "";
+  }
+  sort.prop = sortBy;
   sort.order = order || "ascending";
   await dataGrid();
 }

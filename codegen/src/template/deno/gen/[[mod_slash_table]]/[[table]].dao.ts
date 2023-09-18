@@ -491,10 +491,10 @@ async function getFromQuery() {<#
       and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted = 0
     left join (
       select
-        json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
           if (foreignKey.lbl) {
         #>
-        json_arrayagg(<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
+        json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by, <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
           }
         #>
         <#=mod#>_<#=table#>.id <#=many2many.column1#>
@@ -704,6 +704,74 @@ export async function findAll(
     }
   #>
   );<#
+  var hasMany2manyTmp = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT || "";
+    if (column.isVirtual && column_name !== "org_id") continue;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    if (foreignKey.type !== "many2many") {
+      continue;
+    }
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    hasMany2manyTmp = true;
+    break;
+  }
+  #><#
+  if (hasMany2manyTmp) {
+  #>
+  for (const item of result) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT || "";
+      if (column.isVirtual && column_name !== "org_id") continue;
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      if (!foreignKey) continue;
+      if (foreignKey.type !== "many2many") {
+        continue;
+      }
+      const foreignTable = foreignKey.table;
+      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+    #>
+    
+    // <#=column_comment#>
+    if (item.<#=column_name#>) {
+      const obj = item.<#=column_name#> as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.<#=column_name#> = keys.map((key) => obj[key]);
+    }<#
+      if (foreignKey.lbl) {
+    #>
+    if (item.<#=column_name#>_lbl) {
+      const obj = item.<#=column_name#>_lbl as unknown as {[key: string]: string};
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.<#=column_name#>_lbl = keys.map((key) => obj[key]);
+    }<#
+      }
+    #><#
+    }
+    #>
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

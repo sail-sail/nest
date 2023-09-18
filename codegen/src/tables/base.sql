@@ -43,6 +43,7 @@ CREATE TABLE if not exists `base_tenant_domain` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `tenant_id` varchar(22) NOT NULL COMMENT '租户',
   `domain_id` varchar(22) NOT NULL COMMENT '域名',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -59,6 +60,7 @@ CREATE TABLE if not exists `base_tenant_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `tenant_id` varchar(22) NOT NULL COMMENT '租户',
   `menu_id` varchar(22) NOT NULL COMMENT '菜单',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -117,6 +119,7 @@ CREATE TABLE if not exists `base_usr_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -134,6 +137,7 @@ CREATE TABLE if not exists `base_usr_dept` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -151,6 +155,7 @@ CREATE TABLE if not exists `base_usr_org` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -288,6 +293,7 @@ CREATE TABLE if not exists `base_role_menu` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -305,6 +311,7 @@ CREATE TABLE if not exists `base_role_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
   `permit_id` varchar(22) NOT NULL DEFAULT '' COMMENT '按钮权限',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -322,6 +329,7 @@ CREATE TABLE if not exists `base_role_data_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
   `data_permit_id` varchar(22) NOT NULL DEFAULT '' COMMENT '数据权限',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -339,6 +347,7 @@ CREATE TABLE if not exists `base_role_field_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
   `field_permit_id` varchar(22) NOT NULL DEFAULT '' COMMENT '数据权限',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -461,6 +470,24 @@ CREATE TABLE if not exists `base_dept` (
   INDEX (`parent_id`, `lbl`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门';
+
+------------------------------------------------------------------------ 部门负责人
+drop table if exists `base_dept_usr`;
+CREATE TABLE if not exists `base_dept_usr` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
+  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '负责人',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`dept_id`, `usr_id`, `tenant_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门负责人';
 
 ------------------------------------------------------------------------ 系统字典
 drop table if exists `base_dict`;

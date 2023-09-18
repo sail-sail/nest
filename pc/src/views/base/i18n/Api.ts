@@ -8,7 +8,6 @@ import type {
   PageInput,
   I18Nsearch,
   I18Ninput,
-  I18Nmodel,
 } from "#/types";
 
 import type {
@@ -72,30 +71,6 @@ export async function findAll(
     const item = res[i];
   }
   return res;
-}
-
-export type I18NmodelTree = I18Nmodel & {
-  children?: I18NmodelTree[];
-}
-
-/**
- * 查找树形数据
- * @param sort 
- * @param opt 
- * @returns 
- */
-export async function findTree(
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const res = await findAll(
-    undefined,
-    undefined,
-    sort,
-    opt,
-  );
-  const treeData = list2tree(res);
-  return treeData;
 }
 
 /**

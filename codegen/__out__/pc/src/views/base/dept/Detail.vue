@@ -34,7 +34,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -72,6 +72,28 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.usr_ids == null)">
+          <el-form-item
+            :label="n('部门负责人')"
+            prop="usr_ids"
+          >
+            <CustomSelect
+              :set="dialogModel.usr_ids = dialogModel.usr_ids ?? [ ]"
+              v-model="dialogModel.usr_ids"
+              :method="getUsrList"
+              :options-map="((item: UsrModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('部门负责人') }`"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -89,7 +111,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-1"
+            un-grid="col-span-2"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -187,10 +209,12 @@ import {
 import type {
   DeptInput,
   DeptModel,
+  UsrModel,
 } from "#/types";
 
 import {
   getDeptList,
+  getUsrList,
 } from "./Api";
 
 import {
@@ -227,6 +251,7 @@ let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
 let dialogModel = $ref({
+  usr_ids: [ ],
 } as DeptInput);
 
 let ids = $ref<string[]>([ ]);
@@ -580,6 +605,7 @@ async function onInitI18ns() {
   const codes: string[] = [
     "父部门",
     "名称",
+    "部门负责人",
     "锁定",
     "启用",
     "排序",
