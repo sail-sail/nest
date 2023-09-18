@@ -174,10 +174,40 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: Option<sqlx::types::Json<<#=_data_type#>>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#> = <#=column_name#>.unwrap_or_default().0;
-    let <#=column_name#>_lbl: Option<sqlx::types::Json<<#=_data_type#>>> = row.try_get("<#=column_name#>_lbl")?;
-    let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;<#
+    let <#=column_name_rust#> = {
+      let mut keys: Vec<u32> = <#=column_name_rust#>.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          <#=column_name_rust#>.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let <#=column_name#>_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
+    let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
+    let <#=column_name#>_lbl = {
+      let mut keys: Vec<u32> = <#=column_name#>_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          <#=column_name#>_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>

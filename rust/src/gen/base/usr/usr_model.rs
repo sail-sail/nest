@@ -80,20 +80,110 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
     // 所属组织
-    let org_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids")?;
+    let org_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("org_ids")?;
     let org_ids = org_ids.unwrap_or_default().0;
-    let org_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("org_ids_lbl")?;
+    let org_ids = {
+      let mut keys: Vec<u32> = org_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          org_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let org_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
     let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
+    let org_ids_lbl = {
+      let mut keys: Vec<u32> = org_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          org_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 所属部门
-    let dept_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids")?;
+    let dept_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
-    let dept_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("dept_ids_lbl")?;
+    let dept_ids = {
+      let mut keys: Vec<u32> = dept_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          dept_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let dept_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
+    let dept_ids_lbl = {
+      let mut keys: Vec<u32> = dept_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          dept_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 拥有角色
-    let role_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("role_ids")?;
+    let role_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
-    let role_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("role_ids_lbl")?;
+    let role_ids = {
+      let mut keys: Vec<u32> = role_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          role_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let role_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
+    let role_ids_lbl = {
+      let mut keys: Vec<u32> = role_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          role_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 备注
     let rem: String = row.try_get("rem")?;
     // 是否已删除

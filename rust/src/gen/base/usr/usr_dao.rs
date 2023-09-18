@@ -314,8 +314,8 @@ async fn get_from_query() -> Result<String> {
       and base_org.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_org.id) org_ids,
-        json_arrayagg(base_org.lbl) org_ids_lbl,
+        json_objectagg(base_usr_org.order_by, base_org.id) org_ids,
+        json_objectagg(base_usr_org.order_by, base_org.lbl) org_ids_lbl,
         base_usr.id usr_id
       from base_usr_org
       inner join base_org
@@ -336,8 +336,8 @@ async fn get_from_query() -> Result<String> {
       and base_dept.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_dept.id) dept_ids,
-        json_arrayagg(base_dept.lbl) dept_ids_lbl,
+        json_objectagg(base_usr_dept.order_by, base_dept.id) dept_ids,
+        json_objectagg(base_usr_dept.order_by, base_dept.lbl) dept_ids_lbl,
         base_usr.id usr_id
       from base_usr_dept
       inner join base_dept
@@ -358,8 +358,8 @@ async fn get_from_query() -> Result<String> {
       and base_role.is_deleted = 0
     left join (
       select
-        json_arrayagg(base_role.id) role_ids,
-        json_arrayagg(base_role.lbl) role_ids_lbl,
+        json_objectagg(base_usr_role.order_by, base_role.id) role_ids,
+        json_objectagg(base_usr_role.order_by, base_role.lbl) role_ids_lbl,
         base_usr.id usr_id
       from base_usr_role
       inner join base_role

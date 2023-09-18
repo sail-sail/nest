@@ -70,20 +70,110 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 菜单权限
-    let menu_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids")?;
+    let menu_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids")?;
     let menu_ids = menu_ids.unwrap_or_default().0;
-    let menu_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("menu_ids_lbl")?;
+    let menu_ids = {
+      let mut keys: Vec<u32> = menu_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          menu_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let menu_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("menu_ids_lbl")?;
     let menu_ids_lbl = menu_ids_lbl.unwrap_or_default().0;
+    let menu_ids_lbl = {
+      let mut keys: Vec<u32> = menu_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          menu_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 按钮权限
-    let permit_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("permit_ids")?;
+    let permit_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("permit_ids")?;
     let permit_ids = permit_ids.unwrap_or_default().0;
-    let permit_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("permit_ids_lbl")?;
+    let permit_ids = {
+      let mut keys: Vec<u32> = permit_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          permit_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let permit_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("permit_ids_lbl")?;
     let permit_ids_lbl = permit_ids_lbl.unwrap_or_default().0;
+    let permit_ids_lbl = {
+      let mut keys: Vec<u32> = permit_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          permit_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 数据权限
-    let data_permit_ids: Option<sqlx::types::Json<Vec<String>>> = row.try_get("data_permit_ids")?;
+    let data_permit_ids: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("data_permit_ids")?;
     let data_permit_ids = data_permit_ids.unwrap_or_default().0;
-    let data_permit_ids_lbl: Option<sqlx::types::Json<Vec<String>>> = row.try_get("data_permit_ids_lbl")?;
+    let data_permit_ids = {
+      let mut keys: Vec<u32> = data_permit_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          data_permit_ids.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
+    let data_permit_ids_lbl: Option<sqlx::types::Json<std::collections::HashMap<String, String>>> = row.try_get("data_permit_ids_lbl")?;
     let data_permit_ids_lbl = data_permit_ids_lbl.unwrap_or_default().0;
+    let data_permit_ids_lbl = {
+      let mut keys: Vec<u32> = data_permit_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          data_permit_ids_lbl.get(&x.to_string())
+            .unwrap_or(&"".to_owned())
+            .to_owned()
+        )
+        .collect::<Vec<String>>()
+    };
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
