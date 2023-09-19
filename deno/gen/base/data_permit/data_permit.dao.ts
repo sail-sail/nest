@@ -364,7 +364,7 @@ export async function findAll(
     }
     
     // 系统字段
-    let is_sys_lbl = model.is_sys.toString();
+    let is_sys_lbl = model.is_sys?.toString() || "";
     if (model.is_sys !== undefined && model.is_sys !== null) {
       const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
       if (dictItem) {

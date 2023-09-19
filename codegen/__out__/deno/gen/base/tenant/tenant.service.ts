@@ -136,6 +136,13 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }
   
+  // 不能修改系统记录的系统字段
+  const model = await tenantDao.findById(id);
+  if (model && model.is_sys === 1) {
+    // 名称
+    input.lbl = undefined;
+  }
+  
   const data = await tenantDao.updateById(id, input);
   return data;
 }
@@ -160,6 +167,22 @@ export async function deleteByIds(
     }
     if (ids2.length === 0 && ids.length > 0) {
       throw await ns("不能删除已经锁定的数据");
+    }
+    ids = ids2;
+  }
+  
+  {
+    const ids2: string[] = [ ];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const model = await tenantDao.findById(id);
+      if (model && model.is_sys === 1) {
+        continue;
+      }
+      ids2.push(id);
+    }
+    if (ids2.length === 0 && ids.length > 0) {
+      throw await ns("不能删除系统记录");
     }
     ids = ids2;
   }

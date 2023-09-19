@@ -77,6 +77,9 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      sys_fields: [
+        "lbl",
+      ],
     },
     columns: [
       {
