@@ -187,6 +187,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
+    search.is_sys = [ search.is_sys ];
+  }
+  if (search?.is_sys && search?.is_sys?.length > 0) {
+    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -412,16 +418,18 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
     // 锁定
-    let is_locked_lbl = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
@@ -431,7 +439,7 @@ export async function findAll(
     model.is_locked_lbl = is_locked_lbl;
     
     // 启用
-    let is_enabled_lbl = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
@@ -463,6 +471,16 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 系统字段
+    let is_sys_lbl = model.is_sys?.toString() || "";
+    if (model.is_sys !== undefined && model.is_sys !== null) {
+      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
+      if (dictItem) {
+        is_sys_lbl = dictItem.lbl;
+      }
+    }
+    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -494,6 +512,8 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    is_sys: await n("系统字段"),
+    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
@@ -994,9 +1014,11 @@ export async function create(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]);
   
   // 所属域名
@@ -1056,6 +1078,14 @@ export async function create(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
       input.is_enabled = Number(val);
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
     }
   }
   
@@ -1120,6 +1150,9 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
+  if (input.is_sys !== undefined) {
+    sql += `,is_sys`;
+  }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
@@ -1151,6 +1184,9 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
+  }
+  if (input.is_sys !== undefined) {
+    sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
   
@@ -1239,9 +1275,11 @@ export async function updateById(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]);
 
   // 所属域名
@@ -1304,6 +1342,14 @@ export async function updateById(
     }
   }
   
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
+    }
+  }
+  
   {
     const input2 = {
       ...input,
@@ -1354,6 +1400,12 @@ export async function updateById(
   if (input.rem !== undefined) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_sys !== undefined) {
+    if (input.is_sys != oldModel.is_sys) {
+      sql += `is_sys = ${ args.push(input.is_sys) },`;
       updateFldNum++;
     }
   }
