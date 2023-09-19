@@ -988,7 +988,7 @@ export async function findAll(
     #>
     
     // <#=column_comment#>
-    let <#=column_name#>_lbl = model.<#=column_name#>.toString();
+    let <#=column_name#>_lbl = model.<#=column_name#>?.toString() || "";
     if (model.<#=column_name#> !== undefined && model.<#=column_name#> !== null) {
       const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
       if (dictItem) {

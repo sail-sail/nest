@@ -304,7 +304,7 @@ export async function findAll(
     const model = result[i];
     
     // 锁定
-    let is_locked_lbl = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
@@ -314,7 +314,7 @@ export async function findAll(
     model.is_locked_lbl = is_locked_lbl;
     
     // 启用
-    let is_enabled_lbl = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
@@ -324,7 +324,7 @@ export async function findAll(
     model.is_enabled_lbl = is_enabled_lbl;
     
     // 系统字段
-    let is_sys_lbl = model.is_sys.toString();
+    let is_sys_lbl = model.is_sys?.toString() || "";
     if (model.is_sys !== undefined && model.is_sys !== null) {
       const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
       if (dictItem) {
