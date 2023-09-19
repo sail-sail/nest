@@ -7,6 +7,9 @@ import { gqlRouter } from "./gql.ts";
 import tmpfileRouter from "/lib/tmpfile/tmpfile.router.ts";
 import ossRouter from "/lib/oss/oss.router.ts";
 
+import wx_usrRouter from "/src/wx/wx_usr/wx_usr.router.ts";
+import wx_pay_noticeRouter from "/src/wx/wx_pay_notice/wx_pay_notice.router.ts";
+
 export function initApp() {
   const app = new Application();
   
@@ -16,6 +19,9 @@ export function initApp() {
   app.use(gqlRouter.routes());
   app.use(tmpfileRouter.routes());
   app.use(ossRouter.routes());
+  
+  app.use(wx_usrRouter.routes());
+  app.use(wx_pay_noticeRouter.routes());
   
   return app;
 }
