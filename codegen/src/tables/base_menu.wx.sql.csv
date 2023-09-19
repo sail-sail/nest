@@ -1,0 +1,7 @@
+id,type,parent_id,lbl,route_path,route_query,is_enabled,order_by
+a39GOObeQt6dbIHH1co18g,pc,,微信管理,,NULL,1,10100
+a/7XlyOxT52cohD4tbw1ag,pc,a39GOObeQt6dbIHH1co18g,微信小程序,/wx/wx_app,NULL,1,10101
+atlpWh9kSXCkTpZSBVkLcw,pc,a39GOObeQt6dbIHH1co18g,微信支付,/wx/wx_pay,NULL,1,10102
+GYC3rDTsTfKoMk8aLeDRaQ,pc,a39GOObeQt6dbIHH1co18g,微信用户,/wx/wx_usr,NULL,1,10103
++bfcjNUaSTm4wd53X4QKjg,pc,a39GOObeQt6dbIHH1co18g,微信JSAPI下单,/wx/pay_transactions_jsapi,NULL,1,10104
+GNhDacekTzqt5tuZ6ZkwEA,pc,a39GOObeQt6dbIHH1co18g,微信支付通知,/wx/wx_pay_notice,NULL,1,10105

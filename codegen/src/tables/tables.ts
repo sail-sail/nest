@@ -1,5 +1,7 @@
 import { defineConfig } from "../config";
 
+import wx from "./wx";
+
 export default defineConfig({
   // 角色
   base_role: {
@@ -1189,4 +1191,6 @@ export default defineConfig({
       },
     ],
   },
+  
+  ...wx,
 });
