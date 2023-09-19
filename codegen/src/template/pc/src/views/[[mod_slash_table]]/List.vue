@@ -1450,6 +1450,8 @@ defineOptions({
   name: "<#=optionsName#>",
 });
 
+const pageName = getCurrentInstance()?.type?.name as string;
+
 const {
   n,
   nAsync,
@@ -1461,6 +1463,9 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const dirtyStore = useDirtyStore();
+
+const clearDirty = dirtyStore.onDirty(onRefresh);
 
 const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
 
@@ -2067,13 +2072,26 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
+  clearDirty();
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
-      useFindCount(opt),
+      useFindCount(opt),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
     ]);
   } else {
-    await useFindAll(opt);
+    await Promise.all([
+      useFindAll(opt),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
   }
 }
 
@@ -2268,14 +2286,8 @@ async function openAdd() {
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }
 
@@ -2308,9 +2320,8 @@ async function openCopy() {
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }<#
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
@@ -2434,6 +2445,7 @@ async function onImportExcel() {
     ElMessageBox.alert(msg)
   }
   if (succNum > 0) {
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -2489,6 +2501,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2512,6 +2525,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2535,6 +2549,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2560,6 +2575,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2600,14 +2616,8 @@ async function openEdit() {
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }<#
 }
@@ -2656,14 +2666,8 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }<#
 if (opts.noDelete !== true) {
@@ -2690,14 +2694,8 @@ async function onDeleteByIds() {
   const num = await deleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
@@ -2725,14 +2723,8 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
   }
 }<#
 }
@@ -2764,6 +2756,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
       msg = await nsAsync("禁用 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -2796,6 +2789,7 @@ async function onLockByIds(is_locked: 0 | 1) {
       msg = await nsAsync("解锁 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -2825,14 +2819,8 @@ async function revertByIdsEfc() {
   const num = await revertByIds(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
@@ -2914,12 +2902,7 @@ async function initFrame() {
   }
   await Promise.all([
     initI18nsEfc(),
-    dataGrid(true),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
+    dataGrid(true),
   ]);
   if (tableData.length === 1) {
     await nextTick();
@@ -3019,6 +3002,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   }
   row.<#=column_name#> = selectedIds2;
   await updateById(row.id, { <#=column_name#>: selectedIds2 });
+  dirtyStore.fireDirty(pageName);
   await dataGrid();
 }<#
   }

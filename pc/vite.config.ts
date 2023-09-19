@@ -164,6 +164,9 @@ export default defineConfig({
           "@/store/index": [
             [ "default", "useIndexStore" ],
           ],
+          "@/store/dirty": [
+            [ "default", "useDirtyStore" ],
+          ],
           "@/utils/axios": [
             "axios",
             "uploadFile",

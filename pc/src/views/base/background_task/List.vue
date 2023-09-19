@@ -520,6 +520,8 @@ defineOptions({
   name: "后台任务",
 });
 
+const pageName = getCurrentInstance()?.type?.name as string;
+
 const {
   n,
   nAsync,
@@ -531,6 +533,9 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const dirtyStore = useDirtyStore();
+
+const clearDirty = dirtyStore.onDirty(onRefresh);
 
 const permit = permitStore.getPermit("/base/background_task");
 
@@ -908,13 +913,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
+  clearDirty();
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
       useFindCount(opt),
     ]);
   } else {
-    await useFindAll(opt);
+    await Promise.all([
+      useFindAll(opt),
+    ]);
   }
 }
 
@@ -1026,9 +1034,8 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }
 
@@ -1053,9 +1060,8 @@ async function onDeleteByIds() {
   const num = await deleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
@@ -1083,9 +1089,8 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
   }
 }
 
@@ -1110,9 +1115,8 @@ async function revertByIdsEfc() {
   const num = await revertByIds(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }

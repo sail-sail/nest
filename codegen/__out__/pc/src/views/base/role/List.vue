@@ -697,6 +697,8 @@ defineOptions({
   name: "角色",
 });
 
+const pageName = getCurrentInstance()?.type?.name as string;
+
 const {
   n,
   nAsync,
@@ -708,6 +710,9 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const dirtyStore = useDirtyStore();
+
+const clearDirty = dirtyStore.onDirty(onRefresh);
 
 const permit = permitStore.getPermit("/base/role");
 
@@ -1083,13 +1088,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
+  clearDirty();
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
       useFindCount(opt),
     ]);
   } else {
-    await useFindAll(opt);
+    await Promise.all([
+      useFindAll(opt),
+    ]);
   }
 }
 
@@ -1208,9 +1216,8 @@ async function openAdd() {
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }
 
@@ -1243,9 +1250,8 @@ async function openCopy() {
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }
 
@@ -1322,6 +1328,7 @@ async function onImportExcel() {
     ElMessageBox.alert(msg)
   }
   if (succNum > 0) {
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1346,6 +1353,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -1367,6 +1375,7 @@ async function onIs_enabled(id: string, is_enabled: 0 | 1) {
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -1403,9 +1412,8 @@ async function openEdit() {
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }
 
@@ -1444,9 +1452,8 @@ async function openView() {
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }
 
@@ -1471,9 +1478,8 @@ async function onDeleteByIds() {
   const num = await deleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
@@ -1501,9 +1507,8 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
   }
 }
 
@@ -1531,6 +1536,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
       msg = await nsAsync("禁用 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1559,6 +1565,7 @@ async function onLockByIds(is_locked: 0 | 1) {
       msg = await nsAsync("解锁 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1584,9 +1591,8 @@ async function revertByIdsEfc() {
   const num = await revertByIds(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
@@ -1684,6 +1690,7 @@ async function onMenu_ids(row: RoleModel) {
   }
   row.menu_ids = selectedIds2;
   await updateById(row.id, { menu_ids: selectedIds2 });
+  dirtyStore.fireDirty(pageName);
   await dataGrid();
 }
 
@@ -1725,6 +1732,7 @@ async function onPermit_ids(row: RoleModel) {
   }
   row.permit_ids = selectedIds2;
   await updateById(row.id, { permit_ids: selectedIds2 });
+  dirtyStore.fireDirty(pageName);
   await dataGrid();
 }
 
@@ -1766,6 +1774,7 @@ async function onData_permit_ids(row: RoleModel) {
   }
   row.data_permit_ids = selectedIds2;
   await updateById(row.id, { data_permit_ids: selectedIds2 });
+  dirtyStore.fireDirty(pageName);
   await dataGrid();
 }
 
