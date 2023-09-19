@@ -451,7 +451,7 @@ export async function findAll(
     }
     
     // 是否支持发票
-    let support_fapiao_lbl = model.support_fapiao.toString();
+    let support_fapiao_lbl = model.support_fapiao?.toString() || "";
     if (model.support_fapiao !== undefined && model.support_fapiao !== null) {
       const dictItem = support_fapiaoDict.find((dictItem) => dictItem.val === model.support_fapiao.toString());
       if (dictItem) {

@@ -290,4 +290,16 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/wx/wx_usr",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "微信用户",
+        component: () => import("@/views/wx/wx_usr/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];
