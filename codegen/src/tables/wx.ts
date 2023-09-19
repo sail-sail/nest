@@ -78,6 +78,93 @@ export default defineConfig({
       },
     ],
   },
+  // 微信用户
+  wx_wx_usr: {
+    opts: {},
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        search: true,
+        width: 280,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "usr_id",
+        headerAlign: "center",
+        align: "left",
+        width: 240,
+      },
+      {
+        COLUMN_NAME: "nick_name",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "avatar_url",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "mobile",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "openid",
+        width: 240,
+      },
+      {
+        COLUMN_NAME: "gz_openid",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "unionid",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "session_key",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "gender",
+        width: 80,
+      },
+      {
+        COLUMN_NAME: "city",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "province",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "country",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "language",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
   // 微信支付
   wx_wx_pay: {
     opts: {

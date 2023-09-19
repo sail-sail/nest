@@ -45,26 +45,6 @@
         @keyup.enter="onSave"
       >
         
-        <template v-if="(showBuildIn || builtInModel?.dict_id == null)">
-          <el-form-item
-            :label="n('系统字典')"
-            prop="dict_id"
-          >
-            <CustomSelect
-              v-model="dialogModel.dict_id"
-              :method="getDictList"
-              :options-map="((item: DictModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('系统字典') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
@@ -78,29 +58,181 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.val == null)">
+        <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
-            :label="n('值')"
-            prop="val"
+            :label="n('用户')"
+            prop="usr_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.usr_id"
+              :method="getUsrList"
+              :options-map="((item: UsrModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('用户') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.nick_name == null)">
+          <el-form-item
+            :label="n('昵称')"
+            prop="nick_name"
           >
             <CustomInput
-              v-model="dialogModel.val"
-              :placeholder="`${ ns('请输入') } ${ n('值') }`"
+              v-model="dialogModel.nick_name"
+              :placeholder="`${ ns('请输入') } ${ n('昵称') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+        <template v-if="(showBuildIn || builtInModel?.avatar_url == null)">
           <el-form-item
-            :label="n('排序')"
-            prop="order_by"
+            :label="n('头像')"
+            prop="avatar_url"
           >
-            <CustomInputNumber
-              v-model="dialogModel.order_by"
-              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+            <CustomInput
+              v-model="dialogModel.avatar_url"
+              :placeholder="`${ ns('请输入') } ${ n('头像') }`"
               :readonly="isLocked || isReadonly"
-            ></CustomInputNumber>
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.mobile == null)">
+          <el-form-item
+            :label="n('手机')"
+            prop="mobile"
+          >
+            <CustomInput
+              v-model="dialogModel.mobile"
+              :placeholder="`${ ns('请输入') } ${ n('手机') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.openid == null)">
+          <el-form-item
+            :label="n('小程序openid')"
+            prop="openid"
+          >
+            <CustomInput
+              v-model="dialogModel.openid"
+              :placeholder="`${ ns('请输入') } ${ n('小程序openid') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.gz_openid == null)">
+          <el-form-item
+            :label="n('公众号openid')"
+            prop="gz_openid"
+          >
+            <CustomInput
+              v-model="dialogModel.gz_openid"
+              :placeholder="`${ ns('请输入') } ${ n('公众号openid') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.unionid == null)">
+          <el-form-item
+            :label="n('unionid')"
+            prop="unionid"
+          >
+            <CustomInput
+              v-model="dialogModel.unionid"
+              :placeholder="`${ ns('请输入') } ${ n('unionid') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.session_key == null)">
+          <el-form-item
+            :label="n('会话密钥')"
+            prop="session_key"
+          >
+            <CustomInput
+              v-model="dialogModel.session_key"
+              :placeholder="`${ ns('请输入') } ${ n('会话密钥') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.gender == null)">
+          <el-form-item
+            :label="n('性别')"
+            prop="gender"
+          >
+            <DictbizSelect
+              :set="dialogModel.gender = dialogModel.gender ?? undefined"
+              v-model="dialogModel.gender"
+              code="wx_usr_gender"
+              :placeholder="`${ ns('请选择') } ${ n('性别') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictbizSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.city == null)">
+          <el-form-item
+            :label="n('城市')"
+            prop="city"
+          >
+            <CustomInput
+              v-model="dialogModel.city"
+              :placeholder="`${ ns('请输入') } ${ n('城市') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.province == null)">
+          <el-form-item
+            :label="n('省份')"
+            prop="province"
+          >
+            <CustomInput
+              v-model="dialogModel.province"
+              :placeholder="`${ ns('请输入') } ${ n('省份') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.country == null)">
+          <el-form-item
+            :label="n('国家')"
+            prop="country"
+          >
+            <CustomInput
+              v-model="dialogModel.country"
+              :placeholder="`${ ns('请输入') } ${ n('国家') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.language == null)">
+          <el-form-item
+            :label="n('语言')"
+            prop="language"
+          >
+            <CustomInput
+              v-model="dialogModel.language"
+              :placeholder="`${ ns('请输入') } ${ n('语言') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -199,17 +331,16 @@ import type {
 import {
   create,
   findById,
-  findLastOrderBy,
   updateById,
 } from "./Api";
 
 import type {
-  DictDetailInput,
-  DictModel,
+  WxUsrInput,
+  UsrModel,
 } from "#/types";
 
 import {
-  getDictList,
+  getUsrList,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -227,11 +358,11 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n("/base/dict_detail");
+} = useI18n("/wx/wx_usr");
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit("/base/dict_detail");
+const permit = permitStore.getPermit("/wx/wx_usr");
 
 let inited = $ref(false);
 
@@ -242,7 +373,7 @@ let oldDialogTitle = "";
 let dialogNotice = $ref("");
 
 let dialogModel = $ref({
-} as DictDetailInput);
+} as WxUsrInput);
 
 let ids = $ref<string[]>([ ]);
 let changedIds = $ref<string[]>([ ]);
@@ -259,13 +390,6 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 系统字典
-    dict_id: [
-      {
-        required: true,
-        message: `${ await nsAsync("请选择") } ${ n("系统字典") }`,
-      },
-    ],
     // 名称
     lbl: [
       {
@@ -276,18 +400,6 @@ watchEffect(async () => {
         type: "string",
         max: 100,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
-      },
-    ],
-    // 值
-    val: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("值") }`,
-      },
-      {
-        type: "string",
-        max: 100,
-        message: `${ n("值") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
     // 锁定
@@ -315,7 +427,7 @@ type OnCloseResolveType = {
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 内置变量 */
-let builtInModel = $ref<DictDetailInput>();
+let builtInModel = $ref<WxUsrInput>();
 
 /** 是否显示内置变量 */
 let showBuildIn = $ref(false);
@@ -330,10 +442,10 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 /** 增加时的默认值 */
 async function getDefaultInput() {
-  const defaultInput: DictDetailInput = {
+  const defaultInput: WxUsrInput = {
+    gender: 0,
     is_locked: 0,
     is_enabled: 1,
-    order_by: 1,
   };
   return defaultInput;
 }
@@ -344,7 +456,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
-    builtInModel?: DictDetailInput;
+    builtInModel?: WxUsrInput;
     showBuildIn?: MaybeRefOrGetter<boolean>;
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
@@ -394,16 +506,13 @@ async function showDialog(
   if (action === "add") {
     const [
       defaultModel,
-      order_by,
     ] = await Promise.all([
       getDefaultInput(),
-      findLastOrderBy(),
     ]);
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
       ...model,
-      order_by: order_by + 1,
     };
   } else if (dialogAction === "copy") {
     if (!model?.id) {
@@ -612,13 +721,27 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "系统字典",
     "名称",
-    "值",
+    "用户",
+    "昵称",
+    "头像",
+    "手机",
+    "小程序openid",
+    "公众号openid",
+    "unionid",
+    "会话密钥",
+    "性别",
+    "城市",
+    "省份",
+    "国家",
+    "语言",
     "锁定",
     "启用",
-    "排序",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

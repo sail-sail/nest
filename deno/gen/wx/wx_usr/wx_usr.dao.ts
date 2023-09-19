@@ -41,6 +41,8 @@ import * as validators from "/lib/validators/mod.ts";
 
 import * as dictSrcDao from "/src/base/dict_detail/dict_detail.dao.ts";
 
+import * as dictbizSrcDao from "/src/base/dictbiz_detail/dictbiz_detail.dao.ts";
+
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -48,6 +50,8 @@ import * as authDao from "/lib/auth/auth.dao.ts";
 import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+
+import * as orgDao from "/gen/base/org/org.dao.ts";
 
 import {
   UniqueType,
@@ -60,17 +64,19 @@ import type {
 } from "/gen/types.ts";
 
 import type {
-  WxAppInput,
-  WxAppModel,
-  WxAppSearch,
-  WxAppFieldComment,
-} from "./wx_app.model.ts";
+  WxUsrInput,
+  WxUsrModel,
+  WxUsrSearch,
+  WxUsrFieldComment,
+} from "./wx_usr.model.ts";
 
-const route_path = "/wx/wx_app";
+import * as usrDao from "/gen/base/usr/usr.dao.ts";
+
+const route_path = "/wx/wx_usr";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: WxAppSearch,
+  search?: WxUsrSearch,
   options?: {
   },
 ): Promise<string> {
@@ -84,6 +90,15 @@ async function getWhereQuery(
     }
   } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+  }
+  if (search?.org_id == null) {
+    const authModel = await authDao.getAuthModel();
+    const org_id = authModel?.org_id;
+    if (org_id) {
+      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
+    }
+  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
+    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
@@ -103,23 +118,122 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.appid !== undefined) {
-    whereQuery += ` and t.appid = ${ args.push(search.appid) }`;
+  if (search?.usr_id && !Array.isArray(search?.usr_id)) {
+    search.usr_id = [ search.usr_id ];
   }
-  if (search?.appid === null) {
-    whereQuery += ` and t.appid is null`;
+  if (search?.usr_id && search?.usr_id.length > 0) {
+    whereQuery += ` and usr_id_lbl.id in ${ args.push(search.usr_id) }`;
   }
-  if (isNotEmpty(search?.appid_like)) {
-    whereQuery += ` and t.appid like ${ args.push(sqlLike(search?.appid_like) + "%") }`;
+  if (search?.usr_id === null) {
+    whereQuery += ` and usr_id_lbl.id is null`;
   }
-  if (search?.appsecret !== undefined) {
-    whereQuery += ` and t.appsecret = ${ args.push(search.appsecret) }`;
+  if (search?.usr_id_is_null) {
+    whereQuery += ` and usr_id_lbl.id is null`;
   }
-  if (search?.appsecret === null) {
-    whereQuery += ` and t.appsecret is null`;
+  if (search?.nick_name !== undefined) {
+    whereQuery += ` and t.nick_name = ${ args.push(search.nick_name) }`;
   }
-  if (isNotEmpty(search?.appsecret_like)) {
-    whereQuery += ` and t.appsecret like ${ args.push(sqlLike(search?.appsecret_like) + "%") }`;
+  if (search?.nick_name === null) {
+    whereQuery += ` and t.nick_name is null`;
+  }
+  if (isNotEmpty(search?.nick_name_like)) {
+    whereQuery += ` and t.nick_name like ${ args.push(sqlLike(search?.nick_name_like) + "%") }`;
+  }
+  if (search?.avatar_url !== undefined) {
+    whereQuery += ` and t.avatar_url = ${ args.push(search.avatar_url) }`;
+  }
+  if (search?.avatar_url === null) {
+    whereQuery += ` and t.avatar_url is null`;
+  }
+  if (isNotEmpty(search?.avatar_url_like)) {
+    whereQuery += ` and t.avatar_url like ${ args.push(sqlLike(search?.avatar_url_like) + "%") }`;
+  }
+  if (search?.mobile !== undefined) {
+    whereQuery += ` and t.mobile = ${ args.push(search.mobile) }`;
+  }
+  if (search?.mobile === null) {
+    whereQuery += ` and t.mobile is null`;
+  }
+  if (isNotEmpty(search?.mobile_like)) {
+    whereQuery += ` and t.mobile like ${ args.push(sqlLike(search?.mobile_like) + "%") }`;
+  }
+  if (search?.openid !== undefined) {
+    whereQuery += ` and t.openid = ${ args.push(search.openid) }`;
+  }
+  if (search?.openid === null) {
+    whereQuery += ` and t.openid is null`;
+  }
+  if (isNotEmpty(search?.openid_like)) {
+    whereQuery += ` and t.openid like ${ args.push(sqlLike(search?.openid_like) + "%") }`;
+  }
+  if (search?.gz_openid !== undefined) {
+    whereQuery += ` and t.gz_openid = ${ args.push(search.gz_openid) }`;
+  }
+  if (search?.gz_openid === null) {
+    whereQuery += ` and t.gz_openid is null`;
+  }
+  if (isNotEmpty(search?.gz_openid_like)) {
+    whereQuery += ` and t.gz_openid like ${ args.push(sqlLike(search?.gz_openid_like) + "%") }`;
+  }
+  if (search?.unionid !== undefined) {
+    whereQuery += ` and t.unionid = ${ args.push(search.unionid) }`;
+  }
+  if (search?.unionid === null) {
+    whereQuery += ` and t.unionid is null`;
+  }
+  if (isNotEmpty(search?.unionid_like)) {
+    whereQuery += ` and t.unionid like ${ args.push(sqlLike(search?.unionid_like) + "%") }`;
+  }
+  if (search?.session_key !== undefined) {
+    whereQuery += ` and t.session_key = ${ args.push(search.session_key) }`;
+  }
+  if (search?.session_key === null) {
+    whereQuery += ` and t.session_key is null`;
+  }
+  if (isNotEmpty(search?.session_key_like)) {
+    whereQuery += ` and t.session_key like ${ args.push(sqlLike(search?.session_key_like) + "%") }`;
+  }
+  if (search?.gender && !Array.isArray(search?.gender)) {
+    search.gender = [ search.gender ];
+  }
+  if (search?.gender && search?.gender?.length > 0) {
+    whereQuery += ` and t.gender in ${ args.push(search.gender) }`;
+  }
+  if (search?.city !== undefined) {
+    whereQuery += ` and t.city = ${ args.push(search.city) }`;
+  }
+  if (search?.city === null) {
+    whereQuery += ` and t.city is null`;
+  }
+  if (isNotEmpty(search?.city_like)) {
+    whereQuery += ` and t.city like ${ args.push(sqlLike(search?.city_like) + "%") }`;
+  }
+  if (search?.province !== undefined) {
+    whereQuery += ` and t.province = ${ args.push(search.province) }`;
+  }
+  if (search?.province === null) {
+    whereQuery += ` and t.province is null`;
+  }
+  if (isNotEmpty(search?.province_like)) {
+    whereQuery += ` and t.province like ${ args.push(sqlLike(search?.province_like) + "%") }`;
+  }
+  if (search?.country !== undefined) {
+    whereQuery += ` and t.country = ${ args.push(search.country) }`;
+  }
+  if (search?.country === null) {
+    whereQuery += ` and t.country is null`;
+  }
+  if (isNotEmpty(search?.country_like)) {
+    whereQuery += ` and t.country like ${ args.push(sqlLike(search?.country_like) + "%") }`;
+  }
+  if (search?.language !== undefined) {
+    whereQuery += ` and t.language = ${ args.push(search.language) }`;
+  }
+  if (search?.language === null) {
+    whereQuery += ` and t.language is null`;
+  }
+  if (isNotEmpty(search?.language_like)) {
+    whereQuery += ` and t.language like ${ args.push(sqlLike(search?.language_like) + "%") }`;
   }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
@@ -132,14 +246,6 @@ async function getWhereQuery(
   }
   if (search?.is_enabled && search?.is_enabled?.length > 0) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
-  }
-  if (search?.order_by && search?.order_by?.length > 0) {
-    if (search.order_by[0] != null) {
-      whereQuery += ` and t.order_by >= ${ args.push(search.order_by[0]) }`;
-    }
-    if (search.order_by[1] != null) {
-      whereQuery += ` and t.order_by <= ${ args.push(search.order_by[1]) }`;
-    }
   }
   if (search?.rem !== undefined) {
     whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
@@ -205,7 +311,9 @@ async function getWhereQuery(
 
 async function getFromQuery() {
   let fromQuery = `
-    wx_wx_app t
+    wx_wx_usr t
+    left join base_usr usr_id_lbl
+      on usr_id_lbl.id = t.usr_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -216,15 +324,15 @@ async function getFromQuery() {
 
 /**
  * 根据条件查找总数据数
- * @param { WxAppSearch } search?
+ * @param { WxUsrSearch } search?
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: WxAppSearch,
+  search?: WxUsrSearch,
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "findCount";
   
   const args = new QueryArgs();
@@ -243,13 +351,10 @@ export async function findCount(
       ) t
   `;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
-  
   interface Result {
     total: number,
   }
-  const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  const model = await queryOne<Result>(sql, args);
   let result = model?.total || 0;
   
   return result;
@@ -257,22 +362,23 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找数据
- * @param {WxAppSearch} search? 搜索条件
+ * @param {WxUsrSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: WxAppSearch,
+  search?: WxUsrSearch,
   page?: PageInput,
   sort?: SortInput | SortInput[],
   options?: {
   },
-): Promise<WxAppModel[]> {
-  const table = "wx_wx_app";
+): Promise<WxUsrModel[]> {
+  const table = "wx_wx_usr";
   const method = "findAll";
   
   const args = new QueryArgs();
   let sql = `
     select t.*
+      ,usr_id_lbl.lbl usr_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -286,8 +392,8 @@ export async function findAll(
   if (!sort) {
     sort = [
       {
-        prop: "order_by",
-        order: SortOrderEnum.Asc,
+        prop: "update_time",
+        order: SortOrderEnum.Desc,
       },
     ];
   } else if (!Array.isArray(sort)) {
@@ -309,17 +415,9 @@ export async function findAll(
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
-  
-  const result = await query<WxAppModel>(
+  const result = await query<WxUsrModel>(
     sql,
     args,
-    {
-      cacheKey1,
-      cacheKey2,
-    },
   );
   
   const [
@@ -330,8 +428,25 @@ export async function findAll(
     "is_enabled",
   ]);
   
+  
+  const [
+    genderDict, // 性别
+  ] = await dictbizSrcDao.getDictbiz([
+    "wx_usr_gender",
+  ]);
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 性别
+    let gender_lbl = model.gender?.toString() || "";
+    if (model.gender !== undefined && model.gender !== null) {
+      const dictItem = genderDict.find((dictItem) => dictItem.val === model.gender.toString());
+      if (dictItem) {
+        gender_lbl = dictItem.lbl;
+      }
+    }
+    model.gender_lbl = gender_lbl;
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -384,18 +499,30 @@ export async function findAll(
 /**
  * 获取字段对应的名称
  */
-export async function getFieldComments(): Promise<WxAppFieldComment> {
+export async function getFieldComments(): Promise<WxUsrFieldComment> {
   const n = initN(route_path);
-  const fieldComments: WxAppFieldComment = {
+  const fieldComments: WxUsrFieldComment = {
     id: await n("ID"),
     lbl: await n("名称"),
-    appid: await n("appid"),
-    appsecret: await n("appsecret"),
+    usr_id: await n("用户"),
+    usr_id_lbl: await n("用户"),
+    nick_name: await n("昵称"),
+    avatar_url: await n("头像"),
+    mobile: await n("手机"),
+    openid: await n("小程序openid"),
+    gz_openid: await n("公众号openid"),
+    unionid: await n("unionid"),
+    session_key: await n("会话密钥"),
+    gender: await n("性别"),
+    gender_lbl: await n("性别"),
+    city: await n("城市"),
+    province: await n("省份"),
+    country: await n("国家"),
+    language: await n("语言"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -411,13 +538,13 @@ export async function getFieldComments(): Promise<WxAppFieldComment> {
 
 /**
  * 通过唯一约束获得数据列表
- * @param {WxAppSearch | PartialNull<WxAppModel>} search0
+ * @param {WxUsrSearch | PartialNull<WxUsrModel>} search0
  */
 export async function findByUnique(
-  search0: WxAppSearch | PartialNull<WxAppModel>,
+  search0: WxUsrSearch | PartialNull<WxUsrModel>,
   options?: {
   },
-): Promise<WxAppModel[]> {
+): Promise<WxUsrModel[]> {
   if (search0.id) {
     const model = await findOne({
       id: search0.id,
@@ -427,51 +554,36 @@ export async function findByUnique(
     }
     return [ model ];
   }
-  const models: WxAppModel[] = [ ];
-  {
-    if (search0.appid == null) {
-      return [ ];
-    }
-    const appid = search0.appid;
-    const modelTmps = await findAll({
-      appid,
-    });
-    models.push(...modelTmps);
-  }
+  const models: WxUsrModel[] = [ ];
   return models;
 }
 
 /**
  * 根据唯一约束对比对象是否相等
- * @param {WxAppModel} oldModel
- * @param {PartialNull<WxAppModel>} model
+ * @param {WxUsrModel} oldModel
+ * @param {PartialNull<WxUsrModel>} model
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: WxAppModel,
-  model: PartialNull<WxAppModel>,
+  oldModel: WxUsrModel,
+  model: PartialNull<WxUsrModel>,
 ): boolean {
   if (!oldModel || !model) {
     return false;
-  }
-  if (
-    oldModel.appid === model.appid
-  ) {
-    return true;
   }
   return false;
 }
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {WxAppInput} model
- * @param {WxAppModel} oldModel
+ * @param {WxUsrInput} model
+ * @param {WxUsrModel} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: WxAppInput,
-  oldModel: WxAppModel,
+  model: WxUsrInput,
+  oldModel: WxUsrModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
   },
@@ -501,14 +613,14 @@ export async function checkByUnique(
 
 /**
  * 根据条件查找第一条数据
- * @param {WxAppSearch} search?
+ * @param {WxUsrSearch} search?
  */
 export async function findOne(
-  search?: WxAppSearch,
+  search?: WxUsrSearch,
   sort?: SortInput | SortInput[],
   options?: {
   },
-): Promise<WxAppModel | undefined> {
+): Promise<WxUsrModel | undefined> {
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
@@ -528,7 +640,7 @@ export async function findById(
   id?: string | null,
   options?: {
   },
-): Promise<WxAppModel | undefined> {
+): Promise<WxUsrModel | undefined> {
   if (isEmpty(id)) {
     return;
   }
@@ -538,10 +650,10 @@ export async function findById(
 
 /**
  * 根据搜索条件判断数据是否存在
- * @param {WxAppSearch} search?
+ * @param {WxUsrSearch} search?
  */
 export async function exist(
-  search?: WxAppSearch,
+  search?: WxUsrSearch,
   options?: {
   },
 ): Promise<boolean> {
@@ -557,7 +669,7 @@ export async function exist(
 export async function existById(
   id?: string | null,
 ) {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "existById";
   
   if (isEmpty(id)) {
@@ -569,22 +681,19 @@ export async function existById(
     select
       1 e
     from
-      wx_wx_app t
+      wx_wx_usr t
     where
       t.id = ${ args.push(id) }
       and t.is_deleted = 0
     limit 1
   `;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
-  
   interface Result {
     e: number,
   }
   let model = await queryOne<Result>(
     sql,
-    args,{ cacheKey1, cacheKey2 },
+    args,
   );
   let result = !!model?.e;
   
@@ -596,7 +705,7 @@ export async function existById(
  * @param input 
  */
 export async function validate(
-  input: WxAppInput,
+  input: WxUsrInput,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -610,28 +719,98 @@ export async function validate(
   // 名称
   await validators.chars_max_length(
     input.lbl,
-    22,
+    100,
     fieldComments.lbl,
   );
   
-  // appid
+  // 用户
   await validators.chars_max_length(
-    input.appid,
+    input.usr_id,
     22,
-    fieldComments.appid,
+    fieldComments.usr_id,
   );
   
-  // appsecret
+  // 昵称
   await validators.chars_max_length(
-    input.appsecret,
-    32,
-    fieldComments.appsecret,
+    input.nick_name,
+    100,
+    fieldComments.nick_name,
+  );
+  
+  // 头像
+  await validators.chars_max_length(
+    input.avatar_url,
+    500,
+    fieldComments.avatar_url,
+  );
+  
+  // 手机
+  await validators.chars_max_length(
+    input.mobile,
+    30,
+    fieldComments.mobile,
+  );
+  
+  // 小程序openid
+  await validators.chars_max_length(
+    input.openid,
+    100,
+    fieldComments.openid,
+  );
+  
+  // 公众号openid
+  await validators.chars_max_length(
+    input.gz_openid,
+    100,
+    fieldComments.gz_openid,
+  );
+  
+  // unionid
+  await validators.chars_max_length(
+    input.unionid,
+    100,
+    fieldComments.unionid,
+  );
+  
+  // 会话密钥
+  await validators.chars_max_length(
+    input.session_key,
+    500,
+    fieldComments.session_key,
+  );
+  
+  // 城市
+  await validators.chars_max_length(
+    input.city,
+    100,
+    fieldComments.city,
+  );
+  
+  // 省份
+  await validators.chars_max_length(
+    input.province,
+    100,
+    fieldComments.province,
+  );
+  
+  // 国家
+  await validators.chars_max_length(
+    input.country,
+    100,
+    fieldComments.country,
+  );
+  
+  // 语言
+  await validators.chars_max_length(
+    input.language,
+    100,
+    fieldComments.language,
   );
   
   // 备注
   await validators.chars_max_length(
     input.rem,
-    255,
+    100,
     fieldComments.rem,
   );
   
@@ -653,7 +832,7 @@ export async function validate(
 
 /**
  * 创建数据
- * @param {WxAppInput} input
+ * @param {WxUsrInput} input
  * @param {({
  *   uniqueType?: UniqueType,
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -663,12 +842,12 @@ export async function validate(
  * @return {Promise<string>} 
  */
 export async function create(
-  input: WxAppInput,
+  input: WxUsrInput,
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<string> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "create";
   
   const [
@@ -678,6 +857,29 @@ export async function create(
     "is_locked",
     "is_enabled",
   ]);
+  
+  const [
+    genderDict, // 性别
+  ] = await dictbizSrcDao.getDictbiz([
+    "wx_usr_gender",
+  ]);
+  
+  // 用户
+  if (isNotEmpty(input.usr_id_lbl) && input.usr_id === undefined) {
+    input.usr_id_lbl = String(input.usr_id_lbl).trim();
+    const usrModel = await usrDao.findOne({ lbl: input.usr_id_lbl });
+    if (usrModel) {
+      input.usr_id = usrModel.id;
+    }
+  }
+  
+  // 性别
+  if (isNotEmpty(input.gender_lbl) && input.gender === undefined) {
+    const val = genderDict.find((itemTmp) => itemTmp.lbl === input.gender_lbl)?.val;
+    if (val !== undefined) {
+      input.gender = Number(val);
+    }
+  }
   
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
@@ -720,7 +922,7 @@ export async function create(
   
   const args = new QueryArgs();
   let sql = `
-    insert into wx_wx_app(
+    insert into wx_wx_usr(
       id
       ,create_time
       ,update_time
@@ -732,6 +934,14 @@ export async function create(
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,tenant_id`;
+    }
+  }
+  if (input.org_id != null) {
+    sql += `,org_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.org_id) {
+      sql += `,org_id`;
     }
   }
   if (input.create_usr_id != null) {
@@ -753,20 +963,50 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
-  if (input.appid !== undefined) {
-    sql += `,appid`;
+  if (input.usr_id !== undefined) {
+    sql += `,usr_id`;
   }
-  if (input.appsecret !== undefined) {
-    sql += `,appsecret`;
+  if (input.nick_name !== undefined) {
+    sql += `,nick_name`;
+  }
+  if (input.avatar_url !== undefined) {
+    sql += `,avatar_url`;
+  }
+  if (input.mobile !== undefined) {
+    sql += `,mobile`;
+  }
+  if (input.openid !== undefined) {
+    sql += `,openid`;
+  }
+  if (input.gz_openid !== undefined) {
+    sql += `,gz_openid`;
+  }
+  if (input.unionid !== undefined) {
+    sql += `,unionid`;
+  }
+  if (input.session_key !== undefined) {
+    sql += `,session_key`;
+  }
+  if (input.gender !== undefined) {
+    sql += `,gender`;
+  }
+  if (input.city !== undefined) {
+    sql += `,city`;
+  }
+  if (input.province !== undefined) {
+    sql += `,province`;
+  }
+  if (input.country !== undefined) {
+    sql += `,country`;
+  }
+  if (input.language !== undefined) {
+    sql += `,language`;
   }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
   if (input.is_enabled !== undefined) {
     sql += `,is_enabled`;
-  }
-  if (input.order_by !== undefined) {
-    sql += `,order_by`;
   }
   if (input.rem !== undefined) {
     sql += `,rem`;
@@ -779,6 +1019,14 @@ export async function create(
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
+    }
+  }
+  if (input.org_id != null) {
+    sql += `,${ args.push(input.org_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.org_id) {
+      sql += `,${ args.push(authModel?.org_id) }`;
     }
   }
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
@@ -800,20 +1048,50 @@ export async function create(
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
-  if (input.appid !== undefined) {
-    sql += `,${ args.push(input.appid) }`;
+  if (input.usr_id !== undefined) {
+    sql += `,${ args.push(input.usr_id) }`;
   }
-  if (input.appsecret !== undefined) {
-    sql += `,${ args.push(input.appsecret) }`;
+  if (input.nick_name !== undefined) {
+    sql += `,${ args.push(input.nick_name) }`;
+  }
+  if (input.avatar_url !== undefined) {
+    sql += `,${ args.push(input.avatar_url) }`;
+  }
+  if (input.mobile !== undefined) {
+    sql += `,${ args.push(input.mobile) }`;
+  }
+  if (input.openid !== undefined) {
+    sql += `,${ args.push(input.openid) }`;
+  }
+  if (input.gz_openid !== undefined) {
+    sql += `,${ args.push(input.gz_openid) }`;
+  }
+  if (input.unionid !== undefined) {
+    sql += `,${ args.push(input.unionid) }`;
+  }
+  if (input.session_key !== undefined) {
+    sql += `,${ args.push(input.session_key) }`;
+  }
+  if (input.gender !== undefined) {
+    sql += `,${ args.push(input.gender) }`;
+  }
+  if (input.city !== undefined) {
+    sql += `,${ args.push(input.city) }`;
+  }
+  if (input.province !== undefined) {
+    sql += `,${ args.push(input.province) }`;
+  }
+  if (input.country !== undefined) {
+    sql += `,${ args.push(input.country) }`;
+  }
+  if (input.language !== undefined) {
+    sql += `,${ args.push(input.language) }`;
   }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
   }
   if (input.is_enabled !== undefined) {
     sql += `,${ args.push(input.is_enabled) }`;
-  }
-  if (input.order_by !== undefined) {
-    sql += `,${ args.push(input.order_by) }`;
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
@@ -822,27 +1100,7 @@ export async function create(
   
   const result = await execute(sql, args);
   
-  await delCache();
-  
   return input.id;
-}
-
-/**
- * 删除缓存
- */
-export async function delCache() {
-  const table = "wx_wx_app";
-  const method = "delCache";
-  
-  await delCacheCtx(`dao.sql.${ table }`);
-  const foreignTables: string[] = [
-    "base_usr",
-  ];
-  for (let k = 0; k < foreignTables.length; k++) {
-    const foreignTable = foreignTables[k];
-    if (foreignTable === table) continue;
-    await delCacheCtx(`dao.sql.${ foreignTable }`);
-  }
 }
 
 /**
@@ -859,7 +1117,7 @@ export async function updateTenantById(
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "updateTenantById";
   
   const tenantExist = await tenantDao.existById(tenant_id);
@@ -870,7 +1128,7 @@ export async function updateTenantById(
   const args = new QueryArgs();
   const sql = `
     update
-      wx_wx_app
+      wx_wx_usr
     set
       update_time = ${ args.push(reqDate()) },
       tenant_id = ${ args.push(tenant_id) }
@@ -879,15 +1137,51 @@ export async function updateTenantById(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
+  return num;
+}
+
+/**
+ * 根据id修改部门id
+ * @export
+ * @param {string} id
+ * @param {string} org_id
+ * @param {{
+ *   }} [options]
+ * @return {Promise<number>}
+ */
+export async function updateOrgById(
+  id: string,
+  org_id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "wx_wx_usr";
+  const method = "updateOrgById";
   
-  await delCache();
+  const orgExist = await orgDao.existById(org_id);
+  if (!orgExist) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  const sql = `
+    update
+      wx_wx_usr
+    set
+      update_time = ${ args.push(reqDate()) },
+      org_id = ${ args.push(org_id) }
+    where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
   return num;
 }
 
 /**
  * 根据id修改一行数据
  * @param {string} id
- * @param {WxAppInput} input
+ * @param {WxUsrInput} input
  * @param {({
  *   uniqueType?: "ignore" | "throw" | "update",
  * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
@@ -898,12 +1192,12 @@ export async function updateTenantById(
  */
 export async function updateById(
   id: string,
-  input: WxAppInput,
+  input: WxUsrInput,
   options?: {
     uniqueType?: "ignore" | "throw" | "create";
   },
 ): Promise<string> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "updateById";
   
   if (!id) {
@@ -921,9 +1215,37 @@ export async function updateById(
     "is_enabled",
   ]);
   
+  const [
+    genderDict, // 性别
+  ] = await dictbizSrcDao.getDictbiz([
+    "wx_usr_gender",
+  ]);
+  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
+  }
+  
+  // 修改部门id
+  if (isNotEmpty(input.org_id)) {
+    await updateOrgById(id, input.org_id);
+  }
+  
+  // 用户
+  if (isNotEmpty(input.usr_id_lbl) && input.usr_id === undefined) {
+    input.usr_id_lbl = String(input.usr_id_lbl).trim();
+    const usrModel = await usrDao.findOne({ lbl: input.usr_id_lbl });
+    if (usrModel) {
+      input.usr_id = usrModel.id;
+    }
+  }
+  
+  // 性别
+  if (isNotEmpty(input.gender_lbl) && input.gender === undefined) {
+    const val = genderDict.find((itemTmp) => itemTmp.lbl === input.gender_lbl)?.val;
+    if (val !== undefined) {
+      input.gender = Number(val);
+    }
   }
   
   // 锁定
@@ -962,7 +1284,7 @@ export async function updateById(
   
   const args = new QueryArgs();
   let sql = `
-    update wx_wx_app set
+    update wx_wx_usr set
   `;
   let updateFldNum = 0;
   if (input.lbl !== undefined) {
@@ -971,15 +1293,81 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.appid !== undefined) {
-    if (input.appid != oldModel.appid) {
-      sql += `appid = ${ args.push(input.appid) },`;
+  if (input.usr_id !== undefined) {
+    if (input.usr_id != oldModel.usr_id) {
+      sql += `usr_id = ${ args.push(input.usr_id) },`;
       updateFldNum++;
     }
   }
-  if (input.appsecret !== undefined) {
-    if (input.appsecret != oldModel.appsecret) {
-      sql += `appsecret = ${ args.push(input.appsecret) },`;
+  if (input.nick_name !== undefined) {
+    if (input.nick_name != oldModel.nick_name) {
+      sql += `nick_name = ${ args.push(input.nick_name) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.avatar_url !== undefined) {
+    if (input.avatar_url != oldModel.avatar_url) {
+      sql += `avatar_url = ${ args.push(input.avatar_url) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.mobile !== undefined) {
+    if (input.mobile != oldModel.mobile) {
+      sql += `mobile = ${ args.push(input.mobile) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.openid !== undefined) {
+    if (input.openid != oldModel.openid) {
+      sql += `openid = ${ args.push(input.openid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.gz_openid !== undefined) {
+    if (input.gz_openid != oldModel.gz_openid) {
+      sql += `gz_openid = ${ args.push(input.gz_openid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.unionid !== undefined) {
+    if (input.unionid != oldModel.unionid) {
+      sql += `unionid = ${ args.push(input.unionid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.session_key !== undefined) {
+    if (input.session_key != oldModel.session_key) {
+      sql += `session_key = ${ args.push(input.session_key) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.gender !== undefined) {
+    if (input.gender != oldModel.gender) {
+      sql += `gender = ${ args.push(input.gender) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.city !== undefined) {
+    if (input.city != oldModel.city) {
+      sql += `city = ${ args.push(input.city) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.province !== undefined) {
+    if (input.province != oldModel.province) {
+      sql += `province = ${ args.push(input.province) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.country !== undefined) {
+    if (input.country != oldModel.country) {
+      sql += `country = ${ args.push(input.country) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.language !== undefined) {
+    if (input.language != oldModel.language) {
+      sql += `language = ${ args.push(input.language) },`;
       updateFldNum++;
     }
   }
@@ -992,12 +1380,6 @@ export async function updateById(
   if (input.is_enabled !== undefined) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled = ${ args.push(input.is_enabled) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.order_by !== undefined) {
-    if (input.order_by != oldModel.order_by) {
-      sql += `order_by = ${ args.push(input.order_by) },`;
       updateFldNum++;
     }
   }
@@ -1019,13 +1401,7 @@ export async function updateById(
     sql += `update_time = ${ args.push(new Date()) }`;
     sql += ` where id = ${ args.push(id) } limit 1`;
     
-    await delCache();
-    
     const result = await execute(sql, args);
-  }
-  
-  if (updateFldNum > 0) {
-    await delCache();
   }
   
   const newModel = await findById(id);
@@ -1047,15 +1423,11 @@ export async function deleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "deleteByIds";
   
   if (!ids || !ids.length) {
     return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
   }
   
   let num = 0;
@@ -1068,7 +1440,7 @@ export async function deleteByIds(
     const args = new QueryArgs();
     const sql = `
       update
-        wx_wx_app
+        wx_wx_usr
       set
         is_deleted = 1,
         delete_time = ${ args.push(reqDate()) }
@@ -1079,8 +1451,6 @@ export async function deleteByIds(
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
-  
-  await delCache();
   
   return num;
 }
@@ -1116,21 +1486,17 @@ export async function enableByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "enableByIds";
   
   if (!ids || !ids.length) {
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
   const args = new QueryArgs();
   let sql = `
     update
-      wx_wx_app
+      wx_wx_usr
     set
       is_enabled = ${ args.push(is_enabled) }
     
@@ -1148,8 +1514,6 @@ export async function enableByIds(
   `;
   const result = await execute(sql, args);
   const num = result.affectedRows;
-  
-  await delCache();
   
   return num;
 }
@@ -1186,21 +1550,17 @@ export async function lockByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "lockByIds";
   
   if (!ids || !ids.length) {
     return 0;
   }
   
-  if (ids.length > 0) {
-    await delCache();
-  }
-  
   const args = new QueryArgs();
   let sql = `
     update
-      wx_wx_app
+      wx_wx_usr
     set
       is_locked = ${ args.push(is_locked) }
     
@@ -1219,8 +1579,6 @@ export async function lockByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
-  
   return num;
 }
 
@@ -1234,15 +1592,11 @@ export async function revertByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "revertByIds";
   
   if (!ids || !ids.length) {
     return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
   }
   
   let num = 0;
@@ -1251,7 +1605,7 @@ export async function revertByIds(
     const args = new QueryArgs();
     const sql = `
       update
-        wx_wx_app
+        wx_wx_usr
       set
         is_deleted = 0
       where
@@ -1278,8 +1632,6 @@ export async function revertByIds(
     }
   }
   
-  await delCache();
-  
   return num;
 }
 
@@ -1293,15 +1645,11 @@ export async function forceDeleteByIds(
   options?: {
   },
 ): Promise<number> {
-  const table = "wx_wx_app";
+  const table = "wx_wx_usr";
   const method = "forceDeleteByIds";
   
   if (!ids || !ids.length) {
     return 0;
-  }
-  
-  if (ids.length > 0) {
-    await delCache();
   }
   
   let num = 0;
@@ -1313,7 +1661,7 @@ export async function forceDeleteByIds(
         select
           *
         from
-          wx_wx_app
+          wx_wx_usr
         where
           id = ${ args.push(id) }
       `;
@@ -1323,7 +1671,7 @@ export async function forceDeleteByIds(
     const args = new QueryArgs();
     const sql = `
       delete from
-        wx_wx_app
+        wx_wx_usr
       where
         id = ${ args.push(id) }
         and is_deleted = 1
@@ -1333,50 +1681,5 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
-  
   return num;
-}
-  
-/**
- * 查找 order_by 字段的最大值
- * @return {Promise<number>}
- */
-export async function findLastOrderBy(
-  options?: {
-  },
-): Promise<number> {
-  const table = "wx_wx_app";
-  const method = "findLastOrderBy";
-  
-  let sql = `
-    select
-      t.order_by order_by
-    from
-      wx_wx_app t
-  `;
-  const whereQuery: string[] = [ ];
-  const args = new QueryArgs();
-  whereQuery.push(`t.is_deleted = 0`);
-  {
-    const authModel = await authDao.getAuthModel();
-    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
-    whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
-  }
-  sql += `
-    order by
-      t.order_by desc
-    limit 1
-  `;
-  
-  interface Result {
-    order_by: number;
-  }
-  let model = await queryOne<Result>(sql, args);
-  let result = model?.order_by ?? 0;
-  
-  return result;
 }
