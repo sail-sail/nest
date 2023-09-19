@@ -172,7 +172,7 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (column.maxFileSize) {
               #>
-              :maxFileSize="<#=column.maxFileSize#>"<#
+              :max-file-size="<#=column.maxFileSize#>"<#
               }
               #><#
               if (column.attAccept) {

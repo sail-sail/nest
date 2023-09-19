@@ -721,74 +721,11 @@ export async function validate(
     fieldComments.id,
   );
   
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
   // 类型
   await validators.chars_max_length(
     input.type,
     10,
     fieldComments.type,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
-  // 父菜单
-  await validators.chars_max_length(
-    input.parent_id,
-    22,
-    fieldComments.parent_id,
-  );
-  
-  // 父菜单
-  await validators.chars_max_length(
-    input.parent_id,
-    22,
-    fieldComments.parent_id,
-  );
-  
-  // 父菜单
-  await validators.chars_max_length(
-    input.parent_id,
-    22,
-    fieldComments.parent_id,
   );
   
   // 父菜单
@@ -805,48 +742,6 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    45,
-    fieldComments.lbl,
-  );
-  
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    45,
-    fieldComments.lbl,
-  );
-  
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    45,
-    fieldComments.lbl,
-  );
-  
-  // 路由
-  await validators.chars_max_length(
-    input.route_path,
-    255,
-    fieldComments.route_path,
-  );
-  
-  // 路由
-  await validators.chars_max_length(
-    input.route_path,
-    255,
-    fieldComments.route_path,
-  );
-  
-  // 路由
-  await validators.chars_max_length(
-    input.route_path,
-    255,
-    fieldComments.route_path,
-  );
-  
   // 路由
   await validators.chars_max_length(
     input.route_path,
@@ -861,74 +756,11 @@ export async function validate(
     fieldComments.rem,
   );
   
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    255,
-    fieldComments.rem,
-  );
-  
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    255,
-    fieldComments.rem,
-  );
-  
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    255,
-    fieldComments.rem,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
   // 更新人
