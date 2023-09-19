@@ -129,6 +129,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     const hasSelectInput = hasSelectInputFn(table);
     if (stats.isFile()) {
+      if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
+        return;
+      }
       if(dir.endsWith(".xlsx")) {
 				const buffer = await readFile(fileTng);
         const fields = [ ];
@@ -248,9 +251,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         return;
       }
       if (dir === "/pc/src/router/gen.ts") {
-        return;
-      }
-      if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
         return;
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
