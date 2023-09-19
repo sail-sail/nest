@@ -341,12 +341,15 @@ export async function uniLogin() {
       appLanguage = "zh-cn";
     }
     const loginRes = await uni.login({ provider: "weixin" });
-    const code = loginRes.code;
-    await code2Session({
-      code,
-      lang: appLanguage,
-    });
-    return true;
+    const code = loginRes?.code;
+    if (code) {
+      await code2Session({
+        code,
+        lang: appLanguage,
+      });
+      return true;
+    }
+    return false;
   }
   return false;
 }
