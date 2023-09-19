@@ -14,17 +14,17 @@ Volor:
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS nest_wx CHARSET utf8mb4;
+CREATE DATABASE IF NOT EXISTS deno4wx CHARSET utf8mb4;
 -- 修改密码策略
 set global validate_password_policy=0;
 -- 创建用户
-create user 'nest_wx'@'%' identified by '4ewjkSI1axNODOPv';
+create user 'deno4wx'@'%' identified by '4ewjkSI1axNODOPv';
 -- 设置用户密码不过期
-ALTER USER 'nest_wx'@'%' IDENTIFIED BY '4ewjkSI1axNODOPv' PASSWORD EXPIRE NEVER;
+ALTER USER 'deno4wx'@'%' IDENTIFIED BY '4ewjkSI1axNODOPv' PASSWORD EXPIRE NEVER;
 -- 修改密码策略
-ALTER USER 'nest_wx'@'%' IDENTIFIED WITH mysql_native_password BY '4ewjkSI1axNODOPv';
+ALTER USER 'deno4wx'@'%' IDENTIFIED WITH mysql_native_password BY '4ewjkSI1axNODOPv';
 -- 给用户授权
-grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on nest_wx.* to 'nest_wx'@'%';
+grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on deno4wx.* to 'deno4wx'@'%';
 -- 刷新权限
 flush privileges;
 ```
