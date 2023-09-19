@@ -32,10 +32,10 @@ onLaunch((async(options: any) => {
     })).data;
   } catch (err) {
   }
-  if (!authorization) {
-    await uniLogin();
-  } else {
+  if (authorization) {
     await usrStore.setAuthorization(authorization);
+  } else {
+    await uniLogin();
   }
 }));
 </script>
