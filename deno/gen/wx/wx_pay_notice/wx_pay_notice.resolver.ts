@@ -1,0 +1,80 @@
+import {
+  useContext,
+} from "/lib/context.ts";
+
+import type {
+  SearchExtra,
+} from "/lib/util/dao_util.ts";
+
+import type {
+  UniqueType,
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  WxPayNoticeInput,
+  WxPayNoticeModel,
+  WxPayNoticeSearch,
+  WxPayNoticeFieldComment,
+} from "./wx_pay_notice.model.ts";
+
+import {
+  usePermit,
+} from "/src/base/permit/permit.service.ts";
+
+/**
+ * 根据条件查找据数总数
+ */
+export async function findCountWxPayNotice(
+  search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
+): Promise<number> {
+  const { findCount } = await import("./wx_pay_notice.service.ts");
+  const res = await findCount(search);
+  return res;
+}
+
+/**
+ * 根据搜索条件和分页查找数据
+ */
+export async function findAllWxPayNotice(
+  search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
+  page?: PageInput,
+  sort?: SortInput[],
+): Promise<WxPayNoticeModel[]> {
+  const { findAll } = await import("./wx_pay_notice.service.ts");
+  const res = await findAll(search, page, sort);
+  return res;
+}
+
+/**
+ * 获取字段对应的名称
+ */
+export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldComment> {
+  const { getFieldComments } = await import("./wx_pay_notice.service.ts");
+  const res = await getFieldComments();
+  return res;
+}
+
+/**
+ * 根据条件查找第一条数据
+ */
+export async function findOneWxPayNotice(
+  search?: WxPayNoticeSearch & { $extra?: SearchExtra[] },
+  sort?: SortInput[],
+): Promise<WxPayNoticeModel | undefined> {
+  const { findOne } = await import("./wx_pay_notice.service.ts");
+  const res = await findOne(search, sort);
+  return res;
+}
+
+/**
+ * 根据 id 查找一条数据
+ */
+export async function findByIdWxPayNotice(
+  id: string,
+): Promise<WxPayNoticeModel | undefined> {
+  const { findById } = await import("./wx_pay_notice.service.ts");
+  const res = await findById(id);
+  return res;
+}
