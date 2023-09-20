@@ -35,7 +35,7 @@ export async function code2Session(
     },
   );
   if (!wx_appModel) {
-    throw `wx_usr.appid: ${ model.appid } 未设置!`;
+    throw `wx_app.appid: ${ model.appid } 未设置!`;
   }
   const params = new URLSearchParams();
   params.set("appid", wx_appModel.appid);
