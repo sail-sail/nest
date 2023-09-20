@@ -1,18 +1,26 @@
+import pages from "@/pages.json";
+
 let host = "";
 let port: string | undefined = undefined;
 let protocol = "http:";
+let domain = "";
 let wsProt = "ws:";
+let appid = "wxd4b24c53a1813485";
 
-if(process.env.NODE_ENV === 'development') {
+const homePage = `/${pages.pages[0]?.path}`;
+
+if(import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
   port = "4001";
+  domain = "localhost:4000";
   protocol = "http:";
   wsProt = "ws:";
   // #endif
   // #ifdef H5
   host = location.hostname;
   port = location.port;
+  domain = location.host;
   protocol = location.protocol;
   if(protocol === "https:") {
     wsProt = "wss:";
@@ -20,16 +28,19 @@ if(process.env.NODE_ENV === 'development') {
     wsProt = "ws:";
   }
   // #endif
-} else {
+}
+if (import.meta.env.MODE === "production") {
   // #ifndef H5
   host = "localhost";
   port = undefined;
+  domain = "localhost:4000";
   protocol = "https:";
   wsProt = "wss:";
   // #endif
   // #ifdef H5
   host = location.hostname;
   port = location.port;
+  domain = location.host;
   protocol = location.protocol;
   if(protocol === "https:") {
     wsProt = "wss:";
@@ -48,8 +59,19 @@ let wss = `${wsProt}//${host}`;
 if(port) {
   wss += `:${port}`;
 }
+
 const config = {
-  urlBase, url, wss, host, port, protocol, wsProt,
+  urlBase,
+  url,
+  wss,
+  host,
+  port,
+  protocol,
+  wsProt,
+  homePage,
+  domain,
+  appid,
   pinia: undefined,
 };
+
 export default config;

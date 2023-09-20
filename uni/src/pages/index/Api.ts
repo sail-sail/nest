@@ -4,13 +4,7 @@ import type {
   MutationLoginArgs,
 } from "#/types";
 
-/**
- * 根据 当前网址的域名+端口 获取 租户列表
- * @export
- * @param {{ host: string }} variables
- * @param {GqlOpt} [opt]
- * @return {Promise<{ id: string, lbl: string }[]>}
- */
+/** 根据 当前网址的域名+端口 获取 租户列表 */
 export async function getLoginTenants(
   variables: { domain: string },
   opt?: GqlOpt,
@@ -18,7 +12,7 @@ export async function getLoginTenants(
   const data: {
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       query($domain: String!) {
         getLoginTenants(domain: $domain) {
           id
@@ -29,29 +23,6 @@ export async function getLoginTenants(
     variables,
   },opt);
   return data.getLoginTenants;
-}
-
-/**
- * 获取语言列表
- */
-export async function getLoginLangs(
-  opt?: GqlOpt,
-) {
-  const res: {
-    getLoginLangs: Query["getLoginLangs"],
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getLoginLangs {
-          id
-          code
-          lbl
-        }
-      }
-    `,
-  }, opt);
-  const data = res.getLoginLangs;
-  return data;
 }
 
 export async function login(

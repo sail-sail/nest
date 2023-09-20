@@ -66,6 +66,9 @@ export default defineConfig({
             "isNotEmpty",
             "uniqueID",
           ],
+          "@/tmui/components/tm-form/tm-form.vue": [
+            [ "default", "TmForm" ],
+          ],
         },
       ],
       resolvers: [

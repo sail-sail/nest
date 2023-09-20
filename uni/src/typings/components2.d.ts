@@ -7,7 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AppEmpty: typeof import('./../components/AppEmpty/AppEmpty.vue')['default']
     AppLoading: typeof import('./../components/AppLoading/AppLoading.vue')['default']
+    CustomSelect: typeof import('./../components/CustomSelect/CustomSelect.vue')['default']
+    CustomInput: typeof import('./../components/CustomInput/CustomInput.vue')['default']
   }
 }

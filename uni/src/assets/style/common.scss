@@ -13,18 +13,3 @@ tm-app.n-flex {
     background: inherit !important;
   }
 }
-tm-form.n-flex {
-  > tm-sheet {
-    display: flex;
-    flex: 1 0 0;
-    overflow: hidden;
-    > .flex {
-      flex: 1 0 0;
-      overflow: hidden;
-      > .flex {
-        flex: 1 0 0;
-        overflow: hidden;
-      }
-    }
-  }
-}
