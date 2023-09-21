@@ -231,9 +231,6 @@ let isValueEmpty = $computed(() => {
 
 let showPicker = $ref(false);
 
-// TODO
-showPicker = true;
-
 let pickerValue = $computed({
   get() {
     const value: number[] = [ ];

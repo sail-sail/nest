@@ -31,7 +31,7 @@
           v-model="model.tenant_id"
           :method="getLoginTenantsEfc"
           placeholder="请选择 租户"
-          :multiple="true"
+          :multiple="false"
         >
           <template #left>
             <i
