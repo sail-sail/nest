@@ -13,7 +13,7 @@ if(import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
   port = "4001";
-  domain = "localhost:4000";
+  domain = `${ host }${ port ? `:${ port }` : "" }`;
   protocol = "http:";
   wsProt = "ws:";
   // #endif
@@ -33,7 +33,7 @@ if (import.meta.env.MODE === "production") {
   // #ifndef H5
   host = "localhost";
   port = undefined;
-  domain = "localhost:4000";
+  domain = `${ host }${ port ? `:${ port }` : "" }`;
   protocol = "https:";
   wsProt = "wss:";
   // #endif

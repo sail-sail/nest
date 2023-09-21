@@ -26,12 +26,12 @@
           message: '请选择 租户',
         }"
         required
-        placeholder="请选择 租户"
       >
         <CustomSelect
           v-model="model.tenant_id"
           :method="getLoginTenantsEfc"
           placeholder="请选择 租户"
+          :multiple="true"
         >
           <template #left>
             <i
@@ -96,8 +96,7 @@
       un-m="x-2"
     >
       <tm-button
-        @click="onLoginClk"
-        form-type="submit"
+        @click="onLogin"
         label="登录"
         block
       ></tm-button>
@@ -139,6 +138,18 @@ let model = $ref({
 let redirect_uri = cfg.homePage;
 
 async function onLogin() {
+  if (!formRef) {
+    return;
+  }
+  
+  const {
+    isPass,
+  } = formRef.validate();
+  
+  if (!isPass) {
+    return;
+  }
+  
   uni.setStorage({
     key: "oldLoginModel",
     data: model,

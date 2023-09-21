@@ -44,16 +44,77 @@
     >
     </tm-icon>
   </view>
+  <slot name="right"></slot>
 </view>
 <tm-picker
+  v-if="!props.multiple"
   :columns="options4SelectV2"
   map-key="label"
   v-bind="$attrs"
   v-model="pickerValue"
   :disabled="props.disabled"
   v-model:show="showPicker"
+  :height="height"
+  @confirm="onConfirm"
 >
 </tm-picker>
+<template
+  v-else
+>
+  <tm-drawer
+    v-bind="$attrs"
+    v-model:show="showPicker"
+    :closeable="true"
+    :height="dHeight"
+    :title="props.placeholder || '请选择'"
+    ok-text="确认"
+  >
+    <view
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
+      un-h="full"
+    >
+      <view
+        un-flex="~ [1_0_0] col"
+        un-overflow-auto
+        un-p="y-2 x-4"
+        un-box-border
+      >
+        <tm-cell
+          v-for="item in options4SelectV2"
+          :key="item.value"
+          :margin="[0, 0]"
+          :title="item.label"
+          un-rounded="md"
+          un-flex="shrink-0"
+          un-box-border
+          :bottom-border="true"
+          :border="1"
+        >
+          <template #right>
+            <i
+              v-if="modelValueMuti.includes(item.value)"
+              un-i="iconfont-check"
+              un-text="[var(--primary-color)]"
+            ></i>
+          </template>
+        </tm-cell>
+      </view>
+      <view
+        un-m="x-2"
+      >
+        <tm-button
+          @click="onConfirm"
+          label="确定选择"
+          block
+        ></tm-button>
+      </view>
+      <view
+        :style="{ height: sysinfo.bottom + 'px' }"
+      ></view>
+    </view>
+  </tm-drawer>
+</template>
 </template>
 
 <script lang="ts" setup>
@@ -77,6 +138,7 @@ const props = withDefaults(
     modelValue?: string | string[] | null;
     options4SelectV2?: OptionType[];
     placeholder?: string;
+    height?: number;
     init?: boolean;
     showClear?: boolean;
     multiple?: boolean;
@@ -94,6 +156,7 @@ const props = withDefaults(
     modelValue: undefined,
     options4SelectV2: undefined,
     placeholder: "",
+    height: 700,
     init: true,
     showClear: true,
     multiple: false,
@@ -101,6 +164,24 @@ const props = withDefaults(
     readonly: false,
   },
 );
+
+const sysinfo = inject(
+  "tmuiSysInfo",
+  computed(() => {
+    return {
+      bottom: 0,
+      height: 750,
+      width: uni.upx2px(750),
+      top: 0,
+      isCustomHeader: false,
+      sysinfo: null,
+    };
+  })
+);
+
+const dHeight = computed(() => {
+  return props.height + sysinfo.value.bottom + 80;
+});
 
 let inited = $ref(false);
 let data = $ref<any[]>([ ]);
@@ -116,11 +197,27 @@ watch(
 );
 
 watch(
-  () => modelValue,
+  () => props.disabled,
   () => {
-    emit("update:modelValue", modelValue);
+    if (props.disabled) {
+      showPicker = false;
+    }
   },
 );
+
+let modelValueMuti = $computed(() => {
+  if (!modelValue) {
+    return [ ];
+  }
+  if (props.multiple) {
+    if (Array.isArray(modelValue)) {
+      return modelValue as string[];
+    } else {
+      return [ modelValue as string ];
+    }
+  }
+  return [ modelValue as string ];
+});
 
 let isValueEmpty = $computed(() => {
   if (!modelValue) {
@@ -133,6 +230,9 @@ let isValueEmpty = $computed(() => {
 });
 
 let showPicker = $ref(false);
+
+// TODO
+showPicker = true;
 
 let pickerValue = $computed({
   get() {
@@ -209,6 +309,11 @@ function onClear() {
     modelValue = [ ];
   }
   emit("clear");
+}
+
+function onConfirm() {
+  showPicker = false;
+  emit("update:modelValue", modelValue);
 }
 
 async function refreshEfc() {
