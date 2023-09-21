@@ -10,7 +10,7 @@ const child_process = require("child_process");
 
 process.title = "deno";
 
-{
+function graphqlCodegen() {
   const arr = [
     "node_modules/@graphql-codegen/cli/cjs/bin.js",
     "--config",
@@ -96,6 +96,9 @@ function watchFn() {
         });
       }
       console.log(filenames.slice(0, 4).join("\n"));
+      if (filenames.some((filename) => filename.endsWith(".graphql.ts"))) {
+        graphqlCodegen();
+      }
       filenames = [ ];
       if (ls) {
         ls.kill(9);
