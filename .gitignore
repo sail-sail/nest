@@ -24,3 +24,4 @@ publish_cnf.js
 
 /pc/typings/components.d.ts
 /pc/typings/auto-imports.d.ts
+database_crypto_key.json

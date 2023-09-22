@@ -10,18 +10,19 @@
     "publish": "node lib/script/publish.js",
     "build:win": "deno run -A --import-map=./import_map.json ./lib/script/build.ts",
     "codegen": "cd .. && npm run codegen",
+    "db_gen_crypto_key": "deno run -A --import-map=./import_map.json ./lib/script/db_gen_crypto_key.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/typescript": "4.0.1",
     "@graphql-codegen/typescript-operations": "4.0.1",
-    "@types/node": "20.5.7",
+    "@types/node": "20.6.3",
     "chokidar": "3.5.3",
     "dotenv": "16.3.1",
-    "graphql": "16.8.0",
+    "graphql": "16.8.1",
     "graphql-ts-client-codegen": "3.1.14",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   }
 }
