@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel[]> {
   search = search || { };
-  const data: RoleModel[] = await roleDao.findAll(search, page, sort);
-  return data;
+  const models: RoleModel[] = await roleDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel | undefined> {
   search = search || { };
-  const data = await roleDao.findOne(search, sort);
-  return data;
+  const model = await roleDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<RoleModel | undefined> {
-  const data = await roleDao.findById(id);
-  return data;
+  const model = await roleDao.findById(id);
+  return model;
 }
 
 /**

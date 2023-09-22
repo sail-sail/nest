@@ -52,8 +52,8 @@ export async function findAll(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const data: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
-  return data;
+  const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -70,8 +70,8 @@ export async function findOne(
   if (authModel?.id) {
     search.create_usr_id = [ authModel.id ];
   }
-  const data = await background_taskDao.findOne(search, sort);
-  return data;
+  const model = await background_taskDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -81,8 +81,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<BackgroundTaskModel | undefined> {
-  const data = await background_taskDao.findById(id);
-  return data;
+  const model = await background_taskDao.findById(id);
+  return model;
 }
 
 /**

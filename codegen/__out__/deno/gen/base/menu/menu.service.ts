@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<MenuModel[]> {
   search = search || { };
-  const data: MenuModel[] = await menuDao.findAll(search, page, sort);
-  return data;
+  const models: MenuModel[] = await menuDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<MenuModel | undefined> {
   search = search || { };
-  const data = await menuDao.findOne(search, sort);
-  return data;
+  const model = await menuDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<MenuModel | undefined> {
-  const data = await menuDao.findById(id);
-  return data;
+  const model = await menuDao.findById(id);
+  return model;
 }
 
 /**

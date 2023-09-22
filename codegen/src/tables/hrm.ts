@@ -1,0 +1,86 @@
+import { defineConfig } from "../config";
+
+export default defineConfig({
+  // 工资条
+  hrm_payslip: {
+    opts: {
+      uniques: [
+        [ "pay_date", "usr_id" ],
+      ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "pay_date",
+        require: true,
+        search: true,
+        width: 120,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "usr_id",
+        require: true,
+        width: 140,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "job_num",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "company",
+        width: 280,
+      },
+      {
+        COLUMN_NAME: "gross_pay",
+        width: 100,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "social_security",
+        width: 100,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "individual_tax",
+        width: 100,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "self_pay",
+        width: 100,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "net_pay",
+        width: 100,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "is_send",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "is_confirm",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+});

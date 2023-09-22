@@ -1,5 +1,7 @@
 import { defineConfig } from "../config";
 
+import hrm from "./hrm";
+
 export default defineConfig({
   // 角色
   base_role: {
@@ -1192,4 +1194,6 @@ export default defineConfig({
       },
     ],
   },
+  
+  ...hrm,
 });

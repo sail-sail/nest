@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel[]> {
   search = search || { };
-  const data: TenantModel[] = await tenantDao.findAll(search, page, sort);
-  return data;
+  const models: TenantModel[] = await tenantDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel | undefined> {
   search = search || { };
-  const data = await tenantDao.findOne(search, sort);
-  return data;
+  const model = await tenantDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<TenantModel | undefined> {
-  const data = await tenantDao.findById(id);
-  return data;
+  const model = await tenantDao.findById(id);
+  return model;
 }
 
 /**

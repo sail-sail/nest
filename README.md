@@ -14,17 +14,17 @@ Volor:
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
-CREATE DATABASE IF NOT EXISTS nest CHARSET utf8mb4;
+CREATE DATABASE IF NOT EXISTS xh4hrm CHARSET utf8mb4;
 -- 修改密码策略
 set global validate_password_policy=0;
 -- 创建用户
-create user 'nest'@'%' identified by 'umbdflXHI0osat2v';
+create user 'xh4hrm'@'%' identified by 'l1zx6Cfo2k1Z95SO';
 -- 设置用户密码不过期
-ALTER USER 'nest'@'%' IDENTIFIED BY 'umbdflXHI0osat2v' PASSWORD EXPIRE NEVER;
+ALTER USER 'xh4hrm'@'%' IDENTIFIED BY 'l1zx6Cfo2k1Z95SO' PASSWORD EXPIRE NEVER;
 -- 修改密码策略
-ALTER USER 'nest'@'%' IDENTIFIED WITH mysql_native_password BY 'umbdflXHI0osat2v';
+ALTER USER 'xh4hrm'@'%' IDENTIFIED WITH mysql_native_password BY 'l1zx6Cfo2k1Z95SO';
 -- 给用户授权
-grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on nest.* to 'nest'@'%';
+grant drop,index,select,insert,update,delete,execute,alter,create,references,lock tables on xh4hrm.* to 'xh4hrm'@'%';
 -- 刷新权限
 flush privileges;
 ```
@@ -44,12 +44,12 @@ yum install nginx -y
 
 4. CentOS压缩文件夹
 ```
-tar zcfv /data/nest.tar.gz /data/nest
+tar zcfv /data/xh4hrm.tar.gz /data/xh4hrm
 ```
 
 5. CentOS解压文件夹
 ```
-tar -xzvf /data/software/nest.tar.gz /data/
+tar -xzvf /data/software/xh4hrm.tar.gz /data/
 ```
 
 6. CentOS通过yum安装nodejs
@@ -154,7 +154,7 @@ show variables like 'datadir';
 
 ```
 mysql导出数据:
-mysqldump --defaults-file="/etc/my.cnf" --user=nest -p --host=localhost --protocol=tcp --port=3306 --default-character-set=utf8 --skip-triggers "nest" > nest.sql
+mysqldump --defaults-file="/etc/my.cnf" --user=xh4hrm -p --host=localhost --protocol=tcp --port=3306 --default-character-set=utf8 --skip-triggers "xh4hrm" > xh4hrm.sql
 ```
 
 10. PM2设置开机自启动
@@ -206,7 +206,7 @@ npm run codeapply
 npm run build:pc
 
 自动编译和发布后端:
-npm run build:nest
+npm run build:xh4hrm
 
 自动编译和发布前后端:
 npm run build

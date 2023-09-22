@@ -230,4 +230,16 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/hrm/payslip",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "工资条",
+        component: () => import("@/views/hrm/payslip/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];
