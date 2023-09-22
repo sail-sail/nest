@@ -752,7 +752,7 @@ export async function validate(
   // 备注
   await validators.chars_max_length(
     input.rem,
-    255,
+    100,
     fieldComments.rem,
   );
   
