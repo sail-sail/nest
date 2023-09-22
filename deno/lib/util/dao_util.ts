@@ -10,6 +10,13 @@ import {
   type QueryArgs,
 } from "/lib/context.ts";
 
+import {
+  encode as base64Encode,
+  decode as base64Decode,
+} from "std/encoding/base64.ts";
+
+import { getEnv } from "/lib/env.ts";
+
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -189,4 +196,74 @@ export async function many2manyUpdate(
       await execute(sql, args);
     }
   }
+}
+
+const ivStr = await getEnv("database_crypto_iv");
+
+let iv: Uint8Array | undefined;
+
+if (ivStr) {
+  iv = new TextEncoder().encode(ivStr);
+}
+
+let cryptoKey: CryptoKey | undefined;
+
+const database_crypto_key_path = await getEnv("database_crypto_key_path");
+
+let database_crypto_key: JsonWebKey | undefined;
+
+try {
+  if (database_crypto_key_path) {
+    const database_crypto_keyStr = await Deno.readFile(database_crypto_key_path);
+    database_crypto_key = JSON.parse(new TextDecoder().decode(database_crypto_keyStr));
+  }
+} catch (error) {
+  console.error(error);
+}
+
+if (database_crypto_key) {
+  cryptoKey = await crypto.subtle.importKey(
+    "jwk",
+    database_crypto_key,
+    {
+      name: "AES-CBC",
+      length: 256,
+    },
+    true,
+    ["encrypt", "decrypt"],
+  );
+}
+
+export async function encrypt(
+  str: string,
+) {
+  if (!cryptoKey || !iv) {
+    return;
+  }
+  const buf = await crypto.subtle.encrypt(
+    {
+      name: "AES-CBC",
+      iv,
+    },
+    cryptoKey,
+    new TextEncoder().encode(str),
+  );
+  return base64Encode(buf);
+}
+
+export async function decrypt(
+  str: string,
+) {
+  if (!cryptoKey || !iv || !str) {
+    return "";
+  }
+  const buf = await crypto.subtle.decrypt(
+    {
+      name: "AES-CBC",
+      iv,
+    },
+    cryptoKey,
+    base64Decode(str),
+  );
+  return new TextDecoder().decode(buf);
 }
