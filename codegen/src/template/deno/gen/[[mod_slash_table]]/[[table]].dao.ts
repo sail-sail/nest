@@ -68,6 +68,12 @@ const hasForeignJson = columns.some((column) => {
   }
   return false;
 });
+const hasEncrypt = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  return !!column.isEncrypt;
+});
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
@@ -180,6 +186,15 @@ if (hasForeignJson) {
 
 import {
   setModelIds,
+} from "/lib/util/dao_util.ts";<#
+}
+#><#
+if (hasEncrypt) {
+#>
+
+import {
+  encrypt,
+  decrypt,
 } from "/lib/util/dao_util.ts";<#
 }
 #>
@@ -934,6 +949,7 @@ export async function findAll(
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
       const isPassword = column.isPassword;
+      const isEncrypt = column.isEncrypt;
     #><#
       if (column_type && column_type.startsWith("decimal")) {
     #>
@@ -950,6 +966,10 @@ export async function findAll(
     #>
     // <#=column_comment#>
     model.<#=column_name#> = "";<#
+      } else if (isEncrypt) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = await decrypt(model.<#=column_name#>);<#
       } else if (selectList.length > 0) {
     #>
     // <#=column_comment#>
@@ -1566,6 +1586,36 @@ export async function create(
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
   const method = "create";<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (!column.isEncrypt) {
+      continue;
+    }
+    const column_name = column.COLUMN_NAME;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT;
+    let selectList = [ ];
+    if (column_comment.endsWith("multiple")) {
+      _data_type = "[String]";
+    }
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_name === 'id') column_comment = 'ID';
+  #>
+  // <#=column_comment#>
+  if (input.<#=column_name#>) {
+    input.<#=column_name#> = await encrypt(input.<#=column_name#>);
+  }<#
+  }
+  #><#
   if (hasDict) {
   #>
   
@@ -2433,6 +2483,36 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (!column.isEncrypt) {
+      continue;
+    }
+    const column_name = column.COLUMN_NAME;
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    let column_comment = column.COLUMN_COMMENT;
+    let selectList = [ ];
+    if (column_comment.endsWith("multiple")) {
+      _data_type = "[String]";
+    }
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.includes("[")) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    if (column_name === 'id') column_comment = 'ID';
+  #>
+  // <#=column_comment#>
+  if (input.<#=column_name#>) {
+    input.<#=column_name#> = await encrypt(input.<#=column_name#>);
+  }<#
+  }
+  #><#
   if (hasDict) {
   #>
   

@@ -519,6 +519,11 @@ export interface TableCloumn {
    */
   validators?: Validator[],
   
+  /**
+   * 数据库字段是否加密, 默认为false
+   */
+  isEncrypt?: boolean,
+  
 }
 
 /**
