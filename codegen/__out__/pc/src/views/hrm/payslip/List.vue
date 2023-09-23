@@ -477,13 +477,6 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_send"
-                  @change="onIs_send(row.id, row.is_send)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
@@ -493,13 +486,6 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_confirm"
-                  @change="onIs_confirm(row.id, row.is_confirm)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
