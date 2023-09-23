@@ -135,7 +135,12 @@ import {
   isNotEmpty,
   isEmpty,
   sqlLike,
-  shortUuidV4,
+  shortUuidV4,<#
+  if (cache) {
+  #>
+  hash,<#
+  }
+  #>
 } from "/lib/util/string_util.ts";
 
 import {
@@ -584,7 +589,7 @@ export async function findCount(
   #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
   }
   #>
   
@@ -703,7 +708,7 @@ export async function findAll(
   
   // 缓存
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
   }
   #>
   
@@ -1393,7 +1398,7 @@ export async function existById(
   #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
   }
   #>
   
