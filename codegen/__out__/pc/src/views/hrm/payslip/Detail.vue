@@ -53,10 +53,10 @@
             <CustomDatePicker
               v-model="dialogModel.pay_month"
               type="month"
-              format="YYYY-MM-DD"
+              format="YYYY-MM"
               value-format="YYYY-MM-DD"
               :placeholder="`${ ns('请选择') } ${ n('发放月份') }`"
-              :readonly="isReadonly"
+              :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
         </template>
