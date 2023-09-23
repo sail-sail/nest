@@ -26,12 +26,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
 }
-const hasEncrypt = columns.some((column) => {
-  if (column.ignoreCodegen) {
-    return false;
-  }
-  return !!column.isEncrypt;
-});
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #><#
@@ -114,41 +108,7 @@ export async function findAll(
   }<#
     }
   #>
-  const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);<#
-  if (hasEncrypt) {
-  #>
-  for (const model of models) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    model.<#=column_name#> = "";<#
-    }
-    #>
-  }<#
-  }
-  #>
+  const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);
   return models;
 }<#
 if (hasSummary) {
@@ -196,41 +156,7 @@ export async function findOne(
   }<#
     }
   #>
-  const model = await <#=table#>Dao.findOne(search, sort);<#
-  if (hasEncrypt) {
-  #>
-  if (model) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    model.<#=column_name#> = "";<#
-    }
-    #>
-  }<#
-  }
-  #>
+  const model = await <#=table#>Dao.findOne(search, sort);
   return model;
 }
 
@@ -241,41 +167,7 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<<#=modelName#> | undefined> {
-  const model = await <#=table#>Dao.findById(id);<#
-  if (hasEncrypt) {
-  #>
-  if (model) {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.isEncrypt) {
-        continue;
-      }
-      const column_name = column.COLUMN_NAME;
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      let selectList = [ ];
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-      if (column_name === 'id') column_comment = 'ID';
-    #>
-    // <#=column_comment#>
-    model.<#=column_name#> = "";<#
-    }
-    #>
-  }<#
-  }
-  #>
+  const model = await <#=table#>Dao.findById(id);
   return model;
 }
 
