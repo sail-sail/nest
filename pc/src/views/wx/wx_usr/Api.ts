@@ -455,7 +455,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDictbiz(codes: [
-            "gender",
+            "wx_usr_gender",
           ]) {
             code
             lbl
@@ -565,7 +565,7 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDictbiz(codes: [
-            "gender",
+            "wx_usr_gender",
           ]) {
             code
             lbl

@@ -148,7 +148,7 @@
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('支付完成时间') }`"
-              :readonly="isReadonly"
+              :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
         </template>
