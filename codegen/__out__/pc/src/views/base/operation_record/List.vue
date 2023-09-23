@@ -76,19 +76,17 @@
           :label="n('创建时间')"
           prop="create_time"
         >
-          <el-date-picker
+          <CustomDatePicker
             :set="search.create_time = search.create_time || [ ]"
             type="daterange"
-            un-w="full"
             :model-value="(search.create_time as any)"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            clearable
             @update:model-value="search.create_time = $event"
             @clear="onSearchClear"
-          ></el-date-picker>
+          ></CustomDatePicker>
         </el-form-item>
       </template>
       

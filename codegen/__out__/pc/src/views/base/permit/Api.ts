@@ -418,11 +418,6 @@ export function useDownloadImportTemplate(routePath: string) {
             code
             lbl
           }
-          getDictbiz(codes: [
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -495,11 +490,6 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
           ]) {
             code
             lbl

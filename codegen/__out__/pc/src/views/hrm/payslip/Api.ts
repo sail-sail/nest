@@ -35,8 +35,8 @@ export async function findAll(
       query($search: PayslipSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllPayslip(search: $search, page: $page, sort: $sort) {
           id
-          pay_date
-          pay_date_lbl
+          pay_month
+          pay_month_lbl
           usr_id
           usr_id_lbl
           job_num
@@ -179,8 +179,8 @@ export async function findById(
       query($id: String!) {
         findByIdPayslip(id: $id) {
           id
-          pay_date
-          pay_date_lbl
+          pay_month
+          pay_month_lbl
           usr_id
           usr_id_lbl
           job_num
@@ -386,7 +386,7 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsPayslip {
-            pay_date_lbl
+            pay_month_lbl
             usr_id_lbl
             job_num
             company
@@ -409,14 +409,9 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "is_send",
-            "is_confirm",
+            "yes_no",
+            "yes_no",
             "is_locked",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
           ]) {
             code
             lbl
@@ -462,8 +457,8 @@ export function useExportExcel(routePath: string) {
         query($search: PayslipSearch, $sort: [SortInput!]) {
           findAllPayslip(search: $search, sort: $sort) {
             id
-            pay_date
-            pay_date_lbl
+            pay_month
+            pay_month_lbl
             usr_id
             usr_id_lbl
             job_num
@@ -490,7 +485,7 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsPayslip {
-            pay_date_lbl
+            pay_month_lbl
             usr_id_lbl
             job_num
             company
@@ -512,14 +507,9 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "is_send",
-            "is_confirm",
+            "yes_no",
+            "yes_no",
             "is_locked",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
           ]) {
             code
             lbl

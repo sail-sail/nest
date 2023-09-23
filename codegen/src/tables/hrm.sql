@@ -2,7 +2,7 @@
 drop table if exists `hrm_payslip`;
 CREATE TABLE if not exists `hrm_payslip` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `pay_date` date NOT NULL COMMENT '发放日期',
+  `pay_month` date NOT NULL COMMENT '发放月份',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '姓名',
   `job_num` varchar(22) NOT NULL DEFAULT '' COMMENT '工号',
   `company` varchar(22) NOT NULL DEFAULT '' COMMENT '公司',
@@ -22,6 +22,6 @@ CREATE TABLE if not exists `hrm_payslip` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`pay_date`, `usr_id`),
+  INDEX (`pay_month`, `usr_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='工资条';

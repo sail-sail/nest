@@ -295,16 +295,6 @@ export function useDownloadImportTemplate(routePath: string) {
             id
             lbl
           }
-          getDict(codes: [
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -378,16 +368,6 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           findAllUsr {
-            lbl
-          }
-          getDict(codes: [
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
-          ]) {
-            code
             lbl
           }
         }
