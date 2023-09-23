@@ -152,6 +152,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             (
               [
                 "create_usr_id", "create_time", "update_usr_id", "update_time",
+                "is_default",
               ].includes(column_name)
               || column.readonly
             )
