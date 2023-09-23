@@ -1,6 +1,7 @@
 <template><#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -140,6 +141,13 @@ for (let i = 0; i < columns.length; i++) {
           let foreignSchema = undefined;
           if (foreignKey) {
             foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+          }
+          if (
+            [
+              "is_default",
+            ].includes(column_name)
+          ) {
+            continue;
           }
         #>
         
@@ -837,6 +845,13 @@ watchEffect(async () => {
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const validators = column.validators || [ ];
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
     #><#
       if (require) {
         if (!foreignKey) {
@@ -999,6 +1014,13 @@ async function getDefaultInput() {
       if (column_comment.indexOf("[") !== -1) {
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
       if (!column.COLUMN_DEFAULT) continue;
       let defaultValue = column.COLUMN_DEFAULT.toString();
       if (selectList.length > 0) {
@@ -1119,6 +1141,12 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,<#
+        if (hasDefault) {
+        #>
+        is_default: undefined,
+        is_default_lbl: undefined,<#
+        }
+        #><#
         if (hasLocked) {
         #>
         is_locked: undefined,

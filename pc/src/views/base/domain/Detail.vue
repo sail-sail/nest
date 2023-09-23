@@ -58,21 +58,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.is_default == null)">
-          <el-form-item
-            :label="n('默认')"
-            prop="is_default"
-          >
-            <DictSelect
-              :set="dialogModel.is_default = dialogModel.is_default ?? undefined"
-              v-model="dialogModel.is_default"
-              code="is_default"
-              :placeholder="`${ ns('请选择') } ${ n('默认') }`"
-              :readonly="isLocked || isReadonly"
-            ></DictSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -258,13 +243,6 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("锁定") }`,
       },
     ],
-    // 默认
-    is_default: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("默认") }`,
-      },
-    ],
     // 启用
     is_enabled: [
       {
@@ -300,7 +278,6 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 async function getDefaultInput() {
   const defaultInput: DomainInput = {
     is_locked: 0,
-    is_default: 0,
     is_enabled: 1,
     order_by: 1,
   };
@@ -383,6 +360,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        is_default: undefined,
+        is_default_lbl: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
       };
