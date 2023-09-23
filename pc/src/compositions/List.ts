@@ -1026,8 +1026,8 @@ export function useTableColumns<T>(
 /**
  * 列表页中的月份控件搜索条件
  */
-export function monthrangeSearch(value: Date[], event: Date[]) {
-  if (!event || event.length === 0) {
+export function monthrangeSearch(value?: Date[] | string[] | null, event?: Date[]) {
+  if (!value || !event || event.length === 0) {
     value = [ ];
     return;
   }
