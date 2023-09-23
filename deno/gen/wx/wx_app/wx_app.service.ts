@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<WxAppModel[]> {
   search = search || { };
-  const data: WxAppModel[] = await wx_appDao.findAll(search, page, sort);
-  return data;
+  const models: WxAppModel[] = await wx_appDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<WxAppModel | undefined> {
   search = search || { };
-  const data = await wx_appDao.findOne(search, sort);
-  return data;
+  const model = await wx_appDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<WxAppModel | undefined> {
-  const data = await wx_appDao.findById(id);
-  return data;
+  const model = await wx_appDao.findById(id);
+  return model;
 }
 
 /**

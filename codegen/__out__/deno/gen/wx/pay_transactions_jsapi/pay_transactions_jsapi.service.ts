@@ -41,8 +41,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
   search = search || { };
-  const data: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
-  return data;
+  const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -54,8 +54,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
   search = search || { };
-  const data = await pay_transactions_jsapiDao.findOne(search, sort);
-  return data;
+  const model = await pay_transactions_jsapiDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -65,8 +65,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<PayTransactionsJsapiModel | undefined> {
-  const data = await pay_transactions_jsapiDao.findById(id);
-  return data;
+  const model = await pay_transactions_jsapiDao.findById(id);
+  return model;
 }
 
 /**

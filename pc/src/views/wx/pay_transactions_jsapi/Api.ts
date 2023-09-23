@@ -253,14 +253,14 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "support_fapiao",
+            "is_enabled",
           ]) {
             code
             lbl
           }
           getDictbiz(codes: [
-            "trade_state",
-            "currency",
+            "wx_pay_notice_trade_state",
+            "wx_pay_notice_currency",
           ]) {
             code
             lbl
@@ -363,14 +363,14 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "support_fapiao",
+            "is_enabled",
           ]) {
             code
             lbl
           }
           getDictbiz(codes: [
-            "trade_state",
-            "currency",
+            "wx_pay_notice_trade_state",
+            "wx_pay_notice_currency",
           ]) {
             code
             lbl

@@ -420,11 +420,6 @@ export function useDownloadImportTemplate(routePath: string) {
             code
             lbl
           }
-          getDictbiz(codes: [
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -503,11 +498,6 @@ export function useExportExcel(routePath: string) {
           getDict(codes: [
             "is_locked",
             "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
           ]) {
             code
             lbl
