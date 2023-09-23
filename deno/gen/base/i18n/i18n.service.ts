@@ -41,8 +41,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<I18Nmodel[]> {
   search = search || { };
-  const data: I18Nmodel[] = await i18nDao.findAll(search, page, sort);
-  return data;
+  const models: I18Nmodel[] = await i18nDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -54,8 +54,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<I18Nmodel | undefined> {
   search = search || { };
-  const data = await i18nDao.findOne(search, sort);
-  return data;
+  const model = await i18nDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -65,8 +65,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<I18Nmodel | undefined> {
-  const data = await i18nDao.findById(id);
-  return data;
+  const model = await i18nDao.findById(id);
+  return model;
 }
 
 /**

@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DataPermitModel[]> {
   search = search || { };
-  const data: DataPermitModel[] = await data_permitDao.findAll(search, page, sort);
-  return data;
+  const models: DataPermitModel[] = await data_permitDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DataPermitModel | undefined> {
   search = search || { };
-  const data = await data_permitDao.findOne(search, sort);
-  return data;
+  const model = await data_permitDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<DataPermitModel | undefined> {
-  const data = await data_permitDao.findById(id);
-  return data;
+  const model = await data_permitDao.findById(id);
+  return model;
 }
 
 /**

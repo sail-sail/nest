@@ -80,19 +80,17 @@
           :label="n('开始时间')"
           prop="begin_time"
         >
-          <el-date-picker
+          <CustomDatePicker
             :set="search.begin_time = search.begin_time || [ ]"
             type="daterange"
-            un-w="full"
             :model-value="(search.begin_time as any)"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            clearable
             @update:model-value="search.begin_time = $event"
             @clear="onSearchClear"
-          ></el-date-picker>
+          ></CustomDatePicker>
         </el-form-item>
       </template>
       
@@ -843,7 +841,7 @@ function getTableColumns(): ColumnType[] {
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id",
       width: 120,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -862,7 +860,7 @@ function getTableColumns(): ColumnType[] {
       prop: "update_usr_id_lbl",
       sortBy: "update_usr_id",
       width: 120,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

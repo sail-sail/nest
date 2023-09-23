@@ -126,6 +126,7 @@ export default defineConfig({
             "usePage",
             "useSelect",
             "useSelectOne",
+            "monthrangeSearch",
             "useTableColumns",
             "initListI18ns",
             "initBuiltInSearch",

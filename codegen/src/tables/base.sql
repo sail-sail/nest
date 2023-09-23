@@ -255,7 +255,7 @@ CREATE TABLE if not exists `base_data_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
-  `scope` varchar(10) NOT NULL DEFAULT 'org' COMMENT '范围,dict:data_permit_scope',
+  `scope` varchar(10) NOT NULL DEFAULT 'tenant' COMMENT '范围,dict:data_permit_scope',
   `type` varchar(10) NOT NULL DEFAULT 'editable' COMMENT '类型,dict:data_permit_type',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统字段,dict:is_sys',

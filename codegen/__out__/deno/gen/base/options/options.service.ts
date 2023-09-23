@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OptionsModel[]> {
   search = search || { };
-  const data: OptionsModel[] = await optionsDao.findAll(search, page, sort);
-  return data;
+  const models: OptionsModel[] = await optionsDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OptionsModel | undefined> {
   search = search || { };
-  const data = await optionsDao.findOne(search, sort);
-  return data;
+  const model = await optionsDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<OptionsModel | undefined> {
-  const data = await optionsDao.findById(id);
-  return data;
+  const model = await optionsDao.findById(id);
+  return model;
 }
 
 /**

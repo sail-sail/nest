@@ -5,6 +5,7 @@ import cfg from "./config"
 import {
   type FieldNode,
   type OperationDefinitionNode,
+  type FragmentDefinitionNode,
   Kind,
   parse,
   print,
@@ -105,7 +106,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   if (queryInfos2.length === 1 && queryInfosRepeat2.length === 0) {
     return await gqlQuery(gqlArg, opt);
   }
-  if (queryInfos2.length > 1) {
+  if (queryInfos2.length >= 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
       const queryInfo = queryInfos2[i];
       const hash = `l${ uniqueID() }`;
@@ -114,14 +115,24 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     tasks.push(queryInfos2);
     tasksRepeat.push(queryInfosRepeat2);
     (async function() {
-      let queryBuilder = combinedQuery("");
+      const queryBuilder = combinedQuery("");
       let queryBuilderAdd: ReturnType<typeof queryBuilder.add> | undefined;
       for (let i = 0; i < queryInfos2.length; i++) {
         const queryInfo = queryInfos2[i];
-        let queryTmp = queryInfo.gqlArg!.query!;
+        const queryTmp = queryInfo.gqlArg!.query!;
         const variablesTmp = queryInfo.gqlArg?.variables;
         const queryDoc = parse(queryTmp);
-        const operationDefinitionNode = queryDoc.definitions[0] as OperationDefinitionNode;
+        let operationDefinitionNode: OperationDefinitionNode | FragmentDefinitionNode | undefined = undefined;
+        for (const definition of queryDoc.definitions) {
+          if (definition.kind !== Kind.OPERATION_DEFINITION) {
+            continue;
+          }
+          operationDefinitionNode = definition;
+          break;
+        }
+        if (!operationDefinitionNode) {
+          throw new Error("operationDefinitionNode is undefined");
+        }
         const selections = operationDefinitionNode.selectionSet.selections as FieldNode[];
         const variableDefinitions = operationDefinitionNode.variableDefinitions;
         if (variableDefinitions) {
@@ -168,7 +179,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
         },
         opt,
       );
-      const results: any[] = [ ];
+      const results: { [key: string]: any } = { };
       const hashs: string[] = [ ];
       const keys = Object.keys(newResult || { });
       for (let i = 0; i < keys.length; i++) {

@@ -1,7 +1,7 @@
-import {
-  type Query,
-  type Mutation,
-  type MutationLoginArgs,
+import type {
+  Query,
+  Mutation,
+  MutationLoginArgs,
 } from "#/types";
 
 /**

@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<LangModel[]> {
   search = search || { };
-  const data: LangModel[] = await langDao.findAll(search, page, sort);
-  return data;
+  const models: LangModel[] = await langDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<LangModel | undefined> {
   search = search || { };
-  const data = await langDao.findOne(search, sort);
-  return data;
+  const model = await langDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<LangModel | undefined> {
-  const data = await langDao.findById(id);
-  return data;
+  const model = await langDao.findById(id);
+  return model;
 }
 
 /**

@@ -278,7 +278,7 @@ async function getLoginTenantsEfc() {
 }
 
 async function initI18nEfc() {
-  i18n = useI18n("/usr");
+  i18n = useI18n("/base/usr");
   await Promise.all([
     i18n.initSysI18ns([
       "请选择",

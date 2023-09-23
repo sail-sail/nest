@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DictModel[]> {
   search = search || { };
-  const data: DictModel[] = await dictDao.findAll(search, page, sort);
-  return data;
+  const models: DictModel[] = await dictDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DictModel | undefined> {
   search = search || { };
-  const data = await dictDao.findOne(search, sort);
-  return data;
+  const model = await dictDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<DictModel | undefined> {
-  const data = await dictDao.findById(id);
-  return data;
+  const model = await dictDao.findById(id);
+  return model;
 }
 
 /**

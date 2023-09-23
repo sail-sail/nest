@@ -1,8 +1,14 @@
-const authorization0: string = uni.getStorageSync("authorization") || "";
+import type {
+  GetLoginInfo,
+} from "@/typings/types";
 
 export default defineStore("usr", function() {
   
-  let authorization = $ref(authorization0);
+  let authorization = $ref("");
+  
+  let tenant_id = $ref<string>();
+  let username = $ref<string>();
+  let loginInfo = $ref<GetLoginInfo>();
   
   async function setAuthorization(authorization1: typeof authorization) {
     if (authorization !== authorization1) {
@@ -32,6 +38,19 @@ export default defineStore("usr", function() {
     setAuthorization,
     setShowAuth,
     lang,
+    loginInfo,
+    username,
+    tenant_id,
     setLang,
   });
+}, {
+  unistorage: {
+    paths: [
+      "authorization",
+      "username",
+      "tenant_id",
+      "loginInfo",
+      "lang",
+    ],
+  },
 });
