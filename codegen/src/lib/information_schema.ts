@@ -148,7 +148,7 @@ async function getSchema0(
         item.width = 120;
       }
       if (item.align == null) {
-        item.align = "left";
+        item.align = "center";
       }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
