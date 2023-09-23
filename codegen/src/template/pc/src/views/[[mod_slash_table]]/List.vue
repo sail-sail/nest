@@ -3,6 +3,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsMonth = columns.some((column) => column.isMonth);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -233,19 +234,31 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <el-date-picker
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            type="daterange"
-            un-w="full"
+          <CustomDatePicker
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"<#
+            if (column.isMonth) {
+            #>
+            type="monthrange"<#
+            } else {
+            #>
+            type="daterange"<#
+            }
+            #>
             :model-value="(search.<#=column_name#> as any)"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            clearable
-            @update:model-value="search.<#=column_name#> = $event"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"<#
+            if (column.isMonth) {
+            #>
+            @update:model-value="monthrangeSearch(search.<#=column_name#>, $event)"<#
+            } else {
+            #>
+            @update:model-value="search.<#=column_name#> = $event"<#
+            }
+            #>
             @clear="onSearchClear"
-          ></el-date-picker>
+          ></CustomDatePicker>
         </el-form-item>
       </template><#
       } else if (column_type === "int(1)") {
@@ -1199,6 +1212,14 @@ const hasAtt = columns.some((item) => item.isAtt);
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";<#
+if (hasIsMonth) {
+#>
+
+import {
+  monthrangeSearch,
+} from "@/compositions/List";<#
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

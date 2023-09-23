@@ -146,9 +146,15 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           }
           if (column.onlyCodegenDeno) continue;
           const isImport = dir.startsWith("/pc/public/import_template/");
-          if (isImport && [
-            "create_usr_id", "create_time", "update_usr_id", "update_time",
-          ].includes(column_name)) continue;
+          if (
+            isImport && 
+            (
+              [
+                "create_usr_id", "create_time", "update_usr_id", "update_time",
+              ].includes(column_name)
+              || column.readonly
+            )
+          ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -176,7 +182,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             lbl += `<%const comment = data.getFieldComments${ Table_Up_IN };%>`;
           }
           lbl += `<%=comment.`;
-          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+          if (
+            (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+            || (data_type === "date" || data_type === "datetime")
+          ) {
             lbl += column_name + "_lbl";
           } else {
             lbl += column_name;
