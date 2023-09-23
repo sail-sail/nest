@@ -587,7 +587,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item><#
               }
             #><#
-              if (hasEnabled && opts.noEdit !== true) {
+              if (hasEnabled && opts.noEdit !== true && !columns.find((item) => item.COLUMN_NAME === "is_enabled").readonly) {
             #>
             
             <el-dropdown-item
@@ -607,7 +607,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item><#
             }
             #><#
-              if (hasLocked && opts.noEdit !== true) {
+              if (hasLocked && opts.noEdit !== true && !columns.find((item) => item.COLUMN_NAME === "is_locked").readonly) {
             #>
             
             <el-dropdown-item
@@ -934,7 +934,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
-              } else if(column.isSwitch && opts.noEdit !== true && column_name === "is_default") {
+              } else if(column.isSwitch && opts.noEdit !== true && !column.readonly && column_name === "is_default") {
               #>
               <template #default="{ row }">
                 <CustomSwitch
@@ -948,7 +948,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id)"
                 ></CustomSwitch>
               </template><#
-              } else if(column.isSwitch && opts.noEdit !== true) {
+              } else if(column.isSwitch && opts.noEdit !== true && !column.readonly) {
               #>
               <template #default="{ row }">
                 <CustomSwitch
