@@ -35,36 +35,39 @@ export default defineConfig({
       {
         COLUMN_NAME: "gross_pay",
         width: 100,
+        align: "right",
         isEncrypt: true,
       },
       {
         COLUMN_NAME: "social_security",
         width: 100,
+        align: "right",
         isEncrypt: true,
       },
       {
         COLUMN_NAME: "individual_tax",
         width: 100,
+        align: "right",
         isEncrypt: true,
       },
       {
         COLUMN_NAME: "self_pay",
         width: 100,
+        align: "right",
         isEncrypt: true,
       },
       {
         COLUMN_NAME: "net_pay",
         width: 100,
+        align: "right",
         isEncrypt: true,
       },
       {
         COLUMN_NAME: "is_send",
-        width: 100,
         readonly: true,
       },
       {
         COLUMN_NAME: "is_confirm",
-        width: 100,
         readonly: true,
       },
       {
