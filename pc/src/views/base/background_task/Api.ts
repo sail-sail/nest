@@ -304,13 +304,8 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "state",
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "background_task_state",
+            "background_task_type",
           ]) {
             code
             lbl
@@ -395,13 +390,8 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "state",
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "background_task_state",
+            "background_task_type",
           ]) {
             code
             lbl

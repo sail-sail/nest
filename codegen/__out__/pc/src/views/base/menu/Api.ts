@@ -576,14 +576,9 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "type",
+            "menu_type",
             "is_locked",
             "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
           ]) {
             code
             lbl
@@ -679,14 +674,9 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "type",
+            "menu_type",
             "is_locked",
             "is_enabled",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
           ]) {
             code
             lbl
