@@ -2,9 +2,11 @@ import {
   useI18n,
 } from "@/locales/i18n";
 
-import {
-  type MaybeRefOrGetter,
+import type {
+  MaybeRefOrGetter,
 } from "vue";
+
+import dayjs from "dayjs";
 
 /** 初始化内置搜索条件 */
 export function initBuiltInSearch<T>(
@@ -1019,6 +1021,20 @@ export function useTableColumns<T>(
     storeColumns,
     deleteColumns,
   });
+}
+
+/**
+ * 列表页中的月份控件搜索条件
+ */
+export function monthrangeSearch(value: Date[], event: Date[]) {
+  if (!event || event.length === 0) {
+    value = [ ];
+    return;
+  }
+  if (event[0] && event[1]) {
+    value[0] = dayjs(event[0]).startOf("month").toDate();
+    value[1] = dayjs(event[1]).endOf("month").toDate();
+  }
 }
 
 export async function initListI18ns() {

@@ -179,8 +179,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               accept="<#=column.attAccept#>"<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></UploadImage><#
             } else if (
               foreignKey
@@ -221,8 +228,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               multiple<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
               if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -241,8 +255,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               multiple<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts.list_tree
               && !foreignSchema.opts.ignoreCodegen
@@ -270,8 +291,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               multiple<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomTreeSelect><#
             } else if (selectList.length > 0) {
             #>
@@ -308,8 +336,15 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></DictSelect><#
             } else if (column.dictbiz) {
             #>
@@ -317,8 +352,15 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
@@ -329,9 +371,14 @@ for (let i = 0; i < columns.length; i++) {
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"<#
-              } else if (data_type === "date") {
+              } else if (data_type === "date" && !column.isMonth) {
               #>
               type="date"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"<#
+              } else if (column.isMonth) {
+              #>
+              type="month"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD"<#
               }
@@ -344,8 +391,15 @@ for (let i = 0; i < columns.length; i++) {
             <CustomCheckbox
               v-model="dialogModel.<#=column_name#>"
               :true-readonly-label="`${ ns('是') }`"
-              :false-readonly-label="`${ ns('否') }`"
-              :readonly="isLocked || isReadonly"
+              :false-readonly-label="`${ ns('否') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             >
               <#=column_comment#>
             </CustomCheckbox><#
@@ -353,8 +407,15 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
-              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomInputNumber><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -379,8 +440,15 @@ for (let i = 0; i < columns.length; i++) {
                 }
               #>
               :precision="<#=precision#>"
-              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomInputNumber><#
             } else {
             #>
@@ -393,8 +461,15 @@ for (let i = 0; i < columns.length; i++) {
               @keyup.enter.stop<#
               }
               #>
-              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomInput><#
             }
             #>
@@ -749,6 +824,9 @@ watchEffect(async () => {
         column_comment = column_comment + "开始";
       }
       const foreignKey = column.foreignKey;
+      if (column.readonly) {
+        continue;
+      }
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const validators = column.validators || [ ];
@@ -766,6 +844,9 @@ watchEffect(async () => {
           const validator = validators[j];
       #><#
         if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "number",<#
@@ -777,6 +858,9 @@ watchEffect(async () => {
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,
       },<#
         } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "number",<#
@@ -788,6 +872,9 @@ watchEffect(async () => {
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,
       },<#
         } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "string",<#
@@ -799,6 +886,9 @@ watchEffect(async () => {
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,
       },<#
         } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "string",<#
