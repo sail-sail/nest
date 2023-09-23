@@ -80,8 +80,8 @@
 <script lang="ts" setup>
 import { pinyin } from "pinyin-pro";
 
-import {
-  type OptionType,
+import type {
+  OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
 const t = getCurrentInstance();

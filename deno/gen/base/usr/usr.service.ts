@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel[]> {
   search = search || { };
-  const data: UsrModel[] = await usrDao.findAll(search, page, sort);
-  return data;
+  const models: UsrModel[] = await usrDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel | undefined> {
   search = search || { };
-  const data = await usrDao.findOne(search, sort);
-  return data;
+  const model = await usrDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<UsrModel | undefined> {
-  const data = await usrDao.findById(id);
-  return data;
+  const model = await usrDao.findById(id);
+  return model;
 }
 
 /**

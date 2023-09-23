@@ -282,11 +282,6 @@ watchEffect(async () => {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("数据类型") }`,
       },
-      {
-        type: "string",
-        max: 22,
-        message: `${ n("数据类型") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
-      },
     ],
     // 锁定
     is_locked: [

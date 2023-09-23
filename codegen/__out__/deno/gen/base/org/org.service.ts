@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OrgModel[]> {
   search = search || { };
-  const data: OrgModel[] = await orgDao.findAll(search, page, sort);
-  return data;
+  const models: OrgModel[] = await orgDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OrgModel | undefined> {
   search = search || { };
-  const data = await orgDao.findOne(search, sort);
-  return data;
+  const model = await orgDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<OrgModel | undefined> {
-  const data = await orgDao.findById(id);
-  return data;
+  const model = await orgDao.findById(id);
+  return model;
 }
 
 /**

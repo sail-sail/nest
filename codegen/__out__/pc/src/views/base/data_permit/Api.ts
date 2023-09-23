@@ -421,13 +421,8 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "scope",
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "data_permit_scope",
+            "data_permit_type",
           ]) {
             code
             lbl
@@ -508,13 +503,8 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "scope",
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "data_permit_scope",
+            "data_permit_type",
           ]) {
             code
             lbl

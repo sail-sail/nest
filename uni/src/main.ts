@@ -1,6 +1,7 @@
 import { createSSRApp } from "vue";
 import App from "./App.vue";
-import { createPinia, setActivePinia } from "pinia";
+import * as Pinia from "pinia";
+import { createUnistorage } from "pinia-plugin-unistorage";
 
 import tmui from "./tmui";
 
@@ -11,11 +12,13 @@ globalThis.process.env = globalThis.process.env || { };
 
 export function createApp() {
   const app = createSSRApp(App);
-  const pinia = createPinia();
+  const pinia = Pinia.createPinia();
+  pinia.use(createUnistorage())
   app.use(pinia);
-  setActivePinia(pinia);
+  Pinia.setActivePinia(pinia);
   app.use(tmui, { } as Tmui.tmuiConfig);
   return {
     app,
+    Pinia,
   };
 }

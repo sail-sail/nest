@@ -285,22 +285,12 @@ watchEffect(async () => {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("范围") }`,
       },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("范围") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
-      },
     ],
     // 类型
     type: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("类型") }`,
-      },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("类型") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
       },
     ],
   };
@@ -330,7 +320,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DataPermitInput = {
-    scope: "org",
+    scope: "tenant",
     type: "editable",
   };
   return defaultInput;

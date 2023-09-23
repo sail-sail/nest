@@ -124,7 +124,7 @@
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
-              :readonly="isReadonly"
+              :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
         </template>
@@ -140,7 +140,7 @@
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
               :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
-              :readonly="isReadonly"
+              :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
         </template>
@@ -301,22 +301,12 @@ watchEffect(async () => {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("状态") }`,
       },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("状态") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
-      },
     ],
     // 类型
     type: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("类型") }`,
-      },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("类型") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
       },
     ],
   };
