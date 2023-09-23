@@ -379,12 +379,19 @@ for (let i = 0; i < columns.length; i++) {
               } else if (column.isMonth) {
               #>
               type="month"
-              format="YYYY-MM-DD"
+              format="YYYY-MM"
               value-format="YYYY-MM-DD"<#
               }
               #>
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              :readonly="isReadonly"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
