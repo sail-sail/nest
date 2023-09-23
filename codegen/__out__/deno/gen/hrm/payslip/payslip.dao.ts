@@ -101,12 +101,12 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.pay_date && search?.pay_date?.length > 0) {
-    if (search.pay_date[0] != null) {
-      whereQuery += ` and t.pay_date >= ${ args.push(search.pay_date[0]) }`;
+  if (search?.pay_month && search?.pay_month?.length > 0) {
+    if (search.pay_month[0] != null) {
+      whereQuery += ` and t.pay_month >= ${ args.push(search.pay_month[0]) }`;
     }
-    if (search.pay_date[1] != null) {
-      whereQuery += ` and t.pay_date <= ${ args.push(search.pay_date[1]) }`;
+    if (search.pay_month[1] != null) {
+      whereQuery += ` and t.pay_month <= ${ args.push(search.pay_month[1]) }`;
     }
   }
   if (search?.usr_id && !Array.isArray(search?.usr_id)) {
@@ -388,16 +388,16 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 发放日期
-    if (model.pay_date) {
-      const pay_date = dayjs(model.pay_date);
-      if (isNaN(pay_date.toDate().getTime())) {
-        model.pay_date_lbl = (model.pay_date || "").toString();
+    // 发放月份
+    if (model.pay_month) {
+      const pay_month = dayjs(model.pay_month);
+      if (isNaN(pay_month.toDate().getTime())) {
+        model.pay_month_lbl = (model.pay_month || "").toString();
       } else {
-        model.pay_date_lbl = pay_date.format("YYYY-MM-DD");
+        model.pay_month_lbl = pay_month.format("YYYY-MM");
       }
     } else {
-      model.pay_date_lbl = "";
+      model.pay_month_lbl = "";
     }
     // 应发工资
     model.gross_pay = await decrypt(model.gross_pay);
@@ -475,8 +475,8 @@ export async function getFieldComments(): Promise<PayslipFieldComment> {
   const n = initN(route_path);
   const fieldComments: PayslipFieldComment = {
     id: await n("ID"),
-    pay_date: await n("发放日期"),
-    pay_date_lbl: await n("发放日期"),
+    pay_month: await n("发放月份"),
+    pay_month_lbl: await n("发放月份"),
     usr_id: await n("姓名"),
     usr_id_lbl: await n("姓名"),
     job_num: await n("工号"),
@@ -525,14 +525,14 @@ export async function findByUnique(
   }
   const models: PayslipModel[] = [ ];
   {
-    if (search0.pay_date == null) {
+    if (search0.pay_month == null) {
       return [ ];
     }
-    let pay_date: string[] = [ ];
-    if (!Array.isArray(search0.pay_date)) {
-      pay_date.push(search0.pay_date);
+    let pay_month: string[] = [ ];
+    if (!Array.isArray(search0.pay_month)) {
+      pay_month.push(search0.pay_month);
     } else {
-      pay_date = search0.pay_date;
+      pay_month = search0.pay_month;
     }
     if (search0.usr_id == null) {
       return [ ];
@@ -544,7 +544,7 @@ export async function findByUnique(
       usr_id = search0.usr_id;
     }
     const modelTmps = await findAll({
-      pay_date,
+      pay_month,
       usr_id,
     });
     models.push(...modelTmps);
@@ -566,7 +566,7 @@ export function equalsByUnique(
     return false;
   }
   if (
-    oldModel.pay_date === model.pay_date &&
+    oldModel.pay_month === model.pay_month &&
     oldModel.usr_id === model.usr_id
   ) {
     return true;
@@ -845,10 +845,10 @@ export async function create(
     "is_locked",
   ]);
   
-  // 发放日期
-  if (isNotEmpty(input.pay_date_lbl) && input.pay_date === undefined) {
-    input.pay_date_lbl = String(input.pay_date_lbl).trim();
-    input.pay_date = input.pay_date_lbl;
+  // 发放月份
+  if (isNotEmpty(input.pay_month_lbl) && input.pay_month === undefined) {
+    input.pay_month_lbl = String(input.pay_month_lbl).trim();
+    input.pay_month = input.pay_month_lbl;
   }
   
   // 姓名
@@ -939,8 +939,8 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
-  if (input.pay_date !== undefined) {
-    sql += `,pay_date`;
+  if (input.pay_month !== undefined) {
+    sql += `,pay_month`;
   }
   if (input.usr_id !== undefined) {
     sql += `,usr_id`;
@@ -1004,8 +1004,8 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.pay_date !== undefined) {
-    sql += `,${ args.push(input.pay_date) }`;
+  if (input.pay_month !== undefined) {
+    sql += `,${ args.push(input.pay_month) }`;
   }
   if (input.usr_id !== undefined) {
     sql += `,${ args.push(input.usr_id) }`;
@@ -1207,9 +1207,9 @@ export async function updateById(
     update hrm_payslip set
   `;
   let updateFldNum = 0;
-  if (input.pay_date !== undefined) {
-    if (input.pay_date != oldModel.pay_date) {
-      sql += `pay_date = ${ args.push(input.pay_date) },`;
+  if (input.pay_month !== undefined) {
+    if (input.pay_month != oldModel.pay_month) {
+      sql += `pay_month = ${ args.push(input.pay_month) },`;
       updateFldNum++;
     }
   }

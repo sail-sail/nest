@@ -7,10 +7,10 @@ defineGraphql(resolver, /* GraphQL */ `
 type PayslipModel {
   "ID"
   id: String!
-  "发放日期"
-  pay_date: NaiveDate!
-  "发放日期"
-  pay_date_lbl: String!
+  "发放月份"
+  pay_month: NaiveDate!
+  "发放月份"
+  pay_month_lbl: String!
   "姓名"
   usr_id: String!
   "姓名"
@@ -63,10 +63,10 @@ type PayslipModel {
   is_deleted: Int!
 }
 type PayslipFieldComment {
-  "发放日期"
-  pay_date: String!
-  "发放日期"
-  pay_date_lbl: String!
+  "发放月份"
+  pay_month: String!
+  "发放月份"
+  pay_month_lbl: String!
   "姓名"
   usr_id: String!
   "姓名"
@@ -119,10 +119,10 @@ type PayslipFieldComment {
 input PayslipInput {
   ""
   id: String
-  "发放日期"
-  pay_date: NaiveDate
-  "发放日期"
-  pay_date_lbl: String
+  "发放月份"
+  pay_month: NaiveDate
+  "发放月份"
+  pay_month_lbl: String
   "姓名"
   usr_id: String
   "姓名"
@@ -179,8 +179,8 @@ input PayslipSearch {
   ids: [String]
   "String"
   id: String
-  "发放日期"
-  pay_date: [NaiveDate!]
+  "发放月份"
+  pay_month: [NaiveDate!]
   "姓名"
   usr_id: [String!]
   usr_id_is_null: Boolean

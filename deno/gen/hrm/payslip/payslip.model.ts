@@ -31,8 +31,8 @@ export interface PayslipInput extends PayslipInputType {
 
 export interface PayslipFieldComment {
   id: string;
-  pay_date: string;
-  pay_date_lbl: string;
+  pay_month: string;
+  pay_month_lbl: string;
   usr_id: string;
   usr_id_lbl: string;
   job_num: string;

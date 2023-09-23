@@ -295,11 +295,6 @@ watchEffect(async () => {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("类型") }`,
       },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("类型") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
-      },
     ],
   };
 });

@@ -5,16 +5,18 @@ export default defineConfig({
   hrm_payslip: {
     opts: {
       uniques: [
-        [ "pay_date", "usr_id" ],
+        [ "pay_month", "usr_id" ],
       ],
     },
     columns: [
       {
-        COLUMN_NAME: "pay_date",
+        COLUMN_NAME: "pay_month",
         require: true,
         search: true,
+        sortable: true,
         width: 120,
         fixed: "left",
+        isMonth: true,
       },
       {
         COLUMN_NAME: "usr_id",
@@ -58,10 +60,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "is_send",
         width: 100,
+        readonly: true,
       },
       {
         COLUMN_NAME: "is_confirm",
         width: 100,
+        readonly: true,
       },
       {
         COLUMN_NAME: "is_locked",

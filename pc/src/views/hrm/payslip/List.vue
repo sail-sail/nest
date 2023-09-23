@@ -26,24 +26,22 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.pay_date == null">
+      <template v-if="showBuildIn || builtInSearch?.pay_month == null">
         <el-form-item
-          :label="n('发放日期')"
-          prop="pay_date"
+          :label="n('发放月份')"
+          prop="pay_month"
         >
-          <el-date-picker
-            :set="search.pay_date = search.pay_date || [ ]"
-            type="daterange"
-            un-w="full"
-            :model-value="(search.pay_date as any)"
+          <CustomDatePicker
+            :set="search.pay_month = search.pay_month || [ ]"
+            type="monthrange"
+            :model-value="(search.pay_month as any)"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            clearable
-            @update:model-value="search.pay_date = $event"
+            @update:model-value="monthrangeSearch(search.pay_month, $event)"
             @clear="onSearchClear"
-          ></el-date-picker>
+          ></CustomDatePicker>
         </el-form-item>
       </template>
       
@@ -392,8 +390,8 @@
           :key="col.prop"
         >
           
-          <!-- 发放日期 -->
-          <template v-if="'pay_date_lbl' === col.prop && (showBuildIn || builtInSearch?.pay_date == null)">
+          <!-- 发放月份 -->
+          <template v-if="'pay_month_lbl' === col.prop && (showBuildIn || builtInSearch?.pay_month == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -624,6 +622,10 @@
 import Detail from "./Detail.vue";
 
 import {
+  monthrangeSearch,
+} from "@/compositions/List";
+
+import {
   findAll,
   findCount,
   revertByIds,
@@ -745,7 +747,7 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
-  pay_date?: string; // 发放日期
+  pay_month?: string; // 发放月份
   usr_id?: string|string[]; // 姓名
   usr_id_lbl?: string|string[]; // 姓名
   job_num?: string; // 工号
@@ -909,10 +911,11 @@ let tableData = $ref<PayslipModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "发放日期",
-      prop: "pay_date_lbl",
-      sortBy: "pay_date",
+      label: "发放月份",
+      prop: "pay_month_lbl",
+      sortBy: "pay_month",
       width: 120,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1285,7 +1288,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("发放日期") ]: "pay_date_lbl",
+    [ await nAsync("发放月份") ]: "pay_month_lbl",
     [ await nAsync("姓名") ]: "usr_id_lbl",
     [ await nAsync("工号") ]: "job_num",
     [ await nAsync("公司") ]: "company",
@@ -1320,7 +1323,7 @@ async function onImportExcel() {
       header,
       {
         date_keys: [
-          await nAsync("发放日期"),
+          await nAsync("发放月份"),
           await nAsync("创建时间"),
           await nAsync("更新时间"),
         ],
@@ -1611,7 +1614,7 @@ async function revertByIdsEfc() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "发放日期",
+    "发放月份",
     "姓名",
     "工号",
     "公司",

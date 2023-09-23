@@ -45,17 +45,17 @@
         @keyup.enter="onSave"
       >
         
-        <template v-if="(showBuildIn || builtInModel?.pay_date == null)">
+        <template v-if="(showBuildIn || builtInModel?.pay_month == null)">
           <el-form-item
-            :label="n('发放日期')"
-            prop="pay_date"
+            :label="n('发放月份')"
+            prop="pay_month"
           >
             <CustomDatePicker
-              v-model="dialogModel.pay_date"
-              type="date"
+              v-model="dialogModel.pay_month"
+              type="month"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD"
-              :placeholder="`${ ns('请选择') } ${ n('发放日期') }`"
+              :placeholder="`${ ns('请选择') } ${ n('发放月份') }`"
               :readonly="isReadonly"
             ></CustomDatePicker>
           </el-form-item>
@@ -182,7 +182,7 @@
               v-model="dialogModel.is_send"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('已发送') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -197,7 +197,7 @@
               v-model="dialogModel.is_confirm"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('已确认') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -356,11 +356,11 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 发放日期开始
-    pay_date: [
+    // 发放月份开始
+    pay_month: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("发放日期开始") }`,
+        message: `${ await nsAsync("请输入") } ${ n("发放月份开始") }`,
       },
     ],
     // 姓名
@@ -368,20 +368,6 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("姓名") }`,
-      },
-    ],
-    // 已发送
-    is_send: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("已发送") }`,
-      },
-    ],
-    // 已确认
-    is_confirm: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("已确认") }`,
       },
     ],
     // 锁定
@@ -695,7 +681,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "发放日期",
+    "发放月份",
     "姓名",
     "工号",
     "公司",

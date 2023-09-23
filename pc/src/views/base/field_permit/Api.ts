@@ -419,12 +419,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "field_permit_type",
           ]) {
             code
             lbl
@@ -504,12 +499,7 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "field_permit_type",
           ]) {
             code
             lbl
