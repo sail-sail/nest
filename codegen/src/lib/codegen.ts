@@ -145,6 +145,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             continue;
           }
           if (column.onlyCodegenDeno) continue;
+          if (column.isAtt || column.isImg) continue;
           const isImport = dir.startsWith("/pc/public/import_template/");
           if (
             isImport && 
