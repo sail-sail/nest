@@ -44,18 +44,6 @@ export async function findAll(
 ): Promise<PayslipModel[]> {
   search = search || { };
   const models: PayslipModel[] = await payslipDao.findAll(search, page, sort);
-  for (const model of models) {
-    // 应发工资
-    model.gross_pay = "";
-    // 代缴社保
-    model.social_security = "";
-    // 代缴个税
-    model.individual_tax = "";
-    // 个人自付
-    model.self_pay = "";
-    // 实发工资
-    model.net_pay = "";
-  }
   return models;
 }
 
@@ -69,18 +57,6 @@ export async function findOne(
 ): Promise<PayslipModel | undefined> {
   search = search || { };
   const model = await payslipDao.findOne(search, sort);
-  if (model) {
-    // 应发工资
-    model.gross_pay = "";
-    // 代缴社保
-    model.social_security = "";
-    // 代缴个税
-    model.individual_tax = "";
-    // 个人自付
-    model.self_pay = "";
-    // 实发工资
-    model.net_pay = "";
-  }
   return model;
 }
 
@@ -92,18 +68,6 @@ export async function findById(
   id?: string | null,
 ): Promise<PayslipModel | undefined> {
   const model = await payslipDao.findById(id);
-  if (model) {
-    // 应发工资
-    model.gross_pay = "";
-    // 代缴社保
-    model.social_security = "";
-    // 代缴个税
-    model.individual_tax = "";
-    // 个人自付
-    model.self_pay = "";
-    // 实发工资
-    model.net_pay = "";
-  }
   return model;
 }
 

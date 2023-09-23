@@ -399,15 +399,15 @@ export async function findAll(
     } else {
       model.pay_month_lbl = "";
     }
-    // 应发工资
+    // 应发工资(元)
     model.gross_pay = await decrypt(model.gross_pay);
-    // 代缴社保
+    // 代缴社保(元)
     model.social_security = await decrypt(model.social_security);
-    // 代缴个税
+    // 代缴个税(元)
     model.individual_tax = await decrypt(model.individual_tax);
-    // 个人自付
+    // 个人自付(元)
     model.self_pay = await decrypt(model.self_pay);
-    // 实发工资
+    // 实发工资(元)
     model.net_pay = await decrypt(model.net_pay);
     
     // 已发送
@@ -481,11 +481,11 @@ export async function getFieldComments(): Promise<PayslipFieldComment> {
     usr_id_lbl: await n("姓名"),
     job_num: await n("工号"),
     company: await n("公司"),
-    gross_pay: await n("应发工资"),
-    social_security: await n("代缴社保"),
-    individual_tax: await n("代缴个税"),
-    self_pay: await n("个人自付"),
-    net_pay: await n("实发工资"),
+    gross_pay: await n("应发工资(元)"),
+    social_security: await n("代缴社保(元)"),
+    individual_tax: await n("代缴个税(元)"),
+    self_pay: await n("个人自付(元)"),
+    net_pay: await n("实发工资(元)"),
     is_send: await n("已发送"),
     is_send_lbl: await n("已发送"),
     is_confirm: await n("已确认"),
@@ -737,35 +737,35 @@ export async function validate(
     fieldComments.company,
   );
   
-  // 应发工资
+  // 应发工资(元)
   await validators.chars_max_length(
     input.gross_pay,
     66,
     fieldComments.gross_pay,
   );
   
-  // 代缴社保
+  // 代缴社保(元)
   await validators.chars_max_length(
     input.social_security,
     66,
     fieldComments.social_security,
   );
   
-  // 代缴个税
+  // 代缴个税(元)
   await validators.chars_max_length(
     input.individual_tax,
     66,
     fieldComments.individual_tax,
   );
   
-  // 个人自付
+  // 个人自付(元)
   await validators.chars_max_length(
     input.self_pay,
     66,
     fieldComments.self_pay,
   );
   
-  // 实发工资
+  // 实发工资(元)
   await validators.chars_max_length(
     input.net_pay,
     66,
@@ -814,23 +814,23 @@ export async function create(
 ): Promise<string> {
   const table = "hrm_payslip";
   const method = "create";
-  // 应发工资
+  // 应发工资(元)
   if (input.gross_pay) {
     input.gross_pay = await encrypt(input.gross_pay);
   }
-  // 代缴社保
+  // 代缴社保(元)
   if (input.social_security) {
     input.social_security = await encrypt(input.social_security);
   }
-  // 代缴个税
+  // 代缴个税(元)
   if (input.individual_tax) {
     input.individual_tax = await encrypt(input.individual_tax);
   }
-  // 个人自付
+  // 个人自付(元)
   if (input.self_pay) {
     input.self_pay = await encrypt(input.self_pay);
   }
-  // 实发工资
+  // 实发工资(元)
   if (input.net_pay) {
     input.net_pay = await encrypt(input.net_pay);
   }
@@ -1115,23 +1115,23 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }
-  // 应发工资
+  // 应发工资(元)
   if (input.gross_pay) {
     input.gross_pay = await encrypt(input.gross_pay);
   }
-  // 代缴社保
+  // 代缴社保(元)
   if (input.social_security) {
     input.social_security = await encrypt(input.social_security);
   }
-  // 代缴个税
+  // 代缴个税(元)
   if (input.individual_tax) {
     input.individual_tax = await encrypt(input.individual_tax);
   }
-  // 个人自付
+  // 个人自付(元)
   if (input.self_pay) {
     input.self_pay = await encrypt(input.self_pay);
   }
-  // 实发工资
+  // 实发工资(元)
   if (input.net_pay) {
     input.net_pay = await encrypt(input.net_pay);
   }

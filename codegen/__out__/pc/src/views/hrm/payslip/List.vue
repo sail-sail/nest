@@ -426,7 +426,7 @@
             </el-table-column>
           </template>
           
-          <!-- 应发工资 -->
+          <!-- 应发工资(元) -->
           <template v-else-if="'gross_pay' === col.prop && (showBuildIn || builtInSearch?.gross_pay == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -435,7 +435,7 @@
             </el-table-column>
           </template>
           
-          <!-- 代缴社保 -->
+          <!-- 代缴社保(元) -->
           <template v-else-if="'social_security' === col.prop && (showBuildIn || builtInSearch?.social_security == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -444,7 +444,7 @@
             </el-table-column>
           </template>
           
-          <!-- 代缴个税 -->
+          <!-- 代缴个税(元) -->
           <template v-else-if="'individual_tax' === col.prop && (showBuildIn || builtInSearch?.individual_tax == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -453,7 +453,7 @@
             </el-table-column>
           </template>
           
-          <!-- 个人自付 -->
+          <!-- 个人自付(元) -->
           <template v-else-if="'self_pay' === col.prop && (showBuildIn || builtInSearch?.self_pay == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -462,7 +462,7 @@
             </el-table-column>
           </template>
           
-          <!-- 实发工资 -->
+          <!-- 实发工资(元) -->
           <template v-else-if="'net_pay' === col.prop && (showBuildIn || builtInSearch?.net_pay == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -740,16 +740,16 @@ const props = defineProps<{
   job_num_like?: string; // 工号
   company?: string; // 公司
   company_like?: string; // 公司
-  gross_pay?: string; // 应发工资
-  gross_pay_like?: string; // 应发工资
-  social_security?: string; // 代缴社保
-  social_security_like?: string; // 代缴社保
-  individual_tax?: string; // 代缴个税
-  individual_tax_like?: string; // 代缴个税
-  self_pay?: string; // 个人自付
-  self_pay_like?: string; // 个人自付
-  net_pay?: string; // 实发工资
-  net_pay_like?: string; // 实发工资
+  gross_pay?: string; // 应发工资(元)
+  gross_pay_like?: string; // 应发工资(元)
+  social_security?: string; // 代缴社保(元)
+  social_security_like?: string; // 代缴社保(元)
+  individual_tax?: string; // 代缴个税(元)
+  individual_tax_like?: string; // 代缴个税(元)
+  self_pay?: string; // 个人自付(元)
+  self_pay_like?: string; // 个人自付(元)
+  net_pay?: string; // 实发工资(元)
+  net_pay_like?: string; // 实发工资(元)
   is_send?: string|string[]; // 已发送
   is_confirm?: string|string[]; // 已确认
   is_locked?: string|string[]; // 锁定
@@ -934,42 +934,42 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "应发工资",
+      label: "应发工资(元)",
       prop: "gross_pay",
       width: 100,
-      align: "center",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "代缴社保",
+      label: "代缴社保(元)",
       prop: "social_security",
       width: 100,
-      align: "center",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "代缴个税",
+      label: "代缴个税(元)",
       prop: "individual_tax",
       width: 100,
-      align: "center",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "个人自付",
+      label: "个人自付(元)",
       prop: "self_pay",
       width: 100,
-      align: "center",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "实发工资",
+      label: "实发工资(元)",
       prop: "net_pay",
       width: 100,
-      align: "center",
+      align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -977,7 +977,7 @@ function getTableColumns(): ColumnType[] {
       label: "已发送",
       prop: "is_send_lbl",
       sortBy: "is_send",
-      width: 100,
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -986,7 +986,7 @@ function getTableColumns(): ColumnType[] {
       label: "已确认",
       prop: "is_confirm_lbl",
       sortBy: "is_confirm",
-      width: 100,
+      width: 60,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1278,11 +1278,11 @@ async function onImportExcel() {
     [ await nAsync("姓名") ]: "usr_id_lbl",
     [ await nAsync("工号") ]: "job_num",
     [ await nAsync("公司") ]: "company",
-    [ await nAsync("应发工资") ]: "gross_pay",
-    [ await nAsync("代缴社保") ]: "social_security",
-    [ await nAsync("代缴个税") ]: "individual_tax",
-    [ await nAsync("个人自付") ]: "self_pay",
-    [ await nAsync("实发工资") ]: "net_pay",
+    [ await nAsync("应发工资(元)") ]: "gross_pay",
+    [ await nAsync("代缴社保(元)") ]: "social_security",
+    [ await nAsync("代缴个税(元)") ]: "individual_tax",
+    [ await nAsync("个人自付(元)") ]: "self_pay",
+    [ await nAsync("实发工资(元)") ]: "net_pay",
     [ await nAsync("已发送") ]: "is_send_lbl",
     [ await nAsync("已确认") ]: "is_confirm_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
@@ -1604,11 +1604,11 @@ async function initI18nsEfc() {
     "姓名",
     "工号",
     "公司",
-    "应发工资",
-    "代缴社保",
-    "代缴个税",
-    "个人自付",
-    "实发工资",
+    "应发工资(元)",
+    "代缴社保(元)",
+    "代缴个税(元)",
+    "个人自付(元)",
+    "实发工资(元)",
     "已发送",
     "已确认",
     "锁定",

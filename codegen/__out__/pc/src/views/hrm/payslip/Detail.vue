@@ -109,12 +109,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.gross_pay == null)">
           <el-form-item
-            :label="n('应发工资')"
+            :label="n('应发工资(元)')"
             prop="gross_pay"
           >
             <CustomInput
               v-model="dialogModel.gross_pay"
-              :placeholder="`${ ns('请输入') } ${ n('应发工资') }`"
+              :placeholder="`${ ns('请输入') } ${ n('应发工资(元)') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -122,12 +122,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.social_security == null)">
           <el-form-item
-            :label="n('代缴社保')"
+            :label="n('代缴社保(元)')"
             prop="social_security"
           >
             <CustomInput
               v-model="dialogModel.social_security"
-              :placeholder="`${ ns('请输入') } ${ n('代缴社保') }`"
+              :placeholder="`${ ns('请输入') } ${ n('代缴社保(元)') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -135,12 +135,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.individual_tax == null)">
           <el-form-item
-            :label="n('代缴个税')"
+            :label="n('代缴个税(元)')"
             prop="individual_tax"
           >
             <CustomInput
               v-model="dialogModel.individual_tax"
-              :placeholder="`${ ns('请输入') } ${ n('代缴个税') }`"
+              :placeholder="`${ ns('请输入') } ${ n('代缴个税(元)') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -148,12 +148,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.self_pay == null)">
           <el-form-item
-            :label="n('个人自付')"
+            :label="n('个人自付(元)')"
             prop="self_pay"
           >
             <CustomInput
               v-model="dialogModel.self_pay"
-              :placeholder="`${ ns('请输入') } ${ n('个人自付') }`"
+              :placeholder="`${ ns('请输入') } ${ n('个人自付(元)') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -161,12 +161,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.net_pay == null)">
           <el-form-item
-            :label="n('实发工资')"
+            :label="n('实发工资(元)')"
             prop="net_pay"
           >
             <CustomInput
               v-model="dialogModel.net_pay"
-              :placeholder="`${ ns('请输入') } ${ n('实发工资') }`"
+              :placeholder="`${ ns('请输入') } ${ n('实发工资(元)') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -685,11 +685,11 @@ async function onInitI18ns() {
     "姓名",
     "工号",
     "公司",
-    "应发工资",
-    "代缴社保",
-    "代缴个税",
-    "个人自付",
-    "实发工资",
+    "应发工资(元)",
+    "代缴社保(元)",
+    "代缴个税(元)",
+    "个人自付(元)",
+    "实发工资(元)",
     "已发送",
     "已确认",
     "锁定",
