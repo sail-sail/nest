@@ -31,6 +31,7 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
+  hash,
 } from "/lib/util/string_util.ts";
 
 import {
@@ -224,7 +225,7 @@ export async function findCount(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     total: number,
@@ -292,7 +293,7 @@ export async function findAll(
   
   // 缓存
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   const result = await query<PermitModel>(
     sql,
@@ -555,7 +556,7 @@ export async function existById(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     e: number,
