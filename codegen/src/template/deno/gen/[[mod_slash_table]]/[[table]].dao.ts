@@ -2405,7 +2405,7 @@ if (hasOrgId) {
 #>
 
 /**
- * 根据id修改部门id
+ * 根据id修改组织id
  * @export
  * @param {string} id
  * @param {string} org_id
@@ -2648,7 +2648,7 @@ export async function updateById(
   if (hasOrgId) {
   #>
   
-  // 修改部门id
+  // 修改组织id
   if (isNotEmpty(input.org_id)) {
     await updateOrgById(id, input.org_id);
   }<#
