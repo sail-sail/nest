@@ -746,14 +746,14 @@ export async function validate(
   // 路由
   await validators.chars_max_length(
     input.route_path,
-    255,
+    100,
     fieldComments.route_path,
   );
   
   // 备注
   await validators.chars_max_length(
     input.rem,
-    255,
+    100,
     fieldComments.rem,
   );
   

@@ -51,6 +51,7 @@
     "@dcloudio/uni-mp-toutiao": "3.0.0-3081220230817001",
     "@dcloudio/uni-mp-weixin": "3.0.0-3081220230817001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-3081220230817001",
+    "@wecom/jssdk": "1.4.3",
     "dayjs": "1.11.9",
     "graphql": "16.8.0",
     "graphql-combine-query": "1.2.4",

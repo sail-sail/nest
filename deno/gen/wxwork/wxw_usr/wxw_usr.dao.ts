@@ -1,0 +1,1294 @@
+// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
+import {
+  escapeId,
+  escape,
+} from "sqlstring";
+
+import dayjs from "dayjs";
+
+import {
+  log,
+  escapeDec,
+  reqDate,
+  delCache as delCacheCtx,
+  query,
+  queryOne,
+  execute,
+  QueryArgs,
+} from "/lib/context.ts";
+
+import {
+  initN,
+  ns,
+} from "/src/base/i18n/i18n.ts";
+
+import type {
+  PartialNull,
+} from "/typings/types.ts";
+
+import {
+  isNotEmpty,
+  isEmpty,
+  sqlLike,
+  shortUuidV4,
+  hash,
+} from "/lib/util/string_util.ts";
+
+import {
+  deepCompare,
+} from "/lib/util/object_util.ts";
+
+import * as validators from "/lib/validators/mod.ts";
+
+import { UniqueException } from "/lib/exceptions/unique.execption.ts";
+
+import * as authDao from "/lib/auth/auth.dao.ts";
+
+import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
+
+import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
+
+import {
+  UniqueType,
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+import type {
+  PageInput,
+  SortInput,
+} from "/gen/types.ts";
+
+import type {
+  WxwUsrInput,
+  WxwUsrModel,
+  WxwUsrSearch,
+  WxwUsrFieldComment,
+} from "./wxw_usr.model.ts";
+
+import * as wxw_appDao from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
+
+const route_path = "/wxwork/wxw_usr";
+
+async function getWhereQuery(
+  args: QueryArgs,
+  search?: WxwUsrSearch,
+  options?: {
+  },
+): Promise<string> {
+  let whereQuery = "";
+  whereQuery += ` t.is_deleted = ${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  if (search?.tenant_id == null) {
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    if (tenant_id) {
+      whereQuery += ` and t.tenant_id = ${ args.push(tenant_id) }`;
+    }
+  } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
+    whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
+  }
+  if (isNotEmpty(search?.id)) {
+    whereQuery += ` and t.id = ${ args.push(search?.id) }`;
+  }
+  if (search?.ids && !Array.isArray(search?.ids)) {
+    search.ids = [ search.ids ];
+  }
+  if (search?.ids && search?.ids.length > 0) {
+    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.wxw_app_id && !Array.isArray(search?.wxw_app_id)) {
+    search.wxw_app_id = [ search.wxw_app_id ];
+  }
+  if (search?.wxw_app_id && search?.wxw_app_id.length > 0) {
+    whereQuery += ` and wxw_app_id_lbl.id in ${ args.push(search.wxw_app_id) }`;
+  }
+  if (search?.wxw_app_id === null) {
+    whereQuery += ` and wxw_app_id_lbl.id is null`;
+  }
+  if (search?.wxw_app_id_is_null) {
+    whereQuery += ` and wxw_app_id_lbl.id is null`;
+  }
+  if (search?.lbl !== undefined) {
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
+  }
+  if (search?.lbl === null) {
+    whereQuery += ` and t.lbl is null`;
+  }
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
+  }
+  if (search?.userid !== undefined) {
+    whereQuery += ` and t.userid = ${ args.push(search.userid) }`;
+  }
+  if (search?.userid === null) {
+    whereQuery += ` and t.userid is null`;
+  }
+  if (isNotEmpty(search?.userid_like)) {
+    whereQuery += ` and t.userid like ${ args.push(sqlLike(search?.userid_like) + "%") }`;
+  }
+  if (search?.mobile !== undefined) {
+    whereQuery += ` and t.mobile = ${ args.push(search.mobile) }`;
+  }
+  if (search?.mobile === null) {
+    whereQuery += ` and t.mobile is null`;
+  }
+  if (isNotEmpty(search?.mobile_like)) {
+    whereQuery += ` and t.mobile like ${ args.push(sqlLike(search?.mobile_like) + "%") }`;
+  }
+  if (search?.gender !== undefined) {
+    whereQuery += ` and t.gender = ${ args.push(search.gender) }`;
+  }
+  if (search?.gender === null) {
+    whereQuery += ` and t.gender is null`;
+  }
+  if (isNotEmpty(search?.gender_like)) {
+    whereQuery += ` and t.gender like ${ args.push(sqlLike(search?.gender_like) + "%") }`;
+  }
+  if (search?.email !== undefined) {
+    whereQuery += ` and t.email = ${ args.push(search.email) }`;
+  }
+  if (search?.email === null) {
+    whereQuery += ` and t.email is null`;
+  }
+  if (isNotEmpty(search?.email_like)) {
+    whereQuery += ` and t.email like ${ args.push(sqlLike(search?.email_like) + "%") }`;
+  }
+  if (search?.biz_email !== undefined) {
+    whereQuery += ` and t.biz_email = ${ args.push(search.biz_email) }`;
+  }
+  if (search?.biz_email === null) {
+    whereQuery += ` and t.biz_email is null`;
+  }
+  if (isNotEmpty(search?.biz_email_like)) {
+    whereQuery += ` and t.biz_email like ${ args.push(sqlLike(search?.biz_email_like) + "%") }`;
+  }
+  if (search?.direct_leader !== undefined) {
+    whereQuery += ` and t.direct_leader = ${ args.push(search.direct_leader) }`;
+  }
+  if (search?.direct_leader === null) {
+    whereQuery += ` and t.direct_leader is null`;
+  }
+  if (isNotEmpty(search?.direct_leader_like)) {
+    whereQuery += ` and t.direct_leader like ${ args.push(sqlLike(search?.direct_leader_like) + "%") }`;
+  }
+  if (search?.position !== undefined) {
+    whereQuery += ` and t.position = ${ args.push(search.position) }`;
+  }
+  if (search?.position === null) {
+    whereQuery += ` and t.position is null`;
+  }
+  if (isNotEmpty(search?.position_like)) {
+    whereQuery += ` and t.position like ${ args.push(sqlLike(search?.position_like) + "%") }`;
+  }
+  if (search?.avatar !== undefined) {
+    whereQuery += ` and t.avatar = ${ args.push(search.avatar) }`;
+  }
+  if (search?.avatar === null) {
+    whereQuery += ` and t.avatar is null`;
+  }
+  if (isNotEmpty(search?.avatar_like)) {
+    whereQuery += ` and t.avatar like ${ args.push(sqlLike(search?.avatar_like) + "%") }`;
+  }
+  if (search?.thumb_avatar !== undefined) {
+    whereQuery += ` and t.thumb_avatar = ${ args.push(search.thumb_avatar) }`;
+  }
+  if (search?.thumb_avatar === null) {
+    whereQuery += ` and t.thumb_avatar is null`;
+  }
+  if (isNotEmpty(search?.thumb_avatar_like)) {
+    whereQuery += ` and t.thumb_avatar like ${ args.push(sqlLike(search?.thumb_avatar_like) + "%") }`;
+  }
+  if (search?.qr_code !== undefined) {
+    whereQuery += ` and t.qr_code = ${ args.push(search.qr_code) }`;
+  }
+  if (search?.qr_code === null) {
+    whereQuery += ` and t.qr_code is null`;
+  }
+  if (isNotEmpty(search?.qr_code_like)) {
+    whereQuery += ` and t.qr_code like ${ args.push(sqlLike(search?.qr_code_like) + "%") }`;
+  }
+  if (search?.rem !== undefined) {
+    whereQuery += ` and t.rem = ${ args.push(search.rem) }`;
+  }
+  if (search?.rem === null) {
+    whereQuery += ` and t.rem is null`;
+  }
+  if (isNotEmpty(search?.rem_like)) {
+    whereQuery += ` and t.rem like ${ args.push(sqlLike(search?.rem_like) + "%") }`;
+  }
+  if (search?.$extra) {
+    const extras = search.$extra;
+    for (let i = 0; i < extras.length; i++) {
+      const extra = extras[i];
+      const queryTmp = await extra(args);
+      if (queryTmp) {
+        whereQuery += ` ${ queryTmp }`;
+      }
+    }
+  }
+  return whereQuery;
+}
+
+async function getFromQuery() {
+  let fromQuery = `
+    wxwork_wxw_usr t
+    left join wxwork_wxw_app wxw_app_id_lbl
+      on wxw_app_id_lbl.id = t.wxw_app_id
+  `;
+  return fromQuery;
+}
+
+/**
+ * 根据条件查找总数据数
+ * @param { WxwUsrSearch } search?
+ * @return {Promise<number>}
+ */
+export async function findCount(
+  search?: WxwUsrSearch,
+  options?: {
+  },
+): Promise<number> {
+  const table = "wxwork_wxw_usr";
+  const method = "findCount";
+  
+  const args = new QueryArgs();
+  let sql = `
+    select
+      count(1) total
+    from
+      (
+        select
+          1
+        from
+          ${ await getFromQuery() }
+        where
+          ${ await getWhereQuery(args, search, options) }
+        group by t.id
+      ) t
+  `;
+  
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
+  interface Result {
+    total: number,
+  }
+  const model = await queryOne<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let result = model?.total || 0;
+  
+  return result;
+}
+
+/**
+ * 根据搜索条件和分页查找数据
+ * @param {WxwUsrSearch} search? 搜索条件
+ * @param {SortInput|SortInput[]} sort? 排序
+ */
+export async function findAll(
+  search?: WxwUsrSearch,
+  page?: PageInput,
+  sort?: SortInput | SortInput[],
+  options?: {
+  },
+): Promise<WxwUsrModel[]> {
+  const table = "wxwork_wxw_usr";
+  const method = "findAll";
+  
+  const args = new QueryArgs();
+  let sql = `
+    select t.*
+      ,wxw_app_id_lbl.lbl wxw_app_id_lbl
+    from
+      ${ await getFromQuery() }
+    where
+      ${ await getWhereQuery(args, search, options) }
+    group by t.id
+  `;
+  
+  // 排序
+  if (!sort) {
+    sort = [
+      {
+        prop: "update_time",
+        order: SortOrderEnum.Desc,
+      },
+    ];
+  } else if (!Array.isArray(sort)) {
+    sort = [ sort ];
+  }
+  sort = sort.filter((item) => item.prop);
+  for (let i = 0; i < sort.length; i++) {
+    const item = sort[i];
+    if (i === 0) {
+      sql += ` order by`;
+    } else {
+      sql += `,`;
+    }
+    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
+  }
+  
+  // 分页
+  if (page?.pgSize) {
+    sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
+  }
+  
+  // 缓存
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
+  const result = await query<WxwUsrModel>(
+    sql,
+    args,
+    {
+      cacheKey1,
+      cacheKey2,
+    },
+  );
+  for (let i = 0; i < result.length; i++) {
+    const model = result[i];
+  }
+  
+  return result;
+}
+
+/**
+ * 获取字段对应的名称
+ */
+export async function getFieldComments(): Promise<WxwUsrFieldComment> {
+  const n = initN(route_path);
+  const fieldComments: WxwUsrFieldComment = {
+    id: await n("ID"),
+    wxw_app_id: await n("企业微信应用"),
+    wxw_app_id_lbl: await n("企业微信应用"),
+    lbl: await n("姓名"),
+    userid: await n("用户ID"),
+    mobile: await n("手机号"),
+    gender: await n("性别"),
+    email: await n("邮箱"),
+    biz_email: await n("企业邮箱"),
+    direct_leader: await n("直属上级"),
+    position: await n("职位"),
+    avatar: await n("头像"),
+    thumb_avatar: await n("头像缩略图"),
+    qr_code: await n("个人二维码"),
+    rem: await n("备注"),
+  };
+  return fieldComments;
+}
+
+/**
+ * 通过唯一约束获得数据列表
+ * @param {WxwUsrSearch | PartialNull<WxwUsrModel>} search0
+ */
+export async function findByUnique(
+  search0: WxwUsrSearch | PartialNull<WxwUsrModel>,
+  options?: {
+  },
+): Promise<WxwUsrModel[]> {
+  if (search0.id) {
+    const model = await findOne({
+      id: search0.id,
+    });
+    if (!model) {
+      return [ ];
+    }
+    return [ model ];
+  }
+  const models: WxwUsrModel[] = [ ];
+  {
+    if (search0.wxw_app_id == null) {
+      return [ ];
+    }
+    let wxw_app_id: string[] = [ ];
+    if (!Array.isArray(search0.wxw_app_id)) {
+      wxw_app_id.push(search0.wxw_app_id);
+    } else {
+      wxw_app_id = search0.wxw_app_id;
+    }
+    if (search0.userid == null) {
+      return [ ];
+    }
+    const userid = search0.userid;
+    const modelTmps = await findAll({
+      wxw_app_id,
+      userid,
+    });
+    models.push(...modelTmps);
+  }
+  {
+    if (search0.wxw_app_id == null) {
+      return [ ];
+    }
+    let wxw_app_id: string[] = [ ];
+    if (!Array.isArray(search0.wxw_app_id)) {
+      wxw_app_id.push(search0.wxw_app_id);
+    } else {
+      wxw_app_id = search0.wxw_app_id;
+    }
+    if (search0.lbl == null) {
+      return [ ];
+    }
+    const lbl = search0.lbl;
+    const modelTmps = await findAll({
+      wxw_app_id,
+      lbl,
+    });
+    models.push(...modelTmps);
+  }
+  return models;
+}
+
+/**
+ * 根据唯一约束对比对象是否相等
+ * @param {WxwUsrModel} oldModel
+ * @param {PartialNull<WxwUsrModel>} model
+ * @return {boolean}
+ */
+export function equalsByUnique(
+  oldModel: WxwUsrModel,
+  model: PartialNull<WxwUsrModel>,
+): boolean {
+  if (!oldModel || !model) {
+    return false;
+  }
+  if (
+    oldModel.wxw_app_id === model.wxw_app_id &&
+    oldModel.userid === model.userid
+  ) {
+    return true;
+  }
+  if (
+    oldModel.wxw_app_id === model.wxw_app_id &&
+    oldModel.lbl === model.lbl
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 通过唯一约束检查数据是否已经存在
+ * @param {WxwUsrInput} model
+ * @param {WxwUsrModel} oldModel
+ * @param {UniqueType} uniqueType
+ * @return {Promise<string>}
+ */
+export async function checkByUnique(
+  model: WxwUsrInput,
+  oldModel: WxwUsrModel,
+  uniqueType: UniqueType = UniqueType.Throw,
+  options?: {
+  },
+): Promise<string | undefined> {
+  const isEquals = equalsByUnique(oldModel, model);
+  if (isEquals) {
+    if (uniqueType === UniqueType.Throw) {
+      throw new UniqueException(await ns("数据已经存在"));
+    }
+    if (uniqueType === UniqueType.Update) {
+      const result = await updateById(
+        oldModel.id,
+        {
+          ...model,
+          id: undefined,
+        },
+        options
+      );
+      return result;
+    }
+    if (uniqueType === UniqueType.Ignore) {
+      return;
+    }
+  }
+  return;
+}
+
+/**
+ * 根据条件查找第一条数据
+ * @param {WxwUsrSearch} search?
+ */
+export async function findOne(
+  search?: WxwUsrSearch,
+  sort?: SortInput | SortInput[],
+  options?: {
+  },
+): Promise<WxwUsrModel | undefined> {
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  const result = await findAll(search, page, sort);
+  if (result && result.length > 0) {
+    return result[0];
+  }
+  return;
+}
+
+/**
+ * 根据id查找数据
+ * @param {string} id
+ */
+export async function findById(
+  id?: string | null,
+  options?: {
+  },
+): Promise<WxwUsrModel | undefined> {
+  if (isEmpty(id)) {
+    return;
+  }
+  const model = await findOne({ id });
+  return model;
+}
+
+/**
+ * 根据搜索条件判断数据是否存在
+ * @param {WxwUsrSearch} search?
+ */
+export async function exist(
+  search?: WxwUsrSearch,
+  options?: {
+  },
+): Promise<boolean> {
+  const model = await findOne(search);
+  const exist = !!model;
+  return exist;
+}
+
+/**
+ * 根据id判断数据是否存在
+ * @param {string} id
+ */
+export async function existById(
+  id?: string | null,
+) {
+  const table = "wxwork_wxw_usr";
+  const method = "existById";
+  
+  if (isEmpty(id)) {
+    return false;
+  }
+  
+  const args = new QueryArgs();
+  const sql = `
+    select
+      1 e
+    from
+      wxwork_wxw_usr t
+    where
+      t.id = ${ args.push(id) }
+      and t.is_deleted = 0
+    limit 1
+  `;
+  
+  const cacheKey1 = `dao.sql.${ table }`;
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  
+  interface Result {
+    e: number,
+  }
+  let model = await queryOne<Result>(
+    sql,
+    args,{ cacheKey1, cacheKey2 },
+  );
+  let result = !!model?.e;
+  
+  return result;
+}
+
+/**
+ * 增加和修改时校验输入
+ * @param input 
+ */
+export async function validate(
+  input: WxwUsrInput,
+) {
+  const fieldComments = await getFieldComments();
+  
+  // ID
+  await validators.chars_max_length(
+    input.id,
+    22,
+    fieldComments.id,
+  );
+  
+  // 企业微信应用
+  await validators.chars_max_length(
+    input.wxw_app_id,
+    22,
+    fieldComments.wxw_app_id,
+  );
+  
+  // 姓名
+  await validators.chars_max_length(
+    input.lbl,
+    44,
+    fieldComments.lbl,
+  );
+  
+  // 用户ID
+  await validators.chars_max_length(
+    input.userid,
+    64,
+    fieldComments.userid,
+  );
+  
+  // 手机号
+  await validators.chars_max_length(
+    input.mobile,
+    11,
+    fieldComments.mobile,
+  );
+  
+  // 性别
+  await validators.chars_max_length(
+    input.gender,
+    1,
+    fieldComments.gender,
+  );
+  
+  // 邮箱
+  await validators.chars_max_length(
+    input.email,
+    64,
+    fieldComments.email,
+  );
+  
+  // 企业邮箱
+  await validators.chars_max_length(
+    input.biz_email,
+    64,
+    fieldComments.biz_email,
+  );
+  
+  // 直属上级
+  await validators.chars_max_length(
+    input.direct_leader,
+    64,
+    fieldComments.direct_leader,
+  );
+  
+  // 职位
+  await validators.chars_max_length(
+    input.position,
+    44,
+    fieldComments.position,
+  );
+  
+  // 头像
+  await validators.chars_max_length(
+    input.avatar,
+    512,
+    fieldComments.avatar,
+  );
+  
+  // 头像缩略图
+  await validators.chars_max_length(
+    input.thumb_avatar,
+    512,
+    fieldComments.thumb_avatar,
+  );
+  
+  // 个人二维码
+  await validators.chars_max_length(
+    input.qr_code,
+    512,
+    fieldComments.qr_code,
+  );
+  
+  // 备注
+  await validators.chars_max_length(
+    input.rem,
+    100,
+    fieldComments.rem,
+  );
+  
+}
+
+/**
+ * 创建数据
+ * @param {WxwUsrInput} input
+ * @param {({
+ *   uniqueType?: UniqueType,
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   update: 更新冲突数据
+ * @return {Promise<string>} 
+ */
+export async function create(
+  input: WxwUsrInput,
+  options?: {
+    uniqueType?: UniqueType;
+  },
+): Promise<string> {
+  const table = "wxwork_wxw_usr";
+  const method = "create";
+  
+  // 企业微信应用
+  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
+    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
+    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
+    if (wxw_appModel) {
+      input.wxw_app_id = wxw_appModel.id;
+    }
+  }
+  
+  const oldModels = await findByUnique(input, options);
+  if (oldModels.length > 0) {
+    let id: string | undefined = undefined;
+    for (const oldModel of oldModels) {
+      id = await checkByUnique(
+        input,
+        oldModel,
+        options?.uniqueType,
+        options,
+      );
+      if (id) {
+        break;
+      }
+    }
+    if (id) {
+      return id;
+    }
+  }
+  
+  if (!input.id) {
+    input.id = shortUuidV4();
+  }
+  
+  const args = new QueryArgs();
+  let sql = `
+    insert into wxwork_wxw_usr(
+      id
+      ,create_time
+      ,update_time
+  `;
+  if (input.tenant_id != null) {
+    sql += `,tenant_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    if (tenant_id) {
+      sql += `,tenant_id`;
+    }
+  }
+  if (input.create_usr_id != null) {
+    sql += `,create_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,create_usr_id`;
+    }
+  }
+  if (input.update_usr_id != null) {
+    sql += `,update_usr_id`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,update_usr_id`;
+    }
+  }
+  if (input.wxw_app_id !== undefined) {
+    sql += `,wxw_app_id`;
+  }
+  if (input.lbl !== undefined) {
+    sql += `,lbl`;
+  }
+  if (input.userid !== undefined) {
+    sql += `,userid`;
+  }
+  if (input.mobile !== undefined) {
+    sql += `,mobile`;
+  }
+  if (input.gender !== undefined) {
+    sql += `,gender`;
+  }
+  if (input.email !== undefined) {
+    sql += `,email`;
+  }
+  if (input.biz_email !== undefined) {
+    sql += `,biz_email`;
+  }
+  if (input.direct_leader !== undefined) {
+    sql += `,direct_leader`;
+  }
+  if (input.position !== undefined) {
+    sql += `,position`;
+  }
+  if (input.avatar !== undefined) {
+    sql += `,avatar`;
+  }
+  if (input.thumb_avatar !== undefined) {
+    sql += `,thumb_avatar`;
+  }
+  if (input.qr_code !== undefined) {
+    sql += `,qr_code`;
+  }
+  if (input.rem !== undefined) {
+    sql += `,rem`;
+  }
+  sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
+  if (input.tenant_id != null) {
+    sql += `,${ args.push(input.tenant_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
+    if (tenant_id) {
+      sql += `,${ args.push(tenant_id) }`;
+    }
+  }
+  if (input.create_usr_id != null && input.create_usr_id !== "-") {
+    sql += `,${ args.push(input.create_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.update_usr_id != null && input.update_usr_id !== "-") {
+    sql += `,${ args.push(input.update_usr_id) }`;
+  } else {
+    const authModel = await authDao.getAuthModel();
+    if (authModel?.id !== undefined) {
+      sql += `,${ args.push(authModel.id) }`;
+    }
+  }
+  if (input.wxw_app_id !== undefined) {
+    sql += `,${ args.push(input.wxw_app_id) }`;
+  }
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
+  }
+  if (input.userid !== undefined) {
+    sql += `,${ args.push(input.userid) }`;
+  }
+  if (input.mobile !== undefined) {
+    sql += `,${ args.push(input.mobile) }`;
+  }
+  if (input.gender !== undefined) {
+    sql += `,${ args.push(input.gender) }`;
+  }
+  if (input.email !== undefined) {
+    sql += `,${ args.push(input.email) }`;
+  }
+  if (input.biz_email !== undefined) {
+    sql += `,${ args.push(input.biz_email) }`;
+  }
+  if (input.direct_leader !== undefined) {
+    sql += `,${ args.push(input.direct_leader) }`;
+  }
+  if (input.position !== undefined) {
+    sql += `,${ args.push(input.position) }`;
+  }
+  if (input.avatar !== undefined) {
+    sql += `,${ args.push(input.avatar) }`;
+  }
+  if (input.thumb_avatar !== undefined) {
+    sql += `,${ args.push(input.thumb_avatar) }`;
+  }
+  if (input.qr_code !== undefined) {
+    sql += `,${ args.push(input.qr_code) }`;
+  }
+  if (input.rem !== undefined) {
+    sql += `,${ args.push(input.rem) }`;
+  }
+  sql += `)`;
+  
+  const result = await execute(sql, args);
+  
+  await delCache();
+  
+  return input.id;
+}
+
+/**
+ * 删除缓存
+ */
+export async function delCache() {
+  const table = "wxwork_wxw_usr";
+  const method = "delCache";
+  
+  await delCacheCtx(`dao.sql.${ table }`);
+  const foreignTables: string[] = [
+    "wxwork_wxw_app",
+  ];
+  for (let k = 0; k < foreignTables.length; k++) {
+    const foreignTable = foreignTables[k];
+    if (foreignTable === table) continue;
+    await delCacheCtx(`dao.sql.${ foreignTable }`);
+  }
+}
+
+/**
+ * 根据id修改租户id
+ * @param {string} id
+ * @param {string} tenant_id
+ * @param {{
+ *   }} [options]
+ * @return {Promise<number>}
+ */
+export async function updateTenantById(
+  id: string,
+  tenant_id: string,
+  options?: {
+  },
+): Promise<number> {
+  const table = "wxwork_wxw_usr";
+  const method = "updateTenantById";
+  
+  const tenantExist = await tenantDao.existById(tenant_id);
+  if (!tenantExist) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  const sql = `
+    update
+      wxwork_wxw_usr
+    set
+      update_time = ${ args.push(reqDate()) },
+      tenant_id = ${ args.push(tenant_id) }
+    where
+      id = ${ args.push(id) }
+  `;
+  const result = await execute(sql, args);
+  const num = result.affectedRows;
+  
+  await delCache();
+  return num;
+}
+
+/**
+ * 根据id修改一行数据
+ * @param {string} id
+ * @param {WxwUsrInput} input
+ * @param {({
+ *   uniqueType?: "ignore" | "throw" | "update",
+ * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   ignore: 忽略冲突
+ *   throw: 抛出异常
+ *   create: 级联插入新数据
+ * @return {Promise<string>}
+ */
+export async function updateById(
+  id: string,
+  input: WxwUsrInput,
+  options?: {
+    uniqueType?: "ignore" | "throw" | "create";
+  },
+): Promise<string> {
+  const table = "wxwork_wxw_usr";
+  const method = "updateById";
+  
+  if (!id) {
+    throw new Error("updateById: id cannot be empty");
+  }
+  if (!input) {
+    throw new Error("updateById: input cannot be null");
+  }
+  
+  // 修改租户id
+  if (isNotEmpty(input.tenant_id)) {
+    await updateTenantById(id, input.tenant_id);
+  }
+  
+  // 企业微信应用
+  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
+    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
+    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
+    if (wxw_appModel) {
+      input.wxw_app_id = wxw_appModel.id;
+    }
+  }
+  
+  {
+    const input2 = {
+      ...input,
+      id: undefined,
+    };
+    let models = await findByUnique(input2);
+    models = models.filter((item) => item.id !== id);
+    if (models.length > 0) {
+      throw await ns("数据已经存在");
+    }
+  }
+  
+  const oldModel = await findById(id);
+  
+  if (!oldModel) {
+    throw await ns("修改失败, 数据已被删除");
+  }
+  
+  const args = new QueryArgs();
+  let sql = `
+    update wxwork_wxw_usr set
+  `;
+  let updateFldNum = 0;
+  if (input.wxw_app_id !== undefined) {
+    if (input.wxw_app_id != oldModel.wxw_app_id) {
+      sql += `wxw_app_id = ${ args.push(input.wxw_app_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.userid !== undefined) {
+    if (input.userid != oldModel.userid) {
+      sql += `userid = ${ args.push(input.userid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.mobile !== undefined) {
+    if (input.mobile != oldModel.mobile) {
+      sql += `mobile = ${ args.push(input.mobile) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.gender !== undefined) {
+    if (input.gender != oldModel.gender) {
+      sql += `gender = ${ args.push(input.gender) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.email !== undefined) {
+    if (input.email != oldModel.email) {
+      sql += `email = ${ args.push(input.email) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.biz_email !== undefined) {
+    if (input.biz_email != oldModel.biz_email) {
+      sql += `biz_email = ${ args.push(input.biz_email) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.direct_leader !== undefined) {
+    if (input.direct_leader != oldModel.direct_leader) {
+      sql += `direct_leader = ${ args.push(input.direct_leader) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.position !== undefined) {
+    if (input.position != oldModel.position) {
+      sql += `position = ${ args.push(input.position) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.avatar !== undefined) {
+    if (input.avatar != oldModel.avatar) {
+      sql += `avatar = ${ args.push(input.avatar) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.thumb_avatar !== undefined) {
+    if (input.thumb_avatar != oldModel.thumb_avatar) {
+      sql += `thumb_avatar = ${ args.push(input.thumb_avatar) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.qr_code !== undefined) {
+    if (input.qr_code != oldModel.qr_code) {
+      sql += `qr_code = ${ args.push(input.qr_code) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.rem !== undefined) {
+    if (input.rem != oldModel.rem) {
+      sql += `rem = ${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (updateFldNum > 0) {
+    if (input.update_usr_id && input.update_usr_id !== "-") {
+      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    } else {
+      const authModel = await authDao.getAuthModel();
+      if (authModel?.id !== undefined) {
+        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      }
+    }
+    sql += `update_time = ${ args.push(new Date()) }`;
+    sql += ` where id = ${ args.push(id) } limit 1`;
+    
+    await delCache();
+    
+    const result = await execute(sql, args);
+  }
+  
+  if (updateFldNum > 0) {
+    await delCache();
+  }
+  
+  const newModel = await findById(id);
+  
+  if (!deepCompare(oldModel, newModel)) {
+    console.log(JSON.stringify(oldModel));
+  }
+  
+  return id;
+}
+
+/**
+ * 根据 ids 删除数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function deleteByIds(
+  ids: string[],
+  options?: {
+  },
+): Promise<number> {
+  const table = "wxwork_wxw_usr";
+  const method = "deleteByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
+  let num = 0;
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const isExist = await existById(id);
+    if (!isExist) {
+      continue;
+    }
+    const args = new QueryArgs();
+    const sql = `
+      update
+        wxwork_wxw_usr
+      set
+        is_deleted = 1,
+        delete_time = ${ args.push(reqDate()) }
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
+  }
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 ids 还原数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function revertByIds(
+  ids: string[],
+  options?: {
+  },
+): Promise<number> {
+  const table = "wxwork_wxw_usr";
+  const method = "revertByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
+  let num = 0;
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const args = new QueryArgs();
+    const sql = `
+      update
+        wxwork_wxw_usr
+      set
+        is_deleted = 0
+      where
+        id = ${ args.push(id) }
+      limit 1
+    `;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
+    // 检查数据的唯一索引
+    {
+      const old_model = await findById(id);
+      if (!old_model) {
+        continue;
+      }
+      const input = {
+        ...old_model,
+        id: undefined,
+      };
+      let models = await findByUnique(input);
+      models = models.filter((item) => item.id !== id);
+      if (models.length > 0) {
+        throw await ns("数据已经存在");
+      }
+    }
+  }
+  
+  await delCache();
+  
+  return num;
+}
+
+/**
+ * 根据 ids 彻底删除数据
+ * @param {string[]} ids
+ * @return {Promise<number>}
+ */
+export async function forceDeleteByIds(
+  ids: string[],
+  options?: {
+  },
+): Promise<number> {
+  const table = "wxwork_wxw_usr";
+  const method = "forceDeleteByIds";
+  
+  if (!ids || !ids.length) {
+    return 0;
+  }
+  
+  if (ids.length > 0) {
+    await delCache();
+  }
+  
+  let num = 0;
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    {
+      const args = new QueryArgs();
+      const sql = `
+        select
+          *
+        from
+          wxwork_wxw_usr
+        where
+          id = ${ args.push(id) }
+      `;
+      const model = await queryOne(sql, args);
+      log("forceDeleteByIds:", model);
+    }
+    const args = new QueryArgs();
+    const sql = `
+      delete from
+        wxwork_wxw_usr
+      where
+        id = ${ args.push(id) }
+        and is_deleted = 1
+      limit 1
+    `;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
+  }
+  
+  await delCache();
+  
+  return num;
+}
