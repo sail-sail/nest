@@ -5,7 +5,8 @@ let port: string | undefined = undefined;
 let protocol = "http:";
 let domain = "";
 let wsProt = "ws:";
-let appid = "wxd4b24c53a1813485";
+let appid = "ww374feb8159abae4c";
+let agentid = "1000006";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
@@ -71,6 +72,7 @@ const config = {
   homePage,
   domain,
   appid,
+  agentid,
   pinia: undefined,
 };
 

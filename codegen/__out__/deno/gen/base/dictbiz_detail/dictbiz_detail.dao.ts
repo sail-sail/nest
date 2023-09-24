@@ -580,21 +580,21 @@ export async function validate(
   // 名称
   await validators.chars_max_length(
     input.lbl,
-    255,
+    100,
     fieldComments.lbl,
   );
   
   // 值
   await validators.chars_max_length(
     input.val,
-    255,
+    100,
     fieldComments.val,
   );
   
   // 备注
   await validators.chars_max_length(
     input.rem,
-    255,
+    100,
     fieldComments.rem,
   );
   
