@@ -4,13 +4,6 @@ git config --global core.autocrlf false
 185.199.108.133 raw.githubusercontent.com
 ```
 
-```
-Volor:
-  How to enable Take Over Mode
-  1. Run Extensions: Show Built-in Extensions command
-  2. Find TypeScript and JavaScript Language Features, right click and select Disable (Workspace)
-```
-
 1. 安装Mysql数据库
 ```sql
 -- 创建数据库
@@ -226,11 +219,4 @@ systemctl enable redis
 
 4. 修改配置文件
 vi /etc/redis.conf
-```
-
-### uni-app 微信登录流程
-```
-1. 一打开界面, App.vue 中调用 utils/request/uniLogin 若登录已经失效, 后端通过 code2Session 获取 openid 和 session_key 同时进行登录(获取 authorization)
-2. 每次调用request请求或者GraphQL请求(utils/request/request)时, 有 authorization 就带上 authorization 否则就不带
-  后端检测 authorization 是否过期, 过期则重新调用 utils/request/uniLogin
 ```
