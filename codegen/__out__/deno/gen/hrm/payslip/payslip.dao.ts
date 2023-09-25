@@ -71,8 +71,6 @@ import type {
   PayslipFieldComment,
 } from "./payslip.model.ts";
 
-import * as usrDao from "/gen/base/usr/usr.dao.ts";
-
 const route_path = "/hrm/payslip";
 
 async function getWhereQuery(
@@ -109,17 +107,14 @@ async function getWhereQuery(
       whereQuery += ` and t.pay_month <= ${ args.push(search.pay_month[1]) }`;
     }
   }
-  if (search?.usr_id && !Array.isArray(search?.usr_id)) {
-    search.usr_id = [ search.usr_id ];
+  if (search?.lbl !== undefined) {
+    whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
-  if (search?.usr_id && search?.usr_id.length > 0) {
-    whereQuery += ` and usr_id_lbl.id in ${ args.push(search.usr_id) }`;
+  if (search?.lbl === null) {
+    whereQuery += ` and t.lbl is null`;
   }
-  if (search?.usr_id === null) {
-    whereQuery += ` and usr_id_lbl.id is null`;
-  }
-  if (search?.usr_id_is_null) {
-    whereQuery += ` and usr_id_lbl.id is null`;
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push(sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.job_num !== undefined) {
     whereQuery += ` and t.job_num = ${ args.push(search.job_num) }`;
@@ -267,8 +262,6 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     hrm_payslip t
-    left join base_usr usr_id_lbl
-      on usr_id_lbl.id = t.usr_id
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -333,7 +326,6 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-      ,usr_id_lbl.lbl usr_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -477,8 +469,7 @@ export async function getFieldComments(): Promise<PayslipFieldComment> {
     id: await n("ID"),
     pay_month: await n("发放月份"),
     pay_month_lbl: await n("发放月份"),
-    usr_id: await n("姓名"),
-    usr_id_lbl: await n("姓名"),
+    lbl: await n("姓名"),
     job_num: await n("工号"),
     company: await n("公司"),
     gross_pay: await n("应发工资(元)"),
@@ -534,18 +525,13 @@ export async function findByUnique(
     } else {
       pay_month = search0.pay_month;
     }
-    if (search0.usr_id == null) {
+    if (search0.lbl == null) {
       return [ ];
     }
-    let usr_id: string[] = [ ];
-    if (!Array.isArray(search0.usr_id)) {
-      usr_id.push(search0.usr_id);
-    } else {
-      usr_id = search0.usr_id;
-    }
+    const lbl = search0.lbl;
     const modelTmps = await findAll({
       pay_month,
-      usr_id,
+      lbl,
     });
     models.push(...modelTmps);
   }
@@ -567,7 +553,7 @@ export function equalsByUnique(
   }
   if (
     oldModel.pay_month === model.pay_month &&
-    oldModel.usr_id === model.usr_id
+    oldModel.lbl === model.lbl
   ) {
     return true;
   }
@@ -718,9 +704,9 @@ export async function validate(
   
   // 姓名
   await validators.chars_max_length(
-    input.usr_id,
+    input.lbl,
     22,
-    fieldComments.usr_id,
+    fieldComments.lbl,
   );
   
   // 工号
@@ -851,15 +837,6 @@ export async function create(
     input.pay_month = input.pay_month_lbl;
   }
   
-  // 姓名
-  if (isNotEmpty(input.usr_id_lbl) && input.usr_id === undefined) {
-    input.usr_id_lbl = String(input.usr_id_lbl).trim();
-    const usrModel = await usrDao.findOne({ lbl: input.usr_id_lbl });
-    if (usrModel) {
-      input.usr_id = usrModel.id;
-    }
-  }
-  
   // 已发送
   if (isNotEmpty(input.is_send_lbl) && input.is_send === undefined) {
     const val = is_sendDict.find((itemTmp) => itemTmp.lbl === input.is_send_lbl)?.val;
@@ -942,8 +919,8 @@ export async function create(
   if (input.pay_month !== undefined) {
     sql += `,pay_month`;
   }
-  if (input.usr_id !== undefined) {
-    sql += `,usr_id`;
+  if (input.lbl !== undefined) {
+    sql += `,lbl`;
   }
   if (input.job_num !== undefined) {
     sql += `,job_num`;
@@ -1007,8 +984,8 @@ export async function create(
   if (input.pay_month !== undefined) {
     sql += `,${ args.push(input.pay_month) }`;
   }
-  if (input.usr_id !== undefined) {
-    sql += `,${ args.push(input.usr_id) }`;
+  if (input.lbl !== undefined) {
+    sql += `,${ args.push(input.lbl) }`;
   }
   if (input.job_num !== undefined) {
     sql += `,${ args.push(input.job_num) }`;
@@ -1151,15 +1128,6 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 姓名
-  if (isNotEmpty(input.usr_id_lbl) && input.usr_id === undefined) {
-    input.usr_id_lbl = String(input.usr_id_lbl).trim();
-    const usrModel = await usrDao.findOne({ lbl: input.usr_id_lbl });
-    if (usrModel) {
-      input.usr_id = usrModel.id;
-    }
-  }
-  
   // 已发送
   if (isNotEmpty(input.is_send_lbl) && input.is_send === undefined) {
     const val = is_sendDict.find((itemTmp) => itemTmp.lbl === input.is_send_lbl)?.val;
@@ -1213,9 +1181,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.usr_id !== undefined) {
-    if (input.usr_id != oldModel.usr_id) {
-      sql += `usr_id = ${ args.push(input.usr_id) },`;
+  if (input.lbl !== undefined) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl = ${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }

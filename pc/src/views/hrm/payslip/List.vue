@@ -45,6 +45,21 @@
         </el-form-item>
       </template>
       
+      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
+        <el-form-item
+          :label="n('姓名')"
+          prop="lbl_like"
+        >
+          <el-input
+            v-model="search.lbl_like"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('姓名') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -400,7 +415,7 @@
           </template>
           
           <!-- 姓名 -->
-          <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_id == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -734,8 +749,8 @@ const props = defineProps<{
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
   pay_month?: string; // 发放月份
-  usr_id?: string|string[]; // 姓名
-  usr_id_lbl?: string|string[]; // 姓名
+  lbl?: string; // 姓名
+  lbl_like?: string; // 姓名
   job_num?: string; // 工号
   job_num_like?: string; // 工号
   company?: string; // 公司
@@ -769,8 +784,6 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
-  usr_id: "string[]",
-  usr_id_lbl: "string[]",
   is_send: "number[]",
   is_send_lbl: "string[]",
   is_confirm: "number[]",
@@ -909,10 +922,9 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "姓名",
-      prop: "usr_id_lbl",
-      sortBy: "usr_id",
+      prop: "lbl",
       width: 140,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -1275,7 +1287,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("发放月份") ]: "pay_month_lbl",
-    [ await nAsync("姓名") ]: "usr_id_lbl",
+    [ await nAsync("姓名") ]: "lbl",
     [ await nAsync("工号") ]: "job_num",
     [ await nAsync("公司") ]: "company",
     [ await nAsync("应发工资(元)") ]: "gross_pay",

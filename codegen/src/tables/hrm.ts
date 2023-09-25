@@ -5,7 +5,7 @@ export default defineConfig({
   hrm_payslip: {
     opts: {
       uniques: [
-        [ "pay_month", "usr_id" ],
+        [ "pay_month", "lbl" ],
       ],
     },
     columns: [
@@ -19,7 +19,7 @@ export default defineConfig({
         isMonth: true,
       },
       {
-        COLUMN_NAME: "usr_id",
+        COLUMN_NAME: "lbl",
         require: true,
         width: 140,
         fixed: "left",

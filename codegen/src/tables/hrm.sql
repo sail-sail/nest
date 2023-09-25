@@ -3,7 +3,7 @@ drop table if exists `hrm_payslip`;
 CREATE TABLE if not exists `hrm_payslip` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `pay_month` date NOT NULL COMMENT '发放月份',
-  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '姓名',
+  `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '姓名',
   `job_num` varchar(22) NOT NULL DEFAULT '' COMMENT '工号',
   `company` varchar(22) NOT NULL DEFAULT '' COMMENT '公司',
   `gross_pay` varchar(66) NOT NULL DEFAULT '' COMMENT '应发工资(元)',

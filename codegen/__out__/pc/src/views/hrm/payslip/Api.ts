@@ -37,8 +37,7 @@ export async function findAll(
           id
           pay_month
           pay_month_lbl
-          usr_id
-          usr_id_lbl
+          lbl
           job_num
           company
           gross_pay
@@ -181,8 +180,7 @@ export async function findById(
           id
           pay_month
           pay_month_lbl
-          usr_id
-          usr_id_lbl
+          lbl
           job_num
           company
           gross_pay
@@ -387,7 +385,7 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsPayslip {
             pay_month_lbl
-            usr_id_lbl
+            lbl
             job_num
             company
             gross_pay
@@ -459,8 +457,7 @@ export function useExportExcel(routePath: string) {
             id
             pay_month
             pay_month_lbl
-            usr_id
-            usr_id_lbl
+            lbl
             job_num
             company
             gross_pay
@@ -486,7 +483,7 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsPayslip {
             pay_month_lbl
-            usr_id_lbl
+            lbl
             job_num
             company
             gross_pay

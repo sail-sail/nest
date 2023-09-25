@@ -12,9 +12,7 @@ type PayslipModel {
   "发放月份"
   pay_month_lbl: String!
   "姓名"
-  usr_id: String!
-  "姓名"
-  usr_id_lbl: String
+  lbl: String!
   "工号"
   job_num: String!
   "公司"
@@ -68,9 +66,7 @@ type PayslipFieldComment {
   "发放月份"
   pay_month_lbl: String!
   "姓名"
-  usr_id: String!
-  "姓名"
-  usr_id_lbl: String!
+  lbl: String!
   "工号"
   job_num: String!
   "公司"
@@ -124,9 +120,7 @@ input PayslipInput {
   "发放月份"
   pay_month_lbl: String
   "姓名"
-  usr_id: String
-  "姓名"
-  usr_id_lbl: String
+  lbl: String
   "工号"
   job_num: String
   "公司"
@@ -182,8 +176,8 @@ input PayslipSearch {
   "发放月份"
   pay_month: [NaiveDate!]
   "姓名"
-  usr_id: [String!]
-  usr_id_is_null: Boolean
+  lbl: String
+  lbl_like: String
   "工号"
   job_num: String
   job_num_like: String

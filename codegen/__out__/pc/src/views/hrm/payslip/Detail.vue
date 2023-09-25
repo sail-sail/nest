@@ -61,23 +61,16 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('姓名')"
-            prop="usr_id"
+            prop="lbl"
           >
-            <CustomSelect
-              v-model="dialogModel.usr_id"
-              :method="getUsrList"
-              :options-map="((item: UsrModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('姓名') }`"
+            <CustomInput
+              v-model="dialogModel.lbl"
+              :placeholder="`${ ns('请输入') } ${ n('姓名') }`"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -302,11 +295,9 @@ import {
 
 import type {
   PayslipInput,
-  UsrModel,
 } from "#/types";
 
 import {
-  getUsrList,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -364,10 +355,15 @@ watchEffect(async () => {
       },
     ],
     // 姓名
-    usr_id: [
+    lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("姓名") }`,
+        message: `${ await nsAsync("请输入") } ${ n("姓名") }`,
+      },
+      {
+        type: "string",
+        max: 22,
+        message: `${ n("姓名") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
     // 锁定
@@ -533,6 +529,7 @@ async function onRefresh() {
     dialogModel = {
       ...data,
     };
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
 }
 
