@@ -1,2 +1,2 @@
 import "/src/base/graphql.ts";
-import "/src/wxwork/wxw_usr/wxw_usr.graphql.ts";
+import "/src/wxwork/graphql.ts";

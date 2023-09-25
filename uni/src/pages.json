@@ -18,6 +18,12 @@
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
+		},
+		{
+			"path": "pages/index/TestWxwork",
+			"style": {
+				"navigationBarTitleText": "企业微信登录测试"
+			}
 		}
 	],
 	"globalStyle": {

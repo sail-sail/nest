@@ -243,18 +243,6 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/wxwork/wxw_app_token",
-    component: Layout1,
-    children: [
-      {
-        path: "",
-        name: "企业微信应用接口凭据",
-        component: () => import("@/views/wxwork/wxw_app_token/List.vue"),
-        props: (route) => route.query,
-      },
-    ],
-  },
-  {
     path: "/wxwork/wxw_usr",
     component: Layout1,
     children: [
