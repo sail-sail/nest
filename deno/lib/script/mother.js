@@ -20,6 +20,7 @@ function graphqlCodegen() {
   console.log("node " + arr.join(" "));
   child_process.spawn("node", arr);
 }
+graphqlCodegen();
 
 let ls = null;
 let changeTime = null;
