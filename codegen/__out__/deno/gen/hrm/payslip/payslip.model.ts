@@ -33,8 +33,7 @@ export interface PayslipFieldComment {
   id: string;
   pay_month: string;
   pay_month_lbl: string;
-  usr_id: string;
-  usr_id_lbl: string;
+  lbl: string;
   job_num: string;
   company: string;
   gross_pay: string;
