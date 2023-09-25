@@ -107,3 +107,146 @@ export async function getAccessToken(
   }
   return access_token;
 }
+
+/**
+ * 获取访问用户身份
+ * https://developer.work.weixin.qq.com/document/path/91023
+ * @param code 通过成员授权获取到的code
+ */
+export async function getuserinfoByCode(
+  corpid: string,
+  code: string,
+  opt: {
+    force: boolean;
+  } = {
+    force: false,
+  },
+): Promise<{
+  userid: string;
+  user_ticket: string;
+}> {
+  const access_token = await getAccessToken(corpid);
+  const url = `https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=${
+    access_token
+  }&code=${
+    code
+  }`;
+  const res = await fetch(
+    url,
+    {
+      method: "GET",
+    },
+  );
+  const data: {
+    errcode: number;
+    errmsg: string;
+    userid: string;
+    user_ticket: string;
+  } = await res.json();
+  if (data.errcode === 42001) {
+    if (opt.force) {
+      return await getuserinfoByCode(
+        corpid,
+        code,
+        {
+        force: false,
+        },
+      );
+    }
+  }
+  if (data.errcode != 0) {
+    error(data);
+    throw data.errmsg;
+  }
+  return {
+    userid: data.userid,
+    user_ticket: data.user_ticket,
+  };
+}
+
+/**
+ * 读取成员
+ * https://developer.work.weixin.qq.com/document/path/90196
+ */
+export async function getuser(
+  corpid: string,
+  userid: string,
+  opt: {
+    force: boolean;
+  } = {
+    force: false,
+  },
+): Promise<typeof data> {
+  const access_token = await getAccessToken(corpid);
+  const url = `https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=${
+    access_token
+  }&userid=${
+    userid
+  }`;
+  const res = await fetch(
+    url,
+    {
+      method: "GET",
+    },
+  );
+  /**
+   {
+    errcode: 0,
+    errmsg: "ok",
+    userid: "HuangZhiYong",
+    name: "黄智勇",
+    department: [ 1 ],
+    position: "",
+    status: 1,
+    isleader: 0,
+    extattr: { attrs: [] },
+    telephone: "",
+    enable: 1,
+    hide_mobile: 0,
+    order: [ 0 ],
+    main_department: 1,
+    alias: "",
+    is_leader_in_dept: [ 0 ],
+    direct_leader: []
+  }
+  */
+  const data: {
+    errcode: number;
+    errmsg: string;
+    userid: string;
+    name: string;
+    department: number[];
+    position: string;
+    status: number;
+    isleader: 0|1;
+    extattr: {
+      // deno-lint-ignore no-explicit-any
+      attrs: any[];
+    };
+    telephone: string;
+    enable: 0|1;
+    hide_mobile: 0|1;
+    order: number[];
+    main_department: number;
+    alias: string;
+    is_leader_in_dept: number[];
+    // deno-lint-ignore no-explicit-any
+    direct_leader: any[];
+  } = await res.json();
+  if (data.errcode === 42001) {
+    if (opt.force) {
+      return await getuser(
+        corpid,
+        userid,
+        {
+        force: false,
+        },
+      );
+    }
+  }
+  if (data.errcode != 0) {
+    error(data);
+    throw data.errmsg;
+  }
+  return data;
+}
