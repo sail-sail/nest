@@ -601,7 +601,7 @@ export async function validate(
   // 消息ID
   await validators.chars_max_length(
     input.msgid,
-    64,
+    255,
     fieldComments.msgid,
   );
   
