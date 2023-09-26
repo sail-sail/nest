@@ -39,18 +39,6 @@ onLaunch((async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
-  let authorization: string | undefined = undefined;
-  try {
-    authorization = (await uni.getStorage({
-      key: "authorization"
-    })).data;
-  } catch (err) {
-  }
-  if (authorization) {
-    await usrStore.setAuthorization(authorization);
-  } else {
-    await uniLogin();
-  }
 }));
 </script>
 <style lang="scss">

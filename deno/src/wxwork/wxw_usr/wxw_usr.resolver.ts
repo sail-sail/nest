@@ -19,5 +19,6 @@ export async function wxwLoginByCode(
   
   context.notVerifyToken = true;
   context.is_tran = true;
-  return await wxwLoginByCode(input);
+  const res = await wxwLoginByCode(input);
+  return res;
 }

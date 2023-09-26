@@ -15,7 +15,7 @@ export async function initWxWorkCfg() {
     const code = url.searchParams.get("code");
     if (code) {
       const loginModel = await wxwLoginByCode(code);
-      if (!loginModel.authorization) {
+      if (!loginModel || !loginModel.authorization) {
         return;
       }
       usrStore.authorization = loginModel.authorization;

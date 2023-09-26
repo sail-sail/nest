@@ -11,6 +11,7 @@ function getArg(name: string): string | undefined {
 
 const denoDir = Deno.cwd();
 const pcDir = denoDir + "/../pc";
+const uniDir = denoDir + "/../uni";
 const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
 const commands = (getArg("--command") || "").split(",").filter((v) => v);
 let target = getArg("--target") || "";
@@ -199,6 +200,30 @@ async function pc() {
   await Deno.writeTextFile(`${ buildDir }/../pc/index.html`, str2);
 }
 
+async function uni() {
+  console.log("uni");
+  const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
+    cwd: uniDir,
+    args: [
+      "run",
+      "build:h5",
+    ],
+    stderr: "piped",
+    stdout: "null",
+  });
+  const { stderr } = await command.output();
+  const stderrStr = new TextDecoder().decode(stderr);
+  if (stderrStr) {
+    console.error(stderrStr);
+  }
+  try {
+    await Deno.remove(`${ buildDir }/../uni/`, { recursive: true });
+  // deno-lint-ignore no-empty
+  } catch (_err) {
+  }
+  await Deno.rename(`${ uniDir }/dist/build/h5/`, `${ buildDir }/../uni/`);
+}
+
 async function docs() {
   console.log("docs");
   const command = new Deno.Command("C:/Program Files/nodejs/npm.cmd", {
@@ -245,6 +270,8 @@ for (let i = 0; i < commands.length; i++) {
     await compile();
   } else if (command === "pc") {
     await pc();
+  } else if (command === "uni") {
+    await uni();
   } else if (command === "docs") {
     await docs();
   } else if (command === "publish") {
@@ -267,6 +294,7 @@ if (commands.length === 0) {
   await gqlgen();
   await compile();
   await pc();
+  await uni();
   // await docs();
   await publish();
 }

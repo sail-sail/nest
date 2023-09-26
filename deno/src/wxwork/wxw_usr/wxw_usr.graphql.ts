@@ -11,13 +11,15 @@ input WxwLoginByCodeInput {
   agentid: String!
   "企业微信登录时获取的code"
   code: String!
+  "语言"
+  lang: String
 }
 
-type WxwLoginByCodePayload {
+type WxwLoginByCode {
   "授权码"
   authorization: String!
   "组织id"
-  org_id: String!
+  org_id: String
   "用户名"
   username: String!
   "姓名"
@@ -30,7 +32,7 @@ type WxwLoginByCodePayload {
 
 type Mutation {
   "微信企业号登录"
-  wxwLoginByCode(input: WxwLoginByCodeInput!): WxwLoginByCodePayload!
+  wxwLoginByCode(input: WxwLoginByCodeInput!): WxwLoginByCode!
 }
 
 `);
