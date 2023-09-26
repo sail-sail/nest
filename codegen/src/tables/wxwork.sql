@@ -85,7 +85,7 @@ CREATE TABLE `wxwork_wxw_msg` (
   `url` varchar(1024) NOT NULL DEFAULT '' COMMENT '链接',
   `btntxt` varchar(4) NOT NULL DEFAULT '' COMMENT '按钮文字',
   `errmsg` varchar(256) NOT NULL DEFAULT '' COMMENT '错误信息',
-  `msgid` varchar(64) NOT NULL DEFAULT '' COMMENT '消息ID',
+  `msgid` varchar(255) NOT NULL DEFAULT '' COMMENT '消息ID',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
