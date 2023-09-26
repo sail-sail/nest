@@ -756,15 +756,10 @@ const props = defineProps<{
   company?: string; // 公司
   company_like?: string; // 公司
   gross_pay?: string; // 应发工资(元)
-  gross_pay_like?: string; // 应发工资(元)
   social_security?: string; // 代缴社保(元)
-  social_security_like?: string; // 代缴社保(元)
   individual_tax?: string; // 代缴个税(元)
-  individual_tax_like?: string; // 代缴个税(元)
   self_pay?: string; // 个人自付(元)
-  self_pay_like?: string; // 个人自付(元)
   net_pay?: string; // 实发工资(元)
-  net_pay_like?: string; // 实发工资(元)
   is_send?: string|string[]; // 已发送
   is_confirm?: string|string[]; // 已确认
   is_locked?: string|string[]; // 锁定

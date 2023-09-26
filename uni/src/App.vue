@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
-import { uniLogin } from "@/utils/request";
 
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
+// #ifdef H5
+import {
+  initWxWorkCfg,
+} from "./utils/WxWorkUtil";
+// #endif
 
 onLaunch((async(options: any) => {
   const indexStore = useIndexStore();
-  const usrStore = useUsrStore();
   indexStore.setLaunchOptions(options);
+  
+  const systemInfo = await uni.getSystemInfo();
+  indexStore.setSystemInfo(systemInfo);
+  
+  // #ifdef H5
+  await initWxWorkCfg();
+  // #endif
+  
   let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({
@@ -25,18 +34,6 @@ onLaunch((async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
-  let authorization: string | undefined = undefined;
-  try {
-    authorization = (await uni.getStorage({
-      key: "authorization"
-    })).data;
-  } catch (err) {
-  }
-  if (authorization) {
-    await usrStore.setAuthorization(authorization);
-  } else {
-    await uniLogin();
-  }
 }));
 </script>
 <style lang="scss">
