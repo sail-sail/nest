@@ -153,7 +153,7 @@ export async function getuserinfoByCode(
         corpid,
         code,
         {
-        force: false,
+          force: false,
         },
       );
     }

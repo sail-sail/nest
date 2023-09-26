@@ -604,7 +604,7 @@ import type {
 } from "#/types";
 
 defineOptions({
-  name: "企业微信应用",
+  name: "企微应用",
 });
 
 const pageName = getCurrentInstance()?.type?.name as string;
@@ -712,7 +712,6 @@ const props = defineProps<{
   agentid?: string; // 应用ID
   agentid_like?: string; // 应用ID
   corpsecret?: string; // 应用密钥
-  corpsecret_like?: string; // 应用密钥
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序

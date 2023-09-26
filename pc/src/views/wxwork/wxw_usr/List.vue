@@ -483,7 +483,7 @@ import type {
 } from "#/types";
 
 defineOptions({
-  name: "企业微信用户",
+  name: "企微用户",
 });
 
 const pageName = getCurrentInstance()?.type?.name as string;

@@ -144,9 +144,6 @@ async function getWhereQuery(
   if (search?.corpsecret === null) {
     whereQuery += ` and t.corpsecret is null`;
   }
-  if (isNotEmpty(search?.corpsecret_like)) {
-    whereQuery += ` and t.corpsecret like ${ args.push(sqlLike(search?.corpsecret_like) + "%") }`;
-  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
