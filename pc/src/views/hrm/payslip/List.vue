@@ -60,6 +60,40 @@
         </el-form-item>
       </template>
       
+      <template v-if="showBuildIn || builtInSearch?.is_send == null">
+        <el-form-item
+          :label="n('已发送')"
+          prop="is_send"
+        >
+          <DictSelect
+            :set="search.is_send = search.is_send || [ ]"
+            :model-value="search.is_send"
+            @update:model-value="search.is_send = $event"
+            code="yes_no"
+            :placeholder="`${ ns('请选择') } ${ n('已发送') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_confirm == null">
+        <el-form-item
+          :label="n('已确认')"
+          prop="is_confirm"
+        >
+          <DictSelect
+            :set="search.is_confirm = search.is_confirm || [ ]"
+            :model-value="search.is_confirm"
+            @update:model-value="search.is_confirm = $event"
+            code="yes_no"
+            :placeholder="`${ ns('请选择') } ${ n('已确认') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -148,6 +182,18 @@
     un-flex="~ nowrap"
   >
     <template v-if="search.is_deleted !== 1">
+      
+      <el-button
+        v-if="permit('sendMsgWxw') && !isLocked"
+        plain
+        type="primary"
+        @click="onSendMsgWxw"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template>
+        <span>{{ ns('发送企微工资条') }}</span>
+      </el-button>
       
       <el-button
         v-if="permit('add') && !isLocked"
@@ -639,6 +685,10 @@ import {
   useDownloadImportTemplate,
 } from "./Api";
 
+import {
+  sendMsgWxw,
+} from "./Api2";
+
 import type {
   PayslipModel,
   PayslipInput,
@@ -690,6 +740,18 @@ const emit = defineEmits<{
   refresh: [ ],
   beforeSearchReset: [ ],
 }>();
+
+/**
+ * 发送企微工资条
+ */
+async function onSendMsgWxw() {
+  if (selectedIds.length === 0) {
+    ElMessage.warning("请先选择要发送的工资条");
+    return;
+  }
+  const num = await sendMsgWxw(selectedIds);
+  ElMessage.success(`成功发送 ${ num } 条企微工资条`);
+}
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -919,7 +981,7 @@ function getTableColumns(): ColumnType[] {
       label: "姓名",
       prop: "lbl",
       width: 140,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -936,7 +998,7 @@ function getTableColumns(): ColumnType[] {
       label: "公司",
       prop: "company",
       width: 280,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
