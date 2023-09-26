@@ -503,7 +503,7 @@ async function onInitI18ns() {
     "标题",
     "描述",
     "按钮文字",
-    "创建时间",
+    "发送时间",
     "错误信息",
   ];
   await Promise.all([

@@ -143,10 +143,12 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "wxw_app_id",
+        search: true,
         width: 160,
       },
       {
         COLUMN_NAME: "errcode",
+        search: true,
         width: 100,
       },
       {
@@ -171,6 +173,8 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "create_time",
+        COLUMN_COMMENT: "发送时间",
+        search: true,
       },
       {
         COLUMN_NAME: "errmsg",

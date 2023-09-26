@@ -26,6 +26,64 @@
       @keyup.enter="onSearch"
     >
       
+      <template v-if="showBuildIn || builtInSearch?.wxw_app_id == null">
+        <el-form-item
+          label="企微应用"
+          prop="wxw_app_id"
+        >
+          <CustomSelect
+            :set="search.wxw_app_id = search.wxw_app_id || [ ]"
+            v-model="search.wxw_app_id"
+            :method="getWxwAppList"
+            :options-map="((item: WxwAppModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('企微应用') }`"
+            multiple
+            @change="onSearch"
+          ></CustomSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.errcode == null">
+        <el-form-item
+          :label="n('发送状态')"
+          prop="errcode"
+        >
+          <DictSelect
+            :set="search.errcode = search.errcode || [ ]"
+            :model-value="search.errcode"
+            @update:model-value="search.errcode = $event"
+            code="wxw_msg_errcode"
+            :placeholder="`${ ns('请选择') } ${ n('发送状态') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.create_time == null">
+        <el-form-item
+          :label="n('发送时间')"
+          prop="create_time"
+        >
+          <CustomDatePicker
+            :set="search.create_time = search.create_time || [ ]"
+            type="daterange"
+            :model-value="(search.create_time as any)"
+            :start-placeholder="ns('开始')"
+            :end-placeholder="ns('结束')"
+            format="YYYY-MM-DD"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
+            @update:model-value="search.create_time = $event"
+            @clear="onSearchClear"
+          ></CustomDatePicker>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -365,7 +423,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建时间 -->
+          <!-- 发送时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -444,6 +502,10 @@ import type {
   WxwAppModel,
 } from "#/types";
 
+import {
+  getWxwAppList,
+} from "./Api";
+
 defineOptions({
   name: "企微消息",
 });
@@ -496,6 +558,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
+    wxw_app_id: [ ],
   } as WxwMsgSearch;
 }
 
@@ -557,7 +620,7 @@ const props = defineProps<{
   description_like?: string; // 描述
   btntxt?: string; // 按钮文字
   btntxt_like?: string; // 按钮文字
-  create_time?: string; // 创建时间
+  create_time?: string; // 发送时间
   errmsg?: string; // 错误信息
   errmsg_like?: string; // 错误信息
 }>();
@@ -738,7 +801,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建时间",
+      label: "发送时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
       width: 150,
@@ -1028,7 +1091,7 @@ async function initI18nsEfc() {
     "标题",
     "描述",
     "按钮文字",
-    "创建时间",
+    "发送时间",
     "错误信息",
   ];
   await Promise.all([

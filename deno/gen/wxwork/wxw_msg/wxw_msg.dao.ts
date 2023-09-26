@@ -322,7 +322,7 @@ export async function findAll(
     }
     model.errcode_lbl = errcode_lbl;
     
-    // 创建时间
+    // 发送时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
       if (isNaN(create_time.toDate().getTime())) {
@@ -354,8 +354,8 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
     description: await n("描述"),
     url: await n("链接"),
     btntxt: await n("按钮文字"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
+    create_time: await n("发送时间"),
+    create_time_lbl: await n("发送时间"),
     errmsg: await n("错误信息"),
     msgid: await n("消息ID"),
   };

@@ -25,9 +25,9 @@ type WxwMsgModel {
   url: String!
   "按钮文字"
   btntxt: String!
-  "创建时间"
+  "发送时间"
   create_time: NaiveDateTime
-  "创建时间"
+  "发送时间"
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
@@ -53,9 +53,9 @@ type WxwMsgFieldComment {
   description: String!
   "按钮文字"
   btntxt: String!
-  "创建时间"
+  "发送时间"
   create_time: String!
-  "创建时间"
+  "发送时间"
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
@@ -81,9 +81,9 @@ input WxwMsgInput {
   url: String
   "按钮文字"
   btntxt: String
-  "创建时间"
+  "发送时间"
   create_time: NaiveDateTime
-  "创建时间"
+  "发送时间"
   create_time_lbl: String
   "错误信息"
   errmsg: String
@@ -117,7 +117,7 @@ input WxwMsgSearch {
   "按钮文字"
   btntxt: String
   btntxt_like: String
-  "创建时间"
+  "发送时间"
   create_time: [NaiveDateTime!]
   "错误信息"
   errmsg: String
