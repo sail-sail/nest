@@ -75,9 +75,10 @@ export async function sendMsgWxw(
     const isSucc = await sendCardMsg({
       wxw_app_id,
       touser,
-      title: `工资条`,
-      description: `${ payslipModel.pay_month_lbl }月份工资条`,
-      url: `${ domainModel.lbl }/uni/#/pages/payslip/index?id=${ encodeURIComponent(payslipModel.id) }`,
+      title: `${ payslipModel.pay_month_lbl } 月份工资条`,
+      description: `${ wxw_usrModel.lbl } 的 ${ payslipModel.pay_month_lbl } 月份工资条`,
+      // TODO 协议字段 protocol=https:
+      url: `https://${ domainModel.lbl }/uni/#/pages/payslip/index?id=${ encodeURIComponent(payslipModel.id) }`,
       btntxt: `详情`,
     });
     if (isSucc) {

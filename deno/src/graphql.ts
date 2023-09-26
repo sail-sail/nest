@@ -1,2 +1,3 @@
-import "/src/base/graphql.ts";
-import "/src/wxwork/graphql.ts";
+import "./base/graphql.ts";
+import "./wxwork/graphql.ts";
+import "./hrm/graphql.ts";
