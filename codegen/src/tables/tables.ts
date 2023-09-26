@@ -1,5 +1,6 @@
 import { defineConfig } from "../config";
 
+import wxwork from "./wxwork";
 import hrm from "./hrm";
 
 export default defineConfig({
@@ -1195,5 +1196,6 @@ export default defineConfig({
     ],
   },
   
+  ...wxwork,
   ...hrm,
 });

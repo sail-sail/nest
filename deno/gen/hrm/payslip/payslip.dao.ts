@@ -140,17 +140,11 @@ async function getWhereQuery(
   if (search?.gross_pay === null) {
     whereQuery += ` and t.gross_pay is null`;
   }
-  if (isNotEmpty(search?.gross_pay_like)) {
-    whereQuery += ` and t.gross_pay like ${ args.push(sqlLike(search?.gross_pay_like) + "%") }`;
-  }
   if (search?.social_security !== undefined) {
     whereQuery += ` and t.social_security = ${ args.push(search.social_security) }`;
   }
   if (search?.social_security === null) {
     whereQuery += ` and t.social_security is null`;
-  }
-  if (isNotEmpty(search?.social_security_like)) {
-    whereQuery += ` and t.social_security like ${ args.push(sqlLike(search?.social_security_like) + "%") }`;
   }
   if (search?.individual_tax !== undefined) {
     whereQuery += ` and t.individual_tax = ${ args.push(search.individual_tax) }`;
@@ -158,26 +152,17 @@ async function getWhereQuery(
   if (search?.individual_tax === null) {
     whereQuery += ` and t.individual_tax is null`;
   }
-  if (isNotEmpty(search?.individual_tax_like)) {
-    whereQuery += ` and t.individual_tax like ${ args.push(sqlLike(search?.individual_tax_like) + "%") }`;
-  }
   if (search?.self_pay !== undefined) {
     whereQuery += ` and t.self_pay = ${ args.push(search.self_pay) }`;
   }
   if (search?.self_pay === null) {
     whereQuery += ` and t.self_pay is null`;
   }
-  if (isNotEmpty(search?.self_pay_like)) {
-    whereQuery += ` and t.self_pay like ${ args.push(sqlLike(search?.self_pay_like) + "%") }`;
-  }
   if (search?.net_pay !== undefined) {
     whereQuery += ` and t.net_pay = ${ args.push(search.net_pay) }`;
   }
   if (search?.net_pay === null) {
     whereQuery += ` and t.net_pay is null`;
-  }
-  if (isNotEmpty(search?.net_pay_like)) {
-    whereQuery += ` and t.net_pay like ${ args.push(sqlLike(search?.net_pay_like) + "%") }`;
   }
   if (search?.is_send && !Array.isArray(search?.is_send)) {
     search.is_send = [ search.is_send ];
