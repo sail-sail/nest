@@ -60,6 +60,40 @@
         </el-form-item>
       </template>
       
+      <template v-if="showBuildIn || builtInSearch?.is_send == null">
+        <el-form-item
+          :label="n('已发送')"
+          prop="is_send"
+        >
+          <DictSelect
+            :set="search.is_send = search.is_send || [ ]"
+            :model-value="search.is_send"
+            @update:model-value="search.is_send = $event"
+            code="yes_no"
+            :placeholder="`${ ns('请选择') } ${ n('已发送') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="showBuildIn || builtInSearch?.is_confirm == null">
+        <el-form-item
+          :label="n('已确认')"
+          prop="is_confirm"
+        >
+          <DictSelect
+            :set="search.is_confirm = search.is_confirm || [ ]"
+            :model-value="search.is_confirm"
+            @update:model-value="search.is_confirm = $event"
+            code="yes_no"
+            :placeholder="`${ ns('请选择') } ${ n('已确认') }`"
+            multiple
+            @change="onSearch"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -919,7 +953,7 @@ function getTableColumns(): ColumnType[] {
       label: "姓名",
       prop: "lbl",
       width: 140,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -936,7 +970,7 @@ function getTableColumns(): ColumnType[] {
       label: "公司",
       prop: "company",
       width: 280,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

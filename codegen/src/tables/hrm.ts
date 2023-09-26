@@ -22,6 +22,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         require: true,
         width: 140,
+        align: "center",
         fixed: "left",
       },
       {
@@ -30,6 +31,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "company",
+        align: "left",
         width: 280,
       },
       {
@@ -64,10 +66,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_send",
+        search: true,
         readonly: true,
       },
       {
         COLUMN_NAME: "is_confirm",
+        search: true,
         readonly: true,
       },
       {

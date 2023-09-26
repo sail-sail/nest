@@ -24,6 +24,12 @@
 			"style": {
 				"navigationBarTitleText": "企业微信登录测试"
 			}
+		},
+		{
+			"path": "pages/payslip/index",
+			"style": {
+				"navigationBarTitleText": "工资条"
+			}
 		}
 	],
 	"globalStyle": {
