@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
-import { uniLogin } from "@/utils/request";
-
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
 
 // #ifdef H5
 import {
@@ -14,7 +10,6 @@ import {
 
 onLaunch((async(options: any) => {
   const indexStore = useIndexStore();
-  const usrStore = useUsrStore();
   indexStore.setLaunchOptions(options);
   
   const systemInfo = await uni.getSystemInfo();
