@@ -1,7 +1,5 @@
 import type {
-  Query,
   Mutation,
-  MutationLoginArgs,
 } from "#/types";
 
 import cfg from "@/utils/config";
@@ -33,6 +31,6 @@ export async function wxwLoginByCode(
       },
     },
   }, opt);
-  const data = res.wxwLoginByCode;
+  const data = res?.wxwLoginByCode;
   return data;
 }

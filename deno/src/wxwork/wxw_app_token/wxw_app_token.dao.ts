@@ -1,5 +1,6 @@
 import {
   error,
+  log,
 } from "/lib/context.ts";
  
 import {
@@ -65,6 +66,7 @@ export async function getAccessToken(
         access_token,
         expires_in: data.expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
+        tenant_id: wx_appModel.tenant_id!,
       },
     );
     return access_token;
@@ -77,9 +79,9 @@ export async function getAccessToken(
     || !(expires_in > 0)
     || !access_token
     || !wx_app_tokenModel.token_time
-    // || !token_time.isValid()
-    || token_time.add(2, "m").isBefore(dateNow)
+    || token_time.add(expires_in, "s").add(2, "m").isBefore(dateNow)
   ) {
+    log(`企业微信应用 access_token 过期, 重新获取: ${ JSON.stringify(wx_app_tokenModel) }`);
     const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${ corpid }&corpsecret=${ corpsecret }`;
     const res = await fetch(url);
     const data: {
@@ -96,12 +98,14 @@ export async function getAccessToken(
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 access_token 失败: ${ url }`;
     }
+    const id = wx_appModel.id;
     await updateByIdWxwAppToken(
-      wx_appModel.id,
+      id,
       {
         access_token: data.access_token,
         expires_in: data.expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
+        tenant_id: wx_appModel.tenant_id!,
       },
     );
   }
