@@ -236,8 +236,20 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "企业微信应用",
+        name: "企微应用",
         component: () => import("@/views/wxwork/wxw_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wxwork/wxw_msg",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "企微消息",
+        component: () => import("@/views/wxwork/wxw_msg/List.vue"),
         props: (route) => route.query,
       },
     ],
@@ -248,7 +260,7 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "企业微信用户",
+        name: "企微用户",
         component: () => import("@/views/wxwork/wxw_usr/List.vue"),
         props: (route) => route.query,
       },

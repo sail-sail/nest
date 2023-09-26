@@ -6,8 +6,7 @@ import type {
   Query,
   Mutation,
   PageInput,
-  WxwUsrSearch,
-  WxwUsrInput,
+  WxwMsgSearch,
 } from "#/types";
 
 import type {
@@ -17,29 +16,35 @@ import type {
 /**
  * 根据搜索条件查找数据
  * @export findAll
- * @param {WxwUsrSearch} search?
+ * @param {WxwMsgSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
  */
 export async function findAll(
-  search?: WxwUsrSearch,
+  search?: WxwMsgSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllWxwUsr: Query["findAllWxwUsr"];
+    findAllWxwMsg: Query["findAllWxwMsg"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: WxwUsrSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllWxwUsr(search: $search, page: $page, sort: $sort) {
+      query($search: WxwMsgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllWxwMsg(search: $search, page: $page, sort: $sort) {
           id
           wxw_app_id
           wxw_app_id_lbl
-          lbl
-          userid
-          rem
+          errcode
+          errcode_lbl
+          touser
+          title
+          description
+          btntxt
+          create_time
+          create_time_lbl
+          errmsg
           is_deleted
         }
       }
@@ -50,7 +55,7 @@ export async function findAll(
       sort,
     },
   }, opt);
-  const res = data.findAllWxwUsr;
+  const res = data.findAllWxwMsg;
   for (let i = 0; i < res.length; i++) {
     const item = res[i];
   }
@@ -60,84 +65,26 @@ export async function findAll(
 /**
  * 根据搜索条件查找数据总数
  * @export findCount
- * @param {WxwUsrSearch} search?
+ * @param {WxwMsgSearch} search?
  * @param {GqlOpt} opt?
  */
 export async function findCount(
-  search?: WxwUsrSearch,
+  search?: WxwMsgSearch,
   opt?: GqlOpt,
 ) {
   const data: {
-    findCountWxwUsr: Query["findCountWxwUsr"];
+    findCountWxwMsg: Query["findCountWxwMsg"];
   } = await query({
     query: /* GraphQL */ `
-      query($search: WxwUsrSearch) {
-        findCountWxwUsr(search: $search)
+      query($search: WxwMsgSearch) {
+        findCountWxwMsg(search: $search)
       }
     `,
     variables: {
       search,
     },
   }, opt);
-  const res = data.findCountWxwUsr;
-  return res;
-}
-
-/**
- * 创建一条数据
- * @export create
- * @param {WxwUsrInput} model
- * @param {UniqueType} uniqueType?
- * @param {GqlOpt} opt?
- */
-export async function create(
-  model: WxwUsrInput,
-  unique_type?: UniqueType,
-  opt?: GqlOpt,
-) {
-  const data: {
-    createWxwUsr: Mutation["createWxwUsr"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($model: WxwUsrInput!, $unique_type: UniqueType) {
-        createWxwUsr(model: $model, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      model,
-      unique_type,
-    },
-  }, opt);
-  const res = data.createWxwUsr;
-  return res;
-}
-
-/**
- * 根据id修改一条数据
- * @export updateById
- * @param {string} id
- * @param {WxwUsrInput} model
- * @param {GqlOpt} opt?
- */
-export async function updateById(
-  id: string,
-  model: WxwUsrInput,
-  opt?: GqlOpt,
-) {
-  const data: {
-    updateByIdWxwUsr: Mutation["updateByIdWxwUsr"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($id: String!, $model: WxwUsrInput!) {
-        updateByIdWxwUsr(id: $id, model: $model)
-      }
-    `,
-    variables: {
-      id,
-      model,
-    },
-  }, opt);
-  const res = data.updateByIdWxwUsr;
+  const res = data.findCountWxwMsg;
   return res;
 }
 
@@ -152,17 +99,23 @@ export async function findById(
   opt?: GqlOpt,
 ) {
   const data: {
-    findByIdWxwUsr: Query["findByIdWxwUsr"];
+    findByIdWxwMsg: Query["findByIdWxwMsg"];
   } = await query({
     query: /* GraphQL */ `
       query($id: String!) {
-        findByIdWxwUsr(id: $id) {
+        findByIdWxwMsg(id: $id) {
           id
           wxw_app_id
           wxw_app_id_lbl
-          lbl
-          userid
-          rem
+          errcode
+          errcode_lbl
+          touser
+          title
+          description
+          btntxt
+          create_time
+          create_time_lbl
+          errmsg
         }
       }
     `,
@@ -170,7 +123,7 @@ export async function findById(
       id,
     },
   }, opt);
-  const res = data.findByIdWxwUsr;
+  const res = data.findByIdWxwMsg;
   return res;
 }
 
@@ -185,18 +138,18 @@ export async function deleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    deleteByIdsWxwUsr: Mutation["deleteByIdsWxwUsr"];
+    deleteByIdsWxwMsg: Mutation["deleteByIdsWxwMsg"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [String!]!) {
-        deleteByIdsWxwUsr(ids: $ids)
+        deleteByIdsWxwMsg(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.deleteByIdsWxwUsr;
+  const res = data.deleteByIdsWxwMsg;
   return res;
 }
 
@@ -211,18 +164,18 @@ export async function revertByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    revertByIdsWxwUsr: Mutation["revertByIdsWxwUsr"];
+    revertByIdsWxwMsg: Mutation["revertByIdsWxwMsg"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [String!]!) {
-        revertByIdsWxwUsr(ids: $ids)
+        revertByIdsWxwMsg(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.revertByIdsWxwUsr;
+  const res = data.revertByIdsWxwMsg;
   return res;
 }
 
@@ -237,18 +190,18 @@ export async function forceDeleteByIds(
   opt?: GqlOpt,
 ) {
   const data: {
-    forceDeleteByIdsWxwUsr: Mutation["forceDeleteByIdsWxwUsr"];
+    forceDeleteByIdsWxwMsg: Mutation["forceDeleteByIdsWxwMsg"];
   } = await mutation({
     query: /* GraphQL */ `
       mutation($ids: [String!]!) {
-        forceDeleteByIdsWxwUsr(ids: $ids)
+        forceDeleteByIdsWxwMsg(ids: $ids)
       }
     `,
     variables: {
       ids,
     },
   }, opt);
-  const res = data.forceDeleteByIdsWxwUsr;
+  const res = data.forceDeleteByIdsWxwMsg;
   return res;
 }
 
@@ -314,14 +267,24 @@ export function useDownloadImportTemplate(routePath: string) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
         query {
-          getFieldCommentsWxwUsr {
+          getFieldCommentsWxwMsg {
             wxw_app_id_lbl
-            lbl
-            userid
-            rem
+            errcode_lbl
+            touser
+            title
+            description
+            btntxt
+            create_time_lbl
+            errmsg
           }
           findAllWxwApp {
             id
+            lbl
+          }
+          getDict(codes: [
+            "wxw_msg_errcode",
+          ]) {
+            code
             lbl
           }
         }
@@ -330,10 +293,10 @@ export function useDownloadImportTemplate(routePath: string) {
       },
     });
     const buffer = await workerFn(
-      `${ location.origin }/import_template/wxwork/wxw_usr.xlsx`,
+      `${ location.origin }/import_template/wxwork/wxw_msg.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    saveAsExcel(buffer, `${ await nAsync("企微用户") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("企微消息") }${ await nsAsync("导入模板") }`);
   }
   return {
     workerFn: workerFn2,
@@ -356,28 +319,44 @@ export function useExportExcel(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2(
-    search?: WxwUsrSearch,
+    search?: WxwMsgSearch,
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
     const queryStr = getQueryUrl({
       query: /* GraphQL */ `
-        query($search: WxwUsrSearch, $sort: [SortInput!]) {
-          findAllWxwUsr(search: $search, sort: $sort) {
+        query($search: WxwMsgSearch, $sort: [SortInput!]) {
+          findAllWxwMsg(search: $search, sort: $sort) {
             id
             wxw_app_id
             wxw_app_id_lbl
-            lbl
-            userid
-            rem
+            errcode
+            errcode_lbl
+            touser
+            title
+            description
+            btntxt
+            create_time
+            create_time_lbl
+            errmsg
           }
-          getFieldCommentsWxwUsr {
+          getFieldCommentsWxwMsg {
             wxw_app_id_lbl
-            lbl
-            userid
-            rem
+            errcode_lbl
+            touser
+            title
+            description
+            btntxt
+            create_time_lbl
+            errmsg
           }
           findAllWxwApp {
+            lbl
+          }
+          getDict(codes: [
+            "wxw_msg_errcode",
+          ]) {
+            code
             lbl
           }
         }
@@ -389,10 +368,10 @@ export function useExportExcel(routePath: string) {
     }, opt);
     try {
       const buffer = await workerFn(
-        `${ location.origin }/excel_template/wxwork/wxw_usr.xlsx`,
+        `${ location.origin }/excel_template/wxwork/wxw_msg.xlsx`,
         `${ location.origin }${ queryStr }`,
       );
-      saveAsExcel(buffer, await nAsync("企微用户"));
+      saveAsExcel(buffer, await nAsync("企微消息"));
     } catch (err) {
       ElMessage.error(await nsAsync("导出失败"));
       throw err;
@@ -403,53 +382,4 @@ export function useExportExcel(routePath: string) {
     workerStatus,
     workerTerminate,
   };
-}
-
-/**
- * 批量导入
- * @param {WxwUsrInput[]} models
- * @export importModels
- */
-export async function importModels(
-  models: WxwUsrInput[],
-  percentage: Ref<number>,
-  isCancel: Ref<boolean>,
-  opt?: GqlOpt,
-) {
-  const {
-    nsAsync,
-  } = useI18n();
-  
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  for (let i = 0; i < models.length; i++) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    const item = models[i];
-    
-    opt = opt || { };
-    opt.showErrMsg = false;
-    opt.notLoading = true;
-    
-    try {
-      await create(
-        item,
-        UniqueType.Update,
-        opt,
-      );
-      succNum++;
-    } catch (err) {
-      failNum++;
-      failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
-    }
-    
-    percentage.value = Math.floor((i + 1) / models.length * 100);
-  }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
 }

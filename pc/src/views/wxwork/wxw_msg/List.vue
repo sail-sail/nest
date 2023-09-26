@@ -26,51 +26,6 @@
       @keyup.enter="onSearch"
     >
       
-      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
-        <el-form-item
-          :label="n('名称')"
-          prop="lbl_like"
-        >
-          <el-input
-            v-model="search.lbl_like"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template>
-      
-      <template v-if="builtInSearch?.corpid == null && (showBuildIn || builtInSearch?.corpid_like == null)">
-        <el-form-item
-          :label="n('企业ID')"
-          prop="corpid_like"
-        >
-          <el-input
-            v-model="search.corpid_like"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('企业ID') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template>
-      
-      <template v-if="builtInSearch?.agentid == null && (showBuildIn || builtInSearch?.agentid_like == null)">
-        <el-form-item
-          :label="n('应用ID')"
-          prop="agentid_like"
-        >
-          <el-input
-            v-model="search.agentid_like"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('应用ID') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template>
-      
       <el-form-item
         label=" "
         prop="idsChecked"
@@ -161,42 +116,6 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('add') && !isLocked"
-        plain
-        type="primary"
-        @click="openAdd"
-      >
-        <template #icon>
-          <ElIconCirclePlus />
-        </template>
-        <span>{{ ns('新增') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('add') && !isLocked"
-        plain
-        type="primary"
-        @click="openCopy"
-      >
-        <template #icon>
-          <ElIconCopyDocument />
-        </template>
-        <span>{{ ns('复制') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('edit') && !isLocked"
-        plain
-        type="primary"
-        @click="openEdit"
-      >
-        <template #icon>
-          <ElIconEdit />
-        </template>
-        <span>{{ ns('编辑') }}</span>
-      </el-button>
-      
-      <el-button
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
@@ -270,46 +189,6 @@
               @click="onCancelExport"
             >
               <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('add') && !isLocked"
-              un-justify-center
-              @click="onImportExcel"
-            >
-              <span>{{ ns('导入') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onEnableByIds(1)"
-            >
-              <span>{{ ns('启用') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onEnableByIds(0)"
-            >
-              <span>{{ ns('禁用') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(1)"
-            >
-              <span>{{ ns('锁定') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(0)"
-            >
-              <span>{{ ns('解锁') }}</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -432,8 +311,8 @@
           :key="col.prop"
         >
           
-          <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <!-- 企微应用 -->
+          <template v-if="'wxw_app_id_lbl' === col.prop && (showBuildIn || builtInSearch?.wxw_app_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -441,8 +320,8 @@
             </el-table-column>
           </template>
           
-          <!-- 企业ID -->
-          <template v-else-if="'corpid' === col.prop && (showBuildIn || builtInSearch?.corpid == null)">
+          <!-- 发送状态 -->
+          <template v-else-if="'errcode_lbl' === col.prop && (showBuildIn || builtInSearch?.errcode == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -450,8 +329,8 @@
             </el-table-column>
           </template>
           
-          <!-- 应用ID -->
-          <template v-else-if="'agentid' === col.prop && (showBuildIn || builtInSearch?.agentid == null)">
+          <!-- 成员ID -->
+          <template v-else-if="'touser' === col.prop && (showBuildIn || builtInSearch?.touser == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -459,8 +338,8 @@
             </el-table-column>
           </template>
           
-          <!-- 应用密钥 -->
-          <template v-else-if="'corpsecret' === col.prop && (showBuildIn || builtInSearch?.corpsecret == null)">
+          <!-- 标题 -->
+          <template v-else-if="'title' === col.prop && (showBuildIn || builtInSearch?.title == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -468,57 +347,35 @@
             </el-table-column>
           </template>
           
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <!-- 描述 -->
+          <template v-else-if="'description' === col.prop && (showBuildIn || builtInSearch?.description == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_locked"
-                  @change="onIs_locked(row.id, row.is_locked)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
-          <!-- 启用 -->
-          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+          <!-- 按钮文字 -->
+          <template v-else-if="'btntxt' === col.prop && (showBuildIn || builtInSearch?.btntxt == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_enabled"
-                  @change="onIs_enabled(row.id, row.is_enabled)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
-          <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomInputNumber
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.order_by"
-                  :min="0"
-                  @change="updateById(row.id, { order_by: row.order_by }, { notLoading: true })"
-                ></CustomInputNumber>
-              </template>
             </el-table-column>
           </template>
           
-          <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <!-- 错误信息 -->
+          <template v-else-if="'errmsg' === col.prop && (showBuildIn || builtInSearch?.errmsg == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -566,17 +423,6 @@
     ref="detailRef"
   ></Detail>
   
-  <UploadFileDialog
-    ref="uploadFileDialogRef"
-    @download-import-template="onDownloadImportTemplate"
-  ></UploadFileDialog>
-  
-  <ImportPercentageDialog
-    :percentage="importPercentage"
-    :dialog_visible="isImporting"
-    @stop="stopImport"
-  ></ImportPercentageDialog>
-  
 </div>
 </template>
 
@@ -589,22 +435,17 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
-  enableByIds,
-  lockByIds,
   useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
 } from "./Api";
 
 import type {
+  WxwMsgModel,
+  WxwMsgSearch,
   WxwAppModel,
-  WxwAppInput,
-  WxwAppSearch,
 } from "#/types";
 
 defineOptions({
-  name: "企微应用",
+  name: "企微消息",
 });
 
 const pageName = getCurrentInstance()?.type?.name as string;
@@ -616,7 +457,7 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns
-} = useI18n("/wxwork/wxw_app");
+} = useI18n("/wxwork/wxw_msg");
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
@@ -624,7 +465,7 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh);
 
-const permit = permitStore.getPermit("/wxwork/wxw_app");
+const permit = permitStore.getPermit("/wxwork/wxw_msg");
 
 let inited = $ref(false);
 
@@ -655,7 +496,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   return {
     is_deleted: 0,
-  } as WxwAppSearch;
+  } as WxwMsgSearch;
 }
 
 let search = $ref(initSearch());
@@ -705,18 +546,20 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
-  corpid?: string; // 企业ID
-  corpid_like?: string; // 企业ID
-  agentid?: string; // 应用ID
-  agentid_like?: string; // 应用ID
-  corpsecret?: string; // 应用密钥
-  is_locked?: string|string[]; // 锁定
-  is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
+  wxw_app_id?: string|string[]; // 企微应用
+  wxw_app_id_lbl?: string|string[]; // 企微应用
+  errcode?: string|string[]; // 发送状态
+  touser?: string; // 成员ID
+  touser_like?: string; // 成员ID
+  title?: string; // 标题
+  title_like?: string; // 标题
+  description?: string; // 描述
+  description_like?: string; // 描述
+  btntxt?: string; // 按钮文字
+  btntxt_like?: string; // 按钮文字
+  create_time?: string; // 创建时间
+  errmsg?: string; // 错误信息
+  errmsg_like?: string; // 错误信息
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -725,11 +568,10 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
-  is_enabled: "number[]",
-  is_enabled_lbl: "string[]",
-  order_by: "number",
+  wxw_app_id: "string[]",
+  wxw_app_id_lbl: "string[]",
+  errcode: "string[]",
+  errcode_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -741,14 +583,14 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置搜索条件 */
-const builtInSearch: WxwAppSearch = $(initBuiltInSearch(
+const builtInSearch: WxwMsgSearch = $(initBuiltInSearch(
   props,
   builtInSearchType,
   propsNotInSearch,
 ));
 
 /** 内置变量 */
-const builtInModel: WxwAppModel = $(initBuiltInModel(
+const builtInModel: WxwMsgModel = $(initBuiltInModel(
   props,
   builtInSearchType,
   propsNotInSearch,
@@ -771,7 +613,7 @@ let {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<WxwAppModel>(
+} = $(usePage<WxwMsgModel>(
   dataGrid,
   {
     isPagination,
@@ -790,7 +632,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
-} = $(useSelect<WxwAppModel>(
+} = $(useSelect<WxwMsgModel>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -841,75 +683,75 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<WxwAppModel[]>([ ]);
+let tableData = $ref<WxwMsgModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "名称",
-      prop: "lbl",
-      width: 300,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-      fixed: "left",
-    },
-    {
-      label: "企业ID",
-      prop: "corpid",
-      width: 180,
+      label: "企微应用",
+      prop: "wxw_app_id_lbl",
+      sortBy: "wxw_app_id",
+      width: 160,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "应用ID",
-      prop: "agentid",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "应用密钥",
-      prop: "corpsecret",
-      width: 220,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      sortBy: "is_locked",
-      width: 60,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "启用",
-      prop: "is_enabled_lbl",
-      sortBy: "is_enabled",
-      width: 60,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "排序",
-      prop: "order_by",
+      label: "发送状态",
+      prop: "errcode_lbl",
+      sortBy: "errcode",
       width: 100,
-      sortable: "custom",
-      align: "right",
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: false,
+      showOverflowTooltip: true,
     },
     {
-      label: "备注",
-      prop: "rem",
+      label: "成员ID",
+      prop: "touser",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "标题",
+      prop: "title",
       width: 280,
-      align: "left",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "描述",
+      prop: "description",
+      width: 380,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "按钮文字",
+      prop: "btntxt",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      sortBy: "create_time",
+      width: 150,
+      sortable: "custom",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "错误信息",
+      prop: "errmsg",
+      width: 160,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -936,7 +778,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
-} = $(useTableColumns<WxwAppModel>(
+} = $(useTableColumns<WxwMsgModel>(
   $$(tableColumns),
   {
     persistKey: new URL(import.meta.url).pathname,
@@ -1019,13 +861,13 @@ async function useFindCount(
 }
 
 let sort: Sort = $ref({
-  prop: "order_by",
-  order: "ascending",
+  prop: "create_time",
+  order: "descending",
 });
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxwAppModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<WxwMsgModel> } & Sort,
 ) {
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
@@ -1038,7 +880,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel("/wxwork/wxw_app"));
+let exportExcel = $ref(useExportExcel("/wxwork/wxw_msg"));
 
 /** 导出Excel */
 async function onExport() {
@@ -1056,230 +898,10 @@ async function onCancelExport() {
   exportExcel.workerTerminate();
 }
 
-/** 打开增加页面 */
-async function openAdd() {
-  if (isLocked) {
-    return;
-  }
-  if (!detailRef) {
-    return;
-  }
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("增加"),
-    action: "add",
-    builtInModel,
-    showBuildIn: $$(showBuildIn),
-  });
-  if (changedIds.length === 0) {
-    return;
-  }
-  selectedIds = [
-    ...changedIds,
-  ];
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(true);
-  emit("add", changedIds);
-}
-
-/** 打开复制页面 */
-async function openCopy() {
-  if (isLocked) {
-    return;
-  }
-  if (!detailRef) {
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的数据"));
-    return;
-  }
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("复制"),
-    action: "copy",
-    builtInModel,
-    showBuildIn: $$(showBuildIn),
-    model: {
-      id: selectedIds[selectedIds.length - 1],
-    },
-  });
-  if (changedIds.length === 0) {
-    return;
-  }
-  selectedIds = [
-    ...changedIds,
-  ];
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(true);
-  emit("add", changedIds);
-}
-
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
-
-let importPercentage = $ref(0);
-let isImporting = $ref(false);
-let isStopImport = $ref(false);
-
-const downloadImportTemplate = $ref(useDownloadImportTemplate("/wxwork/wxw_app"));
-
-/**
- * 下载导入模板
- */
-async function onDownloadImportTemplate() {
-  await downloadImportTemplate.workerFn();
-}
-
-/** 弹出导入窗口 */
-async function onImportExcel() {
-  if (isLocked) {
-    return;
-  }
-  if (!uploadFileDialogRef) {
-    return;
-  }
-  const header: { [key: string]: string } = {
-    [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("企业ID") ]: "corpid",
-    [ await nAsync("应用ID") ]: "agentid",
-    [ await nAsync("应用密钥") ]: "corpsecret",
-    [ await nAsync("锁定") ]: "is_locked_lbl",
-    [ await nAsync("启用") ]: "is_enabled_lbl",
-    [ await nAsync("排序") ]: "order_by",
-    [ await nAsync("备注") ]: "rem",
-  };
-  const file = await uploadFileDialogRef.showDialog({
-    title: await nsAsync("批量导入"),
-  });
-  if (!file) {
-    return;
-  }
-  isStopImport = false;
-  isImporting = true;
-  let msg: VNode | undefined = undefined;
-  let succNum = 0;
-  try {
-    ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<WxwAppInput>(
-      file,
-      header,
-      {
-        date_keys: [
-        ],
-      },
-    );
-    const res = await importModels(
-      models,
-      $$(importPercentage),
-      $$(isStopImport),
-    );
-    msg = res.msg;
-    succNum = res.succNum;
-  } finally {
-    isImporting = false;
-    importPercentage = 0;
-  }
-  if (msg) {
-    ElMessageBox.alert(msg)
-  }
-  if (succNum > 0) {
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 取消导入 */
-async function stopImport() {
-  isStopImport = true;
-  isImporting = false;
-  importPercentage = 0;
-}
-
-/** 锁定 */
-async function onIs_locked(id: string, is_locked: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await lockByIds(
-    [ id ],
-    is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 启用 */
-async function onIs_enabled(id: string, is_enabled: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await enableByIds(
-    [ id ],
-    is_enabled,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 打开修改页面 */
-async function openEdit() {
-  if (isLocked) {
-    return;
-  }
-  if (!detailRef) {
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要修改的数据"));
-    return;
-  }
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("修改"),
-    action: "edit",
-    builtInModel,
-    showBuildIn: $$(showBuildIn),
-    isReadonly: $$(isLocked),
-    isLocked: $$(isLocked),
-    model: {
-      ids: selectedIds,
-    },
-  });
-  if (changedIds.length === 0) {
-    return;
-  }
-  dirtyStore.fireDirty(pageName);
-  await dataGrid();
-  emit("edit", changedIds);
-}
-
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
   if (e.ctrlKey) {
-    await openEdit();
   } else if (e.shiftKey) {
-    await openCopy();
   } else {
     await openView();
   }
@@ -1369,64 +991,6 @@ async function onForceDeleteByIds() {
   }
 }
 
-/** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_enabled === 1) {
-      msg = await nsAsync("请选择需要 启用 的数据");
-    } else {
-      msg = await nsAsync("请选择需要 禁用 的数据");
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await enableByIds(selectedIds, is_enabled);
-  if (num > 0) {
-    let msg = "";
-    if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 条数据成功", num);
-    } else {
-      msg = await nsAsync("禁用 {0} 条数据成功", num);
-    }
-    ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = await nsAsync("请选择需要 锁定 的数据");
-    } else {
-      msg = await nsAsync("请选择需要 解锁 的数据");
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await lockByIds(selectedIds, is_locked);
-  if (num > 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 条数据成功", num);
-    } else {
-      msg = await nsAsync("解锁 {0} 条数据成功", num);
-    }
-    ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
 /** 点击还原 */
 async function revertByIdsEfc() {
   if (isLocked) {
@@ -1458,14 +1022,14 @@ async function revertByIdsEfc() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "名称",
-    "企业ID",
-    "应用ID",
-    "应用密钥",
-    "锁定",
-    "启用",
-    "排序",
-    "备注",
+    "企微应用",
+    "发送状态",
+    "成员ID",
+    "标题",
+    "描述",
+    "按钮文字",
+    "创建时间",
+    "错误信息",
   ];
   await Promise.all([
     initListI18ns(),

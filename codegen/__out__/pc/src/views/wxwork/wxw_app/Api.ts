@@ -362,7 +362,7 @@ export function useDownloadImportTemplate(routePath: string) {
       `${ location.origin }/import_template/wxwork/wxw_app.xlsx`,
       `${ location.origin }${ queryStr }`,
     );
-    saveAsExcel(buffer, `${ await nAsync("企业微信应用") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("企微应用") }${ await nsAsync("导入模板") }`);
   }
   return {
     workerFn: workerFn2,
@@ -434,7 +434,7 @@ export function useExportExcel(routePath: string) {
         `${ location.origin }/excel_template/wxwork/wxw_app.xlsx`,
         `${ location.origin }${ queryStr }`,
       );
-      saveAsExcel(buffer, await nAsync("企业微信应用"));
+      saveAsExcel(buffer, await nAsync("企微应用"));
     } catch (err) {
       ElMessage.error(await nsAsync("导出失败"));
       throw err;

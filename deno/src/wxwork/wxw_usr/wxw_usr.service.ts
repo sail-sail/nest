@@ -9,7 +9,6 @@ import {
 } from "/src/wxwork/wxw_app_token/wxw_app_token.dao.ts";
 
 import {
-  findAll as findAllUsr,
   findOne as findOneUsr,
   findById as findByIdUsr,
   create as createUsr,
@@ -31,6 +30,10 @@ import {
 } from "/lib/util/string_util.ts";
 
 import * as authService from "/lib/auth/auth.service.ts";
+
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
 
 /**
  * 企业微信单点登录
@@ -73,7 +76,12 @@ export async function wxwLoginByCode(
       position,
       tenant_id,
     });
-  } else {
+  } else if (
+    wxw_usrModel.userid !== userid ||
+    wxw_usrModel.lbl !== name ||
+    wxw_usrModel.position !== position ||
+    wxw_usrModel.tenant_id !== tenant_id
+  ) {
     await updateWxwUsrById(
       wxw_usrModel.id,
       {
@@ -88,7 +96,7 @@ export async function wxwLoginByCode(
     lbl: name,
   });
   if (usrModel && !usrModel.is_enabled) {
-    throw new Error("用户 已禁用");
+    throw await ns("用户已禁用");
   }
   if (!usrModel) {
     const id = shortUuidV4();
@@ -99,7 +107,11 @@ export async function wxwLoginByCode(
       tenant_id: wxw_appModel.tenant_id!,
     });
     usrModel = (await findByIdUsr(id))!;
-  } else {
+  } else if (
+    usrModel.username !== name ||
+    usrModel.lbl !== name ||
+    usrModel.tenant_id !== wxw_appModel.tenant_id!
+  ) {
     await updateUsrById(
       usrModel.id,
       {
