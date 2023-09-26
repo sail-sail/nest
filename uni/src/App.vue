@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
-import { uniLogin } from "@/utils/request";
-
-import useIndexStore from "@/store/index";
-import useUsrStore from "@/store/usr";
 
 onLaunch((async(options: any) => {
   const indexStore = useIndexStore();
-  const usrStore = useUsrStore();
   indexStore.setLaunchOptions(options);
   let _uid: string | undefined = undefined;
   try {
@@ -25,18 +20,6 @@ onLaunch((async(options: any) => {
     });
   }
   indexStore.setUid(_uid);
-  let authorization: string | undefined = undefined;
-  try {
-    authorization = (await uni.getStorage({
-      key: "authorization"
-    })).data;
-  } catch (err) {
-  }
-  if (authorization) {
-    await usrStore.setAuthorization(authorization);
-  } else {
-    await uniLogin();
-  }
 }));
 </script>
 <style lang="scss">

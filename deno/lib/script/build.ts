@@ -22,6 +22,7 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
+  await Deno.mkdir(`${ buildDir }/`, { recursive: true });
   await Deno.copyFile(denoDir+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
   await Deno.copyFile(denoDir+"/.env.prod", `${ buildDir }/.env.prod`);
   await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
@@ -254,15 +255,11 @@ for (let i = 0; i < commands.length; i++) {
 
 if (commands.length === 0) {
   try {
-    await Deno.remove(`${ buildDir }/`, { recursive: true });
+    await Deno.remove(`${ buildDir }/../`, { recursive: true });
   } catch (err) {
     console.error(err);
   }
-  await Deno.mkdir(`${ buildDir }/`, { recursive: true });
-  try {
-    await Deno.remove(`${ buildDir }/../rust`, { recursive: true });
-  // deno-lint-ignore no-empty
-  } catch (_err) { }
+  await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
   await copyEnv();
   await gqlgen();
   await compile();
