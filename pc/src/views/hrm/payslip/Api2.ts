@@ -13,7 +13,7 @@ export async function sendMsgWxw(
     sendMsgWxw: Mutation["sendMsgWxw"];
   } = await query({
     query: /* GraphQL */ `
-      query($ids: [String!]!) {
+      mutation($ids: [String!]!) {
         sendMsgWxw(ids: $ids)
       }
     `,

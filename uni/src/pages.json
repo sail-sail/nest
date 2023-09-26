@@ -28,6 +28,7 @@
 		{
 			"path": "pages/payslip/index",
 			"style": {
+        "navigationStyle": "custom",
 				"navigationBarTitleText": "工资条"
 			}
 		}
