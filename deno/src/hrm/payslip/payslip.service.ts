@@ -77,8 +77,7 @@ export async function sendMsgWxw(
       touser,
       title: `${ payslipModel.pay_month_lbl } 月份工资条`,
       description: `${ wxw_usrModel.lbl } 的 ${ payslipModel.pay_month_lbl } 月份工资条`,
-      // TODO 协议字段 protocol=https:
-      url: `https://${ domainModel.lbl }/uni/#/pages/payslip/index?id=${ encodeURIComponent(payslipModel.id) }`,
+      url: `${ domainModel.protocol }://${ domainModel.lbl }/uni/#/pages/payslip/index?id=${ encodeURIComponent(payslipModel.id) }`,
       btntxt: `详情`,
     });
     if (isSucc) {
