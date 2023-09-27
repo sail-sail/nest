@@ -75,19 +75,19 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "wxw_app_id", "userid" ],
-        [ "wxw_app_id", "lbl" ],
+        [ "userid" ],
+        [ "lbl" ],
       ],
     },
     columns: [
       {
-        COLUMN_NAME: "wxw_app_id",
-      },
-      {
         COLUMN_NAME: "lbl",
+        align: "center",
+        width: 200,
       },
       {
         COLUMN_NAME: "userid",
+        width: 200,
       },
       {
         COLUMN_NAME: "mobile",

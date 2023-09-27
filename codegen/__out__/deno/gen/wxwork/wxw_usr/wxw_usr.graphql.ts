@@ -7,10 +7,6 @@ defineGraphql(resolver, /* GraphQL */ `
 type WxwUsrModel {
   "ID"
   id: String!
-  "企微应用"
-  wxw_app_id: String!
-  "企微应用"
-  wxw_app_id_lbl: String
   "姓名"
   lbl: String!
   "用户ID"
@@ -39,10 +35,6 @@ type WxwUsrModel {
   is_deleted: Int!
 }
 type WxwUsrFieldComment {
-  "企微应用"
-  wxw_app_id: String!
-  "企微应用"
-  wxw_app_id_lbl: String!
   "姓名"
   lbl: String!
   "用户ID"
@@ -53,10 +45,6 @@ type WxwUsrFieldComment {
 input WxwUsrInput {
   ""
   id: String
-  "企微应用"
-  wxw_app_id: String
-  "企微应用"
-  wxw_app_id_lbl: String
   "姓名"
   lbl: String
   "用户ID"
@@ -89,9 +77,6 @@ input WxwUsrSearch {
   ids: [String]
   "String"
   id: String
-  "企微应用"
-  wxw_app_id: [String!]
-  wxw_app_id_is_null: Boolean
   "姓名"
   lbl: String
   lbl_like: String

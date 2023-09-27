@@ -22,3 +22,14 @@ export async function wxwLoginByCode(
   const res = await wxwLoginByCode(input);
   return res;
 }
+
+/**
+ * 企业微信同步企微用户
+ */
+export async function wxwSyncUsr() {
+  const {
+    wxwSyncUsr,
+  } = await import("./wxw_usr.service.ts");
+  const res = await wxwSyncUsr();
+  return res;
+}
