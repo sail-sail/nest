@@ -693,7 +693,6 @@ import type {
   PayslipModel,
   PayslipInput,
   PayslipSearch,
-  UsrModel,
 } from "#/types";
 
 defineOptions({
@@ -778,6 +777,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -911,6 +911,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<PayslipModel>(
   $$(tableRef),
   {
@@ -1274,6 +1275,7 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1308,6 +1310,7 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1364,6 +1367,7 @@ async function onImportExcel() {
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
   });
+  tableFocus();
   if (!file) {
     return;
   }
@@ -1506,6 +1510,7 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1546,6 +1551,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1556,6 +1562,7 @@ async function openView() {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1611,6 +1618,7 @@ async function onForceDeleteByIds() {
 
 /** 点击锁定或者解锁 */
 async function onLockByIds(is_locked: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1640,6 +1648,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1711,10 +1720,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {
