@@ -11,6 +11,8 @@ type WxwAppTokenModel {
   wxw_app_id: String!
   "企微应用"
   wxw_app_id_lbl: String
+  "类型corp和contact"
+  type: String!
   "令牌"
   access_token: String!
   "令牌创建时间"
@@ -27,6 +29,8 @@ type WxwAppTokenFieldComment {
   wxw_app_id: String!
   "企微应用"
   wxw_app_id_lbl: String!
+  "类型corp和contact"
+  type: String!
   "令牌"
   access_token: String!
   "令牌创建时间"
@@ -43,6 +47,8 @@ input WxwAppTokenInput {
   wxw_app_id: String
   "企微应用"
   wxw_app_id_lbl: String
+  "类型corp和contact"
+  type: String
   "令牌"
   access_token: String
   "令牌创建时间"
@@ -62,6 +68,9 @@ input WxwAppTokenSearch {
   "企微应用"
   wxw_app_id: [String!]
   wxw_app_id_is_null: Boolean
+  "类型corp和contact"
+  type: String
+  type_like: String
   "令牌"
   access_token: String
   access_token_like: String

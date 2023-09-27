@@ -100,6 +100,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.contactsecret == null)">
+          <el-form-item
+            :label="n('通讯录密钥')"
+            prop="contactsecret"
+          >
+            <CustomInput
+              v-model="dialogModel.contactsecret"
+              :placeholder="`${ ns('请输入') } ${ n('通讯录密钥') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -618,6 +631,7 @@ async function onInitI18ns() {
     "企业ID",
     "应用ID",
     "应用密钥",
+    "通讯录密钥",
     "锁定",
     "启用",
     "排序",

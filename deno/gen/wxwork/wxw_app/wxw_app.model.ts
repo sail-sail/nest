@@ -38,6 +38,7 @@ export interface WxwAppFieldComment {
   corpid: string;
   agentid: string;
   corpsecret: string;
+  contactsecret: string;
   is_locked: string;
   is_locked_lbl: string;
   is_enabled: string;

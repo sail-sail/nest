@@ -38,6 +38,7 @@ export async function findAll(
           corpid
           agentid
           corpsecret
+          contactsecret
           is_locked
           is_locked_lbl
           is_enabled
@@ -166,6 +167,7 @@ export async function findById(
           corpid
           agentid
           corpsecret
+          contactsecret
           is_locked
           is_locked_lbl
           is_enabled
@@ -341,6 +343,7 @@ export function useDownloadImportTemplate(routePath: string) {
             corpid
             agentid
             corpsecret
+            contactsecret
             is_locked_lbl
             is_enabled_lbl
             order_by
@@ -400,6 +403,7 @@ export function useExportExcel(routePath: string) {
             corpid
             agentid
             corpsecret
+            contactsecret
             is_locked
             is_locked_lbl
             is_enabled
@@ -412,6 +416,7 @@ export function useExportExcel(routePath: string) {
             corpid
             agentid
             corpsecret
+            contactsecret
             is_locked_lbl
             is_enabled_lbl
             order_by
