@@ -48,7 +48,6 @@ CREATE TABLE `wxwork_wxw_app_token` (
 drop table if exists `wxwork_wxw_usr`;
 CREATE TABLE `wxwork_wxw_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `wxw_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '企微应用',
   `lbl` varchar(44) NOT NULL DEFAULT '' COMMENT '姓名',
   `userid` varchar(64) NOT NULL DEFAULT '' COMMENT '用户ID',
   `mobile` varchar(11) NOT NULL DEFAULT '' COMMENT '手机号',
@@ -68,8 +67,8 @@ CREATE TABLE `wxwork_wxw_usr` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`wxw_app_id`,`userid`),
-  INDEX (`wxw_app_id`,`lbl`),
+  INDEX (`userid`),
+  INDEX (`lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='企微用户';
 

@@ -65,8 +65,6 @@ import type {
   WxwUsrFieldComment,
 } from "./wxw_usr.model.ts";
 
-import * as wxw_appDao from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
-
 const route_path = "/wxwork/wxw_usr";
 
 async function getWhereQuery(
@@ -94,18 +92,6 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
-  }
-  if (search?.wxw_app_id && !Array.isArray(search?.wxw_app_id)) {
-    search.wxw_app_id = [ search.wxw_app_id ];
-  }
-  if (search?.wxw_app_id && search?.wxw_app_id.length > 0) {
-    whereQuery += ` and wxw_app_id_lbl.id in ${ args.push(search.wxw_app_id) }`;
-  }
-  if (search?.wxw_app_id === null) {
-    whereQuery += ` and wxw_app_id_lbl.id is null`;
-  }
-  if (search?.wxw_app_id_is_null) {
-    whereQuery += ` and wxw_app_id_lbl.id is null`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -231,8 +217,6 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     wxwork_wxw_usr t
-    left join wxwork_wxw_app wxw_app_id_lbl
-      on wxw_app_id_lbl.id = t.wxw_app_id
   `;
   return fromQuery;
 }
@@ -296,7 +280,6 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
-      ,wxw_app_id_lbl.lbl wxw_app_id_lbl
     from
       ${ await getFromQuery() }
     where
@@ -357,8 +340,6 @@ export async function getFieldComments(): Promise<WxwUsrFieldComment> {
   const n = initN(route_path);
   const fieldComments: WxwUsrFieldComment = {
     id: await n("ID"),
-    wxw_app_id: await n("企微应用"),
-    wxw_app_id_lbl: await n("企微应用"),
     lbl: await n("姓名"),
     userid: await n("用户ID"),
     mobile: await n("手机号"),
@@ -395,41 +376,21 @@ export async function findByUnique(
   }
   const models: WxwUsrModel[] = [ ];
   {
-    if (search0.wxw_app_id == null) {
-      return [ ];
-    }
-    let wxw_app_id: string[] = [ ];
-    if (!Array.isArray(search0.wxw_app_id)) {
-      wxw_app_id.push(search0.wxw_app_id);
-    } else {
-      wxw_app_id = search0.wxw_app_id;
-    }
     if (search0.userid == null) {
       return [ ];
     }
     const userid = search0.userid;
     const modelTmps = await findAll({
-      wxw_app_id,
       userid,
     });
     models.push(...modelTmps);
   }
   {
-    if (search0.wxw_app_id == null) {
-      return [ ];
-    }
-    let wxw_app_id: string[] = [ ];
-    if (!Array.isArray(search0.wxw_app_id)) {
-      wxw_app_id.push(search0.wxw_app_id);
-    } else {
-      wxw_app_id = search0.wxw_app_id;
-    }
     if (search0.lbl == null) {
       return [ ];
     }
     const lbl = search0.lbl;
     const modelTmps = await findAll({
-      wxw_app_id,
       lbl,
     });
     models.push(...modelTmps);
@@ -451,13 +412,11 @@ export function equalsByUnique(
     return false;
   }
   if (
-    oldModel.wxw_app_id === model.wxw_app_id &&
     oldModel.userid === model.userid
   ) {
     return true;
   }
   if (
-    oldModel.wxw_app_id === model.wxw_app_id &&
     oldModel.lbl === model.lbl
   ) {
     return true;
@@ -610,13 +569,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 企微应用
-  await validators.chars_max_length(
-    input.wxw_app_id,
-    22,
-    fieldComments.wxw_app_id,
-  );
-  
   // 姓名
   await validators.chars_max_length(
     input.lbl,
@@ -723,15 +675,6 @@ export async function create(
   const table = "wxwork_wxw_usr";
   const method = "create";
   
-  // 企微应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
-    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
-    if (wxw_appModel) {
-      input.wxw_app_id = wxw_appModel.id;
-    }
-  }
-  
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
@@ -786,9 +729,6 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,update_usr_id`;
     }
-  }
-  if (input.wxw_app_id !== undefined) {
-    sql += `,wxw_app_id`;
   }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
@@ -852,9 +792,6 @@ export async function create(
       sql += `,${ args.push(authModel.id) }`;
     }
   }
-  if (input.wxw_app_id !== undefined) {
-    sql += `,${ args.push(input.wxw_app_id) }`;
-  }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
   }
@@ -909,7 +846,6 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
-    "wxwork_wxw_app",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -991,15 +927,6 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 企微应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
-    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
-    if (wxw_appModel) {
-      input.wxw_app_id = wxw_appModel.id;
-    }
-  }
-  
   {
     const input2 = {
       ...input,
@@ -1023,12 +950,6 @@ export async function updateById(
     update wxwork_wxw_usr set
   `;
   let updateFldNum = 0;
-  if (input.wxw_app_id !== undefined) {
-    if (input.wxw_app_id != oldModel.wxw_app_id) {
-      sql += `wxw_app_id = ${ args.push(input.wxw_app_id) },`;
-      updateFldNum++;
-    }
-  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;

@@ -33,6 +33,7 @@ type WxwLoginByCode {
 type Mutation {
   "微信企业号登录"
   wxwLoginByCode(input: WxwLoginByCodeInput!): WxwLoginByCode!
+  wxwSyncUsr: Int!
 }
 
 `);

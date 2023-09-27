@@ -11,7 +11,6 @@ import type {
 } from "#/types";
 
 import type {
-  WxwAppSearch,
 } from "#/types";
 
 /**
@@ -35,8 +34,6 @@ export async function findAll(
       query($search: WxwUsrSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllWxwUsr(search: $search, page: $page, sort: $sort) {
           id
-          wxw_app_id
-          wxw_app_id_lbl
           lbl
           userid
           rem
@@ -158,8 +155,6 @@ export async function findById(
       query($id: String!) {
         findByIdWxwUsr(id: $id) {
           id
-          wxw_app_id
-          wxw_app_id_lbl
           lbl
           userid
           rem
@@ -252,51 +247,6 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllWxwApp(
-  search?: WxwAppSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllWxwApp: Query["findAllWxwApp"];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllWxwApp(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllWxwApp;
-  return res;
-}
-
-export async function getWxwAppList() {
-  const data = await findAllWxwApp(
-    undefined,
-    {
-    },
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
  * 下载导入模板
  */
@@ -315,14 +265,9 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsWxwUsr {
-            wxw_app_id_lbl
             lbl
             userid
             rem
-          }
-          findAllWxwApp {
-            id
-            lbl
           }
         }
       `,
@@ -367,20 +312,14 @@ export function useExportExcel(routePath: string) {
         query($search: WxwUsrSearch, $sort: [SortInput!]) {
           findAllWxwUsr(search: $search, sort: $sort) {
             id
-            wxw_app_id
-            wxw_app_id_lbl
             lbl
             userid
             rem
           }
           getFieldCommentsWxwUsr {
-            wxw_app_id_lbl
             lbl
             userid
             rem
-          }
-          findAllWxwApp {
-            lbl
           }
         }
       `,

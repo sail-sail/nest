@@ -131,6 +131,18 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
+        v-if="permit('wxwSyncUsr') && !isLocked"
+        plain
+        type="primary"
+        @click="onWxwSyncUsr"
+      >
+        <template #icon>
+          <ElIconCirclePlus />
+        </template>
+        <span>{{ ns('企微同步') }}</span>
+      </el-button>
+      
+      <el-button
         v-if="permit('add') && !isLocked"
         plain
         type="primary"
@@ -370,17 +382,8 @@
           :key="col.prop"
         >
           
-          <!-- 企微应用 -->
-          <template v-if="'wxw_app_id_lbl' === col.prop && (showBuildIn || builtInSearch?.wxw_app_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 姓名 -->
-          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -475,6 +478,10 @@ import {
   useDownloadImportTemplate,
 } from "./Api";
 
+import {
+  wxwSyncUsr,
+} from "./Api2";
+
 import type {
   WxwUsrModel,
   WxwUsrInput,
@@ -528,6 +535,16 @@ const emit = defineEmits<{
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
+
+/** 企微同步 */
+async function onWxwSyncUsr() {
+  const num = await wxwSyncUsr();
+  if (num === 0) {
+    ElMessage.success(await nsAsync("企微同步成功, 无新增数据"));
+  } else {
+    ElMessage.success(await nsAsync("企微同步成功，新增 {0} 条数据", num));
+  }
+}
 
 /** 搜索 */
 function initSearch() {
@@ -584,8 +601,6 @@ const props = defineProps<{
   selectedIds?: string[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: string; // ID
-  wxw_app_id?: string|string[]; // 企微应用
-  wxw_app_id_lbl?: string|string[]; // 企微应用
   lbl?: string; // 姓名
   lbl_like?: string; // 姓名
   userid?: string; // 用户ID
@@ -600,8 +615,6 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
-  wxw_app_id: "string[]",
-  wxw_app_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -719,18 +732,10 @@ let tableData = $ref<WxwUsrModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "企微应用",
-      prop: "wxw_app_id_lbl",
-      sortBy: "wxw_app_id",
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "姓名",
       prop: "lbl",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -738,6 +743,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "用户ID",
       prop: "userid",
+      width: 200,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -980,7 +986,6 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("企微应用") ]: "wxw_app_id_lbl",
     [ await nAsync("姓名") ]: "lbl",
     [ await nAsync("用户ID") ]: "userid",
     [ await nAsync("备注") ]: "rem",
@@ -1196,7 +1201,6 @@ async function revertByIdsEfc() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "企微应用",
     "姓名",
     "用户ID",
     "备注",
