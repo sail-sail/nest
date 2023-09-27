@@ -107,6 +107,15 @@ async function getWhereQuery(
   if (search?.wxw_app_id_is_null) {
     whereQuery += ` and wxw_app_id_lbl.id is null`;
   }
+  if (search?.type !== undefined) {
+    whereQuery += ` and t.type = ${ args.push(search.type) }`;
+  }
+  if (search?.type === null) {
+    whereQuery += ` and t.type is null`;
+  }
+  if (isNotEmpty(search?.type_like)) {
+    whereQuery += ` and t.type like ${ args.push(sqlLike(search?.type_like) + "%") }`;
+  }
   if (search?.access_token !== undefined) {
     whereQuery += ` and t.access_token = ${ args.push(search.access_token) }`;
   }
@@ -288,6 +297,7 @@ export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
     id: await n("ID"),
     wxw_app_id: await n("企业微信应用"),
     wxw_app_id_lbl: await n("企业微信应用"),
+    type: await n("类型corp和contact"),
     access_token: await n("令牌"),
     token_time: await n("令牌创建时间"),
     token_time_lbl: await n("令牌创建时间"),
@@ -521,6 +531,13 @@ export async function validate(
     fieldComments.wxw_app_id,
   );
   
+  // 类型corp和contact
+  await validators.chars_max_length(
+    input.type,
+    10,
+    fieldComments.type,
+  );
+  
   // 令牌
   await validators.chars_max_length(
     input.access_token,
@@ -623,6 +640,9 @@ export async function create(
   if (input.wxw_app_id !== undefined) {
     sql += `,wxw_app_id`;
   }
+  if (input.type !== undefined) {
+    sql += `,type`;
+  }
   if (input.access_token !== undefined) {
     sql += `,access_token`;
   }
@@ -660,6 +680,9 @@ export async function create(
   }
   if (input.wxw_app_id !== undefined) {
     sql += `,${ args.push(input.wxw_app_id) }`;
+  }
+  if (input.type !== undefined) {
+    sql += `,${ args.push(input.type) }`;
   }
   if (input.access_token !== undefined) {
     sql += `,${ args.push(input.access_token) }`;
@@ -805,6 +828,12 @@ export async function updateById(
   if (input.wxw_app_id !== undefined) {
     if (input.wxw_app_id != oldModel.wxw_app_id) {
       sql += `wxw_app_id = ${ args.push(input.wxw_app_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.type !== undefined) {
+    if (input.type != oldModel.type) {
+      sql += `type = ${ args.push(input.type) },`;
       updateFldNum++;
     }
   }

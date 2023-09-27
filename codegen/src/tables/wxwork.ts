@@ -32,6 +32,11 @@ export default defineConfig({
         isEncrypt: true,
       },
       {
+        COLUMN_NAME: "contactsecret",
+        width: 220,
+        isEncrypt: true,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -58,6 +63,9 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "wxw_app_id",
+      },
+      {
+        COLUMN_NAME: "type",
       },
       {
         COLUMN_NAME: "access_token",

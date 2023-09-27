@@ -144,6 +144,12 @@ async function getWhereQuery(
   if (search?.corpsecret === null) {
     whereQuery += ` and t.corpsecret is null`;
   }
+  if (search?.contactsecret !== undefined) {
+    whereQuery += ` and t.contactsecret = ${ args.push(search.contactsecret) }`;
+  }
+  if (search?.contactsecret === null) {
+    whereQuery += ` and t.contactsecret is null`;
+  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -311,6 +317,8 @@ export async function findAll(
     const model = result[i];
     // 应用密钥
     model.corpsecret = await decrypt(model.corpsecret);
+    // 通讯录密钥
+    model.contactsecret = await decrypt(model.contactsecret);
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -347,6 +355,7 @@ export async function getFieldComments(): Promise<WxwAppFieldComment> {
     corpid: await n("企业ID"),
     agentid: await n("应用ID"),
     corpsecret: await n("应用密钥"),
+    contactsecret: await n("通讯录密钥"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -619,6 +628,13 @@ export async function validate(
     fieldComments.corpsecret,
   );
   
+  // 通讯录密钥
+  await validators.chars_max_length(
+    input.contactsecret,
+    100,
+    fieldComments.contactsecret,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -650,6 +666,10 @@ export async function create(
   // 应用密钥
   if (input.corpsecret) {
     input.corpsecret = await encrypt(input.corpsecret);
+  }
+  // 通讯录密钥
+  if (input.contactsecret) {
+    input.contactsecret = await encrypt(input.contactsecret);
   }
   
   const [
@@ -751,6 +771,9 @@ export async function create(
   if (input.corpsecret !== undefined) {
     sql += `,corpsecret`;
   }
+  if (input.contactsecret !== undefined) {
+    sql += `,contactsecret`;
+  }
   if (input.is_locked !== undefined) {
     sql += `,is_locked`;
   }
@@ -808,6 +831,9 @@ export async function create(
   }
   if (input.corpsecret !== undefined) {
     sql += `,${ args.push(input.corpsecret) }`;
+  }
+  if (input.contactsecret !== undefined) {
+    sql += `,${ args.push(input.contactsecret) }`;
   }
   if (input.is_locked !== undefined) {
     sql += `,${ args.push(input.is_locked) }`;
@@ -960,6 +986,10 @@ export async function updateById(
   if (input.corpsecret) {
     input.corpsecret = await encrypt(input.corpsecret);
   }
+  // 通讯录密钥
+  if (input.contactsecret) {
+    input.contactsecret = await encrypt(input.contactsecret);
+  }
   
   const [
     is_lockedDict, // 锁定
@@ -1039,6 +1069,12 @@ export async function updateById(
   if (input.corpsecret !== undefined) {
     if (input.corpsecret != oldModel.corpsecret) {
       sql += `corpsecret = ${ args.push(input.corpsecret) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.contactsecret !== undefined) {
+    if (input.contactsecret != oldModel.contactsecret) {
+      sql += `contactsecret = ${ args.push(input.contactsecret) },`;
       updateFldNum++;
     }
   }
