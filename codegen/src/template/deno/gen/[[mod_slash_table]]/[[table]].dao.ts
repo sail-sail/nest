@@ -1148,6 +1148,9 @@ export async function findByUnique(
     for (let k = 0; k < uniques.length; k++) {
       const unique = uniques[k];
       const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (!column) {
+        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
+      }
       const data_type = column.DATA_TYPE;
       const foreignKey = column.foreignKey;
     #>
