@@ -168,6 +168,16 @@ export async function wxwSyncUsr() {
   }
   wxwSyncUsrLock = true;
   let num = 0;
+  try {
+    num = await _wxwSyncUsr();
+  } finally {
+    wxwSyncUsrLock = false;
+  }
+  return num;
+}
+
+async function _wxwSyncUsr() {
+  let num = 0;
   // TODO 通过业务选项配置用哪个企微应用来同步企微用户
   const wxw_appModel = await findOneWxwApp({
     // lbl: "XXXXX",
