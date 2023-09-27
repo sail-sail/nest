@@ -3,7 +3,7 @@ import type {
 } from "#/types";
 
 /**
- * 发送企微工资条
+ * 企微发送条
  */
 export async function sendMsgWxw(
   ids: string[],
