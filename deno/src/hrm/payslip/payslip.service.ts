@@ -69,7 +69,7 @@ export async function sendMsgWxw(
     });
     if (!wxw_usrModel || !wxw_usrModel.userid) {
       error(`sendMsgWxw: 企微用户不存在: ${ payslipModel.lbl }`);
-      continue;
+      throw `企微用户不存在: ${ payslipModel.lbl }`;
     }
     const touser = wxw_usrModel.userid;
     const isSucc = await sendCardMsg({
