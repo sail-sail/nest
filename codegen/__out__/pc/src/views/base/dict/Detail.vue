@@ -452,11 +452,6 @@ function onInsert() {
   isReadonly = !isReadonly;
 }
 
-/** 键盘按 PageUp */
-async function onPageUp() {
-  await prevId();
-}
-
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -469,6 +464,11 @@ async function onRefresh() {
     };
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+}
+
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
 }
 
 /** 点击上一项 */
@@ -500,6 +500,11 @@ async function prevId() {
     },
   );
   return true;
+}
+
+/** 键盘按 PageDown */
+async function onPageDown() {
+  await nextId();
 }
 
 /** 点击下一项 */

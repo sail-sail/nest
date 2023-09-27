@@ -1206,10 +1206,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {
