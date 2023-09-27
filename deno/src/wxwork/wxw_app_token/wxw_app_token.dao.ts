@@ -33,12 +33,13 @@ export async function getAccessToken(
   const wxw_app_id = wx_appModel.id;
   const corpsecret = wx_appModel.corpsecret;
   if (isEmpty(corpsecret)) {
-    throw `未设置企业微信应用 corpsecret, corpid: ${ corpid }`;
+    throw `未设置企业微信应用 应用密钥, corpid: ${ corpid }`;
   }
   const dateNow = dayjs();
   const wx_app_tokenModel = await findOneWxwAppToken(
     {
       wxw_app_id: [ wxw_app_id ],
+      type: "corp",
     },
   );
   if (!wx_app_tokenModel) {
@@ -67,6 +68,7 @@ export async function getAccessToken(
       {
         id,
         wxw_app_id,
+        type: "corp",
         access_token,
         expires_in: data.expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
@@ -105,6 +107,111 @@ export async function getAccessToken(
     }
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 access_token 失败: ${ url }`;
+    }
+    const id = wx_app_tokenModel.id;
+    await updateByIdWxwAppToken(
+      id,
+      {
+        access_token: data.access_token,
+        expires_in: data.expires_in,
+        token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
+        tenant_id: wx_appModel.tenant_id!,
+      },
+    );
+  }
+  return access_token;
+}
+
+/**
+ * 获取企微通讯录token
+ */
+export async function getContactAccessToken(
+  corpid: string,
+  force = false,
+) {
+  const wx_appModel = await findOneWxwApp({
+    corpid,
+  });
+  if (!wx_appModel) {
+    throw `未设置企业微信应用, 企业ID: ${ corpid }`;
+  }
+  const wxw_app_id = wx_appModel.id;
+  const contactsecret = wx_appModel.contactsecret;
+  if (isEmpty(contactsecret)) {
+    throw `未设置企业微信应用 通讯录密钥, 企业ID: ${ corpid }`;
+  }
+  const dateNow = dayjs();
+  const wx_app_tokenModel = await findOneWxwAppToken(
+    {
+      wxw_app_id: [ wxw_app_id ],
+      type: "contact",
+    },
+  );
+  if (!wx_app_tokenModel) {
+    const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${
+      encodeURIComponent(corpid)
+    }&corpsecret=${
+      encodeURIComponent(contactsecret)
+    }`;
+    const res = await fetch(url);
+    const data: {
+      errcode: number;
+      errmsg: string;
+      access_token: string;
+      expires_in: number;
+    } = await res.json();
+    const access_token = data.access_token;
+    if (!access_token) {
+      error(data);
+      throw data;
+    }
+    if (isEmpty(access_token)) {
+      throw `企业微信应用 获取 通讯录密钥 失败: ${ url }`;
+    }
+    const id = shortUuidV4();
+    await createWxwAppToken(
+      {
+        id,
+        wxw_app_id,
+        type: "contact",
+        access_token,
+        expires_in: data.expires_in,
+        token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
+        tenant_id: wx_appModel.tenant_id!,
+      },
+    );
+    return access_token;
+  }
+  let access_token = wx_app_tokenModel.access_token;
+  const expires_in = wx_app_tokenModel.expires_in ?? 0;
+  const token_time = dayjs(wx_app_tokenModel.token_time);
+  if (
+    force
+    || !(expires_in > 0)
+    || !access_token
+    || !wx_app_tokenModel.token_time
+    || token_time.add(expires_in, "s").add(2, "m").isBefore(dateNow)
+  ) {
+    log(`企业微信应用 通讯录密钥 过期, 重新获取: ${ JSON.stringify(wx_app_tokenModel) }`);
+    const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${
+      encodeURIComponent(corpid)
+    }&corpsecret=${
+      encodeURIComponent(contactsecret)
+    }`;
+    const res = await fetch(url);
+    const data: {
+      errcode: number;
+      errmsg: string;
+      access_token: string;
+      expires_in: number;
+    } = await res.json();
+    access_token = data.access_token;
+    if (!access_token) {
+      error(data);
+      throw data;
+    }
+    if (isEmpty(access_token)) {
+      throw `企业微信应用 获取 通讯录密钥 失败: ${ url }`;
     }
     const id = wx_app_tokenModel.id;
     await updateByIdWxwAppToken(
@@ -185,7 +292,7 @@ export async function getuseridlist(
     force: false,
   },
 ): Promise<string[]> {
-  const access_token = await getAccessToken(corpid);
+  const access_token = await getContactAccessToken(corpid);
   const url = `https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token=${
     encodeURIComponent(access_token)
   }`;

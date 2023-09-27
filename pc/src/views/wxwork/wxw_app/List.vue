@@ -468,6 +468,15 @@
             </el-table-column>
           </template>
           
+          <!-- 通讯录密钥 -->
+          <template v-else-if="'contactsecret' === col.prop && (showBuildIn || builtInSearch?.contactsecret == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
             <el-table-column
@@ -713,6 +722,7 @@ const props = defineProps<{
   agentid?: string; // 应用ID
   agentid_like?: string; // 应用ID
   corpsecret?: string; // 应用密钥
+  contactsecret?: string; // 通讯录密钥
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
@@ -875,6 +885,14 @@ function getTableColumns(): ColumnType[] {
     {
       label: "应用密钥",
       prop: "corpsecret",
+      width: 220,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "通讯录密钥",
+      prop: "contactsecret",
       width: 220,
       align: "center",
       headerAlign: "center",
@@ -1149,6 +1167,7 @@ async function onImportExcel() {
     [ await nAsync("企业ID") ]: "corpid",
     [ await nAsync("应用ID") ]: "agentid",
     [ await nAsync("应用密钥") ]: "corpsecret",
+    [ await nAsync("通讯录密钥") ]: "contactsecret",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
@@ -1473,6 +1492,7 @@ async function initI18nsEfc() {
     "企业ID",
     "应用ID",
     "应用密钥",
+    "通讯录密钥",
     "锁定",
     "启用",
     "排序",

@@ -15,6 +15,8 @@ type WxwAppModel {
   agentid: String!
   "应用密钥"
   corpsecret: String!
+  "通讯录密钥"
+  contactsecret: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -39,6 +41,8 @@ type WxwAppFieldComment {
   agentid: String!
   "应用密钥"
   corpsecret: String!
+  "通讯录密钥"
+  contactsecret: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -63,6 +67,8 @@ input WxwAppInput {
   agentid: String
   "应用密钥"
   corpsecret: String
+  "通讯录密钥"
+  contactsecret: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -94,6 +100,8 @@ input WxwAppSearch {
   agentid_like: String
   "应用密钥"
   corpsecret: String
+  "通讯录密钥"
+  contactsecret: String
   "锁定"
   is_locked: [Int!]
   "启用"
