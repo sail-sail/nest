@@ -389,7 +389,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsOrg {
@@ -421,7 +421,9 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/base/org.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
     saveAsExcel(buffer, `${ await nAsync("组织") }${ await nsAsync("导入模板") }`);
   }
@@ -450,7 +452,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: OrgSearch, $sort: [SortInput!]) {
           findAllOrg(search: $search, sort: $sort) {
@@ -502,7 +504,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/base/org.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("组织"));
     } catch (err) {

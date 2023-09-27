@@ -768,7 +768,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldComments<#=Table_Up#> {<#
@@ -930,7 +930,9 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
     saveAsExcel(buffer, `${ await nAsync("<#=table_comment#>") }${ await nsAsync("导入模板") }`);
   }
@@ -959,7 +961,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: <#=searchName#>, $sort: [SortInput!]) {
           findAll<#=Table_Up#>(search: $search, sort: $sort) {<#
@@ -1155,7 +1157,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("<#=table_comment#>"));
     } catch (err) {
