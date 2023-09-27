@@ -192,7 +192,7 @@
         <template #icon>
           <ElIconPromotion />
         </template>
-        <span>{{ ns('发送企微工资条') }}</span>
+        <span>{{ ns('企微发送条') }}</span>
       </el-button>
       
       <el-button
@@ -741,7 +741,7 @@ const emit = defineEmits<{
 }>();
 
 /**
- * 发送企微工资条
+ * 企微发送条
  */
 async function onSendMsgWxw() {
   if (selectedIds.length === 0) {
