@@ -33,6 +33,7 @@ export interface WxwAppTokenFieldComment {
   id: string;
   wxw_app_id: string;
   wxw_app_id_lbl: string;
+  type: string;
   access_token: string;
   token_time: string;
   token_time_lbl: string;
