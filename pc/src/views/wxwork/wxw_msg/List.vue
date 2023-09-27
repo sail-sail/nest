@@ -503,7 +503,7 @@ import type {
 } from "#/types";
 
 import {
-  getWxwAppList,
+  getWxwAppList, // 企微应用
 } from "./Api";
 
 defineOptions({
@@ -577,6 +577,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -695,6 +696,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<WxwMsgModel>(
   $$(tableRef),
   {
@@ -991,6 +993,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1001,6 +1004,7 @@ async function openView() {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1056,6 +1060,7 @@ async function onForceDeleteByIds() {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1118,10 +1123,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {

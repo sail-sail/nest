@@ -159,6 +159,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/optbiz",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "业务选项",
+        component: () => import("@/views/base/optbiz/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/base/options",
     component: Layout1,
     children: [

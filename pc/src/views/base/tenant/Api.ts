@@ -508,7 +508,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsTenant {
@@ -550,7 +550,9 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/base/tenant.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
     saveAsExcel(buffer, `${ await nAsync("租户") }${ await nsAsync("导入模板") }`);
   }
@@ -579,7 +581,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: TenantSearch, $sort: [SortInput!]) {
           findAllTenant(search: $search, sort: $sort) {
@@ -643,7 +645,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/base/tenant.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("租户"));
     } catch (err) {
