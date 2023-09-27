@@ -67,8 +67,6 @@ export interface WxwUsrInput extends WxwUsrInputType {
 
 export interface WxwUsrFieldComment {
   id: string;
-  wxw_app_id: string;
-  wxw_app_id_lbl: string;
   lbl: string;
   userid: string;
   mobile: string;

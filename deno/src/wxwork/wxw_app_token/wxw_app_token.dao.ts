@@ -42,7 +42,11 @@ export async function getAccessToken(
     },
   );
   if (!wx_app_tokenModel) {
-    const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${ corpid }&corpsecret=${ corpsecret }`;
+    const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${
+      encodeURIComponent(corpid)
+    }&corpsecret=${
+      encodeURIComponent(corpsecret)
+    }`;
     const res = await fetch(url);
     const data: {
       errcode: number;
@@ -82,7 +86,11 @@ export async function getAccessToken(
     || token_time.add(expires_in, "s").add(2, "m").isBefore(dateNow)
   ) {
     log(`企业微信应用 access_token 过期, 重新获取: ${ JSON.stringify(wx_app_tokenModel) }`);
-    const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${ corpid }&corpsecret=${ corpsecret }`;
+    const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${
+      encodeURIComponent(corpid)
+    }&corpsecret=${
+      encodeURIComponent(corpsecret)
+    }`;
     const res = await fetch(url);
     const data: {
       errcode: number;
@@ -98,7 +106,7 @@ export async function getAccessToken(
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 access_token 失败: ${ url }`;
     }
-    const id = wx_appModel.id;
+    const id = wx_app_tokenModel.id;
     await updateByIdWxwAppToken(
       id,
       {
@@ -131,9 +139,9 @@ export async function getuserinfoByCode(
 }> {
   const access_token = await getAccessToken(corpid);
   const url = `https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=${
-    access_token
+    encodeURIComponent(access_token)
   }&code=${
-    code
+    encodeURIComponent(code)
   }`;
   const res = await fetch(
     url,
@@ -147,16 +155,14 @@ export async function getuserinfoByCode(
     userid: string;
     user_ticket: string;
   } = await res.json();
-  if (data.errcode === 42001) {
-    if (opt.force) {
-      return await getuserinfoByCode(
-        corpid,
-        code,
-        {
-          force: false,
-        },
-      );
-    }
+  if (data.errcode === 42001 && opt.force) {
+    return await getuserinfoByCode(
+      corpid,
+      code,
+      {
+        force: false,
+      },
+    );
   }
   if (data.errcode != 0) {
     error(data);
@@ -166,6 +172,58 @@ export async function getuserinfoByCode(
     userid: data.userid,
     user_ticket: data.user_ticket,
   };
+}
+
+/**
+ * 获取成员ID列表
+ */
+export async function getuseridlist(
+  corpid: string,
+  opt: {
+    force: boolean;
+  } = {
+    force: false,
+  },
+): Promise<string[]> {
+  const access_token = await getAccessToken(corpid);
+  const url = `https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token=${
+    encodeURIComponent(access_token)
+  }`;
+  const res = await fetch(
+    url,
+    {
+      method: "POST",
+    },
+  );
+  const data: {
+    errcode: number;
+    errmsg: string;
+    next_cursor?: string;
+    dept_user: {
+      userid: string;
+      department: number;
+    }[];
+  } = await res.json();
+  if (data.errcode === 42001 && opt.force) {
+    return await getuseridlist(
+      corpid,
+      {
+        force: false,
+      },
+    );
+  }
+  if (data.errcode != 0) {
+    error(data);
+    throw data.errmsg;
+  }
+  const userids: string[] = [ ];
+  for (const dept_user of data.dept_user) {
+    if (userids.includes(dept_user.userid)) {
+      continue;
+    }
+    userids.push(dept_user.userid);
+  }
+  return userids;
 }
 
 /**
@@ -183,9 +241,9 @@ export async function getuser(
 ): Promise<typeof data> {
   const access_token = await getAccessToken(corpid);
   const url = `https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=${
-    access_token
+    encodeURIComponent(access_token)
   }&userid=${
-    userid
+    encodeURIComponent(userid)
   }`;
   const res = await fetch(
     url,
@@ -237,16 +295,14 @@ export async function getuser(
     // deno-lint-ignore no-explicit-any
     direct_leader: any[];
   } = await res.json();
-  if (data.errcode === 42001) {
-    if (opt.force) {
-      return await getuser(
-        corpid,
-        userid,
-        {
+  if (data.errcode === 42001 && opt.force) {
+    return await getuser(
+      corpid,
+      userid,
+      {
         force: false,
-        },
-      );
-    }
+      },
+    );
   }
   if (data.errcode != 0) {
     error(data);
