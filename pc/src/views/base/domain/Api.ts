@@ -35,6 +35,7 @@ export async function findAll(
       query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDomain(search: $search, page: $page, sort: $sort) {
           id
+          protocol
           lbl
           is_locked
           is_locked_lbl
@@ -170,6 +171,7 @@ export async function findById(
       query($id: String!) {
         findByIdDomain(id: $id) {
           id
+          protocol
           lbl
           is_locked
           is_locked_lbl
@@ -419,10 +421,11 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsDomain {
+            protocol
             lbl
             is_locked_lbl
             is_default_lbl
@@ -453,7 +456,9 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/base/domain.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
     saveAsExcel(buffer, `${ await nAsync("域名") }${ await nsAsync("导入模板") }`);
   }
@@ -482,11 +487,12 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: DomainSearch, $sort: [SortInput!]) {
           findAllDomain(search: $search, sort: $sort) {
             id
+            protocol
             lbl
             is_locked
             is_locked_lbl
@@ -506,6 +512,7 @@ export function useExportExcel(routePath: string) {
             update_time_lbl
           }
           getFieldCommentsDomain {
+            protocol
             lbl
             is_locked_lbl
             is_default_lbl
@@ -538,7 +545,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/base/domain.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("域名"));
     } catch (err) {

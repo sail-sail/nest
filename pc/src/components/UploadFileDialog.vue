@@ -146,7 +146,7 @@
   <input
     ref="fileRef"
     type="file"
-    un-display-none
+    un-hidden
     @change="inputChg"
   />
 </el-dialog>

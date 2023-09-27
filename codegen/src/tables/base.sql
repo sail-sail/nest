@@ -23,6 +23,7 @@ CREATE TABLE if not exists `base_tenant` (
 drop table if exists `base_domain`;
 CREATE TABLE if not exists `base_domain` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `protocol` varchar(10) NOT NULL DEFAULT 'https' COMMENT '协议',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_default` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '默认,dict:is_default',
@@ -385,7 +386,7 @@ CREATE TABLE if not exists `base_background_task` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='后台任务';
 
------------------------------------------------------------------------- 选项
+------------------------------------------------------------------------ 系统选项
 drop table if exists `base_options`;
 CREATE TABLE if not exists `base_options` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -407,6 +408,30 @@ CREATE TABLE if not exists `base_options` (
   INDEX (`lbl`, `ky`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='系统选项';
+
+------------------------------------------------------------------------ 业务选项
+drop table if exists `base_optbiz`;
+CREATE TABLE if not exists `base_optbiz` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
+  `ky` varchar(50) NOT NULL DEFAULT '' COMMENT '键',
+  `val` varchar(100) NOT NULL DEFAULT '' COMMENT '值',
+  `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
+  `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_sys` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '系统字段,dict:is_sys',
+  `version` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '版本号',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`lbl`, `ky`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='业务选项';
 
 ------------------------------------------------------------------------ 操作记录
 drop table if exists `base_operation_record`;
