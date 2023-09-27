@@ -2,6 +2,9 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -233,9 +236,6 @@ import type {
   BackgroundTaskInput,
 } from "#/types";
 
-import {
-} from "./Api";
-
 const emit = defineEmits<{
   nextId: [
     {
@@ -439,6 +439,11 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -453,9 +458,15 @@ async function onRefresh() {
   }
 }
 
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -483,9 +494,15 @@ async function prevId() {
   return true;
 }
 
+/** 键盘按 PageDown */
+async function onPageDown() {
+  await nextId();
+}
+
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

@@ -82,6 +82,15 @@ async function getWhereQuery(
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.protocol !== undefined) {
+    whereQuery += ` and t.protocol = ${ args.push(search.protocol) }`;
+  }
+  if (search?.protocol === null) {
+    whereQuery += ` and t.protocol is null`;
+  }
+  if (isNotEmpty(search?.protocol_like)) {
+    whereQuery += ` and t.protocol like ${ args.push(sqlLike(search?.protocol_like) + "%") }`;
+  }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
   }
@@ -376,6 +385,7 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
   const n = initN(route_path);
   const fieldComments: DomainFieldComment = {
     id: await n("ID"),
+    protocol: await n("协议"),
     lbl: await n("名称"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
@@ -595,6 +605,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 协议
+  await validators.chars_max_length(
+    input.protocol,
+    10,
+    fieldComments.protocol,
+  );
+  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -725,6 +742,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.protocol !== undefined) {
+    sql += `,protocol`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -759,6 +779,9 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (input.protocol !== undefined) {
+    sql += `,${ args.push(input.protocol) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -891,6 +914,12 @@ export async function updateById(
     update base_domain set
   `;
   let updateFldNum = 0;
+  if (input.protocol !== undefined) {
+    if (input.protocol != oldModel.protocol) {
+      sql += `protocol = ${ args.push(input.protocol) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;

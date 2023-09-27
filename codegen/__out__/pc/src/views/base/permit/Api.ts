@@ -392,7 +392,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsPermit {
@@ -425,7 +425,9 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/base/permit.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
     saveAsExcel(buffer, `${ await nAsync("按钮权限") }${ await nsAsync("导入模板") }`);
   }
@@ -454,7 +456,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: PermitSearch, $sort: [SortInput!]) {
           findAllPermit(search: $search, sort: $sort) {
@@ -504,7 +506,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/base/permit.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("按钮权限"));
     } catch (err) {
