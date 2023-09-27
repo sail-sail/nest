@@ -8,8 +8,6 @@ git config --global core.autocrlf false
 ```sql
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS nest CHARSET utf8mb4;
--- 修改密码策略
-set global validate_password_policy=0;
 -- 创建用户
 create user 'nest'@'%' identified by 'umbdflXHI0osat2v';
 -- 设置用户密码不过期

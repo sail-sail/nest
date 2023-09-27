@@ -734,6 +734,14 @@ export function useSelect<T = any>(
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
   
+  function tableFocus() {
+    const tableEl = tableRef.value?.$el as HTMLDivElement;
+    if (!tableEl) {
+      return;
+    }
+    tableEl.focus();
+  }
+  
   onUnmounted(function() {
     watch1Stop();
     watch2Stop();
@@ -751,6 +759,7 @@ export function useSelect<T = any>(
     onRowHome,
     onRowEnd,
     rowClassName,
+    tableFocus,
   });
 }
 
@@ -912,6 +921,14 @@ export function useSelectOne<T>(
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
   
+  function tableFocus() {
+    const tableEl = tableRef.value?.$el as HTMLDivElement;
+    if (!tableEl) {
+      return;
+    }
+    tableEl.focus();
+  }
+  
   onUnmounted(function() {
     watch1Stop();
     watch2Stop();
@@ -923,6 +940,7 @@ export function useSelectOne<T>(
     selectChg,
     onRow,
     rowClassName,
+    tableFocus,
   });
 }
 

@@ -2,6 +2,9 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -285,13 +288,11 @@ import {
 import type {
   UsrInput,
   OrgModel,
-  DeptModel,
   RoleModel,
 } from "#/types";
 
 import {
   getOrgList,
-  getDeptList,
   getRoleList,
 } from "./Api";
 
@@ -539,6 +540,16 @@ watch(
   },
 );
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -557,6 +568,7 @@ async function onRefresh() {
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -587,6 +599,7 @@ async function prevId() {
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

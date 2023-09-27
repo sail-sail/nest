@@ -51,7 +51,7 @@
     "@dcloudio/uni-mp-toutiao": "3.0.0-3081220230817001",
     "@dcloudio/uni-mp-weixin": "3.0.0-3081220230817001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-3081220230817001",
-    "dayjs": "1.11.9",
+    "dayjs": "1.11.10",
     "graphql": "16.8.1",
     "graphql-combine-query": "1.2.4",
     "numeral": "2.0.6",
@@ -67,11 +67,11 @@
     "@dcloudio/uni-cli-shared": "3.0.0-3081220230817001",
     "@dcloudio/uni-stacktracey": "3.0.0-3081220230817001",
     "@dcloudio/vite-plugin-uni": "3.0.0-3081220230817001",
-    "@types/node": "20.6.4",
-    "@typescript-eslint/eslint-plugin": "6.7.2",
-    "@typescript-eslint/parser": "6.7.2",
+    "@types/node": "20.7.0",
+    "@typescript-eslint/eslint-plugin": "6.7.3",
+    "@typescript-eslint/parser": "6.7.3",
     "@uni-helper/uni-app-types": "0.5.11",
-    "@unocss/preset-attributify": "0.56.1",
+    "@unocss/preset-attributify": "0.56.4",
     "@vue-macros/reactivity-transform": "0.3.23",
     "@vue/runtime-core": "3.3.4",
     "@vue/runtime-dom": "3.3.4",
@@ -86,7 +86,7 @@
     "terser": "5.20.0",
     "tmui-cli": "1.1.2",
     "typescript": "5.2.2",
-    "unocss": "0.56.1",
+    "unocss": "0.56.4",
     "unocss-applet": "0.5.5",
     "unplugin-auto-import": "0.16.6",
     "unplugin-icons": "0.17.0",
@@ -96,6 +96,6 @@
     "vite-plugin-vue-inspector": "3.7.1",
     "vitest": "0.34.5",
     "vue-router": "4.2.5",
-    "vue-tsc": "1.8.13"
+    "vue-tsc": "1.8.15"
   }
 }

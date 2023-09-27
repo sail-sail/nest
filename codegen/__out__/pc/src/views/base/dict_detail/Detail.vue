@@ -2,6 +2,9 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -274,8 +277,8 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 255,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 255) }`,
+        max: 100,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
     // 值
@@ -286,8 +289,8 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 255,
-        message: `${ n("值") } ${ await nsAsync("长度不能超过 {0}", 255) }`,
+        max: 100,
+        message: `${ n("值") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
     // 锁定
@@ -453,6 +456,16 @@ watch(
   },
 );
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -470,6 +483,7 @@ async function onRefresh() {
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -500,6 +514,7 @@ async function prevId() {
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

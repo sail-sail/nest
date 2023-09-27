@@ -1367,6 +1367,10 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (table === foreignTable) continue;
   if (foreignTableUpArr.includes(foreignTableUp)) continue;
+  const search = column.search;
+  if (!search) {
+    continue;
+  }
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
@@ -1382,6 +1386,7 @@ const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
 const foreignKeyCommentArr = [ ];
+const foreignKeyArrColumns = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1403,11 +1408,22 @@ for (let i = 0; i < columns.length; i++) {
     if (!foreignTableArr.includes(foreignTable)) {
       foreignTableArr.push(foreignTable);
       foreignKeyCommentArr.push(column_comment);
+      foreignKeyArrColumns.push(column);
     }
   }
 }
 #><#
-if (foreignTableArr.length > 0) {
+if (
+  foreignKeyArrColumns.some((item) => {
+    const foreignKey = item.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      return false;
+    }
+    return true;
+  })
+) {
 #>
 
 import {<#
@@ -1417,8 +1433,15 @@ import {<#
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const column_comment = foreignKeyCommentArr[i];
+    const column = foreignKeyArrColumns[i];
+    const foreignKey = column.foreignKey;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      continue;
+    }
   #>
-  get<#=Foreign_Table_Up#>List,<#
+  get<#=Foreign_Table_Up#>List, // <#=column_comment#><#
   }
   #>
 } from "./Api";<#
@@ -1584,6 +1607,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -1820,6 +1844,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
@@ -2321,6 +2346,7 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2355,6 +2381,7 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2427,6 +2454,7 @@ async function onImportExcel() {
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
   });
+  tableFocus();
   if (!file) {
     return;
   }
@@ -2654,6 +2682,7 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2704,6 +2733,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2716,6 +2746,7 @@ if (opts.noDelete !== true) {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2775,6 +2806,7 @@ async function onForceDeleteByIds() {
 
 /** 点击启用或者禁用 */
 async function onEnableByIds(is_enabled: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2808,6 +2840,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 
 /** 点击锁定或者解锁 */
 async function onLockByIds(is_locked: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2841,6 +2874,7 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2886,6 +2920,7 @@ async function onOpenForeignTabs() {
   }
   const id = selectedIds[0];
   await openForeignTabs(id, "");
+  tableFocus();
 }<#
 }
 #>
@@ -2900,6 +2935,7 @@ async function openForeignTabs(id: string, title: string) {
       id,
     },
   });
+  tableFocus();
 }<#
 }
 #>

@@ -541,7 +541,6 @@ import {
 import type {
   OperationRecordModel,
   OperationRecordSearch,
-  UsrModel,
 } from "#/types";
 
 defineOptions({
@@ -614,6 +613,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -740,6 +740,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<OperationRecordModel>(
   $$(tableRef),
   {
@@ -1071,6 +1072,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1081,6 +1083,7 @@ async function openView() {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1136,6 +1139,7 @@ async function onForceDeleteByIds() {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }

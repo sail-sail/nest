@@ -2,6 +2,9 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -34,7 +37,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -44,6 +47,19 @@
         :validate-on-rule-change="false"
         @keyup.enter="onSave"
       >
+        
+        <template v-if="(showBuildIn || builtInModel?.protocol == null)">
+          <el-form-item
+            :label="n('协议')"
+            prop="protocol"
+          >
+            <CustomInput
+              v-model="dialogModel.protocol"
+              :placeholder="`${ ns('请输入') } ${ n('协议') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
@@ -75,7 +91,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-1"
+            un-grid="col-span-2"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -173,9 +189,6 @@ import {
 import type {
   DomainInput,
 } from "#/types";
-
-import {
-} from "./Api";
 
 const emit = defineEmits<{
   nextId: [
@@ -277,6 +290,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DomainInput = {
+    protocol: "https",
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
@@ -401,6 +415,16 @@ watch(
   },
 );
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -418,6 +442,7 @@ async function onRefresh() {
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -448,6 +473,7 @@ async function prevId() {
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */
@@ -560,6 +586,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
+    "协议",
     "名称",
     "锁定",
     "默认",

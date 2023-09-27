@@ -26,7 +26,7 @@ async function copyEnv() {
   await Deno.copyFile(denoDir+"/ecosystem.config.js", `${ buildDir }/ecosystem.config.js`);
   await Deno.copyFile(denoDir+"/.env.prod", `${ buildDir }/.env.prod`);
   await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
-  await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
+  // await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
   await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
 }
 

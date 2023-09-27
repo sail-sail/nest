@@ -137,6 +137,11 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "protocol",
+        width: 100,
+        fixed: "left",
+      },
+      {
         COLUMN_NAME: "lbl",
         width: 280,
         fixed: "left",
@@ -714,6 +719,64 @@ export default defineConfig({
   },
   // 系统选项
   base_options: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "ky" ],
+      ],
+    },
+    columns: [
+      {
+        COLUMN_NAME: "lbl",
+        search: true,
+        width: 140,
+        align: "left",
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "ky",
+        require: true,
+        search: true,
+        width: 140,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "val",
+        search: true,
+        width: 140,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "is_locked",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "version",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 业务选项
+  base_optbiz: {
     opts: {
       cache: true,
       uniques: [
