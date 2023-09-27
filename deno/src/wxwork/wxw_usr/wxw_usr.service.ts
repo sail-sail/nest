@@ -1,11 +1,20 @@
+import {
+  log,
+} from "/lib/context.ts";
+
 import type {
   WxwLoginByCodeInput,
   WxwLoginByCode,
 } from "/gen/types.ts";
 
+import type {
+  WxwUsrInput,
+} from "/gen/wxwork/wxw_usr/wxw_usr.model.ts";
+
 import {
   getuserinfoByCode,
   getuser,
+  getuseridlist,
 } from "/src/wxwork/wxw_app_token/wxw_app_token.dao.ts";
 
 import {
@@ -16,6 +25,7 @@ import {
 } from "/gen/base/usr/usr.dao.ts"
 
 import {
+  findAll as findAllWxwUsr,
   findOne as findOneWxwUsr,
   create as createWxwUsr,
   updateById as updateWxwUsrById,
@@ -63,14 +73,12 @@ export async function wxwLoginByCode(
   const tenant_id = wxw_appModel.tenant_id!;
   // 企业微信用户
   const wxw_usrModel = await findOneWxwUsr({
-    wxw_app_id: [ wxw_appModel.id ],
     lbl: name,
   });
   if (!wxw_usrModel) {
     const id = shortUuidV4();
     await createWxwUsr({
       id,
-      wxw_app_id: wxw_appModel.id,
       userid,
       lbl: name,
       position,
@@ -147,4 +155,53 @@ export async function wxwLoginByCode(
     tenant_id,
     lang,
   };
+}
+
+let wxwSyncUsrLock = false;
+
+/**
+ * 企业微信同步企微用户
+ */
+export async function wxwSyncUsr() {
+  if (wxwSyncUsrLock) {
+    throw "企微用户正在同步中, 请稍后再试";
+  }
+  wxwSyncUsrLock = true;
+  let num = 0;
+  // TODO 通过业务选项配置用哪个企微应用来同步企微用户
+  const wxw_appModel = await findOneWxwApp({
+    // lbl: "XXXXX",
+  });
+  if (!wxw_appModel) {
+    throw new Error("未配置企微应用");
+  }
+  if (!wxw_appModel.is_enabled) {
+    throw new Error(`企微应用已禁用 ${ wxw_appModel.lbl }`);
+  }
+  const corpid = wxw_appModel.corpid;
+  const userids = await getuseridlist(corpid);
+  log(`企微应用 ${ wxw_appModel.lbl } 同步企微用户, 获取到企微用户数量: ${ userids.length }`);
+  const wxw_usrModels = await findAllWxwUsr();
+  const userids4add = userids.filter((userid) => {
+    return !wxw_usrModels.some((wxw_usrModel) => {
+      return wxw_usrModel.userid === userid;
+    });
+  });
+  const wxw_usrModels4add: WxwUsrInput[] = [ ];
+  for (let i = 0; i < userids4add.length; i++) {
+    const userid = userids4add[i];
+    const { name } = await getuser(corpid, userid);
+    wxw_usrModels4add.push({
+      id: shortUuidV4(),
+      userid,
+      lbl: name,
+      tenant_id: wxw_appModel.tenant_id!,
+    });
+  }
+  for (let i = 0; i < wxw_usrModels4add.length; i++) {
+    const item = wxw_usrModels4add[i];
+    await createWxwUsr(item);
+    num++;
+  }
+  return num;
 }

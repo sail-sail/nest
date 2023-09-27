@@ -48,26 +48,6 @@
         @keyup.enter="onSave"
       >
         
-        <template v-if="(showBuildIn || builtInModel?.wxw_app_id == null)">
-          <el-form-item
-            :label="n('企业微信应用')"
-            prop="wxw_app_id"
-          >
-            <CustomSelect
-              v-model="dialogModel.wxw_app_id"
-              :method="getWxwAppList"
-              :options-map="((item: WxwAppModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('企业微信应用') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('姓名')"
@@ -194,12 +174,7 @@ import {
 
 import type {
   WxwUsrInput,
-  WxwAppModel,
 } from "#/types";
-
-import {
-  getWxwAppList,
-} from "./Api";
 
 const emit = defineEmits<{
   nextId: [
@@ -566,7 +541,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "企业微信应用",
     "姓名",
     "用户ID",
     "备注",
