@@ -64,7 +64,6 @@ export async function sendMsgWxw(
       continue;
     }
     const wxw_usrModel = await findOneWxwUsr({
-      wxw_app_id: [ wxw_app_id ],
       lbl: payslipModel.lbl,
     });
     if (!wxw_usrModel || !wxw_usrModel.userid) {
