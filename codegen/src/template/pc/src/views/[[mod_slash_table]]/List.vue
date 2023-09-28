@@ -2440,6 +2440,15 @@ async function onImportExcel() {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     const foreignKey = column.foreignKey;
+    if (
+      [
+        "create_usr_id", "create_time", "update_usr_id", "update_time",
+        "is_default",
+      ].includes(column_name)
+      || column.readonly
+    ) {
+      continue;
+    }
     let column_name2 = column_name;
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
@@ -2453,6 +2462,7 @@ async function onImportExcel() {
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
   tableFocus();
   if (!file) {
@@ -2468,7 +2478,7 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [<#
+        key_types: {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -2489,14 +2499,35 @@ async function onImportExcel() {
             if (column_comment.indexOf("[") !== -1) {
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
-            if (![ "datetime", "date" ].includes(data_type)) {
+            const foreignKey = column.foreignKey;
+            if (
+              [
+                "create_usr_id", "create_time", "update_usr_id", "update_time",
+                "is_default",
+              ].includes(column_name)
+              || column.readonly
+            ) {
               continue;
             }
+            let column_name2 = column_name;
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+            ) {
+              column_name2 = `${column_name}_lbl`;
+            }
+            let data_type2 = "string";
+            if ([ "datetime", "date" ].includes(data_type)) {
+              data_type2 = "date";
+            } else if (data_type === "int" || data_type === "tinyint" || data_type === "double") {
+              data_type2 = "number";
+            } else if (data_type === "varchar" || data_type === "text" || data_type === "char" || data_type === "decimal") {
+              data_type2 = "string";
+            }
           #>
-          await nAsync("<#=column_comment#>"),<#
+          "<#=column_name2#>": "<#=data_type2#>",<#
           }
           #>
-        ],
+        },
       },
     );
     const res = await importModels(

@@ -1,5 +1,7 @@
 import saveAs from "file-saver";
 
+import dayjs from "dayjs";
+
 /**
  * 第一行作为表头, 获得文件数据
  */
@@ -8,7 +10,7 @@ import saveAs from "file-saver";
   header?: {[key: string]: string},
   opt?: {
     type?: "xlsx" | "csv";
-    date_keys?: string[];
+    key_types: { [key: string]: "string" | "number" | "date" };
   },
 ): Promise<T[]> {
   const XLSX = await import("xlsx");
@@ -29,20 +31,29 @@ import saveAs from "file-saver";
       const key = String(keys[k]).trim();
       if (!key) continue;
       let val = vals[key];
-      if (opt?.date_keys && opt.date_keys.includes(key)) {
-        val = num2Date(val);
-      } else {
-        if (typeof val === "string") {
-          val = val.trim();
-        }
-      }
+      const headerKey = header && header[key] || key;
       if (val !== "-") {
-        if (header && header[key]) {
-          (row as any)[header[key]] = val;
+        if (headerKey) {
+          (row as any)[headerKey] = val;
         }
         // else {
         //   (row as any)[key] = val;
         // }
+      }
+      const type = opt?.key_types[headerKey] || "string";
+      if (type === "number") {
+        (row as any)[headerKey] = Number(val);
+        if (isNaN((row as any)[headerKey])) {
+          (row as any)[headerKey] = undefined;
+        }
+      } else if (type === "date") {
+        (row as any)[headerKey] = num2Date(val);
+      } else {
+        if (val instanceof Date) {
+          val = dayjs(val).format("YYYY-MM-DD HH:mm:ss");
+        } else {
+          (row as any)[headerKey] = String(val);
+        }
       }
     }
     rows.push(row);
