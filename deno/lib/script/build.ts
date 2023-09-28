@@ -1,6 +1,8 @@
 import "/lib/env.ts";
 import { getEnv, getEnvs } from "/lib/env.ts";
 
+import { copyDir } from "/lib/util/fs_util.ts";
+
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
   if (index === -1) {
@@ -40,7 +42,7 @@ async function gqlgen() {
       "gqlgen",
     ],
     stderr: "piped",
-    stdout: "null",
+    stdout: "piped",
   });
   const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
@@ -168,7 +170,7 @@ async function compile() {
       cwd: denoDir,
       args: cmds,
       stderr: "piped",
-      stdout: "null",
+      stdout: "piped",
     });
     const { stderr } = await command.output();
     const stderrStr = new TextDecoder().decode(stderr);
@@ -189,7 +191,7 @@ async function pc() {
       "build",
     ],
     stderr: "piped",
-    stdout: "null",
+    stdout: "piped",
   });
   const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
@@ -210,7 +212,7 @@ async function uni() {
       "build:h5",
     ],
     stderr: "piped",
-    stdout: "null",
+    stdout: "piped",
   });
   const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
@@ -222,7 +224,8 @@ async function uni() {
   // deno-lint-ignore no-empty
   } catch (_err) {
   }
-  await Deno.rename(`${ uniDir }/dist/build/h5/`, `${ buildDir }/../uni/`);
+  await Deno.mkdir(`${ buildDir }/../uni/`, { recursive: true });
+  await copyDir(`${ uniDir }/dist/build/h5/`, `${ buildDir }/../uni/`);
 }
 
 async function docs() {
@@ -234,7 +237,7 @@ async function docs() {
       "docs:build",
     ],
     stderr: "piped",
-    stdout: "null",
+    stdout: "piped",
   });
   const { stderr } = await command.output();
   const stderrStr = new TextDecoder().decode(stderr);
@@ -252,7 +255,7 @@ async function publish() {
       "publish",
     ],
     stderr: "piped",
-    stdout: "null",
+    stdout: "piped",
   });
   const { stderr } = await command.output();
   if (stderr) {
