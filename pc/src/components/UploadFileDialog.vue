@@ -146,6 +146,7 @@
   <input
     ref="fileRef"
     type="file"
+    :accept="accept"
     un-hidden
     @change="inputChg"
   />
@@ -164,6 +165,8 @@ let dialogTitle = $ref(ns("上传"));
 let dialogVisible = $ref(false);
 
 let template = $ref(true);
+
+let accept = $ref<string>();
 
 const emit = defineEmits<{
   downloadImportTemplate: [],
@@ -184,6 +187,7 @@ async function showDialog(
     title?: string,
     template?: boolean,
     templateName?: string,
+    accept?: string,
   },
 ) {
   if (arg) {
@@ -191,6 +195,9 @@ async function showDialog(
   }
   if (arg?.template != null) {
     template = arg.template;
+  }
+  if (arg?.accept != null) {
+    accept = arg.accept;
   }
   
   fileInfo = {
