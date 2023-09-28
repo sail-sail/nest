@@ -1289,6 +1289,7 @@ async function onImportExcel() {
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
   tableFocus();
   if (!file) {
@@ -1304,8 +1305,18 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [
-        ],
+        key_types: {
+          "img": "string",
+          "lbl": "string",
+          "username": "string",
+          "default_org_id_lbl": "string",
+          "is_locked_lbl": "number",
+          "is_enabled_lbl": "number",
+          "org_ids_lbl": "string",
+          "dept_ids_lbl": "string",
+          "role_ids_lbl": "string",
+          "rem": "string",
+        },
       },
     );
     const res = await importModels(

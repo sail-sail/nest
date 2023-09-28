@@ -434,7 +434,7 @@ export function useDownloadImportTemplate(routePath: string) {
         data,
       },
     );
-    saveAsExcel(buffer, `${ await nAsync("系统选项") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("系统选项") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,

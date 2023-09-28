@@ -537,7 +537,7 @@ export function equalsByUnique(
     return false;
   }
   if (
-    oldModel.pay_month === model.pay_month &&
+    dayjs(oldModel.pay_month).isSame(model.pay_month, "month") &&
     oldModel.lbl === model.lbl
   ) {
     return true;
@@ -547,19 +547,20 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {PayslipInput} model
+ * @param {PayslipInput} input
  * @param {PayslipModel} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: PayslipInput,
+  input: PayslipInput,
   oldModel: PayslipModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
+    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
@@ -568,10 +569,13 @@ export async function checkByUnique(
       const result = await updateById(
         oldModel.id,
         {
-          ...model,
+          ...input,
           id: undefined,
         },
-        options
+        {
+          ...options,
+          isEncrypt: false,
+        },
       );
       return result;
     }
@@ -781,29 +785,32 @@ export async function create(
   input: PayslipInput,
   options?: {
     uniqueType?: UniqueType;
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "hrm_payslip";
   const method = "create";
-  // 应发工资(元)
-  if (input.gross_pay) {
-    input.gross_pay = await encrypt(input.gross_pay);
-  }
-  // 代缴社保(元)
-  if (input.social_security) {
-    input.social_security = await encrypt(input.social_security);
-  }
-  // 代缴个税(元)
-  if (input.individual_tax) {
-    input.individual_tax = await encrypt(input.individual_tax);
-  }
-  // 个人自付(元)
-  if (input.self_pay) {
-    input.self_pay = await encrypt(input.self_pay);
-  }
-  // 实发工资(元)
-  if (input.net_pay) {
-    input.net_pay = await encrypt(input.net_pay);
+  if (options?.isEncrypt !== false) {
+    // 应发工资(元)
+    if (input.gross_pay != null) {
+      input.gross_pay = await encrypt(input.gross_pay);
+    }
+    // 代缴社保(元)
+    if (input.social_security != null) {
+      input.social_security = await encrypt(input.social_security);
+    }
+    // 代缴个税(元)
+    if (input.individual_tax != null) {
+      input.individual_tax = await encrypt(input.individual_tax);
+    }
+    // 个人自付(元)
+    if (input.self_pay != null) {
+      input.self_pay = await encrypt(input.self_pay);
+    }
+    // 实发工资(元)
+    if (input.net_pay != null) {
+      input.net_pay = await encrypt(input.net_pay);
+    }
   }
   
   const [
@@ -820,6 +827,9 @@ export async function create(
   if (isNotEmpty(input.pay_month_lbl) && input.pay_month === undefined) {
     input.pay_month_lbl = String(input.pay_month_lbl).trim();
     input.pay_month = input.pay_month_lbl;
+    if (input.pay_month) {
+      input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+    }
   }
   
   // 已发送
@@ -1065,7 +1075,8 @@ export async function updateById(
   id: string,
   input: PayslipInput,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create";
+    uniqueType?: "ignore" | "throw";
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "hrm_payslip";
@@ -1077,25 +1088,27 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }
-  // 应发工资(元)
-  if (input.gross_pay) {
-    input.gross_pay = await encrypt(input.gross_pay);
-  }
-  // 代缴社保(元)
-  if (input.social_security) {
-    input.social_security = await encrypt(input.social_security);
-  }
-  // 代缴个税(元)
-  if (input.individual_tax) {
-    input.individual_tax = await encrypt(input.individual_tax);
-  }
-  // 个人自付(元)
-  if (input.self_pay) {
-    input.self_pay = await encrypt(input.self_pay);
-  }
-  // 实发工资(元)
-  if (input.net_pay) {
-    input.net_pay = await encrypt(input.net_pay);
+  if (options?.isEncrypt !== false) {
+    // 应发工资(元)
+    if (input.gross_pay != null) {
+      input.gross_pay = await encrypt(input.gross_pay);
+    }
+    // 代缴社保(元)
+    if (input.social_security != null) {
+      input.social_security = await encrypt(input.social_security);
+    }
+    // 代缴个税(元)
+    if (input.individual_tax != null) {
+      input.individual_tax = await encrypt(input.individual_tax);
+    }
+    // 个人自付(元)
+    if (input.self_pay != null) {
+      input.self_pay = await encrypt(input.self_pay);
+    }
+    // 实发工资(元)
+    if (input.net_pay != null) {
+      input.net_pay = await encrypt(input.net_pay);
+    }
   }
   
   const [
@@ -1145,7 +1158,11 @@ export async function updateById(
     let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      throw await ns("数据已经存在");
+      if (!options || options.uniqueType === UniqueType.Throw) {
+        throw await ns("数据已经存在");
+      } else if (options.uniqueType === UniqueType.Ignore) {
+        return id;
+      }
     }
   }
   
