@@ -1327,17 +1327,12 @@ async function onImportExcel() {
     [ await nAsync("代缴个税(元)") ]: "individual_tax",
     [ await nAsync("个人自付(元)") ]: "self_pay",
     [ await nAsync("实发工资(元)") ]: "net_pay",
-    [ await nAsync("已发送") ]: "is_send_lbl",
-    [ await nAsync("已确认") ]: "is_confirm_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("备注") ]: "rem",
-    [ await nAsync("创建人") ]: "create_usr_id_lbl",
-    [ await nAsync("创建时间") ]: "create_time_lbl",
-    [ await nAsync("更新人") ]: "update_usr_id_lbl",
-    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
   tableFocus();
   if (!file) {
@@ -1353,11 +1348,19 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [
-          await nAsync("发放月份"),
-          await nAsync("创建时间"),
-          await nAsync("更新时间"),
-        ],
+        key_types: {
+          "pay_month_lbl": "date",
+          "lbl": "string",
+          "job_num": "string",
+          "company": "string",
+          "gross_pay": "string",
+          "social_security": "string",
+          "individual_tax": "string",
+          "self_pay": "string",
+          "net_pay": "string",
+          "is_locked_lbl": "number",
+          "rem": "string",
+        },
       },
     );
     const res = await importModels(

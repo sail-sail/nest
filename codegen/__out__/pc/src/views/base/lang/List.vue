@@ -1138,13 +1138,10 @@ async function onImportExcel() {
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
-    [ await nAsync("创建人") ]: "create_usr_id_lbl",
-    [ await nAsync("创建时间") ]: "create_time_lbl",
-    [ await nAsync("更新人") ]: "update_usr_id_lbl",
-    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
   tableFocus();
   if (!file) {
@@ -1160,10 +1157,13 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [
-          await nAsync("创建时间"),
-          await nAsync("更新时间"),
-        ],
+        key_types: {
+          "code": "string",
+          "lbl": "string",
+          "is_enabled_lbl": "number",
+          "order_by": "number",
+          "rem": "string",
+        },
       },
     );
     const res = await importModels(

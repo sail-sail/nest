@@ -528,7 +528,7 @@ export function useDownloadImportTemplate(routePath: string) {
         data,
       },
     );
-    saveAsExcel(buffer, `${ await nAsync("部门") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("部门") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
