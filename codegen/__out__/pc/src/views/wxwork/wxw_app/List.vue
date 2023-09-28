@@ -1175,6 +1175,7 @@ async function onImportExcel() {
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
   tableFocus();
   if (!file) {
@@ -1190,8 +1191,17 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [
-        ],
+        key_types: {
+          "lbl": "string",
+          "corpid": "string",
+          "agentid": "string",
+          "corpsecret": "string",
+          "contactsecret": "string",
+          "is_locked_lbl": "number",
+          "is_enabled_lbl": "number",
+          "order_by": "number",
+          "rem": "string",
+        },
       },
     );
     const res = await importModels(
