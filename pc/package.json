@@ -34,7 +34,7 @@
     "jszip": "3.10.1",
     "pinia": "2.1.6",
     "pinia-plugin-persistedstate": "3.2.0",
-    "pinyin-pro": "3.16.6",
+    "pinyin-pro": "3.16.7",
     "sortablejs": "1.15.0",
     "vue": "3.3.4",
     "vue-demi": "0.14.6",
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.6.5",
     "@types/file-saver": "2.0.5",
-    "@types/node": "20.7.0",
+    "@types/node": "20.7.1",
     "@types/sortablejs": "1.15.3",
     "@typescript-eslint/eslint-plugin": "6.7.3",
     "@typescript-eslint/parser": "6.7.3",
