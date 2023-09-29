@@ -400,6 +400,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: PayslipInput = {
+    pay_month: dayjs().startOf("month").format("YYYY-MM-DD"),
     is_send: 0,
     is_confirm: 0,
     is_locked: 0,
