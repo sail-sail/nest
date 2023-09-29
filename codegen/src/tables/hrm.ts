@@ -17,6 +17,7 @@ export default defineConfig({
         width: 120,
         fixed: "left",
         isMonth: true,
+        COLUMN_DEFAULT: "start_of_month",
       },
       {
         COLUMN_NAME: "lbl",
