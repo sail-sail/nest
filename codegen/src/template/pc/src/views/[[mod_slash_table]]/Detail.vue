@@ -1073,12 +1073,16 @@ async function getDefaultInput() {
       } else if (column_type.startsWith("int") || column_type.startsWith("tinyint") || column_type.startsWith("decimal")) {
         defaultValue = defaultValue;
       } else if (data_type === "datetime" || data_type === "date") {
+        let valueFormat = "YYYY-MM-DD HH:mm:ss";
+        if (data_type === "date") {
+          valueFormat = "YYYY-MM-DD";
+        }
         if (defaultValue === "now") {
           defaultValue = "new Date()";
         } else if (defaultValue.startsWith("start_of_")) {
-          defaultValue = `dayjs().startOf('${ defaultValue.substring("start_of_".length) }').toDate()`;
+          defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
         } else if (defaultValue.startsWith("end_of_")) {
-          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').toDate()`;
+          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
         } else {
           defaultValue = `"${ defaultValue }"`;
         }
