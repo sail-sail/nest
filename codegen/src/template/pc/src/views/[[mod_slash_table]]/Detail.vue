@@ -1,6 +1,7 @@
 <template><#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
+const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -37,6 +38,9 @@ for (let i = 0; i < columns.length; i++) {
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -141,6 +145,13 @@ for (let i = 0; i < columns.length; i++) {
           if (foreignKey) {
             foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
           }
+          if (
+            [
+              "is_default",
+            ].includes(column_name)
+          ) {
+            continue;
+          }
         #>
         
         <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
@@ -172,15 +183,22 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (column.maxFileSize) {
               #>
-              :maxFileSize="<#=column.maxFileSize#>"<#
+              :max-file-size="<#=column.maxFileSize#>"<#
               }
               #><#
               if (column.attAccept) {
               #>
               accept="<#=column.attAccept#>"<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></UploadImage><#
             } else if (
               foreignKey
@@ -221,8 +239,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               multiple<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomSelect><#
             } else if (foreignKey && foreignKey.selectType === "selectInput") {
               if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -241,8 +266,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               multiple<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts.list_tree
               && !foreignSchema.opts.ignoreCodegen
@@ -270,8 +302,15 @@ for (let i = 0; i < columns.length; i++) {
               #>
               multiple<#
               }
+              #><#
+              if (column.readonly) {
               #>
-              :readonly="isLocked || isReadonly"
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomTreeSelect><#
             } else if (selectList.length > 0) {
             #>
@@ -308,8 +347,15 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dict#>"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></DictSelect><#
             } else if (column.dictbiz) {
             #>
@@ -317,8 +363,15 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"
               code="<#=column.dictbiz#>"
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></DictbizSelect><#
             } else if (data_type === "datetime" || data_type === "date") {
             #>
@@ -329,23 +382,42 @@ for (let i = 0; i < columns.length; i++) {
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"<#
-              } else if (data_type === "date") {
+              } else if (data_type === "date" && !column.isMonth) {
               #>
               type="date"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD"<#
+              } else if (column.isMonth) {
+              #>
+              type="month"
+              format="YYYY-MM"
+              value-format="YYYY-MM-DD"<#
               }
               #>
-              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-              :readonly="isReadonly"
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
             <CustomCheckbox
               v-model="dialogModel.<#=column_name#>"
               :true-readonly-label="`${ ns('是') }`"
-              :false-readonly-label="`${ ns('否') }`"
-              :readonly="isLocked || isReadonly"
+              :false-readonly-label="`${ ns('否') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             >
               <#=column_comment#>
             </CustomCheckbox><#
@@ -353,8 +425,15 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"
-              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomInputNumber><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -379,8 +458,15 @@ for (let i = 0; i < columns.length; i++) {
                 }
               #>
               :precision="<#=precision#>"
-              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomInputNumber><#
             } else {
             #>
@@ -393,8 +479,15 @@ for (let i = 0; i < columns.length; i++) {
               @keyup.enter.stop<#
               }
               #>
-              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-              :readonly="isLocked || isReadonly"
+              :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
             ></CustomInput><#
             }
             #>
@@ -532,6 +625,10 @@ import type {
   if (column.noAdd && column.noEdit) {
     continue;
   }
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (foreignSchema && foreignSchema.opts.list_tree) {
+    continue;
+  }
   // if (table === foreignTable) continue;
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
@@ -545,7 +642,35 @@ import type {
   <#=Foreign_Table_Up#>Model,<#
 }
 #>
-} from "#/types";
+} from "#/types";<#
+if (
+  columns.some((column) => {
+    if (column.ignoreCodegen) return false;
+    if (column.onlyCodegenDeno) return false;
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) return false;
+    if (foreignKey.showType === "dialog") {
+      return false;
+    }
+    if (column.noAdd && column.noEdit) {
+      return false;
+    }
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      return false;
+    }
+    if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+      return false;
+    }
+    return true;
+  })
+) {
+#>
 
 import {<#
   const foreignTableArr2 = [];
@@ -574,6 +699,10 @@ import {<#
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      continue;
+    }
     if (foreignTableArr2.includes(foreignTable)) continue;
     foreignTableArr2.push(foreignTable);
     if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -584,6 +713,8 @@ import {<#
   }
   #>
 } from "./Api";<#
+}
+#><#
 const foreignTableArr3 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -749,9 +880,19 @@ watchEffect(async () => {
         column_comment = column_comment + "开始";
       }
       const foreignKey = column.foreignKey;
+      if (column.readonly) {
+        continue;
+      }
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const validators = column.validators || [ ];
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
     #><#
       if (require) {
         if (!foreignKey) {
@@ -766,6 +907,9 @@ watchEffect(async () => {
           const validator = validators[j];
       #><#
         if (validator.maximum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "number",<#
@@ -777,6 +921,9 @@ watchEffect(async () => {
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,
       },<#
         } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "number",<#
@@ -788,6 +935,9 @@ watchEffect(async () => {
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,
       },<#
         } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "string",<#
@@ -799,6 +949,9 @@ watchEffect(async () => {
         message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,
       },<#
         } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
+          if (column.foreignKey || column.dict || column.dictbiz) {
+            continue;
+          }
       #>
       {
         type: "string",<#
@@ -902,6 +1055,13 @@ async function getDefaultInput() {
       if (column_comment.indexOf("[") !== -1) {
         column_comment = column_comment.substring(0, column_comment.indexOf("["));
       }
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
       if (!column.COLUMN_DEFAULT) continue;
       let defaultValue = column.COLUMN_DEFAULT.toString();
       if (selectList.length > 0) {
@@ -912,6 +1072,20 @@ async function getDefaultInput() {
         }
       } else if (column_type.startsWith("int") || column_type.startsWith("tinyint") || column_type.startsWith("decimal")) {
         defaultValue = defaultValue;
+      } else if (data_type === "datetime" || data_type === "date") {
+        let valueFormat = "YYYY-MM-DD HH:mm:ss";
+        if (data_type === "date") {
+          valueFormat = "YYYY-MM-DD";
+        }
+        if (defaultValue === "now") {
+          defaultValue = "new Date()";
+        } else if (defaultValue.startsWith("start_of_")) {
+          defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
+        } else if (defaultValue.startsWith("end_of_")) {
+          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
+        } else {
+          defaultValue = `"${ defaultValue }"`;
+        }
       } else {
         defaultValue = `"${ defaultValue }"`;
       }
@@ -1022,6 +1196,12 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,<#
+        if (hasDefault) {
+        #>
+        is_default: undefined,
+        is_default_lbl: undefined,<#
+        }
+        #><#
         if (hasLocked) {
         #>
         is_locked: undefined,
@@ -1069,6 +1249,11 @@ watch(
 }
 #>
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -1092,9 +1277,15 @@ async function onRefresh() {
   }
 }
 
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -1122,9 +1313,15 @@ async function prevId() {
   return true;
 }
 
+/** 键盘按 PageDown */
+async function onPageDown() {
+  await nextId();
+}
+
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

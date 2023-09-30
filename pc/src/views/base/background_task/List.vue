@@ -80,19 +80,17 @@
           :label="n('开始时间')"
           prop="begin_time"
         >
-          <el-date-picker
+          <CustomDatePicker
             :set="search.begin_time = search.begin_time || [ ]"
             type="daterange"
-            un-w="full"
             :model-value="(search.begin_time as any)"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
             :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            clearable
             @update:model-value="search.begin_time = $event"
             @clear="onSearchClear"
-          ></el-date-picker>
+          ></CustomDatePicker>
         </el-form-item>
       </template>
       
@@ -513,12 +511,13 @@ import {
 import type {
   BackgroundTaskModel,
   BackgroundTaskSearch,
-  UsrModel,
 } from "#/types";
 
 defineOptions({
   name: "后台任务",
 });
+
+const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
   n,
@@ -531,6 +530,9 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const dirtyStore = useDirtyStore();
+
+const clearDirty = dirtyStore.onDirty(onRefresh);
 
 const permit = permitStore.getPermit("/base/background_task");
 
@@ -581,6 +583,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -707,6 +710,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<BackgroundTaskModel>(
   $$(tableRef),
   {
@@ -838,7 +842,7 @@ function getTableColumns(): ColumnType[] {
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id",
       width: 120,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -857,7 +861,7 @@ function getTableColumns(): ColumnType[] {
       prop: "update_usr_id_lbl",
       sortBy: "update_usr_id",
       width: 120,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -908,13 +912,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
+  clearDirty();
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
       useFindCount(opt),
     ]);
   } else {
-    await useFindAll(opt);
+    await Promise.all([
+      useFindAll(opt),
+    ]);
   }
 }
 
@@ -1023,17 +1030,18 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1053,9 +1061,8 @@ async function onDeleteByIds() {
   const num = await deleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
@@ -1083,14 +1090,14 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
   }
 }
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1110,9 +1117,8 @@ async function revertByIdsEfc() {
   const num = await revertByIds(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
@@ -1158,10 +1164,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {

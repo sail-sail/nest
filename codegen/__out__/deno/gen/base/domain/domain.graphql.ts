@@ -7,6 +7,8 @@ defineGraphql(resolver, /* GraphQL */ `
 type DomainModel {
   "ID"
   id: String!
+  "协议"
+  protocol: String!
   "名称"
   lbl: String!
   "锁定"
@@ -45,6 +47,8 @@ type DomainModel {
   is_deleted: Int!
 }
 type DomainFieldComment {
+  "协议"
+  protocol: String!
   "名称"
   lbl: String!
   "锁定"
@@ -83,6 +87,8 @@ type DomainFieldComment {
 input DomainInput {
   ""
   id: String
+  "协议"
+  protocol: String
   "名称"
   lbl: String
   "锁定"
@@ -125,6 +131,9 @@ input DomainSearch {
   ids: [String]
   "String"
   id: String
+  "协议"
+  protocol: String
+  protocol_like: String
   "名称"
   lbl: String
   lbl_like: String

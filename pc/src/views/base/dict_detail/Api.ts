@@ -379,7 +379,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsDictDetail {
@@ -402,11 +402,6 @@ export function useDownloadImportTemplate(routePath: string) {
             code
             lbl
           }
-          getDictbiz(codes: [
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -414,9 +409,11 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/base/dict_detail.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
-    saveAsExcel(buffer, `${ await nAsync("系统字典明细") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("系统字典明细") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -443,7 +440,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: DictDetailSearch, $sort: [SortInput!]) {
           findAllDictDetail(search: $search, sort: $sort) {
@@ -478,11 +475,6 @@ export function useExportExcel(routePath: string) {
             code
             lbl
           }
-          getDictbiz(codes: [
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -493,7 +485,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/base/dict_detail.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("系统字典明细"));
     } catch (err) {

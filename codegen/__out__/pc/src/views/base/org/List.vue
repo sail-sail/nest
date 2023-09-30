@@ -580,12 +580,13 @@ import type {
   OrgModel,
   OrgInput,
   OrgSearch,
-  UsrModel,
 } from "#/types";
 
 defineOptions({
   name: "组织",
 });
+
+const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
   n,
@@ -598,6 +599,9 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const dirtyStore = useDirtyStore();
+
+const clearDirty = dirtyStore.onDirty(onRefresh);
 
 const permit = permitStore.getPermit("/base/org");
 
@@ -648,6 +652,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -770,6 +775,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<OrgModel>(
   $$(tableRef),
   {
@@ -874,7 +880,7 @@ function getTableColumns(): ColumnType[] {
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id",
       width: 120,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -893,7 +899,7 @@ function getTableColumns(): ColumnType[] {
       prop: "update_usr_id_lbl",
       sortBy: "update_usr_id",
       width: 120,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -944,13 +950,16 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
+  clearDirty();
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
       useFindCount(opt),
     ]);
   } else {
-    await useFindAll(opt);
+    await Promise.all([
+      useFindAll(opt),
+    ]);
   }
 }
 
@@ -1063,15 +1072,15 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }
 
@@ -1098,15 +1107,15 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }
 
@@ -1139,14 +1148,12 @@ async function onImportExcel() {
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
-    [ await nAsync("创建人") ]: "create_usr_id_lbl",
-    [ await nAsync("创建时间") ]: "create_time_lbl",
-    [ await nAsync("更新人") ]: "update_usr_id_lbl",
-    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
+  tableFocus();
   if (!file) {
     return;
   }
@@ -1160,10 +1167,13 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [
-          await nAsync("创建时间"),
-          await nAsync("更新时间"),
-        ],
+        key_types: {
+          "lbl": "string",
+          "is_locked_lbl": "number",
+          "is_enabled_lbl": "number",
+          "order_by": "number",
+          "rem": "string",
+        },
       },
     );
     const res = await importModels(
@@ -1181,6 +1191,7 @@ async function onImportExcel() {
     ElMessageBox.alert(msg)
   }
   if (succNum > 0) {
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -1205,6 +1216,7 @@ async function onIs_locked(id: string, is_locked: 0 | 1) {
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -1226,6 +1238,7 @@ async function onIs_enabled(id: string, is_enabled: 0 | 1) {
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -1259,12 +1272,12 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }
 
@@ -1300,17 +1313,18 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1330,9 +1344,8 @@ async function onDeleteByIds() {
   const num = await deleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
@@ -1360,14 +1373,14 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
   }
 }
 
 /** 点击启用或者禁用 */
 async function onEnableByIds(is_enabled: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1390,12 +1403,14 @@ async function onEnableByIds(is_enabled: 0 | 1) {
       msg = await nsAsync("禁用 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
 
 /** 点击锁定或者解锁 */
 async function onLockByIds(is_locked: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1418,12 +1433,14 @@ async function onLockByIds(is_locked: 0 | 1) {
       msg = await nsAsync("解锁 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1443,9 +1460,8 @@ async function revertByIdsEfc() {
   const num = await revertByIds(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    await Promise.all([
-      dataGrid(true),
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
@@ -1488,10 +1504,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {

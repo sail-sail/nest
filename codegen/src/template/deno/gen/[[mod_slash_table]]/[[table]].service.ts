@@ -108,8 +108,8 @@ export async function findAll(
   }<#
     }
   #>
-  const data: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);
-  return data;
+  const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);
+  return models;
 }<#
 if (hasSummary) {
 #>
@@ -156,8 +156,8 @@ export async function findOne(
   }<#
     }
   #>
-  const data = await <#=table#>Dao.findOne(search, sort);
-  return data;
+  const model = await <#=table#>Dao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -167,8 +167,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<<#=modelName#> | undefined> {
-  const data = await <#=table#>Dao.findById(id);
-  return data;
+  const model = await <#=table#>Dao.findById(id);
+  return model;
 }
 
 /**

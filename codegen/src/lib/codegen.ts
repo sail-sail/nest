@@ -129,6 +129,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     const hasSelectInput = hasSelectInputFn(table);
     if (stats.isFile()) {
+      if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
+        return;
+      }
       if(dir.endsWith(".xlsx")) {
 				const buffer = await readFile(fileTng);
         const fields = [ ];
@@ -142,10 +145,18 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             continue;
           }
           if (column.onlyCodegenDeno) continue;
+          if (column.isAtt || column.isImg) continue;
           const isImport = dir.startsWith("/pc/public/import_template/");
-          if (isImport && [
-            "create_usr_id", "create_time", "update_usr_id", "update_time",
-          ].includes(column_name)) continue;
+          if (
+            isImport && 
+            (
+              [
+                "create_usr_id", "create_time", "update_usr_id", "update_time",
+                "is_default",
+              ].includes(column_name)
+              || column.readonly
+            )
+          ) continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -173,7 +184,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             lbl += `<%const comment = data.getFieldComments${ Table_Up_IN };%>`;
           }
           lbl += `<%=comment.`;
-          if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+          if (
+            (foreignKey || selectList.length > 0 || column.dict || column.dictbiz)
+            || (data_type === "date" || data_type === "datetime")
+          ) {
             lbl += column_name + "_lbl";
           } else {
             lbl += column_name;
@@ -250,9 +264,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
-      if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
-        return;
-      }
       if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
         if (!hasForeignTabs) {
           return;
@@ -294,10 +305,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
           });
         }
-        try {
-          await unlink(`${ projectPh }/error.js`);
-        } catch (errTmp) {
-        }
       } catch(err) {
         await writeFile(`${ projectPh }/error.js`, htmlStr);
         throw err;
@@ -327,6 +334,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   for (let i = 0; i < writeFnArr.length; i++) {
     const writeFn = writeFnArr[i];
     writeFn();
+  }
+  try {
+    await unlink(`${ projectPh }/error.js`);
+  } catch (errTmp) {
   }
 }
 

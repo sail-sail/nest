@@ -2,6 +2,9 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -202,12 +205,7 @@ import {
 
 import type {
   DataPermitInput,
-  MenuModel,
 } from "#/types";
-
-import {
-  getMenuList,
-} from "./Api";
 
 import {
   getMenuTree,
@@ -285,22 +283,12 @@ watchEffect(async () => {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("范围") }`,
       },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("范围") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
-      },
     ],
     // 类型
     type: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("类型") }`,
-      },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("类型") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
       },
     ],
   };
@@ -330,7 +318,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 /** 增加时的默认值 */
 async function getDefaultInput() {
   const defaultInput: DataPermitInput = {
-    scope: "org",
+    scope: "tenant",
     type: "editable",
   };
   return defaultInput;
@@ -435,6 +423,11 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -449,9 +442,15 @@ async function onRefresh() {
   }
 }
 
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -479,9 +478,15 @@ async function prevId() {
   return true;
 }
 
+/** 键盘按 PageDown */
+async function onPageDown() {
+  await nextId();
+}
+
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

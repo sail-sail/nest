@@ -148,7 +148,7 @@ async function getSchema0(
         item.width = 120;
       }
       if (item.align == null) {
-        item.align = "left";
+        item.align = "center";
       }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
@@ -345,25 +345,25 @@ async function getSchema0(
   // 校验
   for (let i = 0; i < records2.length; i++) {
     const record = records2[i];
+    if (record.validators) {
+      continue;
+    }
+    record.validators = [ ];
     if (record.COLUMN_NAME === "id") {
-      record.validators = record.validators || [ ];
       record.validators.push({
         chars_max_length: 22,
         chars_min_length: 22,
       });
     } else if (record.foreignKey && !record.foreignKey.multiple) {
-      record.validators = record.validators || [ ];
       record.validators.push({
         chars_max_length: 22,
         chars_min_length: 22,
       });
     } else if (record.foreignKey && record.foreignKey.multiple) {
-      record.validators = record.validators || [ ];
       record.validators.push({
         max_items: Math.floor(record.CHARACTER_MAXIMUM_LENGTH / 22),
       });
     } else if (record.DATA_TYPE === "varchar" || record.DATA_TYPE === "char") {
-      record.validators = record.validators || [ ];
       if (record.CHARACTER_MAXIMUM_LENGTH) {
         record.validators.push({
           chars_max_length: record.CHARACTER_MAXIMUM_LENGTH,
@@ -512,6 +512,9 @@ export async function getSchema(
         const columnSize = Number(COLUMN_TYPE.replace("varchar(", "").replace(")", ""));
         record.attMaxSize = Math.floor((columnSize + 1) / 23);
       }
+    }
+    if (record.isEncrypt) {
+      record.search = false;
     }
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {

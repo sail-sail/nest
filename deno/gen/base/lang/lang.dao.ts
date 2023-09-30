@@ -31,6 +31,7 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
+  hash,
 } from "/lib/util/string_util.ts";
 
 import {
@@ -162,6 +163,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time <= ${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_sys && !Array.isArray(search?.is_sys)) {
+    search.is_sys = [ search.is_sys ];
+  }
+  if (search?.is_sys && search?.is_sys?.length > 0) {
+    whereQuery += ` and t.is_sys in ${ args.push(search.is_sys) }`;
+  }
   if (search?.$extra) {
     const extras = search.$extra;
     for (let i = 0; i < extras.length; i++) {
@@ -216,7 +223,7 @@ export async function findCount(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     total: number,
@@ -283,7 +290,7 @@ export async function findAll(
   
   // 缓存
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   const result = await query<LangModel>(
     sql,
@@ -296,15 +303,17 @@ export async function findAll(
   
   const [
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_enabled",
+    "is_sys",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
     // 启用
-    let is_enabled_lbl = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
@@ -336,6 +345,16 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 系统字段
+    let is_sys_lbl = model.is_sys?.toString() || "";
+    if (model.is_sys !== undefined && model.is_sys !== null) {
+      const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
+      if (dictItem) {
+        is_sys_lbl = dictItem.lbl;
+      }
+    }
+    model.is_sys_lbl = is_sys_lbl;
   }
   
   return result;
@@ -362,6 +381,8 @@ export async function getFieldComments(): Promise<LangFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    is_sys: await n("系统字段"),
+    is_sys_lbl: await n("系统字段"),
   };
   return fieldComments;
 }
@@ -421,19 +442,20 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {LangInput} model
+ * @param {LangInput} input
  * @param {LangModel} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: LangInput,
+  input: LangInput,
   oldModel: LangModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
+    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
@@ -442,10 +464,13 @@ export async function checkByUnique(
       const result = await updateById(
         oldModel.id,
         {
-          ...model,
+          ...input,
           id: undefined,
         },
-        options
+        {
+          ...options,
+          isEncrypt: false,
+        },
       );
       return result;
     }
@@ -534,7 +559,7 @@ export async function existById(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     e: number,
@@ -564,32 +589,11 @@ export async function validate(
     fieldComments.id,
   );
   
-  // ID
-  await validators.chars_max_length(
-    input.id,
-    22,
-    fieldComments.id,
-  );
-  
   // 编码
   await validators.chars_max_length(
     input.code,
     10,
     fieldComments.code,
-  );
-  
-  // 编码
-  await validators.chars_max_length(
-    input.code,
-    10,
-    fieldComments.code,
-  );
-  
-  // 名称
-  await validators.chars_max_length(
-    input.lbl,
-    22,
-    fieldComments.lbl,
   );
   
   // 名称
@@ -606,32 +610,11 @@ export async function validate(
     fieldComments.rem,
   );
   
-  // 备注
-  await validators.chars_max_length(
-    input.rem,
-    100,
-    fieldComments.rem,
-  );
-  
   // 创建人
   await validators.chars_max_length(
     input.create_usr_id,
     22,
     fieldComments.create_usr_id,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
   // 更新人
@@ -658,6 +641,7 @@ export async function create(
   input: LangInput,
   options?: {
     uniqueType?: UniqueType;
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_lang";
@@ -665,8 +649,10 @@ export async function create(
   
   const [
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_enabled",
+    "is_sys",
   ]);
   
   // 启用
@@ -674,6 +660,14 @@ export async function create(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
       input.is_enabled = Number(val);
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
     }
   }
   
@@ -738,6 +732,9 @@ export async function create(
   if (input.rem !== undefined) {
     sql += `,rem`;
   }
+  if (input.is_sys !== undefined) {
+    sql += `,is_sys`;
+  }
   sql += `) values(${ args.push(input.id) },${ args.push(reqDate()) },${ args.push(reqDate()) }`;
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
     sql += `,${ args.push(input.create_usr_id) }`;
@@ -769,6 +766,9 @@ export async function create(
   }
   if (input.rem !== undefined) {
     sql += `,${ args.push(input.rem) }`;
+  }
+  if (input.is_sys !== undefined) {
+    sql += `,${ args.push(input.is_sys) }`;
   }
   sql += `)`;
   
@@ -813,7 +813,8 @@ export async function updateById(
   id: string,
   input: LangInput,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create";
+    uniqueType?: "ignore" | "throw";
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_lang";
@@ -828,8 +829,10 @@ export async function updateById(
   
   const [
     is_enabledDict, // 启用
+    is_sysDict, // 系统字段
   ] = await dictSrcDao.getDict([
     "is_enabled",
+    "is_sys",
   ]);
   
   // 启用
@@ -837,6 +840,14 @@ export async function updateById(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val !== undefined) {
       input.is_enabled = Number(val);
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
     }
   }
   
@@ -848,7 +859,11 @@ export async function updateById(
     let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      throw await ns("数据已经存在");
+      if (!options || options.uniqueType === UniqueType.Throw) {
+        throw await ns("数据已经存在");
+      } else if (options.uniqueType === UniqueType.Ignore) {
+        return id;
+      }
     }
   }
   
@@ -890,6 +905,12 @@ export async function updateById(
   if (input.rem !== undefined) {
     if (input.rem != oldModel.rem) {
       sql += `rem = ${ args.push(input.rem) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_sys !== undefined) {
+    if (input.is_sys != oldModel.is_sys) {
+      sql += `is_sys = ${ args.push(input.is_sys) },`;
       updateFldNum++;
     }
   }

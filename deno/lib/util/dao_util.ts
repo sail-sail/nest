@@ -10,6 +10,13 @@ import {
   type QueryArgs,
 } from "/lib/context.ts";
 
+import {
+  encode as base64Encode,
+  decode as base64Decode,
+} from "std/encoding/base64.ts";
+
+import { getEnv } from "/lib/env.ts";
+
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 import * as authDao from "/lib/auth/auth.dao.ts";
@@ -94,7 +101,7 @@ export async function many2manyUpdate(
       column1Id: string,
       column2Id: string,
       is_deleted: 0|1,
-    }>(/*sql*/ `
+    }>(`
       select
         t.id,
         t.${ escapeId(many.column1) } column1Id,
@@ -107,12 +114,31 @@ export async function many2manyUpdate(
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       const idx = column2Ids.indexOf(model.column2Id);
-      const sql = /*sql*/ `
+      if (idx === -1) {
+        const sql = /*sql*/ `
+          update
+            ${ escapeId(many.mod + "_" + many.table) }
+          set
+            is_deleted = ?
+            ,delete_time = ?
+          where
+            id = ?
+        `;
+        await execute(
+          sql,
+          [
+            1,
+            reqDate(),
+            model.id,
+          ],
+        );
+        continue;
+      }
+      const sql = `
         update
           ${ escapeId(many.mod + "_" + many.table) }
         set
           is_deleted = ?
-          ,delete_time = ?
           ,order_by = ?
         where
           id = ?
@@ -120,8 +146,7 @@ export async function many2manyUpdate(
       await execute(
         sql,
         [
-          idx === -1 ? 1 : 0,
-          reqDate(),
+          0,
           idx + 1,
           model.id,
         ],
@@ -134,7 +159,7 @@ export async function many2manyUpdate(
     const id = shortUuidV4();
     {
       const args = [ ];
-      let sql = /*sql*/ `
+      let sql = `
         insert into ${ many.mod }_${ many.table }(
           id
           ,create_time
@@ -152,7 +177,7 @@ export async function many2manyUpdate(
       sql += `) values(?,?,?`;
       args.push(id);
       args.push(reqDate());
-      args.push(models.length + i + 1);
+      args.push(column2Ids.indexOf(column2Id) + 1);
       if (many.column1 !== "tenant_id" && many.column2 !== "tenant_id") {
         if (tenant_id) {
           sql += `,?`;
@@ -171,4 +196,68 @@ export async function many2manyUpdate(
       await execute(sql, args);
     }
   }
+}
+
+let cryptoKey: CryptoKey | undefined;
+
+const database_crypto_key_path = await getEnv("database_crypto_key_path");
+
+let database_crypto_key: Uint8Array | undefined;
+
+try {
+  if (database_crypto_key_path) {
+    database_crypto_key = await Deno.readFile(database_crypto_key_path);
+  }
+} catch (error) {
+  console.error(error);
+}
+
+if (database_crypto_key) {
+  cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    database_crypto_key,
+    {
+      name: "AES-CBC",
+    },
+    false,
+    ["encrypt", "decrypt"],
+  );
+}
+
+export async function encrypt(
+  str: string,
+) {
+  if (!cryptoKey) {
+    return;
+  }
+  const ivStr = shortUuidV4().substring(0, 16);
+  const iv = new TextEncoder().encode(ivStr);
+  const buf = await crypto.subtle.encrypt(
+    {
+      name: "AES-CBC",
+      iv,
+    },
+    cryptoKey,
+    new TextEncoder().encode(str),
+  );
+  return ivStr + base64Encode(buf);
+}
+
+export async function decrypt(
+  str: string,
+) {
+  if (!cryptoKey || !str || str.length < 16) {
+    return "";
+  }
+  const ivStr = str.substring(0, 16);
+  const iv = new TextEncoder().encode(ivStr);
+  const buf = await crypto.subtle.decrypt(
+    {
+      name: "AES-CBC",
+      iv,
+    },
+    cryptoKey,
+    base64Decode(str.substring(16)),
+  );
+  return new TextDecoder().decode(buf);
 }

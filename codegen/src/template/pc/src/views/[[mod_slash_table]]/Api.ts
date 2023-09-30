@@ -5,6 +5,26 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasSummary = columns.some((column) => column.showSummary);
 const hasUniques = columns.some((column) => column.uniques && column.uniques.length > 0);
+const hasDict = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") {
+    return false;
+  }
+  return column.dict;
+});
+const hasDictbiz = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") {
+    return false;
+  }
+  return column.dictbiz;
+});
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -748,7 +768,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldComments<#=Table_Up#> {<#
@@ -824,6 +844,8 @@ export function useDownloadImportTemplate(routePath: string) {
             <#=foreignKey.lbl#>
           }<#
           }
+          #><#
+          if (hasDict) {
           #>
           getDict(codes: [<#
             for (let i = 0; i < columns.length; i++) {
@@ -851,7 +873,7 @@ export function useDownloadImportTemplate(routePath: string) {
             #><#
               if (column.dict) {
             #>
-            "<#=column_name#>",<#
+            "<#=column.dict#>",<#
               }
             #><#
             }
@@ -859,7 +881,11 @@ export function useDownloadImportTemplate(routePath: string) {
           ]) {
             code
             lbl
+          }<#
           }
+          #><#
+          if (hasDictbiz) {
+          #>
           getDictbiz(codes: [<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
@@ -886,7 +912,7 @@ export function useDownloadImportTemplate(routePath: string) {
             #><#
               if (column.dictbiz) {
             #>
-            "<#=column_name#>",<#
+            "<#=column.dictbiz#>",<#
               }
             #><#
             }
@@ -894,7 +920,9 @@ export function useDownloadImportTemplate(routePath: string) {
           ]) {
             code
             lbl
+          }<#
           }
+          #>
         }
       `,
       variables: {
@@ -902,9 +930,11 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
-    saveAsExcel(buffer, `${ await nAsync("<#=table_comment#>") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("<#=table_comment#>") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -931,7 +961,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: <#=searchName#>, $sort: [SortInput!]) {
           findAll<#=Table_Up#>(search: $search, sort: $sort) {<#
@@ -1038,6 +1068,8 @@ export function useExportExcel(routePath: string) {
             <#=foreignKey.lbl#>
           }<#
           }
+          #><#
+          if (hasDict) {
           #>
           getDict(codes: [<#
             for (let i = 0; i < columns.length; i++) {
@@ -1065,7 +1097,7 @@ export function useExportExcel(routePath: string) {
             #><#
               if (column.dict) {
             #>
-            "<#=column_name#>",<#
+            "<#=column.dict#>",<#
               }
             #><#
             }
@@ -1073,7 +1105,11 @@ export function useExportExcel(routePath: string) {
           ]) {
             code
             lbl
+          }<#
           }
+          #><#
+          if (hasDictbiz) {
+          #>
           getDictbiz(codes: [<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
@@ -1100,7 +1136,7 @@ export function useExportExcel(routePath: string) {
             #><#
               if (column.dictbiz) {
             #>
-            "<#=column_name#>",<#
+            "<#=column.dictbiz#>",<#
               }
             #><#
             }
@@ -1108,7 +1144,9 @@ export function useExportExcel(routePath: string) {
           ]) {
             code
             lbl
+          }<#
           }
+          #>
         }
       `,
       variables: {
@@ -1119,7 +1157,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("<#=table_comment#>"));
     } catch (err) {
