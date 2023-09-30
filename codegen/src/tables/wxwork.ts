@@ -8,7 +8,6 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
         [ "corpid", "agentid" ],
-        [ "corpsecret" ],
       ],
     },
     columns: [
