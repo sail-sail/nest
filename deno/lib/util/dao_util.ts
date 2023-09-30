@@ -198,24 +198,15 @@ export async function many2manyUpdate(
   }
 }
 
-const ivStr = await getEnv("database_crypto_iv");
-
-let iv: Uint8Array | undefined;
-
-if (ivStr) {
-  iv = new TextEncoder().encode(ivStr);
-}
-
 let cryptoKey: CryptoKey | undefined;
 
 const database_crypto_key_path = await getEnv("database_crypto_key_path");
 
-let database_crypto_key: JsonWebKey | undefined;
+let database_crypto_key: Uint8Array | undefined;
 
 try {
   if (database_crypto_key_path) {
-    const database_crypto_keyStr = await Deno.readFile(database_crypto_key_path);
-    database_crypto_key = JSON.parse(new TextDecoder().decode(database_crypto_keyStr));
+    database_crypto_key = await Deno.readFile(database_crypto_key_path);
   }
 } catch (error) {
   console.error(error);
@@ -223,13 +214,12 @@ try {
 
 if (database_crypto_key) {
   cryptoKey = await crypto.subtle.importKey(
-    "jwk",
+    "raw",
     database_crypto_key,
     {
       name: "AES-CBC",
-      length: 256,
     },
-    true,
+    false,
     ["encrypt", "decrypt"],
   );
 }
@@ -237,9 +227,11 @@ if (database_crypto_key) {
 export async function encrypt(
   str: string,
 ) {
-  if (!cryptoKey || !iv) {
+  if (!cryptoKey) {
     return;
   }
+  const ivStr = shortUuidV4().substring(0, 16);
+  const iv = new TextEncoder().encode(ivStr);
   const buf = await crypto.subtle.encrypt(
     {
       name: "AES-CBC",
@@ -248,22 +240,24 @@ export async function encrypt(
     cryptoKey,
     new TextEncoder().encode(str),
   );
-  return base64Encode(buf);
+  return ivStr + base64Encode(buf);
 }
 
 export async function decrypt(
   str: string,
 ) {
-  if (!cryptoKey || !iv || !str) {
+  if (!cryptoKey || !str || str.length < 16) {
     return "";
   }
+  const ivStr = str.substring(0, 16);
+  const iv = new TextEncoder().encode(ivStr);
   const buf = await crypto.subtle.decrypt(
     {
       name: "AES-CBC",
       iv,
     },
     cryptoKey,
-    base64Decode(str),
+    base64Decode(str.substring(16)),
   );
   return new TextDecoder().decode(buf);
 }

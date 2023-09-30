@@ -449,21 +449,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.<#=column_name#>)) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }<#
-  } else {
+  } else if (!column.isEncrypt) {
   #>
   if (search?.<#=column_name#> !== undefined) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
   }
   if (search?.<#=column_name#> === null) {
     whereQuery += ` and t.<#=column_name#> is null`;
-  }<#
-    if (!column.isEncrypt) {
-  #>
+  }
   if (isNotEmpty(search?.<#=column_name#>_like)) {
     whereQuery += ` and t.<#=column_name#> like ${ args.push(sqlLike(search?.<#=column_name#>_like) + "%") }`;
   }<#
-    }
-  #><#
   }
   #><#
   }
