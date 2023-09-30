@@ -210,12 +210,11 @@ let cryptoKey: CryptoKey | undefined;
 
 const database_crypto_key_path = await getEnv("database_crypto_key_path");
 
-let database_crypto_key: JsonWebKey | undefined;
+let database_crypto_key: Uint8Array | undefined;
 
 try {
   if (database_crypto_key_path) {
-    const database_crypto_keyStr = await Deno.readFile(database_crypto_key_path);
-    database_crypto_key = JSON.parse(new TextDecoder().decode(database_crypto_keyStr));
+    database_crypto_key = await Deno.readFile(database_crypto_key_path);
   }
 } catch (error) {
   console.error(error);
@@ -223,13 +222,12 @@ try {
 
 if (database_crypto_key) {
   cryptoKey = await crypto.subtle.importKey(
-    "jwk",
+    "raw",
     database_crypto_key,
     {
       name: "AES-CBC",
-      length: 256,
     },
-    true,
+    false,
     ["encrypt", "decrypt"],
   );
 }
