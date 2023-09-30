@@ -513,6 +513,9 @@ export async function getSchema(
         record.attMaxSize = Math.floor((columnSize + 1) / 23);
       }
     }
+    if (record.isEncrypt) {
+      record.search = false;
+    }
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];

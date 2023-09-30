@@ -1,6 +1,8 @@
 import "/lib/env.ts";
 import { getEnv, getEnvs } from "/lib/env.ts";
 
+import { copyDir } from "/lib/util/fs_util.ts";
+
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
   if (index === -1) {
@@ -39,14 +41,10 @@ async function gqlgen() {
       "run",
       "gqlgen",
     ],
-    stderr: "piped",
-    stdout: "null",
+    stderr: "inherit",
+    stdout: "inherit",
   });
-  const { stderr } = await command.output();
-  const stderrStr = new TextDecoder().decode(stderr);
-  if (stderrStr) {
-    console.error(stderrStr);
-  }
+  await command.output();
 }
 
 // function escapeRegExp(str: string) {
@@ -167,14 +165,10 @@ async function compile() {
     const command = new Deno.Command(Deno.execPath(), {
       cwd: denoDir,
       args: cmds,
-      stderr: "piped",
-      stdout: "null",
+      stderr: "inherit",
+      stdout: "inherit",
     });
-    const { stderr } = await command.output();
-    const stderrStr = new TextDecoder().decode(stderr);
-    if (stderrStr) {
-      console.error(stderrStr);
-    }
+    await command.output();
   } finally {
     // await Deno.writeTextFile(denoDir+"/deps.ts", depsStr);
   }
@@ -188,14 +182,10 @@ async function pc() {
       "run",
       "build",
     ],
-    stderr: "piped",
-    stdout: "null",
+    stderr: "inherit",
+    stdout: "inherit",
   });
-  const { stderr } = await command.output();
-  const stderrStr = new TextDecoder().decode(stderr);
-  if (stderrStr) {
-    console.error(stderrStr);
-  }
+  await command.output();
   const str = await Deno.readTextFile(`${ buildDir }/../pc/index.html`);
   const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
   await Deno.writeTextFile(`${ buildDir }/../pc/index.html`, str2);
@@ -209,20 +199,17 @@ async function uni() {
       "run",
       "build:h5",
     ],
-    stderr: "piped",
-    stdout: "null",
+    stderr: "inherit",
+    stdout: "inherit",
   });
-  const { stderr } = await command.output();
-  const stderrStr = new TextDecoder().decode(stderr);
-  if (stderrStr) {
-    console.error(stderrStr);
-  }
+  await command.output();
   try {
     await Deno.remove(`${ buildDir }/../uni/`, { recursive: true });
   // deno-lint-ignore no-empty
   } catch (_err) {
   }
-  await Deno.rename(`${ uniDir }/dist/build/h5/`, `${ buildDir }/../uni/`);
+  await Deno.mkdir(`${ buildDir }/../uni/`, { recursive: true });
+  await copyDir(`${ uniDir }/dist/build/h5/`, `${ buildDir }/../uni/`);
 }
 
 async function docs() {
@@ -233,14 +220,10 @@ async function docs() {
       "run",
       "docs:build",
     ],
-    stderr: "piped",
-    stdout: "null",
+    stderr: "inherit",
+    stdout: "inherit",
   });
-  const { stderr } = await command.output();
-  const stderrStr = new TextDecoder().decode(stderr);
-  if (stderrStr) {
-    console.error(stderrStr);
-  }
+  await command.output();
 }
 
 async function publish() {
@@ -251,14 +234,10 @@ async function publish() {
       "run",
       "publish",
     ],
-    stderr: "piped",
-    stdout: "null",
+    stderr: "inherit",
+    stdout: "inherit",
   });
-  const { stderr } = await command.output();
-  if (stderr) {
-    const stderrStr = new TextDecoder().decode(stderr);
-    console.error(stderrStr);
-  }
+  await command.output();
 }
 
 for (let i = 0; i < commands.length; i++) {

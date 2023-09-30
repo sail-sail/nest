@@ -305,10 +305,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
           });
         }
-        try {
-          await unlink(`${ projectPh }/error.js`);
-        } catch (errTmp) {
-        }
       } catch(err) {
         await writeFile(`${ projectPh }/error.js`, htmlStr);
         throw err;
@@ -338,6 +334,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   for (let i = 0; i < writeFnArr.length; i++) {
     const writeFn = writeFnArr[i];
     writeFn();
+  }
+  try {
+    await unlink(`${ projectPh }/error.js`);
+  } catch (errTmp) {
   }
 }
 

@@ -372,15 +372,11 @@ input <#=searchName#> {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
-    } else {
+    } else if (!column.isEncrypt) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#><#
-    if (!column.isEncrypt) {
-  #>
+  <#=column_name#>: <#=data_type#>
   <#=column_name#>_like: <#=data_type#><#
-    }
-  #><#
     }
   #><#
   }

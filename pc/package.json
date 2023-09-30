@@ -58,7 +58,7 @@
     "eslint-plugin-vue": "9.17.0",
     "husky": "8.0.3",
     "mysql2": "3.6.1",
-    "postcss": "8.4.30",
+    "postcss": "8.4.31",
     "sass": "1.68.0",
     "spark-md5": "3.0.2",
     "stylus": "0.60.0",

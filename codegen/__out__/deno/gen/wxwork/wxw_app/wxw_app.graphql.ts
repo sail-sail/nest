@@ -98,10 +98,6 @@ input WxwAppSearch {
   "应用ID"
   agentid: String
   agentid_like: String
-  "应用密钥"
-  corpsecret: String
-  "通讯录密钥"
-  contactsecret: String
   "锁定"
   is_locked: [Int!]
   "启用"
