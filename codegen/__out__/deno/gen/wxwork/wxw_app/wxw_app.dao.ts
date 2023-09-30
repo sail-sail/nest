@@ -398,16 +398,6 @@ export async function findByUnique(
     });
     models.push(...modelTmps);
   }
-  {
-    if (search0.corpsecret == null) {
-      return [ ];
-    }
-    const corpsecret = search0.corpsecret;
-    const modelTmps = await findAll({
-      corpsecret,
-    });
-    models.push(...modelTmps);
-  }
   return models;
 }
 
@@ -432,11 +422,6 @@ export function equalsByUnique(
   if (
     oldModel.corpid === model.corpid &&
     oldModel.agentid === model.agentid
-  ) {
-    return true;
-  }
-  if (
-    oldModel.corpsecret === model.corpsecret
   ) {
     return true;
   }
