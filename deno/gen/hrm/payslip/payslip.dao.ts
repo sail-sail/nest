@@ -134,36 +134,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.company_like)) {
     whereQuery += ` and t.company like ${ args.push(sqlLike(search?.company_like) + "%") }`;
   }
-  if (search?.gross_pay !== undefined) {
-    whereQuery += ` and t.gross_pay = ${ args.push(search.gross_pay) }`;
-  }
-  if (search?.gross_pay === null) {
-    whereQuery += ` and t.gross_pay is null`;
-  }
-  if (search?.social_security !== undefined) {
-    whereQuery += ` and t.social_security = ${ args.push(search.social_security) }`;
-  }
-  if (search?.social_security === null) {
-    whereQuery += ` and t.social_security is null`;
-  }
-  if (search?.individual_tax !== undefined) {
-    whereQuery += ` and t.individual_tax = ${ args.push(search.individual_tax) }`;
-  }
-  if (search?.individual_tax === null) {
-    whereQuery += ` and t.individual_tax is null`;
-  }
-  if (search?.self_pay !== undefined) {
-    whereQuery += ` and t.self_pay = ${ args.push(search.self_pay) }`;
-  }
-  if (search?.self_pay === null) {
-    whereQuery += ` and t.self_pay is null`;
-  }
-  if (search?.net_pay !== undefined) {
-    whereQuery += ` and t.net_pay = ${ args.push(search.net_pay) }`;
-  }
-  if (search?.net_pay === null) {
-    whereQuery += ` and t.net_pay is null`;
-  }
   if (search?.is_send && !Array.isArray(search?.is_send)) {
     search.is_send = [ search.is_send ];
   }
