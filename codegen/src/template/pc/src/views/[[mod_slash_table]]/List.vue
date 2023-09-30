@@ -292,6 +292,22 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></el-input-number>
         </el-form-item>
       </template><#
+      } else if (column.isEncrypt) {
+      #>
+      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+        <el-form-item
+          :label="n('<#=column_comment#>')"
+          prop="<#=column_name#>"
+        >
+          <el-input
+            v-model="search.<#=column_name#>"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
+        </el-form-item>
+      </template><#
       } else {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)">
@@ -1351,6 +1367,10 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (table === foreignTable) continue;
   if (foreignTableUpArr.includes(foreignTableUp)) continue;
+  const search = column.search;
+  if (!search) {
+    continue;
+  }
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
@@ -1366,6 +1386,7 @@ const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
 const foreignKeyCommentArr = [ ];
+const foreignKeyArrColumns = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1387,11 +1408,22 @@ for (let i = 0; i < columns.length; i++) {
     if (!foreignTableArr.includes(foreignTable)) {
       foreignTableArr.push(foreignTable);
       foreignKeyCommentArr.push(column_comment);
+      foreignKeyArrColumns.push(column);
     }
   }
 }
 #><#
-if (foreignTableArr.length > 0) {
+if (
+  foreignKeyArrColumns.some((item) => {
+    const foreignKey = item.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      return false;
+    }
+    return true;
+  })
+) {
 #>
 
 import {<#
@@ -1401,8 +1433,15 @@ import {<#
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const column_comment = foreignKeyCommentArr[i];
+    const column = foreignKeyArrColumns[i];
+    const foreignKey = column.foreignKey;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      continue;
+    }
   #>
-  get<#=Foreign_Table_Up#>List,<#
+  get<#=Foreign_Table_Up#>List, // <#=column_comment#><#
   }
   #>
 } from "./Api";<#
@@ -1568,6 +1607,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -1677,8 +1717,12 @@ const props = defineProps<{
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else {
   #>
-  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    if (!column.isEncrypt) {
+  #>
   <#=column_name#>_like?: <#=data_type#>;<#=column_comment#><#
+    }
+  #><#
     }
   #><#
   }
@@ -1800,6 +1844,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
@@ -2301,6 +2346,7 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2335,6 +2381,7 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2393,6 +2440,15 @@ async function onImportExcel() {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     const foreignKey = column.foreignKey;
+    if (
+      [
+        "create_usr_id", "create_time", "update_usr_id", "update_time",
+        "is_default",
+      ].includes(column_name)
+      || column.readonly
+    ) {
+      continue;
+    }
     let column_name2 = column_name;
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
@@ -2406,7 +2462,9 @@ async function onImportExcel() {
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
+  tableFocus();
   if (!file) {
     return;
   }
@@ -2420,7 +2478,7 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [<#
+        key_types: {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -2441,14 +2499,35 @@ async function onImportExcel() {
             if (column_comment.indexOf("[") !== -1) {
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
-            if (![ "datetime", "date" ].includes(data_type)) {
+            const foreignKey = column.foreignKey;
+            if (
+              [
+                "create_usr_id", "create_time", "update_usr_id", "update_time",
+                "is_default",
+              ].includes(column_name)
+              || column.readonly
+            ) {
               continue;
             }
+            let column_name2 = column_name;
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+            ) {
+              column_name2 = `${column_name}_lbl`;
+            }
+            let data_type2 = "string";
+            if ([ "datetime", "date" ].includes(data_type)) {
+              data_type2 = "date";
+            } else if (data_type === "int" || data_type === "tinyint" || data_type === "double") {
+              data_type2 = "number";
+            } else if (data_type === "varchar" || data_type === "text" || data_type === "char" || data_type === "decimal") {
+              data_type2 = "string";
+            }
           #>
-          await nAsync("<#=column_comment#>"),<#
+          "<#=column_name2#>": "<#=data_type2#>",<#
           }
           #>
-        ],
+        },
       },
     );
     const res = await importModels(
@@ -2634,6 +2713,7 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2684,6 +2764,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -2696,6 +2777,7 @@ if (opts.noDelete !== true) {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2755,6 +2837,7 @@ async function onForceDeleteByIds() {
 
 /** 点击启用或者禁用 */
 async function onEnableByIds(is_enabled: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2788,6 +2871,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 
 /** 点击锁定或者解锁 */
 async function onLockByIds(is_locked: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2821,6 +2905,7 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2866,6 +2951,7 @@ async function onOpenForeignTabs() {
   }
   const id = selectedIds[0];
   await openForeignTabs(id, "");
+  tableFocus();
 }<#
 }
 #>
@@ -2880,6 +2966,7 @@ async function openForeignTabs(id: string, title: string) {
       id,
     },
   });
+  tableFocus();
 }<#
 }
 #>
@@ -2935,10 +3022,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {

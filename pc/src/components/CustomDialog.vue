@@ -16,6 +16,7 @@
   :before-close="beforeClose"
   v-bind="$attrs"
   :style="{ height: isFullscreen ? undefined : props.height }"
+  ref="dialogRef"
 >
   <template #header>
     <div
@@ -63,12 +64,12 @@
 </template>
 
 <script setup lang="ts">
-import {
-  type Ref,
+import type {
+  Ref,
 } from "vue";
 
-import {
-  type WatchStopHandle,
+import type {
+  WatchStopHandle,
 } from "vue";
 
 let {
@@ -85,6 +86,8 @@ let fullscreen = $ref(true);
 let dialogType = $ref<CustomDialogType>("default");
 
 let pointerPierce = $ref(false);
+
+let dialogRef = $ref<InstanceType<typeof ElDialog>>();
 
 watch(
   () => dialogVisible,
@@ -151,7 +154,16 @@ function showDialog<OnCloseResolveType>(
       resolve(arg);
     };
   });
+  focus();
   return { dialogPrm, onCloseResolve: onCloseResolve! };
+}
+
+async function focus() {
+  await nextTick();
+  if (!dialogRef) {
+    return;
+  }
+  dialogRef.dialogContentRef.$el.focus();
 }
 
 async function beforeClose(done: (cancel: boolean) => void) {
@@ -164,5 +176,8 @@ async function beforeClose(done: (cancel: boolean) => void) {
   }
 }
 
-defineExpose({ showDialog });
+defineExpose({
+  showDialog,
+  focus,
+});
 </script>

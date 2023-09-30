@@ -571,7 +571,6 @@ import type {
   LangModel,
   LangInput,
   LangSearch,
-  UsrModel,
 } from "#/types";
 
 defineOptions({
@@ -644,6 +643,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -765,6 +765,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<LangModel>(
   $$(tableRef),
   {
@@ -1061,6 +1062,7 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1095,6 +1097,7 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1135,14 +1138,12 @@ async function onImportExcel() {
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
-    [ await nAsync("创建人") ]: "create_usr_id_lbl",
-    [ await nAsync("创建时间") ]: "create_time_lbl",
-    [ await nAsync("更新人") ]: "update_usr_id_lbl",
-    [ await nAsync("更新时间") ]: "update_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
+  tableFocus();
   if (!file) {
     return;
   }
@@ -1156,10 +1157,13 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [
-          await nAsync("创建时间"),
-          await nAsync("更新时间"),
-        ],
+        key_types: {
+          "code": "string",
+          "lbl": "string",
+          "is_enabled_lbl": "number",
+          "order_by": "number",
+          "rem": "string",
+        },
       },
     );
     const res = await importModels(
@@ -1236,6 +1240,7 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1276,6 +1281,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1286,6 +1292,7 @@ async function openView() {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1341,6 +1348,7 @@ async function onForceDeleteByIds() {
 
 /** 点击启用或者禁用 */
 async function onEnableByIds(is_enabled: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1370,6 +1378,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -1433,10 +1442,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {

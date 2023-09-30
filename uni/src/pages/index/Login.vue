@@ -182,10 +182,17 @@ async function getLoginTenantsEfc() {
 
 async function setOldLoginModel() {
   try {
-    const res = await uni.getStorage({
+    let res = await uni.getStorage({
       key: "oldLoginModel",
     });
     if (res) {
+      if (typeof res.data === "string") {
+        try {
+          res.data = JSON.parse(res.data);
+        } catch (err) {
+          console.error(err);
+        }
+      }
       model = res.data;
     }
   } catch (err) {

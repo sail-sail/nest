@@ -403,7 +403,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsWxPay {
@@ -442,9 +442,11 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/wx/wx_pay.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
-    saveAsExcel(buffer, `${ await nAsync("微信支付") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("微信支付") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -471,7 +473,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: WxPaySearch, $sort: [SortInput!]) {
           findAllWxPay(search: $search, sort: $sort) {
@@ -537,7 +539,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/wx/wx_pay.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("微信支付"));
     } catch (err) {
