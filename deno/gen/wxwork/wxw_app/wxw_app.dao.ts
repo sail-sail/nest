@@ -138,18 +138,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.agentid_like)) {
     whereQuery += ` and t.agentid like ${ args.push(sqlLike(search?.agentid_like) + "%") }`;
   }
-  if (search?.corpsecret !== undefined) {
-    whereQuery += ` and t.corpsecret = ${ args.push(search.corpsecret) }`;
-  }
-  if (search?.corpsecret === null) {
-    whereQuery += ` and t.corpsecret is null`;
-  }
-  if (search?.contactsecret !== undefined) {
-    whereQuery += ` and t.contactsecret = ${ args.push(search.contactsecret) }`;
-  }
-  if (search?.contactsecret === null) {
-    whereQuery += ` and t.contactsecret is null`;
-  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }

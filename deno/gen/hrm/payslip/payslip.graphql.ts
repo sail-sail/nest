@@ -184,16 +184,6 @@ input PayslipSearch {
   "公司"
   company: String
   company_like: String
-  "应发工资(元)"
-  gross_pay: String
-  "代缴社保(元)"
-  social_security: String
-  "代缴个税(元)"
-  individual_tax: String
-  "个人自付(元)"
-  self_pay: String
-  "实发工资(元)"
-  net_pay: String
   "已发送"
   is_send: [Int!]
   "已确认"
