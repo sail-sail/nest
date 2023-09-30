@@ -63,9 +63,10 @@ console.log(publishPath);
     cmd += ` ; pm2 stop ${ projectName }`;
     cmd += ` ; rm -rf ${ publishPath }/pc`
     cmd += ` ; rm -rf ${ publishPath }/deno`
+    cmd += ` ; rm -rf ${ publishPath }/uni`
     cmd += ` ; mkdir ${ publishPath }`;
     cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-    cmd += ` ; rmdir ${ publishPathTmp }`;
+    cmd += ` ; rm -rf ${ publishPathTmp }`;
     cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
     cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
     data = await ssh.exec(cmd);

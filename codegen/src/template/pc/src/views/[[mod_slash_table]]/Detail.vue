@@ -38,6 +38,9 @@ for (let i = 0; i < columns.length; i++) {
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -622,6 +625,10 @@ import type {
   if (column.noAdd && column.noEdit) {
     continue;
   }
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (foreignSchema && foreignSchema.opts.list_tree) {
+    continue;
+  }
   // if (table === foreignTable) continue;
   if (foreignTableArr.includes(foreignTable)) continue;
   foreignTableArr.push(foreignTable);
@@ -635,7 +642,35 @@ import type {
   <#=Foreign_Table_Up#>Model,<#
 }
 #>
-} from "#/types";
+} from "#/types";<#
+if (
+  columns.some((column) => {
+    if (column.ignoreCodegen) return false;
+    if (column.onlyCodegenDeno) return false;
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) return false;
+    if (foreignKey.showType === "dialog") {
+      return false;
+    }
+    if (column.noAdd && column.noEdit) {
+      return false;
+    }
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      return false;
+    }
+    if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
+      return false;
+    }
+    return true;
+  })
+) {
+#>
 
 import {<#
   const foreignTableArr2 = [];
@@ -664,6 +699,10 @@ import {<#
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      continue;
+    }
     if (foreignTableArr2.includes(foreignTable)) continue;
     foreignTableArr2.push(foreignTable);
     if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -674,6 +713,8 @@ import {<#
   }
   #>
 } from "./Api";<#
+}
+#><#
 const foreignTableArr3 = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1031,6 +1072,20 @@ async function getDefaultInput() {
         }
       } else if (column_type.startsWith("int") || column_type.startsWith("tinyint") || column_type.startsWith("decimal")) {
         defaultValue = defaultValue;
+      } else if (data_type === "datetime" || data_type === "date") {
+        let valueFormat = "YYYY-MM-DD HH:mm:ss";
+        if (data_type === "date") {
+          valueFormat = "YYYY-MM-DD";
+        }
+        if (defaultValue === "now") {
+          defaultValue = "new Date()";
+        } else if (defaultValue.startsWith("start_of_")) {
+          defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
+        } else if (defaultValue.startsWith("end_of_")) {
+          defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
+        } else {
+          defaultValue = `"${ defaultValue }"`;
+        }
       } else {
         defaultValue = `"${ defaultValue }"`;
       }
@@ -1194,6 +1249,11 @@ watch(
 }
 #>
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -1217,9 +1277,15 @@ async function onRefresh() {
   }
 }
 
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -1247,9 +1313,15 @@ async function prevId() {
   return true;
 }
 
+/** 键盘按 PageDown */
+async function onPageDown() {
+  await nextId();
+}
+
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

@@ -517,7 +517,6 @@ import {
 import type {
   PayTransactionsJsapiModel,
   PayTransactionsJsapiSearch,
-  UsrModel,
 } from "#/types";
 
 defineOptions({
@@ -590,6 +589,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -736,6 +736,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<PayTransactionsJsapiModel>(
   $$(tableRef),
   {
@@ -1142,6 +1143,7 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
@@ -1199,10 +1201,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {

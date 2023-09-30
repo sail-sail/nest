@@ -226,7 +226,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsWxPayNotice {
@@ -273,9 +273,11 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/wx/wx_pay_notice.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
-    saveAsExcel(buffer, `${ await nAsync("微信支付通知") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("微信支付通知") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -302,7 +304,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
           findAllWxPayNotice(search: $search, sort: $sort) {
@@ -385,7 +387,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/wx/wx_pay_notice.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("微信支付通知"));
     } catch (err) {
