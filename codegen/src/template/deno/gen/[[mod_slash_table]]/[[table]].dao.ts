@@ -68,6 +68,12 @@ const hasForeignJson = columns.some((column) => {
   }
   return false;
 });
+const hasEncrypt = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  return !!column.isEncrypt;
+});
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file prefer-const no-unused-vars ban-types require-await
@@ -129,7 +135,12 @@ import {
   isNotEmpty,
   isEmpty,
   sqlLike,
-  shortUuidV4,
+  shortUuidV4,<#
+  if (cache) {
+  #>
+  hash,<#
+  }
+  #>
 } from "/lib/util/string_util.ts";
 
 import {
@@ -180,6 +191,15 @@ if (hasForeignJson) {
 
 import {
   setModelIds,
+} from "/lib/util/dao_util.ts";<#
+}
+#><#
+if (hasEncrypt) {
+#>
+
+import {
+  encrypt,
+  decrypt,
 } from "/lib/util/dao_util.ts";<#
 }
 #>
@@ -429,7 +449,7 @@ async function getWhereQuery(
   if (isNotEmpty(search?.<#=column_name#>)) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search?.<#=column_name#>) }`;
   }<#
-  } else {
+  } else if (!column.isEncrypt) {
   #>
   if (search?.<#=column_name#> !== undefined) {
     whereQuery += ` and t.<#=column_name#> = ${ args.push(search.<#=column_name#>) }`;
@@ -569,7 +589,7 @@ export async function findCount(
   #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
   }
   #>
   
@@ -688,7 +708,7 @@ export async function findAll(
   
   // 缓存
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
   }
   #>
   
@@ -934,6 +954,7 @@ export async function findAll(
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
       const isPassword = column.isPassword;
+      const isEncrypt = column.isEncrypt;
     #><#
       if (column_type && column_type.startsWith("decimal")) {
     #>
@@ -950,6 +971,10 @@ export async function findAll(
     #>
     // <#=column_comment#>
     model.<#=column_name#> = "";<#
+      } else if (isEncrypt) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = await decrypt(model.<#=column_name#>);<#
       } else if (selectList.length > 0) {
     #>
     // <#=column_comment#>
@@ -988,7 +1013,7 @@ export async function findAll(
     #>
     
     // <#=column_comment#>
-    let <#=column_name#>_lbl = model.<#=column_name#>.toString();
+    let <#=column_name#>_lbl = model.<#=column_name#>?.toString() || "";
     if (model.<#=column_name#> !== undefined && model.<#=column_name#> !== null) {
       const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
       if (dictItem) {
@@ -1010,7 +1035,7 @@ export async function findAll(
     } else {
       model.<#=column_name#>_lbl = "";
     }<#
-      } else if (data_type === "date") {
+      } else if (data_type === "date" && !column.isMonth) {
     #>
     
     // <#=column_comment#>
@@ -1020,6 +1045,20 @@ export async function findAll(
         model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
       } else {
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD");
+      }
+    } else {
+      model.<#=column_name#>_lbl = "";
+    }<#
+      } else if (column.isMonth) {
+    #>
+    
+    // <#=column_comment#>
+    if (model.<#=column_name#>) {
+      const <#=column_name#> = dayjs(model.<#=column_name#>);
+      if (isNaN(<#=column_name#>.toDate().getTime())) {
+        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
+      } else {
+        model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM");
       }
     } else {
       model.<#=column_name#>_lbl = "";
@@ -1105,6 +1144,9 @@ export async function findByUnique(
     for (let k = 0; k < uniques.length; k++) {
       const unique = uniques[k];
       const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (!column) {
+        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
+      }
       const data_type = column.DATA_TYPE;
       const foreignKey = column.foreignKey;
     #>
@@ -1174,8 +1216,26 @@ export function equalsByUnique(
   if (<#
     for (let k = 0; k < uniques.length; k++) {
       const unique = uniques[k];
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (!column) {
+        throw new Error(`找不到列：${ unique }, 请检查表 ${ table } 的索引配置opts.uniques: ${ uniques.join(",") }`);
+      }
+      const data_type = column.DATA_TYPE;
+    #><#
+      if (data_type === "date" && !column.isMonth) {
     #>
-    oldModel.<#=unique#> === model.<#=unique#><#=(k === uniques.length - 1) ? "" : " &&" #><#
+    dayjs(oldModel.<#=unique#>).isSame(model.<#=unique#>)<#
+      } else if (data_type === "date" && column.isMonth) {
+    #>
+    dayjs(oldModel.<#=unique#>).isSame(model.<#=unique#>, "month")<#
+      } else if (data_type === "decimal") {
+    #>
+    String(oldModel.<#=unique#>) === String(model.<#=unique#>)<#
+      } else {
+    #>
+    oldModel.<#=unique#> === model.<#=unique#><#
+      }
+    #><#=(k === uniques.length - 1) ? "" : " &&" #><#
     }
     #>
   ) {
@@ -1188,19 +1248,20 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {<#=inputName#>} model
+ * @param {<#=inputName#>} input
  * @param {<#=modelName#>} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: <#=inputName#>,
+  input: <#=inputName#>,
   oldModel: <#=modelName#>,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
+    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
@@ -1209,10 +1270,13 @@ export async function checkByUnique(
       const result = await updateById(
         oldModel.id,
         {
-          ...model,
+          ...input,
           id: undefined,
         },
-        options
+        {
+          ...options,
+          isEncrypt: false,
+        },
       );
       return result;
     }
@@ -1359,7 +1423,7 @@ export async function existById(
   #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
   }
   #>
   
@@ -1562,10 +1626,47 @@ export async function create(
   input: <#=inputName#>,
   options?: {
     uniqueType?: UniqueType;
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
   const method = "create";<#
+  if (hasEncrypt) {
+  #>
+  if (options?.isEncrypt !== false) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (!column.isEncrypt) {
+        continue;
+      }
+      const column_name = column.COLUMN_NAME;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_name === 'id') column_comment = 'ID';
+    #>
+    // <#=column_comment#>
+    if (input.<#=column_name#> != null) {
+      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
+    }<#
+    }
+    #>
+  }<#
+  }
+  #><#
   if (hasDict) {
   #>
   
@@ -1780,7 +1881,14 @@ export async function create(
   // <#=column_comment#>
   if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
     input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
-    input.<#=column_name#> = input.<#=column_name#>_lbl;
+    input.<#=column_name#> = input.<#=column_name#>_lbl;<#
+    if (column.isMonth) {
+    #>
+    if (input.<#=column_name#>) {
+      input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+    }<#
+    }
+    #>
   }<#
   }
   #><#
@@ -2336,7 +2444,7 @@ if (hasOrgId) {
 #>
 
 /**
- * 根据id修改部门id
+ * 根据id修改组织id
  * @export
  * @param {string} id
  * @param {string} org_id
@@ -2421,7 +2529,8 @@ export async function updateById(
   id: string,
   input: <#=inputName#>,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create";
+    uniqueType?: "ignore" | "throw";
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
@@ -2433,6 +2542,42 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }<#
+  if (hasEncrypt) {
+  #>
+  if (options?.isEncrypt !== false) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (!column.isEncrypt) {
+        continue;
+      }
+      const column_name = column.COLUMN_NAME;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_name === 'id') column_comment = 'ID';
+    #>
+    // <#=column_comment#>
+    if (input.<#=column_name#> != null) {
+      input.<#=column_name#> = await encrypt(input.<#=column_name#>);
+    }<#
+    }
+    #>
+  }<#
+  }
+  #><#
   if (hasDict) {
   #>
   
@@ -2549,7 +2694,7 @@ export async function updateById(
   if (hasOrgId) {
   #>
   
-  // 修改部门id
+  // 修改组织id
   if (isNotEmpty(input.org_id)) {
     await updateOrgById(id, input.org_id);
   }<#
@@ -2782,7 +2927,11 @@ export async function updateById(
     let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      throw await ns("数据已经存在");
+      if (!options || options.uniqueType === UniqueType.Throw) {
+        throw await ns("数据已经存在");
+      } else if (options.uniqueType === UniqueType.Ignore) {
+        return id;
+      }
     }
   }
   

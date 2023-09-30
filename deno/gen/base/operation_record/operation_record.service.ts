@@ -41,8 +41,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<OperationRecordModel[]> {
   search = search || { };
-  const data: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort);
-  return data;
+  const models: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -54,8 +54,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<OperationRecordModel | undefined> {
   search = search || { };
-  const data = await operation_recordDao.findOne(search, sort);
-  return data;
+  const model = await operation_recordDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -65,8 +65,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<OperationRecordModel | undefined> {
-  const data = await operation_recordDao.findById(id);
-  return data;
+  const model = await operation_recordDao.findById(id);
+  return model;
 }
 
 /**

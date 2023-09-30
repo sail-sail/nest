@@ -43,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DomainModel[]> {
   search = search || { };
-  const data: DomainModel[] = await domainDao.findAll(search, page, sort);
-  return data;
+  const models: DomainModel[] = await domainDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -56,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DomainModel | undefined> {
   search = search || { };
-  const data = await domainDao.findOne(search, sort);
-  return data;
+  const model = await domainDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -67,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<DomainModel | undefined> {
-  const data = await domainDao.findById(id);
-  return data;
+  const model = await domainDao.findById(id);
+  return model;
 }
 
 /**

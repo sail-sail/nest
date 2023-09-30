@@ -398,7 +398,7 @@ export function useDownloadImportTemplate(routePath: string) {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query {
           getFieldCommentsDataPermit {
@@ -421,13 +421,8 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "scope",
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "data_permit_scope",
+            "data_permit_type",
           ]) {
             code
             lbl
@@ -439,9 +434,11 @@ export function useDownloadImportTemplate(routePath: string) {
     });
     const buffer = await workerFn(
       `${ location.origin }/import_template/base/data_permit.xlsx`,
-      `${ location.origin }${ queryStr }`,
+      {
+        data,
+      },
     );
-    saveAsExcel(buffer, `${ await nAsync("数据权限") }${ await nsAsync("导入模板") }`);
+    saveAsExcel(buffer, `${ await nAsync("数据权限") }${ await nsAsync("导入") }`);
   }
   return {
     workerFn: workerFn2,
@@ -468,7 +465,7 @@ export function useExportExcel(routePath: string) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    const queryStr = getQueryUrl({
+    const data = await query({
       query: /* GraphQL */ `
         query($search: DataPermitSearch, $sort: [SortInput!]) {
           findAllDataPermit(search: $search, sort: $sort) {
@@ -508,13 +505,8 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           getDict(codes: [
-            "scope",
-            "type",
-          ]) {
-            code
-            lbl
-          }
-          getDictbiz(codes: [
+            "data_permit_scope",
+            "data_permit_type",
           ]) {
             code
             lbl
@@ -529,7 +521,9 @@ export function useExportExcel(routePath: string) {
     try {
       const buffer = await workerFn(
         `${ location.origin }/excel_template/base/data_permit.xlsx`,
-        `${ location.origin }${ queryStr }`,
+        {
+          data,
+        },
       );
       saveAsExcel(buffer, await nAsync("数据权限"));
     } catch (err) {

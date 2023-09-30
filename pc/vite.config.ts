@@ -126,6 +126,7 @@ export default defineConfig({
             "usePage",
             "useSelect",
             "useSelectOne",
+            "monthrangeSearch",
             "useTableColumns",
             "initListI18ns",
             "initBuiltInSearch",
@@ -163,6 +164,9 @@ export default defineConfig({
           ],
           "@/store/index": [
             [ "default", "useIndexStore" ],
+          ],
+          "@/store/dirty": [
+            [ "default", "useDirtyStore" ],
           ],
           "@/utils/axios": [
             "axios",

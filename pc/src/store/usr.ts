@@ -89,7 +89,6 @@ export default defineStore("usr", function() {
   persist: {
     paths: [
       "authorization",
-      "dept_id",
       "username",
       "tenant_id",
       "loginInfo",

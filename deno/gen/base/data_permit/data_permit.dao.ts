@@ -31,6 +31,7 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
+  hash,
 } from "/lib/util/string_util.ts";
 
 import {
@@ -227,7 +228,7 @@ export async function findCount(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     total: number,
@@ -295,7 +296,7 @@ export async function findAll(
   
   // 缓存
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   const result = await query<DataPermitModel>(
     sql,
@@ -364,7 +365,7 @@ export async function findAll(
     }
     
     // 系统字段
-    let is_sys_lbl = model.is_sys.toString();
+    let is_sys_lbl = model.is_sys?.toString() || "";
     if (model.is_sys !== undefined && model.is_sys !== null) {
       const dictItem = is_sysDict.find((dictItem) => dictItem.val === model.is_sys.toString());
       if (dictItem) {
@@ -477,19 +478,20 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {DataPermitInput} model
+ * @param {DataPermitInput} input
  * @param {DataPermitModel} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: DataPermitInput,
+  input: DataPermitInput,
   oldModel: DataPermitModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
+    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
@@ -498,10 +500,13 @@ export async function checkByUnique(
       const result = await updateById(
         oldModel.id,
         {
-          ...model,
+          ...input,
           id: undefined,
         },
-        options
+        {
+          ...options,
+          isEncrypt: false,
+        },
       );
       return result;
     }
@@ -590,7 +595,7 @@ export async function existById(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     e: number,
@@ -686,6 +691,7 @@ export async function create(
   input: DataPermitInput,
   options?: {
     uniqueType?: UniqueType;
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_data_permit";
@@ -877,7 +883,8 @@ export async function updateById(
   id: string,
   input: DataPermitInput,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create";
+    uniqueType?: "ignore" | "throw";
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_data_permit";
@@ -941,7 +948,11 @@ export async function updateById(
     let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      throw await ns("数据已经存在");
+      if (!options || options.uniqueType === UniqueType.Throw) {
+        throw await ns("数据已经存在");
+      } else if (options.uniqueType === UniqueType.Ignore) {
+        return id;
+      }
     }
   }
   

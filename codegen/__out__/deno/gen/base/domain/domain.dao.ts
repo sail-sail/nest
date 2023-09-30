@@ -31,6 +31,7 @@ import {
   isEmpty,
   sqlLike,
   shortUuidV4,
+  hash,
 } from "/lib/util/string_util.ts";
 
 import {
@@ -80,6 +81,15 @@ async function getWhereQuery(
   }
   if (search?.ids && search?.ids.length > 0) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+  }
+  if (search?.protocol !== undefined) {
+    whereQuery += ` and t.protocol = ${ args.push(search.protocol) }`;
+  }
+  if (search?.protocol === null) {
+    whereQuery += ` and t.protocol is null`;
+  }
+  if (isNotEmpty(search?.protocol_like)) {
+    whereQuery += ` and t.protocol like ${ args.push(sqlLike(search?.protocol_like) + "%") }`;
   }
   if (search?.lbl !== undefined) {
     whereQuery += ` and t.lbl = ${ args.push(search.lbl) }`;
@@ -219,7 +229,7 @@ export async function findCount(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     total: number,
@@ -286,7 +296,7 @@ export async function findAll(
   
   // 缓存
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   const result = await query<DomainModel>(
     sql,
@@ -311,7 +321,7 @@ export async function findAll(
     const model = result[i];
     
     // 锁定
-    let is_locked_lbl = model.is_locked.toString();
+    let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked !== undefined && model.is_locked !== null) {
       const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
       if (dictItem) {
@@ -321,7 +331,7 @@ export async function findAll(
     model.is_locked_lbl = is_locked_lbl;
     
     // 默认
-    let is_default_lbl = model.is_default.toString();
+    let is_default_lbl = model.is_default?.toString() || "";
     if (model.is_default !== undefined && model.is_default !== null) {
       const dictItem = is_defaultDict.find((dictItem) => dictItem.val === model.is_default.toString());
       if (dictItem) {
@@ -331,7 +341,7 @@ export async function findAll(
     model.is_default_lbl = is_default_lbl;
     
     // 启用
-    let is_enabled_lbl = model.is_enabled.toString();
+    let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled !== undefined && model.is_enabled !== null) {
       const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
       if (dictItem) {
@@ -375,6 +385,7 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
   const n = initN(route_path);
   const fieldComments: DomainFieldComment = {
     id: await n("ID"),
+    protocol: await n("协议"),
     lbl: await n("名称"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
@@ -451,19 +462,20 @@ export function equalsByUnique(
 
 /**
  * 通过唯一约束检查数据是否已经存在
- * @param {DomainInput} model
+ * @param {DomainInput} input
  * @param {DomainModel} oldModel
  * @param {UniqueType} uniqueType
  * @return {Promise<string>}
  */
 export async function checkByUnique(
-  model: DomainInput,
+  input: DomainInput,
   oldModel: DomainModel,
   uniqueType: UniqueType = UniqueType.Throw,
   options?: {
+    isEncrypt?: boolean;
   },
 ): Promise<string | undefined> {
-  const isEquals = equalsByUnique(oldModel, model);
+  const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("数据已经存在"));
@@ -472,10 +484,13 @@ export async function checkByUnique(
       const result = await updateById(
         oldModel.id,
         {
-          ...model,
+          ...input,
           id: undefined,
         },
-        options
+        {
+          ...options,
+          isEncrypt: false,
+        },
       );
       return result;
     }
@@ -564,7 +579,7 @@ export async function existById(
   `;
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
   interface Result {
     e: number,
@@ -592,6 +607,13 @@ export async function validate(
     input.id,
     22,
     fieldComments.id,
+  );
+  
+  // 协议
+  await validators.chars_max_length(
+    input.protocol,
+    10,
+    fieldComments.protocol,
   );
   
   // 名称
@@ -639,6 +661,7 @@ export async function create(
   input: DomainInput,
   options?: {
     uniqueType?: UniqueType;
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_domain";
@@ -724,6 +747,9 @@ export async function create(
       sql += `,update_usr_id`;
     }
   }
+  if (input.protocol !== undefined) {
+    sql += `,protocol`;
+  }
   if (input.lbl !== undefined) {
     sql += `,lbl`;
   }
@@ -758,6 +784,9 @@ export async function create(
     if (authModel?.id !== undefined) {
       sql += `,${ args.push(authModel.id) }`;
     }
+  }
+  if (input.protocol !== undefined) {
+    sql += `,${ args.push(input.protocol) }`;
   }
   if (input.lbl !== undefined) {
     sql += `,${ args.push(input.lbl) }`;
@@ -820,7 +849,8 @@ export async function updateById(
   id: string,
   input: DomainInput,
   options?: {
-    uniqueType?: "ignore" | "throw" | "create";
+    uniqueType?: "ignore" | "throw";
+    isEncrypt?: boolean;
   },
 ): Promise<string> {
   const table = "base_domain";
@@ -875,7 +905,11 @@ export async function updateById(
     let models = await findByUnique(input2);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      throw await ns("数据已经存在");
+      if (!options || options.uniqueType === UniqueType.Throw) {
+        throw await ns("数据已经存在");
+      } else if (options.uniqueType === UniqueType.Ignore) {
+        return id;
+      }
     }
   }
   
@@ -890,6 +924,12 @@ export async function updateById(
     update base_domain set
   `;
   let updateFldNum = 0;
+  if (input.protocol !== undefined) {
+    if (input.protocol != oldModel.protocol) {
+      sql += `protocol = ${ args.push(input.protocol) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl !== undefined) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl = ${ args.push(input.lbl) },`;

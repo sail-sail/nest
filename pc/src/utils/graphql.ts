@@ -108,7 +108,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   if (queryInfos2.length === 1 && queryInfosRepeat2.length === 0) {
     return await gqlQuery(gqlArg, opt);
   }
-  if (queryInfos2.length > 1) {
+  if (queryInfos2.length >= 1) {
     for (let i = 0; i < queryInfos2.length; i++) {
       const queryInfo = queryInfos2[i];
       const hash = `l${ uniqueID() }`;

@@ -5,6 +5,7 @@
   un-w="full"
   v-bind="$attrs"
   v-model="modelValue"
+  :type="props.type"
   :clearable="!props.disabled"
   :disabled="props.disabled"
   @change="onChange"
@@ -40,6 +41,8 @@
 </template>
 
 <script lang="ts" setup>
+import type { IDatePickerType } from "element-plus/es/components/date-picker/src/date-picker.type";
+
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
@@ -50,13 +53,15 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     modelValue?: any;
+    type?: IDatePickerType;
     format?: string;
     disabled?: boolean;
     readonly?: boolean;
   }>(),
   {
     modelValue: undefined,
-    format: "YYYY-MM-DD",
+    type: "date",
+    format: undefined,
     disabled: undefined,
     readonly: undefined,
   },
@@ -71,9 +76,25 @@ watch(
   },
 );
 
+let format = $computed(() => {
+  if (props.format) {
+    return props.format;
+  }
+  if (props.type === "datetime") {
+    return "YYYY-MM-DD HH:mm:ss";
+  }
+  if (props.type === "month") {
+    return "YYYY-MM";
+  }
+  if (props.type === "year") {
+    return "YYYY";
+  }
+  return "YYYY-MM-DD";
+});
+
 let modelLabel = $computed(() => {
   if (modelValue) {
-    return dayjs(modelValue).format(props.format ?? "YYYY-MM-DD");
+    return dayjs(modelValue).format(format);
   }
   return "";
 });

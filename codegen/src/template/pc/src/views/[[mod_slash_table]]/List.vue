@@ -3,6 +3,7 @@ const hasSummary = columns.some((column) => column.showSummary && !column.onlyCo
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsMonth = columns.some((column) => column.isMonth);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -233,19 +234,31 @@ const hasAtt = columns.some((item) => item.isAtt);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <el-date-picker
-            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
-            type="daterange"
-            un-w="full"
+          <CustomDatePicker
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"<#
+            if (column.isMonth) {
+            #>
+            type="monthrange"<#
+            } else {
+            #>
+            type="daterange"<#
+            }
+            #>
             :model-value="(search.<#=column_name#> as any)"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             format="YYYY-MM-DD"
-            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"
-            clearable
-            @update:model-value="search.<#=column_name#> = $event"
+            :default-time="[ new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59) ]"<#
+            if (column.isMonth) {
+            #>
+            @update:model-value="monthrangeSearch(search.<#=column_name#>, $event)"<#
+            } else {
+            #>
+            @update:model-value="search.<#=column_name#> = $event"<#
+            }
+            #>
             @clear="onSearchClear"
-          ></el-date-picker>
+          ></CustomDatePicker>
         </el-form-item>
       </template><#
       } else if (column_type === "int(1)") {
@@ -277,6 +290,22 @@ const hasAtt = columns.some((item) => item.isAtt);
             clearable
             @clear="onSearchClear"
           ></el-input-number>
+        </el-form-item>
+      </template><#
+      } else if (column.isEncrypt) {
+      #>
+      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+        <el-form-item
+          :label="n('<#=column_comment#>')"
+          prop="<#=column_name#>"
+        >
+          <el-input
+            v-model="search.<#=column_name#>"
+            un-w="full"
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+            clearable
+            @clear="onSearchClear"
+          ></el-input>
         </el-form-item>
       </template><#
       } else {
@@ -574,7 +603,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item><#
               }
             #><#
-              if (hasEnabled && opts.noEdit !== true) {
+              if (hasEnabled && opts.noEdit !== true && !columns.find((item) => item.COLUMN_NAME === "is_enabled").readonly) {
             #>
             
             <el-dropdown-item
@@ -594,7 +623,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item><#
             }
             #><#
-              if (hasLocked && opts.noEdit !== true) {
+              if (hasLocked && opts.noEdit !== true && !columns.find((item) => item.COLUMN_NAME === "is_locked").readonly) {
             #>
             
             <el-dropdown-item
@@ -921,7 +950,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   {{ row[column.property] }}
                 </el-link>
               </template><#
-              } else if(column.isSwitch && opts.noEdit !== true && column_name === "is_default") {
+              } else if(column.isSwitch && opts.noEdit !== true && !column.readonly && column_name === "is_default") {
               #>
               <template #default="{ row }">
                 <CustomSwitch
@@ -935,7 +964,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id)"
                 ></CustomSwitch>
               </template><#
-              } else if(column.isSwitch && opts.noEdit !== true) {
+              } else if(column.isSwitch && opts.noEdit !== true && !column.readonly) {
               #>
               <template #default="{ row }">
                 <CustomSwitch
@@ -1199,6 +1228,14 @@ const hasAtt = columns.some((item) => item.isAtt);
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";<#
+if (hasIsMonth) {
+#>
+
+import {
+  monthrangeSearch,
+} from "@/compositions/List";<#
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1330,6 +1367,10 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
   if (table === foreignTable) continue;
   if (foreignTableUpArr.includes(foreignTableUp)) continue;
+  const search = column.search;
+  if (!search) {
+    continue;
+  }
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
@@ -1345,6 +1386,7 @@ const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
 const foreignKeyCommentArr = [ ];
+const foreignKeyArrColumns = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1366,11 +1408,22 @@ for (let i = 0; i < columns.length; i++) {
     if (!foreignTableArr.includes(foreignTable)) {
       foreignTableArr.push(foreignTable);
       foreignKeyCommentArr.push(column_comment);
+      foreignKeyArrColumns.push(column);
     }
   }
 }
 #><#
-if (foreignTableArr.length > 0) {
+if (
+  foreignKeyArrColumns.some((item) => {
+    const foreignKey = item.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      return false;
+    }
+    return true;
+  })
+) {
 #>
 
 import {<#
@@ -1380,8 +1433,15 @@ import {<#
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const column_comment = foreignKeyCommentArr[i];
+    const column = foreignKeyArrColumns[i];
+    const foreignKey = column.foreignKey;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    if (foreignSchema && foreignSchema.opts.list_tree) {
+      continue;
+    }
   #>
-  get<#=Foreign_Table_Up#>List,<#
+  get<#=Foreign_Table_Up#>List, // <#=column_comment#><#
   }
   #>
 } from "./Api";<#
@@ -1450,6 +1510,8 @@ defineOptions({
   name: "<#=optionsName#>",
 });
 
+const pageName = getCurrentInstance()?.type?.name as string;
+
 const {
   n,
   nAsync,
@@ -1461,6 +1523,9 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const dirtyStore = useDirtyStore();
+
+const clearDirty = dirtyStore.onDirty(onRefresh);
 
 const permit = permitStore.getPermit("/<#=mod#>/<#=table#>");
 
@@ -1542,6 +1607,7 @@ async function onSearch() {
 
 /** 刷新 */
 async function onRefresh() {
+  tableFocus();
   emit("refresh");
   await dataGrid(true);
 }
@@ -1651,8 +1717,12 @@ const props = defineProps<{
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else {
   #>
-  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+    if (!column.isEncrypt) {
+  #>
   <#=column_name#>_like?: <#=data_type#>;<#=column_comment#><#
+    }
+  #><#
     }
   #><#
   }
@@ -1774,6 +1844,7 @@ let {
   onRowRight,
   onRowHome,
   onRowEnd,
+  tableFocus,
 } = $(useSelect<<#=modelName#>>(
   $$(tableRef),
   {
@@ -2067,13 +2138,26 @@ async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
+  clearDirty();
   if (isCount) {
     await Promise.all([
       useFindAll(opt),
-      useFindCount(opt),
+      useFindCount(opt),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
     ]);
   } else {
-    await useFindAll(opt);
+    await Promise.all([
+      useFindAll(opt),<#
+      if (hasSummary) {
+      #>
+      dataSummary(),<#
+      }
+      #>
+    ]);
   }
 }
 
@@ -2262,20 +2346,15 @@ async function openAdd() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }
 
@@ -2302,15 +2381,15 @@ async function openCopy() {
       id: selectedIds[selectedIds.length - 1],
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
   selectedIds = [
     ...changedIds,
   ];
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
   emit("add", changedIds);
 }<#
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
@@ -2361,6 +2440,15 @@ async function onImportExcel() {
       column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
     const foreignKey = column.foreignKey;
+    if (
+      [
+        "create_usr_id", "create_time", "update_usr_id", "update_time",
+        "is_default",
+      ].includes(column_name)
+      || column.readonly
+    ) {
+      continue;
+    }
     let column_name2 = column_name;
     if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
@@ -2374,7 +2462,9 @@ async function onImportExcel() {
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
+    accept: ".xlsx",
   });
+  tableFocus();
   if (!file) {
     return;
   }
@@ -2388,7 +2478,7 @@ async function onImportExcel() {
       file,
       header,
       {
-        date_keys: [<#
+        key_types: {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
@@ -2409,14 +2499,35 @@ async function onImportExcel() {
             if (column_comment.indexOf("[") !== -1) {
               column_comment = column_comment.substring(0, column_comment.indexOf("["));
             }
-            if (![ "datetime", "date" ].includes(data_type)) {
+            const foreignKey = column.foreignKey;
+            if (
+              [
+                "create_usr_id", "create_time", "update_usr_id", "update_time",
+                "is_default",
+              ].includes(column_name)
+              || column.readonly
+            ) {
               continue;
             }
+            let column_name2 = column_name;
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz
+              || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+            ) {
+              column_name2 = `${column_name}_lbl`;
+            }
+            let data_type2 = "string";
+            if ([ "datetime", "date" ].includes(data_type)) {
+              data_type2 = "date";
+            } else if (data_type === "int" || data_type === "tinyint" || data_type === "double") {
+              data_type2 = "number";
+            } else if (data_type === "varchar" || data_type === "text" || data_type === "char" || data_type === "decimal") {
+              data_type2 = "string";
+            }
           #>
-          await nAsync("<#=column_comment#>"),<#
+          "<#=column_name2#>": "<#=data_type2#>",<#
           }
           #>
-        ],
+        },
       },
     );
     const res = await importModels(
@@ -2434,6 +2545,7 @@ async function onImportExcel() {
     ElMessageBox.alert(msg)
   }
   if (succNum > 0) {
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }
@@ -2489,6 +2601,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2512,6 +2625,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2535,6 +2649,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2560,6 +2675,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
       notLoading,
     },
   );
+  dirtyStore.fireDirty(pageName);
   await dataGrid(
     true,
     {
@@ -2597,17 +2713,12 @@ async function openEdit() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }<#
 }
@@ -2653,17 +2764,12 @@ async function openView() {
       ids: selectedIds,
     },
   });
+  tableFocus();
   if (changedIds.length === 0) {
     return;
   }
-  await Promise.all([
-    dataGrid(),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
-  ]);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
   emit("edit", changedIds);
 }<#
 if (opts.noDelete !== true) {
@@ -2671,6 +2777,7 @@ if (opts.noDelete !== true) {
 
 /** 点击删除 */
 async function onDeleteByIds() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2690,14 +2797,8 @@ async function onDeleteByIds() {
   const num = await deleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("删除 {0} 条数据成功", num));
     emit("remove", num);
   }
@@ -2725,14 +2826,8 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} 条数据成功", num));
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
   }
 }<#
 }
@@ -2742,6 +2837,7 @@ async function onForceDeleteByIds() {
 
 /** 点击启用或者禁用 */
 async function onEnableByIds(is_enabled: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2764,6 +2860,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
       msg = await nsAsync("禁用 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -2774,6 +2871,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 
 /** 点击锁定或者解锁 */
 async function onLockByIds(is_locked: 0 | 1) {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2796,6 +2894,7 @@ async function onLockByIds(is_locked: 0 | 1) {
       msg = await nsAsync("解锁 {0} 条数据成功", num);
     }
     ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
 }<#
@@ -2806,6 +2905,7 @@ if (opts.noDelete !== true && opts.noRevert !== true) {
 
 /** 点击还原 */
 async function revertByIdsEfc() {
+  tableFocus();
   if (isLocked) {
     return;
   }
@@ -2825,14 +2925,8 @@ async function revertByIdsEfc() {
   const num = await revertByIds(selectedIds);
   if (num) {
     search.is_deleted = 0;
-    await Promise.all([
-      dataGrid(true),<#
-      if (hasSummary) {
-      #>
-      dataSummary(),<#
-      }
-      #>
-    ]);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
     ElMessage.success(await nsAsync("还原 {0} 条数据成功", num));
     emit("revert", num);
   }
@@ -2857,6 +2951,7 @@ async function onOpenForeignTabs() {
   }
   const id = selectedIds[0];
   await openForeignTabs(id, "");
+  tableFocus();
 }<#
 }
 #>
@@ -2871,6 +2966,7 @@ async function openForeignTabs(id: string, title: string) {
       id,
     },
   });
+  tableFocus();
 }<#
 }
 #>
@@ -2914,12 +3010,7 @@ async function initFrame() {
   }
   await Promise.all([
     initI18nsEfc(),
-    dataGrid(true),<#
-    if (hasSummary) {
-    #>
-    dataSummary(),<#
-    }
-    #>
+    dataGrid(true),
   ]);
   if (tableData.length === 1) {
     await nextTick();
@@ -2931,10 +3022,13 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    search = {
+    const search2 = {
       ...search,
       ...builtInSearch,
     };
+    if (deepCompare(search, search2)) {
+      return;
+    }
     await dataGrid(true);
   },
   {
@@ -3019,6 +3113,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   }
   row.<#=column_name#> = selectedIds2;
   await updateById(row.id, { <#=column_name#>: selectedIds2 });
+  dirtyStore.fireDirty(pageName);
   await dataGrid();
 }<#
   }

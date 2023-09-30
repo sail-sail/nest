@@ -1,4 +1,6 @@
-
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
 
 import type {
   UniqueType,
@@ -41,8 +43,8 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<LangModel[]> {
   search = search || { };
-  const data: LangModel[] = await langDao.findAll(search, page, sort);
-  return data;
+  const models: LangModel[] = await langDao.findAll(search, page, sort);
+  return models;
 }
 
 /**
@@ -54,8 +56,8 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<LangModel | undefined> {
   search = search || { };
-  const data = await langDao.findOne(search, sort);
-  return data;
+  const model = await langDao.findOne(search, sort);
+  return model;
 }
 
 /**
@@ -65,8 +67,8 @@ export async function findOne(
 export async function findById(
   id?: string | null,
 ): Promise<LangModel | undefined> {
-  const data = await langDao.findById(id);
-  return data;
+  const model = await langDao.findById(id);
+  return model;
 }
 
 /**
@@ -129,6 +131,11 @@ export async function updateById(
   input: LangInput,
 ): Promise<string> {
   
+  // 不能修改系统记录的系统字段
+  const model = await langDao.findById(id);
+  if (model && model.is_sys === 1) {
+  }
+  
   const data = await langDao.updateById(id, input);
   return data;
 }
@@ -141,6 +148,22 @@ export async function updateById(
 export async function deleteByIds(
   ids: string[],
 ): Promise<number> {
+  
+  {
+    const ids2: string[] = [ ];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const model = await langDao.findById(id);
+      if (model && model.is_sys === 1) {
+        continue;
+      }
+      ids2.push(id);
+    }
+    if (ids2.length === 0 && ids.length > 0) {
+      throw await ns("不能删除系统记录");
+    }
+    ids = ids2;
+  }
   
   const data = await langDao.deleteByIds(ids);
   return data;

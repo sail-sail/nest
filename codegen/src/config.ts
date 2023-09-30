@@ -519,6 +519,21 @@ export interface TableCloumn {
    */
   validators?: Validator[],
   
+  /**
+   * 数据库字段是否加密, 默认为false
+   */
+  isEncrypt?: boolean,
+  
+  /**
+   * 日期控件时是否只取月份, 默认为false
+   */
+  isMonth?: boolean,
+  
+  /**
+   * 不允许修改, 不允许增加, 不在导入模板中显示, 默认为false
+   */
+  readonly?: boolean,
+  
 }
 
 /**

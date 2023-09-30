@@ -2,22 +2,22 @@ export { defineGraphql } from "/lib/oak/gql.ts";
 
 import { AsyncHooksContextManager } from "./async_hooks/AsyncHooksContextManager.ts";
 
-import {
-  type Redis,
-  type RedisConnectOptions,
+import type {
+  Redis,
+  RedisConnectOptions,
 } from "redis";
 
-import {
-  type Client,
-  type ClientConfig,
+import type {
+  Client,
+  ClientConfig,
 } from "./mysql/mod.ts";
 
-import {
-  type PoolConnection,
+import type {
+  PoolConnection,
 } from "./mysql/src/pool.ts";
 
-import {
-  type FieldInfo,
+import type {
+  FieldInfo,
 } from "./mysql/src/packets/parsers/result.ts";
 
 import { Context as OakContext } from "oak";

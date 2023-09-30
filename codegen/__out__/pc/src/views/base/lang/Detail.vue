@@ -2,6 +2,9 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  @keydown.page-down="onPageDown"
+  @keydown.page-up="onPageUp"
+  @keydown.insert="onInsert"
 >
   <template #extra_header>
     <template v-if="!isLocked">
@@ -187,9 +190,6 @@ import type {
   LangInput,
 } from "#/types";
 
-import {
-} from "./Api";
-
 const emit = defineEmits<{
   nextId: [
     {
@@ -248,22 +248,12 @@ watchEffect(async () => {
         max: 10,
         message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
       },
-      {
-        type: "string",
-        max: 10,
-        message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
-      },
     ],
     // 名称
     lbl: [
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("名称") }`,
-      },
-      {
-        type: "string",
-        max: 22,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
       {
         type: "string",
@@ -413,6 +403,11 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
+/** 键盘按 Insert */
+function onInsert() {
+  isReadonly = !isReadonly;
+}
+
 /** 刷新 */
 async function onRefresh() {
   if (!dialogModel.id) {
@@ -427,9 +422,15 @@ async function onRefresh() {
   }
 }
 
+/** 键盘按 PageUp */
+async function onPageUp() {
+  await prevId();
+}
+
 /** 点击上一项 */
 async function onPrevId() {
   await prevId();
+  customDialogRef?.focus();
 }
 
 /** 上一项 */
@@ -457,9 +458,15 @@ async function prevId() {
   return true;
 }
 
+/** 键盘按 PageDown */
+async function onPageDown() {
+  await nextId();
+}
+
 /** 点击下一项 */
 async function onNextId() {
   await nextId();
+  customDialogRef?.focus();
 }
 
 /** 下一项 */

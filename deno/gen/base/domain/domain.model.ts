@@ -28,6 +28,7 @@ export interface DomainInput extends DomainInputType {
 
 export interface DomainFieldComment {
   id: string;
+  protocol: string;
   lbl: string;
   is_locked: string;
   is_locked_lbl: string;

@@ -15,7 +15,7 @@ import {
 
 export async function execCsvFile(context: Context, item: string) {
   let tableName = path.basename(item, path.extname(item));
-  tableName = path.basename(tableName, path.extname(tableName));
+  tableName = tableName.split(".")[0];
   {
     const idx = tableName.indexOf("-");
     if (idx !== -1) {

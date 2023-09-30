@@ -301,9 +301,10 @@ export async function request(
 }
 
 export function getAppid() {
-  const appbaseInfo = uni.getAppBaseInfo();
-  let appid = (appbaseInfo as any).host?.appId;
-  return appid;
+  // const appbaseInfo = uni.getAppBaseInfo();
+  // let appid = (appbaseInfo as any).host?.appId;
+  // return appid;
+  return cfg.appid;
 }
 
 async function code2Session(
@@ -333,7 +334,7 @@ export async function uniLogin() {
   } catch (err) {
   }
   if (providers && providers.includes("weixin")) {
-    const systemInfo = await uni.getSystemInfo();
+    const systemInfo = uni.getSystemInfoSync();
     let appLanguage = systemInfo.appLanguage?.toLocaleLowerCase() || "zh-cn";
     if (appLanguage === "en") {
       appLanguage = "en-us";
@@ -341,12 +342,15 @@ export async function uniLogin() {
       appLanguage = "zh-cn";
     }
     const loginRes = await uni.login({ provider: "weixin" });
-    const code = loginRes.code;
-    await code2Session({
-      code,
-      lang: appLanguage,
-    });
-    return true;
+    const code = loginRes?.code;
+    if (code) {
+      await code2Session({
+        code,
+        lang: appLanguage,
+      });
+      return true;
+    }
+    return false;
   }
   return false;
 }
