@@ -1,3 +1,4 @@
+// npm run build -- -- uni
 const child_process = require("node:child_process");
 const minimist = require("minimist");
 
@@ -38,6 +39,25 @@ async function pc() {
   });
 }
 
+async function uni() {
+  console.log("uni");
+  child_process.execSync("npm run build:h5", {
+    cwd: `${ projectDir }/uni`,
+    stdio: "inherit",
+  });
+  await mkdir(`${ buildDir }/uni`, { recursive: true });
+  await remove(`${ buildDir }/uni/`);
+  await move(`${ projectDir }/uni/dist/build/h5/`, `${ buildDir }/uni/`);
+}
+
+async function docs() {
+  console.log("docs");
+  child_process.execSync("npm run docs:build", {
+    cwd: `${ projectDir }/`,
+    stdio: "inherit",
+  });
+}
+
 async function compile() {
   console.log("compile");
   const cwd = `${ projectDir }/rust/`;
@@ -54,6 +74,7 @@ async function compile() {
     stdio: "inherit",
   });
   await mkdir(`${ buildDir }/rust`, { recursive: true });
+  await remove(`${ buildDir }/rust/server`);
   await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/server`, `${ buildDir }/rust/server`);
 }
 
@@ -65,7 +86,29 @@ async function compile() {
 //   });
 // }
 
+if (commands.length > 0) {
+  console.log("commands", commands);
+}
+
 (async function() {
+  for (let i = 0; i < commands.length; i++) {
+    const command = commands[i].trim();
+    if (command === "copyEnv") {
+      await copyEnv();
+    } else if (command === "gqlgen") {
+      await gqlgen();
+    } else if (command === "compile") {
+      await compile();
+    } else if (command === "pc") {
+      await pc();
+    } else if (command === "uni") {
+      await uni();
+    } else if (command === "docs") {
+      await docs();
+    } else if (command === "publish") {
+      await publish();
+    }
+  }
   if (commands.length === 0) {
     await remove(buildDir);
     await mkdir(buildDir, { recursive: true });
@@ -76,8 +119,10 @@ async function compile() {
     await copyEnv();
     await gqlgen();
     await compile();
-    // await publish();
     await pc();
+    await uni();
+    // await docs();
+    // await publish();
     process.exit(0);
   }
 })();
