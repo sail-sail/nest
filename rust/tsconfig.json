@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "module": "commonjs",
+    "strict": false,
+    "declaration": false,
+    "noImplicitAny": false,
+    "removeComments": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "target": "esnext",
+    "allowJs": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "esModuleInterop": false,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "lib": [
+      "esnext"
+    ]
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "swc": true
+  }
+}
