@@ -33,6 +33,12 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
+const hasEncrypt = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  return !!column.isEncrypt;
+});
 #>use anyhow::Result;
 use tracing::info;
 <#
@@ -44,11 +50,22 @@ use crate::common::auth::auth_dao::get_password;<#
 use crate::common::util::string::*;<#
 if (hasMany2many) {
 #>
-use crate::common::util::dao::{many2many_update, ManyOpts};<#
+
+use crate::common::util::dao::{
+  many2many_update,
+  ManyOpts,
+};<#
+}
+#><#
+if (hasEncrypt) {
+#>
+
+use crate::common::util::dao::encrypt;<#
 }
 #><#
 if (hasDataPermit()) {
 #>
+
 use crate::src::data_permit::data_permit_dao::get_data_permits;
 use crate::src::dept::dept_dao::{
   get_auth_dept_ids,
@@ -1130,11 +1147,17 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
+    let options = Options::new();<#
+    if (hasEncrypt) {
+    #>
+    let options = options.set_is_encrypt(false);<#
+    }
+    #>
     let id = update_by_id(
       ctx,
       model.id.clone(),
       input,
-      None,
+      Some(options),
     ).await?;
     return Ok(id.into());
   }
@@ -1509,7 +1532,54 @@ pub async fn create<'a>(
   )?;
   
   let table = "<#=mod#>_<#=table#>";
-  let _method = "create";
+  let _method = "create";<#
+  if (hasEncrypt) {
+  #>
+  
+  let is_encrypt = {
+    if options.is_some() {
+      let options = options.unwrap();
+      options.get_is_encrypt().unwrap_or(false)
+    } else {
+      false
+    }
+  }
+  if is_encrypt {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (!column.isEncrypt) {
+        continue;
+      }
+      const column_name = column.COLUMN_NAME;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_name === 'id') column_comment = 'ID';
+    #>
+    // <#=column_comment#>
+    if input.<#=column_name#>.is_some() {
+      input.<#=column_name#> = input.<#=column_name#>.map(|item| {
+        encrypt(item)
+      });
+    }<#
+    }
+    #>
+  };<#
+  }
+  #>
   
   let now = ctx.get_now();
   
@@ -1873,7 +1943,54 @@ pub async fn update_by_id<'a>(
   id: String,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<String> {<#
+  if (hasEncrypt) {
+  #>
+  
+  let is_encrypt = {
+    if options.is_some() {
+      let options = options.unwrap();
+      options.get_is_encrypt().unwrap_or(false)
+    } else {
+      false
+    }
+  }
+  if is_encrypt {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (!column.isEncrypt) {
+        continue;
+      }
+      const column_name = column.COLUMN_NAME;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let data_type = column.DATA_TYPE;
+      let column_comment = column.COLUMN_COMMENT;
+      let selectList = [ ];
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.includes("[")) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      if (column_name === 'id') column_comment = 'ID';
+    #>
+    // <#=column_comment#>
+    if input.<#=column_name#>.is_some() {
+      input.<#=column_name#> = input.<#=column_name#>.map(|item| {
+        encrypt(item)
+      });
+    }<#
+    }
+    #>
+  };<#
+  }
+  #>
   
   let old_model = find_by_id(
     ctx,
@@ -1917,12 +2034,25 @@ pub async fn update_by_id<'a>(
       .collect();
     
     if models.len() > 0 {
-      let err_msg = i18n_dao::ns(
-        ctx,
-        "数据已经存在".to_owned(),
-        None,
-      ).await?;
-      return Err(SrvErr::msg(err_msg).into());
+      let unique_type = {
+        if let Some(options) = options.as_ref() {
+          options.get_unique_type()
+            .map(|item| item.clone())
+            .unwrap_or(UniqueType::Throw)
+        } else {
+          UniqueType::Throw
+        }
+      };
+      if unique_type == UniqueType::Throw {
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "数据已经存在".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(err_msg).into());
+      } else if unique_type == UniqueType::Ignore {
+        return Ok(id);
+      }
     }
   }
   

@@ -130,6 +130,29 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  let len = ids.len();
+  let ids0 = ids.clone();
+  let mut ids: Vec<String> = vec![];
+  for id in ids0 {
+    let model = lang_dao::find_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if model.is_none() {
+      continue;
+    }
+    let model = model.unwrap();
+    if model.is_sys == 1 {
+      continue;
+    }
+    ids.push(id);
+  }
+  if ids.len() == 0 && len > 0 {
+    let err_msg = i18n_dao::ns(ctx, "不能删除系统记录".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
+  
   let num = lang_dao::delete_by_ids(
     ctx,
     ids,

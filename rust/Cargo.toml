@@ -69,6 +69,8 @@ num-traits = "0.2"
 fast_chemail = "0.9"
 http = "0.2"
 futures = "0.3"
+aes = "0.8"
+cbc = { version = "0.1", features = ["alloc"]}
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.0"

@@ -19,6 +19,8 @@ use async_graphql::{
 pub struct DomainModel {
   /// ID
   pub id: String,
+  /// 协议
+  pub protocol: String,
   /// 名称
   pub lbl: String,
   /// 锁定
@@ -61,6 +63,8 @@ impl FromRow<'_, MySqlRow> for DomainModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
+    // 协议
+    let protocol: String = row.try_get("protocol")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 锁定
@@ -101,6 +105,7 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     
     let model = Self {
       id,
+      protocol,
       lbl,
       is_locked,
       is_locked_lbl,
@@ -130,6 +135,8 @@ impl FromRow<'_, MySqlRow> for DomainModel {
 pub struct DomainFieldComment {
   /// ID
   pub id: String,
+  /// 协议
+  pub protocol: String,
   /// 名称
   pub lbl: String,
   /// 锁定
@@ -172,6 +179,10 @@ pub struct DomainSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
   pub is_deleted: Option<u8>,
+  /// 协议
+  pub protocol: Option<String>,
+  /// 协议
+  pub protocol_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
@@ -207,6 +218,8 @@ pub struct DomainSearch {
 pub struct DomainInput {
   /// ID
   pub id: Option<String>,
+  /// 协议
+  pub protocol: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 锁定
@@ -249,6 +262,8 @@ impl From<DomainInput> for DomainSearch {
       id: input.id.map(|x| x.into()),
       ids: None,
       is_deleted: None,
+      // 协议
+      protocol: input.protocol,
       // 名称
       lbl: input.lbl,
       // 锁定

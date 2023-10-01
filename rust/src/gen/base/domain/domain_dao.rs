@@ -77,6 +77,22 @@ async fn get_where_query<'a>(
     }
   }
   {
+    let protocol = match &search {
+      Some(item) => item.protocol.clone(),
+      None => None,
+    };
+    if let Some(protocol) = protocol {
+      where_query += &format!(" and t.protocol = {}", args.push(protocol.into()));
+    }
+    let protocol_like = match &search {
+      Some(item) => item.protocol_like.clone(),
+      None => None,
+    };
+    if let Some(protocol_like) = protocol_like {
+      where_query += &format!(" and t.protocol like {}", args.push((sql_like(&protocol_like) + "%").into()));
+    }
+  }
+  {
     let lbl = match &search {
       Some(item) => item.lbl.clone(),
       None => None,
@@ -450,6 +466,7 @@ pub async fn get_field_comments<'a>(
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
+    "协议".into(),
     "名称".into(),
     "锁定".into(),
     "锁定".into(),
@@ -485,23 +502,24 @@ pub async fn get_field_comments<'a>(
   
   let field_comments = DomainFieldComment {
     id: vec[0].to_owned(),
-    lbl: vec[1].to_owned(),
-    is_locked: vec[2].to_owned(),
-    is_locked_lbl: vec[3].to_owned(),
-    is_default: vec[4].to_owned(),
-    is_default_lbl: vec[5].to_owned(),
-    is_enabled: vec[6].to_owned(),
-    is_enabled_lbl: vec[7].to_owned(),
-    order_by: vec[8].to_owned(),
-    rem: vec[9].to_owned(),
-    create_usr_id: vec[10].to_owned(),
-    create_usr_id_lbl: vec[11].to_owned(),
-    create_time: vec[12].to_owned(),
-    create_time_lbl: vec[13].to_owned(),
-    update_usr_id: vec[14].to_owned(),
-    update_usr_id_lbl: vec[15].to_owned(),
-    update_time: vec[16].to_owned(),
-    update_time_lbl: vec[17].to_owned(),
+    protocol: vec[1].to_owned(),
+    lbl: vec[2].to_owned(),
+    is_locked: vec[3].to_owned(),
+    is_locked_lbl: vec[4].to_owned(),
+    is_default: vec[5].to_owned(),
+    is_default_lbl: vec[6].to_owned(),
+    is_enabled: vec[7].to_owned(),
+    is_enabled_lbl: vec[8].to_owned(),
+    order_by: vec[9].to_owned(),
+    rem: vec[10].to_owned(),
+    create_usr_id: vec[11].to_owned(),
+    create_usr_id_lbl: vec[12].to_owned(),
+    create_time: vec[13].to_owned(),
+    create_time_lbl: vec[14].to_owned(),
+    update_usr_id: vec[15].to_owned(),
+    update_usr_id_lbl: vec[16].to_owned(),
+    update_time: vec[17].to_owned(),
+    update_time_lbl: vec[18].to_owned(),
   };
   Ok(field_comments)
 }
@@ -639,11 +657,12 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
+    let options = Options::new();
     let id = update_by_id(
       ctx,
       model.id.clone(),
       input,
-      None,
+      Some(options),
     ).await?;
     return Ok(id.into());
   }
@@ -802,6 +821,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(usr_id.into());
   }
+  // 协议
+  if let Some(protocol) = input.protocol {
+    sql_fields += ",protocol";
+    sql_values += ",?";
+    args.push(protocol.into());
+  }
   // 名称
   if let Some(lbl) = input.lbl {
     sql_fields += ",lbl";
@@ -925,12 +950,25 @@ pub async fn update_by_id<'a>(
       .collect();
     
     if models.len() > 0 {
-      let err_msg = i18n_dao::ns(
-        ctx,
-        "数据已经存在".to_owned(),
-        None,
-      ).await?;
-      return Err(SrvErr::msg(err_msg).into());
+      let unique_type = {
+        if let Some(options) = options.as_ref() {
+          options.get_unique_type()
+            .map(|item| item.clone())
+            .unwrap_or(UniqueType::Throw)
+        } else {
+          UniqueType::Throw
+        }
+      };
+      if unique_type == UniqueType::Throw {
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "数据已经存在".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(err_msg).into());
+      } else if unique_type == UniqueType::Ignore {
+        return Ok(id);
+      }
     }
   }
   
@@ -945,6 +983,12 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
+  // 协议
+  if let Some(protocol) = input.protocol {
+    field_num += 1;
+    sql_fields += ",protocol = ?";
+    args.push(protocol.into());
+  }
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
@@ -1465,6 +1509,13 @@ pub fn validate<'a>(
   chars_max_length(
     input.id.clone(),
     22,
+    "",
+  )?;
+  
+  // 协议
+  chars_max_length(
+    input.protocol.clone(),
+    10,
     "",
   )?;
   

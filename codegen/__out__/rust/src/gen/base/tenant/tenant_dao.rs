@@ -2,7 +2,11 @@ use anyhow::Result;
 use tracing::info;
 
 use crate::common::util::string::*;
-use crate::common::util::dao::{many2many_update, ManyOpts};
+
+use crate::common::util::dao::{
+  many2many_update,
+  ManyOpts,
+};
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -310,6 +314,23 @@ async fn get_where_query<'a>(
       where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
+  {
+    let is_sys: Vec<u8> = match &search {
+      Some(item) => item.is_sys.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_sys.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_sys.len());
+        for item in is_sys {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_sys in ({})", arg);
+    }
+  }
   Ok(where_query)
 }
 
@@ -420,10 +441,12 @@ pub async fn find_all<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]).await?;
   
   let is_locked_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
+  let is_sys_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -441,6 +464,14 @@ pub async fn find_all<'a>(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // 系统字段
+    model.is_sys_lbl = {
+      is_sys_dict.iter()
+        .find(|item| item.val == model.is_sys.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_sys.to_string())
     };
     
   }
@@ -543,6 +574,8 @@ pub async fn get_field_comments<'a>(
     "更新人".into(),
     "更新时间".into(),
     "更新时间".into(),
+    "系统字段".into(),
+    "系统字段".into(),
   ];
   
   let map = n_route.n_batch(
@@ -580,6 +613,8 @@ pub async fn get_field_comments<'a>(
     update_usr_id_lbl: vec[17].to_owned(),
     update_time: vec[18].to_owned(),
     update_time_lbl: vec[19].to_owned(),
+    is_sys: vec[20].to_owned(),
+    is_sys_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -717,11 +752,12 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
+    let options = Options::new();
     let id = update_by_id(
       ctx,
       model.id.clone(),
       input,
-      None,
+      Some(options),
     ).await?;
     return Ok(id.into());
   }
@@ -748,6 +784,7 @@ pub async fn set_id_by_lbl<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]).await?;
   
   // 锁定
@@ -772,6 +809,21 @@ pub async fn set_id_by_lbl<'a>(
       input.is_enabled = is_enabled_dict.into_iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
+    }
+  }
+  
+  // 系统字段
+  if input.is_sys.is_none() {
+    let is_sys_dict = &dict_vec[2];
+    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
+      input.is_sys = is_sys_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -970,6 +1022,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(update_time.into());
   }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    sql_fields += ",is_sys";
+    sql_values += ",?";
+    args.push(is_sys.into());
+  }
   
   let sql = format!(
     "insert into {} ({}) values ({})",
@@ -1075,12 +1133,25 @@ pub async fn update_by_id<'a>(
       .collect();
     
     if models.len() > 0 {
-      let err_msg = i18n_dao::ns(
-        ctx,
-        "数据已经存在".to_owned(),
-        None,
-      ).await?;
-      return Err(SrvErr::msg(err_msg).into());
+      let unique_type = {
+        if let Some(options) = options.as_ref() {
+          options.get_unique_type()
+            .map(|item| item.clone())
+            .unwrap_or(UniqueType::Throw)
+        } else {
+          UniqueType::Throw
+        }
+      };
+      if unique_type == UniqueType::Throw {
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "数据已经存在".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(err_msg).into());
+      } else if unique_type == UniqueType::Ignore {
+        return Ok(id);
+      }
     }
   }
   
@@ -1124,6 +1195,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",rem = ?";
     args.push(rem.into());
+  }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    field_num += 1;
+    sql_fields += ",is_sys = ?";
+    args.push(is_sys.into());
   }
   
   if field_num > 0 {
@@ -1600,78 +1677,8 @@ pub fn validate<'a>(
     22,
     "",
   )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
   
   // 名称
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
   chars_max_length(
     input.lbl.clone(),
     45,
@@ -1684,41 +1691,6 @@ pub fn validate<'a>(
     100,
     "",
   )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
   
   // 创建人
   chars_max_length(
@@ -1726,78 +1698,8 @@ pub fn validate<'a>(
     22,
     "",
   )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
   
   // 更新人
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
   chars_max_length(
     input.update_usr_id.clone(),
     22,

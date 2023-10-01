@@ -2,7 +2,11 @@ use anyhow::Result;
 use tracing::info;
 
 use crate::common::util::string::*;
-use crate::common::util::dao::{many2many_update, ManyOpts};
+
+use crate::common::util::dao::{
+  many2many_update,
+  ManyOpts,
+};
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -787,11 +791,12 @@ pub async fn check_by_unique<'a>(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
+    let options = Options::new();
     let id = update_by_id(
       ctx,
       model.id.clone(),
       input,
-      None,
+      Some(options),
     ).await?;
     return Ok(id.into());
   }
@@ -1162,12 +1167,25 @@ pub async fn update_by_id<'a>(
       .collect();
     
     if models.len() > 0 {
-      let err_msg = i18n_dao::ns(
-        ctx,
-        "数据已经存在".to_owned(),
-        None,
-      ).await?;
-      return Err(SrvErr::msg(err_msg).into());
+      let unique_type = {
+        if let Some(options) = options.as_ref() {
+          options.get_unique_type()
+            .map(|item| item.clone())
+            .unwrap_or(UniqueType::Throw)
+        } else {
+          UniqueType::Throw
+        }
+      };
+      if unique_type == UniqueType::Throw {
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "数据已经存在".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(err_msg).into());
+      } else if unique_type == UniqueType::Ignore {
+        return Ok(id);
+      }
     }
   }
   
@@ -1693,38 +1711,8 @@ pub fn validate<'a>(
     22,
     "",
   )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
   
   // 类型
-  chars_max_length(
-    input.r#type.clone(),
-    10,
-    "",
-  )?;
-  chars_max_length(
-    input.r#type.clone(),
-    10,
-    "",
-  )?;
-  chars_max_length(
-    input.r#type.clone(),
-    10,
-    "",
-  )?;
   chars_max_length(
     input.r#type.clone(),
     10,
@@ -1737,38 +1725,8 @@ pub fn validate<'a>(
     22,
     "",
   )?;
-  chars_max_length(
-    input.parent_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.parent_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.parent_id.clone(),
-    22,
-    "",
-  )?;
   
   // 名称
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
-  chars_max_length(
-    input.lbl.clone(),
-    45,
-    "",
-  )?;
   chars_max_length(
     input.lbl.clone(),
     45,
@@ -1778,44 +1736,14 @@ pub fn validate<'a>(
   // 路由
   chars_max_length(
     input.route_path.clone(),
-    255,
-    "",
-  )?;
-  chars_max_length(
-    input.route_path.clone(),
-    255,
-    "",
-  )?;
-  chars_max_length(
-    input.route_path.clone(),
-    255,
-    "",
-  )?;
-  chars_max_length(
-    input.route_path.clone(),
-    255,
+    100,
     "",
   )?;
   
   // 备注
   chars_max_length(
     input.rem.clone(),
-    255,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    255,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    255,
-    "",
-  )?;
-  chars_max_length(
-    input.rem.clone(),
-    255,
+    100,
     "",
   )?;
   
@@ -1825,38 +1753,8 @@ pub fn validate<'a>(
     22,
     "",
   )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
   
   // 更新人
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
   chars_max_length(
     input.update_usr_id.clone(),
     22,

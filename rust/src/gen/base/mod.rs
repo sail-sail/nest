@@ -11,6 +11,7 @@ pub mod i18n;
 pub mod lang;
 pub mod menu;
 pub mod operation_record;
+pub mod optbiz;
 pub mod options;
 pub mod org;
 pub mod permit;
