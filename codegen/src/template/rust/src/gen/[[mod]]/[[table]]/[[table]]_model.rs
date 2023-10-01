@@ -3,6 +3,12 @@ const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
+const hasEncrypt = columns.some((column) => {
+  if (column.ignoreCodegen) {
+    return false;
+  }
+  return !!column.isEncrypt;
+});
 #>use serde::{
   Serialize,
   Deserialize,
@@ -17,7 +23,12 @@ use sqlx::{
 use async_graphql::{
   SimpleObject,
   InputObject,
-};
+};<#
+if (hasEncrypt) {
+#>
+use crate::common::util::dao::encrypt;<#
+}
+#>
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
@@ -244,6 +255,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+        if (column.isEncrypt) { 
+    #>
+    let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str());<#
+        }
+    #><#
       }
     #><#
     }

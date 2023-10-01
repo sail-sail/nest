@@ -3,11 +3,6 @@ use tracing::info;
 
 use crate::common::util::string::*;
 
-use crate::common::util::dao::{
-  many2many_update,
-  ManyOpts,
-};
-
 #[allow(unused_imports)]
 use crate::common::context::{
   Ctx,
@@ -31,13 +26,13 @@ use crate::common::gql::model::{
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
-use super::dept_model::*;
+use super::optbiz_model::*;
 
 #[allow(unused_variables)]
 async fn get_where_query<'a>(
   ctx: &mut impl Ctx<'a>,
   args: &mut QueryArgs,
-  search: Option<DeptSearch>,
+  search: Option<OptbizSearch>,
 ) -> Result<String> {
   let mut where_query = String::with_capacity(80 * 15 * 2);
   {
@@ -102,52 +97,6 @@ async fn get_where_query<'a>(
     }
   }
   {
-    let org_id = {
-      let org_id = match &search {
-        Some(item) => &item.org_id,
-        None => &None,
-      };
-      let org_id = match trim_opt(org_id.as_ref()) {
-        None => ctx.get_auth_org_id(),
-        Some(item) => match item.as_str() {
-          "-" => None,
-          _ => item.into(),
-        },
-      };
-      org_id
-    };
-    if let Some(org_id) = org_id {
-      where_query += " and t.org_id = ?";
-      args.push(org_id.into());
-    }
-  }
-  {
-    let parent_id: Vec<String> = match &search {
-      Some(item) => item.parent_id.clone().unwrap_or_default(),
-      None => Default::default(),
-    };
-    if !parent_id.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(parent_id.len());
-        for item in parent_id {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and parent_id_lbl.id in ({})", arg);
-    }
-  }
-  {
-    let parent_id_is_null: bool = match &search {
-      Some(item) => item.parent_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if parent_id_is_null {
-      where_query += &format!(" and parent_id_lbl.id is null");
-    }
-  }
-  {
     let lbl = match &search {
       Some(item) => item.lbl.clone(),
       None => None,
@@ -164,29 +113,35 @@ async fn get_where_query<'a>(
     }
   }
   {
-    let usr_ids: Vec<String> = match &search {
-      Some(item) => item.usr_ids.clone().unwrap_or_default(),
-      None => Default::default(),
+    let ky = match &search {
+      Some(item) => item.ky.clone(),
+      None => None,
     };
-    if !usr_ids.is_empty() {
-      let arg = {
-        let mut items = Vec::with_capacity(usr_ids.len());
-        for item in usr_ids {
-          args.push(item.into());
-          items.push("?");
-        }
-        items.join(",")
-      };
-      where_query += &format!(" and base_usr.id in ({})", arg);
+    if let Some(ky) = ky {
+      where_query += &format!(" and t.ky = {}", args.push(ky.into()));
+    }
+    let ky_like = match &search {
+      Some(item) => item.ky_like.clone(),
+      None => None,
+    };
+    if let Some(ky_like) = ky_like {
+      where_query += &format!(" and t.ky like {}", args.push((sql_like(&ky_like) + "%").into()));
     }
   }
   {
-    let usr_ids_is_null: bool = match &search {
-      Some(item) => item.usr_ids_is_null.unwrap_or(false),
-      None => false,
+    let val = match &search {
+      Some(item) => item.val.clone(),
+      None => None,
     };
-    if usr_ids_is_null {
-      where_query += &format!(" and usr_ids_lbl.id is null");
+    if let Some(val) = val {
+      where_query += &format!(" and t.val = {}", args.push(val.into()));
+    }
+    let val_like = match &search {
+      Some(item) => item.val_like.clone(),
+      None => None,
+    };
+    if let Some(val_like) = val_like {
+      where_query += &format!(" and t.val like {}", args.push((sql_like(&val_like) + "%").into()));
     }
   }
   {
@@ -258,6 +213,27 @@ async fn get_where_query<'a>(
     };
     if let Some(rem_like) = rem_like {
       where_query += &format!(" and t.rem like {}", args.push((sql_like(&rem_like) + "%").into()));
+    }
+  }
+  {
+    let version: Vec<u32> = match &search {
+      Some(item) => item.version.clone().unwrap_or_default(),
+      None => vec![],
+    };
+    let version_gt: Option<u32> = match &version.len() {
+      0 => None,
+      _ => version[0].clone().into(),
+    };
+    let version_lt: Option<u32> = match &version.len() {
+      0 => None,
+      1 => None,
+      _ => version[1].clone().into(),
+    };
+    if let Some(version_gt) = version_gt {
+      where_query += &format!(" and t.version >= {}", args.push(version_gt.into()));
+    }
+    if let Some(version_lt) = version_lt {
+      where_query += &format!(" and t.version <= {}", args.push(version_lt.into()));
     }
   }
   {
@@ -354,35 +330,28 @@ async fn get_where_query<'a>(
       where_query += &format!(" and t.update_time <= {}", args.push(update_time_lt.into()));
     }
   }
+  {
+    let is_sys: Vec<u8> = match &search {
+      Some(item) => item.is_sys.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !is_sys.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(is_sys.len());
+        for item in is_sys {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and t.is_sys in ({})", arg);
+    }
+  }
   Ok(where_query)
 }
 
 async fn get_from_query() -> Result<String> {
-  let from_query = r#"base_dept t
-    left join base_dept parent_id_lbl
-      on parent_id_lbl.id = t.parent_id
-    left join base_dept_usr
-      on base_dept_usr.dept_id = t.id
-      and base_dept_usr.is_deleted = 0
-    left join base_usr
-      on base_dept_usr.usr_id = base_usr.id
-      and base_usr.is_deleted = 0
-    left join (
-      select
-        json_objectagg(base_dept_usr.order_by, base_usr.id) usr_ids,
-        json_objectagg(base_dept_usr.order_by, base_usr.lbl) usr_ids_lbl,
-        base_dept.id dept_id
-      from base_dept_usr
-      inner join base_usr
-        on base_usr.id = base_dept_usr.usr_id
-        and base_usr.is_deleted = 0
-      inner join base_dept
-        on base_dept.id = base_dept_usr.dept_id
-      where
-        base_dept_usr.is_deleted = 0
-      group by dept_id
-    ) _usr
-      on _usr.dept_id = t.id
+  let from_query = r#"base_optbiz t
     left join base_usr create_usr_id_lbl
       on create_usr_id_lbl.id = t.create_usr_id
     left join base_usr update_usr_id_lbl
@@ -394,14 +363,14 @@ async fn get_from_query() -> Result<String> {
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DeptSearch>,
+  search: Option<OptbizSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<DeptModel>> {
+) -> Result<Vec<OptbizModel>> {
   
   #[allow(unused_variables)]
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "find_all";
   
   let mut args = QueryArgs::new();
@@ -414,9 +383,6 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
-      ,parent_id_lbl.lbl parent_id_lbl
-      ,max(usr_ids) usr_ids
-      ,max(usr_ids_lbl) usr_ids_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
@@ -434,7 +400,7 @@ pub async fn find_all<'a>(
   
   let options = options.into();
   
-  let mut res: Vec<DeptModel> = ctx.query(
+  let mut res: Vec<OptbizModel> = ctx.query(
     sql,
     args,
     options,
@@ -443,10 +409,12 @@ pub async fn find_all<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]).await?;
   
   let is_locked_dict = &dict_vec[0];
   let is_enabled_dict = &dict_vec[1];
+  let is_sys_dict = &dict_vec[2];
   
   for model in &mut res {
     
@@ -466,6 +434,14 @@ pub async fn find_all<'a>(
         .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
+    // 系统字段
+    model.is_sys_lbl = {
+      is_sys_dict.iter()
+        .find(|item| item.val == model.is_sys.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_sys.to_string())
+    };
+    
   }
   
   Ok(res)
@@ -474,12 +450,12 @@ pub async fn find_all<'a>(
 /// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DeptSearch>,
+  search: Option<OptbizSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
   #[allow(unused_variables)]
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "find_count";
   
   let mut args = QueryArgs::new();
@@ -526,7 +502,7 @@ pub async fn find_count<'a>(
 
 /// 获取路由地址
 pub fn get_route_path() -> String {
-  "/base/dept".to_owned()
+  "/base/optbiz".to_owned()
 }
 
 /// 获取当前路由的国际化
@@ -541,23 +517,22 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   _options: Option<Options>,
-) -> Result<DeptFieldComment> {
+) -> Result<OptbizFieldComment> {
   
   let n_route = get_n_route();
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
-    "父部门".into(),
-    "父部门".into(),
     "名称".into(),
-    "部门负责人".into(),
-    "部门负责人".into(),
+    "键".into(),
+    "值".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
     "启用".into(),
     "排序".into(),
     "备注".into(),
+    "版本号".into(),
     "创建人".into(),
     "创建人".into(),
     "创建时间".into(),
@@ -566,6 +541,8 @@ pub async fn get_field_comments<'a>(
     "更新人".into(),
     "更新时间".into(),
     "更新时间".into(),
+    "系统字段".into(),
+    "系统字段".into(),
   ];
   
   let map = n_route.n_batch(
@@ -582,27 +559,28 @@ pub async fn get_field_comments<'a>(
     )
     .collect::<Vec<String>>();
   
-  let field_comments = DeptFieldComment {
+  let field_comments = OptbizFieldComment {
     id: vec[0].to_owned(),
-    parent_id: vec[1].to_owned(),
-    parent_id_lbl: vec[2].to_owned(),
-    lbl: vec[3].to_owned(),
-    usr_ids: vec[4].to_owned(),
-    usr_ids_lbl: vec[5].to_owned(),
-    is_locked: vec[6].to_owned(),
-    is_locked_lbl: vec[7].to_owned(),
-    is_enabled: vec[8].to_owned(),
-    is_enabled_lbl: vec[9].to_owned(),
-    order_by: vec[10].to_owned(),
-    rem: vec[11].to_owned(),
-    create_usr_id: vec[12].to_owned(),
-    create_usr_id_lbl: vec[13].to_owned(),
-    create_time: vec[14].to_owned(),
-    create_time_lbl: vec[15].to_owned(),
-    update_usr_id: vec[16].to_owned(),
-    update_usr_id_lbl: vec[17].to_owned(),
-    update_time: vec[18].to_owned(),
-    update_time_lbl: vec[19].to_owned(),
+    lbl: vec[1].to_owned(),
+    ky: vec[2].to_owned(),
+    val: vec[3].to_owned(),
+    is_locked: vec[4].to_owned(),
+    is_locked_lbl: vec[5].to_owned(),
+    is_enabled: vec[6].to_owned(),
+    is_enabled_lbl: vec[7].to_owned(),
+    order_by: vec[8].to_owned(),
+    rem: vec[9].to_owned(),
+    version: vec[10].to_owned(),
+    create_usr_id: vec[11].to_owned(),
+    create_usr_id_lbl: vec[12].to_owned(),
+    create_time: vec[13].to_owned(),
+    create_time_lbl: vec[14].to_owned(),
+    update_usr_id: vec[15].to_owned(),
+    update_usr_id_lbl: vec[16].to_owned(),
+    update_time: vec[17].to_owned(),
+    update_time_lbl: vec[18].to_owned(),
+    is_sys: vec[19].to_owned(),
+    is_sys_lbl: vec[20].to_owned(),
   };
   Ok(field_comments)
 }
@@ -610,10 +588,10 @@ pub async fn get_field_comments<'a>(
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<DeptSearch>,
+  search: Option<OptbizSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<DeptModel>> {
+) -> Result<Option<OptbizModel>> {
   
   let page = PageInput {
     pg_offset: 0.into(),
@@ -628,7 +606,7 @@ pub async fn find_one<'a>(
     options,
   ).await?;
   
-  let model: Option<DeptModel> = res.into_iter().next();
+  let model: Option<OptbizModel> = res.into_iter().next();
   
   Ok(model)
 }
@@ -638,9 +616,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<DeptModel>> {
+) -> Result<Option<OptbizModel>> {
   
-  let search = DeptSearch {
+  let search = OptbizSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -659,10 +637,10 @@ pub async fn find_by_id<'a>(
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: DeptSearch,
+  search: OptbizSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<DeptModel>> {
+) -> Result<Vec<OptbizModel>> {
   
   if let Some(id) = search.id {
     let model = find_by_id(
@@ -676,19 +654,17 @@ pub async fn find_by_unique<'a>(
     return Ok(vec![]);
   }
   
-  let mut models: Vec<DeptModel> = vec![];
+  let mut models: Vec<OptbizModel> = vec![];
   
   let mut models_tmp = {
     if
-      search.parent_id.is_none() ||
-      search.lbl.is_none()
+      search.ky.is_none()
     {
       return Ok(vec![]);
     }
     
-    let search = DeptSearch {
-      parent_id: search.parent_id,
-      lbl: search.lbl,
+    let search = OptbizSearch {
+      ky: search.ky,
       ..Default::default()
     };
     
@@ -708,16 +684,15 @@ pub async fn find_by_unique<'a>(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 fn equals_by_unique(
-  input: &DeptInput,
-  model: &DeptModel,
+  input: &OptbizInput,
+  model: &OptbizModel,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
   
   if
-    input.parent_id.as_ref().is_some() && input.parent_id.as_ref().unwrap() == &model.parent_id &&
-    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
+    input.ky.as_ref().is_some() && input.ky.as_ref().unwrap() == &model.ky
   {
     return true;
   }
@@ -728,8 +703,8 @@ fn equals_by_unique(
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: DeptInput,
-  model: DeptModel,
+  input: OptbizInput,
+  model: OptbizModel,
   unique_type: UniqueType,
 ) -> Result<Option<String>> {
   let is_equals = equals_by_unique(
@@ -766,8 +741,8 @@ pub async fn check_by_unique<'a>(
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: DeptInput,
-) -> Result<DeptInput> {
+  input: OptbizInput,
+) -> Result<OptbizInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
@@ -775,6 +750,7 @@ pub async fn set_id_by_lbl<'a>(
   let dict_vec = get_dict(ctx, &vec![
     "is_locked",
     "is_enabled",
+    "is_sys",
   ]).await?;
   
   // 锁定
@@ -807,59 +783,18 @@ pub async fn set_id_by_lbl<'a>(
     }
   }
   
-  // 父部门
-  if input.parent_id.is_none() {
-    if input.parent_id_lbl.is_some()
-      && !input.parent_id_lbl.as_ref().unwrap().is_empty()
-      && input.parent_id.is_none()
-    {
-      input.parent_id_lbl = input.parent_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = find_one(
-        ctx,
-        crate::gen::base::dept::dept_model::DeptSearch {
-          lbl: input.parent_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.parent_id = model.id.into();
-      }
-    }
-  }
-  
-  // 部门负责人
-  if input.usr_ids.is_none() {
-    if input.usr_ids_lbl.is_some() && input.usr_ids.is_none() {
-      input.usr_ids_lbl = input.usr_ids_lbl.map(|item| 
-        item.into_iter()
-          .map(|item| item.trim().to_owned())
-          .collect::<Vec<String>>()
-      );
-      let mut models = vec![];
-      for lbl in input.usr_ids_lbl.clone().unwrap_or_default() {
-        let model = crate::gen::base::usr::usr_dao::find_one(
-          ctx,
-          crate::gen::base::usr::usr_model::UsrSearch {
-            lbl: lbl.into(),
-            ..Default::default()
-          }.into(),
-          None,
-          None,
-        ).await?;
-        if let Some(model) = model {
-          models.push(model);
-        }
-      }
-      if !models.is_empty() {
-        input.usr_ids = models.into_iter()
-          .map(|item| item.id)
-          .collect::<Vec<String>>()
-          .into();
-      }
+  // 系统字段
+  if input.is_sys.is_none() {
+    let is_sys_dict = &dict_vec[2];
+    if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
+      input.is_sys = is_sys_dict.into_iter()
+        .find(|item| {
+          item.lbl == is_sys_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        })
+        .into();
     }
   }
   
@@ -869,7 +804,7 @@ pub async fn set_id_by_lbl<'a>(
 /// 创建数据
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  mut input: DeptInput,
+  mut input: OptbizInput,
   options: Option<Options>,
 ) -> Result<String> {
   
@@ -877,7 +812,7 @@ pub async fn create<'a>(
     &input,
   )?;
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "create";
   
   let now = ctx.get_now();
@@ -947,29 +882,29 @@ pub async fn create<'a>(
     args.push(tenant_id.into());
   }
   
-  if let Some(org_id) = ctx.get_auth_org_id() {
-    sql_fields += ",org_id";
-    sql_values += ",?";
-    args.push(org_id.into());
-  }
-  
   if let Some(auth_model) = ctx.get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";
     sql_values += ",?";
     args.push(usr_id.into());
   }
-  // 父部门
-  if let Some(parent_id) = input.parent_id {
-    sql_fields += ",parent_id";
-    sql_values += ",?";
-    args.push(parent_id.into());
-  }
   // 名称
   if let Some(lbl) = input.lbl {
     sql_fields += ",lbl";
     sql_values += ",?";
     args.push(lbl.into());
+  }
+  // 键
+  if let Some(ky) = input.ky {
+    sql_fields += ",ky";
+    sql_values += ",?";
+    args.push(ky.into());
+  }
+  // 值
+  if let Some(val) = input.val {
+    sql_fields += ",val";
+    sql_values += ",?";
+    args.push(val.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -995,6 +930,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(rem.into());
   }
+  // 版本号
+  if let Some(version) = input.version {
+    sql_fields += ",version";
+    sql_values += ",?";
+    args.push(version.into());
+  }
   // 更新人
   if let Some(update_usr_id) = input.update_usr_id {
     sql_fields += ",update_usr_id";
@@ -1006,6 +947,12 @@ pub async fn create<'a>(
     sql_fields += ",update_time";
     sql_values += ",?";
     args.push(update_time.into());
+  }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    sql_fields += ",is_sys";
+    sql_values += ",?";
+    args.push(is_sys.into());
   }
   
   let sql = format!(
@@ -1029,21 +976,6 @@ pub async fn create<'a>(
     options,
   ).await?;
   
-  // 部门负责人
-  if let Some(usr_ids) = input.usr_ids {
-    many2many_update(
-      ctx,
-      id.clone(),
-      usr_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "dept_usr",
-        column1: "dept_id",
-        column2: "usr_id",
-      },
-    ).await?;
-  }
-  
   Ok(id)
 }
 
@@ -1054,7 +986,7 @@ pub async fn update_tenant_by_id<'a>(
   tenant_id: String,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "update_tenant_by_id";
   
   let mut args = QueryArgs::new();
@@ -1088,52 +1020,25 @@ pub async fn update_tenant_by_id<'a>(
   Ok(num)
 }
 
-/// 根据id修改组织id
-pub async fn update_org_by_id<'a>(
+pub async fn get_version_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  org_id: String,
-  options: Option<Options>,
-) -> Result<u64> {
-  let table = "base_dept";
-  let _method = "update_org_by_id";
+) -> Result<Option<u32>> {
   
-  let mut args = QueryArgs::new();
+  let model = find_by_id(ctx, id, None).await?;
   
-  let sql_fields = "org_id = ?,update_time = ?";
-  args.push(org_id.into());
-  args.push(ctx.get_now().into());
+  if let Some(model) = model {
+    return Ok(model.version.into());
+  }
   
-  let sql_where = "id = ?";
-  args.push(id.into());
-  
-  let sql = format!(
-    "update {} set {} where {}",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  let num = ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  Ok(num)
+  Ok(0.into())
 }
 
 /// 根据id修改数据
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  mut input: DeptInput,
+  mut input: OptbizInput,
   options: Option<Options>,
 ) -> Result<String> {
   
@@ -1172,7 +1077,7 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     
-    let models: Vec<DeptModel> = models.into_iter()
+    let models: Vec<OptbizModel> = models.into_iter()
       .filter(|item| 
         &item.id != &id
       )
@@ -1201,7 +1106,7 @@ pub async fn update_by_id<'a>(
     }
   }
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "update_by_id";
   
   let now = ctx.get_now();
@@ -1212,17 +1117,23 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
-  // 父部门
-  if let Some(parent_id) = input.parent_id {
-    field_num += 1;
-    sql_fields += ",parent_id = ?";
-    args.push(parent_id.into());
-  }
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
+  }
+  // 键
+  if let Some(ky) = input.ky {
+    field_num += 1;
+    sql_fields += ",ky = ?";
+    args.push(ky.into());
+  }
+  // 值
+  if let Some(val) = input.val {
+    field_num += 1;
+    sql_fields += ",val = ?";
+    args.push(val.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
@@ -1248,8 +1159,38 @@ pub async fn update_by_id<'a>(
     sql_fields += ",rem = ?";
     args.push(rem.into());
   }
+  // 版本号
+  if let Some(version) = input.version {
+    field_num += 1;
+    sql_fields += ",version = ?";
+    args.push(version.into());
+  }
+  // 系统字段
+  if let Some(is_sys) = input.is_sys {
+    field_num += 1;
+    sql_fields += ",is_sys = ?";
+    args.push(is_sys.into());
+  }
   
   if field_num > 0 {
+    
+    if let Some(version) = input.version {
+      if version > 0 {
+        let version2 = get_version_by_id(ctx, id.clone()).await?;
+        if let Some(version2) = version2 {
+          if version2 > version {
+            let err_msg = i18n_dao::ns(
+              ctx,
+              "数据已被修改，请刷新后重试".to_owned(),
+              None,
+            ).await?;
+            return Err(SrvErr::msg(err_msg).into());
+          }
+        }
+        sql_fields += ",version = ?";
+        args.push((version + 1).into());
+      }
+    }
     
     if let Some(auth_model) = ctx.get_auth_model() {
       let usr_id = auth_model.id;
@@ -1285,44 +1226,15 @@ pub async fn update_by_id<'a>(
     
   }
   
-  let mut field_num = 0;
-  
-  // 部门负责人
-  if let Some(usr_ids) = input.usr_ids {
-    many2many_update(
-      ctx,
-      id.clone(),
-      usr_ids.clone(),
-      ManyOpts {
-        r#mod: "base",
-        table: "dept_usr",
-        column1: "dept_id",
-        column2: "usr_id",
-      },
-    ).await?;
-    
-    field_num += 1;
-  }
-  
-  if field_num > 0 {
-    let options = Options::from(None);
-    let options = options.set_del_cache_key1s(get_foreign_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      crate::common::cache::cache_dao::del_caches(del_cache_key1s).await?;
-    }
-  }
-  
   Ok(id)
 }
 
 /// 获取外键关联表, 第一个是主表
 #[allow(dead_code)]
 fn get_foreign_tables() -> Vec<&'static str> {
-  let table = "base_dept";
+  let table = "base_optbiz";
   vec![
     table,
-    "base_dept",
-    "base_dept_usr",
     "base_usr",
   ]
 }
@@ -1334,7 +1246,7 @@ pub async fn delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "delete_by_ids";
   
   let options = Options::from(options);
@@ -1398,7 +1310,7 @@ pub async fn enable_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "enable_by_ids";
   
   let options = Options::from(options);
@@ -1461,7 +1373,7 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "lock_by_ids";
   
   let options = Options::from(options);
@@ -1501,7 +1413,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "revert_by_ids";
   
   let options = Options::from(options);
@@ -1544,7 +1456,7 @@ pub async fn revert_by_ids<'a>(
       }
       let old_model = old_model.unwrap();
       
-      let mut input: DeptInput = old_model.into();
+      let mut input: OptbizInput = old_model.into();
       input.id = None;
       
       let models = find_by_unique(
@@ -1554,7 +1466,7 @@ pub async fn revert_by_ids<'a>(
         None,
       ).await?;
       
-      let models: Vec<DeptModel> = models.into_iter()
+      let models: Vec<OptbizModel> = models.into_iter()
         .filter(|item| 
           &item.id != &id
         )
@@ -1582,7 +1494,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "force_delete_by_ids";
   
   let options = Options::from(options);
@@ -1592,7 +1504,7 @@ pub async fn force_delete_by_ids<'a>(
     
     let model = find_all(
       ctx,
-      DeptSearch {
+      OptbizSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
         ..Default::default()
@@ -1640,7 +1552,7 @@ pub async fn find_last_order_by<'a>(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dept";
+  let table = "base_optbiz";
   let _method = "find_last_order_by";
   
   #[allow(unused_mut)]
@@ -1652,11 +1564,6 @@ pub async fn find_last_order_by<'a>(
   if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_where += " and t.tenant_id = ?";
     args.push(tenant_id.into());
-  }
-  
-  if let Some(org_id) = ctx.get_auth_org_id() {
-    sql_where += " and t.org_id = ?";
-    args.push(org_id.into());
   }
   
   let sql = format!(
@@ -1693,7 +1600,7 @@ pub async fn find_last_order_by<'a>(
 /// 校验, 校验失败时抛出SrvErr异常
 #[allow(unused_imports)]
 pub fn validate<'a>(
-  input: &DeptInput,
+  input: &OptbizInput,
 ) -> Result<()> {
   
   use crate::common::validators::max_items::max_items;
@@ -1715,17 +1622,24 @@ pub fn validate<'a>(
     "",
   )?;
   
-  // 父部门
-  chars_max_length(
-    input.parent_id.clone(),
-    22,
-    "",
-  )?;
-  
   // 名称
   chars_max_length(
     input.lbl.clone(),
-    22,
+    50,
+    "",
+  )?;
+  
+  // 键
+  chars_max_length(
+    input.ky.clone(),
+    50,
+    "",
+  )?;
+  
+  // 值
+  chars_max_length(
+    input.val.clone(),
+    100,
     "",
   )?;
   

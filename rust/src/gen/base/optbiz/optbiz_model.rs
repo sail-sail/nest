@@ -16,21 +16,19 @@ use async_graphql::{
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DomainModel {
+pub struct OptbizModel {
   /// ID
   pub id: String,
-  /// 协议
-  pub protocol: String,
   /// 名称
   pub lbl: String,
+  /// 键
+  pub ky: String,
+  /// 值
+  pub val: String,
   /// 锁定
   pub is_locked: u8,
   /// 锁定
   pub is_locked_lbl: String,
-  /// 默认
-  pub is_default: u8,
-  /// 默认
-  pub is_default_lbl: String,
   /// 启用
   pub is_enabled: u8,
   /// 启用
@@ -39,6 +37,8 @@ pub struct DomainModel {
   pub order_by: u32,
   /// 备注
   pub rem: String,
+  /// 版本号
+  pub version: u32,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -55,24 +55,27 @@ pub struct DomainModel {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 系统字段
+  pub is_sys: u8,
+  /// 系统字段
+  pub is_sys_lbl: String,
   /// 是否已删除
   is_deleted: u8,
 }
 
-impl FromRow<'_, MySqlRow> for DomainModel {
+impl FromRow<'_, MySqlRow> for OptbizModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // ID
     let id: String = row.try_get("id")?;
-    // 协议
-    let protocol: String = row.try_get("protocol")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
+    // 键
+    let ky: String = row.try_get("ky")?;
+    // 值
+    let val: String = row.try_get("val")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
-    // 默认
-    let is_default: u8 = row.try_get("is_default")?;
-    let is_default_lbl: String = is_default.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -80,6 +83,8 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 版本号
+    let version: u32 = row.try_get("version")?;
     // 创建人
     let create_usr_id: String = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -100,21 +105,24 @@ impl FromRow<'_, MySqlRow> for DomainModel {
       Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
+    // 系统字段
+    let is_sys: u8 = row.try_get("is_sys")?;
+    let is_sys_lbl: String = is_sys.to_string();
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       id,
-      protocol,
       lbl,
+      ky,
+      val,
       is_locked,
       is_locked_lbl,
-      is_default,
-      is_default_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
       rem,
+      version,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -123,6 +131,8 @@ impl FromRow<'_, MySqlRow> for DomainModel {
       update_usr_id_lbl,
       update_time,
       update_time_lbl,
+      is_sys,
+      is_sys_lbl,
       is_deleted,
     };
     
@@ -132,21 +142,19 @@ impl FromRow<'_, MySqlRow> for DomainModel {
 
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DomainFieldComment {
+pub struct OptbizFieldComment {
   /// ID
   pub id: String,
-  /// 协议
-  pub protocol: String,
   /// 名称
   pub lbl: String,
+  /// 键
+  pub ky: String,
+  /// 值
+  pub val: String,
   /// 锁定
   pub is_locked: String,
   /// 锁定
   pub is_locked_lbl: String,
-  /// 默认
-  pub is_default: String,
-  /// 默认
-  pub is_default_lbl: String,
   /// 启用
   pub is_enabled: String,
   /// 启用
@@ -155,6 +163,8 @@ pub struct DomainFieldComment {
   pub order_by: String,
   /// 备注
   pub rem: String,
+  /// 版本号
+  pub version: String,
   /// 创建人
   pub create_usr_id: String,
   /// 创建人
@@ -171,26 +181,34 @@ pub struct DomainFieldComment {
   pub update_time: String,
   /// 更新时间
   pub update_time_lbl: String,
+  /// 系统字段
+  pub is_sys: String,
+  /// 系统字段
+  pub is_sys_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DomainSearch {
+pub struct OptbizSearch {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
-  /// 协议
-  pub protocol: Option<String>,
-  /// 协议
-  pub protocol_like: Option<String>,
   /// 名称
   pub lbl: Option<String>,
   /// 名称
   pub lbl_like: Option<String>,
+  /// 键
+  pub ky: Option<String>,
+  /// 键
+  pub ky_like: Option<String>,
+  /// 值
+  pub val: Option<String>,
+  /// 值
+  pub val_like: Option<String>,
   /// 锁定
   pub is_locked: Option<Vec<u8>>,
-  /// 默认
-  pub is_default: Option<Vec<u8>>,
   /// 启用
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
@@ -199,6 +217,8 @@ pub struct DomainSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
+  /// 版本号
+  pub version: Option<Vec<u32>>,
   /// 创建人
   pub create_usr_id: Option<Vec<String>>,
   /// 创建人
@@ -211,25 +231,25 @@ pub struct DomainSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新时间
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 系统字段
+  pub is_sys: Option<Vec<u8>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct DomainInput {
+pub struct OptbizInput {
   /// ID
   pub id: Option<String>,
-  /// 协议
-  pub protocol: Option<String>,
   /// 名称
   pub lbl: Option<String>,
+  /// 键
+  pub ky: Option<String>,
+  /// 值
+  pub val: Option<String>,
   /// 锁定
   pub is_locked: Option<u8>,
   /// 锁定
   pub is_locked_lbl: Option<String>,
-  /// 默认
-  pub is_default: Option<u8>,
-  /// 默认
-  pub is_default_lbl: Option<String>,
   /// 启用
   pub is_enabled: Option<u8>,
   /// 启用
@@ -238,6 +258,8 @@ pub struct DomainInput {
   pub order_by: Option<u32>,
   /// 备注
   pub rem: Option<String>,
+  /// 版本号
+  pub version: Option<u32>,
   /// 创建人
   pub create_usr_id: Option<String>,
   /// 创建人
@@ -254,28 +276,35 @@ pub struct DomainInput {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   pub update_time_lbl: Option<String>,
+  /// 系统字段
+  pub is_sys: Option<u8>,
+  /// 系统字段
+  pub is_sys_lbl: Option<String>,
 }
 
-impl From<DomainInput> for DomainSearch {
-  fn from(input: DomainInput) -> Self {
+impl From<OptbizInput> for OptbizSearch {
+  fn from(input: OptbizInput) -> Self {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
+      tenant_id: None,
       is_deleted: None,
-      // 协议
-      protocol: input.protocol,
       // 名称
       lbl: input.lbl,
+      // 键
+      ky: input.ky,
+      // 值
+      val: input.val,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x.into()]),
-      // 默认
-      is_default: input.is_default.map(|x| vec![x.into()]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x.into()]),
       // 排序
       order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 备注
       rem: input.rem,
+      // 版本号
+      version: input.version.map(|x| vec![x.clone().into(), x.clone().into()]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
       // 创建时间
@@ -284,6 +313,8 @@ impl From<DomainInput> for DomainSearch {
       update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
       // 更新时间
       update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      // 系统字段
+      is_sys: input.is_sys.map(|x| vec![x.into()]),
       ..Default::default()
     }
   }

@@ -123,6 +123,20 @@ pub async fn update_by_id<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
+  // 不能修改系统记录的系统字段
+  let model = tenant_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if let Some(model) = model {
+    if model.is_sys == 1 {
+      // 名称
+      input.lbl = None;
+    }
+  }
+  
   let res = tenant_dao::update_by_id(
     ctx,
     id,
@@ -162,6 +176,29 @@ pub async fn delete_by_ids<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   let ids = ids;
+  
+  let len = ids.len();
+  let ids0 = ids.clone();
+  let mut ids: Vec<String> = vec![];
+  for id in ids0 {
+    let model = tenant_dao::find_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if model.is_none() {
+      continue;
+    }
+    let model = model.unwrap();
+    if model.is_sys == 1 {
+      continue;
+    }
+    ids.push(id);
+  }
+  if ids.len() == 0 && len > 0 {
+    let err_msg = i18n_dao::ns(ctx, "不能删除系统记录".to_owned(), None).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }
   
   let num = tenant_dao::delete_by_ids(
     ctx,

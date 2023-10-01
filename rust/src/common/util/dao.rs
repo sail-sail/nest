@@ -2,11 +2,100 @@ use anyhow::{Result, anyhow};
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
+use aes::cipher::{
+  block_padding::Pkcs7,
+  BlockDecryptMut,
+  BlockEncryptMut,
+  KeyIvInit,
+};
+
+use base64::{
+  engine::general_purpose,
+  Engine,
+};
+
+type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
+type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
+
 use crate::common::context::{
   Ctx,
   QueryArgs,
   escape_id, get_short_uuid,
 };
+
+lazy_static! {
+  static ref CRYPTO_KEY: Option<&'static [u8]> = init_crypto_key().unwrap();
+}
+
+fn init_crypto_key() -> Result<Option<&'static [u8]>> {
+  let crypto_key_path = std::env::var("database_crypto_key_path").ok();
+  if crypto_key_path.is_none() {
+    return Ok(None);
+  }
+  let crypto_key_path = crypto_key_path.unwrap();
+  let crypto_key = std::fs::read(crypto_key_path).ok();
+  if crypto_key.is_none() {
+    return Ok(None);
+  }
+  let crypto_key = crypto_key.unwrap();
+  if crypto_key.len() != 16 {
+    return Err(anyhow!("crypto_key.len() != 16"));
+  }
+  Ok(Some(Box::leak(crypto_key.into_boxed_slice())))
+}
+
+#[allow(dead_code)]
+pub fn encrypt(
+  str: &str,
+) -> String {
+  if CRYPTO_KEY.is_none() {
+    return "".to_owned();
+  }
+  let crypto_key = CRYPTO_KEY.unwrap();
+  let iv_str = get_short_uuid()[..16].to_owned();
+  let iv = iv_str.as_bytes();
+  let ct = Aes128CbcEnc::new(
+    crypto_key.into(),
+    iv.into(),
+  )
+    .encrypt_padded_vec_mut::<Pkcs7>(
+      str.as_bytes(),
+    );
+  let str2 = general_purpose::STANDARD.encode(ct.to_vec());
+  let str2 = format!("{}{}", iv_str, str2);
+  str2
+}
+
+#[allow(dead_code)]
+pub fn decrypt(
+  str: &str,
+) -> String {
+  if CRYPTO_KEY.is_none() || str.len() < 16 {
+    return "".to_owned();
+  }
+  let crypto_key = CRYPTO_KEY.unwrap();
+  let iv_str = &str[..16];
+  let iv = iv_str.as_bytes();
+  let ct = &str[16..];
+  let pt = Aes128CbcDec::new(
+    crypto_key.into(),
+    iv.into(),
+  )
+    .decrypt_padded_vec_mut::<Pkcs7>(
+      ct.as_bytes(),
+    )
+    .ok();
+  if pt.is_none() {
+    return "".to_owned();
+  }
+  let pt = pt.unwrap();
+  let str2 = String::from_utf8(pt).ok();
+  if str2.is_none() {
+    return "".to_owned();
+  }
+  let str2 = str2.unwrap();
+  str2
+}
 
 pub struct ManyOpts {
   pub r#mod: &'static str,

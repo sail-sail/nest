@@ -1663,6 +1663,10 @@ pub struct Options {
   #[allow(dead_code)]
   unique_type: Option<UniqueType>,
   
+  #[new(default)]
+  #[allow(dead_code)]
+  is_encrypt: bool,
+  
 }
 
 impl Options {
@@ -1725,6 +1729,20 @@ impl Options {
   #[inline]
   pub fn get_unique_type(&self) -> Option<UniqueType> {
     self.unique_type
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn set_is_encrypt(self, is_encrypt: bool) -> Self {
+    let mut self_ = self;
+    self_.is_encrypt = is_encrypt;
+    self_
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_is_encrypt(&self) -> bool {
+    self.is_encrypt
   }
   
 }

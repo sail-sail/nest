@@ -12,19 +12,19 @@ use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao;
 
-use super::tenant_model::*;
-use super::tenant_dao;
+use super::optbiz_model::*;
+use super::optbiz_dao;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<TenantSearch>,
+  search: Option<OptbizSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<TenantModel>> {
+) -> Result<Vec<OptbizModel>> {
   
-  let res = tenant_dao::find_all(
+  let res = optbiz_dao::find_all(
     ctx,
     search,
     page,
@@ -38,11 +38,11 @@ pub async fn find_all<'a>(
 /// 根据搜索条件查找总数
 pub async fn find_count<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<TenantSearch>,
+  search: Option<OptbizSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = tenant_dao::find_count(
+  let res = optbiz_dao::find_count(
     ctx,
     search,
     options,
@@ -54,12 +54,12 @@ pub async fn find_count<'a>(
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
   ctx: &mut impl Ctx<'a>,
-  search: Option<TenantSearch>,
+  search: Option<OptbizSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<TenantModel>> {
+) -> Result<Option<OptbizModel>> {
   
-  let model = tenant_dao::find_one(
+  let model = optbiz_dao::find_one(
     ctx,
     search,
     sort,
@@ -74,9 +74,9 @@ pub async fn find_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
   options: Option<Options>,
-) -> Result<Option<TenantModel>> {
+) -> Result<Option<OptbizModel>> {
   
-  let model = tenant_dao::find_by_id(
+  let model = optbiz_dao::find_by_id(
     ctx,
     id,
     options,
@@ -89,11 +89,11 @@ pub async fn find_by_id<'a>(
 #[allow(dead_code)]
 pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
-  input: TenantInput,
+  input: OptbizInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  let id = tenant_dao::create(
+  let id = optbiz_dao::create(
     ctx,
     input,
     options,
@@ -102,17 +102,36 @@ pub async fn create<'a>(
   Ok(id)
 }
 
+/// 根据id修改租户id
+#[allow(dead_code)]
+pub async fn update_tenant_by_id<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+  tenant_id: String,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = optbiz_dao::update_tenant_by_id(
+    ctx,
+    id,
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
 /// 根据id修改数据
 #[allow(dead_code)]
 #[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
-  mut input: TenantInput,
+  mut input: OptbizInput,
   options: Option<Options>,
 ) -> Result<String> {
   
-  let is_locked = tenant_dao::get_is_locked_by_id(
+  let is_locked = optbiz_dao::get_is_locked_by_id(
     ctx,
     id.clone(),
     None,
@@ -123,21 +142,7 @@ pub async fn update_by_id<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  // 不能修改系统记录的系统字段
-  let model = tenant_dao::find_by_id(
-    ctx,
-    id.clone(),
-    None,
-  ).await?;
-  
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 名称
-      input.lbl = None;
-    }
-  }
-  
-  let res = tenant_dao::update_by_id(
+  let res = optbiz_dao::update_by_id(
     ctx,
     id,
     input,
@@ -159,7 +164,7 @@ pub async fn delete_by_ids<'a>(
   let ids0 = ids.clone();
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
-    let is_locked = tenant_dao::get_is_locked_by_id(
+    let is_locked = optbiz_dao::get_is_locked_by_id(
       ctx,
       id.clone(),
       None,
@@ -181,7 +186,7 @@ pub async fn delete_by_ids<'a>(
   let ids0 = ids.clone();
   let mut ids: Vec<String> = vec![];
   for id in ids0 {
-    let model = tenant_dao::find_by_id(
+    let model = optbiz_dao::find_by_id(
       ctx,
       id.clone(),
       None,
@@ -200,7 +205,7 @@ pub async fn delete_by_ids<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  let num = tenant_dao::delete_by_ids(
+  let num = optbiz_dao::delete_by_ids(
     ctx,
     ids,
     options,
@@ -218,7 +223,7 @@ pub async fn get_is_enabled_by_id<'a>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = tenant_dao::get_is_enabled_by_id(
+  let is_enabled = optbiz_dao::get_is_enabled_by_id(
     ctx,
     id,
     options,
@@ -236,7 +241,7 @@ pub async fn enable_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::enable_by_ids(
+  let num = optbiz_dao::enable_by_ids(
     ctx,
     ids,
     is_locked,
@@ -256,7 +261,7 @@ pub async fn get_is_locked_by_id<'a>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_locked = tenant_dao::get_is_locked_by_id(
+  let is_locked = optbiz_dao::get_is_locked_by_id(
     ctx,
     id,
     options,
@@ -274,7 +279,7 @@ pub async fn lock_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::lock_by_ids(
+  let num = optbiz_dao::lock_by_ids(
     ctx,
     ids,
     is_locked,
@@ -288,9 +293,9 @@ pub async fn lock_by_ids<'a>(
 pub async fn get_field_comments<'a>(
   ctx: &mut impl Ctx<'a>,
   options: Option<Options>,
-) -> Result<TenantFieldComment> {
+) -> Result<OptbizFieldComment> {
   
-  let comments = tenant_dao::get_field_comments(
+  let comments = optbiz_dao::get_field_comments(
     ctx,
     options,
   ).await?;
@@ -306,7 +311,7 @@ pub async fn revert_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::revert_by_ids(
+  let num = optbiz_dao::revert_by_ids(
     ctx,
     ids,
     options,
@@ -323,7 +328,7 @@ pub async fn force_delete_by_ids<'a>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::force_delete_by_ids(
+  let num = optbiz_dao::force_delete_by_ids(
     ctx,
     ids,
     options,
@@ -338,7 +343,7 @@ pub async fn find_last_order_by<'a>(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = tenant_dao::find_last_order_by(
+  let res = optbiz_dao::find_last_order_by(
     ctx,
     options,
   ).await?;
