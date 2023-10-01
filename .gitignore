@@ -22,6 +22,9 @@ publish_cnf.js
 /rust/Cargo.lock
 /rust/src/common/gql/schema.graphql
 
+/app_macro/target
+/app_macro/Cargo.lock
+
 /pc/typings/components.d.ts
 /pc/typings/auto-imports.d.ts
 database_crypto_key.txt

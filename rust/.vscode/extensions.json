@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    "aaron-bond.better-comments",
+    "alefragnani.bookmarks",
+    "ms-ceintl.vscode-language-pack-zh-hans",
+    "mikestead.dotenv",
+    "hediet.vscode-drawio-insiders-build",
+    "janisdd.vscode-edit-csv",
+    "editorconfig.editorconfig",
+    "graphql.vscode-graphql",
+    "howardzuo.vscode-npm-dependency",
+    "ibm.output-colorizer",
+    "deanhjjiang.split-line",
+    "antfu.where-am-i",
+    "panicbit.cargo",
+    "serayuzgur.crates",
+    "rust-lang.rust-analyzer",
+    "swellaby.vscode-rust-test-adapter",
+    "hdevalke.rust-test-lens",
+    "vadimcn.vscode-lldb",
+    "ms-vscode.cpptools",
+    "caponetto.vscode-diff-viewer",
+    "tamasfe.even-better-toml"
+  ]
+}

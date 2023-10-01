@@ -5,6 +5,10 @@
       "deno": true
     },
     {
+      "path": "./rust",
+      "deno": false
+    },
+    {
       "path": "./pc",
       "deno": false
     },
@@ -26,10 +30,24 @@
     "deno.importMap": "./import_map.json",
     "unocss.root": "",
     "unocss.colorPreview": false,
-    "volar.updateImportsOnFileMove.enabled": false,
-    "volar.codeLens.references": false,
     "references.preferredLocation": "peek",
     "deno.suggest.autoImports": false,
+    "rust-analyzer.inlayHints.closureCaptureHints.enable": true,
+    "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "always",
+	"rust-analyzer.checkOnSave.enable": false,
+    "workbench.colorCustomizations": {
+      // Overrides Theme Default Colors for InlayHints feature 
+      "editorInlayHint.background": "#08000088",
+      "editorInlayHint.foreground": "#ddeeff7d",
+
+      // Overrides Theme Parameter hints fg for InlayHints feature
+      "editorInlayHint.parameterBackground": "#08000088",
+      "editorInlayHint.parameterForeground": "#ddeeff7d",
+
+      // Overrides Theme Type hints fg for InlayHints feature
+      "editorInlayHint.typeBackground": "#08000088",
+      "editorInlayHint.typeForeground": "#ddeeff7d"
+    },
     "diffEditor.experimental.useVersion2": true
   }
 }

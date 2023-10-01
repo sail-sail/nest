@@ -1,0 +1,35 @@
+{
+  "files.exclude": {
+    "node_modules": true,
+    "pnpm-lock.yaml": true,
+    "target": true,
+    "Cargo.lock": true,
+    ".cargo": true,
+    "app_macro": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "pnpm-lock.yaml": true,
+    "target": true,
+    "Cargo.lock": true,
+    ".cargo": true,
+    "app_macro": true
+  },
+  "deno.enable": false,
+  "files.eol": "\n",
+  "rust-analyzer.inlayHints.closureCaptureHints.enable": true,
+  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "always",
+  "workbench.colorCustomizations": {
+    // Overrides Theme Default Colors for InlayHints feature 
+    "editorInlayHint.background": "#08000088",
+    "editorInlayHint.foreground": "#ddeeff7d",
+
+    // Overrides Theme Parameter hints fg for InlayHints feature
+    "editorInlayHint.parameterBackground": "#08000088",
+    "editorInlayHint.parameterForeground": "#ddeeff7d",
+
+    // Overrides Theme Type hints fg for InlayHints feature
+    "editorInlayHint.typeBackground": "#08000088",
+    "editorInlayHint.typeForeground": "#ddeeff7d"
+  }
+}

@@ -225,6 +225,9 @@ export default defineConfig({
         },
         align: "left",
       },
+      // {
+      //   COLUMN_NAME: "test_time",
+      // },
       {
         COLUMN_NAME: "is_locked",
       },
