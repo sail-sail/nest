@@ -24,26 +24,41 @@ use crate::common::context::{
 };
 
 lazy_static! {
-  static ref CRYPTO_KEY: Option<&'static [u8]> = init_crypto_key().unwrap();
+  static ref CRYPTO_KEY: Option<&'static [u8]> = init_crypto_key();
 }
 
-fn init_crypto_key() -> Result<Option<&'static [u8]>> {
+fn init_crypto_key() -> Option<&'static [u8]> {
   let crypto_key_path = std::env::var("database_crypto_key_path").ok();
   if crypto_key_path.is_none() {
-    return Ok(None);
+    return None;
   }
   let crypto_key_path = crypto_key_path.unwrap();
   let crypto_key = std::fs::read(crypto_key_path).ok();
   if crypto_key.is_none() {
-    return Ok(None);
+    return None;
   }
   let crypto_key = crypto_key.unwrap();
   if crypto_key.len() != 16 {
-    return Err(anyhow!("crypto_key.len() != 16"));
+    return None;
   }
-  Ok(Some(Box::leak(crypto_key.into_boxed_slice())))
+  Some(Box::leak(crypto_key.into_boxed_slice()))
 }
 
+/// 使用AES-128-CBC加密给定的字符串。
+/// 
+/// #### 参数
+/// 
+/// - `str`：要加密的字符串。
+/// 
+/// #### 返回值
+/// 
+/// 返回加密后的字符串。
+/// 
+/// #### 示例
+/// 
+/// ```
+/// let encrypted_str = encrypt("hello world");
+/// ```
 #[allow(dead_code)]
 pub fn encrypt(
   str: &str,
@@ -52,20 +67,30 @@ pub fn encrypt(
     return "".to_owned();
   }
   let crypto_key = CRYPTO_KEY.unwrap();
-  let iv_str = get_short_uuid()[..16].to_owned();
+  let salt = &get_short_uuid()[..16];
+  let iv_str = &get_short_uuid()[..16];
   let iv = iv_str.as_bytes();
   let ct = Aes128CbcEnc::new(
     crypto_key.into(),
     iv.into(),
   )
     .encrypt_padded_vec_mut::<Pkcs7>(
-      str.as_bytes(),
+      format!("{}{}", salt, str).as_bytes(),
     );
   let str2 = general_purpose::STANDARD.encode(ct.to_vec());
   let str2 = format!("{}{}", iv_str, str2);
   str2
 }
 
+/// 解密字符串
+/// 
+/// #### 参数
+/// 
+/// * `str` - 要解密的字符串
+/// 
+/// #### 返回值
+/// 
+/// 返回解密后的字符串，如果解密失败则返回空字符串。
 #[allow(dead_code)]
 pub fn decrypt(
   str: &str,
@@ -77,12 +102,17 @@ pub fn decrypt(
   let iv_str = &str[..16];
   let iv = iv_str.as_bytes();
   let ct = &str[16..];
+  let ct = general_purpose::STANDARD.decode(ct).ok();
+  if ct.is_none() {
+    return "".to_owned();
+  }
+  let ct = ct.unwrap();
   let pt = Aes128CbcDec::new(
     crypto_key.into(),
     iv.into(),
   )
     .decrypt_padded_vec_mut::<Pkcs7>(
-      ct.as_bytes(),
+      ct.as_slice(),
     )
     .ok();
   if pt.is_none() {
@@ -93,7 +123,14 @@ pub fn decrypt(
   if str2.is_none() {
     return "".to_owned();
   }
-  let str2 = str2.unwrap();
+  let str2 = {
+    let str2 = str2.unwrap();
+    if str2.len() < 16 {
+      return "".to_owned();
+    }
+    let str2 = str2[16..].to_owned();
+    str2
+  };
   str2
 }
 

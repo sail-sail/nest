@@ -13,7 +13,7 @@ for (let i = 0; i < records.length; i++) {
   const table_nameUp = table_name.substring(0, 1).toUpperCase() + table_name.substring(1);
   if (mods.includes(mod)) continue;
   mods.push(mod);
-#>pub mod base;
+#>pub mod <#=mod#>;
 <#
 }
 #>
