@@ -99,9 +99,7 @@ pub async fn create<'a>(
     input.pay_month = pay_month.with_day(1);
   }
   // 锁定
-  if let Some(is_locked) = input.is_locked {
-    input.is_locked = None;
-  }
+  input.is_locked = None;
   let input = input;
   
   let id = payslip_service::create(
@@ -153,9 +151,7 @@ pub async fn update_by_id<'a>(
     input.pay_month = pay_month.with_day(1);
   }
   // 锁定
-  if let Some(is_locked) = input.is_locked {
-    input.is_locked = None;
-  }
+  input.is_locked = None;
   let input = input;
   
   let res = payslip_service::update_by_id(
