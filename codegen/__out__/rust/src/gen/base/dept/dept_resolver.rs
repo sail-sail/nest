@@ -93,13 +93,9 @@ pub async fn create<'a>(
   
   let mut input = input;
   // 锁定
-  if let Some(is_locked) = input.is_locked {
-    input.is_locked = None;
-  }
+  input.is_locked = None;
   // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    input.is_enabled = None;
-  }
+  input.is_enabled = None;
   let input = input;
   
   let id = dept_service::create(
@@ -166,13 +162,9 @@ pub async fn update_by_id<'a>(
   
   let mut input = input;
   // 锁定
-  if let Some(is_locked) = input.is_locked {
-    input.is_locked = None;
-  }
+  input.is_locked = None;
   // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    input.is_enabled = None;
-  }
+  input.is_enabled = None;
   let input = input;
   
   let res = dept_service::update_by_id(
