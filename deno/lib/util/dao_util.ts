@@ -224,12 +224,18 @@ if (database_crypto_key) {
   );
 }
 
+/**
+ * 对字符串进行加密
+ * @param str 要加密的字符串
+ * @returns 加密后的字符串
+ */
 export async function encrypt(
   str: string,
 ) {
   if (!cryptoKey) {
-    return;
+    return "";
   }
+  const salt = shortUuidV4().substring(0, 16);
   const ivStr = shortUuidV4().substring(0, 16);
   const iv = new TextEncoder().encode(ivStr);
   const buf = await crypto.subtle.encrypt(
@@ -238,11 +244,16 @@ export async function encrypt(
       iv,
     },
     cryptoKey,
-    new TextEncoder().encode(str),
+    new TextEncoder().encode(salt + str),
   );
   return ivStr + base64Encode(buf);
 }
 
+/**
+ * 解密字符串
+ * @param str 要解密的字符串
+ * @returns 解密后的字符串
+ */
 export async function decrypt(
   str: string,
 ) {
@@ -259,5 +270,5 @@ export async function decrypt(
     cryptoKey,
     base64Decode(str.substring(16)),
   );
-  return new TextDecoder().decode(buf);
+  return (new TextDecoder().decode(buf)).substring(16);
 }
