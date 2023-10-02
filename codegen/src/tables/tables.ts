@@ -275,7 +275,6 @@ export default defineConfig({
       cache: true,
       uniques: [
         [ "parent_id", "lbl" ],
-        [ "route_path" ],
       ],
       defaultSort: {
         prop: "order_by",
