@@ -93,9 +93,7 @@ pub async fn create<'a>(
   
   let mut input = input;
   // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    input.is_enabled = None;
-  }
+  input.is_enabled = None;
   let input = input;
   
   let id = lang_service::create(
@@ -124,9 +122,7 @@ pub async fn update_by_id<'a>(
   
   let mut input = input;
   // 启用
-  if let Some(is_enabled) = input.is_enabled {
-    input.is_enabled = None;
-  }
+  input.is_enabled = None;
   let input = input;
   
   let res = lang_service::update_by_id(
