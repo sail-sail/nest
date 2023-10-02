@@ -6,6 +6,33 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasIsMonth = columns.some((column) => column.isMonth);
+const hasNoAdd = columns.some((column) => {
+  const column_name = column.COLUMN_NAME;
+  if (
+    [
+      "id",
+      "create_usr_id",
+      "create_time",
+      "update_usr_id",
+      "update_time",
+    ].includes(column_name)
+  ) return false;
+  return column.noAdd;
+});
+const hasNoEdit = columns.some((column) => {
+  const column_name = column.COLUMN_NAME;
+  if (
+    [
+      "id",
+      "create_usr_id",
+      "create_time",
+      "update_usr_id",
+      "update_time",
+    ].includes(column_name)
+  ) return false;
+  return column.noEdit;
+});
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -46,6 +73,12 @@ if (log) {
 use crate::src::base::i18n::i18n_service::ns;
 use crate::src::base::operation_record::operation_record_service::log;
 use crate::gen::base::operation_record::operation_record_model::OperationRecordInput;<#
+}
+#><#
+if (hasIsMonth) {
+#>
+
+use chrono::Datelike;<#
 }
 #>
 
@@ -131,7 +164,46 @@ pub async fn create<'a>(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "add".to_owned(),
-  ).await?;
+  ).await?;<#
+  if (hasIsMonth || hasNoAdd) {
+  #>
+  
+  let mut input = input;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    let column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.noAdd) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    input.<#=column_name_rust#> = None;
+  }<#
+    } else if (column.isMonth) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
+  }<#
+    }
+  #><#
+  }
+  #>
+  let input = input;<#
+  }
+  #>
   
   let id = <#=table#>_service::create(
     ctx,
@@ -229,6 +301,45 @@ pub async fn update_by_id<'a>(
     "/<#=mod#>/<#=table#>".to_owned(),
     "edit".to_owned(),
   ).await?;<#
+  if (hasIsMonth || hasNoEdit) {
+  #>
+  
+  let mut input = input;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    let column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.noEdit) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    input.<#=column_name_rust#> = None;
+  }<#
+    } else if (column.isMonth) {
+  #>
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
+  }<#
+    }
+  #><#
+  }
+  #>
+  let input = input;<#
+  }
+  #><#
   if (log) {
   #>
   
