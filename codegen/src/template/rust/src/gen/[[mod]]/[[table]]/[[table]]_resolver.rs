@@ -188,9 +188,7 @@ pub async fn create<'a>(
     if (column.noAdd) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    input.<#=column_name_rust#> = None;
-  }<#
+  input.<#=column_name_rust#> = None;<#
     } else if (column.isMonth) {
   #>
   // <#=column_comment#>
@@ -324,9 +322,7 @@ pub async fn update_by_id<'a>(
     if (column.noEdit) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    input.<#=column_name_rust#> = None;
-  }<#
+  input.<#=column_name_rust#> = None;<#
     } else if (column.isMonth) {
   #>
   // <#=column_comment#>
