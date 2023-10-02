@@ -91,6 +91,17 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
+  let mut input = input;
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
+    input.is_locked = None;
+  }
+  // 启用
+  if let Some(is_enabled) = input.is_enabled {
+    input.is_enabled = None;
+  }
+  let input = input;
+  
   let id = dictbiz_detail_service::create(
     ctx,
     input,
@@ -133,6 +144,17 @@ pub async fn update_by_id<'a>(
     "/base/dictbiz_detail".to_owned(),
     "edit".to_owned(),
   ).await?;
+  
+  let mut input = input;
+  // 锁定
+  if let Some(is_locked) = input.is_locked {
+    input.is_locked = None;
+  }
+  // 启用
+  if let Some(is_enabled) = input.is_enabled {
+    input.is_enabled = None;
+  }
+  let input = input;
   
   let res = dictbiz_detail_service::update_by_id(
     ctx,
