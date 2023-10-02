@@ -25,6 +25,8 @@ use super::gql::model::{SortInput, PageInput};
 
 pub use super::gql::model::UniqueType;
 
+pub use super::util::string::hash;
+
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
     .parse::<i64>()
@@ -1694,7 +1696,7 @@ impl Options {
   pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<ArgType>) -> Self {
     let mut self_ = self;
     self_.cache_key1 = format!("dao.sql.{}", table).into();
-    self_.cache_key2 = json!([ &sql, args ]).to_string().into();
+    self_.cache_key2 = hash(json!([ &sql, args ]).to_string().as_bytes()).into();
     self_
   }
   
