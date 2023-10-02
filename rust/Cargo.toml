@@ -28,7 +28,7 @@ slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 lazy_static = "1.4"
 anyhow = "1.0"
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+sqlx = { version = "0.7", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
 rust-s3 = { version = "0.33", features = ["tokio-rustls-tls", "tokio-stream", "no-verify-ssl"], default-features = false }
 async-trait = "0.1"

@@ -26,7 +26,7 @@ use async_graphql::{
 };<#
 if (hasEncrypt) {
 #>
-use crate::common::util::dao::encrypt;<#
+use crate::common::util::dao::decrypt;<#
 }
 #>
 
@@ -238,19 +238,45 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if (data_type === "datetime") {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+      if (is_nullable) {
+    #>
     let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
-      Some(<#=column_name_rust#>) => <#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };<#
+      } else {
+    #>
+    let <#=column_name#>_lbl: String = <#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string();<#
+      }
+    #><#
       } else if (data_type === "date") {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+      if (is_nullable) {
+    #>
     let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
-      Some(<#=column_name_rust#>) => <#=column_name_rust#>.format("%Y-%m-%d").to_string(),
+      Some(item) => item.format(<#
+        if (column.isMonth) {
+      #>"%Y-%m"<#
+        } else {
+      #>"%Y-%m-%d"<#
+        }
+      #>).to_string(),
       None => "".to_owned(),
     };<#
+      } else {
+    #>
+    let <#=column_name#>_lbl: String = <#=column_name_rust#>.format(<#
+        if (column.isMonth) {
+      #>"%Y-%m"<#
+        } else {
+      #>"%Y-%m-%d"<#
+        }
+      #>).to_string();<#
+      }
+    #><#
       } else {
     #>
     // <#=column_comment#>

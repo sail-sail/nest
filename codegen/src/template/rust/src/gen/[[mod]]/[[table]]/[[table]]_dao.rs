@@ -1343,7 +1343,9 @@ pub async fn set_id_by_lbl<'a>(
     {
       input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
         item.trim().to_owned()
-      );
+      );<#
+      if (foreignTableUp !== tableUP) {
+      #>
       let model = <#=daoStr#>find_one(
         ctx,
         crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
@@ -1352,7 +1354,20 @@ pub async fn set_id_by_lbl<'a>(
         }.into(),
         None,
         None,
-      ).await?;
+      ).await?;<#
+      } else {
+      #>
+      let model = <#=daoStr#>find_one(
+        ctx,
+        <#=tableUP#>Search {
+          <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;<#
+      }
+      #>
       if let Some(model) = model {
         input.<#=column_name_rust#> = model.id.into();
       }
@@ -1536,14 +1551,11 @@ pub async fn create<'a>(
   if (hasEncrypt) {
   #>
   
-  let is_encrypt = {
-    if options.is_some() {
-      let options = options.unwrap();
-      options.get_is_encrypt().unwrap_or(false)
-    } else {
-      false
-    }
-  }
+  let is_encrypt = options.as_ref()
+    .map(|item|
+      item.get_is_encrypt()
+    )
+    .unwrap_or(true);
   if is_encrypt {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -1571,7 +1583,7 @@ pub async fn create<'a>(
     #>
     // <#=column_comment#>
     if input.<#=column_name#>.is_some() {
-      input.<#=column_name#> = input.<#=column_name#>.map(|item| {
+      input.<#=column_name#> = input.<#=column_name#>.as_ref().map(|item| {
         encrypt(item)
       });
     }<#
@@ -1947,14 +1959,11 @@ pub async fn update_by_id<'a>(
   if (hasEncrypt) {
   #>
   
-  let is_encrypt = {
-    if options.is_some() {
-      let options = options.unwrap();
-      options.get_is_encrypt().unwrap_or(false)
-    } else {
-      false
-    }
-  }
+  let is_encrypt = options.as_ref()
+    .map(|item|
+      item.get_is_encrypt()
+    )
+    .unwrap_or(true);
   if is_encrypt {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -1982,7 +1991,7 @@ pub async fn update_by_id<'a>(
     #>
     // <#=column_comment#>
     if input.<#=column_name#>.is_some() {
-      input.<#=column_name#> = input.<#=column_name#>.map(|item| {
+      input.<#=column_name#> = input.<#=column_name#>.as_ref().map(|item| {
         encrypt(item)
       });
     }<#
