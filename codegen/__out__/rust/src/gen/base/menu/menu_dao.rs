@@ -722,28 +722,6 @@ pub async fn find_by_unique<'a>(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.route_path.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
-    let search = MenuSearch {
-      route_path: search.route_path,
-      ..Default::default()
-    };
-    
-    find_all(
-      ctx,
-      search.into(),
-      None,
-      None,
-      None,
-    ).await?
-  };
-  models.append(&mut models_tmp);
-  
   Ok(models)
 }
 
@@ -760,12 +738,6 @@ fn equals_by_unique(
   if
     input.parent_id.as_ref().is_some() && input.parent_id.as_ref().unwrap() == &model.parent_id &&
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
-  {
-    return true;
-  }
-  
-  if
-    input.route_path.as_ref().is_some() && input.route_path.as_ref().unwrap() == &model.route_path
   {
     return true;
   }
@@ -882,7 +854,7 @@ pub async fn set_id_by_lbl<'a>(
       );
       let model = find_one(
         ctx,
-        crate::gen::base::menu::menu_model::MenuSearch {
+        MenuSearch {
           lbl: input.parent_id_lbl.clone(),
           ..Default::default()
         }.into(),

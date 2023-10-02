@@ -82,13 +82,13 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 开始时间
     let begin_time: Option<chrono::NaiveDateTime> = row.try_get("begin_time")?;
     let begin_time_lbl: String = match begin_time {
-      Some(begin_time) => begin_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
     // 结束时间
     let end_time: Option<chrono::NaiveDateTime> = row.try_get("end_time")?;
     let end_time_lbl: String = match end_time {
-      Some(end_time) => end_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
     // 备注
@@ -100,7 +100,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
-      Some(create_time) => create_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
     // 更新人
@@ -110,7 +110,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {
-      Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
     // 是否已删除
