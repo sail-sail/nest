@@ -818,7 +818,7 @@ pub async fn set_id_by_lbl<'a>(
       );
       let model = find_one(
         ctx,
-        crate::gen::base::dept::dept_model::DeptSearch {
+        DeptSearch {
           lbl: input.parent_id_lbl.clone(),
           ..Default::default()
         }.into(),

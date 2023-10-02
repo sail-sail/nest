@@ -81,7 +81,7 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
-      Some(create_time) => create_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
     // 更新人
@@ -91,7 +91,7 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
     let update_time_lbl: String = match update_time {
-      Some(update_time) => update_time.format("%Y-%m-%d %H:%M:%S").to_string(),
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => "".to_owned(),
     };
     // 系统字段
