@@ -165,7 +165,7 @@ pub async fn create<'a>(
     "/<#=mod#>/<#=table#>".to_owned(),
     "add".to_owned(),
   ).await?;<#
-  if (hasIsMonth || hasNoAdd) {
+  if (hasIsMonth) {
   #>
   
   let mut input = input;<#
@@ -185,11 +185,7 @@ pub async fn create<'a>(
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
   #><#
-    if (column.noAdd) {
-  #>
-  // <#=column_comment#>
-  input.<#=column_name_rust#> = None;<#
-    } else if (column.isMonth) {
+    if (column.isMonth) {
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
@@ -299,7 +295,7 @@ pub async fn update_by_id<'a>(
     "/<#=mod#>/<#=table#>".to_owned(),
     "edit".to_owned(),
   ).await?;<#
-  if (hasIsMonth || hasNoEdit) {
+  if (hasIsMonth) {
   #>
   
   let mut input = input;<#
@@ -319,11 +315,7 @@ pub async fn update_by_id<'a>(
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     let column_comment = column.COLUMN_COMMENT || "";
   #><#
-    if (column.noEdit) {
-  #>
-  // <#=column_comment#>
-  input.<#=column_name_rust#> = None;<#
-    } else if (column.isMonth) {
+    if (column.isMonth) {
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
