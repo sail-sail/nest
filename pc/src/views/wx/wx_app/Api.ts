@@ -368,7 +368,7 @@ export async function getUsrList() {
     },
     [
       {
-        prop: "update_time",
+        prop: "create_time",
         order: "descending",
       },
     ],
