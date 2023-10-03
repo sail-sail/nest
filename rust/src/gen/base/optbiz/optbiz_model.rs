@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptbizModel {
+  /// 租户ID
+  pub tenant_id: String,
   /// ID
   pub id: String,
   /// 名称
@@ -60,11 +62,13 @@ pub struct OptbizModel {
   /// 系统字段
   pub is_sys_lbl: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for OptbizModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: String = row.try_get("id")?;
     // 名称
@@ -112,6 +116,7 @@ impl FromRow<'_, MySqlRow> for OptbizModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      tenant_id,
       id,
       lbl,
       ky,
@@ -238,6 +243,9 @@ pub struct OptbizSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OptbizInput {
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,
   /// ID
   pub id: Option<String>,
   /// 名称
@@ -287,7 +295,8 @@ impl From<OptbizInput> for OptbizSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
+      // 住户ID
+      tenant_id: input.tenant_id,
       is_deleted: None,
       // 名称
       lbl: input.lbl,

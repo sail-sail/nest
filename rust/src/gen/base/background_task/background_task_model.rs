@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskModel {
+  /// 租户ID
+  pub tenant_id: String,
   /// ID
   pub id: String,
   /// 名称
@@ -60,11 +62,13 @@ pub struct BackgroundTaskModel {
   /// 更新时间
   pub update_time_lbl: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: String = row.try_get("id")?;
     // 名称
@@ -117,6 +121,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      tenant_id,
       id,
       lbl,
       state,
@@ -241,6 +246,9 @@ pub struct BackgroundTaskSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct BackgroundTaskInput {
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,
   /// ID
   pub id: Option<String>,
   /// 名称
@@ -290,7 +298,8 @@ impl From<BackgroundTaskInput> for BackgroundTaskSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
+      // 住户ID
+      tenant_id: input.tenant_id,
       is_deleted: None,
       // 名称
       lbl: input.lbl,

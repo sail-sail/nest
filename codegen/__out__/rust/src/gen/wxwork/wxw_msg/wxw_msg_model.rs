@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgModel {
+  /// 租户ID
+  pub tenant_id: String,
   /// ID
   pub id: String,
   /// 企微应用
@@ -46,11 +48,13 @@ pub struct WxwMsgModel {
   /// 消息ID
   pub msgid: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for WxwMsgModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: String = row.try_get("id")?;
     // 企微应用
@@ -84,6 +88,7 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      tenant_id,
       id,
       wxw_app_id,
       wxw_app_id_lbl,
@@ -187,6 +192,9 @@ pub struct WxwMsgSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgInput {
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,
   /// ID
   pub id: Option<String>,
   /// 企微应用
@@ -222,7 +230,8 @@ impl From<WxwMsgInput> for WxwMsgSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
+      // 住户ID
+      tenant_id: input.tenant_id,
       is_deleted: None,
       // 企微应用
       wxw_app_id: input.wxw_app_id.map(|x| vec![x.into()]),

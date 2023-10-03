@@ -56,7 +56,7 @@ pub struct DataPermitModel {
   /// 系统字段
   pub is_sys_lbl: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for DataPermitModel {
