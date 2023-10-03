@@ -537,16 +537,6 @@ export async function findByUnique(
     });
     models.push(...modelTmps);
   }
-  {
-    if (search0.route_path == null) {
-      return [ ];
-    }
-    const route_path = search0.route_path;
-    const modelTmps = await findAll({
-      route_path,
-    });
-    models.push(...modelTmps);
-  }
   return models;
 }
 
@@ -566,11 +556,6 @@ export function equalsByUnique(
   if (
     oldModel.parent_id === model.parent_id &&
     oldModel.lbl === model.lbl
-  ) {
-    return true;
-  }
-  if (
-    oldModel.route_path === model.route_path
   ) {
     return true;
   }
