@@ -2,6 +2,8 @@ import {
   useContext,
 } from "/lib/context.ts";
 
+import dayjs from "dayjs";
+
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -86,6 +88,10 @@ export async function createPayslip(
   input: PayslipInput,
   unique_type?: UniqueType,
 ): Promise<string> {
+  // 发放月份
+  if (input.pay_month) {
+    input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  }
   
   const {
     validate,
@@ -114,6 +120,10 @@ export async function updateByIdPayslip(
   id: string,
   input: PayslipInput,
 ): Promise<string> {
+  // 发放月份
+  if (input.pay_month) {
+    input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  }
   const context = useContext();
   
   context.is_tran = true;
