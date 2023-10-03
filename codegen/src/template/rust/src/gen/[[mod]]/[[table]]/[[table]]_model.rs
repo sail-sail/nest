@@ -33,6 +33,12 @@ use crate::common::util::dao::decrypt;<#
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
+  if (hasTenant_id) {
+  #>
+  /// 租户ID
+  pub tenant_id: String,<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -117,11 +123,17 @@ pub struct <#=tableUP#>Model {<#
   }
   #>
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {<#
+    if (hasTenant_id) {
+    #>
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -294,7 +306,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {<#
-    for (let i = 0; i < columns.length; i++) {
+      if (hasTenant_id) {
+      #>
+      tenant_id,<#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
@@ -492,7 +509,14 @@ pub struct <#=tableUP#>Search {
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
-pub struct <#=tableUP#>Input {
+pub struct <#=tableUP#>Input {<#
+  if (hasTenant_id) {
+  #>
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,<#
+  }
+  #>
   /// ID
   pub id: Option<String>,<#
   for (let i = 0; i < columns.length; i++) {
@@ -582,7 +606,8 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       ids: None,<#
       if (hasTenant_id) {
       #>
-      tenant_id: None,<#
+      // 住户ID
+      tenant_id: input.tenant_id,<#
       }
       #>
       is_deleted: None,<#

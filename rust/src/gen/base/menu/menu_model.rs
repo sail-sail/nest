@@ -66,7 +66,7 @@ pub struct MenuModel {
   /// 更新时间
   pub update_time_lbl: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for MenuModel {
