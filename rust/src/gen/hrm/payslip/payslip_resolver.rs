@@ -98,8 +98,6 @@ pub async fn create<'a>(
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
   }
-  // 锁定
-  input.is_locked = None;
   let input = input;
   
   let id = payslip_service::create(
@@ -150,8 +148,6 @@ pub async fn update_by_id<'a>(
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
   }
-  // 锁定
-  input.is_locked = None;
   let input = input;
   
   let res = payslip_service::update_by_id(

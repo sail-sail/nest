@@ -1155,7 +1155,7 @@ pub fn validate<'a>(
   // 令牌
   chars_max_length(
     input.access_token.clone(),
-    512,
+    600,
     "",
   )?;
   
