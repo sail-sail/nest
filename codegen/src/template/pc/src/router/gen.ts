@@ -15,6 +15,9 @@ export const routesGen: Array<RouteRecordRaw> = [<#
     const mod_slash_table = table_name.replace("_", "/");
     table_name = table_name.substring(table_name.indexOf("_") + 1);
     record.opts = record.opts || { };
+    if (record.opts.onlyCodegenDeno) {
+      continue;
+    }
     const list_tree = record.opts.list_tree;
     let fileNameVue = "List.vue";
     if (list_tree) {
