@@ -2076,6 +2076,16 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;<#
+  if (hasTenant_id) {
+  #>
+  
+  if let Some(tenant_id) = input.tenant_id {
+    field_num += 1;
+    sql_fields += ",tenant_id = ?";
+    args.push(tenant_id.into());
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

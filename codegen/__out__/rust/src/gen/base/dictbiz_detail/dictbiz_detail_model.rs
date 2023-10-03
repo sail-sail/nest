@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizDetailModel {
+  /// 租户ID
+  pub tenant_id: String,
   /// ID
   pub id: String,
   /// 业务字典
@@ -44,11 +46,13 @@ pub struct DictbizDetailModel {
   /// 系统字段
   pub is_sys_lbl: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for DictbizDetailModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: String = row.try_get("id")?;
     // 业务字典
@@ -76,6 +80,7 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      tenant_id,
       id,
       dictbiz_id,
       dictbiz_id_lbl,
@@ -164,6 +169,9 @@ pub struct DictbizDetailSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct DictbizDetailInput {
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,
   /// ID
   pub id: Option<String>,
   /// 业务字典
@@ -197,7 +205,8 @@ impl From<DictbizDetailInput> for DictbizDetailSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
+      // 住户ID
+      tenant_id: input.tenant_id,
       is_deleted: None,
       // 业务字典
       dictbiz_id: input.dictbiz_id.map(|x| vec![x.into()]),

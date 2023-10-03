@@ -17,6 +17,8 @@ use async_graphql::{
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrModel {
+  /// 租户ID
+  pub tenant_id: String,
   /// ID
   pub id: String,
   /// 头像
@@ -54,11 +56,13 @@ pub struct UsrModel {
   /// 备注
   pub rem: String,
   /// 是否已删除
-  is_deleted: u8,
+  pub is_deleted: u8,
 }
 
 impl FromRow<'_, MySqlRow> for UsrModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: String = row.try_get("id")?;
     // 头像
@@ -190,6 +194,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      tenant_id,
       id,
       img,
       lbl,
@@ -307,6 +312,9 @@ pub struct UsrSearch {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UsrInput {
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<String>,
   /// ID
   pub id: Option<String>,
   /// 头像
@@ -350,7 +358,8 @@ impl From<UsrInput> for UsrSearch {
     Self {
       id: input.id.map(|x| x.into()),
       ids: None,
-      tenant_id: None,
+      // 住户ID
+      tenant_id: input.tenant_id,
       is_deleted: None,
       // 头像
       img: input.img,
