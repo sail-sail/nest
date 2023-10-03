@@ -242,4 +242,40 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/wxwork/wxw_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "企微应用",
+        component: () => import("@/views/wxwork/wxw_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wxwork/wxw_msg",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "企微消息",
+        component: () => import("@/views/wxwork/wxw_msg/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wxwork/wxw_usr",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "企微用户",
+        component: () => import("@/views/wxwork/wxw_usr/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];

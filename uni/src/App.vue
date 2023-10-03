@@ -2,9 +2,23 @@
 import { onLaunch } from "@dcloudio/uni-app";
 import { uniqueID } from "@/utils/StringUtil";
 
+// #ifdef H5
+import {
+  initWxWorkCfg,
+} from "./utils/WxWorkUtil";
+// #endif
+
 onLaunch((async(options: any) => {
   const indexStore = useIndexStore();
   indexStore.setLaunchOptions(options);
+  
+  const systemInfo = await uni.getSystemInfo();
+  indexStore.setSystemInfo(systemInfo);
+  
+  // #ifdef H5
+  await initWxWorkCfg();
+  // #endif
+  
   let _uid: string | undefined = undefined;
   try {
     _uid = (await uni.getStorage({
