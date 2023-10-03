@@ -91,13 +91,6 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
-  let mut input = input;
-  // 锁定
-  input.is_locked = None;
-  // 启用
-  input.is_enabled = None;
-  let input = input;
-  
   let id = menu_service::create(
     ctx,
     input,
@@ -121,13 +114,6 @@ pub async fn update_by_id<'a>(
     "/base/menu".to_owned(),
     "edit".to_owned(),
   ).await?;
-  
-  let mut input = input;
-  // 锁定
-  input.is_locked = None;
-  // 启用
-  input.is_enabled = None;
-  let input = input;
   
   let res = menu_service::update_by_id(
     ctx,
