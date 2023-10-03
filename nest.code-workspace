@@ -29,7 +29,6 @@
     "volar.updateImportsOnFileMove.enabled": false,
     "volar.codeLens.references": false,
     "references.preferredLocation": "peek",
-    "deno.suggest.autoImports": false,
-    "diffEditor.experimental.useVersion2": true
+    "deno.suggest.autoImports": false
   }
 }
