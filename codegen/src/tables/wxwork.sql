@@ -31,7 +31,7 @@ CREATE TABLE `wxwork_wxw_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `wxw_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '企微应用',
   `type` varchar(10) NOT NULL DEFAULT 'corp' COMMENT '类型corp和contact',
-  `access_token` varchar(512) NOT NULL DEFAULT '' COMMENT '令牌',
+  `access_token` varchar(600) NOT NULL DEFAULT '' COMMENT '令牌',
   `token_time` datetime DEFAULT NULL COMMENT '令牌创建时间',
   `expires_in` int unsigned NOT NULL DEFAULT 0 COMMENT '令牌超时时间',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
