@@ -376,14 +376,14 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.lbl_field = "lbl";
   }
-  // 如果没有设置默认排序, 则设置默认排序为 update_time desc, 如果有 order_by 字段则其优先级最高
+  // 如果没有设置默认排序, 则设置默认排序为 create_time desc, 如果有 order_by 字段则其优先级最高
   if (
     !hasOrderBy
     && (!tables[table_name]?.opts?.defaultSort)
   ) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.defaultSort = {
-      prop: "update_time",
+      prop: "create_time",
       order: "descending",
     };
   }
