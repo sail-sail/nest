@@ -268,7 +268,7 @@ export async function findAll(
   if (!sort) {
     sort = [
       {
-        prop: "update_time",
+        prop: "create_time",
         order: SortOrderEnum.Desc,
       },
     ];
