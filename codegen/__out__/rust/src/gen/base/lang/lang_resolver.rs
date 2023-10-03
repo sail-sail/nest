@@ -91,11 +91,6 @@ pub async fn create<'a>(
     "add".to_owned(),
   ).await?;
   
-  let mut input = input;
-  // 启用
-  input.is_enabled = None;
-  let input = input;
-  
   let id = lang_service::create(
     ctx,
     input,
@@ -119,11 +114,6 @@ pub async fn update_by_id<'a>(
     "/base/lang".to_owned(),
     "edit".to_owned(),
   ).await?;
-  
-  let mut input = input;
-  // 启用
-  input.is_enabled = None;
-  let input = input;
   
   let res = lang_service::update_by_id(
     ctx,
