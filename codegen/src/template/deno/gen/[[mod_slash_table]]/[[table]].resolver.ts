@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsMonth = columns.some((column) => column.isMonth);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -53,6 +54,12 @@ if (hasDecimal) {
 #>
 
 import Decimal from "decimal.js";<#
+}
+#><#
+if (hasIsMonth) {
+#>
+
+import dayjs from "dayjs";<#
 }
 #>
 
@@ -165,6 +172,35 @@ export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
 ): Promise<string> {<#
+  if (hasIsMonth) {
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.isMonth) {
+  #>
+  // <#=column_comment#>
+  if (input.<#=column_name#>) {
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  }<#
+    }
+  #><#
+  }
+  #><#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -258,6 +294,35 @@ export async function updateById<#=Table_Up#>(
   id: string,
   input: <#=inputName#>,
 ): Promise<string> {<#
+  if (hasIsMonth) {
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.isMonth) {
+  #>
+  // <#=column_comment#>
+  if (input.<#=column_name#>) {
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  }<#
+    }
+  #><#
+  }
+  #><#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
