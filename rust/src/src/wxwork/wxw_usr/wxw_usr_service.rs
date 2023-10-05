@@ -38,25 +38,22 @@ use crate::gen::base::usr::usr_model::{
 use crate::gen::wxwork::wxw_usr::wxw_usr_dao::{
   find_all as find_all_wxw_usr,
   find_one as find_one_wxw_usr,
-  find_by_id as find_by_id_wxw_usr,
   create as create_wxw_usr,
   update_by_id as update_by_id_wxw_usr,
 };
 use crate::gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrSearch;
 
-use crate::gen::wxwork::wxw_app::wxw_app_dao::{
-  find_one as find_one_wxw_app,
-};
+use crate::gen::wxwork::wxw_app::wxw_app_dao::find_one as find_one_wxw_app;
 use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 
-use crate::common::auth::auth_dao::{
-  get_password,
-  get_token_by_auth_model,
-};
+use crate::common::auth::auth_dao::get_token_by_auth_model;
 
 use crate::common::auth::auth_model::AuthModel;
 
-/// 企业微信单点登录
+use crate::gen::base::optbiz::optbiz_dao::find_one as find_one_optbiz;
+use crate::gen::base::optbiz::optbiz_model::OptbizSearch;
+
+/// 企微单点登录
 pub async fn wxw_login_by_code<'a>(
   ctx: &mut impl Ctx<'a>,
   input: WxwLoginByCodeInput,
@@ -65,12 +62,34 @@ pub async fn wxw_login_by_code<'a>(
   let agentid = input.agentid;
   let code = input.code;
   let lang = input.lang.unwrap_or("zh_CN".to_string());
+  let wxw_app_model = find_one_wxw_app(
+    ctx,
+    WxwAppSearch {
+      corpid: corpid.clone().into(),
+      agentid: agentid.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  if wxw_app_model.is_none() {
+    return Err(anyhow!(
+      "企微应用 未配置 corpid: {corpid}, agentid: {agentid}",
+    ));
+  }
+  let wxw_app_model = wxw_app_model.unwrap();
+  if wxw_app_model.is_enabled == 0 {
+    return Err(anyhow!(
+      "企微应用 已禁用 corpid: {corpid}, agentid: {agentid}",
+    ));
+  }
+  let wxw_app_id = wxw_app_model.id;
   let GetuserinfoModel {
     userid,
     ..
   } = getuserinfo_by_code(
     ctx,
-    corpid.clone(),
+    wxw_app_id.clone(),
     code,
   ).await?;
   let GetuserRes {
@@ -79,7 +98,7 @@ pub async fn wxw_login_by_code<'a>(
     ..
   } = getuser(
     ctx,
-    corpid.clone(),
+    wxw_app_id.clone(),
     userid.clone(),
   ).await?;
   let wxw_app_model = find_one_wxw_app(
@@ -94,17 +113,17 @@ pub async fn wxw_login_by_code<'a>(
   ).await?;
   if wxw_app_model.is_none() {
     return Err(anyhow!(
-      "企业微信应用 未配置 corpid: {corpid}, agentid: {agentid}",
+      "企微应用 未配置 corpid: {corpid}, agentid: {agentid}",
     ));
   }
   let wxw_app_model = wxw_app_model.unwrap();
   if wxw_app_model.is_enabled == 0 {
     return Err(anyhow!(
-      "企业微信应用 已禁用 corpid: {corpid}, agentid: {agentid}",
+      "企微应用 已禁用 corpid: {corpid}, agentid: {agentid}",
     ));
   }
   let tenant_id = wxw_app_model.tenant_id;
-  // 企业微信用户
+  // 企微用户
   let wxw_usr_model = find_one_wxw_usr(
     ctx,
     WxwUsrSearch {
@@ -243,11 +262,11 @@ lazy_static! {
   static ref WXW_SYNC_USR_LOCK: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
 }
 
-/// 同步企业微信用户
+/// 同步企微用户
 pub async fn wxw_sync_usr<'a>(
   ctx: &mut impl Ctx<'a>,
 ) -> Result<i32> {
-  let mut wxw_sync_usr_lock: tokio::sync::MutexGuard<'_, bool> = WXW_SYNC_USR_LOCK.lock().await;
+  let mut wxw_sync_usr_lock = WXW_SYNC_USR_LOCK.lock().await;
   if *wxw_sync_usr_lock {
     return Err(anyhow!("企微用户正在同步中, 请稍后再试"));
   }
@@ -257,9 +276,93 @@ pub async fn wxw_sync_usr<'a>(
   res
 }
 
-/// 同步企业微信用户 // TODO
+/// 同步企微用户
 async fn _wxw_sync_usr<'a>(
   ctx: &mut impl Ctx<'a>,
 ) -> Result<i32> {
-  todo!()
+  let optbiz_model = find_one_optbiz(
+    ctx,
+    OptbizSearch {
+      lbl: "企微用户-同步通讯录".to_string().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  if optbiz_model.is_none() {
+    return Err(anyhow!("企微用户-同步通讯录 未配置"));
+  }
+  let optbiz_model = optbiz_model.unwrap();
+  let wxw_app_lbl = optbiz_model.val;
+  let wxw_app_model = find_one_wxw_app(
+    ctx,
+    WxwAppSearch {
+      lbl: wxw_app_lbl.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  if wxw_app_model.is_none() {
+    return Err(anyhow!(
+      "企微应用 未配置 lbl: {lbl}",
+      lbl = wxw_app_lbl,
+    ));
+  }
+  let wxw_app_model = wxw_app_model.unwrap();
+  if wxw_app_model.is_enabled == 0 {
+    return Err(anyhow!(
+      "企微应用 已禁用 lbl: {lbl}",
+      lbl = wxw_app_lbl,
+    ));
+  }
+  let wxw_app_id = wxw_app_model.id;
+  let userids: Vec<String> = getuseridlist(
+    ctx,
+    wxw_app_id.clone(),
+  ).await?;
+  let wxw_usr_models = find_all_wxw_usr(
+    ctx,
+    None,
+    None,
+    None,
+    None,
+  ).await?;
+  let userids4add = userids.into_iter()
+    .filter(|userid| {
+      wxw_usr_models.iter().find(|wxw_usr_model| {
+        wxw_usr_model.userid == *userid
+      }).is_none()
+    })
+    .collect::<Vec<String>>();
+  let mut wxw_usr_models4add: Vec<WxwUsrInput> = Vec::with_capacity(userids4add.len());
+  for userid in userids4add {
+    let GetuserRes {
+      name,
+      position,
+      ..
+    } = getuser(
+      ctx,
+      wxw_app_id.clone(),
+      userid.clone(),
+    ).await?;
+    wxw_usr_models4add.push(WxwUsrInput {
+      id: get_short_uuid().into(),
+      userid: userid.clone().into(),
+      lbl: name.clone().into(),
+      position: position.clone().into(),
+      tenant_id: wxw_app_model.tenant_id.clone().into(),
+      ..Default::default()
+    });
+  }
+  let mut num = 0;
+  for wxw_usr_model4add in wxw_usr_models4add {
+    create_wxw_usr(
+      ctx,
+      wxw_usr_model4add.into(),
+      None,
+    ).await?;
+    num += 1;
+  }
+  Ok(num)
 }
