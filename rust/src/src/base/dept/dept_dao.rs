@@ -75,11 +75,13 @@ async fn get_parents_by_id<'a>(
   
   parent_ids.extend(ids2.clone());
   
-  let future: Pin<Box<dyn Future<Output = Result<(), Error>>>> = Box::pin(get_parents_by_id(
-    ctx,
-    ids2,
-    parent_ids,
-  ));
+  let future: Pin<Box<dyn Future<Output = Result<(), Error>>>> = Box::pin(
+    get_parents_by_id(
+      ctx,
+      ids2,
+      parent_ids,
+    )
+  );
   
   future.await?;
   
