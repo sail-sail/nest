@@ -934,6 +934,12 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
+  
+  if let Some(tenant_id) = input.tenant_id {
+    field_num += 1;
+    sql_fields += ",tenant_id = ?";
+    args.push(tenant_id.into());
+  }
   // 企微应用
   if let Some(wxw_app_id) = input.wxw_app_id {
     field_num += 1;

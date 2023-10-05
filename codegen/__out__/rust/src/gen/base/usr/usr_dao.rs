@@ -1241,6 +1241,12 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;
+  
+  if let Some(tenant_id) = input.tenant_id {
+    field_num += 1;
+    sql_fields += ",tenant_id = ?";
+    args.push(tenant_id.into());
+  }
   // 头像
   if let Some(img) = input.img {
     field_num += 1;
