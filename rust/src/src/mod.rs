@@ -20,4 +20,5 @@ pub struct SrcQuery(
 pub struct SrcMutation(
   crate::src::base::org::org_graphql::OrgMutation,
   crate::src::base::usr::usr_graphql::UsrMutation,
+  crate::src::wxwork::wxw_usr::wxw_usr_graphql::WxwUsrMutation,
 );
