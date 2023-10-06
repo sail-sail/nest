@@ -1,5 +1,6 @@
 pub mod base;
 pub mod wxwork;
+pub mod hrm;
 
 use async_graphql::MergedObject;
 
