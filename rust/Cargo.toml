@@ -72,6 +72,7 @@ futures = "0.3"
 aes = "0.8"
 cbc = { version = "0.1", features = ["alloc"]}
 async-recursion = "1.0"
+function_name = "0.3"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.0"
