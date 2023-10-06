@@ -1,6 +1,7 @@
 use anyhow::Result;
 use tracing::info;
 
+use std::collections::HashMap;
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -1448,6 +1449,46 @@ pub async fn find_last_order_by<'a>(
   };
   
   Ok(order_by)
+}
+
+/// 校验记录是否启用
+#[function_name::named]
+#[allow(dead_code)]
+pub async fn validate_is_enabled<'a>(
+  ctx: &mut impl Ctx<'a>,
+  model: &DictbizDetailModel,
+) -> Result<()> {
+  if model.is_enabled == 0 {
+    let mut map = HashMap::new();
+    map.insert("0".to_owned(), "业务字典明细".to_owned());
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "{0} 已禁用".to_owned(),
+      map.into(),
+    ).await?;
+    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+  }
+  Ok(())
+}
+
+/// 校验记录是否存在
+#[function_name::named]
+#[allow(dead_code)]
+pub async fn validate_option<'a, T>(
+  ctx: &mut impl Ctx<'a>,
+  model: Option<T>,
+) -> Result<T> {
+  if model.is_none() {
+    let mut map = HashMap::new();
+    map.insert("0".to_owned(), "业务字典明细".to_owned());
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "{0} 不存在".to_owned(),
+      map.into(),
+    ).await?;
+    return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
+  }
+  Ok(model.unwrap())
 }
 
 /// 校验, 校验失败时抛出SrvErr异常
