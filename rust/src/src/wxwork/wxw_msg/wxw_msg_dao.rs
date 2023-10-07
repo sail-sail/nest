@@ -29,6 +29,7 @@ struct SendRes {
   response_code: String,
 }
 
+#[allow(dead_code)]
 async fn fetch_send_card_msg<'a>(
   ctx: &mut impl Ctx<'a>,
   input: SendCardMsgInput,
@@ -88,6 +89,7 @@ async fn fetch_send_card_msg<'a>(
 }
 
 /// 发送卡片消息
+#[allow(dead_code)]
 pub async fn send_card_msg<'a>(
   ctx: &mut impl Ctx<'a>,
   input: SendCardMsgInput,
