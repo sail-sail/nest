@@ -74,8 +74,8 @@ async function compile() {
     stdio: "inherit",
   });
   await mkdir(`${ buildDir }/rust`, { recursive: true });
-  await remove(`${ buildDir }/rust/rust`);
-  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/rust`, `${ buildDir }/rust/rust`);
+  await remove(`${ buildDir }/rust/rust4xh4hrm`);
+  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/rust`, `${ buildDir }/rust/rust4xh4hrm`);
 }
 
 // async function publish() {
