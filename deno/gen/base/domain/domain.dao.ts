@@ -593,6 +593,25 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: DomainModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `{ await ns("域名") } { await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: DomainModel,
+) {
+  if (!model) {
+    throw `{ await ns("域名") } { await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 
