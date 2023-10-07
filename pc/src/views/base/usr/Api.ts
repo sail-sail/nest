@@ -57,6 +57,14 @@ export async function findAll(
           role_ids
           role_ids_lbl
           rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
           is_deleted
         }
       }
@@ -192,6 +200,14 @@ export async function findById(
           role_ids
           role_ids_lbl
           rem
+          create_usr_id
+          create_usr_id_lbl
+          create_time
+          create_time_lbl
+          update_usr_id
+          update_usr_id_lbl
+          update_time
+          update_time_lbl
         }
       }
     `,
@@ -474,6 +490,51 @@ export async function getRoleList() {
   return data;
 }
 
+export async function findAllUsr(
+  search?: UsrSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllUsr: Query["findAllUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllUsr(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllUsr;
+  return res;
+}
+
+export async function getUsrList() {
+  const data = await findAllUsr(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "create_time",
+        order: "descending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function getDeptTree() {
   const data = await findDeptTree(
     [
@@ -517,6 +578,10 @@ export function useDownloadImportTemplate(routePath: string) {
             dept_ids_lbl
             role_ids_lbl
             rem
+            create_usr_id_lbl
+            create_time_lbl
+            update_usr_id_lbl
+            update_time_lbl
           }
           findAllOrg {
             id
@@ -527,6 +592,10 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           findAllRole {
+            id
+            lbl
+          }
+          findAllUsr {
             id
             lbl
           }
@@ -597,6 +666,14 @@ export function useExportExcel(routePath: string) {
             role_ids
             role_ids_lbl
             rem
+            create_usr_id
+            create_usr_id_lbl
+            create_time
+            create_time_lbl
+            update_usr_id
+            update_usr_id_lbl
+            update_time
+            update_time_lbl
           }
           getFieldCommentsUsr {
             img
@@ -609,6 +686,10 @@ export function useExportExcel(routePath: string) {
             dept_ids_lbl
             role_ids_lbl
             rem
+            create_usr_id_lbl
+            create_time_lbl
+            update_usr_id_lbl
+            update_time_lbl
           }
           findAllOrg {
             lbl
@@ -617,6 +698,9 @@ export function useExportExcel(routePath: string) {
             lbl
           }
           findAllRole {
+            lbl
+          }
+          findAllUsr {
             lbl
           }
           getDict(codes: [

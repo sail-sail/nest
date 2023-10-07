@@ -446,11 +446,16 @@ export async function findByUnique(
   }
   const models: OptionsModel[] = [ ];
   {
+    if (search0.lbl == null) {
+      return [ ];
+    }
+    const lbl = search0.lbl;
     if (search0.ky == null) {
       return [ ];
     }
     const ky = search0.ky;
     const modelTmps = await findAll({
+      lbl,
       ky,
     });
     models.push(...modelTmps);
@@ -472,6 +477,7 @@ export function equalsByUnique(
     return false;
   }
   if (
+    oldModel.lbl === model.lbl &&
     oldModel.ky === model.ky
   ) {
     return true;
@@ -617,7 +623,7 @@ export async function validateIsEnabled(
   model: OptionsModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("系统选项") } { await ns("已禁用") }`;
+    throw `${ await ns("系统选项") } ${ await ns("已禁用") }`;
   }
 }
 
@@ -626,7 +632,7 @@ export async function validateOption(
   model?: OptionsModel,
 ) {
   if (!model) {
-    throw `{ await ns("系统选项") } { await ns("不存在") }`;
+    throw `${ await ns("系统选项") } ${ await ns("不存在") }`;
   }
   return model;
 }
