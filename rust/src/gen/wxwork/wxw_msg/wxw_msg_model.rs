@@ -228,15 +228,15 @@ pub struct WxwMsgInput {
 impl From<WxwMsgInput> for WxwMsgSearch {
   fn from(input: WxwMsgInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 企微应用
-      wxw_app_id: input.wxw_app_id.map(|x| vec![x.into()]),
+      wxw_app_id: input.wxw_app_id.map(|x| vec![x]),
       // 发送状态
-      errcode: input.errcode.map(|x| vec![x.into()]),
+      errcode: input.errcode.map(|x| vec![x]),
       // 成员ID
       touser: input.touser,
       // 标题
@@ -248,7 +248,7 @@ impl From<WxwMsgInput> for WxwMsgSearch {
       // 按钮文字
       btntxt: input.btntxt,
       // 发送时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 错误信息
       errmsg: input.errmsg,
       // 消息ID

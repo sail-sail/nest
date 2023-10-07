@@ -63,8 +63,8 @@ async fn fetch_access_token(
 ) -> Result<(String, u32)> {
   let url = format!(
     "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corpid}&corpsecret={corpsecret}",
-    corpid = urlencoding::encode(&corpid),
-    corpsecret = urlencoding::encode(&corpsecret),
+    corpid = urlencoding::encode(corpid),
+    corpsecret = urlencoding::encode(corpsecret),
   );
   let res = reqwest::get(&url).await?;
   #[derive(Serialize, Deserialize)]
@@ -90,7 +90,7 @@ async fn fetch_access_token(
     data.errcode,
     data.errmsg,
   );
-  if access_token.is_empty() || expires_in <= 0 || errcode != 0 {
+  if access_token.is_empty() || expires_in == 0 || errcode != 0 {
     let req_id = ctx.get_req_id();
     let msg =  serde_json::to_string(&data_str)?;
     error!("{req_id} 企业微信应用 获取 access_token 失败: {url}: {msg}");
@@ -161,7 +161,7 @@ pub async fn get_access_token<'a>(
         token_time: now.into(),
         tenant_id: tenant_id.clone().into(),
         ..Default::default()
-      }.into(),
+      },
       None,
     ).await?;
     return Ok(access_token);
@@ -199,7 +199,7 @@ pub async fn get_access_token<'a>(
         token_time: now.into(),
         tenant_id: tenant_id.into(),
         ..Default::default()
-      }.into(),
+      },
       None,
     ).await?;
     return Ok(access_token);
@@ -272,7 +272,7 @@ pub async fn get_contact_access_token<'a>(
         token_time: now.into(),
         tenant_id: tenant_id.clone().into(),
         ..Default::default()
-      }.into(),
+      },
       None,
     ).await?;
     return Ok(access_token);
@@ -310,7 +310,7 @@ pub async fn get_contact_access_token<'a>(
         token_time: now.into(),
         tenant_id: tenant_id.into(),
         ..Default::default()
-      }.into(),
+      },
       None,
     ).await?;
     return Ok(access_token);

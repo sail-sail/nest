@@ -45,16 +45,13 @@ async fn fetch_send_card_msg<'a>(
     "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}",
   );
   if input.touser.is_empty() {
-    let msg = format!("touser 不能为空");
-    return Err(anyhow!(msg));
+    return Err(anyhow!("touser 不能为空"));
   }
   if input.title.is_empty() {
-    let msg = format!("title 不能为空");
-    return Err(anyhow!(msg));
+    return Err(anyhow!("title 不能为空"));
   }
   if input.description.is_empty() {
-    let msg = format!("description 不能为空");
-    return Err(anyhow!(msg));
+    return Err(anyhow!("description 不能为空"));
   }
   let wxw_app_model = find_by_id_wxw_app(
     ctx,
