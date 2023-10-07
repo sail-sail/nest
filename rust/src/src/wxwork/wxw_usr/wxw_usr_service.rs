@@ -280,14 +280,14 @@ async fn _wxw_sync_usr<'a>(
   let optbiz_model = find_one_optbiz(
     ctx,
     OptbizSearch {
-      lbl: "企微用户-同步通讯录".to_string().into(),
+      lbl: "企微应用-同步通讯录".to_string().into(),
       ..Default::default()
     }.into(),
     None,
     None,
   ).await?;
   if optbiz_model.is_none() {
-    return Err(anyhow!("企微用户-同步通讯录 未配置"));
+    return Err(anyhow!("企微应用-同步通讯录 未配置"));
   }
   let optbiz_model = optbiz_model.unwrap();
   let wxw_app_lbl = optbiz_model.val;
