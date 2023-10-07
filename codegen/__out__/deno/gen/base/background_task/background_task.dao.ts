@@ -606,7 +606,7 @@ export async function validateOption(
   model?: BackgroundTaskModel,
 ) {
   if (!model) {
-    throw `{ await ns("后台任务") } { await ns("不存在") }`;
+    throw `${ await ns("后台任务") } ${ await ns("不存在") }`;
   }
   return model;
 }

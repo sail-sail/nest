@@ -517,7 +517,7 @@ export async function validateOption(
   model?: WxwAppTokenModel,
 ) {
   if (!model) {
-    throw `{ await ns("企微应用接口凭据") } { await ns("不存在") }`;
+    throw `${ await ns("企微应用接口凭据") } ${ await ns("不存在") }`;
   }
   return model;
 }
