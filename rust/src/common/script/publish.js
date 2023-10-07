@@ -66,7 +66,7 @@ console.log(publishPath);
     cmd += ` ; mkdir ${ publishPath }`;
     cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
     cmd += ` ; rmdir ${ publishPathTmp }`;
-    cmd += ` ; chmod -R 755 ${ publishPath }/rust/server`;
+    cmd += ` ; chmod -R 755 ${ publishPath }/rust/rust`;
     cmd += ` ; cd ${ publishPath }/rust/ && pm2 start`;
     data = await ssh.exec(cmd);
   } catch (err) {
