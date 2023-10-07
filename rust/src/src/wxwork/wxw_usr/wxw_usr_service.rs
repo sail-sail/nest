@@ -29,6 +29,7 @@ use crate::gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
   create as create_usr,
   update_by_id as update_usr_by_id,
+  validate_is_enabled as validate_is_enabled_usr,
 };
 use crate::gen::base::usr::usr_model::{
   UsrSearch,
@@ -133,7 +134,27 @@ pub async fn wxw_login_by_code<'a>(
     None,
     None,
   ).await?;
-  if wxw_usr_model.is_none() {
+  if let Some(wxw_usr_model) = wxw_usr_model {
+    let id = wxw_usr_model.id.clone();
+    if wxw_usr_model.userid != userid ||
+      wxw_usr_model.lbl != name ||
+      wxw_usr_model.position != position ||
+      wxw_usr_model.tenant_id != tenant_id.as_str()
+    {
+      update_by_id_wxw_usr(
+        ctx,
+        id.clone(),
+        WxwUsrInput {
+          userid: userid.clone().into(),
+          lbl: name.clone().into(),
+          position: position.clone().into(),
+          tenant_id: tenant_id.clone().into(),
+          ..Default::default()
+        },
+        None,
+      ).await?;
+    }
+  } else {
     let id = get_short_uuid();
     create_wxw_usr(
       ctx,
@@ -144,29 +165,9 @@ pub async fn wxw_login_by_code<'a>(
         position: position.clone().into(),
         tenant_id: tenant_id.clone().into(),
         ..Default::default()
-      }.into(),
+      },
       None,
     ).await?;
-  } else {
-    let wxw_usr_model = wxw_usr_model.unwrap();
-    let id = wxw_usr_model.id.clone();
-    if wxw_usr_model.userid != userid ||
-      wxw_usr_model.lbl != name ||
-      wxw_usr_model.position != position ||
-      wxw_usr_model.tenant_id != tenant_id.as_str() {
-      update_by_id_wxw_usr(
-        ctx,
-        id.clone(),
-        WxwUsrInput {
-          userid: userid.clone().into(),
-          lbl: name.clone().into(),
-          position: position.clone().into(),
-          tenant_id: tenant_id.clone().into(),
-          ..Default::default()
-        }.into(),
-        None,
-      ).await?;
-    }
   }
   let usr_model = find_one_usr(
     ctx,
@@ -177,26 +178,12 @@ pub async fn wxw_login_by_code<'a>(
     None,
     None,
   ).await?;
-  if usr_model.is_some() && usr_model.as_ref().unwrap().is_enabled == 0 {
-    return Err(anyhow!(
-      "用户已禁用",
-    ));
-  }
   let mut id = get_short_uuid();
-  if usr_model.is_none() {
-    create_usr(
+  if let Some(usr_model) = usr_model {
+    validate_is_enabled_usr(
       ctx,
-      UsrInput {
-        id: id.clone().into(),
-        username: name.clone().into(),
-        lbl: name.clone().into(),
-        tenant_id: tenant_id.clone().into(),
-        ..Default::default()
-      }.into(),
-      None,
+      &usr_model,
     ).await?;
-  } else {
-    let usr_model = usr_model.unwrap();
     id = usr_model.id;
     if usr_model.username != name ||
       usr_model.lbl != name ||
@@ -210,10 +197,22 @@ pub async fn wxw_login_by_code<'a>(
           lbl: name.clone().into(),
           tenant_id: tenant_id.clone().into(),
           ..Default::default()
-        }.into(),
+        },
         None,
       ).await?;
     }
+  } else {
+    create_usr(
+      ctx,
+      UsrInput {
+        id: id.clone().into(),
+        username: name.clone().into(),
+        lbl: name.clone().into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
   }
   let usr_model = find_by_id_usr(
     ctx,
@@ -231,20 +230,18 @@ pub async fn wxw_login_by_code<'a>(
   if org_id.is_empty() {
     org_id = org_ids[0].clone();
   }
-  if org_id != "" {
-    if !org_ids.contains(&org_id) {
-      org_id = "".to_string();
-    }
+  if !org_id.is_empty() && !org_ids.contains(&org_id) {
+    org_id = "".to_string();
   }
   let now = ctx.get_now();
   let server_tokentimeout = ctx.get_server_tokentimeout();
   let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: usr_model.id.into(),
-    tenant_id: tenant_id.clone().into(),
+    id: usr_model.id,
+    tenant_id: tenant_id.clone(),
     org_id: org_id.clone().into(),
-    lang: lang.clone().into(),
+    lang: lang.clone(),
     exp,
     ..Default::default()
   })?;
@@ -330,9 +327,10 @@ async fn _wxw_sync_usr<'a>(
   ).await?;
   let userids4add = userids.into_iter()
     .filter(|userid| {
-      wxw_usr_models.iter().find(|wxw_usr_model| {
-        wxw_usr_model.userid == *userid
-      }).is_none()
+      !wxw_usr_models.iter()
+        .any(|wxw_usr_model|
+          wxw_usr_model.userid == *userid
+        )
     })
     .collect::<Vec<String>>();
   let mut wxw_usr_models4add: Vec<WxwUsrInput> = Vec::with_capacity(userids4add.len());
@@ -359,7 +357,7 @@ async fn _wxw_sync_usr<'a>(
   for wxw_usr_model4add in wxw_usr_models4add {
     create_wxw_usr(
       ctx,
-      wxw_usr_model4add.into(),
+      wxw_usr_model4add,
       None,
     ).await?;
     num += 1;

@@ -32,7 +32,7 @@ impl WxwMsgGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwMsgModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_msg_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl WxwMsgGenQuery {
     ctx: &Context<'a>,
     search: Option<WxwMsgSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_msg_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl WxwMsgGenQuery {
     search: Option<WxwMsgSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwMsgModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_msg_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl WxwMsgGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<WxwMsgModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_msg_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl WxwMsgGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<WxwMsgFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_msg_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl WxwMsgGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_msg_resolver::update_tenant_by_id(
       &mut ctx,
@@ -146,7 +146,7 @@ impl WxwMsgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_msg_resolver::delete_by_ids(
       &mut ctx,
@@ -163,7 +163,7 @@ impl WxwMsgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_msg_resolver::revert_by_ids(
       &mut ctx,
@@ -180,7 +180,7 @@ impl WxwMsgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_msg_resolver::force_delete_by_ids(
       &mut ctx,

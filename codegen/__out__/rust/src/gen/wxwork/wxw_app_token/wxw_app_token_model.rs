@@ -155,21 +155,21 @@ pub struct WxwAppTokenInput {
 impl From<WxwAppTokenInput> for WxwAppTokenSearch {
   fn from(input: WxwAppTokenInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 企微应用
-      wxw_app_id: input.wxw_app_id.map(|x| vec![x.into()]),
+      wxw_app_id: input.wxw_app_id.map(|x| vec![x]),
       // 类型corp和contact
       r#type: input.r#type,
       // 令牌
       access_token: input.access_token,
       // 令牌创建时间
-      token_time: input.token_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      token_time: input.token_time.map(|x| vec![x, x]),
       // 令牌超时时间
-      expires_in: input.expires_in.map(|x| vec![x.clone().into(), x.clone().into()]),
+      expires_in: input.expires_in.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

@@ -32,7 +32,7 @@ impl WxwAppGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwAppModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl WxwAppGenQuery {
     ctx: &Context<'a>,
     search: Option<WxwAppSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl WxwAppGenQuery {
     search: Option<WxwAppSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwAppModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl WxwAppGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<WxwAppModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::find_by_id(
       &mut ctx,
@@ -105,7 +105,7 @@ impl WxwAppGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -124,7 +124,7 @@ impl WxwAppGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::get_is_locked_by_id(
       &mut ctx,
@@ -140,7 +140,7 @@ impl WxwAppGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<WxwAppFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::get_field_comments(
       &mut ctx,
@@ -155,7 +155,7 @@ impl WxwAppGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_resolver::find_last_order_by(
       &mut ctx,
@@ -180,7 +180,7 @@ impl WxwAppGenMutation {
     model: WxwAppInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -203,7 +203,7 @@ impl WxwAppGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::update_tenant_by_id(
       &mut ctx,
@@ -222,7 +222,7 @@ impl WxwAppGenMutation {
     id: String,
     org_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::update_org_by_id(
       &mut ctx,
@@ -241,7 +241,7 @@ impl WxwAppGenMutation {
     id: String,
     model: WxwAppInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::update_by_id(
       &mut ctx,
@@ -259,7 +259,7 @@ impl WxwAppGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::delete_by_ids(
       &mut ctx,
@@ -277,7 +277,7 @@ impl WxwAppGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::enable_by_ids(
       &mut ctx,
@@ -296,7 +296,7 @@ impl WxwAppGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::lock_by_ids(
       &mut ctx,
@@ -314,7 +314,7 @@ impl WxwAppGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::revert_by_ids(
       &mut ctx,
@@ -331,7 +331,7 @@ impl WxwAppGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_resolver::force_delete_by_ids(
       &mut ctx,

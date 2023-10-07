@@ -117,7 +117,7 @@ async fn get_where_query<'a>(
       None => false,
     };
     if wxw_app_id_is_null {
-      where_query += &format!(" and wxw_app_id_lbl.id is null");
+      where_query += " and wxw_app_id_lbl.id is null";
     }
   }
   {
@@ -159,12 +159,12 @@ async fn get_where_query<'a>(
     };
     let token_time_gt: Option<chrono::NaiveDateTime> = match &token_time.len() {
       0 => None,
-      _ => token_time[0].clone().into(),
+      _ => token_time[0].into(),
     };
     let token_time_lt: Option<chrono::NaiveDateTime> = match &token_time.len() {
       0 => None,
       1 => None,
-      _ => token_time[1].clone().into(),
+      _ => token_time[1].into(),
     };
     if let Some(token_time_gt) = token_time_gt {
       where_query += &format!(" and t.token_time >= {}", args.push(token_time_gt.into()));
@@ -180,12 +180,12 @@ async fn get_where_query<'a>(
     };
     let expires_in_gt: Option<u32> = match &expires_in.len() {
       0 => None,
-      _ => expires_in[0].clone().into(),
+      _ => expires_in[0].into(),
     };
     let expires_in_lt: Option<u32> = match &expires_in.len() {
       0 => None,
       1 => None,
-      _ => expires_in[1].clone().into(),
+      _ => expires_in[1].into(),
     };
     if let Some(expires_in_gt) = expires_in_gt {
       where_query += &format!(" and t.expires_in >= {}", args.push(expires_in_gt.into()));
@@ -317,10 +317,9 @@ pub fn get_route_path() -> String {
 
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
-  let n_route = i18n_dao::NRoute {
+  i18n_dao::NRoute {
     route_path: get_route_path().into(),
-  };
-  n_route
+  }
 }
 
 /// 获取字段对应的国家化后的名称
@@ -347,11 +346,10 @@ pub async fn get_field_comments<'a>(
     i18n_code_maps.clone(),
   ).await?;
   
-  let vec = i18n_code_maps
-    .into_iter()
+  let vec = i18n_code_maps.into_iter()
     .map(|item|
       map.get(&item.code)
-        .map(|item| item.clone())
+        .map(|item| item.to_owned())
         .unwrap_or_default()
     )
     .collect::<Vec<String>>();
@@ -429,13 +427,10 @@ pub async fn find_by_unique<'a>(
   if let Some(id) = search.id {
     let model = find_by_id(
       ctx,
-      id.into(),
+      id,
       None,
     ).await?;
-    if let Some(model) = model {
-      return Ok(vec![model]);
-    }
-    return Ok(vec![]);
+    return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
   
   let mut models: Vec<WxwAppTokenModel> = vec![];
@@ -560,26 +555,24 @@ pub async fn set_id_by_lbl<'a>(
   let mut input = input;
   
   // 企微应用
-  if input.wxw_app_id.is_none() {
-    if input.wxw_app_id_lbl.is_some()
-      && !input.wxw_app_id_lbl.as_ref().unwrap().is_empty()
-      && input.wxw_app_id.is_none()
-    {
-      input.wxw_app_id_lbl = input.wxw_app_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::wxwork::wxw_app::wxw_app_dao::find_one(
-        ctx,
-        crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
-          lbl: input.wxw_app_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.wxw_app_id = model.id.into();
-      }
+  if input.wxw_app_id_lbl.is_some()
+    && !input.wxw_app_id_lbl.as_ref().unwrap().is_empty()
+    && input.wxw_app_id.is_none()
+  {
+    input.wxw_app_id_lbl = input.wxw_app_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::wxwork::wxw_app::wxw_app_dao::find_one(
+      ctx,
+      crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
+        lbl: input.wxw_app_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.wxw_app_id = model.id.into();
     }
   }
   
@@ -614,13 +607,11 @@ pub async fn create<'a>(
     None,
   ).await?;
   
-  if old_models.len() > 0 {
+  if !old_models.is_empty() {
     
     let unique_type = options.as_ref()
       .map(|item|
-        item.get_unique_type()
-          .map(|item| item.clone())
-          .unwrap_or(UniqueType::Throw)
+        item.get_unique_type().unwrap_or(UniqueType::Throw)
       )
       .unwrap_or(UniqueType::Throw);
     
@@ -640,16 +631,15 @@ pub async fn create<'a>(
       }
     }
     
-    match id {
-      Some(id) => return Ok(id),
-      None => {},
+    if let Some(id) = id {
+      return Ok(id);
     }
   }
   
   let id = get_short_uuid();
   
   if input.id.is_none() {
-    input.id = Some(id.clone().into());
+    input.id = id.clone().into();
   }
   
   let mut args = QueryArgs::new();
@@ -812,17 +802,16 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     
-    let models: Vec<WxwAppTokenModel> = models.into_iter()
+    let models = models.into_iter()
       .filter(|item| 
-        &item.id != &id
+        item.id != id
       )
-      .collect();
+      .collect::<Vec<WxwAppTokenModel>>();
     
-    if models.len() > 0 {
+    if !models.is_empty() {
       let unique_type = {
         if let Some(options) = options.as_ref() {
           options.get_unique_type()
-            .map(|item| item.clone())
             .unwrap_or(UniqueType::Throw)
         } else {
           UniqueType::Throw
@@ -1042,11 +1031,11 @@ pub async fn revert_by_ids<'a>(
       
       let models: Vec<WxwAppTokenModel> = models.into_iter()
         .filter(|item| 
-          &item.id != &id
+          item.id != id
         )
         .collect();
       
-      if models.len() > 0 {
+      if !models.is_empty() {
         let err_msg = i18n_dao::ns(
           ctx,
           "数据已经存在".to_owned(),
@@ -1142,7 +1131,7 @@ pub async fn validate_option<'a, T>(
 
 /// 校验, 校验失败时抛出SrvErr异常
 #[allow(unused_imports)]
-pub fn validate<'a>(
+pub fn validate(
   input: &WxwAppTokenInput,
 ) -> Result<()> {
   

@@ -32,7 +32,7 @@ impl WxwAppTokenGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwAppTokenModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_token_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl WxwAppTokenGenQuery {
     ctx: &Context<'a>,
     search: Option<WxwAppTokenSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_token_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl WxwAppTokenGenQuery {
     search: Option<WxwAppTokenSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwAppTokenModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_token_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl WxwAppTokenGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<WxwAppTokenModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_token_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl WxwAppTokenGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<WxwAppTokenFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_app_token_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl WxwAppTokenGenMutation {
     model: WxwAppTokenInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -151,7 +151,7 @@ impl WxwAppTokenGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_token_resolver::update_tenant_by_id(
       &mut ctx,
@@ -170,7 +170,7 @@ impl WxwAppTokenGenMutation {
     id: String,
     model: WxwAppTokenInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_token_resolver::update_by_id(
       &mut ctx,
@@ -188,7 +188,7 @@ impl WxwAppTokenGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_token_resolver::delete_by_ids(
       &mut ctx,
@@ -205,7 +205,7 @@ impl WxwAppTokenGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_token_resolver::revert_by_ids(
       &mut ctx,
@@ -222,7 +222,7 @@ impl WxwAppTokenGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_app_token_resolver::force_delete_by_ids(
       &mut ctx,
