@@ -6,6 +6,7 @@ import type {
  * 企微发送条
  */
 export async function sendMsgWxw(
+  host: string,
   ids: string[],
   opt?: GqlOpt,
 ) {
@@ -13,11 +14,12 @@ export async function sendMsgWxw(
     sendMsgWxw: Mutation["sendMsgWxw"];
   } = await query({
     query: /* GraphQL */ `
-      mutation($ids: [String!]!) {
-        sendMsgWxw(ids: $ids)
+      mutation($host: String!, $ids: [String!]!) {
+        sendMsgWxw(host: $host, ids: $ids)
       }
     `,
     variables: {
+      host,
       ids,
     },
   }, opt);
