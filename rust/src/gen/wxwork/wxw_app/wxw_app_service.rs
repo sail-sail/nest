@@ -121,25 +121,6 @@ pub async fn update_tenant_by_id<'a>(
   Ok(num)
 }
 
-/// 根据id修改组织id
-#[allow(dead_code)]
-pub async fn update_org_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
-  id: String,
-  org_id: String,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = wxw_app_dao::update_org_by_id(
-    ctx,
-    id,
-    org_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 根据id修改数据
 #[allow(dead_code)]
 #[allow(unused_mut)]

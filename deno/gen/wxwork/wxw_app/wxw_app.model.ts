@@ -10,7 +10,6 @@ import type {
 
 export interface WxwAppSearch extends WxwAppSearchType {
   tenant_id?: string | null;
-  org_id?: string | null;
   $extra?: SearchExtra[];
 }
 
@@ -20,7 +19,6 @@ export interface WxwAppModel extends WxwAppModelType {
   update_usr_id: string;
   update_time?: string | null;
   tenant_id?: string | null;
-  org_id?: string | null;
 }
 
 export interface WxwAppInput extends WxwAppInputType {
@@ -29,7 +27,6 @@ export interface WxwAppInput extends WxwAppInputType {
   update_usr_id?: string;
   update_time?: string | null;
   tenant_id?: string | null;
-  org_id?: string | null;
 }
 
 export interface WxwAppFieldComment {

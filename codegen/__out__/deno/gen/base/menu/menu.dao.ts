@@ -700,7 +700,7 @@ export async function validateIsEnabled(
   model: MenuModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("菜单") } { await ns("已禁用") }`;
+    throw `${ await ns("菜单") } ${ await ns("已禁用") }`;
   }
 }
 
@@ -709,7 +709,7 @@ export async function validateOption(
   model?: MenuModel,
 ) {
   if (!model) {
-    throw `{ await ns("菜单") } { await ns("不存在") }`;
+    throw `${ await ns("菜单") } ${ await ns("不存在") }`;
   }
   return model;
 }

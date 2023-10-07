@@ -579,7 +579,7 @@ export async function validateOption(
   model?: PermitModel,
 ) {
   if (!model) {
-    throw `{ await ns("按钮权限") } { await ns("不存在") }`;
+    throw `${ await ns("按钮权限") } ${ await ns("不存在") }`;
   }
   return model;
 }
