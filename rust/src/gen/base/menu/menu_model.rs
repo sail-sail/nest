@@ -345,13 +345,13 @@ pub struct MenuInput {
 impl From<MenuInput> for MenuSearch {
   fn from(input: MenuInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       is_deleted: None,
       // 类型
-      r#type: input.r#type.map(|x| vec![x.into()]),
+      r#type: input.r#type.map(|x| vec![x]),
       // 父菜单
-      parent_id: input.parent_id.map(|x| vec![x.into()]),
+      parent_id: input.parent_id.map(|x| vec![x]),
       // 名称
       lbl: input.lbl,
       // 路由
@@ -359,23 +359,23 @@ impl From<MenuInput> for MenuSearch {
       // 参数
       route_query: input.route_query,
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 所在租户
       tenant_ids: input.tenant_ids,
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

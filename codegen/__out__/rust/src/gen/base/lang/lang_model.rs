@@ -240,7 +240,7 @@ pub struct LangInput {
 impl From<LangInput> for LangSearch {
   fn from(input: LangInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       is_deleted: None,
       // 编码
@@ -248,21 +248,21 @@ impl From<LangInput> for LangSearch {
       // 名称
       lbl: input.lbl,
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x.into()]),
+      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
     }
   }

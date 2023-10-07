@@ -30,7 +30,7 @@ impl NRoute {
     code: String,
     map: Option<HashMap<String, String>>,
   ) -> Result<String> {
-    let res = n(ctx, self.route_path.clone().into(), code, map).await?;
+    let res = n(ctx, self.route_path.clone(), code, map).await?;
     Ok(res)
   }
   
@@ -39,7 +39,7 @@ impl NRoute {
     ctx: &mut impl Ctx<'a>,
     i18n_code_maps: Vec<I18nCodeMap>,
   ) -> Result<HashMap<String, String>> {
-    let res = n_batch(ctx, self.route_path.clone().into(), i18n_code_maps).await?;
+    let res = n_batch(ctx, self.route_path.clone(), i18n_code_maps).await?;
     Ok(res)
   }
   

@@ -85,14 +85,12 @@ async fn main() -> Result<(), std::io::Error> {
   
   // oss, tmpfile
   tokio::spawn(async move {
-    match oss_dao::init().await {
-      Ok(_) => {},
-      Err(_) => {},
-    };
-    match tmpfile_dao::init().await {
-      Ok(_) => {},
-      Err(_) => {},
-    };
+    if let Err(err) = oss_dao::init().await {
+      println!("oss_dao::init() error: {}", err);
+    }
+    if let Err(err) = tmpfile_dao::init().await {
+      println!("tmpfile_dao::init() error: {}", err);
+    }
   });
   
   let schema: QuerySchema = Schema::build(
@@ -127,7 +125,7 @@ async fn main() -> Result<(), std::io::Error> {
     if !is_equal {
       use std::io::Write;
       let mut writer = std::io::BufWriter::new(std::fs::File::create(file_path).unwrap());
-      writer.write(schema.as_bytes()).unwrap();
+      writer.write_all(schema.as_bytes()).unwrap();
     }
     std::process::Command::new("node")
       .arg("node_modules/@graphql-codegen/cli/cjs/bin.js")

@@ -32,7 +32,7 @@ impl OperationRecordGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<OperationRecordModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = operation_record_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl OperationRecordGenQuery {
     ctx: &Context<'a>,
     search: Option<OperationRecordSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = operation_record_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl OperationRecordGenQuery {
     search: Option<OperationRecordSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OperationRecordModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = operation_record_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl OperationRecordGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<OperationRecordModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = operation_record_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl OperationRecordGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<OperationRecordFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = operation_record_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl OperationRecordGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = operation_record_resolver::update_tenant_by_id(
       &mut ctx,
@@ -146,7 +146,7 @@ impl OperationRecordGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = operation_record_resolver::delete_by_ids(
       &mut ctx,
@@ -163,7 +163,7 @@ impl OperationRecordGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = operation_record_resolver::revert_by_ids(
       &mut ctx,
@@ -180,7 +180,7 @@ impl OperationRecordGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = operation_record_resolver::force_delete_by_ids(
       &mut ctx,

@@ -349,7 +349,7 @@ async fn get_where_query<'a>(
       None => false,
     };
     if <#=column_name#>_is_null {
-      where_query += &format!(" and <#=column_name#>_lbl.id is null");
+      where_query += " and <#=column_name#>_lbl.id is null";
     }
   }<#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -377,7 +377,7 @@ async fn get_where_query<'a>(
       None => false,
     };
     if <#=column_name#>_is_null {
-      where_query += &format!(" and <#=column_name#>_lbl.id is null");
+      where_query += " and <#=column_name#>_lbl.id is null";
     }
   }<#
     } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
@@ -419,12 +419,12 @@ async fn get_where_query<'a>(
     };
     let <#=column_name#>_gt: Option<<#=_data_type#>> = match &<#=column_name_rust#>.len() {
       0 => None,
-      _ => <#=column_name#>[0].clone().into(),
+      _ => <#=column_name#>[0].into(),
     };
     let <#=column_name#>_lt: Option<<#=_data_type#>> = match &<#=column_name_rust#>.len() {
       0 => None,
       1 => None,
-      _ => <#=column_name_rust#>[1].clone().into(),
+      _ => <#=column_name_rust#>[1].into(),
     };
     if let Some(<#=column_name#>_gt) = <#=column_name#>_gt {
       where_query += &format!(" and t.<#=column_name#> >= {}", args.push(<#=column_name#>_gt.into()));
@@ -436,10 +436,7 @@ async fn get_where_query<'a>(
     } else if (data_type === "tinyint") {
   #>
   {
-    let <#=column_name_rust#> = match &search {
-      Some(item) => item.<#=column_name_rust#>.clone(),
-      None => None,
-    };
+    let <#=column_name_rust#> = search.<#=column_name_rust#>;
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       where_query += &format!(" and t.<#=column_name#> = {}", args.push(<#=column_name_rust#>.into()));
     }
@@ -772,7 +769,7 @@ pub async fn find_all<'a>(
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
       <#=column_name#>_dict.iter()
-        .find(|item| item.val == model.<#=column_name#>.to_string())
+        .find(|item| item.val == model.<#=column_name#>)
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
@@ -860,10 +857,9 @@ pub fn get_route_path() -> String {
 
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
-  let n_route = i18n_dao::NRoute {
+  i18n_dao::NRoute {
     route_path: get_route_path().into(),
-  };
-  n_route
+  }
 }
 
 /// 获取字段对应的国家化后的名称
@@ -918,11 +914,10 @@ pub async fn get_field_comments<'a>(
     i18n_code_maps.clone(),
   ).await?;
   
-  let vec = i18n_code_maps
-    .into_iter()
+  let vec = i18n_code_maps.into_iter()
     .map(|item|
       map.get(&item.code)
-        .map(|item| item.clone())
+        .map(|item| item.to_owned())
         .unwrap_or_default()
     )
     .collect::<Vec<String>>();
@@ -1032,13 +1027,10 @@ pub async fn find_by_unique<'a>(
   if let Some(id) = search.id {
     let model = find_by_id(
       ctx,
-      id.into(),
+      id,
       None,
     ).await?;
-    if let Some(model) = model {
-      return Ok(vec![model]);
-    }
-    return Ok(vec![]);
+    return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }<#
   if (!opts.uniques || opts.uniques.length === 0) {
   #>
@@ -1231,14 +1223,13 @@ pub async fn set_id_by_lbl<'a>(
   if input.<#=column_name_rust#>.is_none() {
     let <#=column_name#>_dict = &dict_vec[<#=String(dictNum)#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-      input.<#=column_name_rust#> = <#=column_name#>_dict.into_iter()
+      input.<#=column_name_rust#> = <#=column_name#>_dict.iter()
         .find(|item| {
           item.lbl == <#=column_name#>_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
-        })
-        .into();
+        });
     }
   }<#
     dictNumMap[column_name] = dictNum.toString();
@@ -1294,7 +1285,7 @@ pub async fn set_id_by_lbl<'a>(
   if input.<#=column_name_rust#>.is_none() {
     let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNum#>];
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.clone() {
-      input.<#=column_name_rust#> = <#=column_name#>_dictbiz.into_iter()
+      input.<#=column_name_rust#> = <#=column_name#>_dictbiz.iter()
         .find(|item| {
           item.lbl == <#=column_name#>_lbl
         })
@@ -1338,75 +1329,71 @@ pub async fn set_id_by_lbl<'a>(
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if input.<#=column_name#>_lbl.is_some()
-      && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty()
-      && input.<#=column_name_rust#>.is_none()
-    {
-      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
-        item.trim().to_owned()
-      );<#
-      if (foreignTableUp !== tableUP) {
-      #>
-      let model = <#=daoStr#>find_one(
-        ctx,
-        crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-          <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;<#
-      } else {
-      #>
-      let model = <#=daoStr#>find_one(
-        ctx,
-        <#=tableUP#>Search {
-          <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;<#
-      }
-      #>
-      if let Some(model) = model {
-        input.<#=column_name_rust#> = model.id.into();
-      }
+  if input.<#=column_name#>_lbl.is_some()
+    && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty()
+    && input.<#=column_name_rust#>.is_none()
+  {
+    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
+      item.trim().to_owned()
+    );<#
+    if (foreignTableUp !== tableUP) {
+    #>
+    let model = <#=daoStr#>find_one(
+      ctx,
+      crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;<#
+    } else {
+    #>
+    let model = <#=daoStr#>find_one(
+      ctx,
+      <#=tableUP#>Search {
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;<#
+    }
+    #>
+    if let Some(model) = model {
+      input.<#=column_name_rust#> = model.id.into();
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
-      input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
-        item.into_iter()
-          .map(|item| item.trim().to_owned())
-          .collect::<Vec<String>>()
-      );
-      let mut models = vec![];
-      for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
-        let model = <#=daoStr#>find_one(
-          ctx,
-          crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-            lbl: lbl.into(),
-            ..Default::default()
-          }.into(),
-          None,
-          None,
-        ).await?;
-        if let Some(model) = model {
-          models.push(model);
-        }
+  if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
+    input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .collect::<Vec<String>>()
+    );
+    let mut models = vec![];
+    for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
+      let model = <#=daoStr#>find_one(
+        ctx,
+        crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
       }
-      if !models.is_empty() {
-        input.<#=column_name_rust#> = models.into_iter()
-          .map(|item| item.id)
-          .collect::<Vec<String>>()
-          .into();
-      }
+    }
+    if !models.is_empty() {
+      input.<#=column_name_rust#> = models.into_iter()
+        .map(|item| item.id)
+        .collect::<Vec<String>>()
+        .into();
     }
   }<#
     }
@@ -1609,13 +1596,11 @@ pub async fn create<'a>(
     None,
   ).await?;
   
-  if old_models.len() > 0 {
+  if !old_models.is_empty() {
     
     let unique_type = options.as_ref()
       .map(|item|
-        item.get_unique_type()
-          .map(|item| item.clone())
-          .unwrap_or(UniqueType::Throw)
+        item.get_unique_type().unwrap_or(UniqueType::Throw)
       )
       .unwrap_or(UniqueType::Throw);
     
@@ -1635,9 +1620,8 @@ pub async fn create<'a>(
       }
     }
     
-    match id {
-      Some(id) => return Ok(id),
-      None => {},
+    if let Some(id) = id {
+      return Ok(id);
     }
   }<#
   if (mod === "base" && table === "role") {
@@ -1655,7 +1639,7 @@ pub async fn create<'a>(
   let id = get_short_uuid();
   
   if input.id.is_none() {
-    input.id = Some(id.clone().into());
+    input.id = id.clone().into();
   }
   
   let mut args = QueryArgs::new();
@@ -2038,17 +2022,16 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     
-    let models: Vec<<#=tableUP#>Model> = models.into_iter()
+    let models = models.into_iter()
       .filter(|item| 
-        &item.id != &id
+        item.id != id
       )
-      .collect();
+      .collect::<Vec<<#=tableUP#>Model>>();
     
-    if models.len() > 0 {
+    if !models.is_empty() {
       let unique_type = {
         if let Some(options) = options.as_ref() {
           options.get_unique_type()
-            .map(|item| item.clone())
             .unwrap_or(UniqueType::Throw)
         } else {
           UniqueType::Throw
@@ -2696,11 +2679,11 @@ pub async fn revert_by_ids<'a>(
       
       let models: Vec<<#=tableUP#>Model> = models.into_iter()
         .filter(|item| 
-          &item.id != &id
+          item.id != id
         )
         .collect();
       
-      if models.len() > 0 {
+      if !models.is_empty() {
         let err_msg = i18n_dao::ns(
           ctx,
           "数据已经存在".to_owned(),
@@ -2892,7 +2875,7 @@ pub async fn validate_option<'a, T>(
 
 /// 校验, 校验失败时抛出SrvErr异常
 #[allow(unused_imports)]
-pub fn validate<'a>(
+pub fn validate(
   input: &<#=tableUP#>Input,
 ) -> Result<()> {
   

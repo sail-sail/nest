@@ -16,7 +16,7 @@ impl LangQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<Vec<LangModel>> {
-    let mut ctx = CtxImpl::new(&ctx);
+    let mut ctx = CtxImpl::new(ctx);
     
     let res = lang_service::get_login_langs(
       &mut ctx,

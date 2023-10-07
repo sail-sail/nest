@@ -116,7 +116,7 @@ pub async fn get_usr_permits<'a>(
     if menu_id_map.contains_key(&menu_id) {
       continue;
     }
-    if menu_id == "" {
+    if menu_id.is_empty() {
       menu_id_map.insert(menu_id.clone(), "".to_owned());
     }
     
@@ -290,5 +290,5 @@ pub async fn use_permit<'a>(
     Some(map),
   ).await?;
   
-  return Err(anyhow::anyhow!(err_msg));
+  Err(anyhow::anyhow!(err_msg))
 }
