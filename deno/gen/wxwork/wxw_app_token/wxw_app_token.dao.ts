@@ -512,6 +512,16 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: WxwAppTokenModel,
+) {
+  if (!model) {
+    throw `{ await ns("企微应用接口凭据") } { await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 
