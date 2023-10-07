@@ -90,14 +90,11 @@ async fn _download(
       return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
     }
   }
-  match stat.content_type {
-    Some(content_type) => {
-      if !content_type.is_empty() {
-        response = response.content_type(content_type);
-      }
-    },
-    None => {},
-  };
+  if let Some(content_type) = &stat.content_type {
+    if !content_type.is_empty() {
+      response = response.content_type(content_type);
+    }
+  }
   filename = filename.trim().to_string();
   if filename.is_empty() {
     filename = stat.filename;
@@ -246,14 +243,14 @@ pub async fn img(
     _ => "image/webp",
   };
   // 修改filename后缀名
-  let mut filename_vec: Vec<&str> = filename.split(".").collect();
+  let mut filename_vec: Vec<&str> = filename.split('.').collect();
   if filename_vec.len() > 1 {
     filename_vec.pop();
     filename = filename_vec.join(".");
-    filename.push_str(".");
+    filename.push('.');
     filename.push_str(format.as_str());
-    if filename.contains("\"") {
-      filename = filename.replace("\"", "");
+    if filename.contains('"') {
+      filename = filename.replace('"', "");
     }
   }
   if let Some(if_none_match) = if_none_match {
@@ -270,10 +267,8 @@ pub async fn img(
         response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
         response = response.status(StatusCode::from_u16(304)?);
         return Ok(response.finish());
-      } else {
-        if !etag.is_empty() {
-          response = response.header("ETag", etag);
-        }
+      } else if !etag.is_empty() {
+        response = response.header("ETag", etag);
       }
     }
   }
@@ -332,10 +327,8 @@ pub async fn img(
           response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
           response = response.status(StatusCode::from_u16(304)?);
           return Ok(response.finish());
-        } else {
-          if !etag.is_empty() {
-            response = response.header("ETag", etag);
-          }
+        } else if !etag.is_empty() {
+          response = response.header("ETag", etag);
         }
       }
     }
@@ -380,7 +373,7 @@ pub async fn img(
   tmpfile_dao::put_object(
     &cache_id,
     &content,
-    &content_type,
+    content_type,
     &filename,
   ).await?;
   
@@ -403,10 +396,8 @@ pub async fn img(
           response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
           response = response.status(StatusCode::from_u16(304)?);
           return Ok(response.finish());
-        } else {
-          if !etag.is_empty() {
-            response = response.header("ETag", etag);
-          }
+        } else if !etag.is_empty() {
+          response = response.header("ETag", etag);
         }
       }
     }

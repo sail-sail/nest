@@ -308,8 +308,12 @@ pub async fn delete_by_ids<'a>(
     
     ids.push(id);
   }
-  if ids.len() == 0 && len > 0 {
-    let err_msg = i18n_dao::ns(ctx, "不能删除已经锁定的数据".to_owned(), None).await?;
+  if ids.is_empty() && len > 0 {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "不能删除已经锁定的数据".to_owned(),
+      None,
+    ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
   let ids = ids;<#
@@ -336,7 +340,7 @@ pub async fn delete_by_ids<'a>(
     }
     ids.push(id);
   }
-  if ids.len() == 0 && len > 0 {
+  if ids.is_empty() && len > 0 {
     let err_msg = i18n_dao::ns(ctx, "不能删除系统记录".to_owned(), None).await?;
     return Err(SrvErr::msg(err_msg).into());
   }<#

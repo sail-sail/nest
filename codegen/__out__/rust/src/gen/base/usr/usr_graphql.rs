@@ -32,7 +32,7 @@ impl UsrGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<UsrModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl UsrGenQuery {
     ctx: &Context<'a>,
     search: Option<UsrSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl UsrGenQuery {
     search: Option<UsrSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<UsrModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl UsrGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<UsrModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::find_by_id(
       &mut ctx,
@@ -105,7 +105,7 @@ impl UsrGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -124,7 +124,7 @@ impl UsrGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::get_is_locked_by_id(
       &mut ctx,
@@ -140,7 +140,7 @@ impl UsrGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<UsrFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::get_field_comments(
       &mut ctx,
@@ -165,7 +165,7 @@ impl UsrGenMutation {
     model: UsrInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -188,7 +188,7 @@ impl UsrGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::update_tenant_by_id(
       &mut ctx,
@@ -207,7 +207,7 @@ impl UsrGenMutation {
     id: String,
     model: UsrInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::update_by_id(
       &mut ctx,
@@ -225,7 +225,7 @@ impl UsrGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::delete_by_ids(
       &mut ctx,
@@ -243,7 +243,7 @@ impl UsrGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::enable_by_ids(
       &mut ctx,
@@ -262,7 +262,7 @@ impl UsrGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::lock_by_ids(
       &mut ctx,
@@ -280,7 +280,7 @@ impl UsrGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::revert_by_ids(
       &mut ctx,
@@ -297,7 +297,7 @@ impl UsrGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = usr_resolver::force_delete_by_ids(
       &mut ctx,

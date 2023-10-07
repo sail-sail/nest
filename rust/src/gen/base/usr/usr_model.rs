@@ -356,7 +356,7 @@ pub struct UsrInput {
 impl From<UsrInput> for UsrSearch {
   fn from(input: UsrInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
@@ -370,11 +370,11 @@ impl From<UsrInput> for UsrSearch {
       // 密码
       password: input.password,
       // 默认组织
-      default_org_id: input.default_org_id.map(|x| vec![x.into()]),
+      default_org_id: input.default_org_id.map(|x| vec![x]),
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 所属组织
       org_ids: input.org_ids,
       // 所属部门

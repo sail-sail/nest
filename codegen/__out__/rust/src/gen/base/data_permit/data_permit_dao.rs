@@ -99,7 +99,7 @@ async fn get_where_query<'a>(
       None => false,
     };
     if menu_id_is_null {
-      where_query += &format!(" and menu_id_lbl.id is null");
+      where_query += " and menu_id_lbl.id is null";
     }
   }
   {
@@ -191,7 +191,7 @@ async fn get_where_query<'a>(
       None => false,
     };
     if create_usr_id_is_null {
-      where_query += &format!(" and create_usr_id_lbl.id is null");
+      where_query += " and create_usr_id_lbl.id is null";
     }
   }
   {
@@ -201,12 +201,12 @@ async fn get_where_query<'a>(
     };
     let create_time_gt: Option<chrono::NaiveDateTime> = match &create_time.len() {
       0 => None,
-      _ => create_time[0].clone().into(),
+      _ => create_time[0].into(),
     };
     let create_time_lt: Option<chrono::NaiveDateTime> = match &create_time.len() {
       0 => None,
       1 => None,
-      _ => create_time[1].clone().into(),
+      _ => create_time[1].into(),
     };
     if let Some(create_time_gt) = create_time_gt {
       where_query += &format!(" and t.create_time >= {}", args.push(create_time_gt.into()));
@@ -238,7 +238,7 @@ async fn get_where_query<'a>(
       None => false,
     };
     if update_usr_id_is_null {
-      where_query += &format!(" and update_usr_id_lbl.id is null");
+      where_query += " and update_usr_id_lbl.id is null";
     }
   }
   {
@@ -248,12 +248,12 @@ async fn get_where_query<'a>(
     };
     let update_time_gt: Option<chrono::NaiveDateTime> = match &update_time.len() {
       0 => None,
-      _ => update_time[0].clone().into(),
+      _ => update_time[0].into(),
     };
     let update_time_lt: Option<chrono::NaiveDateTime> = match &update_time.len() {
       0 => None,
       1 => None,
-      _ => update_time[1].clone().into(),
+      _ => update_time[1].into(),
     };
     if let Some(update_time_gt) = update_time_gt {
       where_query += &format!(" and t.update_time >= {}", args.push(update_time_gt.into()));
@@ -356,7 +356,7 @@ pub async fn find_all<'a>(
     // 范围
     model.scope_lbl = {
       scope_dict.iter()
-        .find(|item| item.val == model.scope.to_string())
+        .find(|item| item.val == model.scope)
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.scope.to_string())
     };
@@ -364,7 +364,7 @@ pub async fn find_all<'a>(
     // 类型
     model.r#type_lbl = {
       r#type_dict.iter()
-        .find(|item| item.val == model.r#type.to_string())
+        .find(|item| item.val == model.r#type)
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
     };
@@ -442,10 +442,9 @@ pub fn get_route_path() -> String {
 
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
-  let n_route = i18n_dao::NRoute {
+  i18n_dao::NRoute {
     route_path: get_route_path().into(),
-  };
-  n_route
+  }
 }
 
 /// 获取字段对应的国家化后的名称
@@ -483,11 +482,10 @@ pub async fn get_field_comments<'a>(
     i18n_code_maps.clone(),
   ).await?;
   
-  let vec = i18n_code_maps
-    .into_iter()
+  let vec = i18n_code_maps.into_iter()
     .map(|item|
       map.get(&item.code)
-        .map(|item| item.clone())
+        .map(|item| item.to_owned())
         .unwrap_or_default()
     )
     .collect::<Vec<String>>();
@@ -576,13 +574,10 @@ pub async fn find_by_unique<'a>(
   if let Some(id) = search.id {
     let model = find_by_id(
       ctx,
-      id.into(),
+      id,
       None,
     ).await?;
-    if let Some(model) = model {
-      return Ok(vec![model]);
-    }
-    return Ok(vec![]);
+    return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
   
   let mut models: Vec<DataPermitModel> = vec![];
@@ -691,14 +686,13 @@ pub async fn set_id_by_lbl<'a>(
   if input.scope.is_none() {
     let scope_dict = &dict_vec[0];
     if let Some(scope_lbl) = input.scope_lbl.clone() {
-      input.scope = scope_dict.into_iter()
+      input.scope = scope_dict.iter()
         .find(|item| {
           item.lbl == scope_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
-        })
-        .into();
+        });
     }
   }
   
@@ -706,14 +700,13 @@ pub async fn set_id_by_lbl<'a>(
   if input.r#type.is_none() {
     let type_dict = &dict_vec[1];
     if let Some(type_lbl) = input.type_lbl.clone() {
-      input.r#type = type_dict.into_iter()
+      input.r#type = type_dict.iter()
         .find(|item| {
           item.lbl == type_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
-        })
-        .into();
+        });
     }
   }
   
@@ -721,38 +714,35 @@ pub async fn set_id_by_lbl<'a>(
   if input.is_sys.is_none() {
     let is_sys_dict = &dict_vec[2];
     if let Some(is_sys_lbl) = input.is_sys_lbl.clone() {
-      input.is_sys = is_sys_dict.into_iter()
+      input.is_sys = is_sys_dict.iter()
         .find(|item| {
           item.lbl == is_sys_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
-        })
-        .into();
+        });
     }
   }
   
   // 菜单
-  if input.menu_id.is_none() {
-    if input.menu_id_lbl.is_some()
-      && !input.menu_id_lbl.as_ref().unwrap().is_empty()
-      && input.menu_id.is_none()
-    {
-      input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-        item.trim().to_owned()
-      );
-      let model = crate::gen::base::menu::menu_dao::find_one(
-        ctx,
-        crate::gen::base::menu::menu_model::MenuSearch {
-          lbl: input.menu_id_lbl.clone(),
-          ..Default::default()
-        }.into(),
-        None,
-        None,
-      ).await?;
-      if let Some(model) = model {
-        input.menu_id = model.id.into();
-      }
+  if input.menu_id_lbl.is_some()
+    && !input.menu_id_lbl.as_ref().unwrap().is_empty()
+    && input.menu_id.is_none()
+  {
+    input.menu_id_lbl = input.menu_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::menu::menu_dao::find_one(
+      ctx,
+      crate::gen::base::menu::menu_model::MenuSearch {
+        lbl: input.menu_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.menu_id = model.id.into();
     }
   }
   
@@ -787,13 +777,11 @@ pub async fn create<'a>(
     None,
   ).await?;
   
-  if old_models.len() > 0 {
+  if !old_models.is_empty() {
     
     let unique_type = options.as_ref()
       .map(|item|
-        item.get_unique_type()
-          .map(|item| item.clone())
-          .unwrap_or(UniqueType::Throw)
+        item.get_unique_type().unwrap_or(UniqueType::Throw)
       )
       .unwrap_or(UniqueType::Throw);
     
@@ -813,16 +801,15 @@ pub async fn create<'a>(
       }
     }
     
-    match id {
-      Some(id) => return Ok(id),
-      None => {},
+    if let Some(id) = id {
+      return Ok(id);
     }
   }
   
   let id = get_short_uuid();
   
   if input.id.is_none() {
-    input.id = Some(id.clone().into());
+    input.id = id.clone().into();
   }
   
   let mut args = QueryArgs::new();
@@ -956,17 +943,16 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     
-    let models: Vec<DataPermitModel> = models.into_iter()
+    let models = models.into_iter()
       .filter(|item| 
-        &item.id != &id
+        item.id != id
       )
-      .collect();
+      .collect::<Vec<DataPermitModel>>();
     
-    if models.len() > 0 {
+    if !models.is_empty() {
       let unique_type = {
         if let Some(options) = options.as_ref() {
           options.get_unique_type()
-            .map(|item| item.clone())
             .unwrap_or(UniqueType::Throw)
         } else {
           UniqueType::Throw
@@ -1187,11 +1173,11 @@ pub async fn revert_by_ids<'a>(
       
       let models: Vec<DataPermitModel> = models.into_iter()
         .filter(|item| 
-          &item.id != &id
+          item.id != id
         )
         .collect();
       
-      if models.len() > 0 {
+      if !models.is_empty() {
         let err_msg = i18n_dao::ns(
           ctx,
           "数据已经存在".to_owned(),
@@ -1287,7 +1273,7 @@ pub async fn validate_option<'a, T>(
 
 /// 校验, 校验失败时抛出SrvErr异常
 #[allow(unused_imports)]
-pub fn validate<'a>(
+pub fn validate(
   input: &DataPermitInput,
 ) -> Result<()> {
   

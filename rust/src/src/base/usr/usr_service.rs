@@ -81,18 +81,18 @@ pub async fn login<'a>(
   let exp = now.timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: usr_model.id.into(),
-    tenant_id: tenant_id.into(),
+    id: usr_model.id,
+    tenant_id,
     org_id: org_id.clone().into(),
     lang,
     exp,
     ..Default::default()
   })?;
   
-  return Ok(Login {
+  Ok(Login {
     authorization,
     org_id,
-  });
+  })
 }
 
 /// 选择语言

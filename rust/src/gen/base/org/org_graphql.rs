@@ -32,7 +32,7 @@ impl OrgGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<OrgModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl OrgGenQuery {
     ctx: &Context<'a>,
     search: Option<OrgSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl OrgGenQuery {
     search: Option<OrgSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OrgModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl OrgGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<OrgModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::find_by_id(
       &mut ctx,
@@ -105,7 +105,7 @@ impl OrgGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -124,7 +124,7 @@ impl OrgGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::get_is_locked_by_id(
       &mut ctx,
@@ -140,7 +140,7 @@ impl OrgGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<OrgFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::get_field_comments(
       &mut ctx,
@@ -155,7 +155,7 @@ impl OrgGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = org_resolver::find_last_order_by(
       &mut ctx,
@@ -180,7 +180,7 @@ impl OrgGenMutation {
     model: OrgInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -203,7 +203,7 @@ impl OrgGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::update_tenant_by_id(
       &mut ctx,
@@ -222,7 +222,7 @@ impl OrgGenMutation {
     id: String,
     model: OrgInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::update_by_id(
       &mut ctx,
@@ -240,7 +240,7 @@ impl OrgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::delete_by_ids(
       &mut ctx,
@@ -258,7 +258,7 @@ impl OrgGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::enable_by_ids(
       &mut ctx,
@@ -277,7 +277,7 @@ impl OrgGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::lock_by_ids(
       &mut ctx,
@@ -295,7 +295,7 @@ impl OrgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::revert_by_ids(
       &mut ctx,
@@ -312,7 +312,7 @@ impl OrgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = org_resolver::force_delete_by_ids(
       &mut ctx,

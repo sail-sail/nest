@@ -19,7 +19,7 @@ impl MenuQuery {
     r#type: Option<String>,
   ) -> Result<Vec<GetMenus>> {
     
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_service::get_menus(
       &mut ctx,

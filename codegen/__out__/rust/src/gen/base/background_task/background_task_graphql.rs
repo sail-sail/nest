@@ -32,7 +32,7 @@ impl BackgroundTaskGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<BackgroundTaskModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = background_task_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl BackgroundTaskGenQuery {
     ctx: &Context<'a>,
     search: Option<BackgroundTaskSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = background_task_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl BackgroundTaskGenQuery {
     search: Option<BackgroundTaskSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<BackgroundTaskModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = background_task_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl BackgroundTaskGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<BackgroundTaskModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = background_task_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl BackgroundTaskGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<BackgroundTaskFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = background_task_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl BackgroundTaskGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = background_task_resolver::update_tenant_by_id(
       &mut ctx,
@@ -146,7 +146,7 @@ impl BackgroundTaskGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = background_task_resolver::delete_by_ids(
       &mut ctx,
@@ -163,7 +163,7 @@ impl BackgroundTaskGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = background_task_resolver::revert_by_ids(
       &mut ctx,
@@ -180,7 +180,7 @@ impl BackgroundTaskGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = background_task_resolver::force_delete_by_ids(
       &mut ctx,
