@@ -18,22 +18,20 @@ import {
 
 import {
   findOne as findOneWxwApp,
+  findById as findByIdWxwApp,
+  validateOption as validateOptionWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 export async function getAccessToken(
-  corpid: string,
+  wxw_app_id: string,
   force = false,
 ) {
-  const wx_appModel = await findOneWxwApp({
-    corpid,
-  });
-  if (!wx_appModel) {
-    throw `未设置企业微信应用, corpid: ${ corpid }`;
-  }
-  const wxw_app_id = wx_appModel.id;
+  let wx_appModel = await findByIdWxwApp(wxw_app_id);
+  wx_appModel = await validateOptionWxwApp(wx_appModel);
+  const corpid = wx_appModel.corpid;
   const corpsecret = wx_appModel.corpsecret;
-  if (isEmpty(corpsecret)) {
-    throw `未设置企业微信应用 应用密钥, corpid: ${ corpid }`;
+  if (isEmpty(corpid) || isEmpty(corpsecret)) {
+    throw `未设置 企微应用 应用密钥 ${ wx_appModel.lbl }`;
   }
   const dateNow = dayjs();
   const wx_app_tokenModel = await findOneWxwAppToken(
@@ -126,19 +124,15 @@ export async function getAccessToken(
  * 获取企微通讯录token
  */
 export async function getContactAccessToken(
-  corpid: string,
+  wxw_app_id: string,
   force = false,
 ) {
-  const wx_appModel = await findOneWxwApp({
-    corpid,
-  });
-  if (!wx_appModel) {
-    throw `未设置企业微信应用, 企业ID: ${ corpid }`;
-  }
-  const wxw_app_id = wx_appModel.id;
+  let wx_appModel = await findByIdWxwApp(wxw_app_id);
+  wx_appModel = await validateOptionWxwApp(wx_appModel);
+  const corpid = wx_appModel.corpid;
   const contactsecret = wx_appModel.contactsecret;
-  if (isEmpty(contactsecret)) {
-    throw `未设置企业微信应用 通讯录密钥, 企业ID: ${ corpid }`;
+  if (isEmpty(corpid) || isEmpty(contactsecret)) {
+    throw `未设置 企微应用 通讯录密钥 ${ wx_appModel.lbl }`;
   }
   const dateNow = dayjs();
   const wx_app_tokenModel = await findOneWxwAppToken(
@@ -233,18 +227,17 @@ export async function getContactAccessToken(
  * @param code 通过成员授权获取到的code
  */
 export async function getuserinfoByCode(
-  corpid: string,
+  wxw_app_id: string,
   code: string,
-  opt: {
-    force: boolean;
-  } = {
-    force: false,
-  },
+  force = false,
 ): Promise<{
   userid: string;
   user_ticket: string;
 }> {
-  const access_token = await getAccessToken(corpid);
+  const access_token = await getAccessToken(
+    wxw_app_id,
+    force,
+  );
   const url = `https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=${
     encodeURIComponent(access_token)
   }&code=${
@@ -262,13 +255,11 @@ export async function getuserinfoByCode(
     userid: string;
     user_ticket: string;
   } = await res.json();
-  if (data.errcode === 42001 && opt.force) {
+  if (data.errcode === 42001 && !force) {
     return await getuserinfoByCode(
-      corpid,
+      wxw_app_id,
       code,
-      {
-        force: false,
-      },
+      true,
     );
   }
   if (data.errcode != 0) {
@@ -285,14 +276,13 @@ export async function getuserinfoByCode(
  * 获取成员ID列表
  */
 export async function getuseridlist(
-  corpid: string,
-  opt: {
-    force: boolean;
-  } = {
-    force: false,
-  },
+  wxw_app_id: string,
+  force = false,
 ): Promise<string[]> {
-  const access_token = await getContactAccessToken(corpid);
+  const access_token = await getContactAccessToken(
+    wxw_app_id,
+    
+  );
   const url = `https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token=${
     encodeURIComponent(access_token)
   }`;
@@ -311,12 +301,10 @@ export async function getuseridlist(
       department: number;
     }[];
   } = await res.json();
-  if (data.errcode === 42001 && opt.force) {
+  if (data.errcode === 42001 && !force) {
     return await getuseridlist(
-      corpid,
-      {
-        force: false,
-      },
+      wxw_app_id,
+      true,
     );
   }
   if (data.errcode != 0) {
@@ -338,15 +326,14 @@ export async function getuseridlist(
  * https://developer.work.weixin.qq.com/document/path/90196
  */
 export async function getuser(
-  corpid: string,
+  wxw_app_id: string,
   userid: string,
-  opt: {
-    force: boolean;
-  } = {
-    force: false,
-  },
+  force = false,
 ): Promise<typeof data> {
-  const access_token = await getAccessToken(corpid);
+  const access_token = await getAccessToken(
+    wxw_app_id,
+    force,
+  );
   const url = `https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=${
     encodeURIComponent(access_token)
   }&userid=${
@@ -402,13 +389,11 @@ export async function getuser(
     // deno-lint-ignore no-explicit-any
     direct_leader: any[];
   } = await res.json();
-  if (data.errcode === 42001 && opt.force) {
+  if (data.errcode === 42001 && !force) {
     return await getuser(
-      corpid,
+      wxw_app_id,
       userid,
-      {
-        force: false,
-      },
+      true,
     );
   }
   if (data.errcode != 0) {

@@ -30,11 +30,7 @@ export interface WxwCardMsg {
  */
 export async function sendCardMsg(
   input: WxwCardMsg,
-  opt: {
-    force: boolean;
-  } = {
-    force: false,
-  },
+  force = false,
 ): Promise<boolean> {
   log(`发送卡片消息: ${ JSON.stringify(input) }`);
   const wxw_appModel = await findByIdWxwApp(input.wxw_app_id);
@@ -42,9 +38,11 @@ export async function sendCardMsg(
     throw `wxw_app_id 不存在: ${ input.wxw_app_id }`;
   }
   const tenant_id = wxw_appModel.tenant_id;
-  const corpid = wxw_appModel.corpid;
   const agentid = wxw_appModel.agentid;
-  const access_token = await getAccessToken(corpid);
+  const access_token = await getAccessToken(
+    input.wxw_app_id,
+    force,
+  );
   const url = `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${
     access_token
   }`;
@@ -83,15 +81,11 @@ export async function sendCardMsg(
   } = await res.json();
   log(`发送卡片消息返回: ${ JSON.stringify(data) }`);
   const errcode = data.errcode;
-  if (errcode == 42001) {
-    if (opt.force) {
-      return await sendCardMsg(
-        input,
-        {
-          force: false,
-        },
-      );
-    }
+  if (errcode == 42001 && !force) {
+    return await sendCardMsg(
+      input,
+      true,
+    );
   }
   let errmsg = data.errmsg.substring(0, 256);
   if (errcode == 0) {

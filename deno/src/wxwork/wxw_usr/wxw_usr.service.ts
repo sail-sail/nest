@@ -22,6 +22,7 @@ import {
   findById as findByIdUsr,
   create as createUsr,
   updateById as updateUsrById,
+  validateIsEnabled as validateIsEnabledUsr,
 } from "/gen/base/usr/usr.dao.ts"
 
 import {
@@ -33,17 +34,21 @@ import {
 
 import {
   findOne as findOneWxwApp,
+  validateOption as validateOptionWxwApp,
+  validateIsEnabled as validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts"
+
+import {
+  findOne as findOneOptbiz,
+  validateOption as validateOptionOptbiz,
+  validateIsEnabled as validateIsEnabledOptbiz,
+} from "/gen/base/optbiz/optbiz.dao.ts";
 
 import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
 import * as authService from "/lib/auth/auth.service.ts";
-
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
 
 /**
  * 企业微信单点登录
@@ -55,22 +60,30 @@ export async function wxwLoginByCode(
   const agentid = input.agentid;
   const code = input.code;
   const lang = input.lang || "zh_CN";
-  const { userid } = await getuserinfoByCode(corpid, code);
-  const {
-    name,
-    position,
-  } = await getuser(corpid, userid);
-  const wxw_appModel = await findOneWxwApp({
+  
+  let wxw_appModel = await findOneWxwApp({
     corpid,
     agentid,
   });
-  if (!wxw_appModel) {
-    throw new Error(`企业微信应用 未配置 corpid: ${ corpid }, agentid: ${ agentid }`);
-  }
-  if (!wxw_appModel.is_enabled) {
-    throw new Error(`企业微信应用 已禁用 corpid: ${ corpid }, agentid: ${ agentid }`);
-  }
+  wxw_appModel = await validateOptionWxwApp(wxw_appModel);
+  await validateIsEnabledWxwApp(wxw_appModel);
+  
+  const wxw_app_id = wxw_appModel.id;
   const tenant_id = wxw_appModel.tenant_id!;
+  const {
+    userid,
+  } = await getuserinfoByCode(
+    wxw_app_id,
+    code,
+  );
+  const {
+    name,
+    position,
+  } = await getuser(
+    wxw_app_id,
+    userid,
+  );
+  
   // 企业微信用户
   const wxw_usrModel = await findOneWxwUsr({
     lbl: name,
@@ -103,10 +116,23 @@ export async function wxwLoginByCode(
   let usrModel = await findOneUsr({
     lbl: name,
   });
-  if (usrModel && !usrModel.is_enabled) {
-    throw await ns("用户已禁用");
-  }
-  if (!usrModel) {
+  if (usrModel) {
+    await validateIsEnabledUsr(usrModel);
+    if (
+      usrModel.username !== name ||
+      usrModel.lbl !== name ||
+      usrModel.tenant_id !== wxw_appModel.tenant_id!
+    ) {
+      await updateUsrById(
+        usrModel.id,
+        {
+          username: name,
+          lbl: name,
+          tenant_id: wxw_appModel.tenant_id!,
+        },
+      );
+    }
+  } else {
     const id = shortUuidV4();
     await createUsr({
       id,
@@ -115,19 +141,6 @@ export async function wxwLoginByCode(
       tenant_id: wxw_appModel.tenant_id!,
     });
     usrModel = (await findByIdUsr(id))!;
-  } else if (
-    usrModel.username !== name ||
-    usrModel.lbl !== name ||
-    usrModel.tenant_id !== wxw_appModel.tenant_id!
-  ) {
-    await updateUsrById(
-      usrModel.id,
-      {
-        username: name,
-        lbl: name,
-        tenant_id: wxw_appModel.tenant_id!,
-      },
-    );
   }
   const org_ids = usrModel.org_ids || [ ];
   let org_id = usrModel.default_org_id;
@@ -177,20 +190,28 @@ export async function wxwSyncUsr() {
 }
 
 async function _wxwSyncUsr() {
-  let num = 0;
-  // TODO 通过业务选项配置用哪个企微应用来同步企微用户
-  const wxw_appModel = await findOneWxwApp({
-    // lbl: "XXXXX",
-  });
-  if (!wxw_appModel) {
-    throw new Error("未配置企微应用");
+  const optbizModel = await validateOptionOptbiz(
+    await findOneOptbiz({
+      lbl: "企微应用-同步通讯录",
+    }),
+  );
+  await validateIsEnabledOptbiz(optbizModel);
+  
+  const wxw_app_lbl = optbizModel.lbl;
+  if (!wxw_app_lbl) {
+    throw `业务选项未配置 企微应用-同步通讯录 的企微应用名称`;
   }
-  if (!wxw_appModel.is_enabled) {
-    throw new Error(`企微应用已禁用 ${ wxw_appModel.lbl }`);
-  }
-  const corpid = wxw_appModel.corpid;
-  const userids = await getuseridlist(corpid);
+  const wxw_appModel = await validateOptionWxwApp(
+    await findOneWxwApp({
+      lbl: wxw_app_lbl,
+    }),
+  );
+  await validateIsEnabledWxwApp(wxw_appModel);
+  
+  const wxw_app_id = wxw_appModel.id;
+  const userids = await getuseridlist(wxw_app_id);
   log(`企微应用 ${ wxw_appModel.lbl } 同步企微用户, 获取到企微用户数量: ${ userids.length }`);
+  
   const wxw_usrModels = await findAllWxwUsr();
   const userids4add = userids.filter((userid) => {
     return !wxw_usrModels.some((wxw_usrModel) => {
@@ -200,7 +221,7 @@ async function _wxwSyncUsr() {
   const wxw_usrModels4add: WxwUsrInput[] = [ ];
   for (let i = 0; i < userids4add.length; i++) {
     const userid = userids4add[i];
-    const { name } = await getuser(corpid, userid);
+    const { name } = await getuser(wxw_app_id, userid);
     wxw_usrModels4add.push({
       id: shortUuidV4(),
       userid,
@@ -208,6 +229,7 @@ async function _wxwSyncUsr() {
       tenant_id: wxw_appModel.tenant_id!,
     });
   }
+  let num = 0;
   for (let i = 0; i < wxw_usrModels4add.length; i++) {
     const item = wxw_usrModels4add[i];
     await createWxwUsr(item);
