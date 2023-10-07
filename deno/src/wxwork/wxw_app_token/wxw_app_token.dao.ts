@@ -17,7 +17,6 @@ import {
 } from "/gen/wxwork/wxw_app_token/wxw_app_token.dao.ts";
 
 import {
-  findOne as findOneWxwApp,
   findById as findByIdWxwApp,
   validateOption as validateOptionWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
@@ -99,9 +98,10 @@ export async function getAccessToken(
       expires_in: number;
     } = await res.json();
     access_token = data.access_token;
-    if (!access_token) {
+    const errcode = data.errcode;
+    if (errcode != 0) {
       error(data);
-      throw data;
+      throw data.errmsg;
     }
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 access_token 失败: ${ url }`;
@@ -155,9 +155,10 @@ export async function getContactAccessToken(
       expires_in: number;
     } = await res.json();
     const access_token = data.access_token;
-    if (!access_token) {
+    const errcode = data.errcode;
+    if (errcode != 0) {
       error(data);
-      throw data;
+      throw data.errmsg;
     }
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 通讯录密钥 失败: ${ url }`;
@@ -281,7 +282,7 @@ export async function getuseridlist(
 ): Promise<string[]> {
   const access_token = await getContactAccessToken(
     wxw_app_id,
-    
+    force,
   );
   const url = `https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token=${
     encodeURIComponent(access_token)

@@ -5,13 +5,12 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `corpid` varchar(18) NOT NULL DEFAULT '' COMMENT '企业ID',
   `agentid` varchar(7) NOT NULL DEFAULT '' COMMENT '应用ID',
-  `corpsecret` varchar(100) NOT NULL DEFAULT '' COMMENT '应用密钥',
-  `contactsecret` varchar(100) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
+  `corpsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '应用密钥',
+  `contactsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -21,7 +20,6 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`),
   INDEX (`corpid`, `agentid`),
-  INDEX (`corpsecret`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='企微应用';
 

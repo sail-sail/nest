@@ -50,8 +50,6 @@ import * as usrDaoSrc from "/src/base/usr/usr.dao.ts";
 
 import * as tenantDao from "/gen/base/tenant/tenant.dao.ts";
 
-import * as orgDao from "/gen/base/org/org.dao.ts";
-
 import {
   encrypt,
   decrypt,
@@ -92,15 +90,6 @@ async function getWhereQuery(
     }
   } else if (isNotEmpty(search?.tenant_id) && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id = ${ args.push(search.tenant_id) }`;
-  }
-  if (search?.org_id == null) {
-    const authModel = await authDao.getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id = ${ args.push(org_id) }`;
-    }
-  } else if (isNotEmpty(search?.org_id) && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id = ${ args.push(search.org_id) }`;
   }
   if (isNotEmpty(search?.id)) {
     whereQuery += ` and t.id = ${ args.push(search?.id) }`;
@@ -566,7 +555,7 @@ export async function validateIsEnabled(
   model: WxwAppModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("企微应用") } { await ns("已禁用") }`;
+    throw `${ await ns("企微应用") } ${ await ns("已禁用") }`;
   }
 }
 
@@ -575,7 +564,7 @@ export async function validateOption(
   model?: WxwAppModel,
 ) {
   if (!model) {
-    throw `{ await ns("企微应用") } { await ns("不存在") }`;
+    throw `${ await ns("企微应用") } ${ await ns("不存在") }`;
   }
   return model;
 }
@@ -620,14 +609,14 @@ export async function validate(
   // 应用密钥
   await validators.chars_max_length(
     input.corpsecret,
-    100,
+    120,
     fieldComments.corpsecret,
   );
   
   // 通讯录密钥
   await validators.chars_max_length(
     input.contactsecret,
-    100,
+    120,
     fieldComments.contactsecret,
   );
   
@@ -734,14 +723,6 @@ export async function create(
       sql += `,tenant_id`;
     }
   }
-  if (input.org_id != null) {
-    sql += `,org_id`;
-  } else {
-    const authModel = await authDao.getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,org_id`;
-    }
-  }
   if (input.create_usr_id != null) {
     sql += `,create_usr_id`;
   } else {
@@ -793,14 +774,6 @@ export async function create(
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     if (tenant_id) {
       sql += `,${ args.push(tenant_id) }`;
-    }
-  }
-  if (input.org_id != null) {
-    sql += `,${ args.push(input.org_id) }`;
-  } else {
-    const authModel = await authDao.getAuthModel();
-    if (authModel?.org_id) {
-      sql += `,${ args.push(authModel?.org_id) }`;
     }
   }
   if (input.create_usr_id != null && input.create_usr_id !== "-") {
@@ -912,48 +885,6 @@ export async function updateTenantById(
 }
 
 /**
- * 根据id修改组织id
- * @export
- * @param {string} id
- * @param {string} org_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateOrgById(
-  id: string,
-  org_id: string,
-  options?: {
-  },
-): Promise<number> {
-  const table = "wxwork_wxw_app";
-  const method = "updateOrgById";
-  
-  const orgExist = await orgDao.existById(org_id);
-  if (!orgExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `
-    update
-      wxwork_wxw_app
-    set
-      update_time = ${ args.push(reqDate()) },
-      org_id = ${ args.push(org_id) }
-    where
-      id = ${ args.push(id) }
-  `;
-  
-  await delCache();
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  return num;
-}
-
-/**
  * 根据id修改一行数据
  * @param {string} id
  * @param {WxwAppInput} input
@@ -1004,11 +935,6 @@ export async function updateById(
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
-  }
-  
-  // 修改组织id
-  if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id);
   }
   
   // 锁定
@@ -1463,13 +1389,6 @@ export async function findLastOrderBy(
     const authModel = await authDao.getAuthModel();
     const tenant_id = await usrDaoSrc.getTenant_id(authModel?.id);
     whereQuery.push(`t.tenant_id = ${ args.push(tenant_id) }`);
-  }
-  {
-    const authModel = await authDao.getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery.push(`t.org_id = ${ args.push(org_id) }`);
-    }
   }
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");
