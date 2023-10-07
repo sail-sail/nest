@@ -562,7 +562,7 @@ export async function validateOption(
   model?: WxwUsrModel,
 ) {
   if (!model) {
-    throw `{ await ns("企微用户") } { await ns("不存在") }`;
+    throw `${ await ns("企微用户") } ${ await ns("不存在") }`;
   }
   return model;
 }

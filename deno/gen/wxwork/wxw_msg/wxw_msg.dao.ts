@@ -535,7 +535,7 @@ export async function validateOption(
   model?: WxwMsgModel,
 ) {
   if (!model) {
-    throw `{ await ns("企微消息") } { await ns("不存在") }`;
+    throw `${ await ns("企微消息") } ${ await ns("不存在") }`;
   }
   return model;
 }
