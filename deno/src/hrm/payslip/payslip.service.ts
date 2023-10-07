@@ -4,6 +4,8 @@ import {
 
 import {
   findOne as findOneWxwApp,
+  validateOption as validateOptionWxwApp,
+  validateIsEnabled as validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 import {
@@ -16,47 +18,69 @@ import {
 
 import {
   findById as findByIdTenant,
+  validateOption as validateOptionTenant,
+  validateIsEnabled as validateIsEnabledTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  findAll as findAllDomain,
+  findOne as findOneDomain,
+  validateOption as validateOptionDomain,
+  validateIsEnabled as validateIsEnabledDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import {
   sendCardMsg,
 } from "/src/wxwork/wxw_msg/wxw_msg.dao.ts";
 
+import {
+  findOne as findOneOptbiz,
+  validateOption as validateOptionOptbiz,
+  validateIsEnabled as validateIsEnabledOptbiz,
+} from "/gen/base/optbiz/optbiz.dao.ts";
+
 /**
  * 发送企微工资条消息
  */
 export async function sendMsgWxw(
+  host: string,
   ids: string[],
 ) {
-  // TODO 业务选项 里面配置用哪个企微应用发送工资条消息
-  const wxw_appModel = await findOneWxwApp();
-  if (!wxw_appModel || !wxw_appModel.corpid || !wxw_appModel.agentid) {
-    throw `企微应用未配置`;
+  const optbizModel = await validateOptionOptbiz(
+    await findOneOptbiz({
+      lbl: "企微应用-发送工资条",
+    }),
+  );
+  await validateIsEnabledOptbiz(optbizModel);
+  
+  const wxw_app_lbl = optbizModel.val;
+  if (!wxw_app_lbl) {
+    throw `业务选项未配置 企微应用-发送工资条 的企微应用名称`;
   }
-  if (!wxw_appModel.is_enabled) {
-    throw `企微应用已禁用 ${ wxw_appModel.lbl }`;
-  }
+  const wxw_appModel = await validateOptionWxwApp(
+    await findOneWxwApp({
+      lbl: wxw_app_lbl,
+    }),
+  );
+  await validateIsEnabledWxwApp(wxw_appModel);
+  
   const wxw_app_id = wxw_appModel.id;
   const tenant_id = wxw_appModel.tenant_id;
-  const tenantModel = await findByIdTenant(tenant_id);
-  if (!tenantModel) {
-    throw `租户不存在 ${ tenant_id }`;
-  }
+  const tenantModel = await validateOptionTenant(
+    await findByIdTenant(tenant_id),
+  );
+  await validateIsEnabledTenant(tenantModel);
+  
   const domain_ids = tenantModel.domain_ids;
   if (!domain_ids || domain_ids.length === 0) {
     throw `租户未配置域名 ${ tenantModel.lbl }`;
   }
-  const domainModels = await findAllDomain({
-    ids: domain_ids,
-  });
-  const domainModel = domainModels.find((item) => item.is_default);
-  if (!domainModel) {
-    throw `租户的默认域名不存在 ${ tenantModel.lbl }`;
-  }
+  const domainModel = await validateOptionDomain(
+    await findOneDomain({
+      ids: domain_ids,
+      lbl: host,
+    }),
+  );
+  await validateIsEnabledDomain(domainModel);
   let num = 0;
   for (const id of ids) {
     const payslipModel = await findByIdPayslip(id);
