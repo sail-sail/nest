@@ -50,5 +50,7 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
     - 第8行: `"name": "[工程名]",`
 7. `.env`
     - 第1行: `RUST_LOG="[工程名]=info"`
+    - 第6行: `server_title = "[工程名]"`
 8. `.env.prod`
     - 第1行: `RUST_LOG="[工程名]=info"`
+    - 第8行: `server_title = "[工程名]"`
