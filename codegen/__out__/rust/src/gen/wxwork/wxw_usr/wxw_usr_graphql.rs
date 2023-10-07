@@ -32,7 +32,7 @@ impl WxwUsrGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwUsrModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_usr_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl WxwUsrGenQuery {
     ctx: &Context<'a>,
     search: Option<WxwUsrSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_usr_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl WxwUsrGenQuery {
     search: Option<WxwUsrSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwUsrModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_usr_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl WxwUsrGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<WxwUsrModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_usr_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl WxwUsrGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<WxwUsrFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_usr_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl WxwUsrGenMutation {
     model: WxwUsrInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -151,7 +151,7 @@ impl WxwUsrGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_usr_resolver::update_tenant_by_id(
       &mut ctx,
@@ -170,7 +170,7 @@ impl WxwUsrGenMutation {
     id: String,
     model: WxwUsrInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_usr_resolver::update_by_id(
       &mut ctx,
@@ -188,7 +188,7 @@ impl WxwUsrGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_usr_resolver::delete_by_ids(
       &mut ctx,
@@ -205,7 +205,7 @@ impl WxwUsrGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_usr_resolver::revert_by_ids(
       &mut ctx,
@@ -222,7 +222,7 @@ impl WxwUsrGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = wxw_usr_resolver::force_delete_by_ids(
       &mut ctx,

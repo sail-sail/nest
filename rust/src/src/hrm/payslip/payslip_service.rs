@@ -84,7 +84,7 @@ pub async fn send_msg_wxw<'a>(
   let tenant_id = wxw_app_model.tenant_id;
   let tenant_model = find_by_id_tenant(
     ctx,
-    tenant_id.into(),
+    tenant_id,
     None,
   ).await?;
   let tenant_model = validate_option_tenant(
@@ -96,7 +96,7 @@ pub async fn send_msg_wxw<'a>(
     &tenant_model,
   ).await?;
   let domain_ids = tenant_model.domain_ids;
-  if domain_ids.len() == 0 {
+  if domain_ids.is_empty() {
     return Err(anyhow!(
       "租户未配置域名 {lbl}",
       lbl = tenant_model.lbl,
@@ -124,7 +124,7 @@ pub async fn send_msg_wxw<'a>(
   for id in ids {
     let payslip_model = find_by_id_payslip(
       ctx,
-      id.into(),
+      id,
       None,
     ).await?;
     let payslip_model = validate_option_payslip(

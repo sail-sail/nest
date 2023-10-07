@@ -230,7 +230,7 @@ pub struct WxwUsrInput {
 impl From<WxwUsrInput> for WxwUsrSearch {
   fn from(input: WxwUsrInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,

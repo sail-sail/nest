@@ -361,13 +361,13 @@ pub struct PayslipInput {
 impl From<PayslipInput> for PayslipSearch {
   fn from(input: PayslipInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
       // 发放月份
-      pay_month: input.pay_month.map(|x| vec![x.clone().into(), x.clone().into()]),
+      pay_month: input.pay_month.map(|x| vec![x, x]),
       // 姓名
       lbl: input.lbl,
       // 工号
@@ -385,21 +385,21 @@ impl From<PayslipInput> for PayslipSearch {
       // 实发工资(元)
       net_pay: input.net_pay,
       // 已发送
-      is_send: input.is_send.map(|x| vec![x.into()]),
+      is_send: input.is_send.map(|x| vec![x]),
       // 已确认
-      is_confirm: input.is_confirm.map(|x| vec![x.into()]),
+      is_confirm: input.is_confirm.map(|x| vec![x]),
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 备注
       rem: input.rem,
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

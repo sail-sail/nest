@@ -206,7 +206,7 @@ pub struct WxwAppInput {
 impl From<WxwAppInput> for WxwAppSearch {
   fn from(input: WxwAppInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
@@ -222,11 +222,11 @@ impl From<WxwAppInput> for WxwAppSearch {
       // 通讯录密钥
       contactsecret: input.contactsecret,
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
       ..Default::default()
