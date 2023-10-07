@@ -46,3 +46,9 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
 5. `src\common\script\build.js`
     - 第77行: ```await remove(`${ buildDir }/rust/[工程名]`);```
     - 第78行: ```await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/[工程名]`, `${ buildDir }/rust/[工程名]`);```
+6. `.vscode\launch.json`
+    - 第8行: `"name": "[工程名]",`
+7. `.env`
+    - 第1行: `RUST_LOG="[工程名]=info"`
+8. `.env.prod`
+    - 第1行: `RUST_LOG="[工程名]=info"`
