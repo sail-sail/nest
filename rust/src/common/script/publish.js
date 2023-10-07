@@ -63,6 +63,7 @@ console.log(publishPath);
     cmd += ` ; pm2 stop ${ projectName }`;
     cmd += ` ; rm -rf ${ publishPath }/pc`
     cmd += ` ; rm -rf ${ publishPath }/rust`
+    cmd += ` ; rm -rf ${ publishPath }/uni`
     cmd += ` ; mkdir ${ publishPath }`;
     cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
     cmd += ` ; rmdir ${ publishPathTmp }`;
