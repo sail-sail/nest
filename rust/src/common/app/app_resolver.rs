@@ -16,7 +16,7 @@ impl AppQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     let res = app_service::generate_id(&mut ctx).await;
     ctx.ok(res).await
   }
@@ -26,7 +26,7 @@ impl AppQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx);
+    let mut ctx = CtxImpl::new(ctx);
     let res = app_service::check_login(&mut ctx).await;
     ctx.ok(res).await
   }

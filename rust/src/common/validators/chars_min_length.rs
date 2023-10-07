@@ -3,7 +3,7 @@ use anyhow::Result;
 use crate::common::context::SrvErr;
 
 #[allow(dead_code)]
-pub fn chars_min_length<'a>(
+pub fn chars_min_length(
   value: Option<String>,
   len: usize,
   label: &str,
@@ -24,5 +24,5 @@ pub fn chars_min_length<'a>(
     "The {label} length cannot less than {len}",
   );
   
-  return Err(SrvErr::msg(err_msg).into());
+  Err(SrvErr::msg(err_msg).into())
 }

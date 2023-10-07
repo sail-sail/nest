@@ -602,7 +602,7 @@ pub struct <#=tableUP#>Input {<#
 impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
   fn from(input: <#=tableUP#>Input) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,<#
       if (hasTenant_id) {
       #>
@@ -643,19 +643,19 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       } else if (foreignKey && !foreignKey.multiple) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
         } else if ((selectList && selectList.length > 0) || column.dict || column.dictbiz) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
       } else if (["tinyint"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.into()]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
       } else if (["date","datetime","time","int","decimal"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x.clone().into(), x.clone().into()]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| vec![x, x]),<#
       } else {
       #>
       // <#=column_comment#>

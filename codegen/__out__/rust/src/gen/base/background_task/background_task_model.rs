@@ -296,7 +296,7 @@ pub struct BackgroundTaskInput {
 impl From<BackgroundTaskInput> for BackgroundTaskSearch {
   fn from(input: BackgroundTaskInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
@@ -304,27 +304,27 @@ impl From<BackgroundTaskInput> for BackgroundTaskSearch {
       // 名称
       lbl: input.lbl,
       // 状态
-      state: input.state.map(|x| vec![x.into()]),
+      state: input.state.map(|x| vec![x]),
       // 类型
-      r#type: input.r#type.map(|x| vec![x.into()]),
+      r#type: input.r#type.map(|x| vec![x]),
       // 执行结果
       result: input.result,
       // 错误信息
       err_msg: input.err_msg,
       // 开始时间
-      begin_time: input.begin_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      begin_time: input.begin_time.map(|x| vec![x, x]),
       // 结束时间
-      end_time: input.end_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      end_time: input.end_time.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

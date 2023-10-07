@@ -288,7 +288,7 @@ pub struct DictbizInput {
 impl From<DictbizInput> for DictbizSearch {
   fn from(input: DictbizInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
@@ -298,25 +298,25 @@ impl From<DictbizInput> for DictbizSearch {
       // 名称
       lbl: input.lbl,
       // 数据类型
-      r#type: input.r#type.map(|x| vec![x.into()]),
+      r#type: input.r#type.map(|x| vec![x]),
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 备注
       rem: input.rem,
       // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x.into()]),
+      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
     }
   }

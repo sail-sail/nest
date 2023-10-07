@@ -18,7 +18,7 @@ impl I18nQuery {
     route_path: Option<String>,
     code: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(&ctx);
+    let mut ctx = CtxImpl::new(ctx);
     
     let res = service_n_lang(
       &mut ctx,
