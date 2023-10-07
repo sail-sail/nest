@@ -123,6 +123,22 @@ pub async fn update_by_id<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
+  // 不能修改系统记录的系统字段
+  let model = options_dao::find_by_id(
+    ctx,
+    id.clone(),
+    None,
+  ).await?;
+  
+  if let Some(model) = model {
+    if model.is_sys == 1 {
+      // 名称
+      input.lbl = None;
+      // 键
+      input.ky = None;
+    }
+  }
+  
   let res = options_dao::update_by_id(
     ctx,
     id,

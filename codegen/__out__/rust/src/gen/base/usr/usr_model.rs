@@ -55,6 +55,22 @@ pub struct UsrModel {
   pub role_ids_lbl: Vec<String>,
   /// 备注
   pub rem: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
 }
@@ -190,6 +206,26 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     };
     // 备注
     let rem: String = row.try_get("rem")?;
+    // 创建人
+    let create_usr_id: String = row.try_get("create_usr_id")?;
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    // 创建时间
+    let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
+    // 更新人
+    let update_usr_id: String = row.try_get("update_usr_id")?;
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    // 更新时间
+    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_owned(),
+    };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
@@ -213,6 +249,14 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       role_ids,
       role_ids_lbl,
       rem,
+      create_usr_id,
+      create_usr_id_lbl,
+      create_time,
+      create_time_lbl,
+      update_usr_id,
+      update_usr_id_lbl,
+      update_time,
+      update_time_lbl,
       is_deleted,
     };
     
@@ -257,6 +301,22 @@ pub struct UsrFieldComment {
   pub role_ids_lbl: String,
   /// 备注
   pub rem: String,
+  /// 创建人
+  pub create_usr_id: String,
+  /// 创建人
+  pub create_usr_id_lbl: String,
+  /// 创建时间
+  pub create_time: String,
+  /// 创建时间
+  pub create_time_lbl: String,
+  /// 更新人
+  pub update_usr_id: String,
+  /// 更新人
+  pub update_usr_id_lbl: String,
+  /// 更新时间
+  pub update_time: String,
+  /// 更新时间
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Debug, Default)]
@@ -307,6 +367,18 @@ pub struct UsrSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<Vec<String>>,
+  /// 创建人
+  pub create_usr_id_is_null: Option<bool>,
+  /// 创建时间
+  pub create_time: Option<Vec<chrono::NaiveDateTime>>,
+  /// 更新人
+  pub update_usr_id: Option<Vec<String>>,
+  /// 更新人
+  pub update_usr_id_is_null: Option<bool>,
+  /// 更新时间
+  pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
@@ -351,6 +423,22 @@ pub struct UsrInput {
   pub role_ids_lbl: Option<Vec<String>>,
   /// 备注
   pub rem: Option<String>,
+  /// 创建人
+  pub create_usr_id: Option<String>,
+  /// 创建人
+  pub create_usr_id_lbl: Option<String>,
+  /// 创建时间
+  pub create_time: Option<chrono::NaiveDateTime>,
+  /// 创建时间
+  pub create_time_lbl: Option<String>,
+  /// 更新人
+  pub update_usr_id: Option<String>,
+  /// 更新人
+  pub update_usr_id_lbl: Option<String>,
+  /// 更新时间
+  pub update_time: Option<chrono::NaiveDateTime>,
+  /// 更新时间
+  pub update_time_lbl: Option<String>,
 }
 
 impl From<UsrInput> for UsrSearch {
@@ -383,6 +471,14 @@ impl From<UsrInput> for UsrSearch {
       role_ids: input.role_ids,
       // 备注
       rem: input.rem,
+      // 创建人
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建时间
+      create_time: input.create_time.map(|x| vec![x, x]),
+      // 更新人
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新时间
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }
