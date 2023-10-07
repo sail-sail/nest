@@ -631,7 +631,7 @@ export async function validateIsEnabled(
   model: DictbizModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("业务字典") } { await ns("已禁用") }`;
+    throw `${ await ns("业务字典") } ${ await ns("已禁用") }`;
   }
 }
 
@@ -640,7 +640,7 @@ export async function validateOption(
   model?: DictbizModel,
 ) {
   if (!model) {
-    throw `{ await ns("业务字典") } { await ns("不存在") }`;
+    throw `${ await ns("业务字典") } ${ await ns("不存在") }`;
   }
   return model;
 }
