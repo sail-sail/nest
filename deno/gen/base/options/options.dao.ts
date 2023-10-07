@@ -612,6 +612,25 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: OptionsModel,
+) {
+  if (model.is_enabled == 0) {
+    throw `{ await ns("系统选项") } { await ns("已禁用") }`;
+  }
+}
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: OptionsModel,
+) {
+  if (!model) {
+    throw `{ await ns("系统选项") } { await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 

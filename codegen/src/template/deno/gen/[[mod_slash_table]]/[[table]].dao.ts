@@ -1441,6 +1441,29 @@ export async function existById(
   let result = !!model?.e;
   
   return result;
+}<#
+if (hasEnabled) {
+#>
+
+/** 校验记录是否启用 */
+export async function validateIsEnabled(
+  model: <#=modelName#>,
+) {
+  if (model.is_enabled == 0) {
+    throw `{ await ns("<#=table_comment#>") } { await ns("已禁用") }`;
+  }
+}<#
+}
+#>
+
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: <#=modelName#>,
+) {
+  if (!model) {
+    throw `{ await ns("<#=table_comment#>") } { await ns("不存在") }`;
+  }
+  return model;
 }
 
 /**
