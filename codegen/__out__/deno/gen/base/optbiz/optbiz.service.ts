@@ -147,6 +147,10 @@ export async function updateById(
   // 不能修改系统记录的系统字段
   const model = await optbizDao.findById(id);
   if (model && model.is_sys === 1) {
+    // 名称
+    input.lbl = undefined;
+    // 键
+    input.ky = undefined;
   }
   
   const data = await optbizDao.updateById(id, input);
