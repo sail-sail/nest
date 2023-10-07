@@ -1,15 +1,17 @@
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use tracing::{info, error};
-use std::pin::Pin;
-use futures_util::Future;
 
 use anyhow::{Result, anyhow};
 use crate::common::context::Ctx;
 
 use crate::src::wxwork::wxw_app_token::wxw_app_token_dao::get_access_token;
 
-use crate::gen::wxwork::wxw_app::wxw_app_dao::find_by_id as find_by_id_wxw_app;
+use crate::gen::wxwork::wxw_app::wxw_app_dao::{
+  find_by_id as find_by_id_wxw_app,
+  validate_option as validate_option_wxw_app,
+  validate_is_enabled as validate_is_enabled_wxw_app,
+};
 
 use crate::gen::wxwork::wxw_msg::wxw_msg_dao::create as create_wxw_msg;
 use crate::gen::wxwork::wxw_msg::wxw_msg_model::WxwMsgInput;
@@ -27,6 +29,7 @@ struct SendRes {
   response_code: String,
 }
 
+#[allow(dead_code)]
 async fn fetch_send_card_msg<'a>(
   ctx: &mut impl Ctx<'a>,
   input: SendCardMsgInput,
@@ -58,18 +61,14 @@ async fn fetch_send_card_msg<'a>(
     wxw_app_id.clone(),
     None,
   ).await?;
-  if wxw_app_model.is_none() {
-    let msg = format!("wxw_app_id 不存在: {wxw_app_id}");
-    return Err(anyhow!(msg));
-  }
-  let wxw_app_model = wxw_app_model.unwrap();
-  if wxw_app_model.is_enabled == 0 {
-    let msg = format!(
-      "企微应用 已禁用: {lbl}",
-      lbl = wxw_app_model.lbl,
-    );
-    return Err(anyhow!(msg));
-  }
+  let wxw_app_model = validate_option_wxw_app(
+    ctx,
+    wxw_app_model,
+  ).await?;
+  validate_is_enabled_wxw_app(
+    ctx,
+    &wxw_app_model,
+  ).await?;
   let agentid = wxw_app_model.agentid;
   let res = reqwest::Client::new()
     .post(&url)
@@ -90,6 +89,7 @@ async fn fetch_send_card_msg<'a>(
 }
 
 /// 发送卡片消息
+#[allow(dead_code)]
 pub async fn send_card_msg<'a>(
   ctx: &mut impl Ctx<'a>,
   input: SendCardMsgInput,
@@ -100,18 +100,14 @@ pub async fn send_card_msg<'a>(
     wxw_app_id.clone(),
     None,
   ).await?;
-  if wxw_app_model.is_none() {
-    let msg = format!("wxw_app_id 不存在: {wxw_app_id}");
-    return Err(anyhow!(msg));
-  }
-  let wxw_app_model = wxw_app_model.unwrap();
-  if wxw_app_model.is_enabled == 0 {
-    let msg = format!(
-      "企微应用 已禁用: {lbl}",
-      lbl = wxw_app_model.lbl,
-    );
-    return Err(anyhow!(msg));
-  }
+  let wxw_app_model = validate_option_wxw_app(
+    ctx,
+    wxw_app_model,
+  ).await?;
+  validate_is_enabled_wxw_app(
+    ctx,
+    &wxw_app_model,
+  ).await?;
   let tenant_id = wxw_app_model.tenant_id;
   info!(
     "{req_id} 发送卡片消息: {msg}",

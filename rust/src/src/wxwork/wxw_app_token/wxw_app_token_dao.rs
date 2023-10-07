@@ -17,7 +17,11 @@ use crate::gen::wxwork::wxw_app_token::wxw_app_token_model::{
   WxwAppTokenSearch,
 };
 
-use crate::gen::wxwork::wxw_app::wxw_app_dao::find_by_id as find_by_id_wxw_app;
+use crate::gen::wxwork::wxw_app::wxw_app_dao::{
+  find_by_id as find_by_id_wxw_app,
+  validate_option as validate_option_wxw_app,
+  validate_is_enabled as validate_is_enabled_wxw_app,
+};
 
 use crate::src::wxwork::wxw_app_token::wxw_app_token_model::{
   GetuserRes,
@@ -108,18 +112,14 @@ pub async fn get_access_token<'a>(
     wxw_app_id.clone(),
     None,
   ).await?;
-  if wxw_app_model.is_none() {
-    let msg = format!("企微应用不存在, id: {wxw_app_id}");
-    return Err(anyhow!(msg));
-  }
-  let wxw_app_model = wxw_app_model.unwrap();
-  if wxw_app_model.is_enabled == 0 {
-    let msg = format!(
-      "企微应用已禁用 {lbl}",
-      lbl = wxw_app_model.lbl,
-    );
-    return Err(anyhow!(msg));
-  }
+  let wxw_app_model = validate_option_wxw_app(
+    ctx,
+    wxw_app_model,
+  ).await?;
+  validate_is_enabled_wxw_app(
+    ctx,
+    &wxw_app_model,
+  ).await?;
   let corpid = wxw_app_model.corpid;
   let wxw_app_id = wxw_app_model.id;
   let corpsecret = wxw_app_model.corpsecret;
