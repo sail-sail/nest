@@ -577,6 +577,16 @@ export async function existById(
   return result;
 }
 
+/** 校验记录是否存在 */
+export async function validateOption(
+  model?: I18Nmodel,
+) {
+  if (!model) {
+    throw `{ await ns("国际化") } { await ns("不存在") }`;
+  }
+  return model;
+}
+
 /**
  * 增加和修改时校验输入
  * @param input 
