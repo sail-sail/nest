@@ -44,14 +44,22 @@ use crate::gen::wxwork::wxw_usr::wxw_usr_dao::{
 };
 use crate::gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrSearch;
 
-use crate::gen::wxwork::wxw_app::wxw_app_dao::find_one as find_one_wxw_app;
+use crate::gen::wxwork::wxw_app::wxw_app_dao::{
+  find_one as find_one_wxw_app,
+  validate_option as validate_option_wxw_app,
+  validate_is_enabled as validate_is_enabled_wxw_app,
+};
 use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 
 use crate::common::auth::auth_dao::get_token_by_auth_model;
 
 use crate::common::auth::auth_model::AuthModel;
 
-use crate::gen::base::optbiz::optbiz_dao::find_one as find_one_optbiz;
+use crate::gen::base::optbiz::optbiz_dao::{
+  find_one as find_one_optbiz,
+  validate_option as validate_option_optbiz,
+  validate_is_enabled as validate_is_enabled_optbiz,
+};
 use crate::gen::base::optbiz::optbiz_model::OptbizSearch;
 
 /// 企微单点登录
@@ -63,6 +71,7 @@ pub async fn wxw_login_by_code<'a>(
   let agentid = input.agentid;
   let code = input.code;
   let lang = input.lang.unwrap_or("zh_CN".to_string());
+  
   let wxw_app_model = find_one_wxw_app(
     ctx,
     WxwAppSearch {
@@ -73,18 +82,18 @@ pub async fn wxw_login_by_code<'a>(
     None,
     None,
   ).await?;
-  if wxw_app_model.is_none() {
-    return Err(anyhow!(
-      "企微应用 未配置 corpid: {corpid}, agentid: {agentid}",
-    ));
-  }
-  let wxw_app_model = wxw_app_model.unwrap();
-  if wxw_app_model.is_enabled == 0 {
-    return Err(anyhow!(
-      "企微应用 已禁用 corpid: {corpid}, agentid: {agentid}",
-    ));
-  }
+  let wxw_app_model = validate_option_wxw_app(
+    ctx,
+    wxw_app_model,
+  ).await?;
+  validate_is_enabled_wxw_app(
+    ctx,
+    &wxw_app_model
+  ).await?;
+  
   let wxw_app_id = wxw_app_model.id;
+  let tenant_id = wxw_app_model.tenant_id;
+  
   let GetuserinfoModel {
     userid,
     ..
@@ -102,28 +111,7 @@ pub async fn wxw_login_by_code<'a>(
     wxw_app_id.clone(),
     userid.clone(),
   ).await?;
-  let wxw_app_model = find_one_wxw_app(
-    ctx,
-    WxwAppSearch {
-      corpid: corpid.clone().into(),
-      agentid: agentid.clone().into(),
-      ..Default::default()
-    }.into(),
-    None,
-    None,
-  ).await?;
-  if wxw_app_model.is_none() {
-    return Err(anyhow!(
-      "企微应用 未配置 corpid: {corpid}, agentid: {agentid}",
-    ));
-  }
-  let wxw_app_model = wxw_app_model.unwrap();
-  if wxw_app_model.is_enabled == 0 {
-    return Err(anyhow!(
-      "企微应用 已禁用 corpid: {corpid}, agentid: {agentid}",
-    ));
-  }
-  let tenant_id = wxw_app_model.tenant_id;
+  
   // 企微用户
   let wxw_usr_model = find_one_wxw_usr(
     ctx,
@@ -286,10 +274,15 @@ async fn _wxw_sync_usr<'a>(
     None,
     None,
   ).await?;
-  if optbiz_model.is_none() {
-    return Err(anyhow!("企微应用-同步通讯录 未配置"));
-  }
-  let optbiz_model = optbiz_model.unwrap();
+  let optbiz_model = validate_option_optbiz(
+    ctx,
+    optbiz_model,
+  ).await?;
+  validate_is_enabled_optbiz(
+    ctx,
+    &optbiz_model,
+  ).await?;
+  
   let wxw_app_lbl = optbiz_model.val;
   let wxw_app_model = find_one_wxw_app(
     ctx,
@@ -300,19 +293,15 @@ async fn _wxw_sync_usr<'a>(
     None,
     None,
   ).await?;
-  if wxw_app_model.is_none() {
-    return Err(anyhow!(
-      "企微应用 未配置 lbl: {lbl}",
-      lbl = wxw_app_lbl,
-    ));
-  }
-  let wxw_app_model = wxw_app_model.unwrap();
-  if wxw_app_model.is_enabled == 0 {
-    return Err(anyhow!(
-      "企微应用 已禁用 lbl: {lbl}",
-      lbl = wxw_app_lbl,
-    ));
-  }
+  let wxw_app_model = validate_option_wxw_app(
+    ctx,
+    wxw_app_model,
+  ).await?;
+  validate_is_enabled_wxw_app(
+    ctx,
+    &wxw_app_model,
+  ).await?;
+  
   let wxw_app_id = wxw_app_model.id;
   let userids: Vec<String> = getuseridlist(
     ctx,
