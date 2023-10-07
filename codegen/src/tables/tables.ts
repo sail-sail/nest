@@ -268,6 +268,18 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
       },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
     ],
   },
   // 菜单
@@ -724,21 +736,23 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "ky" ],
+        [ "lbl", "ky" ],
+      ],
+      sys_fields: [
+        "lbl",
+        "ky",
       ],
     },
     columns: [
       {
         COLUMN_NAME: "lbl",
         search: true,
-        width: 140,
+        width: 280,
         align: "left",
         fixed: "left",
       },
       {
         COLUMN_NAME: "ky",
-        require: true,
-        search: true,
         width: 140,
         align: "left",
       },
@@ -782,21 +796,23 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "ky" ],
+        [ "lbl", "ky" ],
+      ],
+      sys_fields: [
+        "lbl",
+        "ky",
       ],
     },
     columns: [
       {
         COLUMN_NAME: "lbl",
         search: true,
-        width: 140,
+        width: 280,
         align: "left",
         fixed: "left",
       },
       {
         COLUMN_NAME: "ky",
-        require: true,
-        search: true,
         width: 140,
         align: "left",
       },
