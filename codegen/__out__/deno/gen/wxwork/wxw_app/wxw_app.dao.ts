@@ -609,14 +609,14 @@ export async function validate(
   // 应用密钥
   await validators.chars_max_length(
     input.corpsecret,
-    100,
+    120,
     fieldComments.corpsecret,
   );
   
   // 通讯录密钥
   await validators.chars_max_length(
     input.contactsecret,
-    100,
+    120,
     fieldComments.contactsecret,
   );
   

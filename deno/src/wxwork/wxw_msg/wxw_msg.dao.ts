@@ -9,6 +9,8 @@ import {
 
 import {
   findById as findByIdWxwApp,
+  validateOption as validateOptionWxwApp,
+  validateIsEnabled as validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 import {
@@ -33,10 +35,10 @@ export async function sendCardMsg(
   force = false,
 ): Promise<boolean> {
   log(`发送卡片消息: ${ JSON.stringify(input) }`);
-  const wxw_appModel = await findByIdWxwApp(input.wxw_app_id);
-  if (!wxw_appModel) {
-    throw `wxw_app_id 不存在: ${ input.wxw_app_id }`;
-  }
+  const wxw_appModel = await validateOptionWxwApp(
+    await findByIdWxwApp(input.wxw_app_id),
+  );
+  await validateIsEnabledWxwApp(wxw_appModel);
   const tenant_id = wxw_appModel.tenant_id;
   const agentid = wxw_appModel.agentid;
   const access_token = await getAccessToken(
