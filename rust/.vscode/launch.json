@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "rust4wxwork",
+      "name": "rust4xh4hrm",
       "type": "cppvsdbg",
       "request": "attach",
       "processId": "${command:pickProcess}"
