@@ -748,7 +748,11 @@ async function onSendMsgWxw() {
     ElMessage.warning("请先选择要发送的工资条");
     return;
   }
-  const num = await sendMsgWxw(selectedIds);
+  const host = window.location.host;
+  const num = await sendMsgWxw(
+    host,
+    selectedIds,
+  );
   ElMessage.success(`成功发送 ${ num } 条企微工资条`);
 }
 
