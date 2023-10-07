@@ -41,21 +41,6 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.ky == null && (showBuildIn || builtInSearch?.ky_like == null)">
-        <el-form-item
-          :label="n('键')"
-          prop="ky_like"
-        >
-          <el-input
-            v-model="search.ky_like"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('键') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template>
-      
       <template v-if="builtInSearch?.val == null && (showBuildIn || builtInSearch?.val_like == null)">
         <el-form-item
           :label="n('值')"
@@ -888,7 +873,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 140,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

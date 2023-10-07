@@ -760,6 +760,10 @@ async function onInitI18ns() {
     "所属部门",
     "拥有角色",
     "备注",
+    "创建人",
+    "创建时间",
+    "更新人",
+    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

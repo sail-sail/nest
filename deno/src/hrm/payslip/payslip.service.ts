@@ -52,7 +52,7 @@ export async function sendMsgWxw(
   );
   await validateIsEnabledOptbiz(optbizModel);
   
-  const wxw_app_lbl = optbizModel.lbl;
+  const wxw_app_lbl = optbizModel.val;
   if (!wxw_app_lbl) {
     throw `业务选项未配置 企微应用-发送工资条 的企微应用名称`;
   }

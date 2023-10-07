@@ -710,7 +710,7 @@ export async function validateIsEnabled(
   model: TenantModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("租户") } { await ns("已禁用") }`;
+    throw `${ await ns("租户") } ${ await ns("已禁用") }`;
   }
 }
 
@@ -719,7 +719,7 @@ export async function validateOption(
   model?: TenantModel,
 ) {
   if (!model) {
-    throw `{ await ns("租户") } { await ns("不存在") }`;
+    throw `${ await ns("租户") } ${ await ns("不存在") }`;
   }
   return model;
 }

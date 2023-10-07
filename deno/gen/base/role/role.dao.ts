@@ -747,7 +747,7 @@ export async function validateIsEnabled(
   model: RoleModel,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("角色") } { await ns("已禁用") }`;
+    throw `${ await ns("角色") } ${ await ns("已禁用") }`;
   }
 }
 
@@ -756,7 +756,7 @@ export async function validateOption(
   model?: RoleModel,
 ) {
   if (!model) {
-    throw `{ await ns("角色") } { await ns("不存在") }`;
+    throw `${ await ns("角色") } ${ await ns("不存在") }`;
   }
   return model;
 }
