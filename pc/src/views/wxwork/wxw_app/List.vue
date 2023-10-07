@@ -460,7 +460,7 @@
           </template>
           
           <!-- 应用密钥 -->
-          <template v-else-if="'corpsecret' === col.prop && (showBuildIn || builtInSearch?.corpsecret == null)">
+          <template v-else-if="'corpsecret' === col.prop && showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -469,7 +469,7 @@
           </template>
           
           <!-- 通讯录密钥 -->
-          <template v-else-if="'contactsecret' === col.prop && (showBuildIn || builtInSearch?.contactsecret == null)">
+          <template v-else-if="'contactsecret' === col.prop && showBuildIn">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -721,8 +721,6 @@ const props = defineProps<{
   corpid_like?: string; // 企业ID
   agentid?: string; // 应用ID
   agentid_like?: string; // 应用ID
-  corpsecret?: string; // 应用密钥
-  contactsecret?: string; // 通讯录密钥
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
