@@ -22,7 +22,7 @@ pub async fn get_dictbiz<'a>(
     for item in codes {
       code += &format!("{},", args.push(item.as_ref().to_string().into()));
     }
-    code = code.trim_end_matches(",").to_owned();
+    code = code.trim_end_matches(',').to_owned();
     code
   };
   

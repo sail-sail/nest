@@ -44,14 +44,14 @@ fn init_db_pool() -> Result<Pool<MySql>> {
   let database_hostname = env::var("database_hostname").unwrap_or("localhost".to_owned());
   let database_port = env::var("database_port").unwrap_or("3306".to_owned());
   let database_port: Result<u16, ParseIntError> = database_port.parse();
-  let database_port = database_port.or_else(|_| Ok::<u16, ParseIntError>(3306)).unwrap();
+  let database_port = database_port.unwrap_or(3306);
   let database_username = env::var("database_username").unwrap_or("root".to_owned());
   let database_password = env::var("database_password").unwrap_or_default();
   let database_database = env::var("database_database").unwrap_or_default();
   let database_pool_size = env::var("database_pool_size").unwrap_or("10".to_owned());
   let default_pool_size: u32 = 10;
   let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
-  let database_pool_size = database_pool_size.or_else(|_| Ok::<u32, ParseIntError>(default_pool_size)).unwrap();
+  let database_pool_size = database_pool_size.unwrap_or(default_pool_size);
   let mysql_url = format!("mysql://{database_username}:xxx@{database_hostname}:{database_port}/{database_database}");
   
   info!("mysql_url: {}", &mysql_url);
@@ -112,10 +112,11 @@ pub trait Ctx<'a>: Send + Sized {
       return auth_model.to_owned();
     }
     let auth_token = self.get_auth_token();
-    if auth_token.is_none() {
-      return None;
-    }
-    let auth_token = auth_token.unwrap();
+    // if auth_token.is_none() {
+    //   return None;
+    // }
+    auth_token.as_ref()?;
+    let auth_token: String = auth_token.unwrap();
     let auth_model = get_auth_model_by_token(auth_token);
     if auth_model.is_err() {
       error!("{}", auth_model.err().unwrap());
@@ -210,7 +211,7 @@ pub trait Ctx<'a>: Send + Sized {
   ) -> Result<u64> {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
-    let mut is_debug: bool = IS_DEBUG.clone();
+    let mut is_debug: bool = *IS_DEBUG;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = &options {
       is_debug = options.is_debug;
@@ -299,7 +300,7 @@ pub trait Ctx<'a>: Send + Sized {
         }
         let mut debug_sql = sql.to_string();
         for arg in debug_args {
-          debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+          debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
@@ -371,7 +372,7 @@ pub trait Ctx<'a>: Send + Sized {
       let tran = self.get_tran().unwrap();
       let res = tran.execute(query).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e);
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -455,7 +456,7 @@ pub trait Ctx<'a>: Send + Sized {
       }
       let mut debug_sql = sql.to_string();
       for arg in debug_args {
-        debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+        debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
@@ -551,8 +552,7 @@ pub trait Ctx<'a>: Send + Sized {
         let cache_key1 = options.cache_key1.as_ref().unwrap();
         let cache_key2 = options.cache_key2.as_ref().unwrap();
         let str = get_cache(cache_key1, cache_key2).await?;
-        if str.is_some() {
-          let str = str.unwrap();
+        if let Some(str) = str {
           let res2: Vec<R>;
           let res = serde_json::from_str::<Vec<R>>(&str);
           if let Ok(res) = res {
@@ -568,7 +568,7 @@ pub trait Ctx<'a>: Send + Sized {
     
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
-    let mut is_debug: bool = IS_DEBUG.clone();
+    let mut is_debug: bool = *IS_DEBUG;
     let mut is_tran = self.get_is_tran();
     if let Some(options) = options.as_ref() {
       is_debug = options.is_debug;
@@ -651,7 +651,7 @@ pub trait Ctx<'a>: Send + Sized {
         }
         let mut debug_sql = sql.to_string();
         for arg in debug_args {
-          debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+          debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
@@ -723,7 +723,7 @@ pub trait Ctx<'a>: Send + Sized {
       let tran = self.get_tran().unwrap();
       let res = query.fetch_all(&mut **tran).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e);
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -808,7 +808,7 @@ pub trait Ctx<'a>: Send + Sized {
       }
       let mut debug_sql = sql.to_string();
       for arg in debug_args {
-        debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+        debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
@@ -904,16 +904,14 @@ pub trait Ctx<'a>: Send + Sized {
         let cache_key1 = options.cache_key1.as_ref().unwrap();
         let cache_key2 = options.cache_key2.as_ref().unwrap();
         let str = get_cache(cache_key1, cache_key2).await?;
-        if str.is_some() {
-          let str = str.unwrap();
-          let res2: Option<R>;
+        if let Some(str) = str {
           let res = serde_json::from_str::<R>(&str);
-          if let Ok(res) = res {
-            res2 = res.into();
+          let res2: Option<R> = if let Ok(res) = res {
+            res.into()
           } else {
-            res2 = None;
             del_cache(cache_key1).await?;
-          }
+            None
+          };
           return Ok(res2);
         }
       }
@@ -1074,7 +1072,7 @@ pub trait Ctx<'a>: Send + Sized {
       let tran = self.get_tran().unwrap();
       let res = query.fetch_optional(&mut **tran).await
         .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e.to_string());
+          let err_msg = format!("{} {}", self.get_req_id(), e);
           error!("{}", err_msg);
           anyhow::anyhow!(err_msg)
         })?;
@@ -1485,7 +1483,7 @@ impl Display for ArgType {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default, Clone)]
 pub struct QueryArgs {
   
   pub value: Vec<ArgType>,
@@ -1802,8 +1800,8 @@ impl<'a> CtxImpl<'a> {
  */
 pub fn escape_id(val: impl AsRef<str>) -> String {
   let mut val = val.as_ref().to_owned();
-  val = val.replace("`", "``");
-  val = val.replace(".", "`.`");
+  val = val.replace('`', "``");
+  val = val.replace('.', "`.`");
   val = val.trim().lines().map(|part| {
     part.trim().split_inclusive(char::is_whitespace)
       .filter(|part| !part.trim().is_empty())
@@ -1818,8 +1816,8 @@ pub fn escape_id(val: impl AsRef<str>) -> String {
  */
 pub fn escape(val: impl AsRef<str>) -> String {
   let mut val = val.as_ref().to_owned();
-  val = val.replace("`", "``");
-  val = val.replace("'", "''");
+  val = val.replace('`', "``");
+  val = val.replace('\'', "''");
   val = val.trim().lines().map(|part| {
     part.trim().split_inclusive(char::is_whitespace)
       .filter(|part| !part.trim().is_empty())
@@ -1884,7 +1882,7 @@ pub fn get_order_by_query(
 pub fn get_short_uuid() -> String {
   let uuid = uuid::Uuid::new_v4();
   let uuid = uuid.to_string();
-  let uuid = uuid.replace("-", "");
+  let uuid = uuid.replace('-', "");
   // base64编码
   let uuid = general_purpose::STANDARD.encode(uuid);
   // 切割字符串22位

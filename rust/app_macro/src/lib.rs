@@ -19,9 +19,8 @@ fn map_fields<F>(fields: &Fields, mapper:&mut F) -> proc_macro2::TokenStream
 where
     F: FnMut((&Option<proc_macro2::Ident> ,  &Type)) -> proc_macro2::TokenStream,
 {
-    let fs = fields.iter().map(|field| mapper((&field.ident ,&field.ty)) );
-    let stream2 = proc_macro2::TokenStream::from_iter(fs);
-    stream2
+  let fs = fields.iter().map(|field| mapper((&field.ident ,&field.ty)) );
+  proc_macro2::TokenStream::from_iter(fs)
 }
 
 #[proc_macro_derive(FromModel)]

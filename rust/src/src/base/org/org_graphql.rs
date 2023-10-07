@@ -16,7 +16,7 @@ impl OrgMutation {
     ctx: &Context<'a>,
     org_id: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     let res = org_resolver::org_login_select(&mut ctx, org_id).await;
     ctx.ok(res).await
   }

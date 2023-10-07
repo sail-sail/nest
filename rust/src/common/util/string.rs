@@ -15,8 +15,8 @@ pub fn trim_opt(s: Option<impl AsRef<str>>) -> Option<String> {
 }
 
 pub fn sql_like(s: &str) -> String {
-  s.replace("%", "\\%")
-    .replace("_", "\\_")
+  s.replace('%', "\\%")
+    .replace('_', "\\_")
 }
 
 pub fn hash(s: &[u8]) -> String {

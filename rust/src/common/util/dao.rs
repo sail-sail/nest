@@ -29,14 +29,10 @@ lazy_static! {
 
 fn init_crypto_key() -> Option<&'static [u8]> {
   let crypto_key_path = std::env::var("database_crypto_key_path").ok();
-  if crypto_key_path.is_none() {
-    return None;
-  }
+  crypto_key_path.as_ref()?;
   let crypto_key_path = crypto_key_path.unwrap();
   let crypto_key = std::fs::read(crypto_key_path).ok();
-  if crypto_key.is_none() {
-    return None;
-  }
+  crypto_key.as_ref()?;
   let crypto_key = crypto_key.unwrap();
   if crypto_key.len() != 16 {
     return None;
@@ -77,7 +73,7 @@ pub fn encrypt(
     .encrypt_padded_vec_mut::<Pkcs7>(
       format!("{}{}", salt, str).as_bytes(),
     );
-  let str2 = general_purpose::STANDARD.encode(ct.to_vec());
+  let str2 = general_purpose::STANDARD.encode(ct);
   let str2 = format!("{}{}", iv_str, str2);
   str2
 }
@@ -123,15 +119,13 @@ pub fn decrypt(
   if str2.is_none() {
     return "".to_owned();
   }
-  let str2 = {
+  {
     let str2 = str2.unwrap();
     if str2.len() < 16 {
       return "".to_owned();
     }
-    let str2 = str2[16..].to_owned();
-    str2
-  };
-  str2
+    str2[16..].to_owned()
+  }
 }
 
 pub struct ManyOpts {

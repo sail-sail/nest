@@ -66,7 +66,7 @@ impl <#=tableUP#>GenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::find_all(
       &mut ctx,
@@ -85,7 +85,7 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'a>,
     search: Option<<#=tableUP#>Search>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::find_count(
       &mut ctx,
@@ -103,7 +103,7 @@ impl <#=tableUP#>GenQuery {
     search: Option<<#=tableUP#>Search>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::find_one(
       &mut ctx,
@@ -121,7 +121,7 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<<#=tableUP#>Model>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::find_by_id(
       &mut ctx,
@@ -141,7 +141,7 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -164,7 +164,7 @@ impl <#=tableUP#>GenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::get_is_locked_by_id(
       &mut ctx,
@@ -182,7 +182,7 @@ impl <#=tableUP#>GenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<<#=tableUP#>FieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::get_field_comments(
       &mut ctx,
@@ -199,7 +199,7 @@ impl <#=tableUP#>GenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = <#=table#>_resolver::find_last_order_by(
       &mut ctx,
@@ -228,7 +228,7 @@ impl <#=tableUP#>GenMutation {<#
     model: <#=tableUP#>Input,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -255,7 +255,7 @@ impl <#=tableUP#>GenMutation {<#
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::update_tenant_by_id(
       &mut ctx,
@@ -278,7 +278,7 @@ impl <#=tableUP#>GenMutation {<#
     id: String,
     org_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::update_org_by_id(
       &mut ctx,
@@ -301,7 +301,7 @@ impl <#=tableUP#>GenMutation {<#
     id: String,
     model: <#=tableUP#>Input,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::update_by_id(
       &mut ctx,
@@ -323,7 +323,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::delete_by_ids(
       &mut ctx,
@@ -344,7 +344,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'a>,
     id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::default_by_id(
       &mut ctx,
@@ -366,7 +366,7 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::enable_by_ids(
       &mut ctx,
@@ -389,7 +389,7 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::lock_by_ids(
       &mut ctx,
@@ -411,7 +411,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::revert_by_ids(
       &mut ctx,
@@ -428,7 +428,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = <#=table#>_resolver::force_delete_by_ids(
       &mut ctx,

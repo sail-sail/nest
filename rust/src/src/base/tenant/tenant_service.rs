@@ -66,7 +66,7 @@ pub async fn get_login_tenants<'a>(
     None,
   ).await?;
   
-  let res: Vec<TenantModel> = if domain_models.len() == 0 {
+  let res: Vec<TenantModel> = if domain_models.is_empty() {
     vec![]
   } else {
     let domain_ids: Vec<String> = domain_models.into_iter()

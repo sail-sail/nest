@@ -32,7 +32,7 @@ impl DomainGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DomainModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl DomainGenQuery {
     ctx: &Context<'a>,
     search: Option<DomainSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl DomainGenQuery {
     search: Option<DomainSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DomainModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl DomainGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<DomainModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::find_by_id(
       &mut ctx,
@@ -105,7 +105,7 @@ impl DomainGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -124,7 +124,7 @@ impl DomainGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::get_is_locked_by_id(
       &mut ctx,
@@ -140,7 +140,7 @@ impl DomainGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<DomainFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::get_field_comments(
       &mut ctx,
@@ -155,7 +155,7 @@ impl DomainGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = domain_resolver::find_last_order_by(
       &mut ctx,
@@ -180,7 +180,7 @@ impl DomainGenMutation {
     model: DomainInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -203,7 +203,7 @@ impl DomainGenMutation {
     id: String,
     model: DomainInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::update_by_id(
       &mut ctx,
@@ -221,7 +221,7 @@ impl DomainGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::delete_by_ids(
       &mut ctx,
@@ -238,7 +238,7 @@ impl DomainGenMutation {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::default_by_id(
       &mut ctx,
@@ -256,7 +256,7 @@ impl DomainGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::enable_by_ids(
       &mut ctx,
@@ -275,7 +275,7 @@ impl DomainGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::lock_by_ids(
       &mut ctx,
@@ -293,7 +293,7 @@ impl DomainGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::revert_by_ids(
       &mut ctx,
@@ -310,7 +310,7 @@ impl DomainGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = domain_resolver::force_delete_by_ids(
       &mut ctx,

@@ -42,31 +42,25 @@ pub async fn graphql_handler_get(
   let mut gql_req = Request::new(query);
   match req.header(AUTHORIZATION).map(ToString::to_string) {
     None => {
-      match gql_params.Authorization {
-        Some(auth_token) => {
-          gql_req = gql_req.data::<AuthToken>(auth_token);
-        },
-        None => { },
+      if let Some(auth_token) = gql_params.Authorization {
+        gql_req = gql_req.data::<AuthToken>(auth_token);
       }
     },
     Some(auth_token) => {
       gql_req = gql_req.data::<AuthToken>(auth_token);
     },
   }
-  match gql_params.variables {
-    Some(variables) => {
-      let variables = match serde_json::from_str::<Variables>(&variables) {
-        Ok(variables) => variables,
-        Err(err) => {
-          error!("{}", err);
-          return Response::builder()
-            .status(StatusCode::INTERNAL_SERVER_ERROR)
-            .body(err.to_string())
-        }
-      };
-      gql_req = gql_req.variables(variables);
-    },
-    None => { },
+  if let Some(variables) = gql_params.variables {
+    let variables = match serde_json::from_str::<Variables>(&variables) {
+      Ok(variables) => variables,
+      Err(err) => {
+        error!("{}", err);
+        return Response::builder()
+          .status(StatusCode::INTERNAL_SERVER_ERROR)
+          .body(err.to_string())
+      }
+    };
+    gql_req = gql_req.variables(variables);
   }
   let gql_res = schema.execute(gql_req).await;
   let data = match serde_json::to_vec(&gql_res) {
@@ -112,11 +106,8 @@ pub async fn graphql_handler(
   let mut gql_req = data.0;
   match req.header(AUTHORIZATION).map(ToString::to_string) {
     None => {
-      match token_param.Authorization {
-        Some(auth_token) => {
-          gql_req = gql_req.data::<AuthToken>(auth_token);
-        },
-        None => { },
+      if let Some(auth_token) = token_param.Authorization {
+        gql_req = gql_req.data::<AuthToken>(auth_token);
       }
     },
     Some(auth_token) => {
