@@ -75,7 +75,7 @@ async function compile() {
   });
   await mkdir(`${ buildDir }/rust`, { recursive: true });
   await remove(`${ buildDir }/rust/rust4xh4hrm`);
-  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/rust`, `${ buildDir }/rust/rust4xh4hrm`);
+  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/rust4xh4hrm`, `${ buildDir }/rust/rust4xh4hrm`);
 }
 
 // async function publish() {
