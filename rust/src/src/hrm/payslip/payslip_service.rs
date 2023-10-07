@@ -17,6 +17,7 @@ use crate::gen::base::domain::domain_model::DomainSearch;
 use crate::gen::base::optbiz::optbiz_dao::{
   find_one as find_one_optbiz,
   validate_option as validate_option_optbiz,
+  validate_is_enabled as validate_is_enabled_optbiz,
 };
 use crate::gen::base::optbiz::optbiz_model::OptbizSearch;
 
@@ -44,6 +45,7 @@ use crate::src::wxwork::wxw_msg::wxw_msg_model::SendCardMsgInput;
 /// 发送企微工资条
 pub async fn send_msg_wxw<'a>(
   ctx: &mut impl Ctx<'a>,
+  host: String,
   ids: Vec<String>,
 ) -> Result<i32> {
   let optbiz_model = find_one_optbiz(
@@ -59,10 +61,16 @@ pub async fn send_msg_wxw<'a>(
     ctx,
     optbiz_model,
   ).await?;
+  validate_is_enabled_optbiz(
+    ctx,
+    &optbiz_model,
+  ).await?;
+  
   let wxw_app_lbl = optbiz_model.lbl;
   if wxw_app_lbl.is_empty() {
     return Err(anyhow!("业务选项未配置 企微应用-发送工资条 的企微应用名称"));
   }
+  
   let wxw_app_model = find_one_wxw_app(
     ctx,
     WxwAppSearch {
@@ -80,8 +88,10 @@ pub async fn send_msg_wxw<'a>(
     ctx,
     &wxw_app_model,
   ).await?;
+  
   let wxw_app_id = wxw_app_model.id;
   let tenant_id = wxw_app_model.tenant_id;
+  
   let tenant_model = find_by_id_tenant(
     ctx,
     tenant_id,
@@ -95,7 +105,9 @@ pub async fn send_msg_wxw<'a>(
     ctx,
     &tenant_model,
   ).await?;
+  
   let domain_ids = tenant_model.domain_ids;
+  
   if domain_ids.is_empty() {
     return Err(anyhow!(
       "租户未配置域名 {lbl}",
@@ -106,7 +118,7 @@ pub async fn send_msg_wxw<'a>(
     ctx,
     DomainSearch {
       ids: domain_ids.into(),
-      is_default: vec![1].into(),
+      lbl: host.into(),
       ..Default::default()
     }.into(),
     None,
@@ -120,6 +132,7 @@ pub async fn send_msg_wxw<'a>(
     ctx,
     &domain_model,
   ).await?;
+  
   let mut num = 0;
   for id in ids {
     let payslip_model = find_by_id_payslip(
@@ -131,6 +144,7 @@ pub async fn send_msg_wxw<'a>(
       ctx,
       payslip_model,
     ).await?;
+    
     let wxw_usr_model = find_one_wxw_usr(
       ctx,
       WxwUsrSearch {
@@ -144,6 +158,7 @@ pub async fn send_msg_wxw<'a>(
       ctx,
       wxw_usr_model,
     ).await?;
+    
     let touser = wxw_usr_model.userid;
     let is_succ = send_card_msg(
       ctx,
