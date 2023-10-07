@@ -49,7 +49,7 @@ pub async fn send_msg_wxw<'a>(
   let optbiz_model = find_one_optbiz(
     ctx,
     OptbizSearch {
-      lbl: "企微应用-发送工资".to_owned().into(),
+      lbl: "企微应用-发送工资条".to_owned().into(),
       ..Default::default()
     }.into(),
     None,
@@ -61,7 +61,7 @@ pub async fn send_msg_wxw<'a>(
   ).await?;
   let wxw_app_lbl = optbiz_model.lbl;
   if wxw_app_lbl.is_empty() {
-    return Err(anyhow!("业务选项未配置 企微应用-发送工资 的企微应用名称"));
+    return Err(anyhow!("业务选项未配置 企微应用-发送工资条 的企微应用名称"));
   }
   let wxw_app_model = find_one_wxw_app(
     ctx,
