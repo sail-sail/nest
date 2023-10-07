@@ -66,7 +66,7 @@ pub async fn send_msg_wxw<'a>(
     &optbiz_model,
   ).await?;
   
-  let wxw_app_lbl = optbiz_model.lbl;
+  let wxw_app_lbl = optbiz_model.val;
   if wxw_app_lbl.is_empty() {
     return Err(anyhow!("业务选项未配置 企微应用-发送工资条 的企微应用名称"));
   }
