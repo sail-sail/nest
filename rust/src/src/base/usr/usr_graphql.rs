@@ -42,7 +42,7 @@ impl UsrMutation {
     ctx: &Context<'a>,
     lang: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::select_lang(
       &mut ctx,
@@ -65,7 +65,7 @@ impl UsrQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<GetLoginInfo> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = usr_resolver::get_login_info(
       &mut ctx,

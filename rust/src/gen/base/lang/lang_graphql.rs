@@ -32,7 +32,7 @@ impl LangGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<LangModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl LangGenQuery {
     ctx: &Context<'a>,
     search: Option<LangSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl LangGenQuery {
     search: Option<LangSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<LangModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl LangGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<LangModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::find_by_id(
       &mut ctx,
@@ -105,7 +105,7 @@ impl LangGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -121,7 +121,7 @@ impl LangGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<LangFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::get_field_comments(
       &mut ctx,
@@ -136,7 +136,7 @@ impl LangGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = lang_resolver::find_last_order_by(
       &mut ctx,
@@ -161,7 +161,7 @@ impl LangGenMutation {
     model: LangInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -184,7 +184,7 @@ impl LangGenMutation {
     id: String,
     model: LangInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = lang_resolver::update_by_id(
       &mut ctx,
@@ -202,7 +202,7 @@ impl LangGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = lang_resolver::delete_by_ids(
       &mut ctx,
@@ -220,7 +220,7 @@ impl LangGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = lang_resolver::enable_by_ids(
       &mut ctx,
@@ -238,7 +238,7 @@ impl LangGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = lang_resolver::revert_by_ids(
       &mut ctx,
@@ -255,7 +255,7 @@ impl LangGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = lang_resolver::force_delete_by_ids(
       &mut ctx,

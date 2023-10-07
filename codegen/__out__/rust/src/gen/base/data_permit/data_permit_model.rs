@@ -257,29 +257,29 @@ pub struct DataPermitInput {
 impl From<DataPermitInput> for DataPermitSearch {
   fn from(input: DataPermitInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       is_deleted: None,
       // 菜单
-      menu_id: input.menu_id.map(|x| vec![x.into()]),
+      menu_id: input.menu_id.map(|x| vec![x]),
       // 名称
       lbl: input.lbl,
       // 范围
-      scope: input.scope.map(|x| vec![x.into()]),
+      scope: input.scope.map(|x| vec![x]),
       // 类型
-      r#type: input.r#type.map(|x| vec![x.into()]),
+      r#type: input.r#type.map(|x| vec![x]),
       // 备注
       rem: input.rem,
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x.into()]),
+      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
     }
   }

@@ -11,10 +11,7 @@ lazy_static! {
 fn init_cache_pool() -> Option<Pool> {
   let cache_enable = {
     let cache_enable = env::var("cache_enable").unwrap_or("true".to_owned());
-    match cache_enable.trim().to_lowercase().as_str() {
-      "false" => false,
-      _ => true,
-    }
+    !matches!(cache_enable.trim().to_lowercase().as_str(), "false")
   };
   if !cache_enable {
     return None;
@@ -56,7 +53,7 @@ pub async fn set_cache(
   }
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
-  let _: () = redis::cmd("HSET")
+  redis::cmd("HSET")
     .arg(&[cache_key1, cache_key2, cache_value])
     .query_async(&mut conn).await?;
   Ok(())
@@ -71,7 +68,7 @@ pub async fn del_cache(
   info!("del_cache: {}", cache_key1);
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
-  let _ = redis::cmd("DEL")
+  redis::cmd("DEL")
     .arg(&[cache_key1])
     .query_async(&mut conn).await?;
   Ok(())
@@ -91,7 +88,7 @@ pub async fn del_caches(
   for del_cache_key1 in del_cache_key1s {
     pipe = pipe.cmd("DEL").arg(&[del_cache_key1]).ignore();
   }
-  let _ = pipe.query_async(&mut conn).await?;
+  pipe.query_async(&mut conn).await?;
   Ok(())
 }
 
@@ -102,7 +99,7 @@ pub async fn flash_db() -> Result<()> {
   info!("flash_db");
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
-  let _ = redis::cmd("FLUSHDB")
+  redis::cmd("FLUSHDB")
     .query_async(&mut conn).await?;
   Ok(())
 }

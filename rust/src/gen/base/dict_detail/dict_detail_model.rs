@@ -193,25 +193,25 @@ pub struct DictDetailInput {
 impl From<DictDetailInput> for DictDetailSearch {
   fn from(input: DictDetailInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       is_deleted: None,
       // 系统字典
-      dict_id: input.dict_id.map(|x| vec![x.into()]),
+      dict_id: input.dict_id.map(|x| vec![x]),
       // 名称
       lbl: input.lbl,
       // 值
       val: input.val,
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
-      order_by: input.order_by.map(|x| vec![x.clone().into(), x.clone().into()]),
+      order_by: input.order_by.map(|x| vec![x, x]),
       // 备注
       rem: input.rem,
       // 系统字段
-      is_sys: input.is_sys.map(|x| vec![x.into()]),
+      is_sys: input.is_sys.map(|x| vec![x]),
       ..Default::default()
     }
   }

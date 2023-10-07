@@ -34,9 +34,9 @@ pub async fn min_items<T: Deref<Target = [E]>, E>(
   
   let mut err_msg = String::new();
   err_msg.push_str(label);
-  err_msg.push_str(" ");
+  err_msg.push(' ');
   err_msg.push_str(&msg);
   let err_msg = err_msg;
   
-  return Err(SrvErr::msg(err_msg).into());
+  Err(SrvErr::msg(err_msg).into())
 }
