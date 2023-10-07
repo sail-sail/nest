@@ -167,8 +167,6 @@ pub struct WxwAppSearch {
   pub rem: Option<String>,
   /// 备注
   pub rem_like: Option<String>,
-  /// 组织ID
-  pub org_id: Option<String>,
 }
 
 #[derive(FromModel, InputObject, Debug, Default, Clone)]

@@ -1450,7 +1450,7 @@ export async function validateIsEnabled(
   model: <#=modelName#>,
 ) {
   if (model.is_enabled == 0) {
-    throw `{ await ns("<#=table_comment#>") } { await ns("已禁用") }`;
+    throw `${ await ns("<#=table_comment#>") } ${ await ns("已禁用") }`;
   }
 }<#
 }
@@ -1461,7 +1461,7 @@ export async function validateOption(
   model?: <#=modelName#>,
 ) {
   if (!model) {
-    throw `{ await ns("<#=table_comment#>") } { await ns("不存在") }`;
+    throw `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
   }
   return model;
 }

@@ -634,12 +634,14 @@ pub async fn find_by_unique<'a>(
   
   let mut models_tmp = {
     if
+      search.lbl.is_none() ||
       search.ky.is_none()
     {
       return Ok(vec![]);
     }
     
     let search = OptionsSearch {
+      lbl: search.lbl,
       ky: search.ky,
       ..Default::default()
     };
@@ -668,6 +670,7 @@ fn equals_by_unique(
   }
   
   if
+    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl &&
     input.ky.as_ref().is_some() && input.ky.as_ref().unwrap() == &model.ky
   {
     return true;

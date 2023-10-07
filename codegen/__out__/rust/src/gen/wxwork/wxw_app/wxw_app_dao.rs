@@ -100,26 +100,6 @@ async fn get_where_query<'a>(
     }
   }
   {
-    let org_id = {
-      let org_id = match &search {
-        Some(item) => &item.org_id,
-        None => &None,
-      };
-      let org_id = match trim_opt(org_id.as_ref()) {
-        None => ctx.get_auth_org_id(),
-        Some(item) => match item.as_str() {
-          "-" => None,
-          _ => item.into(),
-        },
-      };
-      org_id
-    };
-    if let Some(org_id) = org_id {
-      where_query += " and t.org_id = ?";
-      args.push(org_id.into());
-    }
-  }
-  {
     let lbl = match &search {
       Some(item) => item.lbl.clone(),
       None => None,
@@ -797,12 +777,6 @@ pub async fn create<'a>(
     args.push(tenant_id.into());
   }
   
-  if let Some(org_id) = ctx.get_auth_org_id() {
-    sql_fields += ",org_id";
-    sql_values += ",?";
-    args.push(org_id.into());
-  }
-  
   if let Some(auth_model) = ctx.get_auth_model() {
     let usr_id = auth_model.id;
     sql_fields += ",create_usr_id";
@@ -902,47 +876,6 @@ pub async fn update_tenant_by_id<'a>(
   
   let sql_fields = "tenant_id = ?,update_time = ?";
   args.push(tenant_id.into());
-  args.push(ctx.get_now().into());
-  
-  let sql_where = "id = ?";
-  args.push(id.into());
-  
-  let sql = format!(
-    "update {} set {} where {}",
-    table,
-    sql_fields,
-    sql_where,
-  );
-  
-  let args = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  let num = ctx.execute(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 根据id修改组织id
-pub async fn update_org_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
-  id: String,
-  org_id: String,
-  options: Option<Options>,
-) -> Result<u64> {
-  let table = "wxwork_wxw_app";
-  let _method = "update_org_by_id";
-  
-  let mut args = QueryArgs::new();
-  
-  let sql_fields = "org_id = ?,update_time = ?";
-  args.push(org_id.into());
   args.push(ctx.get_now().into());
   
   let sql_where = "id = ?";
@@ -1508,11 +1441,6 @@ pub async fn find_last_order_by<'a>(
     args.push(tenant_id.into());
   }
   
-  if let Some(org_id) = ctx.get_auth_org_id() {
-    sql_where += " and t.org_id = ?";
-    args.push(org_id.into());
-  }
-  
   let sql = format!(
     "select t.order_by order_by from {} t where {} order by t.order_by desc limit 1",
     table,
@@ -1633,14 +1561,14 @@ pub fn validate(
   // 应用密钥
   chars_max_length(
     input.corpsecret.clone(),
-    100,
+    120,
     "",
   )?;
   
   // 通讯录密钥
   chars_max_length(
     input.contactsecret.clone(),
-    100,
+    120,
     "",
   )?;
   

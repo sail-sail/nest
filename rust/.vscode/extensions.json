@@ -12,7 +12,6 @@
     "ibm.output-colorizer",
     "deanhjjiang.split-line",
     "antfu.where-am-i",
-    "panicbit.cargo",
     "serayuzgur.crates",
     "rust-lang.rust-analyzer",
     "swellaby.vscode-rust-test-adapter",

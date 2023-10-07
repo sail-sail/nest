@@ -614,7 +614,7 @@ export async function validateOption(
   model?: DataPermitModel,
 ) {
   if (!model) {
-    throw `{ await ns("数据权限") } { await ns("不存在") }`;
+    throw `${ await ns("数据权限") } ${ await ns("不存在") }`;
   }
   return model;
 }
