@@ -650,7 +650,7 @@ export async function validateOption(
   model?: PayslipModel,
 ) {
   if (!model) {
-    throw `{ await ns("工资条") } { await ns("不存在") }`;
+    throw `${ await ns("工资条") } ${ await ns("不存在") }`;
   }
   return model;
 }

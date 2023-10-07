@@ -7,11 +7,13 @@ use super::payslip_service;
 /// 发送企微工资条
 pub async fn send_msg_wxw<'a>(
   ctx: &mut impl Ctx<'a>,
+  host: String,
   ids: Vec<String>,
 ) -> Result<i32> {
   
   let res = payslip_service::send_msg_wxw(
     ctx,
+    host,
     ids,
   ).await?;
   

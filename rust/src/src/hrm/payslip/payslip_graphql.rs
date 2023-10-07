@@ -18,12 +18,14 @@ impl PayslipMutation {
   async fn send_msg_wxw<'a>(
     &self,
     ctx: &Context<'a>,
+    host: String,
     ids: Vec<String>,
   ) -> Result<i32> {
     let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = payslip_resolver::send_msg_wxw(
       &mut ctx,
+      host,
       ids,
     ).await?;
     
