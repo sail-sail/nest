@@ -16,7 +16,7 @@ impl CacheMutation {
     &self,
     ctx: &Context<'a>,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx);
+    let mut ctx = CtxImpl::new(ctx);
     let res = cache_service::clear_cache(&mut ctx).await;
     ctx.ok(res).await
   }

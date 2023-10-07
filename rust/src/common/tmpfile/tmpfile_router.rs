@@ -84,14 +84,11 @@ async fn _download(
       return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
     }
   }
-  match stat.content_type {
-    Some(content_type) => {
-      if !content_type.is_empty() {
-        response = response.content_type(content_type);
-      }
-    },
-    None => {},
-  };
+  if let Some(content_type) = stat.content_type {
+    if !content_type.is_empty() {
+      response = response.content_type(content_type);
+    }
+  }
   filename = filename.trim().to_string();
   if filename.is_empty() {
     filename = stat.filename;

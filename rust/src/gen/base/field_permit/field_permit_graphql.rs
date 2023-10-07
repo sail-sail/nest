@@ -32,7 +32,7 @@ impl FieldPermitGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<FieldPermitModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = field_permit_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl FieldPermitGenQuery {
     ctx: &Context<'a>,
     search: Option<FieldPermitSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = field_permit_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl FieldPermitGenQuery {
     search: Option<FieldPermitSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<FieldPermitModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = field_permit_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl FieldPermitGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<FieldPermitModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = field_permit_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl FieldPermitGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<FieldPermitFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = field_permit_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl FieldPermitGenMutation {
     model: FieldPermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -151,7 +151,7 @@ impl FieldPermitGenMutation {
     id: String,
     model: FieldPermitInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = field_permit_resolver::update_by_id(
       &mut ctx,
@@ -169,7 +169,7 @@ impl FieldPermitGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = field_permit_resolver::delete_by_ids(
       &mut ctx,
@@ -186,7 +186,7 @@ impl FieldPermitGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = field_permit_resolver::revert_by_ids(
       &mut ctx,
@@ -203,7 +203,7 @@ impl FieldPermitGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = field_permit_resolver::force_delete_by_ids(
       &mut ctx,

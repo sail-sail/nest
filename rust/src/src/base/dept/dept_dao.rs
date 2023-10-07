@@ -52,7 +52,7 @@ async fn get_parents_by_id<'a>(
   parent_ids: &mut Vec<String>,
 ) -> Result<()> {
   
-  if parent_ids.len() == 0 {
+  if parent_ids.is_empty() {
     return Ok(());
   }
   

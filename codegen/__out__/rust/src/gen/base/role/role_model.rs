@@ -385,7 +385,7 @@ pub struct RoleInput {
 impl From<RoleInput> for RoleSearch {
   fn from(input: RoleInput) -> Self {
     Self {
-      id: input.id.map(|x| x.into()),
+      id: input.id,
       ids: None,
       // 住户ID
       tenant_id: input.tenant_id,
@@ -399,19 +399,19 @@ impl From<RoleInput> for RoleSearch {
       // 数据权限
       data_permit_ids: input.data_permit_ids,
       // 锁定
-      is_locked: input.is_locked.map(|x| vec![x.into()]),
+      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x.into()]),
+      is_enabled: input.is_enabled.map(|x| vec![x]),
       // 备注
       rem: input.rem,
       // 创建人
-      create_usr_id: input.create_usr_id.map(|x| vec![x.into()]),
+      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
-      create_time: input.create_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      create_time: input.create_time.map(|x| vec![x, x]),
       // 更新人
-      update_usr_id: input.update_usr_id.map(|x| vec![x.into()]),
+      update_usr_id: input.update_usr_id.map(|x| vec![x]),
       // 更新时间
-      update_time: input.update_time.map(|x| vec![x.clone().into(), x.clone().into()]),
+      update_time: input.update_time.map(|x| vec![x, x]),
       ..Default::default()
     }
   }

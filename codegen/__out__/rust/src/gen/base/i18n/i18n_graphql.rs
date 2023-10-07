@@ -32,7 +32,7 @@ impl I18nGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<I18nModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = i18n_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl I18nGenQuery {
     ctx: &Context<'a>,
     search: Option<I18nSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = i18n_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl I18nGenQuery {
     search: Option<I18nSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<I18nModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = i18n_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl I18nGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<I18nModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = i18n_resolver::find_by_id(
       &mut ctx,
@@ -103,7 +103,7 @@ impl I18nGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<I18nFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = i18n_resolver::get_field_comments(
       &mut ctx,
@@ -128,7 +128,7 @@ impl I18nGenMutation {
     model: I18nInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -151,7 +151,7 @@ impl I18nGenMutation {
     id: String,
     model: I18nInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = i18n_resolver::update_by_id(
       &mut ctx,
@@ -169,7 +169,7 @@ impl I18nGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = i18n_resolver::delete_by_ids(
       &mut ctx,
@@ -186,7 +186,7 @@ impl I18nGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = i18n_resolver::revert_by_ids(
       &mut ctx,
@@ -203,7 +203,7 @@ impl I18nGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = i18n_resolver::force_delete_by_ids(
       &mut ctx,

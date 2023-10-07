@@ -32,7 +32,7 @@ impl MenuGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<MenuModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::find_all(
       &mut ctx,
@@ -51,7 +51,7 @@ impl MenuGenQuery {
     ctx: &Context<'a>,
     search: Option<MenuSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::find_count(
       &mut ctx,
@@ -69,7 +69,7 @@ impl MenuGenQuery {
     search: Option<MenuSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<MenuModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::find_one(
       &mut ctx,
@@ -87,7 +87,7 @@ impl MenuGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<MenuModel>> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::find_by_id(
       &mut ctx,
@@ -105,7 +105,7 @@ impl MenuGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::get_is_enabled_by_id(
       &mut ctx,
@@ -124,7 +124,7 @@ impl MenuGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::get_is_locked_by_id(
       &mut ctx,
@@ -140,7 +140,7 @@ impl MenuGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<MenuFieldComment> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::get_field_comments(
       &mut ctx,
@@ -155,7 +155,7 @@ impl MenuGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<u32> {
-    let mut ctx = CtxImpl::new(&ctx).auth()?;
+    let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = menu_resolver::find_last_order_by(
       &mut ctx,
@@ -180,7 +180,7 @@ impl MenuGenMutation {
     model: MenuInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -203,7 +203,7 @@ impl MenuGenMutation {
     id: String,
     model: MenuInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = menu_resolver::update_by_id(
       &mut ctx,
@@ -221,7 +221,7 @@ impl MenuGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = menu_resolver::delete_by_ids(
       &mut ctx,
@@ -239,7 +239,7 @@ impl MenuGenMutation {
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = menu_resolver::enable_by_ids(
       &mut ctx,
@@ -258,7 +258,7 @@ impl MenuGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = menu_resolver::lock_by_ids(
       &mut ctx,
@@ -276,7 +276,7 @@ impl MenuGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = menu_resolver::revert_by_ids(
       &mut ctx,
@@ -293,7 +293,7 @@ impl MenuGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(&ctx).auth()?;
+    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
     
     let res = menu_resolver::force_delete_by_ids(
       &mut ctx,
