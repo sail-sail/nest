@@ -555,7 +555,7 @@ export async function validateOption(
   model?: OperationRecordModel,
 ) {
   if (!model) {
-    throw `{ await ns("操作记录") } { await ns("不存在") }`;
+    throw `${ await ns("操作记录") } ${ await ns("不存在") }`;
   }
   return model;
 }

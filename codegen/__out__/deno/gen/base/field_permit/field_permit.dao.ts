@@ -599,7 +599,7 @@ export async function validateOption(
   model?: FieldPermitModel,
 ) {
   if (!model) {
-    throw `{ await ns("字段权限") } { await ns("不存在") }`;
+    throw `${ await ns("字段权限") } ${ await ns("不存在") }`;
   }
   return model;
 }
