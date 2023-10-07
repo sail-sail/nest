@@ -47,14 +47,14 @@ export async function sendMsgWxw(
 ) {
   const optbizModel = await validateOptionOptbiz(
     await findOneOptbiz({
-      lbl: "企微应用-发送工资",
+      lbl: "企微应用-发送工资条",
     }),
   );
   await validateIsEnabledOptbiz(optbizModel);
   
   const wxw_app_lbl = optbizModel.lbl;
   if (!wxw_app_lbl) {
-    throw `业务选项未配置 企微应用-发送工资 的企微应用名称`;
+    throw `业务选项未配置 企微应用-发送工资条 的企微应用名称`;
   }
   const wxw_appModel = await validateOptionWxwApp(
     await findOneWxwApp({
