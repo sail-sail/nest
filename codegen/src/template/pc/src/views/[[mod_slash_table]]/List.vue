@@ -292,22 +292,6 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></el-input-number>
         </el-form-item>
       </template><#
-      } else if (column.isEncrypt) {
-      #>
-      <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
-          prop="<#=column_name#>"
-        >
-          <el-input
-            v-model="search.<#=column_name#>"
-            un-w="full"
-            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-            clearable
-            @clear="onSearchClear"
-          ></el-input>
-        </el-form-item>
-      </template><#
       } else {
       #>
       <template v-if="builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)">
@@ -853,6 +837,29 @@ const hasAtt = columns.some((item) => item.isAtt);
                   v-model="row[column.property]"
                 ></LinkImage>
               </template>
+            </el-table-column>
+          </template><#
+            } else if (column.isEncrypt) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && showBuildIn">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            ><#
+              if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignTabs(row.id, row[column.property])"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template><#
+              }
+              #>
             </el-table-column>
           </template><#
           } else if (column.isAtt) {
@@ -1697,7 +1704,6 @@ const props = defineProps<{
     } else {
       column_comment = ' // ' + column_comment;
     }
-    /* if (!search) continue; */
   #><#
     if (foreignKey) {
   #>
@@ -1716,10 +1722,10 @@ const props = defineProps<{
   #>
   <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
     } else {
-  #>
-  <#=column_name#>?: <#=data_type#>;<#=column_comment#><#
+  #><#
     if (!column.isEncrypt) {
   #>
+  <#=column_name#>?: <#=data_type#>;<#=column_comment#>
   <#=column_name#>_like?: <#=data_type#>;<#=column_comment#><#
     }
   #><#
