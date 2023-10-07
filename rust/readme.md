@@ -31,6 +31,7 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
 
 ## 换工程名字
 1. `ecosystem.config.js`
+    - 第3行: `name: "[工程名]"`
     - 第4行: `script: "./[工程名]"`
 2. `Cargo.toml`
     - 第1行: `name = "[工程名]"`
@@ -44,3 +45,4 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
     - 第69行: ```cmd += ` ; chmod -R 755 ${ publishPath }/rust/[工程名]`;```
 5. `src\common\script\build.js`
     - 第77行: ```await remove(`${ buildDir }/rust/[工程名]`);```
+    - 第78行: ```await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/[工程名]`, `${ buildDir }/rust/[工程名]`);```
