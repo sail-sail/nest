@@ -582,7 +582,7 @@ export async function validateOption(
   model?: I18Nmodel,
 ) {
   if (!model) {
-    throw `{ await ns("国际化") } { await ns("不存在") }`;
+    throw `${ await ns("国际化") } ${ await ns("不存在") }`;
   }
   return model;
 }
