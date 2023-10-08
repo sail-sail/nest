@@ -1260,10 +1260,11 @@ async function onImportExcel() {
   }
   isStopImport = false;
   isImporting = true;
+  importPercentage = 0;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
   try {
-    ElMessage.info(await nsAsync("正在导入..."));
+    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
     const models = await getExcelData<TenantInput>(
       file,
       header,
@@ -1279,6 +1280,7 @@ async function onImportExcel() {
         },
       },
     );
+    messageHandler.close();
     const res = await importModels(
       models,
       $$(importPercentage),
@@ -1288,7 +1290,6 @@ async function onImportExcel() {
     succNum = res.succNum;
   } finally {
     isImporting = false;
-    importPercentage = 0;
   }
   if (msg) {
     ElMessageBox.alert(msg)
@@ -1303,7 +1304,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-  importPercentage = 0;
 }
 
 /** 锁定 */
