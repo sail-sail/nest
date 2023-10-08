@@ -51,8 +51,8 @@ struct GetuseridlistRes {
 struct Userlist {
   #[serde(default)]
   userid: String,
-  #[serde(default)]
-  department: Vec<i32>,
+  // #[serde(default)]
+  // department: i32,
 }
 
 /// 从企业微信获取 access_token
@@ -406,7 +406,7 @@ async fn fetch_getuseridlist<'a>(
     force.into(),
   ).await?;
   let url = format!(
-    "https://qyapi.weixin.qq.com/cgi-bin/user/list?access_token={access_token}&department_id=1&fetch_child=1",
+    "https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token={access_token}",
     access_token = urlencoding::encode(&access_token),
   );
   let res = reqwest::get(&url).await?;
