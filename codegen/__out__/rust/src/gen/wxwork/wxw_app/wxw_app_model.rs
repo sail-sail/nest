@@ -28,6 +28,10 @@ pub struct WxwAppModel {
   pub corpid: String,
   /// 应用ID
   pub agentid: String,
+  /// 可信域名
+  pub domain_id: String,
+  /// 可信域名
+  pub domain_id_lbl: String,
   /// 应用密钥
   pub corpsecret: String,
   /// 通讯录密钥
@@ -60,6 +64,10 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     let corpid: String = row.try_get("corpid")?;
     // 应用ID
     let agentid: String = row.try_get("agentid")?;
+    // 可信域名
+    let domain_id: String = row.try_get("domain_id")?;
+    let domain_id_lbl: Option<String> = row.try_get("domain_id_lbl")?;
+    let domain_id_lbl = domain_id_lbl.unwrap_or_default();
     // 应用密钥
     let corpsecret: String = row.try_get("corpsecret")?;
     let corpsecret: String = decrypt(corpsecret.as_str());
@@ -85,6 +93,8 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
       lbl,
       corpid,
       agentid,
+      domain_id,
+      domain_id_lbl,
       corpsecret,
       contactsecret,
       is_locked,
@@ -111,6 +121,10 @@ pub struct WxwAppFieldComment {
   pub corpid: String,
   /// 应用ID
   pub agentid: String,
+  /// 可信域名
+  pub domain_id: String,
+  /// 可信域名
+  pub domain_id_lbl: String,
   /// 应用密钥
   pub corpsecret: String,
   /// 通讯录密钥
@@ -149,6 +163,10 @@ pub struct WxwAppSearch {
   pub agentid: Option<String>,
   /// 应用ID
   pub agentid_like: Option<String>,
+  /// 可信域名
+  pub domain_id: Option<Vec<String>>,
+  /// 可信域名
+  pub domain_id_is_null: Option<bool>,
   /// 应用密钥
   pub corpsecret: Option<String>,
   /// 应用密钥
@@ -183,6 +201,10 @@ pub struct WxwAppInput {
   pub corpid: Option<String>,
   /// 应用ID
   pub agentid: Option<String>,
+  /// 可信域名
+  pub domain_id: Option<String>,
+  /// 可信域名
+  pub domain_id_lbl: Option<String>,
   /// 应用密钥
   pub corpsecret: Option<String>,
   /// 通讯录密钥
@@ -215,6 +237,8 @@ impl From<WxwAppInput> for WxwAppSearch {
       corpid: input.corpid,
       // 应用ID
       agentid: input.agentid,
+      // 可信域名
+      domain_id: input.domain_id.map(|x| vec![x]),
       // 应用密钥
       corpsecret: input.corpsecret,
       // 通讯录密钥

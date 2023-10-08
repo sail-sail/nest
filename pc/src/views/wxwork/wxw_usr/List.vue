@@ -538,7 +538,8 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 企微同步 */
 async function onWxwSyncUsr() {
-  const num = await wxwSyncUsr();
+  const host = window.location.host;
+  const num = await wxwSyncUsr(host);
   if (num === 0) {
     ElMessage.success(await nsAsync("企微同步成功, 无新增数据"));
   } else {

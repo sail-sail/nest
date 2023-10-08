@@ -55,12 +55,12 @@ use crate::common::auth::auth_dao::get_token_by_auth_model;
 
 use crate::common::auth::auth_model::AuthModel;
 
-use crate::gen::base::optbiz::optbiz_dao::{
-  find_one as find_one_optbiz,
-  validate_option as validate_option_optbiz,
-  validate_is_enabled as validate_is_enabled_optbiz,
+use crate::gen::base::domain::domain_dao::{
+  find_one as find_one_domain,
+  validate_option as validate_option_domain,
+  validate_is_enabled as validate_is_enabled_domain,
 };
-use crate::gen::base::optbiz::optbiz_model::OptbizSearch;
+use crate::gen::base::domain::domain_model::DomainSearch;
 
 /// 企微单点登录
 pub async fn wxw_login_by_code<'a>(
@@ -250,13 +250,19 @@ lazy_static! {
 /// 同步企微用户
 pub async fn wxw_sync_usr<'a>(
   ctx: &mut impl Ctx<'a>,
+  host: String,
 ) -> Result<i32> {
   let mut wxw_sync_usr_lock = WXW_SYNC_USR_LOCK.lock().await;
   if *wxw_sync_usr_lock {
     return Err(anyhow!("企微用户正在同步中, 请稍后再试"));
   }
   *wxw_sync_usr_lock = true;
-  let res = _wxw_sync_usr(ctx).await;
+  
+  let res = _wxw_sync_usr(
+    ctx,
+    host,
+  ).await;
+  
   *wxw_sync_usr_lock = false;
   res
 }
@@ -264,30 +270,34 @@ pub async fn wxw_sync_usr<'a>(
 /// 同步企微用户
 async fn _wxw_sync_usr<'a>(
   ctx: &mut impl Ctx<'a>,
+  host: String,
 ) -> Result<i32> {
-  let optbiz_model = find_one_optbiz(
+  
+  // 获取域名
+  let domain_model = find_one_domain(
     ctx,
-    OptbizSearch {
-      lbl: "企微应用-同步通讯录".to_string().into(),
+    DomainSearch {
+      lbl: host.into(),
       ..Default::default()
     }.into(),
     None,
     None,
   ).await?;
-  let optbiz_model = validate_option_optbiz(
+  let domain_model = validate_option_domain(
     ctx,
-    optbiz_model,
+    domain_model
   ).await?;
-  validate_is_enabled_optbiz(
+  validate_is_enabled_domain(
     ctx,
-    &optbiz_model,
+    &domain_model,
   ).await?;
   
-  let wxw_app_lbl = optbiz_model.val;
+  let domain_id = domain_model.id;
+  
   let wxw_app_model = find_one_wxw_app(
     ctx,
     WxwAppSearch {
-      lbl: wxw_app_lbl.clone().into(),
+      domain_id: vec![domain_id].into(),
       ..Default::default()
     }.into(),
     None,

@@ -26,10 +26,12 @@ pub async fn wxw_login_by_code<'a>(
 /// 同步企业微信用户
 pub async fn wxw_sync_usr<'a>(
   ctx: &mut impl Ctx<'a>,
+  host: String,
 ) -> Result<i32> {
   
   let res = wxw_usr_service::wxw_sync_usr(
     ctx,
+    host,
   ).await?;
   
   Ok(res)
