@@ -41,16 +41,14 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
     - 第43行: `std::env::set_var("RUST_LOG", "[工程名]=info");`
     - 第54行: `let file_appender = tracing_appender::rolling::daily(log_path, "[工程名].log");`
     - 第75行: `let file_appender = tracing_appender::rolling::daily(log_path, "[工程名].log");`
-4. `src\common\script\publish.js`
-    - 第69行: ```cmd += ` ; chmod -R 755 ${ publishPath }/rust/[工程名]`;```
-5. `src\common\script\build.js`
+4. `src\common\script\build.js`
     - 第77行: ```await remove(`${ buildDir }/rust/[工程名]`);```
     - 第78行: ```await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/[工程名]`, `${ buildDir }/rust/[工程名]`);```
-6. `.vscode\launch.json`
+5. `.vscode\launch.json`
     - 第8行: `"name": "[工程名]",`
-7. `.env`
+6. `.env`
     - 第1行: `RUST_LOG="[工程名]=info"`
     - 第6行: `server_title = "[工程名]"`
-8. `.env.prod`
+7. `.env.prod`
     - 第1行: `RUST_LOG="[工程名]=info"`
     - 第8行: `server_title = "[工程名]"`
