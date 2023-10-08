@@ -12,7 +12,7 @@
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
     "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
     "comrak": "https://deno.land/x/comrak@0.1.1/mod.ts",
-    "dayjs": "https://deno.land/x/sail_dayjs@2.29.2/mod.ts",
+    "dayjs": "https://esm.sh/dayjs@1.11.10",
     "csv": "https://deno.land/x/csv@v0.8.0/mod.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
     "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
