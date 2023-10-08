@@ -476,7 +476,7 @@
           </template>
           
           <!-- 应发工资(元) -->
-          <template v-else-if="'gross_pay' === col.prop && showBuildIn">
+          <template v-else-if="'gross_pay' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -485,7 +485,7 @@
           </template>
           
           <!-- 代缴社保(元) -->
-          <template v-else-if="'social_security' === col.prop && showBuildIn">
+          <template v-else-if="'social_security' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -494,7 +494,7 @@
           </template>
           
           <!-- 代缴个税(元) -->
-          <template v-else-if="'individual_tax' === col.prop && showBuildIn">
+          <template v-else-if="'individual_tax' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -503,7 +503,7 @@
           </template>
           
           <!-- 个人自付(元) -->
-          <template v-else-if="'self_pay' === col.prop && showBuildIn">
+          <template v-else-if="'self_pay' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -512,7 +512,7 @@
           </template>
           
           <!-- 实发工资(元) -->
-          <template v-else-if="'net_pay' === col.prop && showBuildIn">
+          <template v-else-if="'net_pay' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
