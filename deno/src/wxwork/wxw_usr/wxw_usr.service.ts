@@ -197,7 +197,7 @@ async function _wxwSyncUsr() {
   );
   await validateIsEnabledOptbiz(optbizModel);
   
-  const wxw_app_lbl = optbizModel.lbl;
+  const wxw_app_lbl = optbizModel.val;
   if (!wxw_app_lbl) {
     throw `业务选项未配置 企微应用-同步通讯录 的企微应用名称`;
   }
