@@ -1,6 +1,7 @@
 // npm run build -- -- uni
 const child_process = require("node:child_process");
 const minimist = require("minimist");
+const ecosystem = require(`${ __dirname }/../../../ecosystem.config.js`);
 
 const {
   copy,
@@ -16,6 +17,7 @@ const target = argv.target || "";
 const projectDir = `${ __dirname }/../../../../`;
 const buildDir = process.cwd() + "/../build/" + target;
 const commands = (argv.command || "").split(",").filter((v) => v);
+const projectName = ecosystem.apps[0].name;
 
 async function copyEnv() {
   console.log("copyEnv");
@@ -67,15 +69,15 @@ async function compile() {
   // cmd += `rustup update`;
   // cmd += ` && rustup target add x86_64-unknown-linux-musl`;
   // cmd += ` && cargo build --release --target=x86_64-unknown-linux-musl`;
-  cmd += `cargo build --release --target=x86_64-unknown-linux-musl`;
+  cmd += `cargo build --bin ${ projectName } --release --target=x86_64-unknown-linux-musl`;
   cmd += `"`;
   child_process.execSync(cmd, {
     cwd,
     stdio: "inherit",
   });
   await mkdir(`${ buildDir }/rust`, { recursive: true });
-  await remove(`${ buildDir }/rust/rust4xh4hrm`);
-  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/rust4xh4hrm`, `${ buildDir }/rust/rust4xh4hrm`);
+  await remove(`${ buildDir }/rust/${ projectName }`);
+  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/${ projectName }`, `${ buildDir }/rust/${ projectName }`);
 }
 
 // async function publish() {
