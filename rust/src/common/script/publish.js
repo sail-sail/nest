@@ -30,12 +30,12 @@ console.log(publishPath);
   let data;
   
   try {
-    const cmd = `mkdir ${ publishPathTmp }`;
+    const cmd = `mkdir -p ${ publishPathTmp }`;
     console.log(cmd);
     data = await ssh.exec(cmd);
     console.log(data);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
   }
   
   const treeDir = async function(dir) {
@@ -64,14 +64,14 @@ console.log(publishPath);
     cmd += ` ; rm -rf ${ publishPath }/pc`
     cmd += ` ; rm -rf ${ publishPath }/rust`
     cmd += ` ; rm -rf ${ publishPath }/uni`
-    cmd += ` ; mkdir ${ publishPath }`;
+    cmd += ` ; mkdir -p ${ publishPath }`;
     cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
     cmd += ` ; rmdir ${ publishPathTmp }`;
-    cmd += ` ; chmod -R 755 ${ publishPath }/rust/rust4xh4hrm`;
+    cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ projectName }`;
     cmd += ` ; cd ${ publishPath }/rust/ && pm2 start`;
     data = await ssh.exec(cmd);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
   }
   
   if (data) {
