@@ -1603,13 +1603,17 @@ pub async fn validate_is_enabled<'a>(
   model: &OptbizModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let mut map = HashMap::new();
-    map.insert("0".to_owned(), "业务选项".to_owned());
-    let err_msg = i18n_dao::ns(
+    let msg0 = i18n_dao::ns(
       ctx,
-      "{0} 已禁用".to_owned(),
-      map.into(),
+      "业务选项".to_owned(),
+      None,
     ).await?;
+    let msg1 = i18n_dao::ns(
+      ctx,
+      "已禁用".to_owned(),
+      None,
+    ).await?;
+    let err_msg = msg0 + &msg1;
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(())
@@ -1623,13 +1627,17 @@ pub async fn validate_option<'a, T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let mut map = HashMap::new();
-    map.insert("0".to_owned(), "业务选项".to_owned());
-    let err_msg = i18n_dao::ns(
+    let msg0 = i18n_dao::ns(
       ctx,
-      "{0} 不存在".to_owned(),
-      map.into(),
+      "业务选项".to_owned(),
+      None,
     ).await?;
+    let msg1 = i18n_dao::ns(
+      ctx,
+      "不存在".to_owned(),
+      None,
+    ).await?;
+    let err_msg = msg0 + &msg1;
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(model.unwrap())
