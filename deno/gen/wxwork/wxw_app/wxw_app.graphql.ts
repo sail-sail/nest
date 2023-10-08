@@ -13,6 +13,10 @@ type WxwAppModel {
   corpid: String!
   "应用ID"
   agentid: String!
+  "可信域名"
+  domain_id: String!
+  "可信域名"
+  domain_id_lbl: String
   "应用密钥"
   corpsecret: String!
   "通讯录密钥"
@@ -39,6 +43,10 @@ type WxwAppFieldComment {
   corpid: String!
   "应用ID"
   agentid: String!
+  "可信域名"
+  domain_id: String!
+  "可信域名"
+  domain_id_lbl: String!
   "应用密钥"
   corpsecret: String!
   "通讯录密钥"
@@ -65,6 +73,10 @@ input WxwAppInput {
   corpid: String
   "应用ID"
   agentid: String
+  "可信域名"
+  domain_id: String
+  "可信域名"
+  domain_id_lbl: String
   "应用密钥"
   corpsecret: String
   "通讯录密钥"
@@ -98,6 +110,9 @@ input WxwAppSearch {
   "应用ID"
   agentid: String
   agentid_like: String
+  "可信域名"
+  domain_id: [String!]
+  domain_id_is_null: Boolean
   "锁定"
   is_locked: [Int!]
   "启用"

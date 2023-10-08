@@ -11,6 +11,7 @@ import type {
 } from "#/types";
 
 import type {
+  DomainSearch,
 } from "#/types";
 
 /**
@@ -37,6 +38,8 @@ export async function findAll(
           lbl
           corpid
           agentid
+          domain_id
+          domain_id_lbl
           corpsecret
           contactsecret
           is_locked
@@ -166,6 +169,8 @@ export async function findById(
           lbl
           corpid
           agentid
+          domain_id
+          domain_id_lbl
           corpsecret
           contactsecret
           is_locked
@@ -321,6 +326,51 @@ export async function forceDeleteByIds(
   return res;
 }
 
+export async function findAllDomain(
+  search?: DomainSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDomain: Query["findAllDomain"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDomain(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllDomain;
+  return res;
+}
+
+export async function getDomainList() {
+  const data = await findAllDomain(
+    undefined,
+    {
+    },
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载导入模板
  */
@@ -342,12 +392,17 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             corpid
             agentid
+            domain_id_lbl
             corpsecret
             contactsecret
             is_locked_lbl
             is_enabled_lbl
             order_by
             rem
+          }
+          findAllDomain {
+            id
+            lbl
           }
           getDict(codes: [
             "is_locked",
@@ -402,6 +457,8 @@ export function useExportExcel(routePath: string) {
             lbl
             corpid
             agentid
+            domain_id
+            domain_id_lbl
             corpsecret
             contactsecret
             is_locked
@@ -415,12 +472,16 @@ export function useExportExcel(routePath: string) {
             lbl
             corpid
             agentid
+            domain_id_lbl
             corpsecret
             contactsecret
             is_locked_lbl
             is_enabled_lbl
             order_by
             rem
+          }
+          findAllDomain {
+            lbl
           }
           getDict(codes: [
             "is_locked",
