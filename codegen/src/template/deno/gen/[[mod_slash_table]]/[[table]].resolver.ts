@@ -59,6 +59,14 @@ import Decimal from "decimal.js";<#
 if (hasIsMonth) {
 #>
 
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";<#
+}
+#><#
+if (hasIsMonth) {
+#>
+
 import dayjs from "dayjs";<#
 }
 #>
@@ -192,9 +200,26 @@ export async function create<#=Table_Up#>(
     if (column.isMonth) {
   #>
   // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (!<#=column_name#>_lbl.isValid()) {
+      throw await ns("日期格式错误");
+    }
+    input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+  }
   if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      throw await ns("日期格式错误");
+    }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
   }<#
+      if (column.require) {
+  #> else {
+    throw await ns("日期格式错误");
+  }<#
+      }
+  #><#
     }
   #><#
   }
@@ -314,9 +339,26 @@ export async function updateById<#=Table_Up#>(
     if (column.isMonth) {
   #>
   // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (!<#=column_name#>_lbl.isValid()) {
+      throw await ns("日期格式错误");
+    }
+    input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+  }
   if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      throw await ns("日期格式错误");
+    }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
   }<#
+      if (column.require) {
+  #> else {
+    throw await ns("日期格式错误");
+  }<#
+      }
+  #><#
     }
   #><#
   }
