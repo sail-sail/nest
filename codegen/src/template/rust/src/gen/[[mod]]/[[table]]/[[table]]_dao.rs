@@ -40,9 +40,7 @@ const hasEncrypt = columns.some((column) => {
   return !!column.isEncrypt;
 });
 #>use anyhow::Result;
-use tracing::info;
-
-use std::collections::HashMap;<#
+use tracing::info;<#
 if (hasPassword) {
   
 #>

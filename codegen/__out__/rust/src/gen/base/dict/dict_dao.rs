@@ -1,7 +1,5 @@
 use anyhow::Result;
 use tracing::info;
-
-use std::collections::HashMap;
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
