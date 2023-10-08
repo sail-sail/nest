@@ -693,7 +693,7 @@ pub async fn create<'a>(
   
   let is_encrypt = options.as_ref()
     .map(|item|
-      item.get_is_encrypt()
+      item.get_is_encrypt().unwrap_or(true)
     )
     .unwrap_or(true);
   if is_encrypt {
@@ -911,7 +911,7 @@ pub async fn update_by_id<'a>(
   
   let is_encrypt = options.as_ref()
     .map(|item|
-      item.get_is_encrypt()
+      item.get_is_encrypt().unwrap_or(true)
     )
     .unwrap_or(true);
   if is_encrypt {
