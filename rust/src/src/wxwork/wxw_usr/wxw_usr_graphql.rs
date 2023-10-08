@@ -39,11 +39,13 @@ impl WxwUsrMutation {
   async fn wxw_sync_usr<'a>(
     &self,
     ctx: &Context<'a>,
+    host: String,
   ) -> Result<i32> {
     let mut ctx = CtxImpl::new(ctx).auth()?;
     
     let res = wxw_usr_resolver::wxw_sync_usr(
       &mut ctx,
+      host,
     ).await?;
     
     Ok(res)
