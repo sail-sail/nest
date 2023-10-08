@@ -39,8 +39,10 @@ use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
   dotenv().ok();
+  let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
+  let server_title = server_title.to_str().unwrap();
   if std::env::var_os("RUST_LOG").is_none() {
-    std::env::set_var("RUST_LOG", "rust4wxwork=info");
+    std::env::set_var("RUST_LOG", format!("{}=info", server_title));
   }
   
   #[cfg(debug_assertions)]
@@ -51,7 +53,10 @@ async fn main() -> Result<(), std::io::Error> {
       None
     } else {
       let log_path = log_path.unwrap();
-      let file_appender = tracing_appender::rolling::daily(log_path, "rust4wxwork.log");
+      let file_appender = tracing_appender::rolling::daily(
+        log_path,
+        format!("{}.log", server_title).as_str(),
+      );
       let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
       tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
@@ -72,7 +77,10 @@ async fn main() -> Result<(), std::io::Error> {
       None
     } else {
       let log_path = log_path.unwrap();
-      let file_appender = tracing_appender::rolling::daily(log_path, "rust4wxwork.log");
+      let file_appender = tracing_appender::rolling::daily(
+        log_path,
+        format!("{}.log", server_title).as_str(),
+      );
       let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
       tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
