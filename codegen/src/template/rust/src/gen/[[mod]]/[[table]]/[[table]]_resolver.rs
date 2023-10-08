@@ -188,6 +188,11 @@ pub async fn create<'a>(
     if (column.isMonth) {
   #>
   // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_none() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+    }
+  }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
   }<#
@@ -318,6 +323,11 @@ pub async fn update_by_id<'a>(
     if (column.isMonth) {
   #>
   // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_none() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+    }
+  }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
   }<#
