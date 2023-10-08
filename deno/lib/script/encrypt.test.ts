@@ -1,6 +1,6 @@
 import {
-  encode as base64Encode,
-  decode as base64Decode,
+  encodeBase64,
+  decodeBase64,
 } from "std/encoding/base64.ts";
 
 let key = await crypto.subtle.generateKey(
@@ -28,7 +28,7 @@ const encrypt = await crypto.subtle.encrypt(
   encryptedData,
 );
 
-const str2 = base64Encode(encrypt);
+const str2 = encodeBase64(encrypt);
 
 console.log(str2);
 
@@ -49,7 +49,7 @@ const decrypt = await crypto.subtle.decrypt(
     iv,
   },
   key,
-  base64Decode(str2),
+  decodeBase64(str2),
 );
 
 console.log(new TextDecoder().decode(decrypt));

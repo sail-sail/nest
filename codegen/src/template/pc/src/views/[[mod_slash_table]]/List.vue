@@ -843,7 +843,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           #>
           
           <!-- <#=column_comment#> -->
-          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop && showBuildIn">
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
