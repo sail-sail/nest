@@ -34,6 +34,8 @@ export interface WxwAppFieldComment {
   lbl: string;
   corpid: string;
   agentid: string;
+  domain_id: string;
+  domain_id_lbl: string;
   corpsecret: string;
   contactsecret: string;
   is_locked: string;
