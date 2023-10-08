@@ -39,10 +39,10 @@ import {
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts"
 
 import {
-  findOne as findOneOptbiz,
-  validateOption as validateOptionOptbiz,
-  validateIsEnabled as validateIsEnabledOptbiz,
-} from "/gen/base/optbiz/optbiz.dao.ts";
+  findOne as findOneDomain,
+  validateOption as validateOptionDomain,
+  validateIsEnabled as validateIsEnabledDomain,
+} from "/gen/base/domain/domain.dao.ts";
 
 import {
   shortUuidV4,
@@ -175,36 +175,39 @@ let wxwSyncUsrLock = false;
 /**
  * 企业微信同步企微用户
  */
-export async function wxwSyncUsr() {
+export async function wxwSyncUsr(
+  host: string,
+) {
   if (wxwSyncUsrLock) {
     throw "企微用户正在同步中, 请稍后再试";
   }
   wxwSyncUsrLock = true;
   let num = 0;
   try {
-    num = await _wxwSyncUsr();
+    num = await _wxwSyncUsr(host);
   } finally {
     wxwSyncUsrLock = false;
   }
   return num;
 }
 
-async function _wxwSyncUsr() {
-  const optbizModel = await validateOptionOptbiz(
-    await findOneOptbiz({
-      lbl: "企微应用-同步通讯录",
+async function _wxwSyncUsr(
+  host: string,
+) {
+  // 获取域名
+  const domainModel = await validateOptionDomain(
+    await findOneDomain({
+      lbl: host,
     }),
   );
-  await validateIsEnabledOptbiz(optbizModel);
+  await validateIsEnabledDomain(domainModel);
   
-  const wxw_app_lbl = optbizModel.val;
-  log(`企微应用-同步通讯录: ${ wxw_app_lbl }`);
-  if (!wxw_app_lbl) {
-    throw `业务选项未配置 企微应用-同步通讯录 的企微应用名称`;
-  }
+  const domain_id = domainModel.id;
+  
+  // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
     await findOneWxwApp({
-      lbl: wxw_app_lbl,
+      domain_id: [ domain_id ],
     }),
   );
   await validateIsEnabledWxwApp(wxw_appModel);
