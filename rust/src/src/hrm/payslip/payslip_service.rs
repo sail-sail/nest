@@ -1,25 +1,13 @@
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 
 use crate::common::context::Ctx;
 
-use crate::gen::base::tenant::tenant_dao::{
-  find_by_id as find_by_id_tenant,
-  validate_option as validate_option_tenant,
-  validate_is_enabled as validate_is_enabled_tenant,
-};
 use crate::gen::base::domain::domain_dao::{
   find_one as find_one_domain,
   validate_option as validate_option_domain,
   validate_is_enabled as validate_is_enabled_domain,
 };
 use crate::gen::base::domain::domain_model::DomainSearch;
-
-use crate::gen::base::optbiz::optbiz_dao::{
-  find_one as find_one_optbiz,
-  validate_option as validate_option_optbiz,
-  validate_is_enabled as validate_is_enabled_optbiz,
-};
-use crate::gen::base::optbiz::optbiz_model::OptbizSearch;
 
 use crate::gen::wxwork::wxw_app::wxw_app_dao::{
   find_one as find_one_wxw_app,
@@ -48,33 +36,31 @@ pub async fn send_msg_wxw<'a>(
   host: String,
   ids: Vec<String>,
 ) -> Result<i32> {
-  let optbiz_model = find_one_optbiz(
+  
+  let domain_model = find_one_domain(
     ctx,
-    OptbizSearch {
-      lbl: "企微应用-发送工资条".to_owned().into(),
+    DomainSearch {
+      lbl: host.into(),
       ..Default::default()
     }.into(),
     None,
     None,
   ).await?;
-  let optbiz_model = validate_option_optbiz(
+  let domain_model = validate_option_domain(
     ctx,
-    optbiz_model,
+    domain_model,
   ).await?;
-  validate_is_enabled_optbiz(
+  validate_is_enabled_domain(
     ctx,
-    &optbiz_model,
+    &domain_model,
   ).await?;
   
-  let wxw_app_lbl = optbiz_model.val;
-  if wxw_app_lbl.is_empty() {
-    return Err(anyhow!("业务选项未配置 企微应用-发送工资条 的企微应用名称"));
-  }
+  let domain_id = domain_model.id;
   
   let wxw_app_model = find_one_wxw_app(
     ctx,
     WxwAppSearch {
-      lbl: wxw_app_lbl.into(),
+      domain_id: vec![domain_id].into(),
       ..Default::default()
     }.into(),
     None,
@@ -90,48 +76,6 @@ pub async fn send_msg_wxw<'a>(
   ).await?;
   
   let wxw_app_id = wxw_app_model.id;
-  let tenant_id = wxw_app_model.tenant_id;
-  
-  let tenant_model = find_by_id_tenant(
-    ctx,
-    tenant_id,
-    None,
-  ).await?;
-  let tenant_model = validate_option_tenant(
-    ctx,
-    tenant_model,
-  ).await?;
-  validate_is_enabled_tenant(
-    ctx,
-    &tenant_model,
-  ).await?;
-  
-  let domain_ids = tenant_model.domain_ids;
-  
-  if domain_ids.is_empty() {
-    return Err(anyhow!(
-      "租户未配置域名 {lbl}",
-      lbl = tenant_model.lbl,
-    ));
-  }
-  let domain_model = find_one_domain(
-    ctx,
-    DomainSearch {
-      ids: domain_ids.into(),
-      lbl: host.into(),
-      ..Default::default()
-    }.into(),
-    None,
-    None,
-  ).await?;
-  let domain_model = validate_option_domain(
-    ctx,
-    domain_model,
-  ).await?;
-  validate_is_enabled_domain(
-    ctx,
-    &domain_model,
-  ).await?;
   
   let mut num = 0;
   for id in ids {
