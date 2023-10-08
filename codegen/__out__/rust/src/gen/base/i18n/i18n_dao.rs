@@ -1,7 +1,5 @@
 use anyhow::Result;
 use tracing::info;
-
-use std::collections::HashMap;
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -1181,13 +1179,17 @@ pub async fn validate_option<'a, T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let mut map = HashMap::new();
-    map.insert("0".to_owned(), "国际化".to_owned());
-    let err_msg = i18n_dao::ns(
+    let msg0 = i18n_dao::ns(
       ctx,
-      "{0} 不存在".to_owned(),
-      map.into(),
+      "国际化".to_owned(),
+      None,
     ).await?;
+    let msg1 = i18n_dao::ns(
+      ctx,
+      "不存在".to_owned(),
+      None,
+    ).await?;
+    let err_msg = msg0 + &msg1;
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(model.unwrap())
