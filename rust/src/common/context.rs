@@ -1665,7 +1665,7 @@ pub struct Options {
   
   #[new(default)]
   #[allow(dead_code)]
-  is_encrypt: bool,
+  is_encrypt: Option<bool>,
   
 }
 
@@ -1735,13 +1735,13 @@ impl Options {
   #[allow(dead_code)]
   pub fn set_is_encrypt(self, is_encrypt: bool) -> Self {
     let mut self_ = self;
-    self_.is_encrypt = is_encrypt;
+    self_.is_encrypt = is_encrypt.into();
     self_
   }
   
   #[inline]
   #[allow(dead_code)]
-  pub fn get_is_encrypt(&self) -> bool {
+  pub fn get_is_encrypt(&self) -> Option<bool> {
     self.is_encrypt
   }
   
