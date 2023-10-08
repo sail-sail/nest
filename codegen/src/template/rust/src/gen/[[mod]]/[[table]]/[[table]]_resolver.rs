@@ -63,7 +63,14 @@ const hasDictbiz = columns.some((column) => {
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::src::base::permit::permit_service::use_permit;
+use crate::src::base::permit::permit_service::use_permit;<#
+if (hasIsMonth) {
+#>
+
+use crate::common::context::SrvErr;
+use crate::src::base::i18n::i18n_dao;<#
+}
+#>
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
@@ -190,12 +197,23 @@ pub async fn create<'a>(
   // <#=column_comment#>
   if input.<#=column_name_rust#>.is_none() {
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
     }
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
   }<#
+      if (column.require) {
+  #> else {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "日期格式错误".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }<#
+      }
+  #><#
     }
   #><#
   }
@@ -325,12 +343,23 @@ pub async fn update_by_id<'a>(
   // <#=column_comment#>
   if input.<#=column_name_rust#>.is_none() {
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
     }
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
   }<#
+      if (column.require) {
+  #> else {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "日期格式错误".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
+  }<#
+      }
+  #><#
     }
   #><#
   }
