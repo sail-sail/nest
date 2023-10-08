@@ -95,6 +95,11 @@ pub async fn create<'a>(
   
   let mut input = input;
   // 发放月份
+  if input.pay_month.is_none() {
+    if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+    }
+  }
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
   }
@@ -145,6 +150,11 @@ pub async fn update_by_id<'a>(
   
   let mut input = input;
   // 发放月份
+  if input.pay_month.is_none() {
+    if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+    }
+  }
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
   }
