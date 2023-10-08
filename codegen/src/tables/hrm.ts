@@ -7,6 +7,10 @@ export default defineConfig({
       uniques: [
         [ "pay_month", "lbl" ],
       ],
+      defaultSort: {
+        prop: "pay_month",
+        order: "descending",
+      },
     },
     columns: [
       {
