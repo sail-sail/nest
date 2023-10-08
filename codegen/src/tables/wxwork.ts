@@ -8,6 +8,7 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
         [ "corpid", "agentid" ],
+        [ "domain_id" ],
       ],
     },
     columns: [
@@ -24,6 +25,11 @@ export default defineConfig({
         COLUMN_NAME: "agentid",
         search: true,
         width: 120,
+      },
+      {
+        COLUMN_NAME: "domain_id",
+        width: 220,
+        align: "left",
       },
       {
         COLUMN_NAME: "corpsecret",
@@ -165,10 +171,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "title",
         width: 280,
+        align: "left",
       },
       {
         COLUMN_NAME: "description",
         width: 380,
+        align: "left",
       },
       {
         COLUMN_NAME: "url",
