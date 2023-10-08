@@ -11,8 +11,8 @@ import {
 } from "/lib/context.ts";
 
 import {
-  encode as base64Encode,
-  decode as base64Decode,
+  encodeBase64,
+  decodeBase64,
 } from "std/encoding/base64.ts";
 
 import { getEnv } from "/lib/env.ts";
@@ -246,7 +246,7 @@ export async function encrypt(
     cryptoKey,
     new TextEncoder().encode(salt + str),
   );
-  return ivStr + base64Encode(buf);
+  return ivStr + encodeBase64(buf);
 }
 
 /**
@@ -268,7 +268,7 @@ export async function decrypt(
       iv,
     },
     cryptoKey,
-    base64Decode(str.substring(16)),
+    decodeBase64(str.substring(16)),
   );
   return (new TextDecoder().decode(buf)).substring(16);
 }
