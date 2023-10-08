@@ -1,9 +1,7 @@
-require("dotenv").config();
-
 module.exports = {
   apps: [{
-    name: process.env.server_title,
-    script: `./${ process.env.server_title }`,
+    name: "rust4wxwork",
+    script: "./rust4wxwork",
     instances: 1,
     autorestart: true,
     watch: false,
