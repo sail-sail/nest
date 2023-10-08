@@ -1,7 +1,5 @@
 use anyhow::Result;
 use tracing::info;
-
-use std::collections::HashMap;
 use crate::common::auth::auth_dao::get_password;
 use crate::common::util::string::*;
 
