@@ -17,12 +17,6 @@ import {
 } from "/gen/wxwork/wxw_usr/wxw_usr.dao.ts"
 
 import {
-  findById as findByIdTenant,
-  validateOption as validateOptionTenant,
-  validateIsEnabled as validateIsEnabledTenant,
-} from "/gen/base/tenant/tenant.dao.ts";
-
-import {
   findOne as findOneDomain,
   validateOption as validateOptionDomain,
   validateIsEnabled as validateIsEnabledDomain,
@@ -32,12 +26,6 @@ import {
   sendCardMsg,
 } from "/src/wxwork/wxw_msg/wxw_msg.dao.ts";
 
-import {
-  findOne as findOneOptbiz,
-  validateOption as validateOptionOptbiz,
-  validateIsEnabled as validateIsEnabledOptbiz,
-} from "/gen/base/optbiz/optbiz.dao.ts";
-
 /**
  * 发送企微工资条消息
  */
@@ -45,42 +33,27 @@ export async function sendMsgWxw(
   host: string,
   ids: string[],
 ) {
-  const optbizModel = await validateOptionOptbiz(
-    await findOneOptbiz({
-      lbl: "企微应用-发送工资条",
+  
+  // 获取域名
+  const domainModel = await validateOptionDomain(
+    await findOneDomain({
+      lbl: host,
     }),
   );
-  await validateIsEnabledOptbiz(optbizModel);
+  await validateIsEnabledDomain(domainModel);
   
-  const wxw_app_lbl = optbizModel.val;
-  if (!wxw_app_lbl) {
-    throw `业务选项未配置 企微应用-发送工资条 的企微应用名称`;
-  }
+  const domain_id = domainModel.id;
+  
+  // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
     await findOneWxwApp({
-      lbl: wxw_app_lbl,
+      domain_id: [ domain_id ],
     }),
   );
   await validateIsEnabledWxwApp(wxw_appModel);
   
   const wxw_app_id = wxw_appModel.id;
-  const tenant_id = wxw_appModel.tenant_id;
-  const tenantModel = await validateOptionTenant(
-    await findByIdTenant(tenant_id),
-  );
-  await validateIsEnabledTenant(tenantModel);
   
-  const domain_ids = tenantModel.domain_ids;
-  if (!domain_ids || domain_ids.length === 0) {
-    throw `租户未配置域名 ${ tenantModel.lbl }`;
-  }
-  const domainModel = await validateOptionDomain(
-    await findOneDomain({
-      ids: domain_ids,
-      lbl: host,
-    }),
-  );
-  await validateIsEnabledDomain(domainModel);
   let num = 0;
   for (const id of ids) {
     const payslipModel = await findByIdPayslip(id);
