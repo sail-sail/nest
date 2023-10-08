@@ -687,6 +687,8 @@ export async function importModels(
       break;
     }
     
+    percentage.value = Math.floor((i + 1) / models.length * 100);
+    
     const item = models[i];
     
     opt = opt || { };
@@ -705,7 +707,6 @@ export async function importModels(
       failErrMsgs.push(await nsAsync(`第 {0} 行导入失败: {1}`, i + 1, err));
     }
     
-    percentage.value = Math.floor((i + 1) / models.length * 100);
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
