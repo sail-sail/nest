@@ -2,6 +2,10 @@ import {
   useContext,
 } from "/lib/context.ts";
 
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
+
 import dayjs from "dayjs";
 
 import type {
@@ -89,8 +93,21 @@ export async function createPayslip(
   unique_type?: UniqueType,
 ): Promise<string> {
   // 发放月份
+  if (!input.pay_month && input.pay_month_lbl) {
+    const pay_month_lbl = dayjs(input.pay_month_lbl);
+    if (!pay_month_lbl.isValid()) {
+      throw await ns("日期格式错误");
+    }
+    input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
+  }
   if (input.pay_month) {
+    const pay_month = dayjs(input.pay_month);
+    if (!pay_month.isValid()) {
+      throw await ns("日期格式错误");
+    }
     input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  } else {
+    throw await ns("日期格式错误");
   }
   
   const {
@@ -121,8 +138,21 @@ export async function updateByIdPayslip(
   input: PayslipInput,
 ): Promise<string> {
   // 发放月份
+  if (!input.pay_month && input.pay_month_lbl) {
+    const pay_month_lbl = dayjs(input.pay_month_lbl);
+    if (!pay_month_lbl.isValid()) {
+      throw await ns("日期格式错误");
+    }
+    input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
+  }
   if (input.pay_month) {
+    const pay_month = dayjs(input.pay_month);
+    if (!pay_month.isValid()) {
+      throw await ns("日期格式错误");
+    }
     input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  } else {
+    throw await ns("日期格式错误");
   }
   const context = useContext();
   
