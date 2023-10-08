@@ -4,6 +4,9 @@ use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
+use crate::common::context::SrvErr;
+use crate::src::base::i18n::i18n_dao;
+
 use super::payslip_model::*;
 use super::payslip_service;
 
@@ -97,11 +100,18 @@ pub async fn create<'a>(
   // 发放月份
   if input.pay_month.is_none() {
     if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
     }
   }
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
+  } else {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "日期格式错误".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
   }
   let input = input;
   
@@ -152,11 +162,18 @@ pub async fn update_by_id<'a>(
   // 发放月份
   if input.pay_month.is_none() {
     if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl ,"%Y-%m-%d %H:%M:%S")?.into();
+      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
     }
   }
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
+  } else {
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "日期格式错误".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(err_msg).into());
   }
   let input = input;
   
