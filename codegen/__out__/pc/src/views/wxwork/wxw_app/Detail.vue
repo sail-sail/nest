@@ -87,6 +87,26 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.domain_id == null)">
+          <el-form-item
+            :label="n('可信域名')"
+            prop="domain_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.domain_id"
+              :method="getDomainList"
+              :options-map="((item: DomainModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('可信域名') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.corpsecret == null)">
           <el-form-item
             :label="n('应用密钥')"
@@ -227,7 +247,12 @@ import {
 
 import type {
   WxwAppInput,
+  DomainModel,
 } from "#/types";
+
+import {
+  getDomainList,
+} from "./Api";
 
 const emit = defineEmits<{
   nextId: [
@@ -630,6 +655,7 @@ async function onInitI18ns() {
     "名称",
     "企业ID",
     "应用ID",
+    "可信域名",
     "应用密钥",
     "通讯录密钥",
     "锁定",
