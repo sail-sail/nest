@@ -146,6 +146,32 @@ async fn get_where_query<'a>(
     }
   }
   {
+    let domain_id: Vec<String> = match &search {
+      Some(item) => item.domain_id.clone().unwrap_or_default(),
+      None => Default::default(),
+    };
+    if !domain_id.is_empty() {
+      let arg = {
+        let mut items = Vec::with_capacity(domain_id.len());
+        for item in domain_id {
+          args.push(item.into());
+          items.push("?");
+        }
+        items.join(",")
+      };
+      where_query += &format!(" and domain_id_lbl.id in ({})", arg);
+    }
+  }
+  {
+    let domain_id_is_null: bool = match &search {
+      Some(item) => item.domain_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if domain_id_is_null {
+      where_query += " and domain_id_lbl.id is null";
+    }
+  }
+  {
     let corpsecret = match &search {
       Some(item) => item.corpsecret.clone(),
       None => None,
@@ -252,7 +278,9 @@ async fn get_where_query<'a>(
 }
 
 async fn get_from_query() -> Result<String> {
-  let from_query = r#"wxwork_wxw_app t"#.to_owned();
+  let from_query = r#"wxwork_wxw_app t
+    left join base_domain domain_id_lbl
+      on domain_id_lbl.id = t.domain_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -280,6 +308,7 @@ pub async fn find_all<'a>(
   let sql = format!(r#"
     select
       t.*
+      ,domain_id_lbl.lbl domain_id_lbl
     from
       {from_query}
     where
@@ -410,6 +439,8 @@ pub async fn get_field_comments<'a>(
     "名称".into(),
     "企业ID".into(),
     "应用ID".into(),
+    "可信域名".into(),
+    "可信域名".into(),
     "应用密钥".into(),
     "通讯录密钥".into(),
     "锁定".into(),
@@ -438,14 +469,16 @@ pub async fn get_field_comments<'a>(
     lbl: vec[1].to_owned(),
     corpid: vec[2].to_owned(),
     agentid: vec[3].to_owned(),
-    corpsecret: vec[4].to_owned(),
-    contactsecret: vec[5].to_owned(),
-    is_locked: vec[6].to_owned(),
-    is_locked_lbl: vec[7].to_owned(),
-    is_enabled: vec[8].to_owned(),
-    is_enabled_lbl: vec[9].to_owned(),
-    order_by: vec[10].to_owned(),
-    rem: vec[11].to_owned(),
+    domain_id: vec[4].to_owned(),
+    domain_id_lbl: vec[5].to_owned(),
+    corpsecret: vec[6].to_owned(),
+    contactsecret: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
+    order_by: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
   };
   Ok(field_comments)
 }
@@ -564,6 +597,28 @@ pub async fn find_by_unique<'a>(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.domain_id.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = WxwAppSearch {
+      domain_id: search.domain_id,
+      ..Default::default()
+    };
+    
+    find_all(
+      ctx,
+      search.into(),
+      None,
+      None,
+      None,
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -586,6 +641,12 @@ fn equals_by_unique(
   if
     input.corpid.as_ref().is_some() && input.corpid.as_ref().unwrap() == &model.corpid &&
     input.agentid.as_ref().is_some() && input.agentid.as_ref().unwrap() == &model.agentid
+  {
+    return true;
+  }
+  
+  if
+    input.domain_id.as_ref().is_some() && input.domain_id.as_ref().unwrap() == &model.domain_id
   {
     return true;
   }
@@ -671,6 +732,28 @@ pub async fn set_id_by_lbl<'a>(
         .map(|item| {
           item.val.parse().unwrap_or_default()
         });
+    }
+  }
+  
+  // 可信域名
+  if input.domain_id_lbl.is_some()
+    && !input.domain_id_lbl.as_ref().unwrap().is_empty()
+    && input.domain_id.is_none()
+  {
+    input.domain_id_lbl = input.domain_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::domain::domain_dao::find_one(
+      ctx,
+      crate::gen::base::domain::domain_model::DomainSearch {
+        lbl: input.domain_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.domain_id = model.id.into();
     }
   }
   
@@ -798,6 +881,12 @@ pub async fn create<'a>(
     sql_fields += ",agentid";
     sql_values += ",?";
     args.push(agentid.into());
+  }
+  // 可信域名
+  if let Some(domain_id) = input.domain_id {
+    sql_fields += ",domain_id";
+    sql_values += ",?";
+    args.push(domain_id.into());
   }
   // 应用密钥
   if let Some(corpsecret) = input.corpsecret {
@@ -1027,6 +1116,12 @@ pub async fn update_by_id<'a>(
     sql_fields += ",agentid = ?";
     args.push(agentid.into());
   }
+  // 可信域名
+  if let Some(domain_id) = input.domain_id {
+    field_num += 1;
+    sql_fields += ",domain_id = ?";
+    args.push(domain_id.into());
+  }
   // 应用密钥
   if let Some(corpsecret) = input.corpsecret {
     field_num += 1;
@@ -1109,6 +1204,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
   let table = "wxwork_wxw_app";
   vec![
     table,
+    "base_domain",
   ]
 }
 
@@ -1561,6 +1657,13 @@ pub fn validate(
   chars_max_length(
     input.agentid.clone(),
     7,
+    "",
+  )?;
+  
+  // 可信域名
+  chars_max_length(
+    input.domain_id.clone(),
+    22,
     "",
   )?;
   

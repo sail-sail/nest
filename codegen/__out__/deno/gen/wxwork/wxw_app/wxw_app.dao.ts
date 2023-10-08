@@ -72,6 +72,8 @@ import type {
   WxwAppFieldComment,
 } from "./wxw_app.model.ts";
 
+import * as domainDao from "/gen/base/domain/domain.dao.ts";
+
 const route_path = "/wxwork/wxw_app";
 
 async function getWhereQuery(
@@ -127,6 +129,18 @@ async function getWhereQuery(
   if (isNotEmpty(search?.agentid_like)) {
     whereQuery += ` and t.agentid like ${ args.push(sqlLike(search?.agentid_like) + "%") }`;
   }
+  if (search?.domain_id && !Array.isArray(search?.domain_id)) {
+    search.domain_id = [ search.domain_id ];
+  }
+  if (search?.domain_id && search?.domain_id.length > 0) {
+    whereQuery += ` and domain_id_lbl.id in ${ args.push(search.domain_id) }`;
+  }
+  if (search?.domain_id === null) {
+    whereQuery += ` and domain_id_lbl.id is null`;
+  }
+  if (search?.domain_id_is_null) {
+    whereQuery += ` and domain_id_lbl.id is null`;
+  }
   if (search?.is_locked && !Array.isArray(search?.is_locked)) {
     search.is_locked = [ search.is_locked ];
   }
@@ -172,6 +186,8 @@ async function getWhereQuery(
 async function getFromQuery() {
   let fromQuery = `
     wxwork_wxw_app t
+    left join base_domain domain_id_lbl
+      on domain_id_lbl.id = t.domain_id
   `;
   return fromQuery;
 }
@@ -235,6 +251,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `
     select t.*
+      ,domain_id_lbl.lbl domain_id_lbl
     from
       ${ await getFromQuery() }
     where
@@ -331,6 +348,8 @@ export async function getFieldComments(): Promise<WxwAppFieldComment> {
     lbl: await n("名称"),
     corpid: await n("企业ID"),
     agentid: await n("应用ID"),
+    domain_id: await n("可信域名"),
+    domain_id_lbl: await n("可信域名"),
     corpsecret: await n("应用密钥"),
     contactsecret: await n("通讯录密钥"),
     is_locked: await n("锁定"),
@@ -387,6 +406,21 @@ export async function findByUnique(
     });
     models.push(...modelTmps);
   }
+  {
+    if (search0.domain_id == null) {
+      return [ ];
+    }
+    let domain_id: string[] = [ ];
+    if (!Array.isArray(search0.domain_id)) {
+      domain_id.push(search0.domain_id);
+    } else {
+      domain_id = search0.domain_id;
+    }
+    const modelTmps = await findAll({
+      domain_id,
+    });
+    models.push(...modelTmps);
+  }
   return models;
 }
 
@@ -411,6 +445,11 @@ export function equalsByUnique(
   if (
     oldModel.corpid === model.corpid &&
     oldModel.agentid === model.agentid
+  ) {
+    return true;
+  }
+  if (
+    oldModel.domain_id === model.domain_id
   ) {
     return true;
   }
@@ -606,6 +645,13 @@ export async function validate(
     fieldComments.agentid,
   );
   
+  // 可信域名
+  await validators.chars_max_length(
+    input.domain_id,
+    22,
+    fieldComments.domain_id,
+  );
+  
   // 应用密钥
   await validators.chars_max_length(
     input.corpsecret,
@@ -667,6 +713,15 @@ export async function create(
     "is_locked",
     "is_enabled",
   ]);
+  
+  // 可信域名
+  if (isNotEmpty(input.domain_id_lbl) && input.domain_id === undefined) {
+    input.domain_id_lbl = String(input.domain_id_lbl).trim();
+    const domainModel = await domainDao.findOne({ lbl: input.domain_id_lbl });
+    if (domainModel) {
+      input.domain_id = domainModel.id;
+    }
+  }
   
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
@@ -748,6 +803,9 @@ export async function create(
   if (input.agentid !== undefined) {
     sql += `,agentid`;
   }
+  if (input.domain_id !== undefined) {
+    sql += `,domain_id`;
+  }
   if (input.corpsecret !== undefined) {
     sql += `,corpsecret`;
   }
@@ -801,6 +859,9 @@ export async function create(
   if (input.agentid !== undefined) {
     sql += `,${ args.push(input.agentid) }`;
   }
+  if (input.domain_id !== undefined) {
+    sql += `,${ args.push(input.domain_id) }`;
+  }
   if (input.corpsecret !== undefined) {
     sql += `,${ args.push(input.corpsecret) }`;
   }
@@ -837,6 +898,7 @@ export async function delCache() {
   
   await delCacheCtx(`dao.sql.${ table }`);
   const foreignTables: string[] = [
+    "base_domain",
   ];
   for (let k = 0; k < foreignTables.length; k++) {
     const foreignTable = foreignTables[k];
@@ -937,6 +999,15 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id);
   }
   
+  // 可信域名
+  if (isNotEmpty(input.domain_id_lbl) && input.domain_id === undefined) {
+    input.domain_id_lbl = String(input.domain_id_lbl).trim();
+    const domainModel = await domainDao.findOne({ lbl: input.domain_id_lbl });
+    if (domainModel) {
+      input.domain_id = domainModel.id;
+    }
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -995,6 +1066,12 @@ export async function updateById(
   if (input.agentid !== undefined) {
     if (input.agentid != oldModel.agentid) {
       sql += `agentid = ${ args.push(input.agentid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.domain_id !== undefined) {
+    if (input.domain_id != oldModel.domain_id) {
+      sql += `domain_id = ${ args.push(input.domain_id) },`;
       updateFldNum++;
     }
   }

@@ -459,6 +459,15 @@
             </el-table-column>
           </template>
           
+          <!-- 可信域名 -->
+          <template v-else-if="'domain_id_lbl' === col.prop && (showBuildIn || builtInSearch?.domain_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 应用密钥 -->
           <template v-else-if="'corpsecret' === col.prop">
             <el-table-column
@@ -721,6 +730,8 @@ const props = defineProps<{
   corpid_like?: string; // 企业ID
   agentid?: string; // 应用ID
   agentid_like?: string; // 应用ID
+  domain_id?: string|string[]; // 可信域名
+  domain_id_lbl?: string|string[]; // 可信域名
   is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
   order_by?: string; // 排序
@@ -734,6 +745,8 @@ const builtInSearchType: { [key: string]: string } = {
   isPagination: "0|1",
   isLocked: "0|1",
   ids: "string[]",
+  domain_id: "string[]",
+  domain_id_lbl: "string[]",
   is_locked: "number[]",
   is_locked_lbl: "string[]",
   is_enabled: "number[]",
@@ -877,6 +890,15 @@ function getTableColumns(): ColumnType[] {
       prop: "agentid",
       width: 120,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "可信域名",
+      prop: "domain_id_lbl",
+      sortBy: "domain_id",
+      width: 220,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1164,6 +1186,7 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("企业ID") ]: "corpid",
     [ await nAsync("应用ID") ]: "agentid",
+    [ await nAsync("可信域名") ]: "domain_id_lbl",
     [ await nAsync("应用密钥") ]: "corpsecret",
     [ await nAsync("通讯录密钥") ]: "contactsecret",
     [ await nAsync("锁定") ]: "is_locked_lbl",
@@ -1194,6 +1217,7 @@ async function onImportExcel() {
           "lbl": "string",
           "corpid": "string",
           "agentid": "string",
+          "domain_id_lbl": "string",
           "corpsecret": "string",
           "contactsecret": "string",
           "is_locked_lbl": "number",
@@ -1499,6 +1523,7 @@ async function initI18nsEfc() {
     "名称",
     "企业ID",
     "应用ID",
+    "可信域名",
     "应用密钥",
     "通讯录密钥",
     "锁定",
