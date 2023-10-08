@@ -460,7 +460,7 @@
           </template>
           
           <!-- 应用密钥 -->
-          <template v-else-if="'corpsecret' === col.prop && showBuildIn">
+          <template v-else-if="'corpsecret' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -469,7 +469,7 @@
           </template>
           
           <!-- 通讯录密钥 -->
-          <template v-else-if="'contactsecret' === col.prop && showBuildIn">
+          <template v-else-if="'contactsecret' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
