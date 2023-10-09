@@ -198,6 +198,20 @@ pub async fn create<'a>(
   if input.<#=column_name_rust#>.is_none() {
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
       input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.<#=column_name_rust#>.is_none() {
+        let table_comment = i18n_dao::ns(
+          ctx,
+          "<#=table_comment#>".to_owned(),
+          None,
+        ).await?;
+        
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+      }
     }
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
@@ -205,12 +219,18 @@ pub async fn create<'a>(
   }<#
       if (column.require) {
   #> else {
-    let err_msg = i18n_dao::ns(
+    let table_comment = i18n_dao::ns(
       ctx,
-      "日期格式错误".to_owned(),
+      "<#=table_comment#>".to_owned(),
       None,
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
   }<#
       }
   #><#
@@ -344,6 +364,20 @@ pub async fn update_by_id<'a>(
   if input.<#=column_name_rust#>.is_none() {
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
       input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.<#=column_name_rust#>.is_none() {
+        let table_comment = i18n_dao::ns(
+          ctx,
+          "<#=table_comment#>".to_owned(),
+          None,
+        ).await?;
+        
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+      }
     }
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
