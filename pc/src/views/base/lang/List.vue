@@ -1161,7 +1161,7 @@ async function onImportExcel() {
         key_types: {
           "code": "string",
           "lbl": "string",
-          "is_enabled_lbl": "number",
+          "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
         },

@@ -1354,7 +1354,7 @@ async function onImportExcel() {
           "individual_tax": "string",
           "self_pay": "string",
           "net_pay": "string",
-          "is_locked_lbl": "number",
+          "is_locked_lbl": "string",
           "rem": "string",
         },
       },
