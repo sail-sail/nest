@@ -2,6 +2,7 @@ schema:
   - './gen/**/*.graphql.ts'
   - './src/**/*.graphql.ts'
   - './lib/oak/gql.ts'
+  - './lib/**/*.graphql.ts'
 generates:
   ./gen/types.ts:
     plugins:
