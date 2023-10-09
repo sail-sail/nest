@@ -97,8 +97,6 @@ export async function createPayslip(
     const pay_month_lbl = dayjs(input.pay_month_lbl);
     if (pay_month_lbl.isValid()) {
       input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.pay_month) {
@@ -143,8 +141,6 @@ export async function updateByIdPayslip(
     const pay_month_lbl = dayjs(input.pay_month_lbl);
     if (pay_month_lbl.isValid()) {
       input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.pay_month) {

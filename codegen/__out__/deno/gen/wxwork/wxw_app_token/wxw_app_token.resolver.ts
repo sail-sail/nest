@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -92,22 +86,6 @@ export async function createWxwAppToken(
   input: WxwAppTokenInput,
   unique_type?: UniqueType,
 ): Promise<string> {
-  // 令牌创建时间
-  if (!input.token_time && input.token_time_lbl) {
-    const token_time_lbl = dayjs(input.token_time_lbl);
-    if (token_time_lbl.isValid()) {
-      input.token_time = token_time_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("企微应用接口凭据") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.token_time) {
-    const token_time = dayjs(input.token_time);
-    if (!token_time.isValid()) {
-      throw `${ await ns("企微应用接口凭据") } ${ await ns("日期格式错误") }`;
-    }
-    input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
-  }
   
   const {
     validate,
@@ -136,22 +114,6 @@ export async function updateByIdWxwAppToken(
   id: string,
   input: WxwAppTokenInput,
 ): Promise<string> {
-  // 令牌创建时间
-  if (!input.token_time && input.token_time_lbl) {
-    const token_time_lbl = dayjs(input.token_time_lbl);
-    if (token_time_lbl.isValid()) {
-      input.token_time = token_time_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("企微应用接口凭据") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.token_time) {
-    const token_time = dayjs(input.token_time);
-    if (!token_time.isValid()) {
-      throw `${ await ns("企微应用接口凭据") } ${ await ns("日期格式错误") }`;
-    }
-    input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
-  }
   const context = useContext();
   
   context.is_tran = true;
