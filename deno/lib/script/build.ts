@@ -1,3 +1,4 @@
+// npm run build -- -- --command uni
 import "/lib/env.ts";
 import { getEnv, getEnvs } from "/lib/env.ts";
 
