@@ -13,3 +13,17 @@ export async function sendMsgWxw(
   const num = await sendMsgWxw(host, ids);
   return num;
 }
+
+/**
+ * 一键发送企微工资条消息
+ */
+export async function sendMsgWxwOneKey(
+  host: string,
+) {
+  const {
+    sendMsgWxwOneKey,
+  } = await import("./payslip.service.ts");
+  
+  const num = await sendMsgWxwOneKey(host);
+  return num;
+}

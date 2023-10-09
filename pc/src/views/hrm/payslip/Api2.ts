@@ -26,3 +26,26 @@ export async function sendMsgWxw(
   const num = data.sendMsgWxw;
   return num;
 }
+
+/**
+ * 一键发送企微工资条
+ */
+export async function sendMsgWxwOneKey(
+  host: string,
+  opt?: GqlOpt,
+) {
+  const data: {
+    sendMsgWxwOneKey: Mutation["sendMsgWxwOneKey"];
+  } = await query({
+    query: /* GraphQL */ `
+      mutation($host: String!) {
+        sendMsgWxwOneKey(host: $host)
+      }
+    `,
+    variables: {
+      host,
+    },
+  }, opt);
+  const num = data.sendMsgWxwOneKey;
+  return num;
+}

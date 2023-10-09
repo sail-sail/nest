@@ -196,6 +196,18 @@
       </el-button>
       
       <el-button
+        v-if="permit('sendMsgWxwOneKey') && !isLocked"
+        plain
+        type="primary"
+        @click="onSendMsgWxwOneKey"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template>
+        <span>{{ ns('一键企微发送') }}</span>
+      </el-button>
+      
+      <el-button
         v-if="permit('add') && !isLocked"
         plain
         type="primary"
@@ -687,6 +699,7 @@ import {
 
 import {
   sendMsgWxw,
+  sendMsgWxwOneKey,
 } from "./Api2";
 
 import type {
@@ -752,6 +765,17 @@ async function onSendMsgWxw() {
   const num = await sendMsgWxw(
     host,
     selectedIds,
+  );
+  ElMessage.success(`成功发送 ${ num } 条企微工资条`);
+}
+
+/**
+ * 一键企微发送
+ */
+async function onSendMsgWxwOneKey() {
+  const host = window.location.host;
+  const num = await sendMsgWxwOneKey(
+    host,
   );
   ElMessage.success(`成功发送 ${ num } 条企微工资条`);
 }
