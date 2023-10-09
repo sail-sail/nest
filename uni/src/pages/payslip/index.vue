@@ -3,123 +3,124 @@
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
-  <view
-    un-flex="~ [1_0_0] col"
-    un-overflow-auto
+  
+  <CustomForm
+    ref="formRef"
+    v-model="model"
+    :label-width="200"
   >
-    <tm-form
-      ref="formRef"
-      v-model="model"
-      :label-width="200"
-      :transprent="true"
-      :margin="[0, 0]"
-      :padding="[0, 0]"
+    
+    <CustomFormItem
+      label="发放月份"
+      field="pay_month"
     >
-      
-      <tm-form-item
-        label="发放月份"
-        field="pay_month"
-        :margin="[0, 0]"
+      <CustomInput
+        v-model="model.pay_month"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.pay_month"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="姓名"
-        field="lbl"
-        :margin="[20, 0]"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="姓名"
+      field="lbl"
+    >
+      <CustomInput
+        v-model="model.lbl"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.lbl"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="工号"
-        field="job_num"
-        :margin="[20, 0]"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="工号"
+      field="job_num"
+    >
+      <CustomInput
+        v-model="model.job_num"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.job_num"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="公司"
-        field="company"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="公司"
+      field="company"
+    >
+      <CustomInput
+        v-model="model.company"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.company"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="应发工资(元)"
-        field="gross_pay"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="应发工资(元)"
+      field="gross_pay"
+    >
+      <CustomInput
+        v-model="model.gross_pay"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.gross_pay"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="代缴社保(元)"
-        field="social_security"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="代缴社保(元)"
+      field="social_security"
+    >
+      <CustomInput
+        v-model="model.social_security"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.social_security"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="代缴个税(元)"
-        field="individual_tax"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="代缴个税(元)"
+      field="individual_tax"
+    >
+      <CustomInput
+        v-model="model.individual_tax"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.individual_tax"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="个人自付(元)"
-        field="self_pay"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="个人自付(元)"
+      field="self_pay"
+    >
+      <CustomInput
+        v-model="model.self_pay"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.self_pay"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="实发工资(元)"
-        field="net_pay"
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="实发工资(元)"
+      field="net_pay"
+    >
+      <CustomInput
+        v-model="model.net_pay"
+        :readonly="true"
       >
-        <CustomInput
-          v-model="model.net_pay"
-          :readonly="true"
-        >
-        </CustomInput>
-      </tm-form-item>
-      
-    </tm-form>
-  </view>
+      </CustomInput>
+    </CustomFormItem>
+    
+    <CustomFormItem
+      label="备注"
+      field="rem"
+    >
+      <CustomInput
+        v-model="model.rem"
+        :readonly="true"
+      >
+      </CustomInput>
+    </CustomFormItem>
+    
+  </CustomForm>
   
   <view
     un-m="x-2"
@@ -168,7 +169,7 @@ import {
 checkLogin();
 
 let msgRef = $ref<InstanceType<typeof TmMessage>>();
-let formRef = $ref<InstanceType<typeof TmForm>>();
+let formRef = $ref<InstanceType<typeof CustomForm>>();
 
 let model = $ref<Partial<PayslipModel>>({
 });
