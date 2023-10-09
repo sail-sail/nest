@@ -4,6 +4,8 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasDate = columns.some((column) => column.DATA_TYPE === "date");
+const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -56,7 +58,7 @@ if (hasDecimal) {
 import Decimal from "decimal.js";<#
 }
 #><#
-if (hasIsMonth) {
+if (hasIsMonth || hasDate || hasDatetime) {
 #>
 
 import {
@@ -64,7 +66,7 @@ import {
 } from "/src/base/i18n/i18n.ts";<#
 }
 #><#
-if (hasIsMonth) {
+if (hasIsMonth || hasDate || hasDatetime) {
 #>
 
 import dayjs from "dayjs";<#
@@ -180,7 +182,7 @@ export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
 ): Promise<string> {<#
-  if (hasIsMonth) {
+  if (hasIsMonth || hasDate || hasDatetime) {
   #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -204,6 +206,8 @@ export async function create<#=Table_Up#>(
     const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
@@ -226,6 +230,8 @@ export async function create<#=Table_Up#>(
     const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
@@ -248,6 +254,8 @@ export async function create<#=Table_Up#>(
     const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
@@ -362,7 +370,7 @@ export async function updateById<#=Table_Up#>(
   id: string,
   input: <#=inputName#>,
 ): Promise<string> {<#
-  if (hasIsMonth) {
+  if (hasIsMonth || hasDate || hasDatetime) {
   #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -386,6 +394,8 @@ export async function updateById<#=Table_Up#>(
     const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
@@ -408,6 +418,8 @@ export async function updateById<#=Table_Up#>(
     const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
@@ -430,6 +442,8 @@ export async function updateById<#=Table_Up#>(
     const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {

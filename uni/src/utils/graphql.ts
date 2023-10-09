@@ -329,13 +329,15 @@ export async function gqlQuery(
         errMsg += "\n";
       }
     }
-    uni.showToast({
-      title: errMsg,
-      icon: "none",
-      duration: config?.duration || 3000,
-      mask: true,
-      position: "center",
-    });
+    if (errMsg) {
+      uni.showToast({
+        title: errMsg,
+        icon: "none",
+        duration: config?.duration || 3000,
+        mask: true,
+        position: "center",
+      });
+    }
     throw new Error(errMsg, { cause: errors });
   }
   return data;
