@@ -1170,8 +1170,8 @@ async function onImportExcel() {
       {
         key_types: {
           "lbl": "string",
-          "is_locked_lbl": "number",
-          "is_enabled_lbl": "number",
+          "is_locked_lbl": "string",
+          "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
         },
