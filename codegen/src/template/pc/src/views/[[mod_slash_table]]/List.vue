@@ -2523,7 +2523,9 @@ async function onImportExcel() {
               column_name2 = `${column_name}_lbl`;
             }
             let data_type2 = "string";
-            if ([ "datetime", "date" ].includes(data_type)) {
+            if (foreignKey || selectList.length > 0 || column.dict || column.dictbiz) {
+              data_type2 = "string";
+            } else if ([ "datetime", "date" ].includes(data_type)) {
               data_type2 = "date";
             } else if (data_type === "int" || data_type === "tinyint" || data_type === "double") {
               data_type2 = "number";
