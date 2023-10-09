@@ -121,13 +121,6 @@ const usrStore = useUsrStore();
 
 let formRef = $ref<InstanceType<typeof TmForm>>();
 
-async function onLoginClk() {
-  if (!formRef) {
-    return;
-  }
-  formRef.submit();
-}
-
 let model = $ref({
   username: "admin",
   password: "a",
@@ -194,6 +187,7 @@ async function setOldLoginModel() {
         }
       }
       model = res.data;
+      model.lang = model.lang || "zh-CN";
     }
   } catch (err) {
   }
