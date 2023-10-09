@@ -47,7 +47,18 @@ import dayjs from "dayjs";
           (row as any)[headerKey] = undefined;
         }
       } else if (type === "date") {
-        (row as any)[headerKey] = num2Date(val);
+        if (val instanceof Date) {
+          (row as any)[headerKey] = val;
+        } else if (typeof val === "number") {
+          (row as any)[headerKey] = num2Date(val);
+        } else {
+          const dateDay = dayjs(val);
+          if (dateDay.isValid()) {
+            (row as any)[headerKey] = dateDay.toDate();
+          } else {
+            (row as any)[headerKey] = val;
+          }
+        }
       } else {
         if (val instanceof Date) {
           val = dayjs(val).format("YYYY-MM-DD HH:mm:ss");
