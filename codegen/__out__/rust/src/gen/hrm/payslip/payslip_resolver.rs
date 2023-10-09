@@ -101,17 +101,37 @@ pub async fn create<'a>(
   if input.pay_month.is_none() {
     if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
       input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.pay_month.is_none() {
+        let table_comment = i18n_dao::ns(
+          ctx,
+          "工资条".to_owned(),
+          None,
+        ).await?;
+        
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+      }
     }
   }
   if let Some(pay_month) = input.pay_month {
     input.pay_month = pay_month.with_day(1);
   } else {
-    let err_msg = i18n_dao::ns(
+    let table_comment = i18n_dao::ns(
       ctx,
-      "日期格式错误".to_owned(),
+      "工资条".to_owned(),
       None,
     ).await?;
-    return Err(SrvErr::msg(err_msg).into());
+    
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
   }
   let input = input;
   
@@ -163,6 +183,20 @@ pub async fn update_by_id<'a>(
   if input.pay_month.is_none() {
     if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
       input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.pay_month.is_none() {
+        let table_comment = i18n_dao::ns(
+          ctx,
+          "工资条".to_owned(),
+          None,
+        ).await?;
+        
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+      }
     }
   }
   if let Some(pay_month) = input.pay_month {
