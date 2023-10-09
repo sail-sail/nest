@@ -6,6 +6,11 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  checkLogin,
+} from "../index/Api";
+
+checkLogin();
 
 let id = $ref("");
 
