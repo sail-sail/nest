@@ -285,6 +285,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -394,7 +398,7 @@ export async function findByUnique(
     }
     let lang_id: string[] = [ ];
     if (!Array.isArray(search0.lang_id)) {
-      lang_id.push(search0.lang_id);
+      lang_id.push(search0.lang_id, search0.lang_id);
     } else {
       lang_id = search0.lang_id;
     }
@@ -403,7 +407,7 @@ export async function findByUnique(
     }
     let menu_id: string[] = [ ];
     if (!Array.isArray(search0.menu_id)) {
-      menu_id.push(search0.menu_id);
+      menu_id.push(search0.menu_id, search0.menu_id);
     } else {
       menu_id = search0.menu_id;
     }

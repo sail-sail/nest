@@ -10,5 +10,7 @@ declare module '@vue/runtime-core' {
     AppLoading: typeof import('./../components/AppLoading/AppLoading.vue')['default']
     CustomSelect: typeof import('./../components/CustomSelect/CustomSelect.vue')['default']
     CustomInput: typeof import('./../components/CustomInput/CustomInput.vue')['default']
+    CustomFormItem: typeof import('./../components/CustomFormItem/CustomFormItem.vue')['default']
+    CustomForm: typeof import('./../components/CustomForm/CustomForm.vue')['default']
   }
 }

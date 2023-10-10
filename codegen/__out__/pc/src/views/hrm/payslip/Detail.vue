@@ -178,7 +178,7 @@
               v-model="dialogModel.is_send"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('已发送') }`"
-              :readonly="true"
+              :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -193,7 +193,7 @@
               v-model="dialogModel.is_confirm"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('已确认') }`"
-              :readonly="true"
+              :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -364,6 +364,20 @@ watchEffect(async () => {
         type: "string",
         max: 22,
         message: `${ n("姓名") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+      },
+    ],
+    // 已发送
+    is_send: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("已发送") }`,
+      },
+    ],
+    // 已确认
+    is_confirm: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("已确认") }`,
       },
     ],
     // 锁定
