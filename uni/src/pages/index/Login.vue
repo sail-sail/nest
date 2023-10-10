@@ -117,6 +117,8 @@ import {
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
 } from "./Api";
 
+import { lang } from "@/locales/index";
+
 const usrStore = useUsrStore();
 
 let formRef = $ref<InstanceType<typeof TmForm>>();
@@ -125,7 +127,7 @@ let model = $ref({
   username: "admin",
   password: "a",
   tenant_id: "",
-  lang: "zh-cn",
+  lang,
 });
 
 let redirect_uri = cfg.homePage;
@@ -187,7 +189,7 @@ async function setOldLoginModel() {
         }
       }
       model = res.data;
-      model.lang = model.lang || "zh-cn";
+      model.lang = model.lang || lang;
     }
   } catch (err) {
   }
