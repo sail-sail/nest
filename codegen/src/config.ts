@@ -534,6 +534,11 @@ export interface TableCloumn {
    */
   readonly?: boolean,
   
+  /**
+   * 搜索时是否允许多选, 默认为true
+   */
+  searchMultiple?: boolean,
+  
 }
 
 /**
