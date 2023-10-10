@@ -4,6 +4,8 @@ import type {
 
 import cfg from "@/utils/config";
 
+import { lang } from "@/locales/index";
+
 export async function wxwLoginByCode(
   code: string,
   opt?: GqlOpt,
@@ -28,6 +30,7 @@ export async function wxwLoginByCode(
       input: {
         host,
         code,
+        lang,
       },
     },
   }, opt);
