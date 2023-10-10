@@ -23,8 +23,14 @@ use crate::gen::wxwork::wxw_usr::wxw_usr_dao::{
 use crate::gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrSearch;
 
 use crate::gen::hrm::payslip::payslip_dao::{
+  find_all as find_all_payslip,
   find_by_id as find_by_id_payslip,
   validate_option as validate_option_payslip,
+  update_by_id as update_by_id_payslip,
+};
+use crate::gen::hrm::payslip::payslip_model::{
+  PayslipInput,
+  PayslipSearch,
 };
 
 use crate::src::wxwork::wxw_msg::wxw_msg_dao::send_card_msg;
@@ -133,4 +139,60 @@ pub async fn send_msg_wxw<'a>(
     num += 1;
   }
   Ok(num)
+}
+
+/// 一键发送企微工资条
+pub async fn send_msg_wxw_one_key<'a>(
+  ctx: &mut impl Ctx<'a>,
+  host: String,
+) -> Result<i32> {
+  let payslip_models = find_all_payslip(
+    ctx,
+    PayslipSearch {
+      is_send: vec![0].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
+  let ids = payslip_models.into_iter()
+    .map(|payslip_model| payslip_model.id)
+    .collect::<Vec<String>>();
+  let num = send_msg_wxw(
+    ctx,
+    host,
+    ids,
+  ).await?;
+  Ok(num)
+}
+
+/// 确认工资条
+pub async fn confirm_payslip<'a>(
+  ctx: &mut impl Ctx<'a>,
+  id: String,
+) -> Result<i32> {
+  let payslip_model = find_by_id_payslip(
+    ctx,
+    id,
+    None,
+  ).await?;
+  let payslip_model = validate_option_payslip(
+    ctx,
+    payslip_model,
+  ).await?;
+  
+  let id = payslip_model.id;
+  
+  update_by_id_payslip(
+    ctx,
+    id,
+    PayslipInput {
+      is_confirm: 1.into(),
+      ..Default::default()
+    },
+    None,
+  ).await?;
+  
+  Ok(1)
 }
