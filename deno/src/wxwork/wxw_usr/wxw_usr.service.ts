@@ -90,7 +90,7 @@ export async function wxwLoginByCode(
 ): Promise<WxwLoginByCode> {
   const host = input.host;
   const code = input.code;
-  const lang = input.lang || "zh_CN";
+  const lang = input.lang || "zh_cn";
   
   // 获取域名
   const domainModel = await validateOptionDomain(
