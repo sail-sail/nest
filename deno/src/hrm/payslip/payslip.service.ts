@@ -10,6 +10,9 @@ import {
 
 import {
   findById as findByIdPayslip,
+  validateOption as validateOptionPayslip,
+  updateById as updateByIdPayslip,
+  findAll as findAllPayslip,
 } from "/gen/hrm/payslip/payslip.dao.ts"
 
 import {
@@ -67,6 +70,12 @@ export async function sendMsgWxw(
       error(`sendMsgWxw: 企微用户不存在: ${ payslipModel.lbl }`);
       throw `企微用户不存在: ${ payslipModel.lbl }`;
     }
+    await updateByIdPayslip(
+      id,
+      {
+        is_send: 1,
+      },
+    );
     const touser = wxw_usrModel.userid;
     const isSucc = await sendCardMsg({
       wxw_app_id,
@@ -81,4 +90,42 @@ export async function sendMsgWxw(
     }
   }
   return num;
+}
+
+/**
+ * 一键发送企微工资条消息
+ */
+export async function sendMsgWxwOneKey(
+  host: string,
+) {
+  const payslipModels = await findAllPayslip({
+    is_send: [ 0 ],
+  });
+  const ids = payslipModels.map((payslipModel) => payslipModel.id);
+  const num = await sendMsgWxw(
+    host,
+    ids,
+  );
+  return num;
+}
+
+/**
+ * 确认工资条
+ */
+export async function confirmPayslip(
+  id: string,
+) {
+  const payslipModel = await validateOptionPayslip(
+    await findByIdPayslip(id),
+  );
+  if (payslipModel.is_confirm) {
+    throw `工资条已确认`;
+  }
+  await updateByIdPayslip(
+    id,
+    {
+      is_confirm: 1,
+    },
+  );
+  return 1;
 }

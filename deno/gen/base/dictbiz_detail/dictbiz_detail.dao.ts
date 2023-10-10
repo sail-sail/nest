@@ -386,7 +386,7 @@ export async function findByUnique(
     }
     let dictbiz_id: string[] = [ ];
     if (!Array.isArray(search0.dictbiz_id)) {
-      dictbiz_id.push(search0.dictbiz_id);
+      dictbiz_id.push(search0.dictbiz_id, search0.dictbiz_id);
     } else {
       dictbiz_id = search0.dictbiz_id;
     }

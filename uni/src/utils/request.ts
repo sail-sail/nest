@@ -372,6 +372,15 @@ export async function uniLogin() {
         return false;
       }
     }
+  } else {
+    const redirect_uri = location.hash.substring(1);
+    let url = `/pages/index/Login`;
+    if (redirect_uri) {
+      url += `?redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+    }
+    await uni.redirectTo({
+      url,
+    });
   }
   // #endif
   return false;

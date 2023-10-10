@@ -14,6 +14,18 @@ type Mutation {
     ids: [String!]!
   ): Int!
   
+  "一键发送企微工资条"
+  sendMsgWxwOneKey(
+    "域名"
+    host: String!
+  ): Int!
+  
+  "确认工资条"
+  confirmPayslip(
+    "工资条ID"
+    id: String!
+  ): Int!
+  
 }
 
 `);

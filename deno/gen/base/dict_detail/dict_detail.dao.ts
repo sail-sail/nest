@@ -373,7 +373,7 @@ export async function findByUnique(
     }
     let dict_id: string[] = [ ];
     if (!Array.isArray(search0.dict_id)) {
-      dict_id.push(search0.dict_id);
+      dict_id.push(search0.dict_id, search0.dict_id);
     } else {
       dict_id = search0.dict_id;
     }
