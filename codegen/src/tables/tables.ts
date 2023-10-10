@@ -191,15 +191,16 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
+        align: "center",
         fixed: "left",
       },
       {
         COLUMN_NAME: "username",
+        align: "center",
         require: true,
         search: true,
         sortable: true,
         width: 140,
-        align: "left",
       },
       {
         COLUMN_NAME: "password",
