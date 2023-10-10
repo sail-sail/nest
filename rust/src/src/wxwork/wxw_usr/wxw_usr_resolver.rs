@@ -5,9 +5,24 @@ use crate::common::context::Ctx;
 use super::wxw_usr_service;
 
 use super::wxw_usr_model::{
+  WxwGetAppid,
   WxwLoginByCodeInput,
   WxwLoginByCode,
 };
+
+/// 通过host获取appid, agentid
+pub async fn wxw_get_appid<'a>(
+  ctx: &mut impl Ctx<'a>,
+  host: String,
+) -> Result<WxwGetAppid> {
+  
+  let res = wxw_usr_service::wxw_get_appid(
+    ctx,
+    host,
+  ).await?;
+  
+  Ok(res)
+}
 
 /// 微信企业号登录
 pub async fn wxw_login_by_code<'a>(

@@ -15,6 +15,7 @@ pub struct SrcQuery(
   crate::src::base::tenant::tenant_resolver::TenantQuery,
   crate::src::base::usr::usr_graphql::UsrQuery,
   crate::src::base::permit::permit_graphql::PermitQuery,
+  crate::src::wxwork::wxw_usr::wxw_usr_graphql::WxwUsrQuery,
 );
 
 #[derive(MergedObject, Default)]
