@@ -331,7 +331,7 @@ export async function findByUnique(
     }
     let wxw_app_id: string[] = [ ];
     if (!Array.isArray(search0.wxw_app_id)) {
-      wxw_app_id.push(search0.wxw_app_id);
+      wxw_app_id.push(search0.wxw_app_id, search0.wxw_app_id);
     } else {
       wxw_app_id = search0.wxw_app_id;
     }
