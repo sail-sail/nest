@@ -436,6 +436,16 @@ pub async fn find_all<'a>(
   
   let from_query = get_from_query().await?;
   let where_query = get_where_query(ctx, &mut args, search).await?;
+  
+  let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "create_time") {
+    sort.push(SortInput {
+      prop: "create_time".into(),
+      order: "desc".into(),
+    });
+  }
+  let sort = sort.into();
+  
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -869,10 +879,6 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
-  validate(
-    &input,
-  )?;
-  
   let table = "hrm_payslip";
   let _method = "create";
   
@@ -1199,10 +1205,6 @@ pub async fn update_by_id<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  validate(
-    &input,
-  )?;
-  
   input = set_id_by_lbl(
     ctx,
     input,
@@ -1364,8 +1366,6 @@ pub async fn update_by_id<'a>(
     let args = args.into();
     
     let options = Options::from(options);
-    
-    let options = options.set_is_debug(false);
     
     let options = options.into();
     
@@ -1651,109 +1651,4 @@ pub async fn validate_option<'a, T>(
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(model.unwrap())
-}
-
-/// 校验, 校验失败时抛出SrvErr异常
-#[allow(unused_imports)]
-pub fn validate(
-  input: &PayslipInput,
-) -> Result<()> {
-  
-  use crate::common::validators::max_items::max_items;
-  use crate::common::validators::min_items::min_items;
-  use crate::common::validators::maximum::maximum;
-  use crate::common::validators::minimum::minimum;
-  use crate::common::validators::chars_max_length::chars_max_length;
-  use crate::common::validators::chars_min_length::chars_min_length;
-  use crate::common::validators::multiple_of::multiple_of;
-  use crate::common::validators::regex::regex;
-  use crate::common::validators::email::email;
-  use crate::common::validators::url::url;
-  use crate::common::validators::ip::ip;
-  
-  // ID
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  
-  // 姓名
-  chars_max_length(
-    input.lbl.clone(),
-    22,
-    "",
-  )?;
-  
-  // 工号
-  chars_max_length(
-    input.job_num.clone(),
-    22,
-    "",
-  )?;
-  
-  // 公司
-  chars_max_length(
-    input.company.clone(),
-    22,
-    "",
-  )?;
-  
-  // 应发工资(元)
-  chars_max_length(
-    input.gross_pay.clone(),
-    66,
-    "",
-  )?;
-  
-  // 代缴社保(元)
-  chars_max_length(
-    input.social_security.clone(),
-    66,
-    "",
-  )?;
-  
-  // 代缴个税(元)
-  chars_max_length(
-    input.individual_tax.clone(),
-    66,
-    "",
-  )?;
-  
-  // 个人自付(元)
-  chars_max_length(
-    input.self_pay.clone(),
-    66,
-    "",
-  )?;
-  
-  // 实发工资(元)
-  chars_max_length(
-    input.net_pay.clone(),
-    66,
-    "",
-  )?;
-  
-  // 备注
-  chars_max_length(
-    input.rem.clone(),
-    88,
-    "",
-  )?;
-  
-  // 创建人
-  chars_max_length(
-    input.create_usr_id.clone(),
-    22,
-    "",
-  )?;
-  
-  // 更新人
-  chars_max_length(
-    input.update_usr_id.clone(),
-    22,
-    "",
-  )?;
-  
-  Ok(())
 }
