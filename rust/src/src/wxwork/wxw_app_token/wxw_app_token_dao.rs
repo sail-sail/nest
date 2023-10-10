@@ -459,7 +459,7 @@ async fn fetch_getuser<'a>(
   userid: String,
   force: Option<bool>,
 ) -> Result<GetuserRes> {
-  let access_token = get_contact_access_token(
+  let access_token = get_access_token(
     ctx,
     wxw_app_id.clone(),
     force,
