@@ -196,7 +196,9 @@ const hasAtt = columns.some((item) => item.isAtt);
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
-        >
+        ><#
+          if (column.searchMultiple !== false) {
+          #>
           <DictSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             :model-value="search.<#=column_name#>"
@@ -205,7 +207,19 @@ const hasAtt = columns.some((item) => item.isAtt);
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
             @change="onSearch"
-          ></DictSelect>
+          ></DictSelect><#
+          } else {
+          #>
+          <DictSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            :model-value="search.<#=column_name#>[0]"
+            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            code="<#=column.dict#>"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            @change="onSearch"
+          ></DictSelect><#
+          }
+          #>
         </el-form-item>
       </template><#
       } else if (column.dictbiz) {
@@ -214,7 +228,9 @@ const hasAtt = columns.some((item) => item.isAtt);
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
-        >
+        ><#
+          if (column.searchMultiple !== false) {
+          #>
           <DictbizSelect
             :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
             un-w="full"
@@ -224,7 +240,20 @@ const hasAtt = columns.some((item) => item.isAtt);
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
             @change="onSearch"
-          ></DictbizSelect>
+          ></DictbizSelect><#
+          } else {
+          #>
+          <DictbizSelect
+            :set="search.<#=column_name#> = search.<#=column_name#> || [ ]"
+            :model-value="search.<#=column_name#>[0]"
+            @update:model-value="$event != null ? search.<#=column_name#> = [ $event ] : search.<#=column_name#> = [ ]"
+            code="<#=column.dictbiz#>"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            multiple
+            @change="onSearch"
+          ></DictbizSelect><#
+          }
+          #>
         </el-form-item>
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {

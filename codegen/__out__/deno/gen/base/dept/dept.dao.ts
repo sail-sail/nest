@@ -343,6 +343,10 @@ export async function findAll(
     sort = [ sort ];
   }
   sort = sort.filter((item) => item.prop);
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -507,7 +511,7 @@ export async function findByUnique(
     }
     let parent_id: string[] = [ ];
     if (!Array.isArray(search0.parent_id)) {
-      parent_id.push(search0.parent_id);
+      parent_id.push(search0.parent_id, search0.parent_id);
     } else {
       parent_id = search0.parent_id;
     }
