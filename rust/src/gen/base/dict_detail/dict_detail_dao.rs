@@ -680,10 +680,6 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
-  validate(
-    &input,
-  )?;
-  
   let table = "base_dict_detail";
   let _method = "create";
   
@@ -847,10 +843,6 @@ pub async fn update_by_id<'a>(
     return Err(SrvErr::msg(err_msg).into());
   }
   
-  validate(
-    &input,
-  )?;
-  
   input = set_id_by_lbl(
     ctx,
     input,
@@ -976,8 +968,6 @@ pub async fn update_by_id<'a>(
     let args = args.into();
     
     let options = Options::from(options);
-    
-    let options = options.set_is_debug(false);
     
     let options = options.set_del_cache_key1s(get_foreign_tables());
     
@@ -1403,60 +1393,4 @@ pub async fn validate_option<'a, T>(
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(model.unwrap())
-}
-
-/// 校验, 校验失败时抛出SrvErr异常
-#[allow(unused_imports)]
-pub fn validate(
-  input: &DictDetailInput,
-) -> Result<()> {
-  
-  use crate::common::validators::max_items::max_items;
-  use crate::common::validators::min_items::min_items;
-  use crate::common::validators::maximum::maximum;
-  use crate::common::validators::minimum::minimum;
-  use crate::common::validators::chars_max_length::chars_max_length;
-  use crate::common::validators::chars_min_length::chars_min_length;
-  use crate::common::validators::multiple_of::multiple_of;
-  use crate::common::validators::regex::regex;
-  use crate::common::validators::email::email;
-  use crate::common::validators::url::url;
-  use crate::common::validators::ip::ip;
-  
-  // ID
-  chars_max_length(
-    input.id.clone(),
-    22,
-    "",
-  )?;
-  
-  // 系统字典
-  chars_max_length(
-    input.dict_id.clone(),
-    22,
-    "",
-  )?;
-  
-  // 名称
-  chars_max_length(
-    input.lbl.clone(),
-    100,
-    "",
-  )?;
-  
-  // 值
-  chars_max_length(
-    input.val.clone(),
-    100,
-    "",
-  )?;
-  
-  // 备注
-  chars_max_length(
-    input.rem.clone(),
-    100,
-    "",
-  )?;
-  
-  Ok(())
 }
