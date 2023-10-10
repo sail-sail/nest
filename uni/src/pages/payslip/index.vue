@@ -228,7 +228,10 @@ async function onConfirm() {
     return;
   }
   
+  model.is_confirm = 1;
   await confirmPayslip(id);
+  
+  await refresh();
   
   msgRef.show({
     model: "success",

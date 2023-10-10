@@ -476,7 +476,7 @@ export async function findByUnique(
     }
     let pay_month: string[] = [ ];
     if (!Array.isArray(search0.pay_month)) {
-      pay_month.push(search0.pay_month);
+      pay_month.push(search0.pay_month, search0.pay_month);
     } else {
       pay_month = search0.pay_month;
     }

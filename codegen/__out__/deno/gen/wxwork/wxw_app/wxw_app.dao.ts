@@ -412,7 +412,7 @@ export async function findByUnique(
     }
     let domain_id: string[] = [ ];
     if (!Array.isArray(search0.domain_id)) {
-      domain_id.push(search0.domain_id);
+      domain_id.push(search0.domain_id, search0.domain_id);
     } else {
       domain_id = search0.domain_id;
     }

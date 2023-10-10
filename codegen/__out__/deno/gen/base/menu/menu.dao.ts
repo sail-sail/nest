@@ -523,7 +523,7 @@ export async function findByUnique(
     }
     let parent_id: string[] = [ ];
     if (!Array.isArray(search0.parent_id)) {
-      parent_id.push(search0.parent_id);
+      parent_id.push(search0.parent_id, search0.parent_id);
     } else {
       parent_id = search0.parent_id;
     }
