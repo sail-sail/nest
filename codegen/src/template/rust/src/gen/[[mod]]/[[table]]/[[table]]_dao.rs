@@ -4,6 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
@@ -219,7 +220,7 @@ async fn get_where_query<'a>(
   }<#
   }
   #><#
-    if (hasTenant_id) {
+    if (hasTenantId) {
   #>
   {
     let tenant_id = {
@@ -1667,10 +1668,14 @@ pub async fn create<'a>(
   
   args.push(id.clone().into());
   args.push(now.into());<#
-  if (hasTenant_id) {
+  if (hasTenantId) {
   #>
   
-  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+  if let Some(tenant_id) = input.tenant_id {
+    sql_fields += ",tenant_id";
+    sql_values += ",?";
+    args.push(tenant_id.into());
+  } else if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_fields += ",tenant_id";
     sql_values += ",?";
     args.push(tenant_id.into());
@@ -1680,7 +1685,11 @@ pub async fn create<'a>(
   if (hasOrgId) {
   #>
   
-  if let Some(org_id) = ctx.get_auth_org_id() {
+  if let Some(org_id) = input.org_id {
+    sql_fields += ",org_id";
+    sql_values += ",?";
+    args.push(org_id.into());
+  } else if let Some(org_id) = ctx.get_auth_org_id() {
     sql_fields += ",org_id";
     sql_values += ",?";
     args.push(org_id.into());
@@ -1845,7 +1854,7 @@ pub async fn create<'a>(
   
   Ok(id)
 }<#
-if (hasTenant_id) {
+if (hasTenantId) {
 #>
 
 /// 根据id修改租户id
@@ -2084,7 +2093,7 @@ pub async fn update_by_id<'a>(
   args.push(now.into());
   
   let mut field_num: usize = 0;<#
-  if (hasTenant_id) {
+  if (hasTenantId) {
   #>
   
   if let Some(tenant_id) = input.tenant_id {
@@ -2800,7 +2809,7 @@ pub async fn find_last_order_by<'a>(
   let mut sql_where = "".to_owned();
   
   sql_where += "t.is_deleted = 0";<#
-  if (hasTenant_id) {
+  if (hasTenantId) {
   #>
   
   if let Some(tenant_id) = ctx.get_auth_tenant_id() {

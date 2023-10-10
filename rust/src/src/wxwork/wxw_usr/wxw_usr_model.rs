@@ -8,15 +8,25 @@ use async_graphql::{
   SimpleObject,
 };
 
+/// 通过host获取appid, agentid
+#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[graphql(rename_fields = "snake_case")]
+pub struct WxwGetAppid {
+  
+  /// 企业微信appid
+  pub appid: String,
+  
+  /// 企业微信agentid
+  pub agentid: String,
+  
+}
+
 #[derive(InputObject, Clone, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwLoginByCodeInput {
   
-  /// 企业号id
-  pub corpid: String,
-  
-  /// 应用id
-  pub agentid: String,
+  /// 域名
+  pub host: String,
   
   /// 企业微信登录时获取的code
   pub code: String,
