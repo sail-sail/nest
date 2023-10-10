@@ -124,7 +124,7 @@ pub async fn wxw_login_by_code<'a>(
 ) -> Result<WxwLoginByCode> {
   let host = input.host;
   let code = input.code;
-  let lang = input.lang.unwrap_or("zh_CN".to_string());
+  let lang = input.lang.unwrap_or("zh_cn".to_string());
   
   // 获取域名
   let domain_model = find_one_domain(
