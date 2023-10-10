@@ -7,6 +7,21 @@ import type {
 } from "/gen/types.ts";
 
 /**
+ * 通过host获取appid, agentid
+ * @param host 域名
+ */
+export async function wxwGetAppid(
+  host: string,
+) {
+  const {
+    wxwGetAppid,
+  } = await import("./wxw_usr.service.ts");
+  
+  const res = await wxwGetAppid(host);
+  return res;
+}
+
+/**
  * 企业微信单点登录
  */
 export async function wxwLoginByCode(
@@ -18,7 +33,6 @@ export async function wxwLoginByCode(
   const context = useContext();
   
   context.notVerifyToken = true;
-  context.is_tran = true;
   const res = await wxwLoginByCode(input);
   return res;
 }
