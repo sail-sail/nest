@@ -1,10 +1,3 @@
-const systemInfo = uni.getSystemInfoSync();
-
-let sysLang = systemInfo.language?.toLowerCase() || "zh-cn";
-if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(sysLang) > -1) {
-  sysLang = "zh-cn";
-}
-
 export function getLocale(): string {
   let usr: any = { };
   const usrStr = uni.getStorageSync("usr");
@@ -17,6 +10,13 @@ export function getLocale(): string {
   if (lang) {
     return lang;
   }
+  const systemInfo = uni.getSystemInfoSync();
+  
+  let sysLang = systemInfo.language?.toLowerCase() || "zh-cn";
+  if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(sysLang) > -1) {
+    sysLang = "zh-cn";
+  }
+  
   lang = sysLang;
   if (lang && usr?.lang !== lang) {
     usr.lang = lang;
