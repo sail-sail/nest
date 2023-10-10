@@ -243,7 +243,7 @@ const modelLabels = $computed(() => {
 });
 
 function clearClk() {
-  modelValue = "";
+  modelValue = undefined;
   emit("update:modelValue", modelValue);
   emit("clear");
 }

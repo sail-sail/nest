@@ -9717,19 +9717,19 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateto](http://uniapp.dcloud.io/api/router?id=navigateto)
      */
-    navigateTo(options: UniNamespace.NavigateToOptions): void;
+    navigateTo(options: UniNamespace.NavigateToOptions): PromiseLike<void>;
     /**
      * 关闭当前页面，跳转到应用内的某个页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=redirectto](http://uniapp.dcloud.io/api/router?id=redirectto)
      */
-    redirectTo(options: UniNamespace.RedirectToOptions): void;
+    redirectTo(options: UniNamespace.RedirectToOptions): PromiseLike<void>;
     /**
      * 关闭所有页面，打开到应用内的某个页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=relaunch](http://uniapp.dcloud.io/api/router?id=relaunch)
      */
-    reLaunch(options: UniNamespace.ReLaunchOptions): void;
+    reLaunch(options: UniNamespace.ReLaunchOptions): PromiseLike<void>;
     /**
      * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
      *
