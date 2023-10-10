@@ -7,6 +7,7 @@ const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default")
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
+const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -667,7 +668,15 @@ export async function findAll(
   } else if (!Array.isArray(sort)) {
     sort = [ sort ];
   }
-  sort = sort.filter((item) => item.prop);
+  sort = sort.filter((item) => item.prop);<#
+  if (hasCreateTime) {
+  #>
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });<#
+  }
+  #>
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
