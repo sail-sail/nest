@@ -1171,7 +1171,7 @@ export async function findByUnique(
     #>
     let <#=unique#>: <#=_data_type#>[] = [ ];
     if (!Array.isArray(search0.<#=unique#>)) {
-      <#=unique#>.push(search0.<#=unique#>);
+      <#=unique#>.push(search0.<#=unique#>, search0.<#=unique#>);
     } else {
       <#=unique#> = search0.<#=unique#>;
     }<#
