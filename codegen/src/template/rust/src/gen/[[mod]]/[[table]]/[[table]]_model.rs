@@ -2,6 +2,7 @@
 const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
+const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
@@ -33,10 +34,16 @@ use crate::common::util::dao::decrypt;<#
 #[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
-  if (hasTenant_id) {
+  if (hasTenantId) {
   #>
   /// 租户ID
   pub tenant_id: String,<#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+  /// 组织ID
+  pub org_id: String,<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -128,10 +135,16 @@ pub struct <#=tableUP#>Model {<#
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {<#
-    if (hasTenant_id) {
+    if (hasTenantId) {
     #>
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;<#
+    }
+    #><#
+    if (hasOrgId) {
+    #>
+    // 组织ID
+    let org_id = row.try_get("org_id")?;<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -306,9 +319,14 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {<#
-      if (hasTenant_id) {
+      if (hasTenantId) {
       #>
       tenant_id,<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      org_id,<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -401,7 +419,7 @@ pub struct <#=tableUP#>FieldComment {<#
 pub struct <#=tableUP#>Search {
   pub id: Option<String>,
   pub ids: Option<Vec<String>>,<#
-  if (hasTenant_id) {
+  if (hasTenantId) {
   #>
   #[graphql(skip)]
   pub tenant_id: Option<String>,<#
@@ -510,11 +528,18 @@ pub struct <#=tableUP#>Search {
 #[derive(FromModel, InputObject, Debug, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {<#
-  if (hasTenant_id) {
+  if (hasTenantId) {
   #>
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,<#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+  /// 组织ID
+  #[graphql(skip)]
+  pub org_id: Option<String>,<#
   }
   #>
   /// ID
@@ -604,7 +629,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
     Self {
       id: input.id,
       ids: None,<#
-      if (hasTenant_id) {
+      if (hasTenantId) {
       #>
       // 住户ID
       tenant_id: input.tenant_id,<#
