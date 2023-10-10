@@ -125,7 +125,7 @@ let model = $ref({
   username: "admin",
   password: "a",
   tenant_id: "",
-  lang: "zh-CN",
+  lang: "zh-cn",
 });
 
 let redirect_uri = cfg.homePage;
@@ -187,7 +187,7 @@ async function setOldLoginModel() {
         }
       }
       model = res.data;
-      model.lang = model.lang || "zh-CN";
+      model.lang = model.lang || "zh-cn";
     }
   } catch (err) {
   }
