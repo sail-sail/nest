@@ -67,11 +67,10 @@
         >
           <DictSelect
             :set="search.is_send = search.is_send || [ ]"
-            :model-value="search.is_send"
-            @update:model-value="search.is_send = $event"
+            :model-value="search.is_send[0]"
+            @update:model-value="$event != null ? search.is_send = [ $event ] : search.is_send = [ ]"
             code="yes_no"
             :placeholder="`${ ns('请选择') } ${ n('已发送') }`"
-            multiple
             @change="onSearch"
           ></DictSelect>
         </el-form-item>
@@ -84,11 +83,10 @@
         >
           <DictSelect
             :set="search.is_confirm = search.is_confirm || [ ]"
-            :model-value="search.is_confirm"
-            @update:model-value="search.is_confirm = $event"
+            :model-value="search.is_confirm[0]"
+            @update:model-value="$event != null ? search.is_confirm = [ $event ] : search.is_confirm = [ ]"
             code="yes_no"
             :placeholder="`${ ns('请选择') } ${ n('已确认') }`"
-            multiple
             @change="onSearch"
           ></DictSelect>
         </el-form-item>
@@ -1378,6 +1376,8 @@ async function onImportExcel() {
     [ await nAsync("代缴个税(元)") ]: "individual_tax",
     [ await nAsync("个人自付(元)") ]: "self_pay",
     [ await nAsync("实发工资(元)") ]: "net_pay",
+    [ await nAsync("已发送") ]: "is_send_lbl",
+    [ await nAsync("已确认") ]: "is_confirm_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("备注") ]: "rem",
   };
@@ -1410,6 +1410,8 @@ async function onImportExcel() {
           "individual_tax": "string",
           "self_pay": "string",
           "net_pay": "string",
+          "is_send_lbl": "string",
+          "is_confirm_lbl": "string",
           "is_locked_lbl": "string",
           "rem": "string",
         },
@@ -1439,54 +1441,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-}
-
-/** 已发送 */
-async function onIs_send(id: string, is_send: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await updateById(
-    id,
-    {
-      is_send,
-    },
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 已确认 */
-async function onIs_confirm(id: string, is_confirm: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await updateById(
-    id,
-    {
-      is_confirm,
-    },
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
 }
 
 /** 锁定 */

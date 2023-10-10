@@ -72,12 +72,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "is_send",
         search: true,
-        readonly: true,
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "is_confirm",
         search: true,
-        readonly: true,
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "is_locked",

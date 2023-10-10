@@ -432,7 +432,7 @@ export async function findByUnique(
     }
     let menu_id: string[] = [ ];
     if (!Array.isArray(search0.menu_id)) {
-      menu_id.push(search0.menu_id);
+      menu_id.push(search0.menu_id, search0.menu_id);
     } else {
       menu_id = search0.menu_id;
     }
@@ -441,7 +441,7 @@ export async function findByUnique(
     }
     let scope: string[] = [ ];
     if (!Array.isArray(search0.scope)) {
-      scope.push(search0.scope);
+      scope.push(search0.scope, search0.scope);
     } else {
       scope = search0.scope;
     }
