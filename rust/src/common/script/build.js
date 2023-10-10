@@ -49,7 +49,7 @@ async function uni() {
   });
   await mkdir(`${ buildDir }/uni`, { recursive: true });
   await remove(`${ buildDir }/uni/`);
-  await move(`${ projectDir }/uni/dist/build/h5/`, `${ buildDir }/uni/`);
+  await copy(`${ projectDir }/uni/dist/build/h5/`, `${ buildDir }/uni/`);
 }
 
 async function docs() {
@@ -77,7 +77,7 @@ async function compile() {
   });
   await mkdir(`${ buildDir }/rust`, { recursive: true });
   await remove(`${ buildDir }/rust/${ projectName }`);
-  await move(`${ cwd }/target/x86_64-unknown-linux-musl/release/${ projectName }`, `${ buildDir }/rust/${ projectName }`);
+  await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/${ projectName }`, `${ buildDir }/rust/${ projectName }`);
 }
 
 // async function publish() {
