@@ -23,7 +23,7 @@ export function getLocale(): string {
       usr = JSON.parse(usrStr);
     } catch (e) { }
   }
-  let lang = usr?.lang;
+  let lang = usr?.lang?.toLowerCase();
   if (lang) {
     return lang;
   }
