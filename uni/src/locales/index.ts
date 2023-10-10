@@ -2,8 +2,8 @@ const systemInfo = uni.getSystemInfoSync();
 
 let sysLang = systemInfo.language?.toLowerCase() || "zh-cn";
 if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(sysLang) > -1) {
-    sysLang = "zh-cn";
-  }
+  sysLang = "zh-cn";
+}
 
 export function getLocale(): string {
   let usr: any = { };
@@ -13,7 +13,7 @@ export function getLocale(): string {
       usr = JSON.parse(usrStr);
     } catch (e) { }
   }
-  let lang = usr?.lang;
+  let lang = usr?.lang?.toLowerCase();
   if (lang) {
     return lang;
   }
