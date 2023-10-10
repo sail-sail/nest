@@ -6,9 +6,11 @@
   :input-padding="[0, 0]"
   v-bind="$attrs"
   v-model.lazy="modelValue"
-  :show-clear="props.showClear"
+  :show-clear="props.readonly ? false : props.showClear"
   @change="onChange"
   @clear="onClear"
+  :disabled="props.readonly"
+  :placeholder="props.readonly ? '' : props.placeholder"
 >
   <template #left>
     <slot name="left"></slot>
@@ -32,12 +34,14 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     showClear?: boolean;
+    placeholder?: string;
   }>(),
   {
     modelValue: undefined,
     disabled: undefined,
     readonly: undefined,
     showClear: true,
+    placeholder: undefined,
   },
 );
 

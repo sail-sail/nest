@@ -34,7 +34,7 @@
     "jszip": "3.10.1",
     "pinia": "2.1.6",
     "pinia-plugin-persistedstate": "3.2.0",
-    "pinyin-pro": "3.16.7",
+    "pinyin-pro": "3.17.0",
     "sortablejs": "1.15.0",
     "vue": "3.3.4",
     "vue-demi": "0.14.6",
@@ -44,10 +44,10 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.6.5",
     "@types/file-saver": "2.0.5",
-    "@types/node": "20.8.3",
+    "@types/node": "20.8.4",
     "@types/sortablejs": "1.15.3",
-    "@typescript-eslint/eslint-plugin": "6.7.4",
-    "@typescript-eslint/parser": "6.7.4",
+    "@typescript-eslint/eslint-plugin": "6.7.5",
+    "@typescript-eslint/parser": "6.7.5",
     "@unocss/preset-rem-to-px": "0.56.5",
     "@vitejs/plugin-vue": "4.4.0",
     "@vitejs/plugin-vue-jsx": "3.0.2",
@@ -59,7 +59,7 @@
     "husky": "8.0.3",
     "mysql2": "3.6.1",
     "postcss": "8.4.31",
-    "sass": "1.69.0",
+    "sass": "1.69.1",
     "spark-md5": "3.0.2",
     "stylus": "0.60.0",
     "typescript": "5.2.2",
@@ -74,6 +74,6 @@
     "vite-plugin-vue-devtools": "1.0.0-rc.5",
     "vite-plugin-vue-inspector": "4.0.0",
     "vitest": "0.34.6",
-    "vue-tsc": "1.8.16"
+    "vue-tsc": "1.8.18"
   }
 }
