@@ -24,9 +24,9 @@ impl MenuQuery {
     let res = menu_service::get_menus(
       &mut ctx,
       r#type,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }

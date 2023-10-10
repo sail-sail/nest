@@ -22,9 +22,9 @@ impl PermitQuery {
     
     let res = permit_resolver::get_usr_permits(
       &mut ctx,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }
