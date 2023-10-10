@@ -308,7 +308,11 @@ export async function gqlQuery(
     exception = errors?.[0];
   }
   if (exception) {
-    if (exception.code === "token_empty" || exception.code === "refresh_token_expired") {
+    let code = exception.code;
+    if (!code) {
+      code = exception.message;
+    }
+    if (code === "token_empty" || code === "refresh_token_expired") {
       const usrStore = useUsrStore();
       await usrStore.setAuthorization("");
       if (!config.notLogin) {
