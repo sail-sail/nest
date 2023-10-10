@@ -752,7 +752,7 @@ const emit = defineEmits<{
 }>();
 
 /**
- * 企微发送条
+ * 企微发送
  */
 async function onSendMsgWxw() {
   if (selectedIds.length === 0) {
@@ -764,6 +764,7 @@ async function onSendMsgWxw() {
     host,
     selectedIds,
   );
+  await dataGrid();
   ElMessage.success(`成功发送 ${ num } 条企微工资条`);
 }
 
@@ -775,6 +776,7 @@ async function onSendMsgWxwOneKey() {
   const num = await sendMsgWxwOneKey(
     host,
   );
+  await dataGrid();
   ElMessage.success(`成功发送 ${ num } 条企微工资条`);
 }
 
