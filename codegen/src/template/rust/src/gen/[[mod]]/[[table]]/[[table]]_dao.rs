@@ -7,6 +7,7 @@ const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default")
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
+const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -588,7 +589,21 @@ pub async fn find_all<'a>(
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query().await?;
-  let where_query = get_where_query(ctx, &mut args, search).await?;
+  let where_query = get_where_query(ctx, &mut args, search).await?;<#
+  if (hasCreateTime) {
+  #>
+  
+  let mut sort = sort.unwrap_or_default();
+  if !sort.iter().any(|item| item.prop == "create_time") {
+    sort.push(SortInput {
+      prop: "create_time".into(),
+      order: "asc".into(),
+    });
+  }
+  let sort = sort.into();
+  <#
+  }
+  #>
   let order_by_query = get_order_by_query(sort);
   let page_query = get_page_query(page);
   
@@ -1527,11 +1542,15 @@ pub async fn create<'a>(
   ctx: &mut impl Ctx<'a>,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<String> {<#
+  if (false) {
+  #>
   
   validate(
     &input,
-  )?;
+  )?;<#
+  }
+  #>
   
   let table = "<#=mod#>_<#=table#>";
   let _method = "create";<#
@@ -1699,9 +1718,11 @@ pub async fn create<'a>(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    sql_fields += ",<#=column_name#>";
-    sql_values += ",?";
-    args.push(get_password(<#=column_name_rust#>)?.into());
+    if !<#=column_name_rust#>.is_empty() {
+      sql_fields += ",<#=column_name#>";
+      sql_values += ",?";
+      args.push(get_password(<#=column_name_rust#>)?.into());
+    }
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #><#
@@ -1998,11 +2019,15 @@ pub async fn update_by_id<'a>(
       None,
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
-  }
+  }<#
+  if (false) {
+  #>
   
   validate(
     &input,
-  )?;
+  )?;<#
+  }
+  #>
   
   input = set_id_by_lbl(
     ctx,
@@ -2091,9 +2116,11 @@ pub async fn update_by_id<'a>(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    field_num += 1;
-    sql_fields += ",<#=column_name#> = ?";
-    args.push(get_password(<#=column_name_rust#>)?.into());
+    if !<#=column_name_rust#>.is_empty() {
+       field_num += 1;
+      sql_fields += ",<#=column_name#> = ?";
+      args.push(get_password(<#=column_name_rust#>)?.into());
+    }
   }<#
     } else if (foreignKey && foreignKey.type === "json") {
   #>
@@ -2196,9 +2223,7 @@ pub async fn update_by_id<'a>(
     
     let args = args.into();
     
-    let options = Options::from(options);
-    
-    let options = options.set_is_debug(false);<#
+    let options = Options::from(options);<#
     if (cache) {
     #>
     
@@ -2877,7 +2902,9 @@ pub async fn validate_option<'a, T>(
     return Err(SrvErr::new(function_name!().to_owned(), err_msg).into());
   }
   Ok(model.unwrap())
-}
+}<#
+if (false) {
+#>
 
 /// 校验, 校验失败时抛出SrvErr异常
 #[allow(unused_imports)]
@@ -3082,4 +3109,6 @@ pub fn validate(
   #>
   
   Ok(())
+}<#
 }
+#>
