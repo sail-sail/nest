@@ -3,6 +3,7 @@ import {
 } from "/lib/context.ts";
 
 import type {
+  WxwGetAppid,
   WxwLoginByCodeInput,
   WxwLoginByCode,
 } from "/gen/types.ts";
@@ -51,31 +52,73 @@ import {
 import * as authService from "/lib/auth/auth.service.ts";
 
 /**
+ * 通过host获取appid, agentid
+ * @param host 域名
+ */
+export async function wxwGetAppid(
+  host: string,
+): Promise<WxwGetAppid> {
+  // 获取域名
+  const domainModel = await validateOptionDomain(
+    await findOneDomain({
+      lbl: host,
+    }),
+  );
+  await validateIsEnabledDomain(domainModel);
+  
+  const domain_id = domainModel.id;
+  
+  // 获取企微应用
+  const wxw_appModel = await validateOptionWxwApp(
+    await findOneWxwApp({
+      domain_id: [ domain_id ],
+    }),
+  );
+  await validateIsEnabledWxwApp(wxw_appModel);
+  
+  return {
+    appid: wxw_appModel.corpid,
+    agentid: wxw_appModel.agentid,
+  };
+}
+
+/**
  * 企业微信单点登录
  */
 export async function wxwLoginByCode(
   input: WxwLoginByCodeInput,
 ): Promise<WxwLoginByCode> {
-  const corpid = input.corpid;
-  const agentid = input.agentid;
+  const host = input.host;
   const code = input.code;
   const lang = input.lang || "zh_CN";
   
-  let wxw_appModel = await findOneWxwApp({
-    corpid,
-    agentid,
-  });
-  wxw_appModel = await validateOptionWxwApp(wxw_appModel);
+  // 获取域名
+  const domainModel = await validateOptionDomain(
+    await findOneDomain({
+      lbl: host,
+    }),
+  );
+  await validateIsEnabledDomain(domainModel);
+  
+  const domain_id = domainModel.id;
+  
+  const wxw_appModel = await validateOptionWxwApp(
+    await findOneWxwApp({
+      domain_id: [ domain_id ],
+    })
+  );
   await validateIsEnabledWxwApp(wxw_appModel);
   
   const wxw_app_id = wxw_appModel.id;
   const tenant_id = wxw_appModel.tenant_id!;
+  
   const {
     userid,
   } = await getuserinfoByCode(
     wxw_app_id,
     code,
   );
+  
   const {
     name,
     position,
@@ -131,6 +174,7 @@ export async function wxwLoginByCode(
           tenant_id: wxw_appModel.tenant_id!,
         },
       );
+      usrModel = (await findByIdUsr(usrModel.id))!;
     }
   } else {
     const id = shortUuidV4();

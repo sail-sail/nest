@@ -8,6 +8,7 @@ export async function wxwLoginByCode(
   code: string,
   opt?: GqlOpt,
 ) {
+  const host = cfg.domain;
   const res: {
     wxwLoginByCode: Mutation["wxwLoginByCode"],
   } = await mutation({
@@ -25,8 +26,7 @@ export async function wxwLoginByCode(
     `,
     variables: {
       input: {
-        corpid: cfg.appid,
-        agentid: cfg.agentid,
+        host,
         code,
       },
     },
