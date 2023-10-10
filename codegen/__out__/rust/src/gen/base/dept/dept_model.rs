@@ -19,6 +19,8 @@ use async_graphql::{
 pub struct DeptModel {
   /// 租户ID
   pub tenant_id: String,
+  /// 组织ID
+  pub org_id: String,
   /// ID
   pub id: String,
   /// 父部门
@@ -67,6 +69,8 @@ impl FromRow<'_, MySqlRow> for DeptModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
+    // 组织ID
+    let org_id = row.try_get("org_id")?;
     // ID
     let id: String = row.try_get("id")?;
     // 父部门
@@ -145,6 +149,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     
     let model = Self {
       tenant_id,
+      org_id,
       id,
       parent_id,
       parent_id_lbl,
@@ -269,6 +274,9 @@ pub struct DeptInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<String>,
+  /// 组织ID
+  #[graphql(skip)]
+  pub org_id: Option<String>,
   /// ID
   pub id: Option<String>,
   /// 父部门

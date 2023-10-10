@@ -761,7 +761,11 @@ pub async fn create<'a>(
   args.push(id.clone().into());
   args.push(now.into());
   
-  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+  if let Some(tenant_id) = input.tenant_id {
+    sql_fields += ",tenant_id";
+    sql_values += ",?";
+    args.push(tenant_id.into());
+  } else if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_fields += ",tenant_id";
     sql_values += ",?";
     args.push(tenant_id.into());

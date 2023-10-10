@@ -932,13 +932,21 @@ pub async fn create<'a>(
   args.push(id.clone().into());
   args.push(now.into());
   
-  if let Some(tenant_id) = ctx.get_auth_tenant_id() {
+  if let Some(tenant_id) = input.tenant_id {
+    sql_fields += ",tenant_id";
+    sql_values += ",?";
+    args.push(tenant_id.into());
+  } else if let Some(tenant_id) = ctx.get_auth_tenant_id() {
     sql_fields += ",tenant_id";
     sql_values += ",?";
     args.push(tenant_id.into());
   }
   
-  if let Some(org_id) = ctx.get_auth_org_id() {
+  if let Some(org_id) = input.org_id {
+    sql_fields += ",org_id";
+    sql_values += ",?";
+    args.push(org_id.into());
+  } else if let Some(org_id) = ctx.get_auth_org_id() {
     sql_fields += ",org_id";
     sql_values += ",?";
     args.push(org_id.into());
