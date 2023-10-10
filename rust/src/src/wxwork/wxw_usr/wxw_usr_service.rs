@@ -8,6 +8,7 @@ use crate::common::context::{
 };
 
 use super::wxw_usr_model::{
+  WxwGetAppid,
   WxwLoginByCodeInput,
   WxwLoginByCode,
 };
@@ -29,6 +30,7 @@ use crate::gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
   create as create_usr,
   update_by_id as update_usr_by_id,
+  validate_option as validate_option_usr,
   validate_is_enabled as validate_is_enabled_usr,
 };
 use crate::gen::base::usr::usr_model::{
@@ -62,21 +64,93 @@ use crate::gen::base::domain::domain_dao::{
 };
 use crate::gen::base::domain::domain_model::DomainSearch;
 
+/// 通过host获取appid, agentid
+pub async fn wxw_get_appid<'a>(
+  ctx: &mut impl Ctx<'a>,
+  host: String,
+) -> Result<WxwGetAppid> {
+  
+  // 获取域名
+  let domain_model = find_one_domain(
+    ctx,
+    DomainSearch {
+      lbl: host.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  let domain_model = validate_option_domain(
+    ctx,
+    domain_model
+  ).await?;
+  validate_is_enabled_domain(
+    ctx,
+    &domain_model,
+  ).await?;
+  
+  let domain_id = domain_model.id;
+  
+  let wxw_app_model = find_one_wxw_app(
+    ctx,
+    WxwAppSearch {
+      domain_id: vec![domain_id].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  let wxw_app_model = validate_option_wxw_app(
+    ctx,
+    wxw_app_model,
+  ).await?;
+  validate_is_enabled_wxw_app(
+    ctx,
+    &wxw_app_model
+  ).await?;
+  
+  let wxw_get_appid = WxwGetAppid {
+    appid: wxw_app_model.corpid,
+    agentid: wxw_app_model.agentid,
+  };
+  
+  Ok(wxw_get_appid)
+}
+
 /// 企微单点登录
 pub async fn wxw_login_by_code<'a>(
   ctx: &mut impl Ctx<'a>,
   input: WxwLoginByCodeInput,
 ) -> Result<WxwLoginByCode> {
-  let corpid = input.corpid;
-  let agentid = input.agentid;
+  let host = input.host;
   let code = input.code;
   let lang = input.lang.unwrap_or("zh_CN".to_string());
+  
+  // 获取域名
+  let domain_model = find_one_domain(
+    ctx,
+    DomainSearch {
+      lbl: host.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  let domain_model = validate_option_domain(
+    ctx,
+    domain_model
+  ).await?;
+  validate_is_enabled_domain(
+    ctx,
+    &domain_model,
+  ).await?;
+  
+  let domain_id = domain_model.id;
   
   let wxw_app_model = find_one_wxw_app(
     ctx,
     WxwAppSearch {
-      corpid: corpid.clone().into(),
-      agentid: agentid.clone().into(),
+      domain_id: vec![domain_id].into(),
       ..Default::default()
     }.into(),
     None,
@@ -102,6 +176,7 @@ pub async fn wxw_login_by_code<'a>(
     wxw_app_id.clone(),
     code,
   ).await?;
+  
   let GetuserRes {
     name,
     position,
@@ -207,15 +282,18 @@ pub async fn wxw_login_by_code<'a>(
     id.clone(),
     None,
   ).await?;
-  if usr_model.is_none() {
-    return Err(anyhow!(
-      "usr_model 不存在 id: {id}",
-    ));
-  }
-  let usr_model = usr_model.unwrap();
+  let usr_model = validate_option_usr(
+    ctx,
+    usr_model,
+  ).await?;
+  validate_is_enabled_usr(
+    ctx,
+    &usr_model,
+  ).await?;
+  
   let org_ids = usr_model.org_ids;
   let mut org_id = usr_model.default_org_id;
-  if org_id.is_empty() {
+  if !org_id.is_empty() {
     org_id = org_ids[0].clone();
   }
   if !org_id.is_empty() && !org_ids.contains(&org_id) {
@@ -233,14 +311,17 @@ pub async fn wxw_login_by_code<'a>(
     exp,
     ..Default::default()
   })?;
-  Ok(WxwLoginByCode {
+  
+  let wxw_login_by_code = WxwLoginByCode {
     authorization,
     org_id: Some(org_id),
     username: name.clone(),
     name,
     tenant_id,
     lang,
-  })
+  };
+  
+  Ok(wxw_login_by_code)
 }
 
 lazy_static! {

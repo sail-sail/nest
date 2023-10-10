@@ -133,6 +133,7 @@ pub async fn get_access_token<'a>(
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id.clone()].into(),
       r#type: "corp".to_owned().into(),
+      tenant_id: tenant_id.clone().into(),
       ..Default::default()
     }.into(),
     None,
@@ -155,7 +156,7 @@ pub async fn get_access_token<'a>(
       WxwAppTokenInput {
         id: id.into(),
         wxw_app_id: wxw_app_id.into(),
-        r#type: "crop".to_owned().into(),
+        r#type: "corp".to_owned().into(),
         access_token: access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
@@ -244,6 +245,7 @@ pub async fn get_contact_access_token<'a>(
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id.clone()].into(),
       r#type: "contact".to_owned().into(),
+      tenant_id: tenant_id.clone().into(),
       ..Default::default()
     }.into(),
     None,
@@ -330,12 +332,21 @@ async fn fetch_getuserinfo_by_code<'a>(
     force.into(),
   ).await?;
   let url = format!(
-    "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token={access_token}&code={code}",
+    "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token={access_token}&code={code}",
     access_token = urlencoding::encode(&access_token),
     code = urlencoding::encode(&code),
   );
+  info!(
+    "{req_id} fetch_getuserinfo_by_code.url: {url}",
+    req_id = ctx.get_req_id(),
+  );
   let res = reqwest::get(&url).await?;
-  let data: GetuserinfoRes = res.json().await?;
+  let data = res.text().await?;
+  info!(
+    "{req_id} fetch_getuserinfo_by_code.data: {data}",
+    req_id = ctx.get_req_id(),
+  );
+  let data: GetuserinfoRes = serde_json::from_str(&data)?;
   Ok(data)
 }
 
@@ -409,8 +420,17 @@ async fn fetch_getuseridlist<'a>(
     "https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token={access_token}",
     access_token = urlencoding::encode(&access_token),
   );
+  info!(
+    "{req_id} fetch_getuseridlist.url: {url}",
+    req_id = ctx.get_req_id(),
+  );
   let res = reqwest::get(&url).await?;
   let data: GetuseridlistRes = res.json().await?;
+  info!(
+    "{req_id} fetch_getuseridlist.data: {data}",
+    req_id = ctx.get_req_id(),
+    data = serde_json::to_string(&data)?,
+  );
   Ok(data)
 }
 
@@ -469,8 +489,17 @@ async fn fetch_getuser<'a>(
     access_token = urlencoding::encode(&access_token),
     userid = urlencoding::encode(&userid),
   );
+  info!(
+    "{req_id} fetch_getuser.url: {url}",
+    req_id = ctx.get_req_id(),
+  );
   let res = reqwest::get(&url).await?;
   let data: GetuserRes = res.json().await?;
+  info!(
+    "{req_id} fetch_getuser.data: {data}",
+    req_id = ctx.get_req_id(),
+    data = serde_json::to_string(&data)?,
+  );
   Ok(data)
 }
 

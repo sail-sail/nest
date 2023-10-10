@@ -9,9 +9,34 @@ use crate::common::context::{
 use super::wxw_usr_resolver;
 
 use super::wxw_usr_model::{
+  WxwGetAppid,
   WxwLoginByCodeInput,
   WxwLoginByCode,
 };
+
+#[derive(Default)]
+pub struct WxwUsrQuery;
+
+#[Object(rename_args = "snake_case")]
+impl WxwUsrQuery {
+  
+  /// 通过host获取appid, agentid
+  async fn wxw_get_appid<'a>(
+    &self,
+    ctx: &Context<'a>,
+    host: String,
+  ) -> Result<WxwGetAppid> {
+    let mut ctx = CtxImpl::new(ctx);
+    
+    let res = wxw_usr_resolver::wxw_get_appid(
+      &mut ctx,
+      host,
+    ).await;
+    
+    ctx.ok(res).await
+  }
+  
+}
 
 #[derive(Default)]
 pub struct WxwUsrMutation;
@@ -25,14 +50,14 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     input: WxwLoginByCodeInput,
   ) -> Result<WxwLoginByCode> {
-    let mut ctx = CtxImpl::with_tran(ctx);
+    let mut ctx = CtxImpl::new(ctx);
     
     let res = wxw_usr_resolver::wxw_login_by_code(
       &mut ctx,
       input
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
   /// 同步企业微信用户
@@ -46,9 +71,9 @@ impl WxwUsrMutation {
     let res = wxw_usr_resolver::wxw_sync_usr(
       &mut ctx,
       host,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }
