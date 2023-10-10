@@ -499,7 +499,7 @@ pub async fn find_all<'a>(
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "desc".into(),
+      order: "asc".into(),
     });
   }
   let sort = sort.into();
