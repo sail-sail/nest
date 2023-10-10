@@ -540,6 +540,7 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 async function onWxwSyncUsr() {
   const host = window.location.host;
   const num = await wxwSyncUsr(host);
+  await dataGrid(true);
   if (num === 0) {
     ElMessage.success(await nsAsync("企微同步成功, 无新增数据"));
   } else {
