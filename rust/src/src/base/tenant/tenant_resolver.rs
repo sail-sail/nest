@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::CtxImpl;
+use crate::common::context::{Ctx, CtxImpl};
 
 use super::tenant_service;
 use crate::gen::base::tenant::tenant_model::TenantModel;
@@ -19,8 +19,8 @@ impl TenantQuery {
     domain: String,
   ) -> Result<Vec<TenantModel>> {
     let mut ctx = CtxImpl::new(ctx);
-    let res = tenant_service::get_login_tenants(&mut ctx, domain).await?;
-    Ok(res)
+    let res = tenant_service::get_login_tenants(&mut ctx, domain).await;
+    ctx.ok(res).await
   }
   
 }

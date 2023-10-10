@@ -31,9 +31,9 @@ impl UsrMutation {
     let res = usr_resolver::login(
       &mut ctx,
       input
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
   /// 选择语言
@@ -47,9 +47,9 @@ impl UsrMutation {
     let res = usr_resolver::select_lang(
       &mut ctx,
       lang,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }
@@ -69,9 +69,9 @@ impl UsrQuery {
     
     let res = usr_resolver::get_login_info(
       &mut ctx,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }

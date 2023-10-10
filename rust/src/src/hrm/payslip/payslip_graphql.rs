@@ -43,9 +43,9 @@ impl PayslipMutation {
     let res = payslip_resolver::send_msg_wxw_one_key(
       &mut ctx,
       host,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
   /// 确认工资条
@@ -59,9 +59,9 @@ impl PayslipMutation {
     let res = payslip_resolver::confirm_payslip(
       &mut ctx,
       id,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }
