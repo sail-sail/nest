@@ -394,7 +394,7 @@ export async function findByUnique(
     }
     let lang_id: string[] = [ ];
     if (!Array.isArray(search0.lang_id)) {
-      lang_id.push(search0.lang_id);
+      lang_id.push(search0.lang_id, search0.lang_id);
     } else {
       lang_id = search0.lang_id;
     }
@@ -403,7 +403,7 @@ export async function findByUnique(
     }
     let menu_id: string[] = [ ];
     if (!Array.isArray(search0.menu_id)) {
-      menu_id.push(search0.menu_id);
+      menu_id.push(search0.menu_id, search0.menu_id);
     } else {
       menu_id = search0.menu_id;
     }

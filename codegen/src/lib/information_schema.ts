@@ -234,7 +234,7 @@ async function getSchema0(
         item.showOverflowTooltip = false;
       }
     }
-    if (column_name.startsWith("is_")) {
+    if (column_name.startsWith("is_") || record?.COLUMN_TYPE === "tinyint(1) unsigned") {
       if (item.width == null) {
         item.width = 60;
       }
@@ -249,6 +249,9 @@ async function getSchema0(
       }
       if (item.require == null) {
         item.require = true;
+      }
+      if (item.searchMultiple == null) {
+        item.searchMultiple = false;
       }
     }
     if ([ "order_by" ].includes(column_name)) {
