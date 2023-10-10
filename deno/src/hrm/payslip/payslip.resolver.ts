@@ -27,3 +27,17 @@ export async function sendMsgWxwOneKey(
   const num = await sendMsgWxwOneKey(host);
   return num;
 }
+
+/**
+ * 确认工资条
+ */
+export async function confirmPayslip(
+  id: string,
+) {
+  const {
+    confirmPayslip,
+  } = await import("./payslip.service.ts");
+  
+  const num = await confirmPayslip(id);
+  return num;
+}

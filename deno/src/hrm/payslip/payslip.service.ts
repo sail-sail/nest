@@ -10,6 +10,7 @@ import {
 
 import {
   findById as findByIdPayslip,
+  validateOption as validateOptionPayslip,
   updateById as updateByIdPayslip,
   findAll as findAllPayslip,
 } from "/gen/hrm/payslip/payslip.dao.ts"
@@ -106,4 +107,25 @@ export async function sendMsgWxwOneKey(
     ids,
   );
   return num;
+}
+
+/**
+ * 确认工资条
+ */
+export async function confirmPayslip(
+  id: string,
+) {
+  const payslipModel = await validateOptionPayslip(
+    await findByIdPayslip(id),
+  );
+  if (payslipModel.is_confirm) {
+    throw `工资条已确认`;
+  }
+  await updateByIdPayslip(
+    id,
+    {
+      is_confirm: 1,
+    },
+  );
+  return 1;
 }

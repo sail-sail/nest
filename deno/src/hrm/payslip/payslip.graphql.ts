@@ -20,6 +20,12 @@ type Mutation {
     host: String!
   ): Int!
   
+  "确认工资条"
+  confirmPayslip(
+    "工资条ID"
+    id: String!
+  ): Int!
+  
 }
 
 `);

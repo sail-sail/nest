@@ -14,11 +14,13 @@
       label="发放月份"
       field="pay_month"
     >
-      <CustomInput
-        v-model="model.pay_month"
-        :readonly="true"
+      <view
+        un-h="32px"
+        un-flex="~"
+        un-items="center"
       >
-      </CustomInput>
+        {{ model.pay_month_lbl }}
+      </view>
     </CustomFormItem>
     
     <CustomFormItem
@@ -126,6 +128,7 @@
     un-m="x-2"
   >
     <tm-modal
+      v-if="model.is_confirm === 0"
       title="工资条"
       ok-text="确认"
       :overlay-click="false"
@@ -147,6 +150,12 @@
         确认工资条吗？
       </view>
     </tm-modal>
+    <tm-button
+      v-else
+      label="已确认"
+      block
+      disabled
+    ></tm-button>
   </view>
   
   <AppLoading></AppLoading>
@@ -166,6 +175,11 @@ import {
   checkLogin,
 } from "../index/Api";
 
+import {
+  findById,
+  confirmPayslip,
+} from "./Api";
+
 checkLogin();
 
 let msgRef = $ref<InstanceType<typeof TmMessage>>();
@@ -175,6 +189,27 @@ let model = $ref<Partial<PayslipModel>>({
 });
 
 let id = $ref("");
+
+watch(
+  () => id,
+  refresh,
+);
+
+async function refresh() {
+  if (!id) {
+    return;
+  }
+  const res = await findById(id);
+  if (!res) {
+    await nextTick();
+    msgRef?.show({
+      model: "error",
+      text: "工资条不存在",
+    });
+    return;
+  }
+  model = res;
+}
 
 async function onConfirm() {
   if (!formRef || !msgRef) {
@@ -193,7 +228,7 @@ async function onConfirm() {
     return;
   }
   
-  // await confirmPayslip(id);
+  await confirmPayslip(id);
   
   msgRef.show({
     model: "success",
