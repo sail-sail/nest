@@ -1113,13 +1113,15 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
   }<#
@@ -1131,13 +1133,15 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
   }<#
@@ -1149,13 +1153,15 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
   }<#
