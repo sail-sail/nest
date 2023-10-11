@@ -33,6 +33,7 @@ lazy_static! {
     .unwrap_or(3600);
   static ref DB_POOL: Pool<MySql> = init_db_pool().unwrap();
   static ref IS_DEBUG: bool = init_debug();
+  static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
 }
 
 fn init_debug() -> bool {
@@ -298,7 +299,8 @@ pub trait Ctx<'a>: Send + Sized {
             }
           };
         }
-        let mut debug_sql = sql.to_string();
+        let mut debug_sql = sql.to_owned();
+        debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
         for arg in debug_args {
           debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
@@ -454,7 +456,8 @@ pub trait Ctx<'a>: Send + Sized {
           }
         };
       }
-      let mut debug_sql = sql.to_string();
+      let mut debug_sql = sql.to_owned();
+      debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
       for arg in debug_args {
         debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
@@ -649,7 +652,8 @@ pub trait Ctx<'a>: Send + Sized {
             }
           };
         }
-        let mut debug_sql = sql.to_string();
+        let mut debug_sql = sql.to_owned();
+        debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
         for arg in debug_args {
           debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
         }
@@ -806,7 +810,8 @@ pub trait Ctx<'a>: Send + Sized {
           }
         };
       }
-      let mut debug_sql = sql.to_string();
+      let mut debug_sql = sql.to_owned();
+      debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
       for arg in debug_args {
         debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
       }
@@ -1000,8 +1005,11 @@ pub trait Ctx<'a>: Send + Sized {
             }
           };
         }
-        let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-        let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
+        let mut debug_sql = sql.to_owned();
+        debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
+        for arg in debug_args {
+          debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
+        }
         info!("{} {}", self.get_req_id(), debug_sql);
       } else {
         for arg in args {
@@ -1156,8 +1164,11 @@ pub trait Ctx<'a>: Send + Sized {
           }
         };
       }
-      let query_params: sqlformat::QueryParams = sqlformat::QueryParams::Indexed(debug_args);
-      let debug_sql = sqlformat::format(sql, &query_params, sqlformat::FormatOptions::default());
+      let mut debug_sql = sql.to_owned();
+      debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
+      for arg in debug_args {
+        debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
+      }
       info!("{} {}", self.get_req_id(), debug_sql);
     } else {
       for arg in args {
@@ -1798,6 +1809,7 @@ impl<'a> CtxImpl<'a> {
 /**
  * 转义sql语句中的字段
  */
+#[must_use]
 pub fn escape_id(val: impl AsRef<str>) -> String {
   let mut val = val.as_ref().to_owned();
   val = val.replace('`', "``");
@@ -1814,6 +1826,7 @@ pub fn escape_id(val: impl AsRef<str>) -> String {
 /**
  * 转义sql语句中的值
  */
+#[must_use]
 pub fn escape(val: impl AsRef<str>) -> String {
   let mut val = val.as_ref().to_owned();
   val = val.replace('`', "``");
@@ -1830,6 +1843,7 @@ pub fn escape(val: impl AsRef<str>) -> String {
 /**
  * 获取 sql 语句中 limit 的部分
  */
+#[must_use]
 pub fn get_page_query(page: Option<PageInput>) -> String {
   let mut page_query = String::with_capacity(32);
   if let Some(page) = page {
@@ -1845,6 +1859,7 @@ pub fn get_page_query(page: Option<PageInput>) -> String {
 /**
  * 获取 sql 语句中 order by 的部分
  */
+#[must_use]
 pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
 ) -> String {
@@ -1879,6 +1894,7 @@ pub fn get_order_by_query(
   order_by_query
 }
 
+#[must_use]
 pub fn get_short_uuid() -> String {
   let uuid = uuid::Uuid::new_v4();
   let uuid = uuid.to_string();
@@ -1911,10 +1927,19 @@ mod tests {
   #[test]
   fn test_debug_sql() {
     let debug_args = vec!["a", "b"];
-    let sql = "select * from `a`.`b` where a = ? and b = ?";
-    let mut debug_sql = sql.to_string();
+    let sql = r#"
+      select
+        *
+      from
+        `a`.`b`
+      where 
+        a = ?
+        and b = ?
+    "#;
+    let mut debug_sql = sql.to_owned();
+    debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
     for arg in debug_args {
-      debug_sql = debug_sql.replacen("?", &format!("'{}'", arg.replace("'", "''")), 1);
+      debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
     }
     println!("{}", debug_sql);
   }
