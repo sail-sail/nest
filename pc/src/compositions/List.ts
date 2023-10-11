@@ -1050,8 +1050,8 @@ export function monthrangeSearch(value?: Date[] | string[] | null, event?: Date[
     return;
   }
   if (event[0] && event[1]) {
-    value[0] = dayjs(event[0]).startOf("month").toDate();
-    value[1] = dayjs(event[1]).endOf("month").toDate();
+    value[0] = dayjs(event[0]).startOf("month").format("YYYY-MM-DD");
+    value[1] = dayjs(event[1]).endOf("month").format("YYYY-MM-DD");
   }
 }
 
