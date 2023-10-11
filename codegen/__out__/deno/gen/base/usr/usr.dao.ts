@@ -571,6 +571,111 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: UsrInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 默认组织
+  if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
+    input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
+    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
+    if (orgModel) {
+      input.default_org_id = orgModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+  
+  // 所属组织
+  if (!input.org_ids && input.org_ids_lbl) {
+    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
+      input.org_ids_lbl = input.org_ids_lbl.split(",");
+    }
+    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_org t
+      where
+        t.lbl in ${ args.push(input.org_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.org_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 所属部门
+  if (!input.dept_ids && input.dept_ids_lbl) {
+    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
+      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
+    }
+    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_dept t
+      where
+        t.lbl in ${ args.push(input.dept_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.dept_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 拥有角色
+  if (!input.role_ids && input.role_ids_lbl) {
+    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
+      input.role_ids_lbl = input.role_ids_lbl.split(",");
+    }
+    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_role t
+      where
+        t.lbl in ${ args.push(input.role_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.role_ids = models.map((item: { id: string }) => item.id);
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -899,104 +1004,7 @@ export async function create(
   const table = "base_usr";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 默认组织
-  if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
-    input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
-    if (orgModel) {
-      input.default_org_id = orgModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-  
-  // 所属组织
-  if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 所属部门
-  if (!input.dept_ids && input.dept_ids_lbl) {
-    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
-      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
-    }
-    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(input.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.dept_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 拥有角色
-  if (!input.role_ids && input.role_ids_lbl) {
-    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
-      input.role_ids_lbl = input.role_ids_lbl.split(",");
-    }
-    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_role t
-      where
-        t.lbl in ${ args.push(input.role_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.role_ids = models.map((item: { id: string }) => item.id);
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -1264,109 +1272,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 默认组织
-  if (isNotEmpty(input.default_org_id_lbl) && input.default_org_id === undefined) {
-    input.default_org_id_lbl = String(input.default_org_id_lbl).trim();
-    const orgModel = await orgDao.findOne({ lbl: input.default_org_id_lbl });
-    if (orgModel) {
-      input.default_org_id = orgModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-
-  // 所属组织
-  if (!input.org_ids && input.org_ids_lbl) {
-    if (typeof input.org_ids_lbl === "string" || input.org_ids_lbl instanceof String) {
-      input.org_ids_lbl = input.org_ids_lbl.split(",");
-    }
-    input.org_ids_lbl = input.org_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_org t
-      where
-        t.lbl in ${ args.push(input.org_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.org_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 所属部门
-  if (!input.dept_ids && input.dept_ids_lbl) {
-    if (typeof input.dept_ids_lbl === "string" || input.dept_ids_lbl instanceof String) {
-      input.dept_ids_lbl = input.dept_ids_lbl.split(",");
-    }
-    input.dept_ids_lbl = input.dept_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_dept t
-      where
-        t.lbl in ${ args.push(input.dept_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.dept_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 拥有角色
-  if (!input.role_ids && input.role_ids_lbl) {
-    if (typeof input.role_ids_lbl === "string" || input.role_ids_lbl instanceof String) {
-      input.role_ids_lbl = input.role_ids_lbl.split(",");
-    }
-    input.role_ids_lbl = input.role_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_role t
-      where
-        t.lbl in ${ args.push(input.role_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.role_ids = models.map((item: { id: string }) => item.id);
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

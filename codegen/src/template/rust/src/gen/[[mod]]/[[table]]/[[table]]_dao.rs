@@ -9,6 +9,7 @@ const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasMany2many = columns.some((column) => column.foreignKey?.type === "many2many");
 const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_time");
+const hasIsMonth = columns.some((column) => column.isMonth);
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("_");
@@ -44,9 +45,13 @@ const hasEncrypt = columns.some((column) => {
 #>use anyhow::Result;
 use tracing::info;<#
 if (hasPassword) {
-  
 #>
 use crate::common::auth::auth_dao::get_password;<#
+}
+#><#
+if (hasIsMonth) {
+#>
+use chrono::Datelike;<#
 }
 #>
 use crate::common::util::string::*;<#
@@ -1180,6 +1185,7 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+/// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -1188,6 +1194,68 @@ pub async fn set_id_by_lbl<'a>(
   
   #[allow(unused_mut)]
   let mut input = input;<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    let column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.isMonth) {
+  #>
+  // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_none() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.<#=column_name_rust#>.is_none() {
+        let table_comment = i18n_dao::ns(
+          ctx,
+          "<#=table_comment#>".to_owned(),
+          None,
+        ).await?;
+        
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+      }
+    }
+  }
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+    input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
+  }<#
+      if (column.require) {
+  #> else {
+    let table_comment = i18n_dao::ns(
+      ctx,
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+  }<#
+      }
+  #><#
+    }
+  #><#
+  }
+  #><#
   let dictNumMap = { };
   let dictBizNumMap = { };
     if (hasDict) {
@@ -1602,11 +1670,6 @@ pub async fn create<'a>(
   
   let now = ctx.get_now();
   
-  input = set_id_by_lbl(
-    ctx,
-    input,
-  ).await?;
-  
   let old_models = find_by_unique(
     ctx,
     input.clone().into(),
@@ -1964,6 +2027,7 @@ pub async fn get_version_by_id<'a>(
 #>
 
 /// 根据id修改数据
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -2037,11 +2101,6 @@ pub async fn update_by_id<'a>(
   )?;<#
   }
   #>
-  
-  input = set_id_by_lbl(
-    ctx,
-    input,
-  ).await?;
   
   {
     let mut input = input.clone();

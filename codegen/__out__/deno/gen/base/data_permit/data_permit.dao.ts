@@ -382,6 +382,55 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: DataPermitInput,
+) {
+  
+  const [
+    scopeDict, // 范围
+    typeDict, // 类型
+    is_sysDict, // 系统字段
+  ] = await dictSrcDao.getDict([
+    "data_permit_scope",
+    "data_permit_type",
+    "is_sys",
+  ]);
+  
+  // 菜单
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+    input.menu_id_lbl = String(input.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
+    if (menuModel) {
+      input.menu_id = menuModel.id;
+    }
+  }
+  
+  // 范围
+  if (isNotEmpty(input.scope_lbl) && input.scope === undefined) {
+    const val = scopeDict.find((itemTmp) => itemTmp.lbl === input.scope_lbl)?.val;
+    if (val !== undefined) {
+      input.scope = val;
+    }
+  }
+  
+  // 类型
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
+    if (val !== undefined) {
+      input.type = val;
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -711,48 +760,7 @@ export async function create(
   const table = "base_data_permit";
   const method = "create";
   
-  const [
-    scopeDict, // 范围
-    typeDict, // 类型
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "data_permit_scope",
-    "data_permit_type",
-    "is_sys",
-  ]);
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 范围
-  if (isNotEmpty(input.scope_lbl) && input.scope === undefined) {
-    const val = scopeDict.find((itemTmp) => itemTmp.lbl === input.scope_lbl)?.val;
-    if (val !== undefined) {
-      input.scope = val;
-    }
-  }
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -911,48 +919,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    scopeDict, // 范围
-    typeDict, // 类型
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "data_permit_scope",
-    "data_permit_type",
-    "is_sys",
-  ]);
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 范围
-  if (isNotEmpty(input.scope_lbl) && input.scope === undefined) {
-    const val = scopeDict.find((itemTmp) => itemTmp.lbl === input.scope_lbl)?.val;
-    if (val !== undefined) {
-      input.scope = val;
-    }
-  }
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
