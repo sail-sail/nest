@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -92,33 +86,18 @@ export async function createPayslip(
   input: PayslipInput,
   unique_type?: UniqueType,
 ): Promise<string> {
-  // 发放月份
-  if (!input.pay_month && input.pay_month_lbl) {
-    const pay_month_lbl = dayjs(input.pay_month_lbl);
-    if (pay_month_lbl.isValid()) {
-      input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.pay_month) {
-    const pay_month = dayjs(input.pay_month);
-    if (!pay_month.isValid()) {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
-    }
-    input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  } else {
-    throw `${ await ns("工资条") } ${ await ns("不能为空") }`;
-  }
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./payslip.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -138,36 +117,22 @@ export async function updateByIdPayslip(
   id: string,
   input: PayslipInput,
 ): Promise<string> {
-  // 发放月份
-  if (!input.pay_month && input.pay_month_lbl) {
-    const pay_month_lbl = dayjs(input.pay_month_lbl);
-    if (pay_month_lbl.isValid()) {
-      input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.pay_month) {
-    const pay_month = dayjs(input.pay_month);
-    if (!pay_month.isValid()) {
-      throw await ns("日期格式错误");
-    }
-    input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  } else {
-    throw await ns("日期格式错误");
-  }
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./payslip.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/hrm/payslip",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./payslip.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -178,6 +143,11 @@ export async function updateByIdPayslip(
 export async function deleteByIdsPayslip(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./payslip.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -186,10 +156,6 @@ export async function deleteByIdsPayslip(
     "/hrm/payslip",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./payslip.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -201,6 +167,11 @@ export async function lockByIdsPayslip(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./payslip.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -212,10 +183,6 @@ export async function lockByIdsPayslip(
     "/hrm/payslip",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./payslip.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -226,6 +193,11 @@ export async function lockByIdsPayslip(
 export async function revertByIdsPayslip(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./payslip.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -234,10 +206,6 @@ export async function revertByIdsPayslip(
     "/hrm/payslip",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./payslip.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

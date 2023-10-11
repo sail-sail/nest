@@ -45,6 +45,14 @@ export async function findAll(
   return models;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: I18Ninput,
+) {
+  const data = await i18nDao.setIdByLbl(input);
+  return data;
+}
+
 /**
  * 根据条件查找第一条数据
  * @param {I18Nsearch} search? 搜索条件

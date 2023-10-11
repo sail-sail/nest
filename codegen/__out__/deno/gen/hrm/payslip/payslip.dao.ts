@@ -342,7 +342,7 @@ export async function findAll(
     // 发放月份
     if (model.pay_month) {
       const pay_month = dayjs(model.pay_month);
-      if (isNaN(pay_month.toDate().getTime())) {
+      if (!pay_month.isValid()) {
         model.pay_month_lbl = (model.pay_month || "").toString();
       } else {
         model.pay_month_lbl = pay_month.format("YYYY-MM");
@@ -417,6 +417,73 @@ export async function findAll(
   }
   
   return result;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: PayslipInput,
+) {
+  // 发放月份
+  if (!input.pay_month && input.pay_month_lbl) {
+    const pay_month_lbl = dayjs(input.pay_month_lbl);
+    if (pay_month_lbl.isValid()) {
+      input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.pay_month) {
+    const pay_month = dayjs(input.pay_month);
+    if (!pay_month.isValid()) {
+      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
+    }
+    input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  } else {
+    throw `${ await ns("工资条") } ${ await ns("不能为空") }`;
+  }
+  
+  const [
+    is_sendDict, // 已发送
+    is_confirmDict, // 已确认
+    is_lockedDict, // 锁定
+  ] = await dictSrcDao.getDict([
+    "yes_no",
+    "yes_no",
+    "is_locked",
+  ]);
+  
+  // 发放月份
+  if (isNotEmpty(input.pay_month_lbl) && input.pay_month === undefined) {
+    input.pay_month_lbl = String(input.pay_month_lbl).trim();
+    input.pay_month = input.pay_month_lbl;
+    if (input.pay_month) {
+      input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+    }
+  }
+  
+  // 已发送
+  if (isNotEmpty(input.is_send_lbl) && input.is_send === undefined) {
+    const val = is_sendDict.find((itemTmp) => itemTmp.lbl === input.is_send_lbl)?.val;
+    if (val !== undefined) {
+      input.is_send = Number(val);
+    }
+  }
+  
+  // 已确认
+  if (isNotEmpty(input.is_confirm_lbl) && input.is_confirm === undefined) {
+    const val = is_confirmDict.find((itemTmp) => itemTmp.lbl === input.is_confirm_lbl)?.val;
+    if (val !== undefined) {
+      input.is_confirm = Number(val);
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
 }
 
 /**
@@ -797,48 +864,7 @@ export async function create(
     }
   }
   
-  const [
-    is_sendDict, // 已发送
-    is_confirmDict, // 已确认
-    is_lockedDict, // 锁定
-  ] = await dictSrcDao.getDict([
-    "yes_no",
-    "yes_no",
-    "is_locked",
-  ]);
-  
-  // 发放月份
-  if (isNotEmpty(input.pay_month_lbl) && input.pay_month === undefined) {
-    input.pay_month_lbl = String(input.pay_month_lbl).trim();
-    input.pay_month = input.pay_month_lbl;
-    if (input.pay_month) {
-      input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-    }
-  }
-  
-  // 已发送
-  if (isNotEmpty(input.is_send_lbl) && input.is_send === undefined) {
-    const val = is_sendDict.find((itemTmp) => itemTmp.lbl === input.is_send_lbl)?.val;
-    if (val !== undefined) {
-      input.is_send = Number(val);
-    }
-  }
-  
-  // 已确认
-  if (isNotEmpty(input.is_confirm_lbl) && input.is_confirm === undefined) {
-    const val = is_confirmDict.find((itemTmp) => itemTmp.lbl === input.is_confirm_lbl)?.val;
-    if (val !== undefined) {
-      input.is_confirm = Number(val);
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -1095,44 +1121,12 @@ export async function updateById(
     }
   }
   
-  const [
-    is_sendDict, // 已发送
-    is_confirmDict, // 已确认
-    is_lockedDict, // 锁定
-  ] = await dictSrcDao.getDict([
-    "yes_no",
-    "yes_no",
-    "is_locked",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 已发送
-  if (isNotEmpty(input.is_send_lbl) && input.is_send === undefined) {
-    const val = is_sendDict.find((itemTmp) => itemTmp.lbl === input.is_send_lbl)?.val;
-    if (val !== undefined) {
-      input.is_send = Number(val);
-    }
-  }
-  
-  // 已确认
-  if (isNotEmpty(input.is_confirm_lbl) && input.is_confirm === undefined) {
-    const val = is_confirmDict.find((itemTmp) => itemTmp.lbl === input.is_confirm_lbl)?.val;
-    if (val !== undefined) {
-      input.is_confirm = Number(val);
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
