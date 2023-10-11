@@ -288,6 +288,43 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: WxwAppTokenInput,
+) {
+  // 令牌创建时间
+  if (!input.token_time && input.token_time_lbl) {
+    const token_time_lbl = dayjs(input.token_time_lbl);
+    if (token_time_lbl.isValid()) {
+      input.token_time = token_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("企微应用接口凭据") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.token_time) {
+    const token_time = dayjs(input.token_time);
+    if (!token_time.isValid()) {
+      throw `${ await ns("企微应用接口凭据") } ${ await ns("日期格式错误") }`;
+    }
+    input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  
+  // 企业微信应用
+  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
+    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
+    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
+    if (wxw_appModel) {
+      input.wxw_app_id = wxw_appModel.id;
+    }
+  }
+  
+  // 令牌创建时间
+  if (isNotEmpty(input.token_time_lbl) && input.token_time === undefined) {
+    input.token_time_lbl = String(input.token_time_lbl).trim();
+    input.token_time = input.token_time_lbl;
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -582,20 +619,7 @@ export async function create(
   const table = "wxwork_wxw_app_token";
   const method = "create";
   
-  // 企业微信应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
-    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
-    if (wxw_appModel) {
-      input.wxw_app_id = wxw_appModel.id;
-    }
-  }
-  
-  // 令牌创建时间
-  if (isNotEmpty(input.token_time_lbl) && input.token_time === undefined) {
-    input.token_time_lbl = String(input.token_time_lbl).trim();
-    input.token_time = input.token_time_lbl;
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -809,14 +833,7 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 企业微信应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
-    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
-    if (wxw_appModel) {
-      input.wxw_app_id = wxw_appModel.id;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
