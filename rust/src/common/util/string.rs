@@ -14,11 +14,13 @@ pub fn trim_opt(s: Option<impl AsRef<str>>) -> Option<String> {
   }
 }
 
+#[must_use]
 pub fn sql_like(s: &str) -> String {
   s.replace('%', "\\%")
     .replace('_', "\\_")
 }
 
+#[must_use]
 pub fn hash(s: &[u8]) -> String {
   let mut hasher = Sha256::new();
   hasher.update(s);

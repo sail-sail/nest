@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -95,12 +89,15 @@ export async function createDomain(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./domain.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -120,18 +117,22 @@ export async function updateByIdDomain(
   id: string,
   input: DomainInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/domain",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./domain.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -142,6 +143,11 @@ export async function updateByIdDomain(
 export async function deleteByIdsDomain(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -150,10 +156,6 @@ export async function deleteByIdsDomain(
     "/base/domain",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./domain.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -164,6 +166,11 @@ export async function deleteByIdsDomain(
 export async function defaultByIdDomain(
   id: string,
 ): Promise<number> {
+  
+  const {
+    defaultById,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -172,10 +179,6 @@ export async function defaultByIdDomain(
     "/base/domain",
     "default",
   );
-  
-  const {
-    defaultById,
-  } = await import("./domain.service.ts");
   const res = await defaultById(id);
   return res;
 }
@@ -187,6 +190,11 @@ export async function enableByIdsDomain(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -198,10 +206,6 @@ export async function enableByIdsDomain(
     "/base/domain",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./domain.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -213,6 +217,11 @@ export async function lockByIdsDomain(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -224,10 +233,6 @@ export async function lockByIdsDomain(
     "/base/domain",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./domain.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -238,6 +243,11 @@ export async function lockByIdsDomain(
 export async function revertByIdsDomain(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./domain.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -246,10 +256,6 @@ export async function revertByIdsDomain(
     "/base/domain",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./domain.service.ts");
   const res = await revertByIds(ids);
   return res;
 }
