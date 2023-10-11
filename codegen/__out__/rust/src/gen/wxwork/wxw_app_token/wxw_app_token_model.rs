@@ -21,9 +21,9 @@ pub struct WxwAppTokenModel {
   pub tenant_id: String,
   /// ID
   pub id: String,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id: String,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id_lbl: String,
   /// 类型corp和contact
   pub r#type: String,
@@ -45,7 +45,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: String = row.try_get("id")?;
-    // 企业微信应用
+    // 企微应用
     let wxw_app_id: String = row.try_get("wxw_app_id")?;
     let wxw_app_id_lbl: Option<String> = row.try_get("wxw_app_id_lbl")?;
     let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
@@ -86,9 +86,9 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
 pub struct WxwAppTokenFieldComment {
   /// ID
   pub id: String,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id: String,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id_lbl: String,
   /// 类型corp和contact
   pub r#type: String,
@@ -110,9 +110,9 @@ pub struct WxwAppTokenSearch {
   #[graphql(skip)]
   pub tenant_id: Option<String>,
   pub is_deleted: Option<u8>,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id: Option<Vec<String>>,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id_is_null: Option<bool>,
   /// 类型corp和contact
   pub r#type: Option<String>,
@@ -136,9 +136,9 @@ pub struct WxwAppTokenInput {
   pub tenant_id: Option<String>,
   /// ID
   pub id: Option<String>,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id: Option<String>,
-  /// 企业微信应用
+  /// 企微应用
   pub wxw_app_id_lbl: Option<String>,
   /// 类型corp和contact
   pub r#type: Option<String>,
@@ -160,7 +160,7 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       // 住户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
-      // 企业微信应用
+      // 企微应用
       wxw_app_id: input.wxw_app_id.map(|x| vec![x]),
       // 类型corp和contact
       r#type: input.r#type,
