@@ -4,6 +4,9 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsMonth = columns.some((column) => column.isMonth);
+const hasDate = columns.some((column) => column.DATA_TYPE === "date");
+const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasCreateUsrId = columns.some((column) => column.COLUMN_NAME === "create_usr_id");
@@ -1064,7 +1067,7 @@ export async function findAll(
     // <#=column_comment#>
     if (model.<#=column_name#>) {
       const <#=column_name#> = dayjs(model.<#=column_name#>);
-      if (isNaN(<#=column_name#>.toDate().getTime())) {
+      if (!<#=column_name#>.isValid()) {
         model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
       } else {
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM");
@@ -1079,6 +1082,444 @@ export async function findAll(
   }
   
   return result;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: <#=inputName#>,
+) {<#
+  if (hasIsMonth || hasDate || hasDatetime) {
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.isMonth) {
+  #>
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (<#=column_name#>_lbl.isValid()) {
+      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+    }
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+  }<#
+      if (column.require) {
+  #> else {
+    throw `${ await ns("<#=table_comment#>") } ${ await ns("不能为空") }`;
+  }<#
+      }
+  #><#
+    } else if (column.DATA_TYPE === "date") {
+  #>
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (<#=column_name#>_lbl.isValid()) {
+      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+    }
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
+  }<#
+      if (column.require) {
+  #> else {
+    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
+  }<#
+      }
+  #><#
+    } else if (column.DATA_TYPE === "datetime") {
+  #>
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
+    if (<#=column_name#>_lbl.isValid()) {
+      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.<#=column_name#>) {
+    const <#=column_name#> = dayjs(input.<#=column_name#>);
+    if (!<#=column_name#>.isValid()) {
+      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+    }
+    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
+  }<#
+      if (column.require) {
+  #> else {
+    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
+  }<#
+      }
+  #><#
+    }
+  #><#
+  }
+  #><#
+  }
+  #><#
+  if (hasDict) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictSrcDao.getDict([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dict) {
+    #>
+    "<#=column.dict#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);<#
+  }
+  #><#
+  if (hasDictbiz) {
+  #>
+  
+  const [<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dictbiz) {
+    #>
+    <#=column_name#>Dict, // <#=column_comment#><#
+      }
+    #><#
+    }
+    #>
+  ] = await dictbizSrcDao.getDictbiz([<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+    #><#
+      if (column.dictbiz) {
+    #>
+    "<#=column.dictbiz#>",<#
+      }
+    #><#
+    }
+    #>
+  ]);<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    const isPassword = column.isPassword;
+    const isVirtual = column.isVirtual;
+    if (isVirtual) continue;
+  #><#
+    if (selectList.length > 0) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
+      for (let i = 0; i < selectList.length; i++) {
+        const item = selectList[i];
+        let value = item.value;
+        let label = item.label;
+        if (typeof(value) === "string") {
+          value = `"${ value }"`;
+        } else if (typeof(value) === "number") {
+          value = value.toString();
+        }
+    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
+      input.<#=column_name#> = <#=value#>;
+    }<#
+      }
+    #>
+  }<#
+    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
+    if (val !== undefined) {
+      input.<#=column_name#> = val;
+    }
+  }<#
+    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
+    if (val !== undefined) {
+      input.<#=column_name#> = Number(val);
+    }
+  }<#
+    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
+      let daoStr = "";
+      if (foreignTable !== table) {
+        daoStr = `${ foreignTable }Dao.`;
+      }
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
+    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
+    if (<#=foreignTable#>Model) {
+      input.<#=column_name#> = <#=foreignTable#>Model.id;
+    }
+  }<#
+    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
+  #>
+  
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
+      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
+    }
+    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        <#=foreignKey.mod#>_<#=foreignTable#> t
+      where
+        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
+  }<#
+  } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
+    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
+    input.<#=column_name#> = input.<#=column_name#>_lbl;<#
+    if (column.isMonth) {
+    #>
+    if (input.<#=column_name#>) {
+      input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+    }<#
+    }
+    #>
+  }<#
+  }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (foreignTable) {
+      continue;
+    }
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #><#
+    if (column.dict) {
+  #>
+  
+  // <#=column_comment#>
+  if (input.<#=column_name#> != null) {
+    const dictModel = <#=column_name#>Dict.find((itemTmp) => {
+      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
+    });<#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>
+    input.<#=val#> = dictModel?.<#=key#>;<#
+    }
+    #>
+  }<#
+    } else if (column.dictbiz) {
+  #>
+  
+  // <#=column_comment#>
+  if (input.<#=column_name#> != null) {
+    const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
+      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
+    });<#
+    for (const key of redundLblKeys) {
+      const val = redundLbl[key];
+    #>
+    input.<#=val#> = dictbizModel?.<#=key#>;<#
+    }
+    #>
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const redundLbl = column.redundLbl;
+    if (!redundLbl) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    if (!foreignTable) {
+      continue;
+    }
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const redundLblKeys = Object.keys(redundLbl);
+    if (redundLblKeys.length === 0) {
+      continue;
+    }
+  #>
+  
+  // <#=column_comment#>
+  if (isNotEmpty(input.<#=column_name#>)) {
+    const {
+      findById: findById<#=foreignTableUp#>,
+    } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
+    
+    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(input.<#=column_name#>);
+    if (<#=foreignTable#>Model) {<#
+      for (const key of redundLblKeys) {
+        const val = redundLbl[key];
+      #>
+      input.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
+      }
+      #>
+    }
+  }<#
+  }
+  #>
 }
 
 /**
@@ -1698,344 +2139,9 @@ export async function create(
     #>
   }<#
   }
-  #><#
-  if (hasDict) {
   #>
   
-  const [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dict) {
-    #>
-    <#=column_name#>Dict, // <#=column_comment#><#
-      }
-    #><#
-    }
-    #>
-  ] = await dictSrcDao.getDict([<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dict) {
-    #>
-    "<#=column.dict#>",<#
-      }
-    #><#
-    }
-    #>
-  ]);<#
-  }
-  #><#
-  if (hasDictbiz) {
-  #>
-  
-  const [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dictbiz) {
-    #>
-    <#=column_name#>Dict, // <#=column_comment#><#
-      }
-    #><#
-    }
-    #>
-  ] = await dictbizSrcDao.getDictbiz([<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dictbiz) {
-    #>
-    "<#=column.dictbiz#>",<#
-      }
-    #><#
-    }
-    #>
-  ]);<#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    const isPassword = column.isPassword;
-    const isVirtual = column.isVirtual;
-    if (isVirtual) continue;
-  #><#
-    if (selectList.length > 0) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
-      for (let i = 0; i < selectList.length; i++) {
-        const item = selectList[i];
-        let value = item.value;
-        let label = item.label;
-        if (typeof(value) === "string") {
-          value = `"${ value }"`;
-        } else if (typeof(value) === "number") {
-          value = value.toString();
-        }
-    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
-      input.<#=column_name#> = <#=value#>;
-    }<#
-      }
-    #>
-  }<#
-    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
-      input.<#=column_name#> = val;
-    }
-  }<#
-    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
-      input.<#=column_name#> = Number(val);
-    }
-  }<#
-    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
-      let daoStr = "";
-      if (foreignTable !== table) {
-        daoStr = `${ foreignTable }Dao.`;
-      }
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
-    if (<#=foreignTable#>Model) {
-      input.<#=column_name#> = <#=foreignTable#>Model.id;
-    }
-  }<#
-    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
-  #>
-  
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
-      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
-    }
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        <#=foreignKey.mod#>_<#=foreignTable#> t
-      where
-        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
-  }<#
-  } else if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
-    input.<#=column_name#> = input.<#=column_name#>_lbl;<#
-    if (column.isMonth) {
-    #>
-    if (input.<#=column_name#>) {
-      input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-    }<#
-    }
-    #>
-  }<#
-  }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (foreignTable) {
-      continue;
-    }
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #><#
-    if (column.dict) {
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    const dictModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
-    });<#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>
-    input.<#=val#> = dictModel?.<#=key#>;<#
-    }
-    #>
-  }<#
-    } else if (column.dictbiz) {
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
-    });<#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>
-    input.<#=val#> = dictbizModel?.<#=key#>;<#
-    }
-    #>
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (!foreignTable) {
-      continue;
-    }
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>)) {
-    const {
-      findById: findById<#=foreignTableUp#>,
-    } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
-    
-    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(input.<#=column_name#>);
-    if (<#=foreignTable#>Model) {<#
-      for (const key of redundLblKeys) {
-        const val = redundLbl[key];
-      #>
-      input.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
-      }
-      #>
-    }
-  }<#
-  }
-  #>
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -2610,110 +2716,6 @@ export async function updateById(
   }<#
   }
   #><#
-  if (hasDict) {
-  #>
-  
-  const [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dict) {
-    #>
-    <#=column_name#>Dict, // <#=column_comment#><#
-      }
-    #><#
-    }
-    #>
-  ] = await dictSrcDao.getDict([<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dict) {
-    #>
-    "<#=column.dict#>",<#
-      }
-    #><#
-    }
-    #>
-  ]);<#
-  }
-  #><#
-  if (hasDictbiz) {
-  #>
-  
-  const [<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dictbiz) {
-    #>
-    <#=column_name#>Dict, // <#=column_comment#><#
-      }
-    #><#
-    }
-    #>
-  ] = await dictbizSrcDao.getDictbiz([<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      let column_comment = column.COLUMN_COMMENT || "";
-      let selectList = [ ];
-      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-      if (selectStr) {
-        selectList = eval(`(${ selectStr })`);
-      }
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
-    #><#
-      if (column.dictbiz) {
-    #>
-    "<#=column.dictbiz#>",<#
-      }
-    #><#
-    }
-    #>
-  ]);<#
-  }
-  #><#
   if (hasTenant_id) {
   #>
   
@@ -2731,225 +2733,9 @@ export async function updateById(
     await updateOrgById(id, input.org_id);
   }<#
   }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    const isPassword = column.isPassword;
-    const isVirtual = column.isVirtual;
-    if (isVirtual) continue;
-  #><#
-    if (selectList.length > 0) {
   #>
   
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
-      for (let i = 0; i < selectList.length; i++) {
-        const item = selectList[i];
-        let value = item.value;
-        let label = item.label;
-        if (typeof(value) === "string") {
-          value = `"${ value }"`;
-        } else if (typeof(value) === "number") {
-          value = value.toString();
-        }
-    #><#=i>0?" else ":"\n      "#>if (input.<#=column_name#>_lbl === "<#=label#>") {
-      input.<#=column_name#> = <#=value#>;
-    }<#
-      }
-    #>
-  }<#
-    } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
-      input.<#=column_name#> = val;
-    }
-  }<#
-    } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    const val = <#=column_name#>Dict.find((itemTmp) => itemTmp.lbl === input.<#=column_name#>_lbl)?.val;
-    if (val !== undefined) {
-      input.<#=column_name#> = Number(val);
-    }
-  }<#
-    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
-      let daoStr = "";
-      if (foreignTable !== table) {
-        daoStr = `${ foreignTable }Dao.`;
-      }
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> === undefined) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();
-    const <#=foreignTable#>Model = await <#=daoStr#>findOne({ <#=foreignKey.lbl#>: input.<#=column_name#>_lbl });
-    if (<#=foreignTable#>Model) {
-      input.<#=column_name#> = <#=foreignTable#>Model.id;
-    }
-  }<#
-    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
-  #>
-
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    if (typeof input.<#=column_name#>_lbl === "string" || input.<#=column_name#>_lbl instanceof String) {
-      input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.split(",");
-    }
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        <#=foreignKey.mod#>_<#=foreignTable#> t
-      where
-        t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.<#=column_name#> = models.map((item: { id: string }) => item.id);
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (foreignTable) {
-      continue;
-    }
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #><#
-    if (column.dict) {
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    const dictModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
-    });<#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>
-    input.<#=val#> = dictModel?.<#=key#>;<#
-    }
-    #>
-  }<#
-    } else if (column.dictbiz) {
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    const dictbizModel = <#=column_name#>Dict.find((itemTmp) => {
-      return itemTmp.val === dictbizSrcDao.val2Str(input.<#=column_name#>, itemTmp.type as any);
-    });<#
-    for (const key of redundLblKeys) {
-      const val = redundLbl[key];
-    #>
-    input.<#=val#> = dictbizModel?.<#=key#>;<#
-    }
-    #>
-  }<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-    let selectList = [ ];
-    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
-    if (selectStr) {
-      selectList = eval(`(${ selectStr })`);
-    }
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    if (!foreignTable) {
-      continue;
-    }
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #>
-  
-  // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>)) {
-    const {
-      findById: findById<#=foreignTableUp#>,
-    } = await import("/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts");
-    
-    const <#=foreignTable#>Model = await findById<#=foreignTableUp#>(input.<#=column_name#>);
-    if (<#=foreignTable#>Model) {<#
-      for (const key of redundLblKeys) {
-        const val = redundLbl[key];
-      #>
-      input.<#=val#> = <#=foreignTable#>Model.<#=key#>;<#
-      }
-      #>
-    }
-  }<#
-  }
-  #>
+  await setIdByLbl(input);
   
   {
     const input2 = {
