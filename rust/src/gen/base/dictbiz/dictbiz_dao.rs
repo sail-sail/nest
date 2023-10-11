@@ -732,6 +732,7 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+/// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -818,11 +819,6 @@ pub async fn create<'a>(
   let _method = "create";
   
   let now = ctx.get_now();
-  
-  input = set_id_by_lbl(
-    ctx,
-    input,
-  ).await?;
   
   let old_models = find_by_unique(
     ctx,
@@ -1018,6 +1014,7 @@ pub async fn update_tenant_by_id<'a>(
 }
 
 /// 根据id修改数据
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -1039,11 +1036,6 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
-  
-  input = set_id_by_lbl(
-    ctx,
-    input,
-  ).await?;
   
   {
     let mut input = input.clone();

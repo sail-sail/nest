@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -91,6 +85,11 @@ export async function findByIdOperationRecord(
 export async function deleteByIdsOperationRecord(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./operation_record.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -99,10 +98,6 @@ export async function deleteByIdsOperationRecord(
     "/base/operation_record",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./operation_record.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -113,6 +108,11 @@ export async function deleteByIdsOperationRecord(
 export async function revertByIdsOperationRecord(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./operation_record.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -121,10 +121,6 @@ export async function revertByIdsOperationRecord(
     "/base/operation_record",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./operation_record.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

@@ -89,12 +89,15 @@ export async function createDictDetail(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./dict_detail.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -114,18 +117,22 @@ export async function updateByIdDictDetail(
   id: string,
   input: DictDetailInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./dict_detail.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/dict_detail",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./dict_detail.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -136,6 +143,11 @@ export async function updateByIdDictDetail(
 export async function deleteByIdsDictDetail(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./dict_detail.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -144,10 +156,6 @@ export async function deleteByIdsDictDetail(
     "/base/dict_detail",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./dict_detail.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -159,6 +167,11 @@ export async function enableByIdsDictDetail(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./dict_detail.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -170,10 +183,6 @@ export async function enableByIdsDictDetail(
     "/base/dict_detail",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./dict_detail.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -185,6 +194,11 @@ export async function lockByIdsDictDetail(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./dict_detail.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -196,10 +210,6 @@ export async function lockByIdsDictDetail(
     "/base/dict_detail",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./dict_detail.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -210,6 +220,11 @@ export async function lockByIdsDictDetail(
 export async function revertByIdsDictDetail(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./dict_detail.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -218,10 +233,6 @@ export async function revertByIdsDictDetail(
     "/base/dict_detail",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./dict_detail.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

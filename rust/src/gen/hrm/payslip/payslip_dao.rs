@@ -1,5 +1,6 @@
 use anyhow::Result;
 use tracing::info;
+use chrono::Datelike;
 use crate::common::util::string::*;
 
 use crate::common::util::dao::encrypt;
@@ -812,6 +813,7 @@ pub async fn check_by_unique<'a>(
   Ok(None)
 }
 
+/// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
   ctx: &mut impl Ctx<'a>,
@@ -820,6 +822,42 @@ pub async fn set_id_by_lbl<'a>(
   
   #[allow(unused_mut)]
   let mut input = input;
+  // 发放月份
+  if input.pay_month.is_none() {
+    if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.pay_month.is_none() {
+        let table_comment = i18n_dao::ns(
+          ctx,
+          "工资条".to_owned(),
+          None,
+        ).await?;
+        
+        let err_msg = i18n_dao::ns(
+          ctx,
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+      }
+    }
+  }
+  if let Some(pay_month) = input.pay_month {
+    input.pay_month = pay_month.with_day(1);
+  } else {
+    let table_comment = i18n_dao::ns(
+      ctx,
+      "工资条".to_owned(),
+      None,
+    ).await?;
+    
+    let err_msg = i18n_dao::ns(
+      ctx,
+      "不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+  }
   
   let dict_vec = get_dict(ctx, &vec![
     "yes_no",
@@ -921,11 +959,6 @@ pub async fn create<'a>(
   };
   
   let now = ctx.get_now();
-  
-  input = set_id_by_lbl(
-    ctx,
-    input,
-  ).await?;
   
   let old_models = find_by_unique(
     ctx,
@@ -1149,6 +1182,7 @@ pub async fn update_tenant_by_id<'a>(
 }
 
 /// 根据id修改数据
+#[allow(unused_mut)]
 pub async fn update_by_id<'a>(
   ctx: &mut impl Ctx<'a>,
   id: String,
@@ -1208,11 +1242,6 @@ pub async fn update_by_id<'a>(
     ).await?;
     return Err(SrvErr::msg(err_msg).into());
   }
-  
-  input = set_id_by_lbl(
-    ctx,
-    input,
-  ).await?;
   
   {
     let mut input = input.clone();

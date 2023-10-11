@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -95,12 +89,15 @@ export async function createPermit(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./permit.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -120,18 +117,22 @@ export async function updateByIdPermit(
   id: string,
   input: PermitInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/permit",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./permit.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -142,6 +143,11 @@ export async function updateByIdPermit(
 export async function deleteByIdsPermit(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -150,10 +156,6 @@ export async function deleteByIdsPermit(
     "/base/permit",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./permit.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -164,6 +166,11 @@ export async function deleteByIdsPermit(
 export async function revertByIdsPermit(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./permit.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -172,10 +179,6 @@ export async function revertByIdsPermit(
     "/base/permit",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./permit.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

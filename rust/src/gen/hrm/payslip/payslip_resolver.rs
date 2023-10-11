@@ -4,13 +4,8 @@ use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
-use crate::common::context::SrvErr;
-use crate::src::base::i18n::i18n_dao;
-
 use super::payslip_model::*;
 use super::payslip_service;
-
-use chrono::Datelike;
 
 /// 根据搜索条件和分页查找数据
 pub async fn find_all<'a>(
@@ -90,50 +85,16 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = payslip_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/hrm/payslip".to_owned(),
     "add".to_owned(),
   ).await?;
-  
-  let mut input = input;
-  // 发放月份
-  if input.pay_month.is_none() {
-    if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.pay_month.is_none() {
-        let table_comment = i18n_dao::ns(
-          ctx,
-          "工资条".to_owned(),
-          None,
-        ).await?;
-        
-        let err_msg = i18n_dao::ns(
-          ctx,
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;
-        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-      }
-    }
-  }
-  if let Some(pay_month) = input.pay_month {
-    input.pay_month = pay_month.with_day(1);
-  } else {
-    let table_comment = i18n_dao::ns(
-      ctx,
-      "工资条".to_owned(),
-      None,
-    ).await?;
-    
-    let err_msg = i18n_dao::ns(
-      ctx,
-      "不能为空".to_owned(),
-      None,
-    ).await?;
-    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-  }
-  let input = input;
   
   let id = payslip_service::create(
     ctx,
@@ -172,44 +133,16 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = payslip_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/hrm/payslip".to_owned(),
     "edit".to_owned(),
   ).await?;
-  
-  let mut input = input;
-  // 发放月份
-  if input.pay_month.is_none() {
-    if let Some(pay_month_lbl) = input.pay_month_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.pay_month = chrono::NaiveDate::parse_from_str(pay_month_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.pay_month.is_none() {
-        let table_comment = i18n_dao::ns(
-          ctx,
-          "工资条".to_owned(),
-          None,
-        ).await?;
-        
-        let err_msg = i18n_dao::ns(
-          ctx,
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;
-        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-      }
-    }
-  }
-  if let Some(pay_month) = input.pay_month {
-    input.pay_month = pay_month.with_day(1);
-  } else {
-    let err_msg = i18n_dao::ns(
-      ctx,
-      "日期格式错误".to_owned(),
-      None,
-    ).await?;
-    return Err(SrvErr::msg(err_msg).into());
-  }
-  let input = input;
   
   let res = payslip_service::update_by_id(
     ctx,
