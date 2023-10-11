@@ -7,9 +7,9 @@ defineGraphql(resolver, /* GraphQL */ `
 type WxwAppTokenModel {
   "ID"
   id: String!
-  "企业微信应用"
+  "企微应用"
   wxw_app_id: String!
-  "企业微信应用"
+  "企微应用"
   wxw_app_id_lbl: String
   "类型corp和contact"
   type: String!
@@ -25,9 +25,9 @@ type WxwAppTokenModel {
   is_deleted: Int!
 }
 type WxwAppTokenFieldComment {
-  "企业微信应用"
+  "企微应用"
   wxw_app_id: String!
-  "企业微信应用"
+  "企微应用"
   wxw_app_id_lbl: String!
   "类型corp和contact"
   type: String!
@@ -43,9 +43,9 @@ type WxwAppTokenFieldComment {
 input WxwAppTokenInput {
   ""
   id: String
-  "企业微信应用"
+  "企微应用"
   wxw_app_id: String
-  "企业微信应用"
+  "企微应用"
   wxw_app_id_lbl: String
   "类型corp和contact"
   type: String
@@ -65,7 +65,7 @@ input WxwAppTokenSearch {
   ids: [String]
   "String"
   id: String
-  "企业微信应用"
+  "企微应用"
   wxw_app_id: [String!]
   wxw_app_id_is_null: Boolean
   "类型corp和contact"
