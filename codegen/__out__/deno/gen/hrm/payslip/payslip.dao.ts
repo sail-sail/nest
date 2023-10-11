@@ -429,17 +429,15 @@ export async function setIdByLbl(
     if (pay_month_lbl.isValid()) {
       input.pay_month = pay_month_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("发放月份") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.pay_month) {
     const pay_month = dayjs(input.pay_month);
     if (!pay_month.isValid()) {
-      throw `${ await ns("工资条") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("发放月份") } ${ await ns("日期格式错误") }`;
     }
     input.pay_month = dayjs(input.pay_month).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  } else {
-    throw `${ await ns("工资条") } ${ await ns("不能为空") }`;
   }
   
   const [
