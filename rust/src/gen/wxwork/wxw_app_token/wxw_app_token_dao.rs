@@ -330,8 +330,8 @@ pub async fn get_field_comments<'a>(
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
-    "企业微信应用".into(),
-    "企业微信应用".into(),
+    "企微应用".into(),
+    "企微应用".into(),
     "类型corp和contact".into(),
     "令牌".into(),
     "令牌创建时间".into(),
@@ -553,7 +553,7 @@ pub async fn set_id_by_lbl<'a>(
   #[allow(unused_mut)]
   let mut input = input;
   
-  // 企业微信应用
+  // 企微应用
   if input.wxw_app_id_lbl.is_some()
     && !input.wxw_app_id_lbl.as_ref().unwrap().is_empty()
     && input.wxw_app_id.is_none()
@@ -657,7 +657,7 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(usr_id.into());
   }
-  // 企业微信应用
+  // 企微应用
   if let Some(wxw_app_id) = input.wxw_app_id {
     sql_fields += ",wxw_app_id";
     sql_values += ",?";
@@ -833,7 +833,7 @@ pub async fn update_by_id<'a>(
     sql_fields += ",tenant_id = ?";
     args.push(tenant_id.into());
   }
-  // 企业微信应用
+  // 企微应用
   if let Some(wxw_app_id) = input.wxw_app_id {
     field_num += 1;
     sql_fields += ",wxw_app_id = ?";
