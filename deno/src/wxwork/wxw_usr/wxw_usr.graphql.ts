@@ -38,6 +38,16 @@ type WxwLoginByCode {
   lang: String!
 }
 
+type Query {
+  
+  "通过host获取appid, agentid"
+  wxwGetAppid(
+    "域名"
+    host: String!
+  ): WxwGetAppid!
+  
+}
+
 type Mutation {
   
   "微信企业号登录"
@@ -47,13 +57,6 @@ type Mutation {
     "域名"
     host: String!
   ): Int!
-  
-  "通过host获取appid, agentid"
-  wxwGetAppid(
-    "域名"
-    host: String!
-  ): WxwGetAppid!
-  
 }
 
 `);

@@ -786,7 +786,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         height="100%"
         row-key="id"
         :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="sort"<#
+        :default-sort="defaultSortBy"<#
         if (hasSummary) {
         #>
         show-summary
@@ -2273,24 +2273,48 @@ async function useFindCount(
 if (defaultSort && defaultSort.prop) {
 #>
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "<#=defaultSort.prop#>",
   order: "<#=defaultSort.order || 'ascending'#>",
-});<#
+};<#
 } else {
 #>
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "",
   order: "ascending",
-});<#
+};<#
 }
 #>
+
+let sort = $ref<Sort>({
+  ...defaultSort,
+});
+
+let defaultSortBy = $computed(() => {
+  const column = tableColumns.find((item) => {
+    const sortBy = item.sortBy || item.prop || "";
+    return item.sortBy === sortBy;
+  });
+  const prop = column?.prop || "";
+  const order = sort.order;
+  return {
+    prop,
+    order,
+  } as Sort;
+});
 
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
 ) {
+  if (!order) {
+    sort = {
+      ...defaultSort,
+    };
+    await dataGrid();
+    return;
+  }
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
     sortBy = column.sortBy[0];

@@ -227,6 +227,8 @@ async function langChg() {
   await initI18nEfc();
 }
 
+let oldLoginModelKey = "oldLoginModelPc";
+
 /**
  * 登录
  */
@@ -244,7 +246,7 @@ async function loginClk() {
     return;
   }
   localStorage.setItem(
-    "oldLoginModel",
+    oldLoginModelKey,
     JSON.stringify({
       username: model.username,
       tenant_id: model.tenant_id,
@@ -301,13 +303,13 @@ async function clearCacheClk() {
 }
 
 async function initFrame() {
-  const oldLoginModelStr = localStorage.getItem("oldLoginModel");
+  const oldLoginModelStr = localStorage.getItem(oldLoginModelKey);
   let oldLoginModel: any = undefined;
   if (oldLoginModelStr) {
     try {
       oldLoginModel = JSON.parse(oldLoginModelStr);
     } catch (err) {
-      localStorage.removeItem("oldLoginModel");
+      localStorage.removeItem(oldLoginModelKey);
     }
   }
   if (oldLoginModel) {

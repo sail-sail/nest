@@ -63,14 +63,7 @@ const hasDictbiz = columns.some((column) => {
 
 use crate::common::context::{Ctx, Options};
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::src::base::permit::permit_service::use_permit;<#
-if (hasIsMonth) {
-#>
-
-use crate::common::context::SrvErr;
-use crate::src::base::i18n::i18n_dao;<#
-}
-#>
+use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
@@ -80,12 +73,6 @@ if (log) {
 use crate::src::base::i18n::i18n_service::ns;
 use crate::src::base::operation_record::operation_record_service::log;
 use crate::gen::base::operation_record::operation_record_model::OperationRecordInput;<#
-}
-#><#
-if (hasIsMonth) {
-#>
-
-use chrono::Datelike;<#
 }
 #>
 
@@ -167,80 +154,16 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = <#=table#>_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "add".to_owned(),
-  ).await?;<#
-  if (hasIsMonth) {
-  #>
-  
-  let mut input = input;<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-      ].includes(column_name)
-    ) continue;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-    let column_comment = column.COLUMN_COMMENT || "";
-  #><#
-    if (column.isMonth) {
-  #>
-  // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.<#=column_name_rust#>.is_none() {
-        let table_comment = i18n_dao::ns(
-          ctx,
-          "<#=table_comment#>".to_owned(),
-          None,
-        ).await?;
-        
-        let err_msg = i18n_dao::ns(
-          ctx,
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;
-        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-      }
-    }
-  }
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
-  }<#
-      if (column.require) {
-  #> else {
-    let table_comment = i18n_dao::ns(
-      ctx,
-      "<#=table_comment#>".to_owned(),
-      None,
-    ).await?;
-    
-    let err_msg = i18n_dao::ns(
-      ctx,
-      "不能为空".to_owned(),
-      None,
-    ).await?;
-    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-  }<#
-      }
-  #><#
-    }
-  #><#
-  }
-  #>
-  let input = input;<#
-  }
-  #>
+  ).await?;
   
   let id = <#=table#>_service::create(
     ctx,
@@ -333,74 +256,16 @@ pub async fn update_by_id<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = <#=table#>_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/<#=mod#>/<#=table#>".to_owned(),
     "edit".to_owned(),
   ).await?;<#
-  if (hasIsMonth) {
-  #>
-  
-  let mut input = input;<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-      ].includes(column_name)
-    ) continue;
-    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
-    let column_comment = column.COLUMN_COMMENT || "";
-  #><#
-    if (column.isMonth) {
-  #>
-  // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.<#=column_name_rust#>.is_none() {
-        let table_comment = i18n_dao::ns(
-          ctx,
-          "<#=table_comment#>".to_owned(),
-          None,
-        ).await?;
-        
-        let err_msg = i18n_dao::ns(
-          ctx,
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;
-        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-      }
-    }
-  }
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
-  }<#
-      if (column.require) {
-  #> else {
-    let err_msg = i18n_dao::ns(
-      ctx,
-      "日期格式错误".to_owned(),
-      None,
-    ).await?;
-    return Err(SrvErr::msg(err_msg).into());
-  }<#
-      }
-  #><#
-    }
-  #><#
-  }
-  #>
-  let input = input;<#
-  }
-  #><#
   if (log) {
   #>
   
