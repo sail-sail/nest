@@ -416,13 +416,15 @@ export async function setIdByLbl(
     if (begin_time_lbl.isValid()) {
       input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("开始时间") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.begin_time) {
     const begin_time = dayjs(input.begin_time);
     if (!begin_time.isValid()) {
-      throw `${ await ns("开始时间") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
     }
     input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -432,13 +434,15 @@ export async function setIdByLbl(
     if (end_time_lbl.isValid()) {
       input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("结束时间") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.end_time) {
     const end_time = dayjs(input.end_time);
     if (!end_time.isValid()) {
-      throw `${ await ns("结束时间") } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
     }
     input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
   }
