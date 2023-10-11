@@ -1113,22 +1113,16 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
   }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>") } ${ await ns("不能为空") }`;
-  }<#
-      }
-  #><#
     } else if (column.DATA_TYPE === "date") {
   #>
   // <#=column_comment#>
@@ -1137,22 +1131,16 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
   }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
-  }<#
-      }
-  #><#
     } else if (column.DATA_TYPE === "datetime") {
   #>
   // <#=column_comment#>
@@ -1161,22 +1149,16 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
+      throw `${ await ns("<#=column_comment#>") } ${ await ns("日期格式错误") }`;
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
   }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
-  }<#
-      }
-  #><#
     }
   #><#
   }
