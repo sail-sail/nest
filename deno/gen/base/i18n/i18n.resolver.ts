@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -95,12 +89,15 @@ export async function createI18N(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./i18n.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -120,18 +117,22 @@ export async function updateByIdI18N(
   id: string,
   input: I18Ninput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./i18n.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/i18n",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./i18n.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -142,6 +143,11 @@ export async function updateByIdI18N(
 export async function deleteByIdsI18N(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./i18n.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -150,10 +156,6 @@ export async function deleteByIdsI18N(
     "/base/i18n",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./i18n.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -164,6 +166,11 @@ export async function deleteByIdsI18N(
 export async function revertByIdsI18N(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./i18n.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -172,10 +179,6 @@ export async function revertByIdsI18N(
     "/base/i18n",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./i18n.service.ts");
   const res = await revertByIds(ids);
   return res;
 }
