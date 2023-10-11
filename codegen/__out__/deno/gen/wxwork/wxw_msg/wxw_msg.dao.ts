@@ -342,6 +342,35 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: WxwMsgInput,
+) {
+  
+  const [
+    errcodeDict, // 发送状态
+  ] = await dictSrcDao.getDict([
+    "wxw_msg_errcode",
+  ]);
+  
+  // 企微应用
+  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
+    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
+    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
+    if (wxw_appModel) {
+      input.wxw_app_id = wxw_appModel.id;
+    }
+  }
+  
+  // 发送状态
+  if (isNotEmpty(input.errcode_lbl) && input.errcode === undefined) {
+    const val = errcodeDict.find((itemTmp) => itemTmp.lbl === input.errcode_lbl)?.val;
+    if (val !== undefined) {
+      input.errcode = val;
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -646,28 +675,7 @@ export async function create(
   const table = "wxwork_wxw_msg";
   const method = "create";
   
-  const [
-    errcodeDict, // 发送状态
-  ] = await dictSrcDao.getDict([
-    "wxw_msg_errcode",
-  ]);
-  
-  // 企微应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
-    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
-    if (wxw_appModel) {
-      input.wxw_app_id = wxw_appModel.id;
-    }
-  }
-  
-  // 发送状态
-  if (isNotEmpty(input.errcode_lbl) && input.errcode === undefined) {
-    const val = errcodeDict.find((itemTmp) => itemTmp.lbl === input.errcode_lbl)?.val;
-    if (val !== undefined) {
-      input.errcode = val;
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -878,33 +886,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    errcodeDict, // 发送状态
-  ] = await dictSrcDao.getDict([
-    "wxw_msg_errcode",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 企微应用
-  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
-    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
-    const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
-    if (wxw_appModel) {
-      input.wxw_app_id = wxw_appModel.id;
-    }
-  }
-  
-  // 发送状态
-  if (isNotEmpty(input.errcode_lbl) && input.errcode === undefined) {
-    const val = errcodeDict.find((itemTmp) => itemTmp.lbl === input.errcode_lbl)?.val;
-    if (val !== undefined) {
-      input.errcode = val;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

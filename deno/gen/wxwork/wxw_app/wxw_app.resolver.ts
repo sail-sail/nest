@@ -89,12 +89,15 @@ export async function createWxwApp(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./wxw_app.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -114,18 +117,22 @@ export async function updateByIdWxwApp(
   id: string,
   input: WxwAppInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./wxw_app.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/wxwork/wxw_app",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./wxw_app.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -136,6 +143,11 @@ export async function updateByIdWxwApp(
 export async function deleteByIdsWxwApp(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./wxw_app.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -144,10 +156,6 @@ export async function deleteByIdsWxwApp(
     "/wxwork/wxw_app",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./wxw_app.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -159,6 +167,11 @@ export async function enableByIdsWxwApp(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./wxw_app.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -170,10 +183,6 @@ export async function enableByIdsWxwApp(
     "/wxwork/wxw_app",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./wxw_app.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -185,6 +194,11 @@ export async function lockByIdsWxwApp(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./wxw_app.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -196,10 +210,6 @@ export async function lockByIdsWxwApp(
     "/wxwork/wxw_app",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./wxw_app.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -210,6 +220,11 @@ export async function lockByIdsWxwApp(
 export async function revertByIdsWxwApp(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./wxw_app.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -218,10 +233,6 @@ export async function revertByIdsWxwApp(
     "/wxwork/wxw_app",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./wxw_app.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

@@ -85,6 +85,11 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = wxw_usr_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/wxwork/wxw_usr".to_owned(),
@@ -127,6 +132,11 @@ pub async fn update_by_id<'a>(
   input: WxwUsrInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  let input = wxw_usr_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
   
   use_permit(
     ctx,

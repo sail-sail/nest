@@ -359,6 +359,12 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: OperationRecordInput,
+) {
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -673,6 +679,8 @@ export async function create(
   const table = "base_operation_record";
   const method = "create";
   
+  await setIdByLbl(input);
+  
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
     let id: string | undefined = undefined;
@@ -880,6 +888,8 @@ export async function updateById(
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
+  
+  await setIdByLbl(input);
   
   {
     const input2 = {
