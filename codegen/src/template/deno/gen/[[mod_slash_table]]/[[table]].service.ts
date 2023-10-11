@@ -110,6 +110,14 @@ export async function findAll(
   #>
   const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort);
   return models;
+}
+
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: <#=inputName#>,
+) {
+  const data = await <#=table#>Dao.setIdByLbl(input);
+  return data;
 }<#
 if (hasSummary) {
 #>

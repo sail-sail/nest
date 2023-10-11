@@ -125,7 +125,13 @@ function convertType(field: FieldInfo, val: string, config: ClientConfig): any {
     case MYSQL_TYPE_TIME:
     case MYSQL_TYPE_TIME2:
       return val;
-    case MYSQL_TYPE_DATE:
+    case MYSQL_TYPE_DATE: {
+      if (config.dateStrings !== false) {
+        return val;
+      }
+      const date = new Date(val + " 00:00:00");
+      return date;
+    }
     case MYSQL_TYPE_TIMESTAMP:
     case MYSQL_TYPE_DATETIME:
     case MYSQL_TYPE_NEWDATE:

@@ -392,7 +392,7 @@
         height="100%"
         row-key="id"
         :empty-text="inited ? undefined : ns('加载中...')"
-        :default-sort="sort"
+        :default-sort="defaultSortBy"
         @select="selectChg"
         @select-all="selectChg"
         @row-click="onRow"
@@ -1151,15 +1151,39 @@ async function useFindCount(
   );
 }
 
-let sort: Sort = $ref({
+const defaultSort: Sort = {
   prop: "",
   order: "ascending",
+};
+
+let sort = $ref<Sort>({
+  ...defaultSort,
+});
+
+let defaultSortBy = $computed(() => {
+  const column = tableColumns.find((item) => {
+    const sortBy = item.sortBy || item.prop || "";
+    return item.sortBy === sortBy;
+  });
+  const prop = column?.prop || "";
+  const order = sort.order;
+  return {
+    prop,
+    order,
+  } as Sort;
 });
 
 /** 排序 */
 async function onSortChange(
   { prop, order, column }: { column: TableColumnCtx<RoleModel> } & Sort,
 ) {
+  if (!order) {
+    sort = {
+      ...defaultSort,
+    };
+    await dataGrid();
+    return;
+  }
   let sortBy = "";
   if (Array.isArray(column.sortBy)) {
     sortBy = column.sortBy[0];

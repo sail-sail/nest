@@ -325,6 +325,55 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: DictDetailInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+    is_sysDict, // 系统字段
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+    "is_sys",
+  ]);
+  
+  // 系统字典
+  if (isNotEmpty(input.dict_id_lbl) && input.dict_id === undefined) {
+    input.dict_id_lbl = String(input.dict_id_lbl).trim();
+    const dictModel = await dictDao.findOne({ lbl: input.dict_id_lbl });
+    if (dictModel) {
+      input.dict_id = dictModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -631,48 +680,7 @@ export async function create(
   const table = "base_dict_detail";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-    "is_sys",
-  ]);
-  
-  // 系统字典
-  if (isNotEmpty(input.dict_id_lbl) && input.dict_id === undefined) {
-    input.dict_id_lbl = String(input.dict_id_lbl).trim();
-    const dictModel = await dictDao.findOne({ lbl: input.dict_id_lbl });
-    if (dictModel) {
-      input.dict_id = dictModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -842,48 +850,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-    "is_sys",
-  ]);
-  
-  // 系统字典
-  if (isNotEmpty(input.dict_id_lbl) && input.dict_id === undefined) {
-    input.dict_id_lbl = String(input.dict_id_lbl).trim();
-    const dictModel = await dictDao.findOne({ lbl: input.dict_id_lbl });
-    if (dictModel) {
-      input.dict_id = dictModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

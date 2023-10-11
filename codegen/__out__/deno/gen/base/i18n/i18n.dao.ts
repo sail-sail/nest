@@ -347,6 +347,30 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: I18Ninput,
+) {
+  
+  // 语言
+  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
+    input.lang_id_lbl = String(input.lang_id_lbl).trim();
+    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
+    if (langModel) {
+      input.lang_id = langModel.id;
+    }
+  }
+  
+  // 菜单
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+    input.menu_id_lbl = String(input.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
+    if (menuModel) {
+      input.menu_id = menuModel.id;
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -679,23 +703,7 @@ export async function create(
   const table = "base_i18n";
   const method = "create";
   
-  // 语言
-  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
-    input.lang_id_lbl = String(input.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
-    if (langModel) {
-      input.lang_id = langModel.id;
-    }
-  }
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -849,23 +857,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  // 语言
-  if (isNotEmpty(input.lang_id_lbl) && input.lang_id === undefined) {
-    input.lang_id_lbl = String(input.lang_id_lbl).trim();
-    const langModel = await langDao.findOne({ lbl: input.lang_id_lbl });
-    if (langModel) {
-      input.lang_id = langModel.id;
-    }
-  }
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {
