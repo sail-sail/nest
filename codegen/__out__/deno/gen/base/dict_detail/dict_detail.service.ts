@@ -47,6 +47,14 @@ export async function findAll(
   return models;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: DictDetailInput,
+) {
+  const data = await dict_detailDao.setIdByLbl(input);
+  return data;
+}
+
 /**
  * 根据条件查找第一条数据
  * @param {DictDetailSearch} search? 搜索条件

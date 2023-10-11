@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -95,12 +89,15 @@ export async function createLang(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./lang.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -120,18 +117,22 @@ export async function updateByIdLang(
   id: string,
   input: LangInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./lang.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/lang",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./lang.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -142,6 +143,11 @@ export async function updateByIdLang(
 export async function deleteByIdsLang(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./lang.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -150,10 +156,6 @@ export async function deleteByIdsLang(
     "/base/lang",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./lang.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -165,6 +167,11 @@ export async function enableByIdsLang(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./lang.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -176,10 +183,6 @@ export async function enableByIdsLang(
     "/base/lang",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./lang.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -190,6 +193,11 @@ export async function enableByIdsLang(
 export async function revertByIdsLang(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./lang.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -198,10 +206,6 @@ export async function revertByIdsLang(
     "/base/lang",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./lang.service.ts");
   const res = await revertByIds(ids);
   return res;
 }
