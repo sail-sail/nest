@@ -3,9 +3,6 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasIsMonth = columns.some((column) => column.isMonth);
-const hasDate = columns.some((column) => column.DATA_TYPE === "date");
-const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -56,20 +53,6 @@ if (hasDecimal) {
 #>
 
 import Decimal from "decimal.js";<#
-}
-#><#
-if (hasIsMonth || hasDate || hasDatetime) {
-#>
-
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";<#
-}
-#><#
-if (hasIsMonth || hasDate || hasDatetime) {
-#>
-
-import dayjs from "dayjs";<#
 }
 #>
 
@@ -182,101 +165,6 @@ export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
 ): Promise<string> {<#
-  if (hasIsMonth || hasDate || hasDatetime) {
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-      ].includes(column_name)
-    ) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-  #><#
-    if (column.isMonth) {
-  #>
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
-    if (<#=column_name#>_lbl.isValid()) {
-      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.<#=column_name#>) {
-    const <#=column_name#> = dayjs(input.<#=column_name#>);
-    if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>") } ${ await ns("不能为空") }`;
-  }<#
-      }
-  #><#
-    } else if (column.DATA_TYPE === "date") {
-  #>
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
-    if (<#=column_name#>_lbl.isValid()) {
-      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.<#=column_name#>) {
-    const <#=column_name#> = dayjs(input.<#=column_name#>);
-    if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
-  }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
-  }<#
-      }
-  #><#
-    } else if (column.DATA_TYPE === "datetime") {
-  #>
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
-    if (<#=column_name#>_lbl.isValid()) {
-      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.<#=column_name#>) {
-    const <#=column_name#> = dayjs(input.<#=column_name#>);
-    if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
-  }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
-  }<#
-      }
-  #><#
-    }
-  #><#
-  }
-  #><#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -319,12 +207,15 @@ export async function create<#=Table_Up#>(
     }
     #>
     validate,
+    setIdByLbl,
     create,
   } = await import("./<#=table#>.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -370,101 +261,6 @@ export async function updateById<#=Table_Up#>(
   id: string,
   input: <#=inputName#>,
 ): Promise<string> {<#
-  if (hasIsMonth || hasDate || hasDatetime) {
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-      ].includes(column_name)
-    ) continue;
-    let column_comment = column.COLUMN_COMMENT || "";
-  #><#
-    if (column.isMonth) {
-  #>
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
-    if (<#=column_name#>_lbl.isValid()) {
-      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.<#=column_name#>) {
-    const <#=column_name#> = dayjs(input.<#=column_name#>);
-    if (!<#=column_name#>.isValid()) {
-      throw await ns("日期格式错误");
-    }
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-  }<#
-      if (column.require) {
-  #> else {
-    throw await ns("日期格式错误");
-  }<#
-      }
-  #><#
-    } else if (column.DATA_TYPE === "date") {
-  #>
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
-    if (<#=column_name#>_lbl.isValid()) {
-      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.<#=column_name#>) {
-    const <#=column_name#> = dayjs(input.<#=column_name#>);
-    if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
-  }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
-  }<#
-      }
-  #><#
-    } else if (column.DATA_TYPE === "datetime") {
-  #>
-  // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    const <#=column_name#>_lbl = dayjs(input.<#=column_name#>_lbl);
-    if (<#=column_name#>_lbl.isValid()) {
-      input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.<#=column_name#>) {
-    const <#=column_name#> = dayjs(input.<#=column_name#>);
-    if (!<#=column_name#>.isValid()) {
-      throw `${ await ns("<#=table_comment#>") } ${ await ns("日期格式错误") }`;
-    }
-    input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
-  }<#
-      if (column.require) {
-  #> else {
-    throw `${ await ns("<#=table_comment#>`) } ${ await ns(`不能为空") }`;
-  }<#
-      }
-  #><#
-    }
-  #><#
-  }
-  #><#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -499,14 +295,6 @@ export async function updateById<#=Table_Up#>(
   }<#
   }
   #>
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/<#=mod#>/<#=table#>",
-    "edit",
-  );
   
   const {<#
     if (log) {
@@ -514,8 +302,20 @@ export async function updateById<#=Table_Up#>(
     findById,<#
     }
     #>
+    setIdByLbl,
     updateById,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await setIdByLbl(input);
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "edit",
+  );<#
   if (log) {
   #>
   
@@ -553,14 +353,6 @@ if (opts.noDelete !== true) {
 export async function deleteByIds<#=Table_Up#>(
   ids: string[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/<#=mod#>/<#=table#>",
-    "delete",
-  );
   
   const {<#
     if (log) {
@@ -569,7 +361,16 @@ export async function deleteByIds<#=Table_Up#>(
     }
     #>
     deleteByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  const context = useContext();
+  
+  context.is_tran = true;
+  
+  await usePermit(
+    "/<#=mod#>/<#=table#>",
+    "delete",
+  );<#
   if (log) {
   #>
   
@@ -607,6 +408,11 @@ export async function deleteByIds<#=Table_Up#>(
 export async function defaultById<#=Table_Up#>(
   id: string,
 ): Promise<number> {
+  
+  const {
+    defaultById,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -614,11 +420,7 @@ export async function defaultById<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "default",
-  );
-  
-  const {
-    defaultById,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   
@@ -654,6 +456,11 @@ export async function enableByIds<#=Table_Up#>(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -664,11 +471,7 @@ export async function enableByIds<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "enable",
-  );
-  
-  const {
-    enableByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   
@@ -704,6 +507,11 @@ export async function lockByIds<#=Table_Up#>(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -714,11 +522,7 @@ export async function lockByIds<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "lock",
-  );
-  
-  const {
-    lockByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   
@@ -756,6 +560,11 @@ if (opts.noDelete !== true) {
 export async function revertByIds<#=Table_Up#>(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./<#=table#>.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -763,11 +572,7 @@ export async function revertByIds<#=Table_Up#>(
   await usePermit(
     "/<#=mod#>/<#=table#>",
     "delete",
-  );
-  
-  const {
-    revertByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  );<#
   if (log) {
   #>
   

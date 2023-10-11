@@ -85,6 +85,11 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = dictbiz_detail_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/base/dictbiz_detail".to_owned(),
@@ -127,6 +132,11 @@ pub async fn update_by_id<'a>(
   input: DictbizDetailInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  let input = dictbiz_detail_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
   
   use_permit(
     ctx,

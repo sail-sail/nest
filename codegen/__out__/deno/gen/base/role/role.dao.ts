@@ -525,6 +525,102 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: RoleInput,
+) {
+  
+  const [
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 菜单权限
+  if (!input.menu_ids && input.menu_ids_lbl) {
+    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
+      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
+    }
+    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_menu t
+      where
+        t.lbl in ${ args.push(input.menu_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.menu_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 按钮权限
+  if (!input.permit_ids && input.permit_ids_lbl) {
+    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
+      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
+    }
+    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_permit t
+      where
+        t.lbl in ${ args.push(input.permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.permit_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 数据权限
+  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
+    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
+      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
+    }
+    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_data_permit t
+      where
+        t.scope in ${ args.push(input.data_permit_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.data_permit_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -828,95 +924,7 @@ export async function create(
   const table = "base_role";
   const method = "create";
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 菜单权限
-  if (!input.menu_ids && input.menu_ids_lbl) {
-    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
-      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
-    }
-    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_menu t
-      where
-        t.lbl in ${ args.push(input.menu_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.menu_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 按钮权限
-  if (!input.permit_ids && input.permit_ids_lbl) {
-    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
-      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
-    }
-    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_permit t
-      where
-        t.lbl in ${ args.push(input.permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.permit_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 数据权限
-  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
-    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
-      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
-    }
-    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_data_permit t
-      where
-        t.scope in ${ args.push(input.data_permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.data_permit_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -1169,100 +1177,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "is_locked",
-    "is_enabled",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
-
-  // 菜单权限
-  if (!input.menu_ids && input.menu_ids_lbl) {
-    if (typeof input.menu_ids_lbl === "string" || input.menu_ids_lbl instanceof String) {
-      input.menu_ids_lbl = input.menu_ids_lbl.split(",");
-    }
-    input.menu_ids_lbl = input.menu_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_menu t
-      where
-        t.lbl in ${ args.push(input.menu_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.menu_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 按钮权限
-  if (!input.permit_ids && input.permit_ids_lbl) {
-    if (typeof input.permit_ids_lbl === "string" || input.permit_ids_lbl instanceof String) {
-      input.permit_ids_lbl = input.permit_ids_lbl.split(",");
-    }
-    input.permit_ids_lbl = input.permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_permit t
-      where
-        t.lbl in ${ args.push(input.permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.permit_ids = models.map((item: { id: string }) => item.id);
-  }
-
-  // 数据权限
-  if (!input.data_permit_ids && input.data_permit_ids_lbl) {
-    if (typeof input.data_permit_ids_lbl === "string" || input.data_permit_ids_lbl instanceof String) {
-      input.data_permit_ids_lbl = input.data_permit_ids_lbl.split(",");
-    }
-    input.data_permit_ids_lbl = input.data_permit_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_data_permit t
-      where
-        t.scope in ${ args.push(input.data_permit_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.data_permit_ids = models.map((item: { id: string }) => item.id);
-  }
   
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

@@ -56,6 +56,7 @@ fn init_crypto_key() -> Option<&'static [u8]> {
 /// let encrypted_str = encrypt("hello world");
 /// ```
 #[allow(dead_code)]
+#[must_use]
 pub fn encrypt(
   str: &str,
 ) -> String {
@@ -88,6 +89,7 @@ pub fn encrypt(
 /// 
 /// 返回解密后的字符串，如果解密失败则返回空字符串。
 #[allow(dead_code)]
+#[must_use]
 pub fn decrypt(
   str: &str,
 ) -> String {
