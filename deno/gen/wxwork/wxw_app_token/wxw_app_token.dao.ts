@@ -309,7 +309,7 @@ export async function setIdByLbl(
     input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
   }
   
-  // 企业微信应用
+  // 企微应用
   if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id === undefined) {
     input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
     const wxw_appModel = await wxw_appDao.findOne({ lbl: input.wxw_app_id_lbl });
@@ -332,8 +332,8 @@ export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
   const n = initN(route_path);
   const fieldComments: WxwAppTokenFieldComment = {
     id: await n("ID"),
-    wxw_app_id: await n("企业微信应用"),
-    wxw_app_id_lbl: await n("企业微信应用"),
+    wxw_app_id: await n("企微应用"),
+    wxw_app_id_lbl: await n("企微应用"),
     type: await n("类型corp和contact"),
     access_token: await n("令牌"),
     token_time: await n("令牌创建时间"),
@@ -575,7 +575,7 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 企业微信应用
+  // 企微应用
   await validators.chars_max_length(
     input.wxw_app_id,
     22,
