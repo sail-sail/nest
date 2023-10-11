@@ -109,6 +109,18 @@ pub async fn send_msg_wxw<'a>(
       wxw_usr_model,
     ).await?;
     
+    let payslip_id = payslip_model.id;
+    
+    update_by_id_payslip(
+      ctx,
+      payslip_id.clone(),
+      PayslipInput {
+        is_send: 1.into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+    
     let touser = wxw_usr_model.userid;
     let is_succ = send_card_msg(
       ctx,
@@ -128,7 +140,7 @@ pub async fn send_msg_wxw<'a>(
           "{protocol}://{lbl}/uni/#/pages/payslip/index?id={id}",
           protocol = domain_model.protocol,
           lbl = domain_model.lbl,
-          id = urlencoding::encode(&payslip_model.id),
+          id = urlencoding::encode(&payslip_id),
         ),
         btntxt: "详情".to_owned(),
       },
