@@ -2,12 +2,6 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import dayjs from "dayjs";
-
 import type {
   SearchExtra,
 } from "/lib/util/dao_util.ts";
@@ -95,12 +89,15 @@ export async function createRole(
   
   const {
     validate,
+    setIdByLbl,
     create,
   } = await import("./role.service.ts");
   
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await validate(input);
   
@@ -120,18 +117,22 @@ export async function updateByIdRole(
   id: string,
   input: RoleInput,
 ): Promise<string> {
+  
+  const {
+    setIdByLbl,
+    updateById,
+  } = await import("./role.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
+  
+  await setIdByLbl(input);
   
   await usePermit(
     "/base/role",
     "edit",
   );
-  
-  const {
-    updateById,
-  } = await import("./role.service.ts");
   const res = await updateById(id, input);
   return res;
 }
@@ -142,6 +143,11 @@ export async function updateByIdRole(
 export async function deleteByIdsRole(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    deleteByIds,
+  } = await import("./role.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -150,10 +156,6 @@ export async function deleteByIdsRole(
     "/base/role",
     "delete",
   );
-  
-  const {
-    deleteByIds,
-  } = await import("./role.service.ts");
   const res = await deleteByIds(ids);
   return res;
 }
@@ -165,6 +167,11 @@ export async function enableByIdsRole(
   ids: string[],
   is_enabled: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    enableByIds,
+  } = await import("./role.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -176,10 +183,6 @@ export async function enableByIdsRole(
     "/base/role",
     "enable",
   );
-  
-  const {
-    enableByIds,
-  } = await import("./role.service.ts");
   const res = await enableByIds(ids, is_enabled);
   return res;
 }
@@ -191,6 +194,11 @@ export async function lockByIdsRole(
   ids: string[],
   is_locked: 0 | 1,
 ): Promise<number> {
+  
+  const {
+    lockByIds,
+  } = await import("./role.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -202,10 +210,6 @@ export async function lockByIdsRole(
     "/base/role",
     "lock",
   );
-  
-  const {
-    lockByIds,
-  } = await import("./role.service.ts");
   const res = await lockByIds(ids, is_locked);
   return res;
 }
@@ -216,6 +220,11 @@ export async function lockByIdsRole(
 export async function revertByIdsRole(
   ids: string[],
 ): Promise<number> {
+  
+  const {
+    revertByIds,
+  } = await import("./role.service.ts");
+  
   const context = useContext();
   
   context.is_tran = true;
@@ -224,10 +233,6 @@ export async function revertByIdsRole(
     "/base/role",
     "delete",
   );
-  
-  const {
-    revertByIds,
-  } = await import("./role.service.ts");
   const res = await revertByIds(ids);
   return res;
 }

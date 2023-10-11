@@ -406,6 +406,80 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: BackgroundTaskInput,
+) {
+  // 开始时间
+  if (!input.begin_time && input.begin_time_lbl) {
+    const begin_time_lbl = dayjs(input.begin_time_lbl);
+    if (begin_time_lbl.isValid()) {
+      input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("后台任务") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.begin_time) {
+    const begin_time = dayjs(input.begin_time);
+    if (!begin_time.isValid()) {
+      throw `${ await ns("后台任务") } ${ await ns("日期格式错误") }`;
+    }
+    input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  // 结束时间
+  if (!input.end_time && input.end_time_lbl) {
+    const end_time_lbl = dayjs(input.end_time_lbl);
+    if (end_time_lbl.isValid()) {
+      input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      throw `${ await ns("后台任务") } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.end_time) {
+    const end_time = dayjs(input.end_time);
+    if (!end_time.isValid()) {
+      throw `${ await ns("后台任务") } ${ await ns("日期格式错误") }`;
+    }
+    input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  
+  const [
+    stateDict, // 状态
+    typeDict, // 类型
+  ] = await dictSrcDao.getDict([
+    "background_task_state",
+    "background_task_type",
+  ]);
+  
+  // 状态
+  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
+    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
+    if (val !== undefined) {
+      input.state = val;
+    }
+  }
+  
+  // 类型
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
+    if (val !== undefined) {
+      input.type = val;
+    }
+  }
+  
+  // 开始时间
+  if (isNotEmpty(input.begin_time_lbl) && input.begin_time === undefined) {
+    input.begin_time_lbl = String(input.begin_time_lbl).trim();
+    input.begin_time = input.begin_time_lbl;
+  }
+  
+  // 结束时间
+  if (isNotEmpty(input.end_time_lbl) && input.end_time === undefined) {
+    input.end_time_lbl = String(input.end_time_lbl).trim();
+    input.end_time = input.end_time_lbl;
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -710,41 +784,7 @@ export async function create(
   const table = "base_background_task";
   const method = "create";
   
-  const [
-    stateDict, // 状态
-    typeDict, // 类型
-  ] = await dictSrcDao.getDict([
-    "background_task_state",
-    "background_task_type",
-  ]);
-  
-  // 状态
-  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
-    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
-    if (val !== undefined) {
-      input.state = val;
-    }
-  }
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
-  
-  // 开始时间
-  if (isNotEmpty(input.begin_time_lbl) && input.begin_time === undefined) {
-    input.begin_time_lbl = String(input.begin_time_lbl).trim();
-    input.begin_time = input.begin_time_lbl;
-  }
-  
-  // 结束时间
-  if (isNotEmpty(input.end_time_lbl) && input.end_time === undefined) {
-    input.end_time_lbl = String(input.end_time_lbl).trim();
-    input.end_time = input.end_time_lbl;
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -949,34 +989,12 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    stateDict, // 状态
-    typeDict, // 类型
-  ] = await dictSrcDao.getDict([
-    "background_task_state",
-    "background_task_type",
-  ]);
-  
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id);
   }
   
-  // 状态
-  if (isNotEmpty(input.state_lbl) && input.state === undefined) {
-    const val = stateDict.find((itemTmp) => itemTmp.lbl === input.state_lbl)?.val;
-    if (val !== undefined) {
-      input.state = val;
-    }
-  }
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

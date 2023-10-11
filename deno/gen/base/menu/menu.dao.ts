@@ -468,6 +468,77 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: MenuInput,
+) {
+  
+  const [
+    typeDict, // 类型
+    is_lockedDict, // 锁定
+    is_enabledDict, // 启用
+  ] = await dictSrcDao.getDict([
+    "menu_type",
+    "is_locked",
+    "is_enabled",
+  ]);
+  
+  // 类型
+  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
+    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
+    if (val !== undefined) {
+      input.type = val;
+    }
+  }
+  
+  // 父菜单
+  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
+    input.parent_id_lbl = String(input.parent_id_lbl).trim();
+    const menuModel = await findOne({ lbl: input.parent_id_lbl });
+    if (menuModel) {
+      input.parent_id = menuModel.id;
+    }
+  }
+  
+  // 锁定
+  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
+    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+    if (val !== undefined) {
+      input.is_locked = Number(val);
+    }
+  }
+  
+  // 所在租户
+  if (!input.tenant_ids && input.tenant_ids_lbl) {
+    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
+      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
+    }
+    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
+    const args = new QueryArgs();
+    const sql = `
+      select
+        t.id
+      from
+        base_tenant t
+      where
+        t.lbl in ${ args.push(input.tenant_ids_lbl) }
+    `;
+    interface Result {
+      id: string;
+    }
+    const models = await query<Result>(sql, args);
+    input.tenant_ids = models.map((item: { id: string }) => item.id);
+  }
+  
+  // 启用
+  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
+    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
+    if (val !== undefined) {
+      input.is_enabled = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -806,70 +877,7 @@ export async function create(
   const table = "base_menu";
   const method = "create";
   
-  const [
-    typeDict, // 类型
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "menu_type",
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
-  
-  // 父菜单
-  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
-    input.parent_id_lbl = String(input.parent_id_lbl).trim();
-    const menuModel = await findOne({ lbl: input.parent_id_lbl });
-    if (menuModel) {
-      input.parent_id = menuModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-  
-  // 所在租户
-  if (!input.tenant_ids && input.tenant_ids_lbl) {
-    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
-      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
-    }
-    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_tenant t
-      where
-        t.lbl in ${ args.push(input.tenant_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.tenant_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -1060,70 +1068,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    typeDict, // 类型
-    is_lockedDict, // 锁定
-    is_enabledDict, // 启用
-  ] = await dictSrcDao.getDict([
-    "menu_type",
-    "is_locked",
-    "is_enabled",
-  ]);
-  
-  // 类型
-  if (isNotEmpty(input.type_lbl) && input.type === undefined) {
-    const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
-    if (val !== undefined) {
-      input.type = val;
-    }
-  }
-  
-  // 父菜单
-  if (isNotEmpty(input.parent_id_lbl) && input.parent_id === undefined) {
-    input.parent_id_lbl = String(input.parent_id_lbl).trim();
-    const menuModel = await findOne({ lbl: input.parent_id_lbl });
-    if (menuModel) {
-      input.parent_id = menuModel.id;
-    }
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked === undefined) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val !== undefined) {
-      input.is_locked = Number(val);
-    }
-  }
-
-  // 所在租户
-  if (!input.tenant_ids && input.tenant_ids_lbl) {
-    if (typeof input.tenant_ids_lbl === "string" || input.tenant_ids_lbl instanceof String) {
-      input.tenant_ids_lbl = input.tenant_ids_lbl.split(",");
-    }
-    input.tenant_ids_lbl = input.tenant_ids_lbl.map((item: string) => item.trim());
-    const args = new QueryArgs();
-    const sql = `
-      select
-        t.id
-      from
-        base_tenant t
-      where
-        t.lbl in ${ args.push(input.tenant_ids_lbl) }
-    `;
-    interface Result {
-      id: string;
-    }
-    const models = await query<Result>(sql, args);
-    input.tenant_ids = models.map((item: { id: string }) => item.id);
-  }
-  
-  // 启用
-  if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled === undefined) {
-    const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
-    if (val !== undefined) {
-      input.is_enabled = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

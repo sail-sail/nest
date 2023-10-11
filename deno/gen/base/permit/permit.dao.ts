@@ -355,6 +355,35 @@ export async function findAll(
   return result;
 }
 
+/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+export async function setIdByLbl(
+  input: PermitInput,
+) {
+  
+  const [
+    is_sysDict, // 系统字段
+  ] = await dictSrcDao.getDict([
+    "is_sys",
+  ]);
+  
+  // 菜单
+  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
+    input.menu_id_lbl = String(input.menu_id_lbl).trim();
+    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
+    if (menuModel) {
+      input.menu_id = menuModel.id;
+    }
+  }
+  
+  // 系统字段
+  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
+    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
+    if (val !== undefined) {
+      input.is_sys = Number(val);
+    }
+  }
+}
+
 /**
  * 获取字段对应的名称
  */
@@ -669,28 +698,7 @@ export async function create(
   const table = "base_permit";
   const method = "create";
   
-  const [
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "is_sys",
-  ]);
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
   if (oldModels.length > 0) {
@@ -843,28 +851,7 @@ export async function updateById(
     throw new Error("updateById: input cannot be null");
   }
   
-  const [
-    is_sysDict, // 系统字段
-  ] = await dictSrcDao.getDict([
-    "is_sys",
-  ]);
-  
-  // 菜单
-  if (isNotEmpty(input.menu_id_lbl) && input.menu_id === undefined) {
-    input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await menuDao.findOne({ lbl: input.menu_id_lbl });
-    if (menuModel) {
-      input.menu_id = menuModel.id;
-    }
-  }
-  
-  // 系统字段
-  if (isNotEmpty(input.is_sys_lbl) && input.is_sys === undefined) {
-    const val = is_sysDict.find((itemTmp) => itemTmp.lbl === input.is_sys_lbl)?.val;
-    if (val !== undefined) {
-      input.is_sys = Number(val);
-    }
-  }
+  await setIdByLbl(input);
   
   {
     const input2 = {

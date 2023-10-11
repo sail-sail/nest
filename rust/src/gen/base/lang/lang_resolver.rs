@@ -85,6 +85,11 @@ pub async fn create<'a>(
   options: Option<Options>,
 ) -> Result<String> {
   
+  let input = lang_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
+  
   use_permit(
     ctx,
     "/base/lang".to_owned(),
@@ -108,6 +113,11 @@ pub async fn update_by_id<'a>(
   input: LangInput,
   options: Option<Options>,
 ) -> Result<String> {
+  
+  let input = lang_service::set_id_by_lbl(
+    ctx,
+    input,
+  ).await?;
   
   use_permit(
     ctx,
