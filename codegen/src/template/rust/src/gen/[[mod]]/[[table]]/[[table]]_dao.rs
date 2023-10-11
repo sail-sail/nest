@@ -1217,41 +1217,24 @@ pub async fn set_id_by_lbl<'a>(
     if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
       input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
       if input.<#=column_name_rust#>.is_none() {
-        let table_comment = i18n_dao::ns(
+        let field_comments = get_field_comments(
           ctx,
-          "<#=table_comment#>".to_owned(),
           None,
         ).await?;
+        let column_comment = field_comments.<#=column_name_rust#>;
         
         let err_msg = i18n_dao::ns(
           ctx,
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
+        return Err(SrvErr::msg(format!("{column_comment} {err_msg}")).into());
       }
     }
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     input.<#=column_name_rust#> = <#=column_name_rust#>.with_day(1);
   }<#
-      if (column.require) {
-  #> else {
-    let table_comment = i18n_dao::ns(
-      ctx,
-      "<#=table_comment#>".to_owned(),
-      None,
-    ).await?;
-    
-    let err_msg = i18n_dao::ns(
-      ctx,
-      "不能为空".to_owned(),
-      None,
-    ).await?;
-    return Err(SrvErr::msg(format!("{table_comment} {err_msg}")).into());
-  }<#
-      }
-  #><#
     }
   #><#
   }
