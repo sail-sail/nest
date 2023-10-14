@@ -21,7 +21,7 @@ use super::usr_model::{
 
 /// 登录, 获得token
 pub async fn login<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: LoginInput,
 ) -> Result<Login> {
   let LoginInput {
@@ -97,7 +97,7 @@ pub async fn login<'a>(
 
 /// 选择语言
 pub async fn select_lang<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut Ctx<'a>,
   lang: String,
 ) -> Result<String> {
   
@@ -111,27 +111,30 @@ pub async fn select_lang<'a>(
     return Err(anyhow::anyhow!("未登录"));
   }
   
-  let mut auth_model = auth_model.unwrap();
+  let mut auth_model = auth_model.unwrap().clone();
   auth_model.lang = lang;
   
   let authorization = get_token_by_auth_model(&auth_model)?;
-  ctx.set_auth_model_impl(auth_model.into());
-  ctx.set_auth_token(authorization.clone().into());
+  ctx.set_auth_model(auth_model);
   
   Ok(authorization)
 }
 
 pub async fn get_login_info<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<GetLoginInfo> {
   
   let auth_model = ctx.get_auth_model();
   if auth_model.is_none() {
     return Err(anyhow::anyhow!("未登录"));
   }
-  let auth_model = auth_model.unwrap();
+  let auth_model = auth_model.unwrap().clone();
   
-  let usr_model = usr_dao::find_by_id(ctx, auth_model.id, None).await?;
+  let usr_model = usr_dao::find_by_id(
+    ctx,
+    auth_model.id,
+    None,
+  ).await?;
   
   if usr_model.is_none() {
     return Err(anyhow::anyhow!("用户不存在"));

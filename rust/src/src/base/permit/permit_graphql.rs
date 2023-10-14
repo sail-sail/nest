@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::permit_resolver;
 use super::permit_model::GetUsrPermits;
@@ -18,7 +18,9 @@ impl PermitQuery {
     ctx: &Context<'a>,
   ) -> Result<Vec<GetUsrPermits>> {
     
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = permit_resolver::get_usr_permits(
       &mut ctx,

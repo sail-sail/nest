@@ -4,7 +4,7 @@ use crate::common::context::{Ctx, QueryArgs, Options};
 use super::menu_model::GetMenus;
 
 async fn find_menus<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
   
@@ -120,7 +120,7 @@ async fn find_menus<'a>(
 // }
 
 pub async fn get_menus<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   r#type: Option<String>,
 ) -> Result<Vec<GetMenus>> {
   let all_models: Vec<GetMenus> = find_menus(ctx, r#type).await?;

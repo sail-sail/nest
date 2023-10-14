@@ -1,10 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{
-  CtxImpl,
-  Ctx,
-};
+use crate::common::context::Ctx;
 
 use super::usr_resolver;
 
@@ -26,7 +23,9 @@ impl UsrMutation {
     ctx: &Context<'a>,
     input: LoginInput,
   ) -> Result<Login> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .with_tran()?
+      .build();
     
     let res = usr_resolver::login(
       &mut ctx,
@@ -42,7 +41,9 @@ impl UsrMutation {
     ctx: &Context<'a>,
     lang: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = usr_resolver::select_lang(
       &mut ctx,
@@ -65,7 +66,9 @@ impl UsrQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<GetLoginInfo> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = usr_resolver::get_login_info(
       &mut ctx,

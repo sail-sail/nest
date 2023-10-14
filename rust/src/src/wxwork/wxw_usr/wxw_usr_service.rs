@@ -66,7 +66,7 @@ use crate::gen::base::domain::domain_model::DomainSearch;
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   host: String,
 ) -> Result<WxwGetAppid> {
   
@@ -119,7 +119,7 @@ pub async fn wxw_get_appid<'a>(
 
 /// 企微单点登录
 pub async fn wxw_login_by_code<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: WxwLoginByCodeInput,
 ) -> Result<WxwLoginByCode> {
   let host = input.host;
@@ -330,7 +330,7 @@ lazy_static! {
 
 /// 同步企微用户
 pub async fn wxw_sync_usr<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   host: String,
 ) -> Result<i32> {
   let mut wxw_sync_usr_lock = WXW_SYNC_USR_LOCK.lock().await;
@@ -350,7 +350,7 @@ pub async fn wxw_sync_usr<'a>(
 
 /// 同步企微用户
 async fn _wxw_sync_usr<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   host: String,
 ) -> Result<i32> {
   

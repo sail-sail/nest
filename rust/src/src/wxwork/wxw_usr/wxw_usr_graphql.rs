@@ -1,10 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{
-  CtxImpl,
-  Ctx,
-};
+use crate::common::context::Ctx;
 
 use super::wxw_usr_resolver;
 
@@ -26,7 +23,8 @@ impl WxwUsrQuery {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<WxwGetAppid> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     
     let res = wxw_usr_resolver::wxw_get_appid(
       &mut ctx,
@@ -50,7 +48,8 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     input: WxwLoginByCodeInput,
   ) -> Result<WxwLoginByCode> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     
     let res = wxw_usr_resolver::wxw_login_by_code(
       &mut ctx,
@@ -66,7 +65,9 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<i32> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_usr_resolver::wxw_sync_usr(
       &mut ctx,

@@ -5,7 +5,7 @@ use crate::gen::base::tenant::tenant_dao;
 
 /// 当前租户拥有的菜单
 pub async fn get_menu_ids_by_tenant<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<Vec<String>> {
   let tenant_id = ctx.get_auth_tenant_id();
   if tenant_id.is_none() {
@@ -26,7 +26,7 @@ pub async fn get_menu_ids_by_tenant<'a>(
 }
 
 pub async fn filter_menu_ids_by_tenant<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   menu_ids: Vec<String>,
 ) -> Result<Vec<String>> {
   let tenant_menu_ids = get_menu_ids_by_tenant(ctx).await?;

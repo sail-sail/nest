@@ -3,7 +3,6 @@ use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  CtxImpl,
   Ctx,
   Options,
   UniqueType,
@@ -32,10 +31,12 @@ impl PayslipGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<PayslipModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::find_all(
-      &mut ctx,
+      &ctx,
       search,
       page,
       sort,
@@ -51,10 +52,12 @@ impl PayslipGenQuery {
     ctx: &Context<'a>,
     search: Option<PayslipSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::find_count(
-      &mut ctx,
+      &ctx,
       search,
       None,
     ).await;
@@ -69,10 +72,12 @@ impl PayslipGenQuery {
     search: Option<PayslipSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<PayslipModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::find_one(
-      &mut ctx,
+      &ctx,
       search,
       sort,
       None,
@@ -87,10 +92,12 @@ impl PayslipGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<PayslipModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::find_by_id(
-      &mut ctx,
+      &ctx,
       id,
       None,
     ).await;
@@ -106,10 +113,12 @@ impl PayslipGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::get_is_locked_by_id(
-      &mut ctx,
+      &ctx,
       id,
       None,
     ).await;
@@ -122,10 +131,12 @@ impl PayslipGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<PayslipFieldComment> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::get_field_comments(
-      &mut ctx,
+      &ctx,
       None,
     ).await;
     
@@ -147,7 +158,9 @@ impl PayslipGenMutation {
     model: PayslipInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -155,7 +168,7 @@ impl PayslipGenMutation {
     }
     
     let id = payslip_resolver::create(
-      &mut ctx,
+      &ctx,
       model,
       options.into(),
     ).await;
@@ -170,10 +183,12 @@ impl PayslipGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::update_tenant_by_id(
-      &mut ctx,
+      &ctx,
       id,
       tenant_id,
       None,
@@ -189,10 +204,12 @@ impl PayslipGenMutation {
     id: String,
     model: PayslipInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::update_by_id(
-      &mut ctx,
+      &ctx,
       id,
       model,
       None,
@@ -207,10 +224,12 @@ impl PayslipGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -225,10 +244,12 @@ impl PayslipGenMutation {
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::lock_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       is_locked,
       None,
@@ -243,10 +264,12 @@ impl PayslipGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::revert_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -260,10 +283,12 @@ impl PayslipGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = payslip_resolver::force_delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;

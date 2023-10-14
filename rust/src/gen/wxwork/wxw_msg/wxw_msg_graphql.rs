@@ -3,7 +3,6 @@ use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  CtxImpl,
   Ctx,
   Options,
   UniqueType,
@@ -32,10 +31,12 @@ impl WxwMsgGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwMsgModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::find_all(
-      &mut ctx,
+      &ctx,
       search,
       page,
       sort,
@@ -51,10 +52,12 @@ impl WxwMsgGenQuery {
     ctx: &Context<'a>,
     search: Option<WxwMsgSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::find_count(
-      &mut ctx,
+      &ctx,
       search,
       None,
     ).await;
@@ -69,10 +72,12 @@ impl WxwMsgGenQuery {
     search: Option<WxwMsgSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwMsgModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::find_one(
-      &mut ctx,
+      &ctx,
       search,
       sort,
       None,
@@ -87,10 +92,12 @@ impl WxwMsgGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<WxwMsgModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::find_by_id(
-      &mut ctx,
+      &ctx,
       id,
       None,
     ).await;
@@ -103,10 +110,12 @@ impl WxwMsgGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<WxwMsgFieldComment> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::get_field_comments(
-      &mut ctx,
+      &ctx,
       None,
     ).await;
     
@@ -128,10 +137,12 @@ impl WxwMsgGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::update_tenant_by_id(
-      &mut ctx,
+      &ctx,
       id,
       tenant_id,
       None,
@@ -146,10 +157,12 @@ impl WxwMsgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -163,10 +176,12 @@ impl WxwMsgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::revert_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -180,10 +195,12 @@ impl WxwMsgGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = wxw_msg_resolver::force_delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;

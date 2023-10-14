@@ -6,7 +6,7 @@ use crate::gen::base::operation_record::operation_record_model::OperationRecordI
 
 #[allow(dead_code)]
 pub async fn log<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: OperationRecordInput,
 ) -> Result<()> {
   operation_record_dao::create(

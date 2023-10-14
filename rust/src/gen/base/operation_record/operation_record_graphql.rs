@@ -3,7 +3,6 @@ use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  CtxImpl,
   Ctx,
   Options,
   UniqueType,
@@ -32,10 +31,12 @@ impl OperationRecordGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<OperationRecordModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::find_all(
-      &mut ctx,
+      &ctx,
       search,
       page,
       sort,
@@ -51,10 +52,12 @@ impl OperationRecordGenQuery {
     ctx: &Context<'a>,
     search: Option<OperationRecordSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::find_count(
-      &mut ctx,
+      &ctx,
       search,
       None,
     ).await;
@@ -69,10 +72,12 @@ impl OperationRecordGenQuery {
     search: Option<OperationRecordSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OperationRecordModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::find_one(
-      &mut ctx,
+      &ctx,
       search,
       sort,
       None,
@@ -87,10 +92,12 @@ impl OperationRecordGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<OperationRecordModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::find_by_id(
-      &mut ctx,
+      &ctx,
       id,
       None,
     ).await;
@@ -103,10 +110,12 @@ impl OperationRecordGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<OperationRecordFieldComment> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::get_field_comments(
-      &mut ctx,
+      &ctx,
       None,
     ).await;
     
@@ -128,10 +137,12 @@ impl OperationRecordGenMutation {
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::update_tenant_by_id(
-      &mut ctx,
+      &ctx,
       id,
       tenant_id,
       None,
@@ -146,10 +157,12 @@ impl OperationRecordGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -163,10 +176,12 @@ impl OperationRecordGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::revert_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -180,10 +195,12 @@ impl OperationRecordGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = operation_record_resolver::force_delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;

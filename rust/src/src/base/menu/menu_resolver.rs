@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::menu_service;
 use super::menu_model::GetMenus;
@@ -19,7 +19,9 @@ impl MenuQuery {
     r#type: Option<String>,
   ) -> Result<Vec<GetMenus>> {
     
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = menu_service::get_menus(
       &mut ctx,
