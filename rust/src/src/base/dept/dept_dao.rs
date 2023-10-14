@@ -14,7 +14,7 @@ use crate::common::auth::auth_model::AuthModel;
 /// 获取当前登录用户的部门id列表
 #[allow(dead_code)]
 pub async fn get_auth_dept_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<Vec<String>> {
   
   let aut_model: Option<AuthModel> = ctx.get_auth_model();
@@ -47,7 +47,7 @@ pub async fn get_auth_dept_ids<'a>(
 
 #[allow(dead_code)]
 async fn get_parents_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   parent_ids: &mut Vec<String>,
 ) -> Result<()> {
@@ -91,7 +91,7 @@ async fn get_parents_by_id<'a>(
 /// 获取当前用户及其所有父部门的id
 #[allow(dead_code)]
 pub async fn get_auth_and_parents_dept_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<Vec<String>> {
   
   let dept_ids = get_auth_dept_ids(

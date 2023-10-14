@@ -18,6 +18,8 @@ use crate::gen::wxwork::wxw_msg::wxw_msg_model::WxwMsgInput;
 
 use super::wxw_msg_model::SendCardMsgInput;
 
+use crate::common::util::http::CLIENT;
+
 #[derive(Serialize, Deserialize)]
 struct SendRes {
   errcode: i32,
@@ -31,7 +33,7 @@ struct SendRes {
 
 #[allow(dead_code)]
 async fn fetch_send_card_msg<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: SendCardMsgInput,
   force: bool,
 ) -> Result<SendRes> {
@@ -67,8 +69,7 @@ async fn fetch_send_card_msg<'a>(
     &wxw_app_model,
   ).await?;
   let agentid = wxw_app_model.agentid;
-  let res = reqwest::Client::new()
-    .post(&url)
+  let res = CLIENT.post(&url)
     .json(&json!({
       "touser": input.touser,
       "msgtype": "textcard",
@@ -88,7 +89,7 @@ async fn fetch_send_card_msg<'a>(
 /// 发送卡片消息
 #[allow(dead_code)]
 pub async fn send_card_msg<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: SendCardMsgInput,
 ) -> Result<bool> {
   let wxw_app_id = input.wxw_app_id.clone();

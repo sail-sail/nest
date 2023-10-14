@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::lang_service;
 use crate::gen::base::lang::lang_model::LangModel;
@@ -16,7 +16,8 @@ impl LangQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<Vec<LangModel>> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     
     let res = lang_service::get_login_langs(
       &mut ctx,

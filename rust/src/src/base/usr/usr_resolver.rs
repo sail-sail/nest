@@ -12,7 +12,7 @@ use super::usr_model::{
 
 /// 登录, 获得token
 pub async fn login<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: LoginInput,
 ) -> Result<Login> {
   
@@ -26,7 +26,7 @@ pub async fn login<'a>(
 
 /// 选择语言
 pub async fn select_lang<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut Ctx<'a>,
   lang: String,
 ) -> Result<String> {
   
@@ -39,7 +39,7 @@ pub async fn select_lang<'a>(
 }
 
 pub async fn get_login_info<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<GetLoginInfo> {
   
   let res = usr_service::get_login_info(

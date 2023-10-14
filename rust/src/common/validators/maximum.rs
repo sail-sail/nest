@@ -8,7 +8,7 @@ use crate::src::base::i18n::i18n_dao;
 
 #[allow(dead_code)]
 pub async fn maximum<T>(
-  ctx: &mut impl Ctx<'_>,
+  ctx: &mut Ctx<'_>,
   value: Option<T>,
   n: T,
   label: &str,

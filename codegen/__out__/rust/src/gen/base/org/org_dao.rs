@@ -29,7 +29,7 @@ use super::org_model::*;
 
 #[allow(unused_variables)]
 async fn get_where_query<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<OrgSearch>,
 ) -> Result<String> {
@@ -291,7 +291,7 @@ async fn get_from_query() -> Result<String> {
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<OrgSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -378,7 +378,7 @@ pub async fn find_all<'a>(
 
 /// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<OrgSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -443,7 +443,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 
 /// 获取字段对应的国家化后的名称
 pub async fn get_field_comments<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<OrgFieldComment> {
   
@@ -504,7 +504,7 @@ pub async fn get_field_comments<'a>(
 
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<OrgSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -530,7 +530,7 @@ pub async fn find_one<'a>(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<OrgModel>> {
@@ -553,7 +553,7 @@ pub async fn find_by_id<'a>(
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: OrgSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -616,7 +616,7 @@ fn equals_by_unique(
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: OrgInput,
   model: OrgModel,
   unique_type: UniqueType,
@@ -655,7 +655,7 @@ pub async fn check_by_unique<'a>(
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: OrgInput,
 ) -> Result<OrgInput> {
   
@@ -700,7 +700,7 @@ pub async fn set_id_by_lbl<'a>(
 
 /// 创建数据
 pub async fn create<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   mut input: OrgInput,
   options: Option<Options>,
 ) -> Result<String> {
@@ -846,7 +846,7 @@ pub async fn create<'a>(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   tenant_id: String,
   options: Option<Options>,
@@ -888,7 +888,7 @@ pub async fn update_tenant_by_id<'a>(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   mut input: OrgInput,
   options: Option<Options>,
@@ -1045,7 +1045,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1088,7 +1088,7 @@ pub async fn delete_by_ids<'a>(
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1108,7 +1108,7 @@ pub async fn get_is_enabled_by_id<'a>(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   is_enabled: u8,
   options: Option<Options>,
@@ -1151,7 +1151,7 @@ pub async fn enable_by_ids<'a>(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1171,7 +1171,7 @@ pub async fn get_is_locked_by_id<'a>(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
@@ -1212,7 +1212,7 @@ pub async fn lock_by_ids<'a>(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1293,7 +1293,7 @@ pub async fn revert_by_ids<'a>(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1352,7 +1352,7 @@ pub async fn force_delete_by_ids<'a>(
 
 /// 查找 order_by 字段的最大值
 pub async fn find_last_order_by<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -1405,7 +1405,7 @@ pub async fn find_last_order_by<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   model: &OrgModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
@@ -1429,7 +1429,7 @@ pub async fn validate_is_enabled<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {

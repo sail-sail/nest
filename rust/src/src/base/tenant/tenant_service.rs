@@ -15,7 +15,7 @@ use crate::gen::base::domain::domain_model::{
 
 // 获取当前租户绑定的网址
 // pub async fn get_host_tenant<'a>(
-//   ctx: &mut impl Ctx<'a>,
+//   ctx: &Ctx<'a>,
 // ) -> Result<String> {
   
 //   let tenant_id = ctx.get_auth_tenant_id();
@@ -50,7 +50,7 @@ use crate::gen::base::domain::domain_model::{
 /// 根据 当前网址的域名+端口 获取 租户列表
 #[allow(unused_variables)]
 pub async fn get_login_tenants<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   domain: String,
 ) -> Result<Vec<TenantModel>> {
   

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::app_service;
 
@@ -16,7 +16,9 @@ impl AppQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     let res = app_service::generate_id(&mut ctx).await;
     ctx.ok(res).await
   }
@@ -26,7 +28,8 @@ impl AppQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     let res = app_service::check_login(&mut ctx).await;
     ctx.ok(res).await
   }

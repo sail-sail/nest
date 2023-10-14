@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::org_resolver;
 
@@ -16,7 +16,10 @@ impl OrgMutation {
     ctx: &Context<'a>,
     org_id: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_tran()?
+      .with_auth()?
+      .build();
     let res = org_resolver::org_login_select(&mut ctx, org_id).await;
     ctx.ok(res).await
   }

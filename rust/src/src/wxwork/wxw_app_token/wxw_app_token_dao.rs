@@ -57,7 +57,7 @@ struct Userlist {
 
 /// 从企业微信获取 access_token
 async fn fetch_access_token(
-  ctx: &mut impl Ctx<'_>,
+  ctx: &Ctx<'_>,
   corpid: &str,
   corpsecret: &str,
 ) -> Result<(String, u32)> {
@@ -102,7 +102,7 @@ async fn fetch_access_token(
 
 /// 获取企业微信应用的 access_token。
 pub async fn get_access_token<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   force: Option<bool>,
 ) -> Result<String> {
@@ -210,7 +210,7 @@ pub async fn get_access_token<'a>(
 
 /// 获取企微通讯录token
 pub async fn get_contact_access_token<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   force: Option<bool>,
 ) -> Result<String> {
@@ -321,7 +321,7 @@ pub async fn get_contact_access_token<'a>(
 }
 
 async fn fetch_getuserinfo_by_code<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   code: String,
   force: bool,
@@ -363,7 +363,7 @@ async fn fetch_getuserinfo_by_code<'a>(
 /// 
 /// 返回用户身份信息 `userid`, `user_ticket`
 pub async fn getuserinfo_by_code<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   code: String,
 ) -> Result<GetuserinfoModel> {
@@ -407,7 +407,7 @@ pub async fn getuserinfo_by_code<'a>(
 }
 
 async fn fetch_getuseridlist<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   force: bool,
 ) -> Result<GetuseridlistRes> {
@@ -436,7 +436,7 @@ async fn fetch_getuseridlist<'a>(
 
 /// 获取成员ID列表
 pub async fn getuseridlist<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
 ) -> Result<Vec<String>> {
   let mut data: GetuseridlistRes = fetch_getuseridlist(
@@ -474,7 +474,7 @@ pub async fn getuseridlist<'a>(
 }
 
 async fn fetch_getuser<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   userid: String,
   force: Option<bool>,
@@ -520,7 +520,7 @@ async fn fetch_getuser<'a>(
 ///
 /// 如果获取用户信息失败，则返回 `Err`，其中包含错误信息。
 pub async fn getuser<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   wxw_app_id: String,
   userid: String,
 ) -> Result<GetuserRes> {

@@ -3,106 +3,96 @@
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
-  <view
-    un-flex="~ [1_0_0] col"
-    un-overflow-hidden
+  <CustomForm
+    ref="formRef"
+    v-model="model"
+    :label-width="200"
   >
-    
-    <tm-form
-      ref="formRef"
-      v-model="model"
-      @submit="onLogin"
-      un-flex="~ [1_0_0] col"
-      un-overflow-auto
-      :label-width="120"
-      :transprent="true"
+      
+    <tm-form-item
+      label="租户"
+      field="tenant_id"
+      :rules="{
+        required: true,
+        message: '请选择 租户',
+      }"
+      required
     >
-      
-      <tm-form-item
-        label="租户"
-        field="tenant_id"
-        :rules="{
-          required: true,
-          message: '请选择 租户',
-        }"
-        required
+      <CustomSelect
+        v-model="model.tenant_id"
+        :method="getLoginTenantsEfc"
+        placeholder="请选择 租户"
+        :multiple="false"
       >
-        <CustomSelect
-          v-model="model.tenant_id"
-          :method="getLoginTenantsEfc"
-          placeholder="请选择 租户"
-          :multiple="false"
-        >
-          <template #left>
-            <i
-              un-i="iconfont-user"
-              un-m="r-2"
-            ></i>
-          </template>
-        </CustomSelect>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="用户名"
-        field="username"
-        :rules="{
-          required: true,
-          message: '请输入 用户名',
-        }"
-        required
-      >
-        <CustomInput
-          v-model="model.username"
-          :type="'text'"
-          :show-clear="true"
-          placeholder="请输入 用户名"
-        >
-          <template #left>
-            <i
-              un-i="iconfont-user"
-              un-m="r-2"
-            ></i>
-          </template>
-        </CustomInput>
-      </tm-form-item>
-      
-      <tm-form-item
-        label="密码"
-        field="password"
-        :rules="{
-          required: true,
-          message: '请输入 密码',
-        }"
-        required
-      >
-        <CustomInput
-          v-model="model.password"
-          :type="'password'"
-          :show-clear="true"
-          placeholder="请输入 密码"
-        >
-          <template #left>
-            <i
-              un-i="iconfont-password"
-              un-m="r-2"
-            ></i>
-          </template>
-        </CustomInput>
-      </tm-form-item>
-      
-    </tm-form>
+        <template #left>
+          <i
+            un-i="iconfont-user"
+            un-m="r-2"
+          ></i>
+        </template>
+      </CustomSelect>
+    </tm-form-item>
     
-    <view
-      un-m="x-2"
+    <tm-form-item
+      label="用户名"
+      field="username"
+      :rules="{
+        required: true,
+        message: '请输入 用户名',
+      }"
+      required
     >
-      <tm-button
-        @click="onLogin"
-        label="登录"
-        block
-      ></tm-button>
-    </view>
+      <CustomInput
+        v-model="model.username"
+        :type="'text'"
+        :show-clear="true"
+        placeholder="请输入 用户名"
+      >
+        <template #left>
+          <i
+            un-i="iconfont-user"
+            un-m="r-2"
+          ></i>
+        </template>
+      </CustomInput>
+    </tm-form-item>
     
+    <tm-form-item
+      label="密码"
+      field="password"
+      :rules="{
+        required: true,
+        message: '请输入 密码',
+      }"
+      required
+    >
+      <CustomInput
+        v-model="model.password"
+        :type="'password'"
+        :show-clear="true"
+        placeholder="请输入 密码"
+      >
+        <template #left>
+          <i
+            un-i="iconfont-password"
+            un-m="r-2"
+          ></i>
+        </template>
+      </CustomInput>
+    </tm-form-item>
+      
+  </CustomForm>
+  
+  <view
+    un-m="x-2"
+  >
+    <tm-button
+      @click="onLogin"
+      label="登录"
+      block
+    ></tm-button>
   </view>
+  
   <AppLoading></AppLoading>
 </tm-app>
 </template>
@@ -121,7 +111,7 @@ import { lang } from "@/locales/index";
 
 const usrStore = useUsrStore();
 
-let formRef = $ref<InstanceType<typeof TmForm>>();
+let formRef = $ref<InstanceType<typeof CustomForm>>();
 
 let model = $ref({
   username: "admin",

@@ -6,7 +6,7 @@ use super::payslip_service;
 
 /// 发送企微工资条
 pub async fn send_msg_wxw<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   host: String,
   ids: Vec<String>,
 ) -> Result<i32> {
@@ -22,7 +22,7 @@ pub async fn send_msg_wxw<'a>(
 
 /// 一键发送企微工资条
 pub async fn send_msg_wxw_one_key<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   host: String,
 ) -> Result<i32> {
   
@@ -36,7 +36,7 @@ pub async fn send_msg_wxw_one_key<'a>(
 
 /// 确认工资条
 pub async fn confirm_payslip<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
 ) -> Result<i32> {
   

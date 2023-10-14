@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::dict_detail_model::GetDict;
 use super::dict_detail_resolver;
@@ -18,7 +18,8 @@ impl DictDetailQuery {
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDict>>> {
     
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     
     let res = dict_detail_resolver::get_dict(
       &mut ctx,

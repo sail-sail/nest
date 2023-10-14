@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::i18n_service::n_lang as service_n_lang;
 
@@ -18,7 +18,8 @@ impl I18nQuery {
     route_path: Option<String>,
     code: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     
     let res = service_n_lang(
       &mut ctx,
