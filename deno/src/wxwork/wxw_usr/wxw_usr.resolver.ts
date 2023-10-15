@@ -16,6 +16,9 @@ export async function wxwGetAppid(
   const {
     wxwGetAppid,
   } = await import("./wxw_usr.service.ts");
+  const context = useContext();
+  
+  context.notVerifyToken = true;
   
   const res = await wxwGetAppid(host);
   return res;
