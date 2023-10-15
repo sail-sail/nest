@@ -2,10 +2,7 @@ use serde::{Serialize, Deserialize};
 use tracing::{info, error};
 
 use anyhow::{Result, anyhow};
-use crate::common::context::{
-  Ctx,
-  get_short_uuid,
-};
+use crate::common::context::Ctx;
 
 use crate::gen::wxwork::wxw_app_token::wxw_app_token_dao::{
   find_one as find_one_wxw_app_token,
@@ -150,11 +147,9 @@ pub async fn get_access_token<'a>(
       &corpid,
       &corpsecret,
     ).await?;
-    let id = get_short_uuid();
     create_wxw_app_token(
       ctx,
       WxwAppTokenInput {
-        id: id.into(),
         wxw_app_id: wxw_app_id.into(),
         r#type: "corp".to_owned().into(),
         access_token: access_token.clone().into(),
@@ -262,11 +257,9 @@ pub async fn get_contact_access_token<'a>(
       &corpid,
       &contactsecret,
     ).await?;
-    let id = get_short_uuid();
     create_wxw_app_token(
       ctx,
       WxwAppTokenInput {
-        id: id.into(),
         wxw_app_id: wxw_app_id.into(),
         r#type: "contact".to_owned().into(),
         access_token: access_token.clone().into(),
