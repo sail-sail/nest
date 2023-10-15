@@ -2091,7 +2091,11 @@ export async function create(
   },
 ): Promise<string> {
   const table = "<#=mod#>_<#=table#>";
-  const method = "create";<#
+  const method = "create";
+  
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
+  }<#
   if (hasEncrypt) {
   #>
   if (options?.isEncrypt !== false) {<#
@@ -2162,8 +2166,13 @@ export async function create(
   }
   #>
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    ctx.error(`id: ${ input.id } has collided when create in table: ${ table }`);
   }
   
   const args = new QueryArgs();

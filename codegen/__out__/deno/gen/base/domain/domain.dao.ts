@@ -730,6 +730,10 @@ export async function create(
   const table = "base_domain";
   const method = "create";
   
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
+  }
+  
   await setIdByLbl(input);
   
   const oldModels = await findByUnique(input, options);
@@ -751,8 +755,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    ctx.error(`id: ${ input.id } has collided when create in table: ${ table }`);
   }
   
   const args = new QueryArgs();
