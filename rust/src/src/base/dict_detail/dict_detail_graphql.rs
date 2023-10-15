@@ -18,10 +18,11 @@ impl DictDetailQuery {
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDict>>> {
     
-    let mut ctx = CtxImpl::new(ctx);
+    let ctx = Ctx::builder(ctx)
+      .build();
     
     let res = dict_detail_resolver::get_dict(
-      &mut ctx,
+      &ctx,
       &codes,
     ).await;
     

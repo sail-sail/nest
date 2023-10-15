@@ -18,11 +18,13 @@ impl PermitQuery {
     ctx: &Context<'a>,
   ) -> Result<Vec<GetUsrPermits>> {
     
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = permit_resolver::get_usr_permits(
-      &mut ctx,
-    ).await?;
+      &ctx,
+    ).await;
     
     Ok(res)
   }

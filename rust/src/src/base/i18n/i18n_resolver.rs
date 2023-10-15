@@ -18,10 +18,11 @@ impl I18nQuery {
     route_path: Option<String>,
     code: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(ctx);
+    let ctx = Ctx::builder(ctx)
+      .build();
     
     let res = service_n_lang(
-      &mut ctx,
+      &ctx,
       lang_code,
       route_path,
       code,
