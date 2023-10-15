@@ -19,12 +19,12 @@ impl MenuQuery {
     r#type: Option<String>,
   ) -> Result<Vec<GetMenus>> {
     
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .with_auth()?
       .build();
     
     let res = menu_service::get_menus(
-      &mut ctx,
+      &ctx,
       r#type,
     ).await;
     

@@ -841,6 +841,10 @@ export async function create(
 ): Promise<string> {
   const table = "hrm_payslip";
   const method = "create";
+  
+  if (input.id) {
+    throw new Error(`Can not set id when create in dao: ${ table }`);
+  }
   if (options?.isEncrypt !== false) {
     // 应发工资(元)
     if (input.gross_pay != null) {
@@ -885,8 +889,13 @@ export async function create(
     }
   }
   
-  if (!input.id) {
+  while (true) {
     input.id = shortUuidV4();
+    const isExist = await existById(input.id);
+    if (!isExist) {
+      break;
+    }
+    ctx.error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();

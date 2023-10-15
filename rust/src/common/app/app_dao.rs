@@ -4,15 +4,15 @@ use crate::common::context::{
 };
 
 /// 清空缓存
-pub fn generate_id<'a>(
-  _ctx: &mut Ctx<'a>,
+pub fn generate_id(
+  _ctx: &Ctx<'_>,
 ) -> String {
   get_short_uuid()
 }
 
 /// 检查是否已经登录
-pub fn check_login<'a>(
-  ctx: &mut Ctx<'a>,
+pub fn check_login(
+  ctx: &Ctx<'_>,
 ) -> bool {
-  ctx.get_auth_model().is_some()
+  ctx.has_auth_model()
 }

@@ -105,13 +105,8 @@ pub async fn select_lang<'a>(
     return Err(anyhow::anyhow!("语言编码不能为空"));
   }
   
-  let auth_model = ctx.get_auth_model();
+  let mut auth_model = ctx.get_auth_model_err()?;
   
-  if auth_model.is_none() {
-    return Err(anyhow::anyhow!("未登录"));
-  }
-  
-  let mut auth_model = auth_model.unwrap().clone();
   auth_model.lang = lang;
   
   let authorization = get_token_by_auth_model(&auth_model)?;
@@ -124,23 +119,17 @@ pub async fn get_login_info<'a>(
   ctx: &Ctx<'a>,
 ) -> Result<GetLoginInfo> {
   
-  let auth_model = ctx.get_auth_model();
-  if auth_model.is_none() {
-    return Err(anyhow::anyhow!("未登录"));
-  }
-  let auth_model = auth_model.unwrap().clone();
+  let auth_model = ctx.get_auth_model_err()?;
   
   let usr_model = usr_dao::find_by_id(
     ctx,
     auth_model.id,
     None,
   ).await?;
-  
-  if usr_model.is_none() {
-    return Err(anyhow::anyhow!("用户不存在"));
-  }
-  
-  let usr_model = usr_model.unwrap();
+  let usr_model = usr_dao::validate_option(
+    ctx,
+    usr_model
+  ).await?;
   
   let org_ids = usr_model.org_ids;
   let org_ids_lbl = usr_model.org_ids_lbl;
@@ -150,12 +139,15 @@ pub async fn get_login_info<'a>(
     return Err(anyhow::anyhow!("未登录"));
   }
   
-  let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids.iter().zip(org_ids_lbl.iter()).map(|(id, lbl)| {
-    GetLoginInfoorgIdModel {
-      id: id.into(),
-      lbl: lbl.into(),
-    }
-  }).collect();
+  let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids
+    .iter()
+    .zip(org_ids_lbl.iter())
+    .map(|(id, lbl)| {
+      GetLoginInfoorgIdModel {
+        id: id.into(),
+        lbl: lbl.into(),
+      }
+    }).collect();
   
   Ok(GetLoginInfo {
     lbl: usr_model.lbl,

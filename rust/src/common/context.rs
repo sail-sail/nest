@@ -104,10 +104,28 @@ impl<'a> Ctx<'a> {
   }
   
   /// 获取当前登录用户
+  #[allow(dead_code)]
   pub fn get_auth_model(
     &self,
   ) -> Option<AuthModel> {
     self.auth_model.clone()
+  }
+  
+  #[allow(dead_code)]
+  pub fn has_auth_model(&self) -> bool {
+    self.auth_model.is_some()
+  }
+  
+  #[allow(dead_code)]
+  pub fn get_auth_model_err(&self) -> Result<AuthModel> {
+    if self.auth_model.is_some() {
+      return Ok(self.auth_model.clone().unwrap());
+    }
+    error!(
+      "{req_id} Not login! - validate_auth_model is none",
+      req_id = self.get_req_id(),
+    );
+    Err(anyhow::anyhow!("Not login!"))
   }
   
   #[allow(dead_code)]
@@ -167,11 +185,9 @@ impl<'a> Ctx<'a> {
       }
       let req_id = self.get_req_id();
       error!("{} {}", req_id, err);
-    } else {
-      if let Some(tran) = tran {
-        info!("{} commit;", self.get_req_id());
-        tran.commit().await?;
-      }
+    } else if let Some(tran) = tran {
+      info!("{} commit;", self.get_req_id());
+      tran.commit().await?;
     }
     res
   }
@@ -1684,6 +1700,9 @@ impl <'a> CtxBuilder<'a> {
   
   /// 校验token是否已经过期
   pub fn with_auth(mut self) -> Result<CtxBuilder<'a>> {
+    if self.auth_model.is_some() {
+      return Err(anyhow!("auth_model_not_none"));
+    }
     let auth_token = self.gql_ctx.data_opt
       ::<super::auth::auth_model::AuthToken>()
       .map(ToString::to_string);
@@ -1716,15 +1735,31 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
+  /// 如果auth_model能获取, 则获取, 否则不抛出异常
+  #[allow(dead_code)]
+  pub fn with_auth_optional(mut self) -> Result<CtxBuilder<'a>> {
+    if self.auth_model.is_some() {
+      return Err(anyhow!("auth_model_not_none"));
+    }
+    let auth_token = self.gql_ctx.data_opt
+      ::<super::auth::auth_model::AuthToken>()
+      .map(ToString::to_string);
+    if auth_token.is_none() {
+      return Ok(self);
+    }
+    let auth_token = auth_token.unwrap();
+    self.auth_model = get_auth_model_by_token(auth_token).ok();
+    Ok(self)
+  }
+  
   pub fn build(self) -> Ctx<'a> {
-    let ctx = Ctx {
+    Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
       req_id: self.req_id,
       tran: Arc::new(Mutex::new(None)),
       auth_model: self.auth_model,
       now: self.now,
-    };
-    ctx
+    }
   }
   
 }
