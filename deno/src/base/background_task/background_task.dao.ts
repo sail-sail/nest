@@ -55,10 +55,8 @@ export function backgroundTaskWrap(
     if (result2 === timeoutObj) {
       taskResult = taskResult || { };
       taskResult.type = taskResult.type || "text";
-      const id = shortUuidV4();
-      await background_taskDao.create(
+      const id = await background_taskDao.create(
         {
-          id,
           lbl: taskResult.lbl || "",
           type: taskResult.type,
           state: "running",
