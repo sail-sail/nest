@@ -17,9 +17,13 @@ impl OptionsQuery {
     ctx: &Context<'a>,
     lbl: String,
   ) -> Result<Vec<OptionsModel>> {
-    let mut ctx = CtxImpl::new(ctx);
-    let res = options_service::get_options_by_lbl(&mut ctx, lbl).await?;
-    Ok(res)
+    let ctx = Ctx::builder(ctx)
+      .build();
+    let res = options_service::get_options_by_lbl(
+      &ctx,
+      lbl,
+    ).await;
+    ctx.ok(res).await
   }
   
 }

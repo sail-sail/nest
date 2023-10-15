@@ -18,10 +18,11 @@ impl DictbizDetailQuery {
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDictbiz>>> {
     
-    let mut ctx = CtxImpl::new(ctx);
+    let ctx = Ctx::builder(ctx)
+      .build();
     
     let res = dictbiz_detail_resolver::get_dictbiz(
-      &mut ctx,
+      &ctx,
       &codes,
     ).await;
     

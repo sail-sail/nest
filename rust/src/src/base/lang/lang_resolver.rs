@@ -16,10 +16,11 @@ impl LangQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<Vec<LangModel>> {
-    let mut ctx = CtxImpl::new(ctx);
+    let ctx = Ctx::builder(ctx)
+      .build();
     
     let res = lang_service::get_login_langs(
-      &mut ctx,
+      &ctx,
     ).await;
     
     ctx.ok(res).await

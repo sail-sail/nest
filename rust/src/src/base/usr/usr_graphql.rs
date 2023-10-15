@@ -26,10 +26,12 @@ impl UsrMutation {
     ctx: &Context<'a>,
     input: LoginInput,
   ) -> Result<Login> {
-    let mut ctx = CtxImpl::new(ctx);
+    let ctx = Ctx::builder(ctx)
+      .with_tran()?
+      .build();
     
     let res = usr_resolver::login(
-      &mut ctx,
+      &ctx,
       input
     ).await?;
     
@@ -65,11 +67,13 @@ impl UsrQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<GetLoginInfo> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = usr_resolver::get_login_info(
-      &mut ctx,
-    ).await?;
+      &ctx,
+    ).await;
     
     Ok(res)
   }
