@@ -1,5 +1,5 @@
 use anyhow::Result;
-use tracing::info;
+use tracing::{info, error};
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -562,6 +562,43 @@ pub async fn find_by_id<'a>(
   Ok(res)
 }
 
+/// 根据搜索条件判断数据是否存在
+pub async fn exists<'a>(
+  ctx: &Ctx<'a>,
+  search: Option<OperationRecordSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let total = find_count(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(total > 0)
+}
+
+/// 根据ID判断数据是否存在
+pub async fn exists_by_id<'a>(
+  ctx: &Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let search = OperationRecordSearch {
+    id: Some(id),
+    ..Default::default()
+  }.into();
+  
+  let res = exists(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
@@ -648,6 +685,7 @@ pub async fn set_id_by_lbl<'a>(
 }
 
 /// 创建数据
+#[allow(unused_mut)]
 pub async fn create<'a>(
   ctx: &Ctx<'a>,
   mut input: OperationRecordInput,
@@ -656,6 +694,12 @@ pub async fn create<'a>(
   
   let table = "base_operation_record";
   let _method = "create";
+  
+  if input.id.is_some() {
+    return Err(SrvErr::msg(
+      format!("Can not set id when create in dao: {table}")
+    ).into());
+  }
   
   let now = ctx.get_now();
   
@@ -695,11 +739,23 @@ pub async fn create<'a>(
     }
   }
   
-  let id = get_short_uuid();
-  
-  if input.id.is_none() {
-    input.id = id.clone().into();
+  let mut id;
+  loop {
+    id = get_short_uuid();
+    let is_exist = exists_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if !is_exist {
+      break;
+    }
+    error!(
+      "{req_id} ID_COLLIDE: {table} {id}",
+      req_id = ctx.get_req_id(),
+    );
   }
+  let id = id;
   
   let mut args = QueryArgs::new();
   

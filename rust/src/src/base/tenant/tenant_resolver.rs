@@ -18,10 +18,14 @@ impl TenantQuery {
     ctx: &Context<'a>,
     domain: String,
   ) -> Result<Vec<TenantModel>> {
-    let mut ctx = Ctx::builder(ctx)
-      .with_auth()?
+    let ctx = Ctx::builder(ctx)
       .build();
-    let res = tenant_service::get_login_tenants(&mut ctx, domain).await;
+    
+    let res = tenant_service::get_login_tenants(
+      &ctx,
+      domain,
+    ).await;
+    
     ctx.ok(res).await
   }
   

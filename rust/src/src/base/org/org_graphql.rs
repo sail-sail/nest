@@ -20,7 +20,12 @@ impl OrgMutation {
       .with_tran()?
       .with_auth()?
       .build();
-    let res = org_resolver::org_login_select(&mut ctx, org_id).await;
+    
+    let res = org_resolver::org_login_select(
+      &mut ctx,
+      org_id,
+    ).await;
+    
     ctx.ok(res).await
   }
   
