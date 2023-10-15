@@ -6,7 +6,7 @@ use super::permit_model::GetUsrPermits;
 
 /// 根据当前用户获取权限列表
 pub async fn get_usr_permits<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<Vec<GetUsrPermits>> {
   
   let permits = permit_service::get_usr_permits(

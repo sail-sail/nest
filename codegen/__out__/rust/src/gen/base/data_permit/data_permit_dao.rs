@@ -1,5 +1,5 @@
 use anyhow::Result;
-use tracing::info;
+use tracing::{info, error};
 use crate::common::util::string::*;
 
 #[allow(unused_imports)]
@@ -28,7 +28,7 @@ use super::data_permit_model::*;
 
 #[allow(unused_variables)]
 async fn get_where_query<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<DataPermitSearch>,
 ) -> Result<String> {
@@ -294,7 +294,7 @@ async fn get_from_query() -> Result<String> {
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<DataPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -392,7 +392,7 @@ pub async fn find_all<'a>(
 
 /// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<DataPermitSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -457,7 +457,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 
 /// 获取字段对应的国家化后的名称
 pub async fn get_field_comments<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<DataPermitFieldComment> {
   
@@ -524,7 +524,7 @@ pub async fn get_field_comments<'a>(
 
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<DataPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -550,7 +550,7 @@ pub async fn find_one<'a>(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
@@ -570,10 +570,47 @@ pub async fn find_by_id<'a>(
   Ok(res)
 }
 
+/// 根据搜索条件判断数据是否存在
+pub async fn exists<'a>(
+  ctx: &Ctx<'a>,
+  search: Option<DataPermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let total = find_count(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(total > 0)
+}
+
+/// 根据ID判断数据是否存在
+pub async fn exists_by_id<'a>(
+  ctx: &Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let search = DataPermitSearch {
+    id: Some(id),
+    ..Default::default()
+  }.into();
+  
+  let res = exists(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: DataPermitSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -639,7 +676,7 @@ fn equals_by_unique(
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: DataPermitInput,
   model: DataPermitModel,
   unique_type: UniqueType,
@@ -678,7 +715,7 @@ pub async fn check_by_unique<'a>(
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: DataPermitInput,
 ) -> Result<DataPermitInput> {
   
@@ -759,14 +796,21 @@ pub async fn set_id_by_lbl<'a>(
 }
 
 /// 创建数据
+#[allow(unused_mut)]
 pub async fn create<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   mut input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let table = "base_data_permit";
   let _method = "create";
+  
+  if input.id.is_some() {
+    return Err(SrvErr::msg(
+      format!("Can not set id when create in dao: {table}")
+    ).into());
+  }
   
   let now = ctx.get_now();
   
@@ -806,11 +850,23 @@ pub async fn create<'a>(
     }
   }
   
-  let id = get_short_uuid();
-  
-  if input.id.is_none() {
-    input.id = id.clone().into();
+  let mut id;
+  loop {
+    id = get_short_uuid();
+    let is_exist = exists_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if !is_exist {
+      break;
+    }
+    error!(
+      "{req_id} ID_COLLIDE: {table} {id}",
+      req_id = ctx.get_req_id(),
+    );
   }
+  let id = id;
   
   let mut args = QueryArgs::new();
   
@@ -903,7 +959,7 @@ pub async fn create<'a>(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   mut input: DataPermitInput,
   options: Option<Options>,
@@ -1061,7 +1117,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1103,7 +1159,7 @@ pub async fn delete_by_ids<'a>(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1184,7 +1240,7 @@ pub async fn revert_by_ids<'a>(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1245,7 +1301,7 @@ pub async fn force_delete_by_ids<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {

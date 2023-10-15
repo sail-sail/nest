@@ -8,7 +8,7 @@ use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
 pub async fn ip<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut Ctx<'a>,
   value: Option<String>,
   label: &str,
 ) -> Result<()> {

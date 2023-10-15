@@ -5,7 +5,7 @@ use super::dictbiz_detail_model::GetDictbiz;
 use super::dictbiz_detail_service;
 
 pub async fn get_dictbiz<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<Vec<GetDictbiz>>> {
   

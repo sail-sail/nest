@@ -9,7 +9,7 @@ use crate::gen::base::options::options_model::{
 };
 
 pub async fn get_options_by_lbl<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   lbl: String,
 ) -> Result<Vec<OptionsModel>> {
   
@@ -29,7 +29,7 @@ pub async fn get_options_by_lbl<'a>(
 
 /// 更新国际化版本号
 pub async fn update_i18n_version<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<String> {
   
   let lbl = "国际化版本号".to_owned();

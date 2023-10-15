@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::CtxImpl;
+use crate::common::context::Ctx;
 
 use super::tenant_service;
 use crate::gen::base::tenant::tenant_model::TenantModel;

@@ -21,7 +21,7 @@ use super::usr_model::{
 
 /// 登录, 获得token
 pub async fn login<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: LoginInput,
 ) -> Result<Login> {
   let LoginInput {
@@ -97,7 +97,7 @@ pub async fn login<'a>(
 
 /// 选择语言
 pub async fn select_lang<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut Ctx<'a>,
   lang: String,
 ) -> Result<String> {
   
@@ -110,14 +110,13 @@ pub async fn select_lang<'a>(
   auth_model.lang = lang;
   
   let authorization = get_token_by_auth_model(&auth_model)?;
-  ctx.set_auth_model_impl(auth_model.into());
-  ctx.set_auth_token(authorization.clone().into());
+  ctx.set_auth_model(auth_model);
   
   Ok(authorization)
 }
 
 pub async fn get_login_info<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<GetLoginInfo> {
   
   let auth_model = ctx.get_auth_model_err()?;

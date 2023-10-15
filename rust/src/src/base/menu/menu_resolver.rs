@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::menu_service;
 use super::menu_model::GetMenus;
@@ -26,9 +26,9 @@ impl MenuQuery {
     let res = menu_service::get_menus(
       &ctx,
       r#type,
-    ).await?;
+    ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }

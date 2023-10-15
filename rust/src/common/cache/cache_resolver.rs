@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::cache_service;
 
@@ -16,7 +16,8 @@ impl CacheMutation {
     &self,
     ctx: &Context<'a>,
   ) -> Result<bool> {
-    let mut ctx = CtxImpl::new(ctx);
+    let mut ctx = Ctx::builder(ctx)
+      .build();
     let res = cache_service::clear_cache(&mut ctx).await;
     ctx.ok(res).await
   }

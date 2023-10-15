@@ -26,7 +26,7 @@ impl NRoute {
   #[allow(dead_code)]
   pub async fn n<'a>(
     &self,
-    ctx: &mut impl Ctx<'a>,
+    ctx: &Ctx<'a>,
     code: String,
     map: Option<HashMap<String, String>>,
   ) -> Result<String> {
@@ -36,7 +36,7 @@ impl NRoute {
   
   pub async fn n_batch<'a>(
     &self,
-    ctx: &mut impl Ctx<'a>,
+    ctx: &Ctx<'a>,
     i18n_code_maps: Vec<I18nCodeMap>,
   ) -> Result<HashMap<String, String>> {
     let res = n_batch(ctx, self.route_path.clone(), i18n_code_maps).await?;
@@ -47,7 +47,7 @@ impl NRoute {
 
 #[allow(dead_code)]
 pub async fn n<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   route_path: Option<String>,
   code: String,
   map: Option<HashMap<String, String>>,
@@ -99,7 +99,7 @@ impl From<(String, HashMap<String, String>)> for I18nCodeMap {
 
 #[allow(dead_code)]
 pub async fn n_batch<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   route_path: Option<String>,
   i18n_code_maps: Vec<I18nCodeMap>,
 ) -> Result<HashMap<String, String>> {
@@ -139,7 +139,7 @@ pub async fn n_batch<'a>(
 
 #[allow(dead_code)]
 pub async fn ns<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   code: String,
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
@@ -156,7 +156,7 @@ pub async fn ns<'a>(
 }
 
 pub async fn n_lang<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   lang_code: String,
   route_path: Option<String>,
   code: String,

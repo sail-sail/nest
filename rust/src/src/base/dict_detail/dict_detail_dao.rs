@@ -6,7 +6,7 @@ use super::dict_detail_model::GetDict;
 
 /// 获取业务字典
 pub async fn get_dict<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<Vec<GetDict>>> {
   if codes.is_empty() {
