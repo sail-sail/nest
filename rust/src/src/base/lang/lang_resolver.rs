@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::lang_service;
 use crate::gen::base::lang::lang_model::LangModel;

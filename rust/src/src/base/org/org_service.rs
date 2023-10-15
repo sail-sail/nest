@@ -5,7 +5,7 @@ use crate::common::context::Ctx;
 use crate::gen::base::usr::usr_dao;
 
 pub async fn org_login_select<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut Ctx<'a>,
   org_id: String,
 ) -> Result<String> {
   let org_id2 = ctx.get_auth_org_id();
@@ -35,6 +35,6 @@ pub async fn org_login_select<'a>(
   }
   auth_model.org_id = org_id.into();
   let token = auth_dao::get_token_by_auth_model(&auth_model)?;
-  ctx.set_auth_token(token.clone().into());
+  ctx.set_auth_model(auth_model);
   Ok(token)
 }

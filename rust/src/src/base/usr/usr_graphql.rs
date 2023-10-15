@@ -1,10 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{
-  CtxImpl,
-  Ctx,
-};
+use crate::common::context::Ctx;
 
 use super::usr_resolver;
 
@@ -44,7 +41,9 @@ impl UsrMutation {
     ctx: &Context<'a>,
     lang: String,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let mut ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = usr_resolver::select_lang(
       &mut ctx,
@@ -75,7 +74,7 @@ impl UsrQuery {
       &ctx,
     ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }

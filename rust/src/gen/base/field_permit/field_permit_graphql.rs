@@ -3,7 +3,6 @@ use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  CtxImpl,
   Ctx,
   Options,
   UniqueType,
@@ -32,10 +31,12 @@ impl FieldPermitGenQuery {
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<FieldPermitModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::find_all(
-      &mut ctx,
+      &ctx,
       search,
       page,
       sort,
@@ -51,10 +52,12 @@ impl FieldPermitGenQuery {
     ctx: &Context<'a>,
     search: Option<FieldPermitSearch>,
   ) -> Result<i64> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::find_count(
-      &mut ctx,
+      &ctx,
       search,
       None,
     ).await;
@@ -69,10 +72,12 @@ impl FieldPermitGenQuery {
     search: Option<FieldPermitSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<FieldPermitModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::find_one(
-      &mut ctx,
+      &ctx,
       search,
       sort,
       None,
@@ -87,10 +92,12 @@ impl FieldPermitGenQuery {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<Option<FieldPermitModel>> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::find_by_id(
-      &mut ctx,
+      &ctx,
       id,
       None,
     ).await;
@@ -103,10 +110,12 @@ impl FieldPermitGenQuery {
     &self,
     ctx: &Context<'a>,
   ) -> Result<FieldPermitFieldComment> {
-    let mut ctx = CtxImpl::new(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::get_field_comments(
-      &mut ctx,
+      &ctx,
       None,
     ).await;
     
@@ -128,7 +137,9 @@ impl FieldPermitGenMutation {
     model: FieldPermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
@@ -136,7 +147,7 @@ impl FieldPermitGenMutation {
     }
     
     let id = field_permit_resolver::create(
-      &mut ctx,
+      &ctx,
       model,
       options.into(),
     ).await;
@@ -151,10 +162,12 @@ impl FieldPermitGenMutation {
     id: String,
     model: FieldPermitInput,
   ) -> Result<String> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::update_by_id(
-      &mut ctx,
+      &ctx,
       id,
       model,
       None,
@@ -169,10 +182,12 @@ impl FieldPermitGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -186,10 +201,12 @@ impl FieldPermitGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::revert_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;
@@ -203,10 +220,12 @@ impl FieldPermitGenMutation {
     ctx: &Context<'a>,
     ids: Vec<String>,
   ) -> Result<u64> {
-    let mut ctx = CtxImpl::with_tran(ctx).auth()?;
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
     
     let res = field_permit_resolver::force_delete_by_ids(
-      &mut ctx,
+      &ctx,
       ids,
       None,
     ).await;

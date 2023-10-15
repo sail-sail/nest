@@ -1,5 +1,5 @@
 use anyhow::Result;
-use tracing::info;
+use tracing::{info, error};
 use crate::common::util::string::*;
 
 use crate::common::util::dao::{
@@ -33,7 +33,7 @@ use super::role_model::*;
 
 #[allow(unused_variables)]
 async fn get_where_query<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   args: &mut QueryArgs,
   search: Option<RoleSearch>,
 ) -> Result<String> {
@@ -418,7 +418,7 @@ async fn get_from_query() -> Result<String> {
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
 pub async fn find_all<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<RoleSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -511,7 +511,7 @@ pub async fn find_all<'a>(
 
 /// 根据搜索条件查询数据总数
 pub async fn find_count<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<RoleSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -576,7 +576,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 
 /// 获取字段对应的国家化后的名称
 pub async fn get_field_comments<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   _options: Option<Options>,
 ) -> Result<RoleFieldComment> {
   
@@ -647,7 +647,7 @@ pub async fn get_field_comments<'a>(
 
 /// 根据条件查找第一条数据
 pub async fn find_one<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: Option<RoleSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -673,7 +673,7 @@ pub async fn find_one<'a>(
 
 /// 根据ID查找第一条数据
 pub async fn find_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
@@ -693,10 +693,47 @@ pub async fn find_by_id<'a>(
   Ok(res)
 }
 
+/// 根据搜索条件判断数据是否存在
+pub async fn exists<'a>(
+  ctx: &Ctx<'a>,
+  search: Option<RoleSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let total = find_count(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(total > 0)
+}
+
+/// 根据ID判断数据是否存在
+pub async fn exists_by_id<'a>(
+  ctx: &Ctx<'a>,
+  id: String,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let search = RoleSearch {
+    id: Some(id),
+    ..Default::default()
+  }.into();
+  
+  let res = exists(
+    ctx,
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   search: RoleSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -759,7 +796,7 @@ fn equals_by_unique(
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: RoleInput,
   model: RoleModel,
   unique_type: UniqueType,
@@ -798,7 +835,7 @@ pub async fn check_by_unique<'a>(
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   input: RoleInput,
 ) -> Result<RoleInput> {
   
@@ -932,14 +969,21 @@ pub async fn set_id_by_lbl<'a>(
 }
 
 /// 创建数据
+#[allow(unused_mut)]
 pub async fn create<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   mut input: RoleInput,
   options: Option<Options>,
 ) -> Result<String> {
   
   let table = "base_role";
   let _method = "create";
+  
+  if input.id.is_some() {
+    return Err(SrvErr::msg(
+      format!("Can not set id when create in dao: {table}")
+    ).into());
+  }
   
   let now = ctx.get_now();
   
@@ -986,11 +1030,23 @@ pub async fn create<'a>(
     ).await?.into();
   }
   
-  let id = get_short_uuid();
-  
-  if input.id.is_none() {
-    input.id = id.clone().into();
+  let mut id;
+  loop {
+    id = get_short_uuid();
+    let is_exist = exists_by_id(
+      ctx,
+      id.clone(),
+      None,
+    ).await?;
+    if !is_exist {
+      break;
+    }
+    error!(
+      "{req_id} ID_COLLIDE: {table} {id}",
+      req_id = ctx.get_req_id(),
+    );
   }
+  let id = id;
   
   let mut args = QueryArgs::new();
   
@@ -1125,7 +1181,7 @@ pub async fn create<'a>(
 
 /// 根据id修改租户id
 pub async fn update_tenant_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   tenant_id: String,
   options: Option<Options>,
@@ -1167,7 +1223,7 @@ pub async fn update_tenant_by_id<'a>(
 /// 根据id修改数据
 #[allow(unused_mut)]
 pub async fn update_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   mut input: RoleInput,
   options: Option<Options>,
@@ -1392,7 +1448,7 @@ fn get_foreign_tables() -> Vec<&'static str> {
 
 /// 根据 ids 删除数据
 pub async fn delete_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1435,7 +1491,7 @@ pub async fn delete_by_ids<'a>(
 /// 根据 ID 查找是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1455,7 +1511,7 @@ pub async fn get_is_enabled_by_id<'a>(
 
 /// 根据 ids 启用或禁用数据
 pub async fn enable_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   is_enabled: u8,
   options: Option<Options>,
@@ -1498,7 +1554,7 @@ pub async fn enable_by_ids<'a>(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 pub async fn get_is_locked_by_id<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1518,7 +1574,7 @@ pub async fn get_is_locked_by_id<'a>(
 
 /// 根据 ids 锁定或者解锁数据
 pub async fn lock_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   is_locked: u8,
   options: Option<Options>,
@@ -1559,7 +1615,7 @@ pub async fn lock_by_ids<'a>(
 
 /// 根据 ids 还原数据
 pub async fn revert_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1640,7 +1696,7 @@ pub async fn revert_by_ids<'a>(
 
 /// 根据 ids 彻底删除数据
 pub async fn force_delete_by_ids<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1701,7 +1757,7 @@ pub async fn force_delete_by_ids<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_is_enabled<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   model: &RoleModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
@@ -1725,7 +1781,7 @@ pub async fn validate_is_enabled<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {

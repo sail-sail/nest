@@ -7,7 +7,7 @@ use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
 pub async fn regex<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &mut Ctx<'a>,
   value: Option<String>,
   regex_str: &'static str,
   label: &str,

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_graphql::{Context, Object};
 
-use crate::common::context::{CtxImpl, Ctx};
+use crate::common::context::Ctx;
 
 use super::permit_resolver;
 use super::permit_model::GetUsrPermits;
@@ -26,7 +26,7 @@ impl PermitQuery {
       &ctx,
     ).await;
     
-    Ok(res)
+    ctx.ok(res).await
   }
   
 }

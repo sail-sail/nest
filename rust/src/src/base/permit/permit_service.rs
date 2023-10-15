@@ -27,7 +27,7 @@ use crate::gen::base::permit::permit_model::PermitModel;
 
 /// 根据当前用户获取权限列表
 pub async fn get_usr_permits<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
 ) -> Result<Vec<GetUsrPermits>> {
   let auth_model = ctx.get_auth_model();
   if auth_model.is_none() {
@@ -160,7 +160,7 @@ pub async fn get_usr_permits<'a>(
 
 /// 后端按钮权限校验
 pub async fn use_permit<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   route_path: String,
   code: String,
 ) -> Result<()> {

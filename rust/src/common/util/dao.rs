@@ -146,7 +146,7 @@ struct ManyModel {
 }
 
 pub async fn many2many_update<'a>(
-  ctx: &mut impl Ctx<'a>,
+  ctx: &Ctx<'a>,
   id: String,
   foreign_ids: Vec<String>,
   many_opts: ManyOpts,

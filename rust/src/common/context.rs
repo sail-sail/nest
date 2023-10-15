@@ -11,7 +11,9 @@ use uuid::Uuid;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 
-use async_trait::async_trait;
+use std::sync::Arc;
+use tokio::sync::Mutex;
+
 use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
 
@@ -74,82 +76,81 @@ fn init_db_pool() -> Result<Pool<MySql>> {
   Ok(pool)
 }
 
-#[async_trait]
-pub trait Ctx<'a>: Send + Sized {
+impl<'a> Ctx<'a> {
   
-  fn get_not_verify_token(&self) -> bool;
+  pub fn builder(
+    ctx: &'a async_graphql::Context<'a>,
+  ) -> CtxBuilder<'a> {
+    CtxBuilder::new(ctx)
+  }
   
-  fn get_is_tran(&self) -> bool;
+  pub fn set_auth_model(
+    &mut self,
+    auth_model: AuthModel,
+  ) {
+    self.auth_model = Some(auth_model);
+  }
   
-  fn set_is_tran(&mut self, is_tran: bool);
+  pub fn get_req_id(&self) -> &str {
+    &self.req_id
+  }
   
-  fn get_req_id(&self) -> &str;
+  pub fn get_now(&self) -> NaiveDateTime {
+    self.now
+  }
   
-  fn get_auth_model_impl(&self) -> &Option<AuthModel>;
-  
-  fn set_auth_model_impl(&mut self, auth_model: Option<AuthModel>);
-  
-  fn set_auth_token(&mut self, auth_token: Option<String>);
-  
-  fn get_auth_token(&self) -> Option<String>;
-  
-  fn get_tran(&mut self) -> Option<&mut Transaction<'a, MySql>>;
-  
-  fn get_tran_owned(self) -> Option<Transaction<'a, MySql>>;
-  
-  fn set_tran(&mut self, tran: Transaction<'a, MySql>);
-  
-  fn get_now(&self) -> NaiveDateTime;
-  
-  fn get_server_tokentimeout(&self) -> i64 {
+  pub fn get_server_tokentimeout(&self) -> i64 {
     SERVER_TOKEN_TIMEOUT.to_owned()
   }
   
-  fn get_auth_model(
-    &mut self,
+  /// 获取当前登录用户
+  #[allow(dead_code)]
+  pub fn get_auth_model(
+    &self,
   ) -> Option<AuthModel> {
-    let auth_model = self.get_auth_model_impl();
-    if auth_model.is_some() {
-      return auth_model.to_owned();
-    }
-    let auth_token = self.get_auth_token();
-    // if auth_token.is_none() {
-    //   return None;
-    // }
-    auth_token.as_ref()?;
-    let auth_token: String = auth_token.unwrap();
-    let auth_model = get_auth_model_by_token(auth_token);
-    if auth_model.is_err() {
-      error!("{}", auth_model.err().unwrap());
-      return None;
-    }
-    let auth_model = auth_model.unwrap();
-    self.set_auth_model_impl(auth_model.to_owned().into());
-    auth_model.into()
+    self.auth_model.clone()
   }
   
-  fn get_auth_id(&mut self) -> Option<String> {
+  #[allow(dead_code)]
+  pub fn has_auth_model(&self) -> bool {
+    self.auth_model.is_some()
+  }
+  
+  #[allow(dead_code)]
+  pub fn get_auth_model_err(&self) -> Result<AuthModel> {
+    if self.auth_model.is_some() {
+      return Ok(self.auth_model.clone().unwrap());
+    }
+    error!(
+      "{req_id} Not login! - validate_auth_model is none",
+      req_id = self.get_req_id(),
+    );
+    Err(anyhow::anyhow!("Not login!"))
+  }
+  
+  #[allow(dead_code)]
+  pub fn get_auth_id(&self) -> Option<String> {
     match self.get_auth_model() {
       Some(item) => item.id.into(),
       None => None,
     }
   }
   
-  fn get_auth_tenant_id(&mut self) -> Option<String> {
+  pub fn get_auth_tenant_id(&self) -> Option<String> {
     match self.get_auth_model() {
       Some(item) => item.tenant_id.into(),
       None => None,
     }
   }
   
-  fn get_auth_org_id(&mut self) -> Option<String> {
+  pub fn get_auth_org_id(&self) -> Option<String> {
     match self.get_auth_model() {
       Some(item) => item.org_id,
       None => None,
     }
   }
   
-  fn get_auth_lang(&mut self) -> Option<String> {
+  pub fn get_auth_lang(&self) -> Option<String> {
     match self.get_auth_model() {
       Some(item) => item.lang.into(),
       None => None,
@@ -157,55 +158,43 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 开启事务
-  async fn begin(&mut self) -> Result<()> {
-    if self.get_tran().is_some() {
-      return Ok(());
+  async fn begin(&self) -> Result<()> {
+    {
+      let tran = self.tran.lock().await;
+      if (*tran).is_some() {
+        return Ok(());
+      }
     }
     info!("{} begin;", self.get_req_id());
     let tran = DB_POOL.clone().begin().await?;
-    self.set_tran(tran);
+    let mut tran0 = self.tran.lock().await;
+    *tran0 = Some(tran);
     Ok(())
   }
   
-  /// 提交事务
-  async fn commit(mut self) -> Result<()> {
-    let req_id = self.get_req_id().to_owned();
-    let tran = self.get_tran_owned();
-    if let Some(tran) = tran {
-      info!("{} commit;", req_id);
-      tran.commit().await?;
-    }
-    Ok(())
-  }
-  
-  /// 回滚事务
-  async fn rollback(mut self) -> Result<()> {
-    let req_id = self.get_req_id().to_owned();
-    let tran = self.get_tran_owned();
-    if let Some(tran) = tran {
-      info!("{} rollback;", req_id);
-      tran.rollback().await?;
-    }
-    Ok(())
-  }
-  
-  async fn ok<T>(self, res: Result<T>) -> Result<T>
+  pub async fn ok<T>(&self, res: Result<T>) -> Result<T>
   where
     T: Send + Sized,
   {
-    if let Err(e) = res {
-      let req_id = self.get_req_id().to_owned();
-      self.rollback().await?;
-      error!("{} {}", req_id, e);
-      return Err(e);
+    let mut tran = self.tran.lock().await;
+    let tran = tran.take();
+    if let Err(err) = &res {
+      if let Some(tran) = tran {
+        info!("{} rollback;", self.get_req_id());
+        tran.rollback().await?;
+      }
+      let req_id = self.get_req_id();
+      error!("{} {}", req_id, err);
+    } else if let Some(tran) = tran {
+      info!("{} commit;", self.get_req_id());
+      tran.commit().await?;
     }
-    self.commit().await?;
     res
   }
   
   /// 带参数执行查询
-  async fn execute(
-    &mut self,
+  pub async fn execute(
+    &self,
     sql: String,
     args: Vec<ArgType>,
     options: Option<Options>,
@@ -213,7 +202,7 @@ pub trait Ctx<'a>: Send + Sized {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
     let mut is_debug: bool = *IS_DEBUG;
-    let mut is_tran = self.get_is_tran();
+    let mut is_tran = self.is_tran;
     if let Some(options) = &options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -228,9 +217,6 @@ pub trait Ctx<'a>: Send + Sized {
     }
     
     if is_tran {
-      if self.get_tran().is_none() {
-        self.begin().await?;
-      }
       let mut query = sqlx::query(sql);
       if is_debug {
         let mut debug_args = vec![];
@@ -371,13 +357,17 @@ pub trait Ctx<'a>: Send + Sized {
           };
         }
       }
-      let tran = self.get_tran().unwrap();
-      let res = tran.execute(query).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e);
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
+      let res = {
+        self.begin().await?;
+        let mut tran = self.tran.lock().await;
+        let tran = tran.as_mut().unwrap();
+        tran.execute(query).await
+          .map_err(|e| {
+            let err_msg = format!("{} {}", self.get_req_id(), e);
+            error!("{}", err_msg);
+            anyhow::anyhow!(err_msg)
+          })?
+      };
       let rows_affected = res.rows_affected();
       if rows_affected > 0 {
         if let Some(options) = &options {
@@ -541,8 +531,8 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 带参数执行查询
-  async fn query<R>(
-    &mut self,
+  pub async fn query<R>(
+    &self,
     sql: String,
     args: Vec<ArgType>,
     options: Option<Options>,
@@ -572,7 +562,7 @@ pub trait Ctx<'a>: Send + Sized {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
     let mut is_debug: bool = *IS_DEBUG;
-    let mut is_tran = self.get_is_tran();
+    let mut is_tran = self.is_tran;
     if let Some(options) = options.as_ref() {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -581,9 +571,6 @@ pub trait Ctx<'a>: Send + Sized {
     }
     
     if is_tran {
-      if self.get_tran().is_none() {
-        self.begin().await?;
-      }
       let mut query = sqlx::query_as::<_, R>(sql);
       if is_debug {
         let mut debug_args = vec![];
@@ -724,13 +711,17 @@ pub trait Ctx<'a>: Send + Sized {
           };
         }
       }
-      let tran = self.get_tran().unwrap();
-      let res = query.fetch_all(&mut **tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e);
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
+      let res = {
+        self.begin().await?;
+        let mut tran = self.tran.lock().await;
+        let tran = tran.as_mut().unwrap();
+        query.fetch_all((*tran).as_mut()).await
+          .map_err(|e| {
+            let err_msg = format!("{} {}", self.get_req_id(), e);
+            error!("{}", err_msg);
+            anyhow::anyhow!(err_msg)
+          })?
+      };
       
       if let Some(options) = &options {
         if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -895,8 +886,8 @@ pub trait Ctx<'a>: Send + Sized {
   }
   
   /// 带参数查询一条数据
-  async fn query_one<R>(
-    &mut self,
+  pub async fn query_one<R>(
+    &self,
     sql: String,
     args: Vec<ArgType>,
     options: Option<Options>,
@@ -925,7 +916,7 @@ pub trait Ctx<'a>: Send + Sized {
     let sql: &'a str = Box::leak(sql.into_boxed_str());
     
     let mut is_debug = true;
-    let mut is_tran = self.get_is_tran();
+    let mut is_tran = self.is_tran;
     if let Some(options) = &options {
       is_debug = options.is_debug;
       if let Some(is_tran0) = options.get_is_tran() {
@@ -934,9 +925,6 @@ pub trait Ctx<'a>: Send + Sized {
     }
     
     if is_tran {
-      if self.get_tran().is_none() {
-        self.begin().await?;
-      }
       let mut query = sqlx::query_as::<_, R>(sql);
       if is_debug {
         let mut debug_args = vec![];
@@ -1077,13 +1065,17 @@ pub trait Ctx<'a>: Send + Sized {
           };
         }
       }
-      let tran = self.get_tran().unwrap();
-      let res = query.fetch_optional(&mut **tran).await
-        .map_err(|e| {
-          let err_msg = format!("{} {}", self.get_req_id(), e);
-          error!("{}", err_msg);
-          anyhow::anyhow!(err_msg)
-        })?;
+      let res = {
+        self.begin().await?;
+        let mut tran = self.tran.lock().await;
+        let tran = tran.as_mut().unwrap();
+        query.fetch_optional((*tran).as_mut()).await
+          .map_err(|e| {
+            let err_msg = format!("{} {}", self.get_req_id(), e);
+            error!("{}", err_msg);
+            anyhow::anyhow!(err_msg)
+          })?
+      };
       if let Some(res) = &res {
         if let Some(options) = &options {
           if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -1250,121 +1242,19 @@ pub trait Ctx<'a>: Send + Sized {
     Ok(res)
   }
   
-  fn insert_auth_header(&self) -> Result<()>;
-  
-  /// 校验token是否已经过期
-  fn auth(mut self) -> Result<Self> {
-    let auth_token = self.get_auth_token();
-    if auth_token.is_none() {
-      return Err(anyhow!("token_empty"));
-    }
-    let auth_token = auth_token.unwrap();
-    let mut auth_model = match get_auth_model_by_token(auth_token) {
-      Ok(item) => item,
-      Err(e) => {
-        error!("{}", e.to_string());
-        return Err(anyhow!("refresh_token_expired"));
-      },
-    };
-    let now = self.get_now();
-    let server_tokentimeout = self.get_server_tokentimeout();
-    let now_sec = now.timestamp_millis() / 1000;
-    if now_sec - server_tokentimeout > auth_model.exp {
-      if now_sec - server_tokentimeout * 2 > auth_model.exp {
-        return Err(anyhow!("refresh_token_expired"));
-      }
-      auth_model.exp = now_sec + server_tokentimeout;
-      let auth_token = get_token_by_auth_model(&auth_model)?;
-      self.set_auth_model_impl(Some(auth_model));
-      self.insert_auth_header()?;
-      self.set_auth_token(Some(auth_token));
-      return Ok(self);
-    }
-    Ok(self)
-  }
-  
 }
 
-// #[async_trait]
-impl<'a> Ctx<'a> for CtxImpl<'a> {
-  
-  fn get_not_verify_token(&self) -> bool {
-    self.not_verify_token
-  }
-  
-  fn get_is_tran(&self) -> bool {
-    self.is_tran
-  }
-  
-  fn set_is_tran(&mut self, is_tran: bool) {
-    self.is_tran = is_tran;
-  }
-  
-  fn get_req_id(&self) -> &str {
-    &self.req_id
-  }
-  
-  fn set_auth_model_impl(&mut self, auth_model: Option<AuthModel>) {
-    self.auth_model = auth_model;
-  }
-  
-  fn get_auth_model_impl(&self) -> &Option<AuthModel> {
-    &self.auth_model
-  }
-  
-  fn set_auth_token(&mut self, auth_token: Option<String>) {
-    self.auth_token = auth_token;
-  }
-  
-  fn insert_auth_header(&self) -> Result<()> {
-    let auth_token = self.get_auth_token();
-    if auth_token.is_none() {
-      return Ok(());
-    }
-    let auth_token = auth_token.unwrap();
-    self.gql_ctx.insert_http_header(AUTHORIZATION.parse::<HeaderName>()?, auth_token.parse::<HeaderValue>()?);
-    Ok(())
-  }
-  
-  fn get_auth_token(&self) -> Option<String> {
-    self.auth_token.clone()
-  }
-  
-  fn get_tran(&mut self) -> Option<&mut Transaction<'a, MySql>> {
-    self.tran.as_mut()
-  }
-  
-  fn get_tran_owned(self) -> Option<Transaction<'a, MySql>> {
-    self.tran
-  }
-  
-  fn set_tran(&mut self, tran: Transaction<'a, MySql>) {
-    self.tran = Some(tran);
-  }
-  
-  fn get_now(&self) -> NaiveDateTime {
-    self.now
-  }
-  
-}
-
-pub struct CtxImpl<'a> {
+pub struct Ctx<'a> {
   
   is_tran: bool,
   
   req_id: String,
   
-  tran: Option<Transaction<'a, MySql>>,
-  
-  not_verify_token: bool,
+  tran: Arc<Mutex<Option<Transaction<'a, MySql>>>>,
   
   auth_model: Option<AuthModel>,
   
-  auth_token: Option<String>,
-  
-  gql_ctx: &'a async_graphql::Context<'a>,
-  
-  now: NaiveDateTime
+  now: NaiveDateTime,
   
 }
 
@@ -1758,7 +1648,7 @@ impl Options {
   
 }
 
-// impl<'a> Drop for CtxImpl<'a> {
+// impl<'a> Drop for Ctx<'a> {
   
 //   fn drop(&mut self) {
 //     if (&(self.tran)).is_some() {
@@ -1768,40 +1658,108 @@ impl Options {
   
 // }
 
-impl<'a> CtxImpl<'a> {
+pub struct CtxBuilder<'a> {
+  
+  gql_ctx: &'a async_graphql::Context<'a>,
+  
+  is_tran: Option<bool>,
+  
+  auth_model: Option<AuthModel>,
+  
+  req_id: String,
+  
+  now: NaiveDateTime,
+  
+}
+
+impl <'a> CtxBuilder<'a> {
   
   pub fn new(
     gql_ctx: &'a async_graphql::Context<'a>,
-  ) -> CtxImpl<'a> {
+  ) -> CtxBuilder<'a> {
     let now = Local::now();
     let now = NaiveDateTime::from_timestamp_opt(
       now.timestamp() + now.offset().local_minus_utc() as i64,
       now.timestamp_subsec_nanos(),
     ).unwrap();
     let req_id = now.timestamp_millis().to_string();
-    let mut ctx = CtxImpl {
-      is_tran: false,
-      req_id,
-      tran: None,
-      auth_model: None,
-      not_verify_token: false,
-      auth_token: None,
+    CtxBuilder {
       gql_ctx,
+      is_tran: None,
+      auth_model: None,
+      req_id,
       now,
-    };
-    ctx.set_auth_token(
-      gql_ctx.data_opt::<super::auth::auth_model::AuthToken>()
-        .map(ToString::to_string)
-    );
-    ctx
+    }
   }
   
-  pub fn with_tran(
-    gql_ctx: &'a async_graphql::Context<'a>,
-  ) -> CtxImpl<'a> {
-    let mut ctx = CtxImpl::new(gql_ctx);
-    ctx.set_is_tran(true);
-    ctx
+  // 开启事务
+  pub fn with_tran(mut self) -> Result<CtxBuilder<'a>> {
+    self.is_tran = Some(true);
+    Ok(self)
+  }
+  
+  /// 校验token是否已经过期
+  pub fn with_auth(mut self) -> Result<CtxBuilder<'a>> {
+    if self.auth_model.is_some() {
+      return Err(anyhow!("auth_model_not_none"));
+    }
+    let auth_token = self.gql_ctx.data_opt
+      ::<super::auth::auth_model::AuthToken>()
+      .map(ToString::to_string);
+    if auth_token.is_none() {
+      return Err(anyhow!("token_empty"));
+    }
+    let auth_token = auth_token.unwrap();
+    let mut auth_model = match get_auth_model_by_token(auth_token) {
+      Ok(item) => item,
+      Err(e) => {
+        error!("{}", e.to_string());
+        return Err(anyhow!("refresh_token_expired"));
+      },
+    };
+    let now = self.now;
+    let server_tokentimeout = SERVER_TOKEN_TIMEOUT.to_owned();
+    let now_sec = now.timestamp_millis() / 1000;
+    if now_sec - server_tokentimeout > auth_model.exp {
+      if now_sec - server_tokentimeout * 2 > auth_model.exp {
+        return Err(anyhow!("refresh_token_expired"));
+      }
+      auth_model.exp = now_sec + server_tokentimeout;
+      let auth_token = get_token_by_auth_model(&auth_model)?;
+      self.gql_ctx.insert_http_header(
+        AUTHORIZATION.parse::<HeaderName>()?,
+        auth_token.parse::<HeaderValue>()?,
+      );
+    }
+    self.auth_model = Some(auth_model);
+    Ok(self)
+  }
+  
+  /// 如果auth_model能获取, 则获取, 否则不抛出异常
+  #[allow(dead_code)]
+  pub fn with_auth_optional(mut self) -> Result<CtxBuilder<'a>> {
+    if self.auth_model.is_some() {
+      return Err(anyhow!("auth_model_not_none"));
+    }
+    let auth_token = self.gql_ctx.data_opt
+      ::<super::auth::auth_model::AuthToken>()
+      .map(ToString::to_string);
+    if auth_token.is_none() {
+      return Ok(self);
+    }
+    let auth_token = auth_token.unwrap();
+    self.auth_model = get_auth_model_by_token(auth_token).ok();
+    Ok(self)
+  }
+  
+  pub fn build(self) -> Ctx<'a> {
+    Ctx {
+      is_tran: self.is_tran.unwrap_or_default(),
+      req_id: self.req_id,
+      tran: Arc::new(Mutex::new(None)),
+      auth_model: self.auth_model,
+      now: self.now,
+    }
   }
   
 }
