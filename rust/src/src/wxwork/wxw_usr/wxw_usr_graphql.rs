@@ -23,11 +23,11 @@ impl WxwUsrQuery {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<WxwGetAppid> {
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .build();
     
     let res = wxw_usr_resolver::wxw_get_appid(
-      &mut ctx,
+      &ctx,
       host,
     ).await;
     
@@ -48,11 +48,11 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     input: WxwLoginByCodeInput,
   ) -> Result<WxwLoginByCode> {
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .build();
     
     let res = wxw_usr_resolver::wxw_login_by_code(
-      &mut ctx,
+      &ctx,
       input
     ).await;
     
@@ -65,12 +65,12 @@ impl WxwUsrMutation {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<i32> {
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .with_auth()?
       .build();
     
     let res = wxw_usr_resolver::wxw_sync_usr(
-      &mut ctx,
+      &ctx,
       host,
     ).await;
     

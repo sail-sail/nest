@@ -218,11 +218,9 @@ pub async fn wxw_login_by_code<'a>(
       ).await?;
     }
   } else {
-    let id = get_short_uuid();
     create_wxw_usr(
       ctx,
       WxwUsrInput {
-        id: id.into(),
         userid: userid.clone().into(),
         lbl: name.clone().into(),
         position: position.clone().into(),
@@ -241,7 +239,7 @@ pub async fn wxw_login_by_code<'a>(
     None,
     None,
   ).await?;
-  let mut id = get_short_uuid();
+  let id;
   if let Some(usr_model) = usr_model {
     validate_is_enabled_usr(
       ctx,
@@ -265,10 +263,9 @@ pub async fn wxw_login_by_code<'a>(
       ).await?;
     }
   } else {
-    create_usr(
+    id = create_usr(
       ctx,
       UsrInput {
-        id: id.clone().into(),
         username: name.clone().into(),
         lbl: name.clone().into(),
         tenant_id: tenant_id.clone().into(),
