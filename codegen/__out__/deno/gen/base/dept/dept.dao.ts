@@ -868,7 +868,7 @@ export async function create(
     if (!isExist) {
       break;
     }
-    ctx.error(`id: ${ input.id } has collided when create in table: ${ table }`);
+    ctx.error(`ID_COLLIDE: ${ table } ${ input.id }`);
   }
   
   const args = new QueryArgs();
