@@ -45,10 +45,6 @@ import {
   validateIsEnabled as validateIsEnabledDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
-import {
-  shortUuidV4,
-} from "/lib/util/string_util.ts";
-
 import * as authService from "/lib/auth/auth.service.ts";
 
 /**
@@ -132,9 +128,7 @@ export async function wxwLoginByCode(
     lbl: name,
   });
   if (!wxw_usrModel) {
-    const id = shortUuidV4();
     await createWxwUsr({
-      id,
       userid,
       lbl: name,
       position,
@@ -177,9 +171,7 @@ export async function wxwLoginByCode(
       usrModel = (await findByIdUsr(usrModel.id))!;
     }
   } else {
-    const id = shortUuidV4();
-    await createUsr({
-      id,
+    const id = await createUsr({
       username: name,
       lbl: name,
       tenant_id: wxw_appModel.tenant_id!,
@@ -271,7 +263,6 @@ async function _wxwSyncUsr(
     const userid = userids4add[i];
     const { name } = await getuser(wxw_app_id, userid);
     wxw_usrModels4add.push({
-      id: shortUuidV4(),
       userid,
       lbl: name,
       tenant_id: wxw_appModel.tenant_id!,

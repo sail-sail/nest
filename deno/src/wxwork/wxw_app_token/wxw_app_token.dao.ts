@@ -60,10 +60,8 @@ export async function getAccessToken(
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 access_token 失败: ${ url }`;
     }
-    const id = shortUuidV4();
     await createWxwAppToken(
       {
-        id,
         wxw_app_id,
         type: "corp",
         access_token,
@@ -163,10 +161,8 @@ export async function getContactAccessToken(
     if (isEmpty(access_token)) {
       throw `企业微信应用 获取 通讯录密钥 失败: ${ url }`;
     }
-    const id = shortUuidV4();
     await createWxwAppToken(
       {
-        id,
         wxw_app_id,
         type: "contact",
         access_token,
