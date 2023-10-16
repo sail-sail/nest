@@ -71,8 +71,10 @@ export async function findOneUsr(
   const { findOne } = await import("./usr.service.ts");
   const res = await findOne(search, sort);
   
-  // 密码
-  res.password = "";
+  if (res) {
+    // 密码
+    res.password = "";
+  }
   return res;
 }
 
@@ -85,8 +87,10 @@ export async function findByIdUsr(
   const { findById } = await import("./usr.service.ts");
   const res = await findById(id);
   
-  // 密码
-  res.password = "";
+  if (res) {
+    // 密码
+    res.password = "";
+  }
   return res;
 }
 

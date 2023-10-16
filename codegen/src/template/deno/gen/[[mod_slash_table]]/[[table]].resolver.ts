@@ -193,8 +193,10 @@ export async function findOne<#=Table_Up#>(
     if (isPassword) {
   #>
   
-  // <#=column_comment#>
-  res.password = "";<#
+  if (res) {
+    // <#=column_comment#>
+    res.password = "";
+  }<#
     }
   #><#
   }
@@ -229,8 +231,10 @@ export async function findById<#=Table_Up#>(
     if (isPassword) {
   #>
   
-  // <#=column_comment#>
-  res.password = "";<#
+  if (res) {
+    // <#=column_comment#>
+    res.password = "";
+  }<#
     }
   #><#
   }
