@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasPassword = columns.some((column) => column.isPassword);
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -105,7 +106,38 @@ export async function findAll<#=Table_Up#>(
   sort?: SortInput[],
 ): Promise<<#=modelName#>[]> {
   const { findAll } = await import("./<#=table#>.service.ts");
-  const res = await findAll(search, page, sort);
+  const res = await findAll(search, page, sort);<#
+  if (hasPassword) {
+  #>
+  
+  for (const model of res) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.password = "";<#
+      }
+    #><#
+    }
+    #>
+  }<#
+  }
+  #>
   return res;
 }
 
@@ -141,7 +173,32 @@ export async function findOne<#=Table_Up#>(
   sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
   const { findOne } = await import("./<#=table#>.service.ts");
-  const res = await findOne(search, sort);
+  const res = await findOne(search, sort);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+  #><#
+    if (isPassword) {
+  #>
+  
+  // <#=column_comment#>
+  res.password = "";<#
+    }
+  #><#
+  }
+  #>
   return res;
 }
 
@@ -152,7 +209,32 @@ export async function findById<#=Table_Up#>(
   id: string,
 ): Promise<<#=modelName#> | undefined> {
   const { findById } = await import("./<#=table#>.service.ts");
-  const res = await findById(id);
+  const res = await findById(id);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let column_comment = column.COLUMN_COMMENT || "";
+    let selectList = [ ];
+    let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+    if (selectStr) {
+      selectList = eval(`(${ selectStr })`);
+    }
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const isPassword = column.isPassword;
+  #><#
+    if (isPassword) {
+  #>
+  
+  // <#=column_comment#>
+  res.password = "";<#
+    }
+  #><#
+  }
+  #>
   return res;
 }<#
 if (opts.noAdd !== true) {

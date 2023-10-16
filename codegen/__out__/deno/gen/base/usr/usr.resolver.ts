@@ -44,6 +44,11 @@ export async function findAllUsr(
 ): Promise<UsrModel[]> {
   const { findAll } = await import("./usr.service.ts");
   const res = await findAll(search, page, sort);
+  
+  for (const model of res) {
+    // 密码
+    model.password = "";
+  }
   return res;
 }
 
@@ -65,6 +70,9 @@ export async function findOneUsr(
 ): Promise<UsrModel | undefined> {
   const { findOne } = await import("./usr.service.ts");
   const res = await findOne(search, sort);
+  
+  // 密码
+  res.password = "";
   return res;
 }
 
@@ -76,6 +84,9 @@ export async function findByIdUsr(
 ): Promise<UsrModel | undefined> {
   const { findById } = await import("./usr.service.ts");
   const res = await findById(id);
+  
+  // 密码
+  res.password = "";
   return res;
 }
 

@@ -520,8 +520,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    // 密码
-    model.password = "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
