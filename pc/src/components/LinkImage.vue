@@ -63,6 +63,11 @@
   <div
     v-else
     un-text="[light-gray]"
+    un-flex="~ [1_0_0]"
+    un-overflow-hidden
+    un-justify-center
+    un-items-center
+    un-cursor-default
   >
     (无)
   </div>
