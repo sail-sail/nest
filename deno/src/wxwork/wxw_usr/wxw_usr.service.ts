@@ -98,6 +98,7 @@ export async function wxwLoginByCode(
   
   const domain_id = domainModel.id;
   
+  // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
     await findOneWxwApp({
       domain_id: [ domain_id ],
