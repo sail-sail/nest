@@ -73,6 +73,10 @@ async function redisClient() {
   if (_redisClient) {
     return _redisClient;
   }
+  const cacheEnable = await getEnv("cache_enable");
+  if (cacheEnable !== "true") {
+    return;
+  }
   const hostname = await getEnv("cache_hostname");
   if (!hostname) {
     return;
