@@ -374,8 +374,13 @@ export async function findByUnique(
     } else {
       wxw_app_id = search0.wxw_app_id;
     }
+    if (search0.type == null) {
+      return [ ];
+    }
+    const type = search0.type;
     const modelTmps = await findAll({
       wxw_app_id,
+      type,
     });
     models.push(...modelTmps);
   }
@@ -406,7 +411,8 @@ export function equalsByUnique(
     return false;
   }
   if (
-    oldModel.wxw_app_id === model.wxw_app_id
+    oldModel.wxw_app_id === model.wxw_app_id &&
+    oldModel.type === model.type
   ) {
     return true;
   }
