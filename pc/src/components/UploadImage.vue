@@ -42,7 +42,7 @@
       >
         
         <el-icon
-          v-if="indexStore.loading > 0"
+          v-if="loading"
           color="gray"
         >
           <ElIconLoading />
@@ -204,6 +204,8 @@ let urlList = $computed(() => {
 
 let fileRef = $ref<HTMLInputElement>();
 
+let loading = $ref(false);
+
 async function inputChg() {
   if (!fileRef) {
     return;
@@ -225,7 +227,13 @@ async function inputChg() {
     ElMessage.error(await nsAsync("文件大小不能超过 {0}M", props.maxFileSize / 1024 / 1024));
     return;
   }
-  const id = await uploadFile(file);
+  let id = "";
+  loading = true;
+  try {
+    id = await uploadFile(file);
+  } finally {
+    loading = false;
+  }
   if (!id) {
     return;
   }
