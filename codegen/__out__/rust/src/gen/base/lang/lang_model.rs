@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangModel {
   /// ID
@@ -121,7 +121,7 @@ impl FromRow<'_, MySqlRow> for LangModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangFieldComment {
   /// ID
@@ -160,7 +160,7 @@ pub struct LangFieldComment {
   pub is_sys_lbl: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangSearch {
   pub id: Option<String>,
@@ -198,7 +198,7 @@ pub struct LangSearch {
   pub is_sys: Option<Vec<u8>>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LangInput {
   /// ID

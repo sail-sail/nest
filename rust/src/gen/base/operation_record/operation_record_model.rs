@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordModel {
   /// 租户ID
@@ -128,7 +128,7 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordFieldComment {
   /// ID
@@ -167,7 +167,7 @@ pub struct OperationRecordFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordSearch {
   pub id: Option<String>,
@@ -221,7 +221,7 @@ pub struct OperationRecordSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct OperationRecordInput {
   /// 租户ID
