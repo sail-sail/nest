@@ -4,13 +4,13 @@ use async_graphql::{
   Enum,
 };
 
-#[derive(SimpleObject, InputObject, Debug)]
+#[derive(SimpleObject, InputObject)]
 pub struct PageInput {
   pub pg_offset: Option<i64>,
   pub pg_size: Option<i64>,
 }
 
-#[derive(SimpleObject, InputObject, Debug)]
+#[derive(SimpleObject, InputObject)]
 pub struct SortInput {
   #[graphql(default)]
   pub prop: String,
@@ -18,7 +18,7 @@ pub struct SortInput {
   pub order: String,
 }
 
-#[derive(Enum, Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(Enum, Copy, Clone, Eq, PartialEq)]
 pub enum UniqueType {
   #[graphql(name = "throw")]
   Throw,
