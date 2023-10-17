@@ -1,5 +1,7 @@
 import { defineConfig } from "../config";
 
+import cron from "./cron";
+
 export default defineConfig({
   // 角色
   base_role: {
@@ -1271,4 +1273,6 @@ export default defineConfig({
       },
     ],
   },
+  
+  ...cron,
 });
