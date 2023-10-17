@@ -930,7 +930,10 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
@@ -1387,7 +1390,9 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    Object.assign(search, builtInSearch);
+    if (deepCompare(builtInSearch, search)) {
+      return;
+    }
     await dataGrid(true);
   },
   {
