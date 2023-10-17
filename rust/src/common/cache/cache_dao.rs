@@ -17,9 +17,18 @@ fn init_cache_pool() -> Option<Pool> {
     return None;
   }
   let cache_hostname = env::var("cache_hostname").unwrap_or("127.0.0.1".to_owned());
+  let cache_username = env::var("cache_username").unwrap_or("".to_owned());
+  let cache_password = env::var("cache_password").unwrap_or("".to_owned());
   let cache_port = env::var("cache_port").unwrap_or("6379".to_owned());
   let cache_db = env::var("cache_db").unwrap_or("0".to_owned());
-  let url = format!("redis://{}:{}/{}", cache_hostname, cache_port, cache_db);
+  let cache_user = {
+    if cache_username.is_empty() {
+      "".to_owned()
+    } else {
+      format!("{}:{}@", cache_username, cache_password)
+    }
+  };
+  let url = format!("redis://{cache_user}{cache_hostname}:{cache_port}/{cache_db}");
   info!("cache: {}", &url);
   let cfg = Config::from_url(url);
   let cache_pool: Pool = cfg.create_pool(
