@@ -1194,6 +1194,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       :tenant_ids="[ usrStore.tenant_id ]"<#
       }
+      #><#
+      if (hasEnabled) {
+      #>
+      is_enabled="1"<#
+      }
       #>
       v-bind="listSelectProps"
     ></<#=Foreign_Table_Up#>List>
@@ -1214,6 +1219,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       if (mod === "base" && table === "role" && column_name === "menu_ids") {
       #>
       :tenant_ids="[ usrStore.tenant_id ]"<#
+      }
+      #><#
+      if (hasEnabled) {
+      #>
+      is_enabled="1"<#
       }
       #>
       v-bind="listSelectProps"
@@ -2197,7 +2207,10 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  let search2 = {
+  if (showBuildIn) {
+    Object.assign(search, builtInSearch);
+  }
+  const search2 = {
     ...search,
     idsChecked: undefined,
   };
@@ -3083,11 +3096,7 @@ async function initFrame() {
 watch(
   () => builtInSearch,
   async function() {
-    const search2 = {
-      ...search,
-      ...builtInSearch,
-    };
-    if (deepCompare(search, search2)) {
+    if (deepCompare(builtInSearch, search)) {
       return;
     }
     await dataGrid(true);

@@ -4,6 +4,11 @@ import {
 
 import * as authService from "/lib/auth/auth.service.ts";
 
+import {
+  getAuthModel,
+  getPassword,
+} from "/lib/auth/auth.dao.ts";
+
 import * as usrDao from "./usr.dao.ts";
 
 import * as usrDaoGen from "/gen/base/usr/usr.dao.ts";
@@ -12,6 +17,7 @@ import * as orgDaoGen from "/gen/base/org/org.dao.ts";
 
 import type {
   MutationLoginArgs,
+  ChangePasswordInput,
 } from "/gen/types.ts";
 
 import {
@@ -101,6 +107,7 @@ export async function getLoginInfo() {
   }
   return {
     lbl: usrModel.lbl,
+    username: usrModel.username,
     lang: authModel.lang,
     org_id,
     org_id_models,
@@ -124,4 +131,56 @@ export async function selectLang(lang: string) {
     lang,
   });
   return authorization;
+}
+
+/**
+ * 修改密码
+ * @param {ChangePasswordInput} input 修改密码信息
+ *  oldPassword 旧密码
+ *  password 新密码
+ *  confirmPassword 确认密码
+ **/
+export async function changePassword(
+  input: ChangePasswordInput,
+) {
+  const oldPassword = input.oldPassword;
+  const password = input.password;
+  const confirmPassword = input.confirmPassword;
+  if (isEmpty(oldPassword)) {
+    throw await ns("旧密码不能为空");
+  }
+  if (isEmpty(password)) {
+    throw await ns("新密码不能为空");
+  }
+  if (isEmpty(confirmPassword)) {
+    throw await ns("确认密码不能为空");
+  }
+  if (password !== confirmPassword) {
+    throw await ns("两次输入的密码不一致");
+  }
+  const authModel = await getAuthModel();
+  
+  const id = authModel.id;
+  
+  const usrModel = await usrDaoGen.validateOption(
+    await usrDaoGen.findOne({
+      id,
+    }),
+  );
+  await usrDaoGen.validateIsEnabled(usrModel);
+  
+  const usr_id = usrModel.id;
+  
+  const password2 = await getPassword(oldPassword);
+  if (usrModel.password !== password2) {
+    throw await ns("旧密码错误");
+  }
+  const password3 = await getPassword(password);
+  await usrDaoGen.updateById(
+    usr_id,
+    {
+      password: password3,
+    },
+  );
+  return true;
 }
