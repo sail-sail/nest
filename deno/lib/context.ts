@@ -73,12 +73,24 @@ async function redisClient() {
   if (_redisClient) {
     return _redisClient;
   }
+  const cacheEnable = await getEnv("cache_enable");
+  if (cacheEnable !== "true") {
+    return;
+  }
   const hostname = await getEnv("cache_hostname");
   if (!hostname) {
     return;
   }
+  let password: string|undefined = await getEnv("cache_password");
+  if (password) {
+    password = password.trim();
+  }
+  if (!password) {
+    password = undefined;
+  }
   const option: RedisConnectOptions = {
     hostname,
+    password,
     port: Number(await getEnv("cache_port")) || 6379,
     db: Number(await getEnv("cache_db")) || 0,
   };

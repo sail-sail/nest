@@ -229,6 +229,16 @@
                 
                 <el-dropdown-item
                   divided
+                  @click="onChangePassword"
+                >
+                  <ElIcon>
+                    <ElIconDelete />
+                  </ElIcon>
+                  <span>{{ ns('修改密码') }}</span>
+                </el-dropdown-item>
+                
+                <el-dropdown-item
+                  divided
                   @click="logoutClk"
                 >
                   <ElIcon>
@@ -278,6 +288,11 @@
       </router-view>
     </div>
   </div>
+  
+  <!-- 修改密码 -->
+  <ChangePassword
+    ref="changePasswordRef"
+  ></ChangePassword>
 </div>
 </template>
 
@@ -285,6 +300,8 @@
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
+
+import ChangePassword from "../change_password/ChangePassword.vue";
 
 import {
   getLoginInfo,
@@ -297,6 +314,7 @@ import {
 const {
   n,
   ns,
+  nsAsync,
   initI18ns,
   initSysI18ns,
 } = useI18n();
@@ -496,6 +514,23 @@ async function deptSelectClk(org_id: string) {
       usrStore.loginInfo.org_id = org_id;
     }
     await usrStore.login(token);
+  }
+}
+
+let changePasswordRef = $ref<InstanceType<typeof ChangePassword>>();
+
+/** 修改密码 */
+async function onChangePassword() {
+  if (!changePasswordRef) {
+    return;
+  }
+  const {
+    type,
+  } = await changePasswordRef.showDialog({
+    action: "edit",
+  });
+  if (type === "cancel") {
+    return;
   }
 }
 
