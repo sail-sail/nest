@@ -38,6 +38,10 @@ import {
   ConnnectionError,
 } from "./mysql/src/constant/errors.ts";
 
+import {
+  isEmpty,
+} from "/lib/util/string_util.ts";
+
 declare global {
   interface Window {
     process: {
@@ -77,26 +81,17 @@ async function redisClient() {
   if (cacheEnable !== "true") {
     return;
   }
-  const hostname = await getEnv("cache_hostname");
-  if (!hostname) {
-    return;
-  }
-  let password: string|undefined = await getEnv("cache_password");
-  if (password) {
-    password = password.trim();
-  }
-  if (!password) {
-    password = undefined;
-  }
+  const hostname = await getEnv("cache_hostname") || "127.0.0.1";
   const option: RedisConnectOptions = {
     hostname,
-    password,
     port: Number(await getEnv("cache_port")) || 6379,
     db: Number(await getEnv("cache_db")) || 0,
   };
-  const cache_password = await getEnv("cache_password");
-  if (cache_password) {
-    option.password = cache_password;
+  const username = await getEnv("cache_username");
+  const password = await getEnv("cache_password");
+  if (!isEmpty(username)) {
+    option.username = username;
+    option.password = password;
   }
   try {
     const {
