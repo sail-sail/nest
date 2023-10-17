@@ -81,8 +81,16 @@ async function redisClient() {
   if (!hostname) {
     return;
   }
+  let password: string|undefined = await getEnv("cache_password");
+  if (password) {
+    password = password.trim();
+  }
+  if (!password) {
+    password = undefined;
+  }
   const option: RedisConnectOptions = {
     hostname,
+    password,
     port: Number(await getEnv("cache_port")) || 6379,
     db: Number(await getEnv("cache_db")) || 0,
   };
