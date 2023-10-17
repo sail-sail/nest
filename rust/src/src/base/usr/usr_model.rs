@@ -17,7 +17,7 @@ input LoginInput {
   lang: String!
 }
 */
-#[derive(InputObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(InputObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginInput {
   
@@ -38,7 +38,7 @@ pub struct LoginInput {
   
 }
 
-#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct Login {
   
@@ -47,7 +47,7 @@ pub struct Login {
   
 }
 
-#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfo {
   
@@ -58,7 +58,7 @@ pub struct GetLoginInfo {
   
 }
 
-#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfoorgIdModel {
   

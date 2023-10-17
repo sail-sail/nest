@@ -58,11 +58,11 @@ mod test {
   use jwt::{VerifyWithKey, SignWithKey};
   use sha2::Sha256;
 
-  use crate::common::auth::{auth_dao::get_auth_model_by_token};
+  use crate::common::auth::auth_dao::get_auth_model_by_token;
 
   use super::get_password;
   
-  #[derive(serde::Deserialize, serde::Serialize, Debug)]
+  #[derive(serde::Deserialize, serde::Serialize)]
   struct Claims {
     id: String,
     wx_usr_id: Option<String>,
@@ -76,10 +76,10 @@ mod test {
     // let token: &str = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjlMbW5xaExJVHpLc2tGTy9sY1hScUEiLCJkZXB0X2lkIjoiUi9WSFcwa3pSeEs5dEc4bUlITWRiUSIsImxhbmciOiJ6aC1jbiIsImV4cCI6MTY4MDYyNTA5N30.BDbu_mJXsECJnnRiOmf10fEniE8RZ0E_77lZYXL5X8Q";
     let token2 = SignWithKey::sign_with_key(Claims { id: "9LmnqhLITzKskFO/lcXRqA".to_owned(), wx_usr_id: None, exp: 1680625097 }, &key).unwrap();
     
-    let claims: Claims = VerifyWithKey::verify_with_key(&*token2, &key).unwrap();
+    let _claims: Claims = VerifyWithKey::verify_with_key(&*token2, &key).unwrap();
     
     // Claims { id: "9LmnqhLITzKskFO/lcXRqA", wx_usr_id: None, exp: 1680625097 }
-    println!("{:?}", claims);
+    // println!("{:?}", claims);
   }
   
   #[test]
@@ -91,8 +91,8 @@ mod test {
   #[test]
   fn test_get_auth_model_by_token() {
     let test_authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjlMbW5xaExJVHpLc2tGTy9sY1hScUEiLCJkZXB0X2lkIjoiUi9WSFcwa3pSeEs5dEc4bUlITWRiUSIsImxhbmciOiJ6aC1jbiIsImV4cCI6MTY4MTAwMDE5OX0.V3LQksf-D50OzvlFO5r-xZ-FwFxah-tSvJ0abN6Vl0E";
-    let auth_model = get_auth_model_by_token(test_authorization);
-    println!("{:?}", auth_model);
+    let _auth_model = get_auth_model_by_token(test_authorization);
+    // println!("{:?}", auth_model);
   }
   
 }

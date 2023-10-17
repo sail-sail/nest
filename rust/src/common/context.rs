@@ -1258,14 +1258,14 @@ pub struct Ctx<'a> {
   
 }
 
-#[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
 pub struct CountModel {
   
   pub total: i64,
   
 }
 
-#[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
 pub struct OrderByModel {
   
   pub order_by: u32,
@@ -1540,7 +1540,7 @@ impl From<Uuid> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone, Debug)]
+#[derive(Default, new, Clone)]
 pub struct Options {
   
   /// 是否打印sql调试语句
