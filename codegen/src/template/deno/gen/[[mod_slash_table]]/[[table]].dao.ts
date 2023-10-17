@@ -979,10 +979,6 @@ export async function findAll(
     #><#
       if (foreignKey && foreignKey.type === "json") {
     #><#
-      } else if (isPassword) {
-    #>
-    // <#=column_comment#>
-    model.<#=column_name#> = "";<#
       } else if (isEncrypt) {
     #>
     // <#=column_comment#>

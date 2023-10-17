@@ -1,9 +1,8 @@
-import {
-  type MenuModel as MenuModel0,
-  type GetLoginInfo,
-  type Mutation,
-  type Query,
-  type GetMenus,
+import type {
+  GetLoginInfo,
+  Mutation,
+  Query,
+  GetMenus,
 } from "#/types";
 
 type MenuModel = GetMenus & {
