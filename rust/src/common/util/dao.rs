@@ -143,6 +143,7 @@ struct ManyModel {
   column1_id: String,
   column2_id: String,
   is_deleted: bool,
+  order_by: u32,
 }
 
 pub async fn many2many_update<'a>(
@@ -150,7 +151,7 @@ pub async fn many2many_update<'a>(
   id: String,
   foreign_ids: Vec<String>,
   many_opts: ManyOpts,
-) -> Result<()> {
+) -> Result<bool> {
   let tenant_id = ctx.get_auth_tenant_id();
   let auth_model = ctx.get_auth_model();
   
@@ -166,7 +167,8 @@ pub async fn many2many_update<'a>(
       t.id,
       t.{column1} column1_id,
       t.{column2} column2_id,
-      t.is_deleted
+      t.is_deleted,
+      t.order_by
     from {mod_table} t
     where
       t.{column1} = ?
@@ -182,12 +184,15 @@ pub async fn many2many_update<'a>(
     None,
   ).await?;
   
+  let mut has_change = false;
+  
   for model in &models {
+    let id = model.id.clone();
     let idx: Option<usize> = foreign_ids.iter()
       .position(|foreign_id| 
         foreign_id == &model.column2_id
       );
-    if idx.is_none() {
+    if idx.is_none() && !model.is_deleted {
       let mut args = QueryArgs::new();
       let sql = format!(r#"
         update {mod_table}
@@ -198,29 +203,38 @@ pub async fn many2many_update<'a>(
           id = ?
       "#);
       args.push(ctx.get_now().into());
-      args.push(model.id.clone().into());
+      args.push(id.clone().into());
       let args = args.into();
+      has_change = true;
       ctx.execute(sql, args, None).await?;
       continue;
     }
     let idx = idx.unwrap();
-    if idx > u32::MAX as usize {
+    let order_by = idx + 1;
+    if order_by > u32::MAX as usize {
       return Err(anyhow!("many2many_update: idx > u32::MAX as usize"));
     }
-    let idx = idx as u32;
-    let mut args = QueryArgs::new();
-    let sql = format!(r#"
-      update {mod_table}
-      set
-        is_deleted = 0
-        ,order_by = ?
-      where
-        id = ?
-    "#);
-    args.push((idx + 1).into());
-    args.push(model.id.clone().into());
-    let args = args.into();
-    ctx.execute(sql, args, None).await?;
+    let order_by = order_by as u32;
+    if model.is_deleted || model.order_by != order_by {
+      let mut args = QueryArgs::new();
+      let sql = format!(r#"
+        update {mod_table}
+        set
+          is_deleted = 0
+          ,order_by = ?
+        where
+          id = ?
+      "#);
+      args.push(order_by.into());
+      args.push(id.into());
+      let args = args.into();
+      has_change = true;
+      ctx.execute(
+        sql,
+        args,
+        None,
+      ).await?;
+    }
   }
   
   let foreign_ids2 = foreign_ids.clone().into_iter()
@@ -281,7 +295,11 @@ pub async fn many2many_update<'a>(
     
     let sql = format!("insert into {mod_table} ({sql_fields}) values ({sql_values})");
     let args = args.into();
-    ctx.execute(sql, args, None).await?;
+    ctx.execute(
+      sql,
+      args,
+      None,
+    ).await?;
   }
-  Ok(())
+  Ok(has_change)
 }
