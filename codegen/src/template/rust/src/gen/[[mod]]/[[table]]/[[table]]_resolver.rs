@@ -91,7 +91,41 @@ pub async fn find_all<'a>(
     page,
     sort,
     options,
-  ).await?;
+  ).await?;<#
+  if (hasPassword) {
+  #>
+  
+  let mut res = res;
+  for model in &mut res {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column_name);
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name_rust#> = "".to_owned();<#
+      }
+    #><#
+    }
+    #>
+  }
+  let res = res;<#
+  }
+  #>
   
   Ok(res)
 }
@@ -103,13 +137,13 @@ pub async fn find_count<'a>(
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = <#=table#>_service::find_count(
+  let num = <#=table#>_service::find_count(
     ctx,
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(num)
 }
 
 /// 根据条件查找第一条数据
@@ -125,7 +159,42 @@ pub async fn find_one<'a>(
     search,
     sort,
     options,
-  ).await?;
+  ).await?;<#
+  if (hasPassword) {
+  #>
+  
+  let mut model = model;
+  if let Some(model) = &mut model {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column_name);
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name_rust#> = "".to_owned();<#
+      }
+    #><#
+    }
+    #>
+  }
+  
+  let model = model;<#
+  }
+  #>
   
   Ok(model)
 }
@@ -141,7 +210,42 @@ pub async fn find_by_id<'a>(
     ctx,
     id,
     options,
-  ).await?;
+  ).await?;<#
+  if (hasPassword) {
+  #>
+  
+  let mut model = model;
+  if let Some(model) = &mut model {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column_name);
+      if (column_name === "id") continue;
+      let column_comment = column.COLUMN_COMMENT || "";
+      let selectList = [ ];
+      let selectStr = column_comment.substring(column_comment.indexOf("["), column_comment.lastIndexOf("]")+1).trim();
+      if (selectStr) {
+        selectList = eval(`(${ selectStr })`);
+      }
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name_rust#> = "".to_owned();<#
+      }
+    #><#
+    }
+    #>
+  }
+  
+  let model = model;<#
+  }
+  #>
   
   Ok(model)
 }

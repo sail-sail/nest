@@ -88,7 +88,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // 用户名
     let username: String = row.try_get("username")?;
     // 密码
-    let password = "".to_owned();
+    let password: String = row.try_get("password")?;
     // 默认组织
     let default_org_id: String = row.try_get("default_org_id")?;
     let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;

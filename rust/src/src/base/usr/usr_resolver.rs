@@ -8,6 +8,7 @@ use super::usr_model::{
   LoginInput,
   Login,
   GetLoginInfo,
+  ChangePasswordInput,
 };
 
 /// 登录, 获得token
@@ -33,6 +34,20 @@ pub async fn select_lang<'a>(
   let res = usr_service::select_lang(
     ctx,
     lang,
+  ).await?;
+  
+  Ok(res)
+}
+
+/// 修改密码
+pub async fn change_password<'a>(
+  ctx: &Ctx<'a>,
+  input: ChangePasswordInput,
+) -> Result<bool> {
+  
+  let res = usr_service::change_password(
+    ctx,
+    input,
   ).await?;
   
   Ok(res)
