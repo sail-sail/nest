@@ -171,15 +171,14 @@ export async function changePassword(
   
   const usr_id = usrModel.id;
   
-  const password2 = await getPassword(oldPassword);
-  if (usrModel.password !== password2) {
+  const oldPassword2 = await getPassword(oldPassword);
+  if (usrModel.password !== oldPassword2) {
     throw await ns("旧密码错误");
   }
-  const password3 = await getPassword(password);
   await usrDaoGen.updateById(
     usr_id,
     {
-      password: password3,
+      password,
     },
   );
   return true;
