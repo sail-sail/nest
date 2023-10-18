@@ -18,12 +18,12 @@ impl PayslipMutation {
     host: String,
     ids: Vec<String>,
   ) -> Result<i32> {
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .with_auth()?
       .build();
     
     let res = payslip_resolver::send_msg_wxw(
-      &mut ctx,
+      &ctx,
       host,
       ids,
     ).await?;
@@ -37,12 +37,12 @@ impl PayslipMutation {
     ctx: &Context<'a>,
     host: String,
   ) -> Result<i32> {
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .with_auth()?
       .build();
     
     let res = payslip_resolver::send_msg_wxw_one_key(
-      &mut ctx,
+      &ctx,
       host,
     ).await;
     
@@ -55,13 +55,13 @@ impl PayslipMutation {
     ctx: &Context<'a>,
     id: String,
   ) -> Result<i32> {
-    let mut ctx = Ctx::builder(ctx)
+    let ctx = Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
       .build();
     
     let res = payslip_resolver::confirm_payslip(
-      &mut ctx,
+      &ctx,
       id,
     ).await;
     
