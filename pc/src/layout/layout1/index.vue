@@ -232,7 +232,7 @@
                   @click="onChangePassword"
                 >
                   <ElIcon>
-                    <ElIconDelete />
+                    <ElIconLock />
                   </ElIcon>
                   <span>{{ ns('修改密码') }}</span>
                 </el-dropdown-item>
