@@ -3,21 +3,32 @@ import {
   createWebHashHistory,
   RouteRecordRaw,
 } from "vue-router";
+
 import { routesGen } from "./gen";
-// import useMenuStore from "../store/menu";
-// import useTabsStore from "../store/tabs";
+
+import Layout1 from "@/layout/layout1/index.vue";
 
 const routes: Array<RouteRecordRaw> = [
   ...routesGen,
   {
     path: "",
-    redirect: "/base/usr",
+    redirect: "/index",
   },
-  // {
-  //   path: "/index",
-  //   name: "主页",
-  //   component: () => import("@/views/Index.vue"),
-  // },
+  {
+    path: "/index",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "首页",
+        component: () => import("@/views/Index.vue"),
+        meta: {
+          closeable: false,
+          icon: "iconfont-home-fill",
+        },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

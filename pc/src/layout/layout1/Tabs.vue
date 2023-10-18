@@ -17,11 +17,27 @@
     >
       <template #default>
         <span
+          v-if="!item?.icon"
           class="tab_label"
           :title="item.lbl"
         >
           {{ item.lbl }}
         </span>
+        <div
+          v-else
+          class="tab_icon"
+          :title="item.lbl"
+        >
+          <el-icon
+            size="20"
+          >
+            <template
+              v-if="item?.icon === 'iconfont-home-fill'"
+            >
+              <i un-i="iconfont-home-fill"></i>
+            </template>
+          </el-icon>
+        </div>
       </template>
       <template #dropdown>
         <el-dropdown-menu>
@@ -50,7 +66,7 @@
       </template>
     </el-dropdown>
     <div
-      v-if="tabs.length > 1"
+      v-if="item.closeable !== false && tabs.length > 1"
       class="tab_close_div"
     >
       <ElIconClose
@@ -63,12 +79,12 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  type TabInf,
+import type {
+  TabInf,
 } from "@/store/tabs";
 
-import {
-  type SortableEvent,
+import type {
+  SortableEvent,
 } from "sortablejs";
 
 import Sortable from "sortablejs";
@@ -220,6 +236,11 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
   align-items: center;
   white-space: nowrap;
   color: #FFF;
+}
+.tab_icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .tab_close_div {
   display: flex;
