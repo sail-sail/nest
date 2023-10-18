@@ -2,9 +2,10 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import {
-  type MutationLoginArgs,
-  type Mutation,
+import type {
+  MutationLoginArgs,
+  Mutation,
+  ChangePasswordInput,
 } from "/gen/types.ts"
 
 /**
@@ -41,4 +42,14 @@ export async function selectLang(lang: string) {
     selectLang,
   } = await import("./usr.service.ts");
   return await selectLang(lang);
+}
+
+// 修改密码
+export async function changePassword(
+  input: ChangePasswordInput,
+) {
+  const {
+    changePassword,
+  } = await import("./usr.service.ts");
+  return await changePassword(input);
 }

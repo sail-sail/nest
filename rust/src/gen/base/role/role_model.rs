@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleModel {
   /// 租户ID
@@ -239,7 +239,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleFieldComment {
   /// ID
@@ -286,7 +286,7 @@ pub struct RoleFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleSearch {
   pub id: Option<String>,
@@ -332,7 +332,7 @@ pub struct RoleSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct RoleInput {
   /// 租户ID

@@ -538,7 +538,7 @@ impl<'a> Ctx<'a> {
     options: Option<Options>,
   ) -> Result<Vec<R>>
   where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Debug,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
   {
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -893,7 +893,7 @@ impl<'a> Ctx<'a> {
     options: Option<Options>,
   ) -> Result<Option<R>>
   where
-    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Debug + Sync,
+    R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
   {
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -1258,14 +1258,14 @@ pub struct Ctx<'a> {
   
 }
 
-#[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
 pub struct CountModel {
   
   pub total: i64,
   
 }
 
-#[derive(SimpleObject, FromRow, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
 pub struct OrderByModel {
   
   pub order_by: u32,
@@ -1540,7 +1540,7 @@ impl From<Uuid> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone, Debug)]
+#[derive(Default, new, Clone)]
 pub struct Options {
   
   /// 是否打印sql调试语句

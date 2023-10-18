@@ -11,6 +11,7 @@ defineGraphql(usrResolver, /* GraphQL */`
 
   type GetLoginInfo {
     lbl: String!
+    username: String!
     lang: String!
     org_id: String
     org_id_models: [GetLoginInfoOrgIdModels!]!
@@ -29,10 +30,21 @@ defineGraphql(usrResolver, /* GraphQL */`
     lang: String!
   }
   
+  input ChangePasswordInput {
+    oldPassword: String!
+    password: String!
+    confirmPassword: String!
+  }
+  
   type Mutation {
     "登录"
     login(input: LoginInput!): LoginModel!
+    "切换语言"
     selectLang(lang: String!): String!
+    "修改密码"
+    changePassword(
+      input: ChangePasswordInput!
+    ): Boolean!
   }
   
   type Query {

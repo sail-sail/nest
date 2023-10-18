@@ -31,7 +31,7 @@ use crate::common::util::dao::decrypt;<#
 }
 #>
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
@@ -373,7 +373,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
@@ -414,7 +414,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Search {
   pub id: Option<String>,
@@ -525,7 +525,7 @@ pub struct <#=tableUP#>Search {
   #>
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <#=tableUP#>Input {<#
   if (hasTenantId) {

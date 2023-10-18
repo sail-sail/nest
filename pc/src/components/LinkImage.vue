@@ -5,6 +5,8 @@
   un-box-border
   un-rounded
   un-cursor-pointer
+  un-justify-center
+  un-items-center
 >
   <template
     v-if="urlList.length > 0"
