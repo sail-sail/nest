@@ -166,6 +166,7 @@ pub async fn wxw_login_by_code<'a>(
   ).await?;
   
   let wxw_app_id = wxw_app_model.id;
+  let wxw_app_lbl = wxw_app_model.lbl;
   let tenant_id = wxw_app_model.tenant_id;
   
   let GetuserinfoModel {
@@ -177,15 +178,21 @@ pub async fn wxw_login_by_code<'a>(
     code,
   ).await?;
   
-  let GetuserRes {
-    name,
-    position,
-    ..
-  } = getuser(
+  let get_user_res = getuser(
     ctx,
     wxw_app_id.clone(),
     userid.clone(),
   ).await?;
+  if get_user_res.is_none() {
+    return Err(anyhow!("{userid} 不在应用 {wxw_app_lbl} 的可见范围内"));
+  }
+  let get_user_res = get_user_res.unwrap();
+  
+  let GetuserRes {
+    name,
+    position,
+    ..
+  } = get_user_res;
   
   // 企微用户
   let wxw_usr_model = find_one_wxw_usr(
@@ -412,15 +419,20 @@ async fn _wxw_sync_usr<'a>(
     .collect::<Vec<String>>();
   let mut wxw_usr_models4add: Vec<WxwUsrInput> = Vec::with_capacity(userids4add.len());
   for userid in userids4add {
-    let GetuserRes {
-      name,
-      position,
-      ..
-    } = getuser(
+    let get_user_res = getuser(
       ctx,
       wxw_app_id.clone(),
       userid.clone(),
     ).await?;
+    if get_user_res.is_none() {
+      continue;
+    }
+    let get_user_res = get_user_res.unwrap();
+    let GetuserRes {
+      name,
+      position,
+      ..
+    } = get_user_res;
     wxw_usr_models4add.push(WxwUsrInput {
       id: get_short_uuid().into(),
       userid: userid.clone().into(),
