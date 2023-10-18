@@ -8,15 +8,6 @@ use async_graphql::{
   SimpleObject,
 };
 
-/*
-input LoginInput {
-  username: String!
-  password: String!
-  tenant_id: String!
-  org_id: String
-  lang: String!
-}
-*/
 #[derive(InputObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginInput {
@@ -38,6 +29,21 @@ pub struct LoginInput {
   
 }
 
+#[derive(InputObject, Clone, Default, Serialize, Deserialize)]
+#[graphql(rename_fields = "camelCase")]
+pub struct ChangePasswordInput {
+  
+  /// 旧密码
+  pub old_password: String,
+  
+  /// 新密码
+  pub password: String,
+  
+  /// 确认密码
+  pub confirm_password: String,
+  
+}
+
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct Login {
@@ -52,6 +58,7 @@ pub struct Login {
 pub struct GetLoginInfo {
   
   pub lbl: String,
+  pub username: String,
   pub lang: String,
   pub org_id: Option<String>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,

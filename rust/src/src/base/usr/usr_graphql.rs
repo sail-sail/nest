@@ -9,6 +9,7 @@ use super::usr_model::{
   LoginInput,
   Login,
   GetLoginInfo,
+  ChangePasswordInput,
 };
 
 #[derive(Default)]
@@ -51,6 +52,24 @@ impl UsrMutation {
     ).await;
     
     ctx.ok(res).await
+  }
+  
+  /// 修改密码
+  async fn change_password<'a>(
+    &self,
+    ctx: &Context<'a>,
+    input: ChangePasswordInput,
+  ) -> Result<bool> {
+    let ctx = Ctx::builder(ctx)
+      .with_auth()?
+      .build();
+    
+    let res = usr_resolver::change_password(
+      &ctx,
+      input,
+    ).await?;
+    
+    Ok(res)
   }
   
 }
