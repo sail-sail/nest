@@ -516,7 +516,7 @@ pub async fn getuser<'a>(
   ctx: &Ctx<'a>,
   wxw_app_id: String,
   userid: String,
-) -> Result<GetuserRes> {
+) -> Result<Option<GetuserRes>> {
   let data: GetuserRes = fetch_getuser(
     ctx,
     wxw_app_id.clone(),
@@ -526,6 +526,10 @@ pub async fn getuser<'a>(
   let data_str = serde_json::to_string(&data)?;
   let errcode = data.errcode;
   let errmsg = data.errmsg.clone();
+  // 指定的成员/部门/标签参数无权限, 指定的成员或部门或标签不在应用的可见范围之内
+  if errcode == 60011 {
+    return Ok(None);
+  }
   if errcode == 42001 {
     let data: GetuserRes = fetch_getuser(
       ctx,
@@ -544,7 +548,7 @@ pub async fn getuser<'a>(
       );
       return Err(anyhow!("读取成员失败: {errmsg}"));
     }
-    return Ok(data);
+    return Ok(Some(data));
   }
   if errcode != 0 {
     error!(
@@ -554,5 +558,5 @@ pub async fn getuser<'a>(
     );
     return Err(anyhow!("读取成员失败: {errmsg}"));
   }
-  Ok(data)
+  Ok(Some(data))
 }
