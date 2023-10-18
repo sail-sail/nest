@@ -237,11 +237,12 @@ export type <#=modelNameTree#> = <#=modelName#> & {
  * @returns 
  */
 export async function findTree(
+  search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const res = await findAll(
-    undefined,
+    search,
     undefined,
     sort,
     opt,
@@ -735,10 +736,24 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts.list_tree !== true) {
     continue;
   }
+  let list_treeForeignTable = undefined;
+  if (typeof list_tree === "string") {
+    list_treeForeignTable = optTables[foreignKey.mod + "_" + foreignKey.table];
+  }
 #>
 
 export async function get<#=Foreign_Table_Up#>Tree() {
-  const data = await find<#=Foreign_Table_Up#>Tree(
+  const data = await find<#=Foreign_Table_Up#>Tree(<#
+    if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
+    #>
+    {
+      is_enabled: [ 1 ],
+    },<#
+    } else {
+    #>
+    undefined,<#
+    }
+    #>
     [
       {
         prop: "<#=defaultSort && defaultSort.prop || ""#>",

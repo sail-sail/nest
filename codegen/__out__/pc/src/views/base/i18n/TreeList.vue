@@ -178,7 +178,7 @@ function getById(
 }
 
 async function onFindTree() {
-  treeData = await findTree();
+  treeData = await findTree({ is_enabled: [ 1 ] });
   if (parent_id) {
     const node = getById(parent_id, treeData);
     if (!node) {

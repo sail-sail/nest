@@ -369,6 +369,9 @@ export async function getUsrList() {
 
 export async function getMenuTree() {
   const data = await findMenuTree(
+    {
+      is_enabled: [ 1 ],
+    },
     [
       {
         prop: "order_by",

@@ -1,4 +1,5 @@
 <#
+const hasEnabled = columns.some(function (column) { return column.COLUMN_NAME === "is_enabled" });
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -26,12 +27,14 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 const list_tree = opts.list_tree;
 let list_treeColumn = undefined;
 let list_treeForeignKey = undefined;
+let list_treeForeignTable = undefined;
 if (typeof list_tree === "string") {
   list_treeColumn = columns.find((item) => item.COLUMN_NAME === list_tree);
   list_treeForeignKey = list_treeColumn?.foreignKey;
   if (!list_treeForeignKey) {
     throw `表: ${ mod_table } 中的 list_tree 对应的外键字段: ${ list_tree } 不存在`;
   }
+  list_treeForeignTable = optTables[list_treeForeignKey.mod + "_" + list_treeForeignKey.table];
 }
 #><template>
 <div
@@ -228,7 +231,11 @@ function getById(
 }
 
 async function onFindTree() {
-  treeData = await findTree();
+  treeData = await findTree(<#
+  if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
+  #>{ is_enabled: [ 1 ] }<#
+  }
+  #>);
   if (parent_id) {
     const node = getById(parent_id, treeData);
     if (!node) {
