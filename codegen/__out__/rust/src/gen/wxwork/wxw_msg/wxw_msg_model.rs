@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgModel {
   /// 租户ID
@@ -110,7 +110,7 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgFieldComment {
   /// ID
@@ -143,7 +143,7 @@ pub struct WxwMsgFieldComment {
   pub msgid: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgSearch {
   pub id: Option<String>,
@@ -189,7 +189,7 @@ pub struct WxwMsgSearch {
   pub msgid_like: Option<String>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwMsgInput {
   /// 租户ID
