@@ -130,7 +130,7 @@ export async function findAll<#=Table_Up#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.password = "";<#
+    model.<#=column_name#> = "";<#
       }
     #><#
     }
@@ -195,7 +195,7 @@ export async function findOne<#=Table_Up#>(
   
   if (res) {
     // <#=column_comment#>
-    res.password = "";
+    res.<#=column_name#> = "";
   }<#
     }
   #><#
@@ -233,7 +233,7 @@ export async function findById<#=Table_Up#>(
   
   if (res) {
     // <#=column_comment#>
-    res.password = "";
+    res.<#=column_name#> = "";
   }<#
     }
   #><#
