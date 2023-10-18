@@ -98,6 +98,7 @@ export async function wxwLoginByCode(
   
   const domain_id = domainModel.id;
   
+  // 获取企微应用
   const wxw_appModel = await validateOptionWxwApp(
     await findOneWxwApp({
       domain_id: [ domain_id ],
@@ -115,13 +116,15 @@ export async function wxwLoginByCode(
     code,
   );
   
-  const {
-    name,
-    position,
-  } = await getuser(
+  const wxwUser = await getuser(
     wxw_app_id,
     userid,
   );
+  if (!wxwUser) {
+    throw `${ userid } 不在应用 ${ wxw_appModel.lbl } 的可见范围之内`;
+  }
+  const name = wxwUser.name;
+  const position = wxwUser.position;
   
   // 企业微信用户
   const wxw_usrModel = await findOneWxwUsr({
@@ -261,7 +264,11 @@ async function _wxwSyncUsr(
   const wxw_usrModels4add: WxwUsrInput[] = [ ];
   for (let i = 0; i < userids4add.length; i++) {
     const userid = userids4add[i];
-    const { name } = await getuser(wxw_app_id, userid);
+    const wxwUser = await getuser(wxw_app_id, userid);
+    if (!wxwUser) {
+      continue;
+    }
+    const name = wxwUser.name;
     wxw_usrModels4add.push({
       userid,
       lbl: name,

@@ -5,7 +5,6 @@ import {
  
 import {
   isEmpty,
-  shortUuidV4,
 } from "/lib/util/string_util.ts";
  
 import dayjs from "dayjs";
@@ -19,19 +18,24 @@ import {
 import {
   findById as findByIdWxwApp,
   validateOption as validateOptionWxwApp,
+  validateIsEnabled as validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 export async function getAccessToken(
   wxw_app_id: string,
   force = false,
 ) {
-  let wx_appModel = await findByIdWxwApp(wxw_app_id);
-  wx_appModel = await validateOptionWxwApp(wx_appModel);
+  // 获取企微应用
+  const wx_appModel = await validateOptionWxwApp(
+    await findByIdWxwApp(wxw_app_id)
+  );
+  await validateIsEnabledWxwApp(wx_appModel);
   const corpid = wx_appModel.corpid;
   const corpsecret = wx_appModel.corpsecret;
   if (isEmpty(corpid) || isEmpty(corpsecret)) {
-    throw `未设置 企微应用 应用密钥 ${ wx_appModel.lbl }`;
+    throw `未设置 企微应用 密钥 ${ wx_appModel.lbl }`;
   }
+  
   const dateNow = dayjs();
   const wx_app_tokenModel = await findOneWxwAppToken(
     {
@@ -125,13 +129,18 @@ export async function getContactAccessToken(
   wxw_app_id: string,
   force = false,
 ) {
-  let wx_appModel = await findByIdWxwApp(wxw_app_id);
-  wx_appModel = await validateOptionWxwApp(wx_appModel);
+  // 获取企微应用
+  const wx_appModel = await validateOptionWxwApp(
+    await findByIdWxwApp(wxw_app_id)
+  );
+  await validateIsEnabledWxwApp(wx_appModel);
+  
   const corpid = wx_appModel.corpid;
   const contactsecret = wx_appModel.contactsecret;
   if (isEmpty(corpid) || isEmpty(contactsecret)) {
     throw `未设置 企微应用 通讯录密钥 ${ wx_appModel.lbl }`;
   }
+  
   const dateNow = dayjs();
   const wx_app_tokenModel = await findOneWxwAppToken(
     {
@@ -326,7 +335,7 @@ export async function getuser(
   wxw_app_id: string,
   userid: string,
   force = false,
-): Promise<typeof data> {
+): Promise<typeof data | undefined> {
   const access_token = await getAccessToken(
     wxw_app_id,
     force,
@@ -386,6 +395,10 @@ export async function getuser(
     // deno-lint-ignore no-explicit-any
     direct_leader: any[];
   } = await res.json();
+  // 指定的成员/部门/标签参数无权限, 指定的成员或部门或标签不在应用的可见范围之内
+  if (data.errcode === 60011) {
+    return;
+  }
   if (data.errcode === 42001 && !force) {
     return await getuser(
       wxw_app_id,

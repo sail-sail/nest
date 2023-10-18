@@ -60,7 +60,7 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "wxw_app_id" ],
+        [ "wxw_app_id", "type" ],
         [ "access_token" ],
       ],
       onlyCodegenDeno: true,
