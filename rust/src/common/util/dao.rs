@@ -137,7 +137,7 @@ pub struct ManyOpts {
   pub column2: &'static str,
 }
 
-#[derive(FromRow, Debug, Clone, Serialize, Deserialize)]
+#[derive(FromRow, Clone, Serialize, Deserialize)]
 struct ManyModel {
   id: String,
   column1_id: String,

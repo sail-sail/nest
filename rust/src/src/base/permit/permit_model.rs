@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use async_graphql::SimpleObject;
 
-#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetUsrPermits {
   /// ID

@@ -86,27 +86,28 @@ export async function many2manyUpdate(
     column1: string;
     column2: string;
   },
-) {
+): Promise<boolean> {
   const column2Ids: string[] = model[column_name];
   if (!column2Ids) {
-    return;
+    return false;
   }
-  const { id: usr_id } = await authDao.getAuthModel() as AuthModel;
+  const { id: usr_id } = await authDao.getAuthModel();
   const tenant_id = await usrDaoSrc.getTenant_id(usr_id);
-  // deno-lint-ignore no-explicit-any
-  let models: any[] = [ ];
+  type Model = {
+    id: string,
+    column2Id: string,
+    is_deleted: 0|1,
+    order_by: number,
+  }
+  let hasChange = false;
+  let models: Model[] = [ ];
   if (model.id) {
-    models = await query<{
-      id: string,
-      column1Id: string,
-      column2Id: string,
-      is_deleted: 0|1,
-    }>(`
+    models = await query<Model>(`
       select
         t.id,
-        t.${ escapeId(many.column1) } column1Id,
         t.${ escapeId(many.column2) } column2Id,
-        t.is_deleted
+        t.is_deleted,
+        t.order_by
       from ${ escapeId(many.mod + "_" +many.table) } t
       where
         t.${ escapeId(many.column1) } = ?
@@ -114,8 +115,8 @@ export async function many2manyUpdate(
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
       const idx = column2Ids.indexOf(model.column2Id);
-      if (idx === -1) {
-        const sql = /*sql*/ `
+      if (idx === -1 && model.is_deleted === 0) {
+        const sql = `
           update
             ${ escapeId(many.mod + "_" + many.table) }
           set
@@ -124,6 +125,7 @@ export async function many2manyUpdate(
           where
             id = ?
         `;
+        hasChange = true;
         await execute(
           sql,
           [
@@ -134,26 +136,32 @@ export async function many2manyUpdate(
         );
         continue;
       }
-      const sql = `
-        update
-          ${ escapeId(many.mod + "_" + many.table) }
-        set
-          is_deleted = ?
-          ,order_by = ?
-        where
-          id = ?
-      `;
-      await execute(
-        sql,
-        [
-          0,
-          idx + 1,
-          model.id,
-        ],
-      );
+      if (model.is_deleted === 1 || model.order_by !== idx + 1) {
+        const sql = `
+          update
+            ${ escapeId(many.mod + "_" + many.table) }
+          set
+            is_deleted = ?
+            ,order_by = ?
+          where
+            id = ?
+        `;
+        hasChange = true;
+        await execute(
+          sql,
+          [
+            0,
+            idx + 1,
+            model.id,
+          ],
+        );
+      }
     }
   }
   const column2Ids2 = column2Ids.filter((column2Id) => models.every((model) => model.column2Id !== column2Id));
+  if (column2Ids2.length > 0) {
+    hasChange = true;
+  }
   for (let i = 0; i < column2Ids2.length; i++) {
     const column2Id = column2Ids2[i];
     const id = shortUuidV4();
@@ -196,6 +204,7 @@ export async function many2manyUpdate(
       await execute(sql, args);
     }
   }
+  return hasChange;
 }
 
 let cryptoKey: CryptoKey | undefined;

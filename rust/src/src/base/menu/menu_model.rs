@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
 use async_graphql::SimpleObject;
 
-#[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetMenus {
   pub id: String,
