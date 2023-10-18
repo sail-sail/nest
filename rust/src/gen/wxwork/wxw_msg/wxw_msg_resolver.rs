@@ -34,13 +34,13 @@ pub async fn find_count<'a>(
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = wxw_msg_service::find_count(
+  let num = wxw_msg_service::find_count(
     ctx,
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(num)
 }
 
 /// 根据条件查找第一条数据
