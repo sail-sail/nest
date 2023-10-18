@@ -1104,8 +1104,9 @@ pub async fn find_by_unique<'a>(
     if<#
       for (let k = 0; k < uniques.length; k++) {
         const unique = uniques[k];
+        const unique_rust = rustKeyEscape(unique);
       #>
-      search.<#=unique#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+      search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
       }
       #>
     {
@@ -1115,8 +1116,9 @@ pub async fn find_by_unique<'a>(
     let search = <#=tableUP#>Search {<#
       for (let k = 0; k < uniques.length; k++) {
         const unique = uniques[k];
+        const unique_rust = rustKeyEscape(unique);
       #>
-      <#=unique#>: search.<#=unique#>,<#
+      <#=unique_rust#>: search.<#=unique_rust#>,<#
       }
       #>
       ..Default::default()
@@ -1157,8 +1159,9 @@ fn equals_by_unique(
   if<#
     for (let i = 0; i < uniques.length; i++) {
       const unique = uniques[i];
+      const unique_rust = rustKeyEscape(unique);
     #>
-    input.<#=unique#>.as_ref().is_some() && input.<#=unique#>.as_ref().unwrap() == &model.<#=unique#><#
+    input.<#=unique_rust#>.as_ref().is_some() && input.<#=unique_rust#>.as_ref().unwrap() == &model.<#=unique_rust#><#
       if (i !== uniques.length - 1) {
     #> &&<#
       }
