@@ -24,6 +24,13 @@ pub async fn find_all<'a>(
     options,
   ).await?;
   
+  let mut res = res;
+  for model in &mut res {
+    // 密码
+    model.password = "".to_owned();
+  }
+  let res = res;
+  
   Ok(res)
 }
 
@@ -34,13 +41,13 @@ pub async fn find_count<'a>(
   options: Option<Options>,
 ) -> Result<i64> {
   
-  let res = usr_service::find_count(
+  let num = usr_service::find_count(
     ctx,
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(num)
 }
 
 /// 根据条件查找第一条数据
@@ -58,6 +65,14 @@ pub async fn find_one<'a>(
     options,
   ).await?;
   
+  let mut model = model;
+  if let Some(model) = &mut model {
+    // 密码
+    model.password = "".to_owned();
+  }
+  
+  let model = model;
+  
   Ok(model)
 }
 
@@ -73,6 +88,14 @@ pub async fn find_by_id<'a>(
     id,
     options,
   ).await?;
+  
+  let mut model = model;
+  if let Some(model) = &mut model {
+    // 密码
+    model.password = "".to_owned();
+  }
+  
+  let model = model;
   
   Ok(model)
 }
