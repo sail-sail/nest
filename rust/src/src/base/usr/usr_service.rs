@@ -11,13 +11,19 @@ use crate::common::auth::auth_dao::{
 use crate::common::auth::auth_model::AuthModel;
 
 use crate::gen::base::usr::usr_dao;
-use crate::gen::base::usr::usr_model::UsrSearch;
+use crate::gen::base::usr::usr_model::{
+  UsrInput,
+  UsrSearch,
+};
 
 use super::usr_model::{
   LoginInput,
   GetLoginInfo,
   GetLoginInfoorgIdModel,
+  ChangePasswordInput,
 };
+
+use crate::src::base::i18n::i18n_dao::NRoute;
 
 /// 登录, 获得token
 pub async fn login<'a>(
@@ -37,28 +43,27 @@ pub async fn login<'a>(
   if tenant_id.is_empty() {
     return Err(anyhow::anyhow!("请选择租户"));
   }
-  let password2 = get_password(password)?;
-  
   let usr_model = usr_dao::find_one(
     ctx,
     UsrSearch {
       username: username.into(),
-      password: password2.into(),
       tenant_id: tenant_id.clone().into(),
       ..Default::default()
     }.into(),
     None,
     None,
   ).await?;
-  
   if usr_model.is_none() {
     return Err(anyhow::anyhow!("用户名或密码错误"));
   }
-  
   let usr_model = usr_model.unwrap();
+  usr_dao::validate_is_enabled(
+    ctx,
+    &usr_model,
+  ).await?;
   
-  if usr_model.is_enabled == 0 {
-    return Err(anyhow::anyhow!("用户已被禁用"));
+  if usr_model.password != get_password(password)? {
+    return Err(anyhow::anyhow!("用户名或密码错误"));
   }
   
   let org_ids = usr_model.org_ids;
@@ -115,6 +120,95 @@ pub async fn select_lang<'a>(
   Ok(authorization)
 }
 
+/// 修改密码
+pub async fn change_password<'a>(
+  ctx: &Ctx<'a>,
+  input: ChangePasswordInput,
+) -> Result<bool> {
+  
+  let n_route = NRoute {
+    route_path: "/base/usr".to_owned().into()
+  };
+  
+  let old_password = input.old_password;
+  let password = input.password;
+  let confirm_password = input.confirm_password;
+  
+  if old_password.is_empty() {
+    let err_msg = n_route.n(
+      ctx,
+      "旧密码不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
+  }
+  if password.is_empty() {
+    let err_msg = n_route.n(
+      ctx,
+      "新密码不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
+  }
+  if confirm_password.is_empty() {
+    let err_msg = n_route.n(
+      ctx,
+      "确认密码不能为空".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
+  }
+  if password != confirm_password {
+    let err_msg = n_route.n(
+      ctx,
+      "两次输入的密码不一致".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
+  }
+  
+  let auth_model = ctx.get_auth_model_err()?;
+  
+  let usr_id = auth_model.id;
+  
+  let usr_model = usr_dao::find_by_id(
+    ctx,
+    usr_id.clone(),
+    None,
+  ).await?;
+  let usr_model = usr_dao::validate_option(
+    ctx,
+    usr_model
+  ).await?;
+  usr_dao::validate_is_enabled(
+    ctx,
+    &usr_model,
+  ).await?;
+  
+  let old_password = get_password(old_password)?;
+  
+  if usr_model.password != old_password {
+    let err_msg = n_route.n(
+      ctx,
+      "旧密码错误".to_owned(),
+      None,
+    ).await?;
+    return Err(anyhow::anyhow!(err_msg));
+  }
+  
+  usr_dao::update_by_id(
+    ctx,
+    usr_id,
+    UsrInput {
+      password: password.into(),
+      ..Default::default()
+    },
+    None,
+  ).await?;
+  
+  Ok(true)
+}
+
 pub async fn get_login_info<'a>(
   ctx: &Ctx<'a>,
 ) -> Result<GetLoginInfo> {
@@ -151,6 +245,7 @@ pub async fn get_login_info<'a>(
   
   Ok(GetLoginInfo {
     lbl: usr_model.lbl,
+    username: usr_model.username,
     lang: auth_model.lang,
     org_id,
     org_id_models,

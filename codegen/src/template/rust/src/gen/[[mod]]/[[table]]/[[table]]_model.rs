@@ -203,10 +203,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // ID
     let id: String = row.try_get("id")?;<#
-      } else if (isPassword) {
-    #>
-    // <#=column_comment#>
-    let <#=column_name_rust#> = "".to_owned();<#
       } else if (foreignKey && foreignKey.multiple) {
     #>
     // <#=column_comment#>
