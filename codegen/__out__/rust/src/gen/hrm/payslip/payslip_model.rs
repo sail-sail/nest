@@ -15,7 +15,7 @@ use async_graphql::{
 };
 use crate::common::util::dao::decrypt;
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct PayslipModel {
   /// 租户ID
@@ -175,7 +175,7 @@ impl FromRow<'_, MySqlRow> for PayslipModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct PayslipFieldComment {
   /// ID
@@ -232,7 +232,7 @@ pub struct PayslipFieldComment {
   pub update_time_lbl: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct PayslipSearch {
   pub id: Option<String>,
@@ -298,7 +298,7 @@ pub struct PayslipSearch {
   pub update_time: Option<Vec<chrono::NaiveDateTime>>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct PayslipInput {
   /// 租户ID

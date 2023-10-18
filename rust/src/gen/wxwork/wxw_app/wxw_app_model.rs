@@ -15,7 +15,7 @@ use async_graphql::{
 };
 use crate::common::util::dao::decrypt;
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppModel {
   /// 租户ID
@@ -110,7 +110,7 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppFieldComment {
   /// ID
@@ -143,7 +143,7 @@ pub struct WxwAppFieldComment {
   pub rem: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppSearch {
   pub id: Option<String>,
@@ -187,7 +187,7 @@ pub struct WxwAppSearch {
   pub rem_like: Option<String>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppInput {
   /// 租户ID

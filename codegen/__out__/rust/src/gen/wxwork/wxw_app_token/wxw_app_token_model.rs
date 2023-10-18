@@ -14,7 +14,7 @@ use async_graphql::{
   InputObject,
 };
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize, Clone)]
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenModel {
   /// 租户ID
@@ -81,7 +81,7 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
   }
 }
 
-#[derive(SimpleObject, Debug, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenFieldComment {
   /// ID
@@ -102,7 +102,7 @@ pub struct WxwAppTokenFieldComment {
   pub expires_in: String,
 }
 
-#[derive(InputObject, Debug, Default)]
+#[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenSearch {
   pub id: Option<String>,
@@ -128,7 +128,7 @@ pub struct WxwAppTokenSearch {
   pub expires_in: Option<Vec<u32>>,
 }
 
-#[derive(FromModel, InputObject, Debug, Default, Clone)]
+#[derive(FromModel, InputObject, Default, Clone)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwAppTokenInput {
   /// 租户ID
