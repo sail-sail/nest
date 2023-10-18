@@ -472,13 +472,15 @@ pub async fn find_by_unique<'a>(
   
   let mut models_tmp = {
     if
-      search.wxw_app_id.is_none()
+      search.wxw_app_id.is_none() ||
+      search.r#type.is_none()
     {
       return Ok(vec![]);
     }
     
     let search = WxwAppTokenSearch {
       wxw_app_id: search.wxw_app_id,
+      r#type: search.r#type,
       ..Default::default()
     };
     
@@ -528,7 +530,8 @@ fn equals_by_unique(
   }
   
   if
-    input.wxw_app_id.as_ref().is_some() && input.wxw_app_id.as_ref().unwrap() == &model.wxw_app_id
+    input.wxw_app_id.as_ref().is_some() && input.wxw_app_id.as_ref().unwrap() == &model.wxw_app_id &&
+    input.r#type.as_ref().is_some() && input.r#type.as_ref().unwrap() == &model.r#type
   {
     return true;
   }
