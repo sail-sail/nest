@@ -24,7 +24,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
   modelNameTree = Table_Up + "ModelTree";
 }
-const list_tree = opts.list_tree;
+const list_tree = opts?.list_tree;
 let list_treeColumn = undefined;
 let list_treeForeignKey = undefined;
 let list_treeForeignTable = undefined;

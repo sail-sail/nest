@@ -121,10 +121,10 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignSchema) {
     continue;
   }
-  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+  if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (foreignSchema.opts.list_tree !== true) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
 #>
@@ -730,10 +730,10 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignSchema) {
     continue;
   }
-  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+  if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (foreignSchema.opts.list_tree !== true) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   let list_treeForeignTable = undefined;
