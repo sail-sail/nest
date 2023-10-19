@@ -116,6 +116,22 @@ async fn get_where_query<'a>(
     }
   }
   {
+    let home_url = match &search {
+      Some(item) => item.home_url.clone(),
+      None => None,
+    };
+    if let Some(home_url) = home_url {
+      where_query += &format!(" and t.home_url = {}", args.push(home_url.into()));
+    }
+    let home_url_like = match &search {
+      Some(item) => item.home_url_like.clone(),
+      None => None,
+    };
+    if let Some(home_url_like) = home_url_like {
+      where_query += &format!(" and t.home_url like {}", args.push((sql_like(&home_url_like) + "%").into()));
+    }
+  }
+  {
     let menu_ids: Vec<String> = match &search {
       Some(item) => item.menu_ids.clone().unwrap_or_default(),
       None => Default::default(),
@@ -585,6 +601,7 @@ pub async fn get_field_comments<'a>(
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
     "名称".into(),
+    "首页".into(),
     "菜单权限".into(),
     "菜单权限".into(),
     "按钮权限".into(),
@@ -622,25 +639,26 @@ pub async fn get_field_comments<'a>(
   let field_comments = RoleFieldComment {
     id: vec[0].to_owned(),
     lbl: vec[1].to_owned(),
-    menu_ids: vec[2].to_owned(),
-    menu_ids_lbl: vec[3].to_owned(),
-    permit_ids: vec[4].to_owned(),
-    permit_ids_lbl: vec[5].to_owned(),
-    data_permit_ids: vec[6].to_owned(),
-    data_permit_ids_lbl: vec[7].to_owned(),
-    is_locked: vec[8].to_owned(),
-    is_locked_lbl: vec[9].to_owned(),
-    is_enabled: vec[10].to_owned(),
-    is_enabled_lbl: vec[11].to_owned(),
-    rem: vec[12].to_owned(),
-    create_usr_id: vec[13].to_owned(),
-    create_usr_id_lbl: vec[14].to_owned(),
-    create_time: vec[15].to_owned(),
-    create_time_lbl: vec[16].to_owned(),
-    update_usr_id: vec[17].to_owned(),
-    update_usr_id_lbl: vec[18].to_owned(),
-    update_time: vec[19].to_owned(),
-    update_time_lbl: vec[20].to_owned(),
+    home_url: vec[2].to_owned(),
+    menu_ids: vec[3].to_owned(),
+    menu_ids_lbl: vec[4].to_owned(),
+    permit_ids: vec[5].to_owned(),
+    permit_ids_lbl: vec[6].to_owned(),
+    data_permit_ids: vec[7].to_owned(),
+    data_permit_ids_lbl: vec[8].to_owned(),
+    is_locked: vec[9].to_owned(),
+    is_locked_lbl: vec[10].to_owned(),
+    is_enabled: vec[11].to_owned(),
+    is_enabled_lbl: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
+    create_usr_id: vec[14].to_owned(),
+    create_usr_id_lbl: vec[15].to_owned(),
+    create_time: vec[16].to_owned(),
+    create_time_lbl: vec[17].to_owned(),
+    update_usr_id: vec[18].to_owned(),
+    update_usr_id_lbl: vec[19].to_owned(),
+    update_time: vec[20].to_owned(),
+    update_time_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1079,6 +1097,12 @@ pub async fn create<'a>(
     sql_values += ",?";
     args.push(lbl.into());
   }
+  // 首页
+  if let Some(home_url) = input.home_url {
+    sql_fields += ",home_url";
+    sql_values += ",?";
+    args.push(home_url.into());
+  }
   // 锁定
   if let Some(is_locked) = input.is_locked {
     sql_fields += ",is_locked";
@@ -1305,6 +1329,12 @@ pub async fn update_by_id<'a>(
     field_num += 1;
     sql_fields += ",lbl = ?";
     args.push(lbl.into());
+  }
+  // 首页
+  if let Some(home_url) = input.home_url {
+    field_num += 1;
+    sql_fields += ",home_url = ?";
+    args.push(home_url.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

@@ -31,19 +31,6 @@
     "unocss.root": "",
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
-    "deno.suggest.autoImports": false,
-    "workbench.colorCustomizations": {
-      // Overrides Theme Default Colors for InlayHints feature 
-      "editorInlayHint.background": "#08000088",
-      "editorInlayHint.foreground": "#ddeeff7d",
-
-      // Overrides Theme Parameter hints fg for InlayHints feature
-      "editorInlayHint.parameterBackground": "#08000088",
-      "editorInlayHint.parameterForeground": "#ddeeff7d",
-
-      // Overrides Theme Type hints fg for InlayHints feature
-      "editorInlayHint.typeBackground": "#08000088",
-      "editorInlayHint.typeForeground": "#ddeeff7d"
-    }
+    "deno.suggest.autoImports": false
   }
 }
