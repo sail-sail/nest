@@ -537,6 +537,7 @@ export async function getUsrList() {
 
 export async function getDeptTree() {
   const data = await findDeptTree(
+    undefined,
     [
       {
         prop: "order_by",

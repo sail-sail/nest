@@ -32,6 +32,7 @@ export interface RoleInput extends RoleInputType {
 export interface RoleFieldComment {
   id: string;
   lbl: string;
+  home_url: string;
   menu_ids: string;
   menu_ids_lbl: string;
   permit_ids: string;
