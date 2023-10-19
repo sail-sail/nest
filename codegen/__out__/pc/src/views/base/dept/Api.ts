@@ -87,11 +87,12 @@ export type DeptModelTree = DeptModel & {
  * @returns 
  */
 export async function findTree(
+  search?: DeptSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const res = await findAll(
-    undefined,
+    search,
     undefined,
     sort,
     opt,
@@ -459,6 +460,7 @@ export async function getUsrList() {
 
 export async function getDeptTree() {
   const data = await findDeptTree(
+    undefined,
     [
       {
         prop: "order_by",

@@ -8,3 +8,4 @@ import "./i18n/i18n.graphql.ts";
 import "./options/options.graphql.ts";
 import "./lang/lang.graphql.ts";
 import "./permit/permit.graphql.ts";
+import "./role/role.graphql.ts";
