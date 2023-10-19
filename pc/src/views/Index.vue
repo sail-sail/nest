@@ -1,8 +1,109 @@
 <template>
-主页
+<div
+  un-flex="~ [1_0_0]"
+  un-overflow-hidden
+>
+  <template v-if="!inited">
+    <div
+      un-flex="~ [1_0_0]"
+      un-overflow-hidden
+      un-justify-center
+      un-items-center
+      un-text="gray 5"
+    >
+      {{ errMsg }}
+    </div>
+  </template>
+  <template v-else>
+    <template v-if="inited && myComponents.length === 0">
+      <div
+        un-flex="~ [1_0_0]"
+        un-overflow-hidden
+        un-justify-center
+        un-items-center
+        un-text="gray"
+      >
+      </div>
+    </template>
+    <template v-else-if="myComponents.length === 1">
+      <Component
+        :is="myComponents[0]"
+      ></Component>
+    </template>
+    <swiper
+      v-else
+      class="swiper"
+      un-w="full"
+      navigation
+      :pagination="{ clickable: true }"
+      :modules="[ Pagination, A11y ]"
+    >
+      <swiper-slide
+        v-for="(item, i) in myComponents"
+        :key="homeUrls[i]"
+      >
+        <Component
+          :is="item"
+        ></Component>
+      </swiper-slide>
+    </swiper>
+  </template>
+</div>
 </template>
-<script setup lang="ts">
 
+<script setup lang="ts">
+import "swiper/css";
+import "swiper/css/pagination";
+
+import type {
+  Component,
+} from "vue";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { Pagination, A11y } from "swiper/modules";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { Swiper, SwiperSlide } from "swiper/vue";
+
+import { getComponent } from "@/router/util";
+
+import {
+  getHomeUrls,
+} from "@/components/Api";
+
+defineOptions({
+  name: "首页",
+});
+
+const usrStore = useUsrStore();
+
+let inited = $ref(false);
+
+let errMsg = $ref("正在加载...");
+
+let myComponents = $shallowRef<Component[]>([ ]);
+let homeUrls = $shallowRef<string[]>([ ]);
+
+async function onGetHomeUrls() {
+  const homeUrls = await getHomeUrls() || [ ];
+  myComponents = await Promise.all(homeUrls.map((url) => getComponent(url)));
+}
+
+async function initFrame() {
+  try {
+    await onGetHomeUrls();
+    inited = true;
+  } catch(err) {
+    console.log(err);
+    errMsg = "网络连接失败";
+  }
+}
+
+usrStore.onLogin(initFrame);
+
+initFrame();
 </script>
 
 <style scoped>

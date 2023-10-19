@@ -21,6 +21,10 @@ import {
   findTree as findMenuTree,
 } from "@/views/base/menu/Api";
 
+import {
+  getHomeUrlMap,
+} from "./Api2";
+
 /**
  * 根据搜索条件查找数据
  * @export findAll
@@ -43,6 +47,7 @@ export async function findAll(
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
+          home_url
           menu_ids
           menu_ids_lbl
           permit_ids
@@ -73,8 +78,10 @@ export async function findAll(
     },
   }, opt);
   const res = data.findAllRole;
+  const homeUrlMap = await getHomeUrlMap();
   for (let i = 0; i < res.length; i++) {
     const item = res[i];
+    (item as any).home_url_lbl = homeUrlMap.find((item2) => item2.id === item.home_url)?.lbl || item.home_url;
   }
   return res;
 }
@@ -181,6 +188,7 @@ export async function findById(
         findByIdRole(id: $id) {
           id
           lbl
+          home_url
           menu_ids
           menu_ids_lbl
           permit_ids
@@ -562,6 +570,7 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsRole {
             lbl
+            home_url
             menu_ids_lbl
             permit_ids_lbl
             data_permit_ids_lbl
@@ -640,6 +649,7 @@ export function useExportExcel(routePath: string) {
           findAllRole(search: $search, sort: $sort) {
             id
             lbl
+            home_url
             menu_ids
             menu_ids_lbl
             permit_ids
@@ -662,6 +672,7 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsRole {
             lbl
+            home_url
             menu_ids_lbl
             permit_ids_lbl
             data_permit_ids_lbl

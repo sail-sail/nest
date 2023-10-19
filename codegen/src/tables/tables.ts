@@ -14,6 +14,10 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
       },
       {
+        COLUMN_NAME: "home_url",
+        width: 180,
+      },
+      {
         COLUMN_NAME: "menu_ids",
         COLUMN_COMMENT: "菜单权限",
         search: true,

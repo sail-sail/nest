@@ -43,6 +43,7 @@ export async function findAll(
         findAllRole(search: $search, page: $page, sort: $sort) {
           id
           lbl
+          home_url
           menu_ids
           menu_ids_lbl
           permit_ids
@@ -181,6 +182,7 @@ export async function findById(
         findByIdRole(id: $id) {
           id
           lbl
+          home_url
           menu_ids
           menu_ids_lbl
           permit_ids
@@ -562,6 +564,7 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsRole {
             lbl
+            home_url
             menu_ids_lbl
             permit_ids_lbl
             data_permit_ids_lbl
@@ -640,6 +643,7 @@ export function useExportExcel(routePath: string) {
           findAllRole(search: $search, sort: $sort) {
             id
             lbl
+            home_url
             menu_ids
             menu_ids_lbl
             permit_ids
@@ -662,6 +666,7 @@ export function useExportExcel(routePath: string) {
           }
           getFieldCommentsRole {
             lbl
+            home_url
             menu_ids_lbl
             permit_ids_lbl
             data_permit_ids_lbl

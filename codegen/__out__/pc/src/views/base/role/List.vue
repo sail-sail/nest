@@ -433,6 +433,15 @@
             </el-table-column>
           </template>
           
+          <!-- 首页 -->
+          <template v-else-if="'home_url' === col.prop && (showBuildIn || builtInSearch?.home_url == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 菜单权限 -->
           <template v-else-if="'menu_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_ids == null)">
             <el-table-column
@@ -795,6 +804,8 @@ const props = defineProps<{
   id?: string; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  home_url?: string; // 首页
+  home_url_like?: string; // 首页
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string|string[]; // 菜单权限
   permit_ids?: string|string[]; // 按钮权限
@@ -957,6 +968,14 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
+    },
+    {
+      label: "首页",
+      prop: "home_url",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "菜单权限",
@@ -1307,6 +1326,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("名称") ]: "lbl",
+    [ await nAsync("首页") ]: "home_url",
     [ await nAsync("菜单权限") ]: "menu_ids_lbl",
     [ await nAsync("按钮权限") ]: "permit_ids_lbl",
     [ await nAsync("数据权限") ]: "data_permit_ids_lbl",
@@ -1335,6 +1355,7 @@ async function onImportExcel() {
       {
         key_types: {
           "lbl": "string",
+          "home_url": "string",
           "menu_ids_lbl": "string",
           "permit_ids_lbl": "string",
           "data_permit_ids_lbl": "string",
@@ -1638,6 +1659,7 @@ async function revertByIdsEfc() {
 async function initI18nsEfc() {
   const codes: string[] = [
     "名称",
+    "首页",
     "菜单权限",
     "按钮权限",
     "数据权限",
