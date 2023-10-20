@@ -1303,7 +1303,7 @@ impl std::fmt::Display for SrvErr {
   }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum ArgType {
   Bool(bool),
   I8(i8),
@@ -1384,7 +1384,7 @@ impl Display for ArgType {
   }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Default, Clone)]
 pub struct QueryArgs {
   
   pub value: Vec<ArgType>,
