@@ -119,6 +119,7 @@ async fn find_menus<'a>(
 //   }
 // }
 
+/// 首页获取菜单列表
 pub async fn get_menus<'a>(
   ctx: &Ctx<'a>,
   r#type: Option<String>,

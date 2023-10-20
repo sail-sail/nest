@@ -1,31 +1,18 @@
 use anyhow::Result;
-use async_graphql::{Context, Object};
-
 use crate::common::context::Ctx;
 
 use super::options_service;
 use crate::gen::base::options::options_model::OptionsModel;
 
-#[derive(Default)]
-pub struct OptionsQuery;
-
-#[Object(rename_args = "snake_case")]
-impl OptionsQuery {
+pub async fn get_options_by_lbl<'a>(
+  ctx: &Ctx<'a>,
+  lbl: String,
+) -> Result<Vec<OptionsModel>> {
   
-  async fn get_options_by_lbl<'a>(
-    &self,
-    ctx: &Context<'a>,
-    lbl: String,
-  ) -> Result<Vec<OptionsModel>> {
-    let ctx = Ctx::builder(ctx)
-      .build();
-    
-    let res = options_service::get_options_by_lbl(
-      &ctx,
-      lbl,
-    ).await;
-    
-    ctx.ok(res).await
-  }
+  let res = options_service::get_options_by_lbl(
+    ctx,
+    lbl,
+  ).await?;
   
+  Ok(res)
 }
