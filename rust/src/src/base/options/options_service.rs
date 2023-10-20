@@ -8,6 +8,11 @@ pub async fn get_options_by_lbl<'a>(
   ctx: &Ctx<'a>,
   lbl: String,
 ) -> Result<Vec<OptionsModel>> {
-  let res = options_dao::get_options_by_lbl(ctx, lbl).await?;
+  
+  let res = options_dao::get_options_by_lbl(
+    ctx,
+    lbl,
+  ).await?;
+  
   Ok(res)
 }
