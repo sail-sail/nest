@@ -3,7 +3,7 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
-use super::menu_service;
+use super::menu_resolver;
 use super::menu_model::GetMenus;
 
 #[derive(Default)]
@@ -23,7 +23,7 @@ impl MenuQuery {
       .with_auth()?
       .build();
     
-    let res = menu_service::get_menus(
+    let res = menu_resolver::get_menus(
       &ctx,
       r#type,
     ).await;
