@@ -5,7 +5,7 @@ use crate::common::context::Ctx;
 use crate::gen::base::menu::menu_dao::find_one as find_one_menu;
 use crate::gen::base::menu::menu_model::MenuSearch;
 
-use crate::gen::base::data_permit::data_permit_dao::find_all as find_all_data_permit;
+use crate::gen::base::data_permit::data_permit_dao::find_all as find_all_permit;
 use crate::gen::base::data_permit::data_permit_model::{
   DataPermitModel,
   DataPermitSearch,
@@ -33,7 +33,7 @@ pub async fn get_data_permits<'a>(
   }
   let menu_model = menu_model.unwrap();
   
-  let data_permit_models = find_all_data_permit(
+  let data_permit_models = find_all_permit(
     ctx,
     DataPermitSearch {
       menu_id: vec![menu_model.id].into(),
