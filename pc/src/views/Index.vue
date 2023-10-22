@@ -23,6 +23,7 @@
         un-items-center
         un-text="gray"
       >
+        (暂未设置首页)
       </div>
     </template>
     <template v-else-if="myComponents.length === 1">
