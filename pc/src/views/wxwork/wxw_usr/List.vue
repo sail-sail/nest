@@ -539,13 +539,8 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 /** 企微同步 */
 async function onWxwSyncUsr() {
   const host = window.location.host;
-  const num = await wxwSyncUsr(host);
-  await dataGrid(true);
-  if (num === 0) {
-    ElMessage.success(await nsAsync("企微同步成功, 无新增数据"));
-  } else {
-    ElMessage.success(await nsAsync("企微同步成功，新增 {0} 条数据", num));
-  }
+  await wxwSyncUsr(host);
+  ElMessage.success(await nsAsync("企微用户正在同步, 这可能需要一点时间, 请稍后刷新查看..."));
 }
 
 /** 搜索 */
