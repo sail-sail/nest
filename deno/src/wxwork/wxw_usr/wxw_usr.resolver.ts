@@ -49,6 +49,6 @@ export async function wxwSyncUsr(
   const {
     wxwSyncUsr,
   } = await import("./wxw_usr.service.ts");
-  const res = await wxwSyncUsr(host);
-  return res;
+  wxwSyncUsr(host);
+  return 0;
 }
