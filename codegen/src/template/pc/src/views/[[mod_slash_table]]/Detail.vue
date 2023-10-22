@@ -203,7 +203,7 @@ for (let i = 0; i < columns.length; i++) {
             } else if (
               foreignKey
               && (foreignKey.selectType === "select" || foreignKey.selectType == null)
-              && !foreignSchema?.opts.list_tree
+              && !foreignSchema?.opts?.list_tree
             ) {
             #>
             <CustomSelect<#
@@ -276,9 +276,9 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
             ></SelectInput<#=Foreign_Table_Up#>><#
-            } else if (foreignSchema && foreignSchema.opts.list_tree
-              && !foreignSchema.opts.ignoreCodegen
-              && !foreignSchema.opts.onlyCodegenDeno
+            } else if (foreignSchema && foreignSchema.opts?.list_tree
+              && !foreignSchema.opts?.ignoreCodegen
+              && !foreignSchema.opts?.onlyCodegenDeno
             ) {
             #>
             <CustomTreeSelect<#
@@ -626,7 +626,7 @@ import type {
     continue;
   }
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-  if (foreignSchema && foreignSchema.opts.list_tree) {
+  if (foreignSchema && foreignSchema.opts?.list_tree) {
     continue;
   }
   // if (table === foreignTable) continue;
@@ -661,7 +661,7 @@ if (
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema && foreignSchema.opts.list_tree) {
+    if (foreignSchema && foreignSchema.opts?.list_tree) {
       return false;
     }
     if (selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -700,7 +700,7 @@ import {<#
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema && foreignSchema.opts.list_tree) {
+    if (foreignSchema && foreignSchema.opts?.list_tree) {
       continue;
     }
     if (foreignTableArr2.includes(foreignTable)) continue;
@@ -747,10 +747,10 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignSchema) {
     continue;
   }
-  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+  if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts.list_tree) {
+  if (!foreignSchema.opts?.list_tree) {
     continue;
   }
   if (foreignTableArr3.includes(foreignTable)) continue;

@@ -112,10 +112,10 @@ const hasAtt = columns.some((item) => item.isAtt);
       <#
       if (column.isImg) {
       #><#
-      } else if (foreignSchema && foreignSchema.opts.list_tree
-        && !foreignSchema.opts.ignoreCodegen
-        && !foreignSchema.opts.onlyCodegenDeno
-        && typeof opts.list_tree !== "string"
+      } else if (foreignSchema && foreignSchema.opts?.list_tree
+        && !foreignSchema.opts?.ignoreCodegen
+        && !foreignSchema.opts?.onlyCodegenDeno
+        && typeof opts?.list_tree !== "string"
       ) {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
@@ -139,10 +139,10 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></CustomTreeSelect>
         </el-form-item>
       </template><#
-      } else if (foreignSchema && foreignSchema.opts.list_tree
-        && !foreignSchema.opts.ignoreCodegen
-        && !foreignSchema.opts.onlyCodegenDeno
-        && typeof opts.list_tree === "string"
+      } else if (foreignSchema && foreignSchema.opts?.list_tree
+        && !foreignSchema.opts?.ignoreCodegen
+        && !foreignSchema.opts?.onlyCodegenDeno
+        && typeof opts?.list_tree === "string"
       ) {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null">
@@ -1171,7 +1171,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     let foreignSchema = undefined;
     if (foreignKey) {
       foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-      if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+      if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
         continue;
       }
     }
@@ -1179,7 +1179,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
       && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
-      && !(foreignSchema && foreignSchema.opts.list_tree)
+      && !(foreignSchema && foreignSchema.opts?.list_tree)
     ) {
   #>
   
@@ -1205,7 +1205,7 @@ const hasAtt = columns.some((item) => item.isAtt);
   </ListSelectDialog><#
     } else if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-      && (foreignSchema && foreignSchema.opts.list_tree)
+      && (foreignSchema && foreignSchema.opts?.list_tree)
     ) {
   #>
   
@@ -1309,7 +1309,7 @@ for (let i = 0; i < columns.length; i++) {
   let foreignSchema = undefined;
   if (foreignKey) {
     foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
       continue;
     }
   }
@@ -1317,14 +1317,14 @@ for (let i = 0; i < columns.length; i++) {
   if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
     && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
-    && !(foreignSchema && foreignSchema.opts.list_tree)
+    && !(foreignSchema && foreignSchema.opts?.list_tree)
   ) {
 #>
 
 import <#=Foreign_Table_Up#>List from "../<#=foreignTable#>/List.vue";<#
   } else if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-    && (foreignSchema && foreignSchema.opts.list_tree && foreignSchema.opts.list_tree)
+    && (foreignSchema && foreignSchema.opts?.list_tree && foreignSchema.opts?.list_tree)
   ) {
 #>
 
@@ -1464,7 +1464,7 @@ if (
     const foreignKey = item.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema && foreignSchema.opts.list_tree) {
+    if (foreignSchema && foreignSchema.opts?.list_tree) {
       return false;
     }
     return true;
@@ -1483,7 +1483,7 @@ import {<#
     const column = foreignKeyArrColumns[i];
     const foreignKey = column.foreignKey;
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-    if (foreignSchema && foreignSchema.opts.list_tree) {
+    if (foreignSchema && foreignSchema.opts?.list_tree) {
       continue;
     }
   #>
@@ -1522,10 +1522,10 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignSchema) {
     continue;
   }
-  if (foreignSchema.opts.ignoreCodegen || foreignSchema.opts.onlyCodegenDeno) {
+  if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts.list_tree) {
+  if (!foreignSchema.opts?.list_tree) {
     continue;
   }
   if (!column.search) {
