@@ -232,7 +232,7 @@
                   @click="onChangePassword"
                 >
                   <ElIcon>
-                    <ElIconDelete />
+                    <ElIconLock />
                   </ElIcon>
                   <span>{{ ns('修改密码') }}</span>
                 </el-dropdown-item>
@@ -354,12 +354,16 @@ watch(
     const name = route.name as string;
     const menuLbl = menuStore.getLblByPath(route.path);
     const lbl = menuLbl || (route.meta?.name as string) || name || "";
+    const closeable = route.meta?.closeable as boolean ?? true;
+    const icon = route.meta?.icon as string | undefined;
     tabsStore.activeTab({
       name,
       lbl,
       active: true,
       path: route.path,
       query: route.query,
+      closeable,
+      icon,
     });
   },
   {

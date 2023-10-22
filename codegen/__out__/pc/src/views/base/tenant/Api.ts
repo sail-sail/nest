@@ -481,6 +481,7 @@ export async function getUsrList() {
 
 export async function getMenuTree() {
   const data = await findMenuTree(
+    undefined,
     [
       {
         prop: "",

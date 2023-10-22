@@ -1,9 +1,9 @@
-import {
-  type Component,
+import type {
+  Component,
 } from "vue";
 
-import {
-  type RouteRecordRaw,
+import type {
+  RouteRecordRaw,
 } from "vue-router";
 
 import router0 from "./index";
@@ -54,7 +54,9 @@ export function getRouters() {
   return routersRv;
 }
 
-export function getRouterPaths() {
+export function getRouterPaths(
+  filterFn?: (router: RouteRecordRaw) => boolean,
+) {
   const paths: {
     name: string;
     path: string;
@@ -68,8 +70,14 @@ export function getRouterPaths() {
     if (!router.name) {
       continue;
     }
+    if (filterFn) {
+      const isIn = filterFn(router);
+      if (!isIn) {
+        continue;
+      }
+    }
     paths.push({
-      name: router.name,
+      name: String(router.meta?.name || router.name),
       path: router.path,
     });
   }

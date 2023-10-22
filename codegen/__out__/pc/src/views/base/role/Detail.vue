@@ -61,6 +61,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.home_url == null)">
+          <el-form-item
+            :label="n('首页')"
+            prop="home_url"
+          >
+            <CustomInput
+              v-model="dialogModel.home_url"
+              :placeholder="`${ ns('请输入') } ${ n('首页') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -561,6 +574,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 async function onInitI18ns() {
   const codes: string[] = [
     "名称",
+    "首页",
     "菜单权限",
     "按钮权限",
     "数据权限",
