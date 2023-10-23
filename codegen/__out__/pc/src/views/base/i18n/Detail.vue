@@ -397,7 +397,7 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
-      data
+      data,
     ] = await Promise.all([
       findById(model.id),
     ]);
