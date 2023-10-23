@@ -44,14 +44,14 @@ export async function findAll(
           img
           lbl
           username
+          org_ids
+          org_ids_lbl
           default_org_id
           default_org_id_lbl
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
-          org_ids
-          org_ids_lbl
           dept_ids
           dept_ids_lbl
           role_ids
@@ -187,14 +187,14 @@ export async function findById(
           lbl
           username
           password
+          org_ids
+          org_ids_lbl
           default_org_id
           default_org_id_lbl
           is_locked
           is_locked_lbl
           is_enabled
           is_enabled_lbl
-          org_ids
-          org_ids_lbl
           dept_ids
           dept_ids_lbl
           role_ids
@@ -572,10 +572,10 @@ export function useDownloadImportTemplate(routePath: string) {
             img
             lbl
             username
+            org_ids_lbl
             default_org_id_lbl
             is_locked_lbl
             is_enabled_lbl
-            org_ids_lbl
             dept_ids_lbl
             role_ids_lbl
             rem
@@ -654,14 +654,14 @@ export function useExportExcel(routePath: string) {
             lbl
             username
             password
+            org_ids
+            org_ids_lbl
             default_org_id
             default_org_id_lbl
             is_locked
             is_locked_lbl
             is_enabled
             is_enabled_lbl
-            org_ids
-            org_ids_lbl
             dept_ids
             dept_ids_lbl
             role_ids
@@ -680,10 +680,10 @@ export function useExportExcel(routePath: string) {
             img
             lbl
             username
+            org_ids_lbl
             default_org_id_lbl
             is_locked_lbl
             is_enabled_lbl
-            org_ids_lbl
             dept_ids_lbl
             role_ids_lbl
             rem

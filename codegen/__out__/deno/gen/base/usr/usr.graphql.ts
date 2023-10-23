@@ -15,6 +15,10 @@ type UsrModel {
   username: String!
   "密码"
   password: String!
+  "所属组织"
+  org_ids: [String!]
+  "所属组织"
+  org_ids_lbl: [String!]
   "默认组织"
   default_org_id: String!
   "默认组织"
@@ -27,10 +31,6 @@ type UsrModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String
-  "所属组织"
-  org_ids: [String!]
-  "所属组织"
-  org_ids_lbl: [String!]
   "所属部门"
   dept_ids: [String!]
   "所属部门"
@@ -67,6 +67,10 @@ type UsrFieldComment {
   lbl: String!
   "用户名"
   username: String!
+  "所属组织"
+  org_ids: String!
+  "所属组织"
+  org_ids_lbl: String!
   "默认组织"
   default_org_id: String!
   "默认组织"
@@ -79,10 +83,6 @@ type UsrFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
-  "所属组织"
-  org_ids: String!
-  "所属组织"
-  org_ids_lbl: String!
   "所属部门"
   dept_ids: String!
   "所属部门"
@@ -121,6 +121,10 @@ input UsrInput {
   username: String
   "密码"
   password: String
+  "所属组织"
+  org_ids: [String!]
+  "所属组织"
+  org_ids_lbl: [String!]
   "默认组织"
   default_org_id: String
   "默认组织"
@@ -133,10 +137,6 @@ input UsrInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
-  "所属组织"
-  org_ids: [String!]
-  "所属组织"
-  org_ids_lbl: [String!]
   "所属部门"
   dept_ids: [String!]
   "所属部门"
@@ -180,6 +180,9 @@ input UsrSearch {
   "用户名"
   username: String
   username_like: String
+  "所属组织"
+  org_ids: [String!]
+  org_ids_is_null: Boolean
   "默认组织"
   default_org_id: [String!]
   default_org_id_is_null: Boolean
@@ -187,9 +190,6 @@ input UsrSearch {
   is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "所属组织"
-  org_ids: [String!]
-  org_ids_is_null: Boolean
   "所属部门"
   dept_ids: [String!]
   dept_ids_is_null: Boolean
