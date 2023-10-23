@@ -104,6 +104,28 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.org_ids == null)">
+          <el-form-item
+            :label="n('所属组织')"
+            prop="org_ids"
+          >
+            <CustomSelect
+              :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
+              v-model="dialogModel.org_ids"
+              :method="getOrgList"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.default_org_id == null)">
           <el-form-item
             :label="n('默认组织')"
@@ -122,28 +144,6 @@
                 };
               })"
               :placeholder="`${ ns('请选择') } ${ n('默认组织') }`"
-              :readonly="isLocked || isReadonly"
-            ></CustomSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.org_ids == null)">
-          <el-form-item
-            :label="n('所属组织')"
-            prop="org_ids"
-          >
-            <CustomSelect
-              :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
-              v-model="dialogModel.org_ids"
-              :method="getOrgList"
-              :options-map="((item: OrgModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
-              multiple
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -757,10 +757,10 @@ async function onInitI18ns() {
     "头像",
     "名称",
     "用户名",
+    "所属组织",
     "默认组织",
     "锁定",
     "启用",
-    "所属组织",
     "所属部门",
     "拥有角色",
     "备注",

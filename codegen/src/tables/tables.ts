@@ -212,6 +212,26 @@ export default defineConfig({
         isPassword: true,
       },
       {
+        COLUMN_NAME: "org_ids",
+        COLUMN_COMMENT: "所属组织",
+        search: true,
+        width: 280,
+        align: "left",
+        foreignKey: {
+          mod: "base",
+          table: "org",
+          column: "id",
+          lbl: "lbl",
+          multiple: true,
+          type: "many2many",
+          defaultSort: {
+            prop: "order_by",
+            order: "ascending",
+          },
+          selectType: "select",
+        },
+      },
+      {
         COLUMN_NAME: "default_org_id",
         width: 140,
         require: true,
@@ -232,26 +252,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_enabled",
-      },
-      {
-        COLUMN_NAME: "org_ids",
-        COLUMN_COMMENT: "所属组织",
-        search: true,
-        width: 280,
-        align: "left",
-        foreignKey: {
-          mod: "base",
-          table: "org",
-          column: "id",
-          lbl: "lbl",
-          multiple: true,
-          type: "many2many",
-          defaultSort: {
-            prop: "order_by",
-            order: "ascending",
-          },
-          selectType: "select",
-        },
       },
       {
         COLUMN_NAME: "dept_ids",
