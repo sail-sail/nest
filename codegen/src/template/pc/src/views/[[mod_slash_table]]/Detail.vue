@@ -1191,7 +1191,21 @@ async function showDialog(
     if (!model?.id) {
       return await dialogRes.dialogPrm;
     }
-    const data = await findById(model.id);
+    const [
+      data<#
+      if (hasOrderBy) {
+      #>
+      order_by,<#
+      }
+      #>
+    ] = await Promise.all([
+      findById(model.id),<#
+      if (hasOrderBy) {
+      #>
+      findLastOrderBy(),<#
+      }
+      #>
+    ]);
     if (data) {
       dialogModel = {
         ...data,
@@ -1206,6 +1220,11 @@ async function showDialog(
         #>
         is_locked: undefined,
         is_locked_lbl: undefined,<#
+        }
+        #><#
+        if (hasOrderBy) {
+        #>
+        order_by,<#
         }
         #>
       };
