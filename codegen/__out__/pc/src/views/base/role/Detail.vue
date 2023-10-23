@@ -353,7 +353,11 @@ async function showDialog(
     if (!model?.id) {
       return await dialogRes.dialogPrm;
     }
-    const data = await findById(model.id);
+    const [
+      data
+    ] = await Promise.all([
+      findById(model.id),
+    ]);
     if (data) {
       dialogModel = {
         ...data,

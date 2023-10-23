@@ -401,13 +401,20 @@ async function showDialog(
     if (!model?.id) {
       return await dialogRes.dialogPrm;
     }
-    const data = await findById(model.id);
+    const [
+      data
+      order_by,
+    ] = await Promise.all([
+      findById(model.id),
+      findLastOrderBy(),
+    ]);
     if (data) {
       dialogModel = {
         ...data,
         id: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
+        order_by,
       };
     }
   } else if (dialogAction === "edit") {
