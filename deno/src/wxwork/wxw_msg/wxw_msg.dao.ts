@@ -111,8 +111,12 @@ export async function sendCardMsg(
     return false;
   }
   if (errcode != 0) {
-    error(data);
-    return false;
+    error(`发送卡片消息失败: ${ data.errmsg }`);
+    let errmsg = data.errmsg;
+    if (errcode === 60020) {
+      errmsg = "外网IP地址未在企微白名单中, 请联系管理员";
+    }
+    throw errmsg;
   }
   return true;
 }
