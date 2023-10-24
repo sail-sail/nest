@@ -4,8 +4,8 @@ use crate::common::context::Ctx;
 
 use crate::gen::base::usr::usr_dao;
 
-pub async fn org_login_select<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn org_login_select(
+  ctx: &mut Ctx,
   org_id: String,
 ) -> Result<String> {
   let org_id2 = ctx.get_auth_org_id();

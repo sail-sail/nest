@@ -5,8 +5,8 @@ use crate::common::context::Ctx;
 
 use super::i18n_service;
 
-pub async fn n_lang<'a>(
-  ctx: &Ctx<'a>,
+pub async fn n_lang(
+  ctx: &Ctx,
   lang_code: String,
   route_path: Option<String>,
   code: String,

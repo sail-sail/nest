@@ -11,8 +11,8 @@ use crate::gen::base::usr::usr_dao::{
 };
 
 /// 获取当前角色的首页轮播图路由
-pub async fn get_home_urls<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_home_urls(
+  ctx: &Ctx,
 ) -> Result<Vec<String>> {
   
   let usr_id = ctx.get_auth_model_err()?.id;

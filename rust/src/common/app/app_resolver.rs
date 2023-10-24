@@ -12,9 +12,9 @@ pub struct AppQuery;
 impl AppQuery {
   
   /// 生成ID主键
-  async fn generate_id<'a>(
+  async fn generate_id(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<String> {
     let mut ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -24,9 +24,9 @@ impl AppQuery {
   }
   
   /// 检查是否已经登录
-  async fn check_login<'a>(
+  async fn check_login(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<bool> {
     let mut ctx = Ctx::builder(ctx)
       .build();

@@ -24,9 +24,9 @@ pub struct FieldPermitGenQuery;
 impl FieldPermitGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_field_permit<'a>(
+  async fn find_all_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<FieldPermitSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -47,9 +47,9 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_field_permit<'a>(
+  async fn find_count_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<FieldPermitSearch>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -66,9 +66,9 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_field_permit<'a>(
+  async fn find_one_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<FieldPermitSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<FieldPermitModel>> {
@@ -87,9 +87,9 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_field_permit<'a>(
+  async fn find_by_id_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<FieldPermitModel>> {
     let ctx = Ctx::builder(ctx)
@@ -106,9 +106,9 @@ impl FieldPermitGenQuery {
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_field_permit<'a>(
+  async fn get_field_comments_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<FieldPermitFieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -131,14 +131,15 @@ pub struct FieldPermitGenMutation;
 impl FieldPermitGenMutation {
   
   /// 创建数据
-  async fn create_field_permit<'a>(
+  async fn create_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: FieldPermitInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let mut options = Options::new();
@@ -156,14 +157,15 @@ impl FieldPermitGenMutation {
   }
   
   /// 根据id修改数据
-  async fn update_by_id_field_permit<'a>(
+  async fn update_by_id_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: FieldPermitInput,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = field_permit_resolver::update_by_id(
@@ -177,13 +179,14 @@ impl FieldPermitGenMutation {
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_field_permit<'a>(
+  async fn delete_by_ids_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = field_permit_resolver::delete_by_ids(
@@ -196,13 +199,14 @@ impl FieldPermitGenMutation {
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_field_permit<'a>(
+  async fn revert_by_ids_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = field_permit_resolver::revert_by_ids(
@@ -215,13 +219,14 @@ impl FieldPermitGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_field_permit<'a>(
+  async fn force_delete_by_ids_field_permit(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = field_permit_resolver::force_delete_by_ids(

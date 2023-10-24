@@ -11,9 +11,9 @@ pub struct I18nQuery;
 #[Object]
 impl I18nQuery {
   
-  async fn n<'a>(
+  async fn n(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     lang_code: String,
     route_path: Option<String>,
     code: String,

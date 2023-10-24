@@ -4,8 +4,8 @@ use crate::common::context::Ctx;
 use super::options_dao;
 use crate::gen::base::options::options_model::OptionsModel;
 
-pub async fn get_options_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_options_by_lbl(
+  ctx: &Ctx,
   lbl: String,
 ) -> Result<Vec<OptionsModel>> {
   

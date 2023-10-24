@@ -12,9 +12,9 @@ pub struct OrgMutation;
 impl OrgMutation {
   
   /// 切换组织
-  async fn org_login_select<'a>(
+  async fn org_login_select(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     org_id: String,
   ) -> Result<String> {
     

@@ -8,7 +8,7 @@ use crate::src::base::i18n::i18n_dao;
 
 #[allow(dead_code)]
 pub async fn max_items<T: Deref<Target = [E]>, E>(
-  ctx: &mut Ctx<'_>,
+  ctx: &Ctx,
   value: Option<&T>,
   len: usize,
   label: &str,

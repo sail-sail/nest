@@ -19,9 +19,9 @@ pub struct UsrMutation;
 impl UsrMutation {
   
   /// 登录, 获得token
-  async fn login<'a>(
+  async fn login(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     input: LoginInput,
   ) -> Result<Login> {
     let ctx = Ctx::builder(ctx)
@@ -37,9 +37,9 @@ impl UsrMutation {
   }
   
   /// 选择语言
-  async fn select_lang<'a>(
+  async fn select_lang(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     lang: String,
   ) -> Result<String> {
     let mut ctx = Ctx::builder(ctx)
@@ -55,9 +55,9 @@ impl UsrMutation {
   }
   
   /// 修改密码
-  async fn change_password<'a>(
+  async fn change_password(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     input: ChangePasswordInput,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -81,9 +81,9 @@ pub struct UsrQuery;
 impl UsrQuery {
   
   /// 获取当前登录用户信息
-  async fn get_login_info<'a>(
+  async fn get_login_info(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<GetLoginInfo> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?

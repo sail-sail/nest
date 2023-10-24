@@ -24,9 +24,9 @@ pub struct OperationRecordGenQuery;
 impl OperationRecordGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_operation_record<'a>(
+  async fn find_all_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<OperationRecordSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -47,9 +47,9 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_operation_record<'a>(
+  async fn find_count_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<OperationRecordSearch>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -66,9 +66,9 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_operation_record<'a>(
+  async fn find_one_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<OperationRecordSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OperationRecordModel>> {
@@ -87,9 +87,9 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_operation_record<'a>(
+  async fn find_by_id_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<OperationRecordModel>> {
     let ctx = Ctx::builder(ctx)
@@ -106,9 +106,9 @@ impl OperationRecordGenQuery {
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_operation_record<'a>(
+  async fn get_field_comments_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<OperationRecordFieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -131,14 +131,15 @@ pub struct OperationRecordGenMutation;
 impl OperationRecordGenMutation {
   
   /// 根据id修改租户id
-  async fn update_tenant_by_id_operation_record<'a>(
+  async fn update_tenant_by_id_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = operation_record_resolver::update_tenant_by_id(
@@ -152,13 +153,14 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_operation_record<'a>(
+  async fn delete_by_ids_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = operation_record_resolver::delete_by_ids(
@@ -171,13 +173,14 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_operation_record<'a>(
+  async fn revert_by_ids_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = operation_record_resolver::revert_by_ids(
@@ -190,13 +193,14 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_operation_record<'a>(
+  async fn force_delete_by_ids_operation_record(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = operation_record_resolver::force_delete_by_ids(

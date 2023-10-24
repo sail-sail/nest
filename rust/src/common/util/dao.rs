@@ -146,8 +146,8 @@ struct ManyModel {
   order_by: u32,
 }
 
-pub async fn many2many_update<'a>(
-  ctx: &Ctx<'a>,
+pub async fn many2many_update(
+  ctx: &Ctx,
   id: String,
   foreign_ids: Vec<String>,
   many_opts: ManyOpts,

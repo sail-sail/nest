@@ -12,9 +12,9 @@ pub struct CacheMutation;
 impl CacheMutation {
   
   /// 清空缓存
-  async fn clear_cache<'a>(
+  async fn clear_cache(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<bool> {
     let mut ctx = Ctx::builder(ctx)
       .build();

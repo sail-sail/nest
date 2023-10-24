@@ -24,9 +24,9 @@ pub struct OrgGenQuery;
 impl OrgGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_org<'a>(
+  async fn find_all_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<OrgSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -47,9 +47,9 @@ impl OrgGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_org<'a>(
+  async fn find_count_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<OrgSearch>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -66,9 +66,9 @@ impl OrgGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_org<'a>(
+  async fn find_one_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<OrgSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OrgModel>> {
@@ -87,9 +87,9 @@ impl OrgGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_org<'a>(
+  async fn find_by_id_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<OrgModel>> {
     let ctx = Ctx::builder(ctx)
@@ -107,9 +107,9 @@ impl OrgGenQuery {
   
   /// 根据 ID 查找是否已启用
   /// 记录不存在则返回 false
-  async fn get_is_enabled_by_id_org<'a>(
+  async fn get_is_enabled_by_id_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -128,9 +128,9 @@ impl OrgGenQuery {
   /// 根据 ID 查找是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
-  async fn get_is_locked_by_id_org<'a>(
+  async fn get_is_locked_by_id_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<bool> {
     let ctx = Ctx::builder(ctx)
@@ -147,9 +147,9 @@ impl OrgGenQuery {
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_org<'a>(
+  async fn get_field_comments_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<OrgFieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -164,9 +164,9 @@ impl OrgGenQuery {
   }
   
   /// 查找 order_by 字段的最大值
-  async fn find_last_order_by_org<'a>(
+  async fn find_last_order_by_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<u32> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -189,14 +189,15 @@ pub struct OrgGenMutation;
 impl OrgGenMutation {
   
   /// 创建数据
-  async fn create_org<'a>(
+  async fn create_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     model: OrgInput,
     unique_type: Option<UniqueType>,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let mut options = Options::new();
@@ -214,14 +215,15 @@ impl OrgGenMutation {
   }
   
   /// 根据id修改租户id
-  async fn update_tenant_by_id_org<'a>(
+  async fn update_tenant_by_id_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::update_tenant_by_id(
@@ -235,14 +237,15 @@ impl OrgGenMutation {
   }
   
   /// 根据id修改数据
-  async fn update_by_id_org<'a>(
+  async fn update_by_id_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     model: OrgInput,
   ) -> Result<String> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::update_by_id(
@@ -256,13 +259,14 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_org<'a>(
+  async fn delete_by_ids_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::delete_by_ids(
@@ -275,14 +279,15 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 启用或禁用数据
-  async fn enable_by_ids_org<'a>(
+  async fn enable_by_ids_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_enabled: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::enable_by_ids(
@@ -296,14 +301,15 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
-  async fn lock_by_ids_org<'a>(
+  async fn lock_by_ids_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
     is_locked: u8,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::lock_by_ids(
@@ -317,13 +323,14 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_org<'a>(
+  async fn revert_by_ids_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::revert_by_ids(
@@ -336,13 +343,14 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_org<'a>(
+  async fn force_delete_by_ids_org(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = org_resolver::force_delete_by_ids(

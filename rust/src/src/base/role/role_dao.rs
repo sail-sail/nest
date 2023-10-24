@@ -5,8 +5,8 @@ use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 /// 获取当前用户拥有的角色id列表
 #[allow(dead_code)]
-async fn get_auth_role_ids<'a>(
-  ctx: &Ctx<'a>,
+async fn get_auth_role_ids(
+  ctx: &Ctx,
 ) -> Result<Vec<String>> {
   
   let aut_model = ctx.get_auth_model();

@@ -24,9 +24,9 @@ pub struct BackgroundTaskGenQuery;
 impl BackgroundTaskGenQuery {
   
   /// 根据搜索条件和分页查找数据
-  async fn find_all_background_task<'a>(
+  async fn find_all_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<BackgroundTaskSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
@@ -47,9 +47,9 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据搜索条件查询数据总数
-  async fn find_count_background_task<'a>(
+  async fn find_count_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<BackgroundTaskSearch>,
   ) -> Result<i64> {
     let ctx = Ctx::builder(ctx)
@@ -66,9 +66,9 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据条件查找第一条数据
-  async fn find_one_background_task<'a>(
+  async fn find_one_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     search: Option<BackgroundTaskSearch>,
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<BackgroundTaskModel>> {
@@ -87,9 +87,9 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据ID查找第一条数据
-  async fn find_by_id_background_task<'a>(
+  async fn find_by_id_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
   ) -> Result<Option<BackgroundTaskModel>> {
     let ctx = Ctx::builder(ctx)
@@ -106,9 +106,9 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 获取字段对应的名称
-  async fn get_field_comments_background_task<'a>(
+  async fn get_field_comments_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<BackgroundTaskFieldComment> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
@@ -131,14 +131,15 @@ pub struct BackgroundTaskGenMutation;
 impl BackgroundTaskGenMutation {
   
   /// 根据id修改租户id
-  async fn update_tenant_by_id_background_task<'a>(
+  async fn update_tenant_by_id_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     id: String,
     tenant_id: String,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = background_task_resolver::update_tenant_by_id(
@@ -152,13 +153,14 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 删除数据
-  async fn delete_by_ids_background_task<'a>(
+  async fn delete_by_ids_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = background_task_resolver::delete_by_ids(
@@ -171,13 +173,14 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 还原数据
-  async fn revert_by_ids_background_task<'a>(
+  async fn revert_by_ids_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = background_task_resolver::revert_by_ids(
@@ -190,13 +193,14 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 彻底删除数据
-  async fn force_delete_by_ids_background_task<'a>(
+  async fn force_delete_by_ids_background_task(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     ids: Vec<String>,
   ) -> Result<u64> {
     let ctx = Ctx::builder(ctx)
       .with_auth()?
+      .with_tran()?
       .build();
     
     let res = background_task_resolver::force_delete_by_ids(

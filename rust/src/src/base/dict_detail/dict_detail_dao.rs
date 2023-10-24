@@ -5,8 +5,8 @@ use crate::common::context::{Ctx, QueryArgs, Options};
 use super::dict_detail_model::GetDict;
 
 /// 获取业务字典
-pub async fn get_dict<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_dict(
+  ctx: &Ctx,
   codes: &Vec<impl AsRef<str>>,
 ) -> Result<Vec<Vec<GetDict>>> {
   if codes.is_empty() {

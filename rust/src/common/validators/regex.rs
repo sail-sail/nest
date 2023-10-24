@@ -6,8 +6,8 @@ use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
-pub async fn regex<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn regex(
+  ctx: &mut Ctx,
   value: Option<String>,
   regex_str: &'static str,
   label: &str,

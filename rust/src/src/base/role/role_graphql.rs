@@ -12,9 +12,9 @@ pub struct RoleQuery;
 impl RoleQuery {
   
   /// 获取当前角色的首页轮播图路由
-  async fn get_home_urls<'a>(
+  async fn get_home_urls(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<Vec<String>> {
     
     let ctx = Ctx::builder(ctx)

@@ -7,8 +7,8 @@ use crate::common::context::SrvErr;
 use crate::src::base::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
-pub async fn url<'a>(
-  ctx: &mut Ctx<'a>,
+pub async fn url(
+  ctx: &mut Ctx,
   value: Option<String>,
   label: &str,
 ) -> Result<()> {

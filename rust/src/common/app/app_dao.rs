@@ -5,14 +5,14 @@ use crate::common::context::{
 
 /// 清空缓存
 pub fn generate_id(
-  _ctx: &Ctx<'_>,
+  _ctx: &Ctx,
 ) -> String {
   get_short_uuid()
 }
 
 /// 检查是否已经登录
 pub fn check_login(
-  ctx: &Ctx<'_>,
+  ctx: &Ctx,
 ) -> bool {
   ctx.has_auth_model()
 }

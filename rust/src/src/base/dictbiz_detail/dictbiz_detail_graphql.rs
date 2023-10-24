@@ -12,9 +12,9 @@ pub struct DictbizDetailQuery;
 #[Object(rename_args = "snake_case")]
 impl DictbizDetailQuery {
   
-  async fn get_dictbiz<'a>(
+  async fn get_dictbiz(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDictbiz>>> {
     

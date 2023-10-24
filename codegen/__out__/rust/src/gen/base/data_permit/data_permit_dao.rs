@@ -27,8 +27,8 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::data_permit_model::*;
 
 #[allow(unused_variables)]
-async fn get_where_query<'a>(
-  ctx: &Ctx<'a>,
+async fn get_where_query(
+  ctx: &Ctx,
   args: &mut QueryArgs,
   search: Option<DataPermitSearch>,
 ) -> Result<String> {
@@ -293,8 +293,8 @@ async fn get_from_query() -> Result<String> {
 
 /// 根据搜索条件和分页查找数据
 #[allow(unused_variables)]
-pub async fn find_all<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_all(
+  ctx: &Ctx,
   search: Option<DataPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -391,8 +391,8 @@ pub async fn find_all<'a>(
 }
 
 /// 根据搜索条件查询数据总数
-pub async fn find_count<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_count(
+  ctx: &Ctx,
   search: Option<DataPermitSearch>,
   options: Option<Options>,
 ) -> Result<i64> {
@@ -456,8 +456,8 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 }
 
 /// 获取字段对应的国家化后的名称
-pub async fn get_field_comments<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_field_comments(
+  ctx: &Ctx,
   _options: Option<Options>,
 ) -> Result<DataPermitFieldComment> {
   
@@ -523,8 +523,8 @@ pub async fn get_field_comments<'a>(
 }
 
 /// 根据条件查找第一条数据
-pub async fn find_one<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_one(
+  ctx: &Ctx,
   search: Option<DataPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -549,8 +549,8 @@ pub async fn find_one<'a>(
 }
 
 /// 根据ID查找第一条数据
-pub async fn find_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_id(
+  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
@@ -571,8 +571,8 @@ pub async fn find_by_id<'a>(
 }
 
 /// 根据搜索条件判断数据是否存在
-pub async fn exists<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists(
+  ctx: &Ctx,
   search: Option<DataPermitSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -587,8 +587,8 @@ pub async fn exists<'a>(
 }
 
 /// 根据ID判断数据是否存在
-pub async fn exists_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn exists_by_id(
+  ctx: &Ctx,
   id: String,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -609,8 +609,8 @@ pub async fn exists_by_id<'a>(
 
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn find_by_unique(
+  ctx: &Ctx,
   search: DataPermitSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -675,8 +675,8 @@ fn equals_by_unique(
 
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique<'a>(
-  ctx: &Ctx<'a>,
+pub async fn check_by_unique(
+  ctx: &Ctx,
   input: DataPermitInput,
   model: DataPermitModel,
   unique_type: UniqueType,
@@ -714,8 +714,8 @@ pub async fn check_by_unique<'a>(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
-pub async fn set_id_by_lbl<'a>(
-  ctx: &Ctx<'a>,
+pub async fn set_id_by_lbl(
+  ctx: &Ctx,
   input: DataPermitInput,
 ) -> Result<DataPermitInput> {
   
@@ -797,8 +797,8 @@ pub async fn set_id_by_lbl<'a>(
 
 /// 创建数据
 #[allow(unused_mut)]
-pub async fn create<'a>(
-  ctx: &Ctx<'a>,
+pub async fn create(
+  ctx: &Ctx,
   mut input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<String> {
@@ -958,8 +958,8 @@ pub async fn create<'a>(
 
 /// 根据id修改数据
 #[allow(unused_mut)]
-pub async fn update_by_id<'a>(
-  ctx: &Ctx<'a>,
+pub async fn update_by_id(
+  ctx: &Ctx,
   id: String,
   mut input: DataPermitInput,
   options: Option<Options>,
@@ -1116,8 +1116,8 @@ fn get_foreign_tables() -> Vec<&'static str> {
 }
 
 /// 根据 ids 删除数据
-pub async fn delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn delete_by_ids(
+  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1158,8 +1158,8 @@ pub async fn delete_by_ids<'a>(
 }
 
 /// 根据 ids 还原数据
-pub async fn revert_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn revert_by_ids(
+  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1239,8 +1239,8 @@ pub async fn revert_by_ids<'a>(
 }
 
 /// 根据 ids 彻底删除数据
-pub async fn force_delete_by_ids<'a>(
-  ctx: &Ctx<'a>,
+pub async fn force_delete_by_ids(
+  ctx: &Ctx,
   ids: Vec<String>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1301,7 +1301,7 @@ pub async fn force_delete_by_ids<'a>(
 #[function_name::named]
 #[allow(dead_code)]
 pub async fn validate_option<'a, T>(
-  ctx: &Ctx<'a>,
+  ctx: &Ctx,
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {

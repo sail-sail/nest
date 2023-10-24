@@ -6,8 +6,8 @@ use super::tenant_service;
 use crate::gen::base::tenant::tenant_model::TenantModel;
 
 /// 根据 当前网址的域名+端口 获取 租户列表
-pub async fn get_login_tenants<'a>(
-  ctx: &Ctx<'a>,
+pub async fn get_login_tenants(
+  ctx: &Ctx,
   domain: String,
 ) -> Result<Vec<TenantModel>> {
   

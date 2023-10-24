@@ -12,9 +12,9 @@ pub struct LangQuery;
 #[Object(rename_args = "snake_case")]
 impl LangQuery {
   
-  async fn get_login_langs<'a>(
+  async fn get_login_langs(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
   ) -> Result<Vec<LangModel>> {
     let ctx = Ctx::builder(ctx)
       .build();
